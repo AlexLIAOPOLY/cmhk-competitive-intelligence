@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
+from unittest import mock
 from zoneinfo import ZoneInfo
 
 import project_monitor
@@ -405,6 +406,110 @@ class ProjectMonitorTests(unittest.TestCase):
             suggestions=["检查日志。"],
             terminal=True,
         )
+
+    def _write_slot_archive(self, slot: str, payload: dict) -> None:
+        hour, minute = slot.split(":")
+        path = self.root / "strategy_briefing" / "runs" / f"2026-08-16@{hour}-{minute}.json"
+        base = json.loads(path.read_text()) if path.exists() else {}
+        base.update(payload)
+        path.write_text(json.dumps(base))
+
+    def test_empty_agentic_gap_search_alerts_even_when_scan_completes(self):
+        self._write_slot_archive(
+            "09:00",
+            {
+                "news_discovery": {
+                    "agentic_search": {
+                        "agentic_query_count": 8,
+                        "agentic_result_count": 0,
+                    }
+                }
+            },
+        )
+        monitor = self._monitor()
+
+        issues = monitor._detect_strategic_content_quality()
+
+        self.assertEqual(len(issues), 1)
+        self.assertIn("Agentic", issues[0]["summary"])
+        self.assertEqual(issues[0]["severity"], "P2")
+
+    def test_agentic_gap_search_with_results_is_not_alerted(self):
+        self._write_slot_archive(
+            "09:00",
+            {
+                "news_discovery": {
+                    "agentic_search": {
+                        "agentic_query_count": 8,
+                        "agentic_result_count": 3,
+                    }
+                }
+            },
+        )
+
+        self.assertEqual(self._monitor()._detect_strategic_content_quality(), [])
+
+    def test_no_agentic_queries_planned_is_not_treated_as_failure(self):
+        self._write_slot_archive(
+            "09:00",
+            {
+                "news_discovery": {
+                    "agentic_search": {
+                        "agentic_query_count": 0,
+                        "agentic_result_count": 0,
+                    }
+                }
+            },
+        )
+
+        self.assertEqual(self._monitor()._detect_strategic_content_quality(), [])
+
+    def test_blocked_dirty_copy_raises_a_p1_alert(self):
+        self._write_slot_archive(
+            "09:00",
+            {
+                "review_sheet": {
+                    "dirty_copy_blocked_count": 2,
+                    "dirty_copy_blocked": [
+                        {"reason": "标题含模型提示词", "title": "合法JSON 需要判断"},
+                    ],
+                }
+            },
+        )
+        monitor = self._monitor()
+
+        issues = monitor._detect_strategic_content_quality()
+
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0]["severity"], "P1")
+        self.assertIn("提示词", issues[0]["summary"])
+
+    def test_deferred_review_backlog_alerts_past_threshold(self):
+        (self.root / "strategy_briefing" / "candidate_ai_editor_deferred.json").write_text(
+            json.dumps({"items": [{"key": f"k{index}"} for index in range(60)]})
+        )
+        monitor = self._monitor()
+
+        issues = monitor._detect_strategic_content_quality()
+
+        self.assertEqual(len(issues), 1)
+        self.assertIn("补审队列", issues[0]["summary"])
+
+    def test_small_deferred_queue_does_not_alert(self):
+        (self.root / "strategy_briefing" / "candidate_ai_editor_deferred.json").write_text(
+            json.dumps({"items": [{"key": "k1"}]})
+        )
+
+        self.assertEqual(self._monitor()._detect_strategic_content_quality(), [])
+
+    def test_content_quality_detector_is_registered(self):
+        monitor = self._monitor()
+        with mock.patch.object(
+            monitor, "_detect_strategic_content_quality", return_value=[]
+        ) as detector:
+            monitor.collect_issues()
+
+        detector.assert_called_once()
 
     def test_catalog_covers_main_tasks_and_explicitly_excludes_token_hub(self):
         config = json.loads(CONFIG_PATH.read_text())

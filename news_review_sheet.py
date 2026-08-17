@@ -1187,6 +1187,7 @@ def sync_candidates(
             acknowledge_deferred_ai_candidates,
             agent_semantic_deduplicate_candidates,
             polish_candidates_before_review,
+            unpublishable_copy_reason,
         )
 
         _progress(
@@ -1230,6 +1231,37 @@ def sync_candidates(
             )
         )
         prepared_items = semantic_result["kept"]
+        # Final gate before human-facing rows. The AI layer already recovers or
+        # rejects leaked prompt text and programme listings, so anything caught
+        # here is an unseen model failure: block it and let monitoring alert
+        # instead of writing it into the sheet people review.
+        blocked_dirty_copy: list[dict[str, str]] = []
+        publishable_items: list[dict[str, Any]] = []
+        for item in prepared_items:
+            dirty_reason = unpublishable_copy_reason(
+                item.get("ai_title") or item.get("title"),
+                item.get("ai_summary") or item.get("summary"),
+            )
+            if dirty_reason:
+                blocked_dirty_copy.append(
+                    {
+                        "news_id": _text(item.get("news_id"), 80),
+                        "title": _text(item.get("ai_title") or item.get("title"), 240),
+                        "reason": dirty_reason,
+                    }
+                )
+                continue
+            publishable_items.append(item)
+        prepared_items = publishable_items
+        if blocked_dirty_copy:
+            logging.error(
+                "审核表写入前拦截 %s 条不可发布文案：%s",
+                len(blocked_dirty_copy),
+                "；".join(
+                    f"{entry['reason']}（{entry['title'][:40]}）"
+                    for entry in blocked_dirty_copy[:3]
+                ),
+            )
         finalized_ai_items = [
             *prepared_items,
             *[
@@ -1406,6 +1438,8 @@ def sync_candidates(
                 "last_archived_count": archived_count,
                 "last_gate_filtered_count": len(items) - len(curated_items),
                 "last_gate_filtered_reasons": dict(gate_reasons),
+                "last_dirty_copy_blocked_count": len(blocked_dirty_copy),
+                "last_dirty_copy_blocked": blocked_dirty_copy[:10],
                 "last_new_count": new_count,
                 "last_new_category_counts": dict(new_category_counts),
                 "last_new_region_counts": dict(new_region_counts),
@@ -1435,6 +1469,8 @@ def sync_candidates(
             "archived_count": archived_count,
             "gate_filtered_count": len(items) - len(curated_items),
             "gate_filtered_reasons": dict(gate_reasons),
+            "dirty_copy_blocked_count": len(blocked_dirty_copy),
+            "dirty_copy_blocked": blocked_dirty_copy[:10],
             "new_count": new_count,
             "new_category_counts": dict(new_category_counts),
             "new_region_counts": dict(new_region_counts),

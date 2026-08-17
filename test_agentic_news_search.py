@@ -501,6 +501,129 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertGreaterEqual(len(calls), 2)
         self.assertIn(" OR ", calls[1])
 
+    def test_compacted_query_keeps_subject_group_mandatory(self):
+        compacted = digest._compact_agentic_query(
+            "HGC 环球全域电讯 环电 业绩 财报 营收 利润 亏损 裁员 重组 投资 合作",
+            ["HGC", "环球全域电讯", "环电"],
+        )
+
+        # "A OR B (intent)" lets a bare "A" satisfy the whole query and floods
+        # the pool with unrelated news, so the subject group must be bracketed.
+        self.assertTrue(compacted.startswith("("))
+        self.assertRegex(compacted, r"^\([^()]+\)\s*\([^()]+\)$")
+        self.assertFalse(digest._has_unguarded_top_level_or(compacted))
+
+    def test_or_soup_planner_query_is_rewritten_with_mandatory_subject(self):
+        plans = digest._normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": "3HK OR 3香港 OR 和记电讯 5G 资费 OR 促销 OR 合作",
+                        "keywords": ["3 Hong Kong", "3HK"],
+                        "intent": "经营动态",
+                    }
+                ]
+            },
+            phase="followup",
+            existing_queries=set(),
+            limit=1,
+        )
+
+        self.assertEqual(len(plans), 1)
+        self.assertFalse(digest._has_unguarded_top_level_or(plans[0]["query"]))
+
+    def test_deterministic_gap_query_brackets_its_subject(self):
+        query = digest._deterministic_gap_query(["HGC", "环球全域电讯"])
+
+        self.assertRegex(query, r"^\([^()]+\)\s*\([^()]+\)$")
+        self.assertFalse(digest._has_unguarded_top_level_or(query))
+
+    def test_ungrounded_agentic_results_are_dropped_before_ai_review(self):
+        competitor_plan = {
+            "module": "竞争对手",
+            "query": "(SmarTone OR 数码通) (业绩 OR 5G)",
+            "keywords": ["SmarTone", "数码通"],
+            "canonical_competitor": "SmarTone",
+            "search_origin": "agentic_followup",
+        }
+        on_topic = {"title": "数码通公布全年业绩", "snippet": "SmarTone 全年收入上升。"}
+        off_topic = {"title": "中年好聲音4淘汰賽", "snippet": "歌唱比賽最新一集。"}
+
+        self.assertTrue(digest._agentic_result_is_grounded(competitor_plan, on_topic))
+        self.assertFalse(digest._agentic_result_is_grounded(competitor_plan, off_topic))
+
+        # A broad policy subject such as 香港 matches nearly everything, and so
+        # does a lone intent such as 测试, so two of the planner's terms must hit.
+        policy_plan = {
+            "module": "政策/法规类",
+            "query": "(香港 OR 智慧交通) (测试 OR 口岸 OR 通关)",
+            "keywords": ["香港", "智慧交通"],
+            "search_origin": "agentic_expansion",
+        }
+        border = {"title": "新皇崗口岸港方口岸區測試", "snippet": "當局指發現需要改善。"}
+        one_broad_term = {"title": "香港測量師學會大獎2026", "snippet": "西半山豪宅獲獎。"}
+        one_generic_intent = {
+            "title": "iQOO Neo 11 相機測試",
+            "snippet": "手機鏡頭樣張曝光。",
+        }
+
+        self.assertTrue(digest._agentic_result_is_grounded(policy_plan, border))
+        self.assertFalse(
+            digest._agentic_result_is_grounded(policy_plan, one_broad_term)
+        )
+        self.assertFalse(
+            digest._agentic_result_is_grounded(policy_plan, one_generic_intent)
+        )
+
+    def test_fixed_monitoring_results_keep_full_recall(self):
+        fixed_plan = {
+            "module": "竞争对手",
+            "query": "SmarTone",
+            "keywords": ["SmarTone"],
+            "search_origin": "monitoring_sheet_keyword_search",
+        }
+
+        self.assertTrue(
+            digest._agentic_result_is_grounded(
+                fixed_plan,
+                {"title": "完全无关的新闻", "snippet": "与监控词无关。"},
+            )
+        )
+
+    def test_execute_search_plans_reports_dropped_noise(self):
+        plan = {
+            "module": "竞争对手",
+            "query": "(HGC OR 环球全域电讯) (业绩 OR 合作)",
+            "keywords": ["HGC", "环球全域电讯"],
+            "canonical_competitor": "HGC",
+            "search_origin": "agentic_expansion",
+        }
+        results = [
+            {
+                "news_id": "NEWS-1",
+                "title": "HGC 宣布企业网络合作",
+                "snippet": "环球全域电讯与客户签约。",
+                "published_at": "2026-08-17T10:00:00+08:00",
+            },
+            {
+                "news_id": "NEWS-2",
+                "title": "某綜藝節目淘汰賽",
+                "snippet": "與電訊業無關。",
+                "published_at": "2026-08-17T10:30:00+08:00",
+            },
+        ]
+        with mock.patch.object(digest, "_google_news_search", return_value=results):
+            items, errors, stats = digest._execute_search_plans(
+                [plan],
+                start_at=datetime(2026, 8, 17, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 8, 17, 15, 0, tzinfo=HKT),
+            )
+
+        self.assertEqual(errors, [])
+        self.assertEqual([item["news_id"] for item in items], ["NEWS-1"])
+        self.assertEqual(stats["ungrounded_dropped_count"], 1)
+
     def test_agentic_plan_rejects_runaway_all_operator_query(self):
         plans = digest._normalize_agentic_plans(
             {

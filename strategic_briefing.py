@@ -2827,6 +2827,22 @@ def _recover_publishable_copy(
     return title, summary
 
 
+def unpublishable_copy_reason(title: Any, summary: Any) -> str:
+    """Name why finished copy must never reach the human review sheet.
+
+    The AI layer already recovers or rejects these, so a hit here means a new
+    model failure slipped past every upstream guard and must be alerted on
+    rather than quietly written into the sheet people work from.
+    """
+    if _is_program_listing_title(title):
+        return "标题为广播电视节目单或栏目名"
+    if _text_has_model_artifact(title):
+        return "标题含模型提示词"
+    if _text_has_model_artifact(summary):
+        return "摘要含模型提示词"
+    return ""
+
+
 def _to_simplified_chinese(value: Any, limit: int) -> str:
     """Normalize model-authored Chinese copy before it reaches any consumer."""
     return _clean_text(_SIMPLIFIED_CHINESE_CONVERTER.convert(str(value or "")), limit)

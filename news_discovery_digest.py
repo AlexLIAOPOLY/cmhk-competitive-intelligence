@@ -629,34 +629,53 @@ def _sanitize_agentic_query(value: Any) -> str:
     return re.sub(r"\s+", " ", query).strip()
 
 
-def _deterministic_gap_query(aliases: list[str]) -> str:
+# A gap query must keep its subject mandatory. "A OR B (intent)" lets a search
+# engine satisfy the whole expression with a bare "A", which returns unrelated
+# news; "(A OR B) (intent)" keeps the subject group ANDed with the intents.
+_MANDATORY_SUBJECT_QUERY_RE = re.compile(r"^\([^()]+\)\s*\([^()]+\)$")
+_DEFAULT_GAP_INTENTS = ("资费", "促销", "5G", "网络建设", "合作", "业绩")
+
+
+def _mandatory_subject_query(aliases: list[str], intents: list[str]) -> str:
     names = [
         _clean_text(alias, 40).strip('"')
         for alias in aliases
         if _clean_text(alias, 40).strip('"')
     ][:3]
-    if not names:
+    terms = [
+        _clean_text(intent, 40).strip('"')
+        for intent in intents
+        if _clean_text(intent, 40).strip('"')
+    ][:6]
+    if not names or not terms:
         return ""
-    return (
-        " OR ".join(names)
-        + " (资费 OR 促销 OR 5G OR 网络建设 OR 合作 OR 业绩)"
-    )
+    return f"({' OR '.join(names)}) ({' OR '.join(terms)})"
+
+
+def _deterministic_gap_query(aliases: list[str]) -> str:
+    return _mandatory_subject_query(aliases, list(_DEFAULT_GAP_INTENTS))
+
+
+def _has_unguarded_top_level_or(query: str) -> bool:
+    """True when an OR sits outside every bracket, making the subject optional."""
+    outside = re.sub(r"\([^()]*\)", " ", query)
+    return bool(re.search(r"\bOR\b", outside, flags=re.I))
 
 
 def _compact_agentic_query(query: str, keywords: list[str] | None = None) -> str:
-    """Rewrite AND-heavy planner queries into alias OR + a few intent ORs."""
+    """Rewrite planner queries into a mandatory subject group plus intent ORs."""
     query = _sanitize_agentic_query(query)
     if not query:
         return query
-    or_count = len(re.findall(r"\bOR\b", query, flags=re.I))
     tokens = [
         token.strip('"()')
         for token in re.split(r"\s+", query)
         if token.strip('"()') and token.upper() != "OR"
     ]
-    if or_count >= 2 and len(query) <= 180:
+    if _MANDATORY_SUBJECT_QUERY_RE.match(query) and len(query) <= 180:
         return query
-    if len(tokens) <= 6:
+    # A short all-AND query is already precise enough for a search engine.
+    if len(tokens) <= 6 and not _has_unguarded_top_level_or(query):
         return query
     aliases = [
         _clean_text(keyword, 40).strip('"')
@@ -667,19 +686,112 @@ def _compact_agentic_query(query: str, keywords: list[str] | None = None) -> str
         aliases = tokens[:2]
     alias_keys = {alias.casefold() for alias in aliases}
     intents: list[str] = []
-    for token in tokens:
-        if token.casefold() in alias_keys:
+    trailing_group = re.search(r"\(([^()]+)\)\s*$", query)
+    if trailing_group:
+        candidates = [
+            term.strip()
+            for term in re.split(r"\bOR\b", trailing_group.group(1), flags=re.I)
+        ]
+    else:
+        candidates = tokens
+    for token in candidates:
+        token = token.strip('"()')
+        if not token or token.casefold() in alias_keys:
             continue
-        if any(_term_matches(token, alias) or _term_matches(alias, token) for alias in aliases):
+        if any(
+            _term_matches(token, alias) or _term_matches(alias, token)
+            for alias in aliases
+        ):
             continue
         if token not in intents:
             intents.append(token)
-        if len(intents) >= 3:
+        if len(intents) >= 4:
             break
-    if not intents:
-        return _deterministic_gap_query(aliases) or query
-    compacted = f"{' OR '.join(aliases)} ({' OR '.join(intents)})"
+    compacted = _mandatory_subject_query(
+        aliases, intents or list(_DEFAULT_GAP_INTENTS)
+    )
+    if not compacted:
+        return query
+    if len(compacted) > 180:
+        compacted = _mandatory_subject_query(aliases, intents[:2] or list(_DEFAULT_GAP_INTENTS[:3]))
     return compacted[:180]
+
+
+def _query_intent_terms(query: str) -> list[str]:
+    trailing_group = re.search(r"\(([^()]+)\)\s*$", _clean_text(query, 300))
+    if not trailing_group:
+        return []
+    return [
+        term.strip().strip('"')
+        for term in re.split(r"\bOR\b", trailing_group.group(1), flags=re.I)
+        if term.strip().strip('"')
+    ]
+
+
+def _plan_subject_aliases(plan: dict[str, Any]) -> list[str]:
+    aliases = [
+        _clean_text(keyword, 40).strip('"')
+        for keyword in (plan.get("keywords") or [])
+        if _clean_text(keyword, 40).strip('"')
+    ]
+    canonical = _clean_text(plan.get("canonical_competitor"), 120)
+    if canonical:
+        for group in mandatory_search_groups():
+            if str(group["canonical"]) == canonical:
+                aliases = [*aliases, *[str(term) for term in group["terms"]]]
+                break
+    return list(dict.fromkeys(alias for alias in aliases if alias))
+
+
+def _simplified_for_matching(value: Any, limit: int = 800) -> str:
+    """Planner queries are simplified Chinese; Hong Kong sources are traditional."""
+    return strategic_briefing._to_simplified_chinese(value, limit)
+
+
+def _grounding_term_matches(simplified_text: str, term: str) -> bool:
+    return _term_matches(
+        simplified_text, _simplified_for_matching(term, 120)
+    ) or _term_matches(simplified_text, term)
+
+
+def _agentic_result_is_grounded(plan: dict[str, Any], item: dict[str, Any]) -> bool:
+    """Drop fuzzy search-engine matches that answer none of the planner's terms.
+
+    Fixed monitoring keeps full recall. An Agentic query is machine-written and
+    unreviewed, so an article that matches neither its subject nor its intent is
+    noise that would otherwise reach AI review and the human sheet.
+    """
+    if not _clean_text(plan.get("search_origin"), 100).startswith("agentic_"):
+        return True
+    text = _simplified_for_matching(
+        " ".join(
+            _clean_text(value, 400)
+            for value in (item.get("title"), item.get("snippet"))
+            if _clean_text(value, 400)
+        )
+    )
+    if not text:
+        return False
+    subjects = _plan_subject_aliases(plan)
+    if "竞争对手" in _clean_text(plan.get("module"), 100):
+        # Competitor aliases are specific brand names, so one is proof enough.
+        return any(
+            _grounding_term_matches(text, alias) for alias in subjects
+        ) or bool(
+            canonical_competitors_for_text(item.get("title"), item.get("snippet"))
+        )
+    # Policy and local-market subjects are broad words such as 香港 that match
+    # nearly any article, and intents such as 测试 are just as generic alone.
+    # Require the article to answer two of the planner's own terms instead.
+    terms = list(
+        dict.fromkeys(
+            [*subjects, *_query_intent_terms(str(plan.get("query") or ""))]
+        )
+    )
+    if not terms:
+        return False
+    matched = sum(1 for term in terms if _grounding_term_matches(text, term))
+    return matched >= min(2, len(terms))
 
 
 def _agentic_zero_result_retry_plan(plan: dict[str, Any]) -> dict[str, Any] | None:
@@ -1147,6 +1259,7 @@ def _execute_search_plans(
     zero_result_queries: list[str] = []
     retry_count = 0
     retry_result_count = 0
+    ungrounded_count = 0
 
     def _search(plan: dict[str, Any]) -> list[dict[str, Any]]:
         return _google_news_search(
@@ -1171,6 +1284,7 @@ def _execute_search_plans(
     def _attach_provenance(
         plan: dict[str, Any], found: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
+        nonlocal ungrounded_count
         provenance_fields = (
             "scheduled_crawl_signal_id",
             "scheduled_crawl_run_id",
@@ -1178,11 +1292,16 @@ def _execute_search_plans(
             "scheduled_crawl_parent_url",
             "scheduled_crawl_target_url",
         )
+        grounded: list[dict[str, Any]] = []
         for item in found:
+            if not _agentic_result_is_grounded(plan, item):
+                ungrounded_count += 1
+                continue
             for field in provenance_fields:
                 if plan.get(field):
                     item[field] = plan[field]
-        return found
+            grounded.append(item)
+        return grounded
 
     with ThreadPoolExecutor(max_workers=SEARCH_WORKERS) as executor:
         future_map = {
@@ -1228,6 +1347,7 @@ def _execute_search_plans(
         "zero_result_queries": zero_result_queries[:30],
         "retry_count": retry_count,
         "retry_result_count": retry_result_count,
+        "ungrounded_dropped_count": ungrounded_count,
     }
 
 

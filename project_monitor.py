@@ -287,6 +287,24 @@ class ProjectMonitor:
         return _env_true(self.environ.get("CMHK_ALERT_NOTIFICATIONS"))
 
     @property
+    def configured_targets(self) -> list[dict[str, Any]]:
+        return [item for item in (self.config.get("targets") or []) if isinstance(item, dict)]
+
+    @property
+    def alert_targets(self) -> list[dict[str, Any]]:
+        """Groups that still receive incident cards.
+
+        The requirements group is reserved for strategic-news and dashboard
+        review, so it stays in ``targets`` for card-callback trust checks while
+        opting out of alert delivery via ``alert_notify``.
+        """
+        override = str(self.environ.get("CMHK_ALERT_TARGET_ROLES") or "").strip()
+        if override:
+            wanted = {part.strip() for part in override.split(",") if part.strip()}
+            return [item for item in self.configured_targets if str(item.get("role") or "") in wanted]
+        return [item for item in self.configured_targets if item.get("alert_notify", True)]
+
+    @property
     def ai_enabled(self) -> bool:
         return _env_true(self.environ.get("CMHK_ALERT_AI_DIAGNOSIS", "1"))
 
@@ -361,6 +379,7 @@ class ProjectMonitor:
             ("scheduler-pending", self._detect_scheduler_pending),
             ("strategic-monitor-heartbeat", self._detect_strategic_monitor_heartbeat),
             ("strategic-slots", self._detect_strategic_slots),
+            ("strategic-content-quality", self._detect_strategic_content_quality),
             ("feishu-media-metrics", self._detect_feishu_media_metrics),
             ("runtime-logs", self._detect_runtime_logs),
         )
@@ -848,6 +867,132 @@ class ProjectMonitor:
                         terminal=True,
                     )
                 )
+        return issues
+
+    def _latest_strategic_archive(self) -> tuple[str, dict[str, Any]]:
+        """Return the most recent completed scan archive for the current day."""
+        now = self.now()
+        newest_key = ""
+        newest: dict[str, Any] = {}
+        for raw in self.config.get("strategic_scan_times") or []:
+            try:
+                hour, minute = [int(value) for value in str(raw).split(":", 1)]
+                slot = datetime.combine(now.date(), clock_time(hour, minute), HKT)
+            except (TypeError, ValueError):
+                continue
+            if now < slot:
+                continue
+            slot_key = slot.strftime("%Y-%m-%d@%H-%M")
+            archive = _read_json(
+                self.runtime_root / "strategy_briefing" / "runs" / f"{slot_key}.json",
+                {},
+            )
+            if isinstance(archive, dict) and archive:
+                newest_key, newest = slot_key, archive
+        return newest_key, newest
+
+    def _detect_strategic_content_quality(self) -> list[dict[str, Any]]:
+        """Catch scans that finish successfully while producing unusable output.
+
+        A run can archive as completed with an empty Agentic gap search, blocked
+        prompt-leak copy or a stuck AI review backlog. Those degrade coverage
+        silently, so they need their own signal rather than the pass/fail one.
+        """
+        issues: list[dict[str, Any]] = []
+        slot_key, archive = self._latest_strategic_archive()
+        if not archive:
+            return issues
+        archive_path = (
+            self.runtime_root / "strategy_briefing" / "runs" / f"{slot_key}.json"
+        )
+        occurred_at = str(archive.get("completed_at") or archive.get("scanned_at") or "")
+        agentic = (archive.get("news_discovery") or {}).get("agentic_search") or {}
+        query_count = int(agentic.get("agentic_query_count") or 0)
+        result_count = int(agentic.get("agentic_result_count") or 0)
+        if query_count > 0 and result_count == 0:
+            issues.append(
+                self._issue(
+                    condition_key=f"strategic-agentic-empty:{slot_key}",
+                    component="strategic-news",
+                    task_name=f"战略新闻Agentic补搜 {slot_key}",
+                    severity="P2",
+                    summary="Agentic 补搜执行了查询但一条结果都没有返回",
+                    error=(
+                        f"本轮补搜查询 {query_count} 条，返回 0 条结果；"
+                        "扫描本身仍标记为完成。"
+                    ),
+                    impact="覆盖缺口没有被补上，竞对与政策盲区会连续多轮无人发现。",
+                    suggestions=[
+                        "检查补搜查询是否被写成整串 AND 词，导致搜索引擎零命中。",
+                        "确认查询已改写为“(别名 OR 别名) (意图 OR 意图)”形式。",
+                        "核对当日该竞对是否确实没有新闻，避免误判为故障。",
+                    ],
+                    occurred_at_hkt=occurred_at,
+                    evidence=[
+                        str(archive_path),
+                        f"agentic_query_count={query_count}",
+                        f"agentic_result_count={result_count}",
+                    ],
+                )
+            )
+        review = archive.get("review_sheet") or {}
+        dirty_count = int(review.get("dirty_copy_blocked_count") or 0)
+        if dirty_count > 0:
+            samples = "；".join(
+                f"{str(entry.get('reason') or '')}（{str(entry.get('title') or '')[:40]}）"
+                for entry in (review.get("dirty_copy_blocked") or [])[:3]
+                if isinstance(entry, dict)
+            )
+            issues.append(
+                self._issue(
+                    condition_key=f"strategic-dirty-copy:{slot_key}:{dirty_count}",
+                    component="strategic-news",
+                    task_name=f"战略新闻AI文案质量 {slot_key}",
+                    severity="P1",
+                    summary="AI 生成文案含提示词或节目单，已在写表前拦截",
+                    error=f"本轮拦截 {dirty_count} 条不可发布文案。{samples}",
+                    impact="模型输出出现新的污染形态，上游守卫没有覆盖，可能漏进人工审核表。",
+                    suggestions=[
+                        "查看被拦截标题，确认是哪一类提示词泄漏或栏目导视。",
+                        "在 strategic_briefing 的提示词与 artifact 标记中补上新形态。",
+                        "确认被拦截的条目是真实新闻时，人工补回审核表。",
+                    ],
+                    occurred_at_hkt=occurred_at,
+                    evidence=[str(archive_path), f"dirty_copy_blocked_count={dirty_count}"],
+                )
+            )
+        audit = _read_json(
+            self.runtime_root / "strategy_briefing" / "candidate_ai_editor_audit.json",
+            {},
+        )
+        queue = _read_json(
+            self.runtime_root / "strategy_briefing" / "candidate_ai_editor_deferred.json",
+            {},
+        )
+        queued = queue.get("items") if isinstance(queue, dict) else []
+        queued_count = len(queued) if isinstance(queued, list) else 0
+        threshold = max(1, int(self.config.get("strategic_deferred_queue_limit") or 40))
+        if queued_count >= threshold:
+            issues.append(
+                self._issue(
+                    condition_key=f"strategic-deferred-backlog:{queued_count // threshold}",
+                    component="strategic-news",
+                    task_name="战略新闻AI补审队列",
+                    severity="P2",
+                    summary="AI 补审队列持续积压，条目迟迟没有进入审核表",
+                    error=(
+                        f"待补审 {queued_count} 条，阈值 {threshold} 条；"
+                        f"最近一轮延期 {int((audit or {}).get('deferred_count') or 0)} 条。"
+                    ),
+                    impact="这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+                    suggestions=[
+                        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+                        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。",
+                    ],
+                    occurred_at_hkt=occurred_at,
+                    evidence=[f"deferred_queue_count={queued_count}"],
+                )
+            )
         return issues
 
     def _source_root(self) -> Path:
@@ -1862,12 +2007,14 @@ class ProjectMonitor:
             raise RuntimeError("notification gate is disabled")
         if not (incident.get("diagnosis") or {}).get("ok"):
             raise RuntimeError("AI diagnosis gate is incomplete")
+        chat_id = str(target.get("chat_id") or "")
+        if chat_id not in {str(item.get("chat_id") or "") for item in self.alert_targets}:
+            raise RuntimeError("目标群未在报障推送路由内，发送已关闭")
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
         self._verify_bot_identity()
         self._verify_target(target)
         self._verify_primary_handler()
-        chat_id = str(target.get("chat_id") or "")
         content = self.render_alert(incident)
         idempotency = "cmhk-alert-" + _fingerprint(incident.get("incident_id"), chat_id)[:32]
         proc = self._run(
@@ -1969,7 +2116,7 @@ class ProjectMonitor:
             return
         incident.pop("delivery_suppressed", None)
         deliveries = incident.setdefault("delivery", {})
-        for target in self.config.get("targets") or []:
+        for target in self.alert_targets:
             chat_id = str(target.get("chat_id") or "")
             current = deliveries.get(chat_id)
             if isinstance(current, dict) and current.get("state") == "verified":
@@ -2159,12 +2306,13 @@ class ProjectMonitor:
 
     def _ledger_notification_status(self, incident: dict[str, Any]) -> str:
         deliveries = incident.get("delivery") if isinstance(incident.get("delivery"), dict) else {}
+        routed = [str(item.get("chat_id") or "") for item in self.alert_targets]
         states = [
-            str(item.get("state") or "")
-            for item in deliveries.values()
-            if isinstance(item, dict)
+            str(deliveries[chat_id].get("state") or "")
+            for chat_id in routed
+            if isinstance(deliveries.get(chat_id), dict)
         ]
-        target_count = len(self.config.get("targets") or [])
+        target_count = len(routed)
         verified = sum(1 for state in states if state == "verified")
         if target_count and verified == target_count:
             return f"已发送并回读（{verified}/{target_count}）"
@@ -2595,9 +2743,21 @@ class ProjectMonitor:
                     "role": item.get("role"),
                     "chat_id": item.get("chat_id"),
                     "expected_name": item.get("expected_name"),
+                    "alert_notify": bool(item.get("alert_notify", True)),
                 }
-                for item in self.config.get("targets") or []
+                for item in self.configured_targets
             ],
+            "alert_targets": [
+                {
+                    "role": item.get("role"),
+                    "chat_id": item.get("chat_id"),
+                    "expected_name": item.get("expected_name"),
+                }
+                for item in self.alert_targets
+            ],
+            "alert_routing_policy": str(
+                (self.config.get("alert_routing") or {}).get("policy") or "all_targets"
+            ),
             "excluded_components": list(self.config.get("excluded_components") or []),
             "error_ledger": {
                 "enabled": self.error_ledger_enabled,
@@ -2623,6 +2783,14 @@ class ProjectMonitor:
             "",
             f"- 模式：{'告警已启用' if self.notifications_enabled else '影子监控，不发送'}",
             "- 群消息政策：仅错误；必须先完成一轮AI分析；不发送正常、恢复或心跳消息",
+            "- 报障目标群："
+            + (
+                "、".join(
+                    str(item.get("expected_name") or item.get("chat_id") or "")
+                    for item in status["alert_targets"]
+                )
+                or "无（当前路由为空，不会发送任何报障）"
+            ),
             f"- 检查时间：{status['checked_at_hkt']}",
             f"- 当前错误：P1 {status['active_counts']['P1']} / P2 {status['active_counts']['P2']} / P3 {status['active_counts']['P3']}",
             "- 明确排除：Token Hub",
