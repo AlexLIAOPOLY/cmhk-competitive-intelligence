@@ -755,11 +755,13 @@ def _grounding_term_matches(simplified_text: str, term: str) -> bool:
 
 
 def _agentic_result_is_grounded(plan: dict[str, Any], item: dict[str, Any]) -> bool:
-    """Drop fuzzy search-engine matches that answer none of the planner's terms.
+    """Keep every plausible Agentic hit; only drop copy that answers nothing.
 
-    Fixed monitoring keeps full recall. An Agentic query is machine-written and
-    unreviewed, so an article that matches neither its subject nor its intent is
-    noise that would otherwise reach AI review and the human sheet.
+    Discovery prefers extra noise over a miss. Query bracketing already stops
+    a bare alias from satisfying the whole search. This gate only removes
+    articles that share none of the planner's terms, are not a recognised
+    competitor, and were not admitted as semantic coverage. AI review still
+    decides what reaches the human sheet.
     """
     if not _clean_text(plan.get("search_origin"), 100).startswith("agentic_"):
         return True
@@ -772,26 +774,21 @@ def _agentic_result_is_grounded(plan: dict[str, Any], item: dict[str, Any]) -> b
     )
     if not text:
         return False
-    subjects = _plan_subject_aliases(plan)
-    if "竞争对手" in _clean_text(plan.get("module"), 100):
-        # Competitor aliases are specific brand names, so one is proof enough.
-        return any(
-            _grounding_term_matches(text, alias) for alias in subjects
-        ) or bool(
-            canonical_competitors_for_text(item.get("title"), item.get("snippet"))
-        )
-    # Policy and local-market subjects are broad words such as 香港 that match
-    # nearly any article, and intents such as 测试 are just as generic alone.
-    # Require the article to answer two of the planner's own terms instead.
+    if item.get("semantic_relevance"):
+        return True
     terms = list(
         dict.fromkeys(
-            [*subjects, *_query_intent_terms(str(plan.get("query") or ""))]
+            [
+                *_plan_subject_aliases(plan),
+                *_query_intent_terms(str(plan.get("query") or "")),
+            ]
         )
     )
-    if not terms:
-        return False
-    matched = sum(1 for term in terms if _grounding_term_matches(text, term))
-    return matched >= min(2, len(terms))
+    if any(_grounding_term_matches(text, term) for term in terms):
+        return True
+    return bool(
+        canonical_competitors_for_text(item.get("title"), item.get("snippet"))
+    )
 
 
 def _agentic_zero_result_retry_plan(plan: dict[str, Any]) -> dict[str, Any] | None:

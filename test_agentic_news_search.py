@@ -553,9 +553,19 @@ class AgenticNewsSearchTests(unittest.TestCase):
 
         self.assertTrue(digest._agentic_result_is_grounded(competitor_plan, on_topic))
         self.assertFalse(digest._agentic_result_is_grounded(competitor_plan, off_topic))
+        self.assertTrue(
+            digest._agentic_result_is_grounded(
+                competitor_plan,
+                {
+                    "title": "本地电讯商上调全年派息指引",
+                    "snippet": "管理层称企业方案需求回升。",
+                    "semantic_relevance": True,
+                },
+            )
+        )
 
-        # A broad policy subject such as 香港 matches nearly everything, and so
-        # does a lone intent such as 测试, so two of the planner's terms must hit.
+        # One planner term is enough. Extra noise is preferred over a miss;
+        # AI review still decides what reaches the human sheet.
         policy_plan = {
             "module": "政策/法规类",
             "query": "(香港 OR 智慧交通) (测试 OR 口岸 OR 通关)",
@@ -568,14 +578,16 @@ class AgenticNewsSearchTests(unittest.TestCase):
             "title": "iQOO Neo 11 相機測試",
             "snippet": "手機鏡頭樣張曝光。",
         }
+        unrelated = {"title": "某綜藝節目淘汰賽", "snippet": "歌唱比賽最新一集。"}
 
         self.assertTrue(digest._agentic_result_is_grounded(policy_plan, border))
-        self.assertFalse(
+        self.assertTrue(
             digest._agentic_result_is_grounded(policy_plan, one_broad_term)
         )
-        self.assertFalse(
+        self.assertTrue(
             digest._agentic_result_is_grounded(policy_plan, one_generic_intent)
         )
+        self.assertFalse(digest._agentic_result_is_grounded(policy_plan, unrelated))
 
     def test_fixed_monitoring_results_keep_full_recall(self):
         fixed_plan = {
