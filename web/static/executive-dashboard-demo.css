@@ -2740,6 +2740,7 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   .news-item p { display: none; }
   .panel { min-height: 560px; }
   .panel-reach { min-height: 430px; }
+  .panel-finance { min-height: 500px; }
   .panel-heading { min-height: 108px; grid-template-columns: auto 1fr; grid-template-rows: 44px 50px; }
   .panel-heading > span { font-size: 30px; }
   .panel-heading h2 { font-size: 19px; }
@@ -2763,6 +2764,7 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
 @media (max-width: 400px) {
   .panel { min-height: 590px; }
   .panel-reach { min-height: 450px; }
+  .panel-finance { min-height: 510px; }
   .panel-heading h2 { font-size: 17px; }
   .panel-tabs button { font-size: 10px; }
   .monitor-kpi > span { font-size: 11px; }
