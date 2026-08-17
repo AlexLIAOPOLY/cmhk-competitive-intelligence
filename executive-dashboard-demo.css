@@ -155,7 +155,7 @@ img { display: block; max-width: 100%; }
 .brand img {
   height: clamp(22px, 1.5vw, 30px);
   width: auto;
-  opacity: .95;
+  mix-blend-mode: screen;
 }
 
 .brand:hover {
