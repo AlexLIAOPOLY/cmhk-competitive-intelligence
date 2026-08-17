@@ -332,10 +332,14 @@ MONITOR_SHEET_ID = (os.environ.get("CMHK_STRATEGY_SHEET_ID") or "n1fzSN").strip(
 MONITOR_SHEET_URL = (
     f"https://cmhk-try.feishu.cn/sheets/{MONITOR_SHEET_TOKEN}?sheet={MONITOR_SHEET_ID}"
 )
-DEFAULT_TARGET_CHAT_IDS = (
-    "oc_22bf3c7febc4bab295fedfb0b8e6c176",
-    "oc_f86adbf0010f3e648400c377bf26179b",
-)
+PROJECT_CHAT_ID = "oc_f86adbf0010f3e648400c377bf26179b"
+PROJECT_CHAT_NAME = "揭榜-竞争对手与行业情报监测AI应用"
+REQUIREMENTS_CHAT_ID = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
+# 需求沟通群不再接收任何主动推送，只保留读取群内线索与审核回复的能力。
+LISTEN_CHAT_ID = (
+    os.environ.get("CMHK_STRATEGY_LISTEN_CHAT_ID") or REQUIREMENTS_CHAT_ID
+).strip()
+DEFAULT_TARGET_CHAT_IDS = (PROJECT_CHAT_ID,)
 _configured_target_chat_ids = os.environ.get("CMHK_STRATEGY_CHAT_IDS", "").strip()
 if _configured_target_chat_ids:
     TARGET_CHAT_IDS = tuple(
@@ -351,7 +355,7 @@ else:
         (_legacy_target_chat_id,) if _legacy_target_chat_id else DEFAULT_TARGET_CHAT_IDS
     )
 TARGET_CHAT_ID = TARGET_CHAT_IDS[0]
-TARGET_CHAT_NAME = os.environ.get("CMHK_STRATEGY_CHAT_NAME") or "竞对AI项目需求沟通群"
+TARGET_CHAT_NAME = os.environ.get("CMHK_STRATEGY_CHAT_NAME") or PROJECT_CHAT_NAME
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_STRATEGY_POLL_SECONDS", "60")))
 GROUP_CHECK_SECONDS = max(300, int(os.environ.get("CMHK_STRATEGY_GROUP_CHECK_SECONDS", "3600")))
 SCAN_CATCHUP_MINUTES = max(30, int(os.environ.get("CMHK_STRATEGY_SCAN_CATCHUP_MINUTES", "120")))
@@ -2498,7 +2502,7 @@ def _list_group_messages(start_ms: int) -> tuple[list[dict[str, Any]], str]:
     for _ in range(10):
         params: dict[str, Any] = {
             "container_id_type": "chat",
-            "container_id": TARGET_CHAT_ID,
+            "container_id": LISTEN_CHAT_ID,
             "sort_type": "ByCreateTimeAsc",
             "page_size": 50,
             "start_time": str(max(0, int(start_ms / 1000) - 1)),

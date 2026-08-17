@@ -98,7 +98,7 @@
   "media_metrics_grace_minutes": 20,
   "alert_routing": {
     "policy": "project_group_only",
-    "reason": "需求沟通群以战略新闻与看板确认为主，报障不再重复发送",
+    "reason": "需求沟通群不再接收任何机器人主动推送；报障、战略新闻和全量通报只发总群",
     "env_override": "CMHK_ALERT_TARGET_ROLES"
   },
   "targets": [

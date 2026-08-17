@@ -294,9 +294,9 @@ class ProjectMonitor:
     def alert_targets(self) -> list[dict[str, Any]]:
         """Groups that still receive incident cards.
 
-        The requirements group is reserved for strategic-news and dashboard
-        review, so it stays in ``targets`` for card-callback trust checks while
-        opting out of alert delivery via ``alert_notify``.
+        The requirements group stays in ``targets`` for historical card-callback
+        trust checks, but it no longer receives new incident cards. All bot
+        group pushes go to the project group only.
         """
         override = str(self.environ.get("CMHK_ALERT_TARGET_ROLES") or "").strip()
         if override:

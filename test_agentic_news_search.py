@@ -149,11 +149,8 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual([item["news_id"] for item in payload["items"]], ["NEWS-FRESH"])
         self.assertIn("本轮检索到的新闻", card_text)
 
-    def test_digest_card_is_sent_to_both_report_groups(self):
-        responses = [
-            {"data": {"message_id": "om_primary"}, "_identity": "bot"},
-            {"data": {"message_id": "om_secondary"}, "_identity": "bot"},
-        ]
+    def test_digest_card_is_sent_only_to_the_project_group(self):
+        responses = [{"data": {"message_id": "om_primary"}, "_identity": "bot"}]
         with mock.patch.object(
             strategic_briefing,
             "_lark_api",
@@ -166,13 +163,17 @@ class AgenticNewsSearchTests(unittest.TestCase):
                 }
             )
 
-        self.assertEqual(message_ids, ["om_primary", "om_secondary"])
+        self.assertEqual(message_ids, ["om_primary"])
         self.assertEqual(
             [call.kwargs["data"]["receive_id"] for call in lark_api.call_args_list],
-            list(strategic_briefing.TARGET_CHAT_IDS),
+            [strategic_briefing.PROJECT_CHAT_ID],
+        )
+        self.assertNotIn(
+            strategic_briefing.REQUIREMENTS_CHAT_ID,
+            strategic_briefing.TARGET_CHAT_IDS,
         )
         uuids = [call.kwargs["data"]["uuid"] for call in lark_api.call_args_list]
-        self.assertEqual(len(set(uuids)), 2)
+        self.assertEqual(len(set(uuids)), 1)
 
     def test_agentic_planner_has_room_and_retries_for_complete_json(self):
         spec = {

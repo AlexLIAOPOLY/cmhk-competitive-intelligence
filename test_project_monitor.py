@@ -15,6 +15,9 @@ import project_monitor
 
 HKT = ZoneInfo("Asia/Hong_Kong")
 CONFIG_PATH = Path(__file__).resolve().parent / "config" / "project_monitor.json"
+REQUIREMENTS_CHAT_ID = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
+PROJECT_CHAT_ID = "oc_f86adbf0010f3e648400c377bf26179b"
+BOTH_ROLES = "requirements,project"
 
 
 class FakeCommandRunner:
@@ -368,18 +371,28 @@ class ProjectMonitorTests(unittest.TestCase):
             "needs_human": True,
         }
 
-    def _monitor(self, *, enabled=False, ai=None, enable_ledger=False) -> project_monitor.ProjectMonitor:
+    def _monitor(
+        self,
+        *,
+        enabled=False,
+        ai=None,
+        enable_ledger=False,
+        alert_roles: str | None = None,
+    ) -> project_monitor.ProjectMonitor:
+        environ = {
+            "CMHK_ALERT_NOTIFICATIONS": "1" if enabled else "0",
+            "CMHK_ALERT_AI_DIAGNOSIS": "1",
+            "CMHK_ERROR_LEDGER_ENABLED": "1" if enable_ledger else "0",
+            "CMHK_MONITOR_LOG_ROOT": str(self.log_root),
+            "CMHK_MONITOR_SOURCE_ROOT": str(self.root),
+        }
+        if alert_roles is not None:
+            environ["CMHK_ALERT_TARGET_ROLES"] = alert_roles
         return project_monitor.ProjectMonitor(
             runtime_root=self.root,
             config_path=CONFIG_PATH,
             state_dir=self.state_dir,
-            environ={
-                "CMHK_ALERT_NOTIFICATIONS": "1" if enabled else "0",
-                "CMHK_ALERT_AI_DIAGNOSIS": "1",
-                "CMHK_ERROR_LEDGER_ENABLED": "1" if enable_ledger else "0",
-                "CMHK_MONITOR_LOG_ROOT": str(self.log_root),
-                "CMHK_MONITOR_SOURCE_ROOT": str(self.root),
-            },
+            environ=environ,
             now_fn=lambda: self.now,
             command_runner=self.runner,
             http_getter=lambda _url, _timeout: {
@@ -693,15 +706,15 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(self.ai_calls, 0)
         self.assertEqual(self.runner.send_calls(), [])
 
-    def test_error_is_ai_analysed_once_then_sent_as_expected_bot_to_both_groups(self):
+    def test_error_is_ai_analysed_once_then_sent_as_expected_bot_to_project_group(self):
         monitor = self._monitor(enabled=True)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         self.assertEqual(self.ai_calls, 1)
         sends = self.runner.send_calls()
-        self.assertEqual(len(sends), 2)
+        self.assertEqual(len(sends), 1)
         sent_chats = {args[args.index("--chat-id") + 1] for args in sends}
-        self.assertEqual(sent_chats, set(self.runner.chat_names))
+        self.assertEqual(sent_chats, {PROJECT_CHAT_ID})
         for args in sends:
             self.assertEqual(args[args.index("--as") + 1], "bot")
             self.assertEqual(args[args.index("--profile") + 1], "cli_a9575e70ae799cb2")
@@ -760,7 +773,7 @@ class ProjectMonitorTests(unittest.TestCase):
         monitor = self._monitor(enabled=True, ai=lower_severity_ai)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         self.assertEqual(result["active_incidents"][0]["ai_severity"], "P1")
 
     def test_ai_fault_time_must_match_observed_evidence(self):
@@ -798,7 +811,7 @@ class ProjectMonitorTests(unittest.TestCase):
         issues[0]["terminal"] = False
         third = monitor.run_cycle()
         self.assertEqual(self.ai_calls, 1)
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         self.assertNotEqual(third["active_incidents"][0]["incident_id"], first_id)
 
     def test_terminal_one_shot_error_is_retained_until_ai_retry_succeeds(self):
@@ -826,7 +839,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.now += timedelta(minutes=5, seconds=1)
         second = monitor.run_cycle()
         self.assertEqual(self.ai_calls, 2)
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         self.assertEqual(second["active_incidents"][0]["diagnosis_status"], "completed")
 
     def test_wrong_bot_app_id_fails_closed_before_send(self):
@@ -839,40 +852,77 @@ class ProjectMonitorTests(unittest.TestCase):
         states = result["active_incidents"][0]["delivery_states"]
         self.assertEqual(set(states.values()), {"failed_before_verification"})
 
-    def test_wrong_live_chat_name_fails_closed_for_that_target(self):
-        first = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
-        self.runner.chat_names[first] = "错误群名"
+    def test_requirements_group_is_excluded_from_alert_routing_by_default(self):
         monitor = self._monitor(enabled=True)
+        routed = {str(item.get("chat_id")) for item in monitor.alert_targets}
+        self.assertEqual(routed, {PROJECT_CHAT_ID})
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        result = monitor.run_cycle()
+        chat_calls = {
+            json.loads(args[args.index("--params") + 1])["chat_id"]
+            for args in self.runner.calls
+            if len(args) >= 4 and args[1:4] == ["im", "chats", "get"]
+        }
+        self.assertNotIn(REQUIREMENTS_CHAT_ID, chat_calls)
+        self.assertEqual(
+            set(result["active_incidents"][0]["delivery_states"]),
+            {PROJECT_CHAT_ID},
+        )
+        self.assertEqual(result["alert_routing_policy"], "project_group_only")
+        self.assertEqual(
+            {item["chat_id"]: item["alert_notify"] for item in result["targets"]},
+            {REQUIREMENTS_CHAT_ID: False, PROJECT_CHAT_ID: True},
+        )
+
+    def test_ledger_notification_status_counts_routed_group_only(self):
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        monitor.run_cycle()
+        self.assertEqual(self.runner.ledger_rows[0][16], "已发送并回读（1/1）")
+
+    def test_opted_out_group_cannot_be_sent_even_if_called_directly(self):
+        monitor = self._monitor(enabled=True)
+        incident = self._issue(monitor)
+        incident["diagnosis"] = {"ok": True}
+        target = next(
+            item for item in monitor.configured_targets if item["chat_id"] == REQUIREMENTS_CHAT_ID
+        )
+        with self.assertRaises(RuntimeError):
+            monitor._send_to_target(incident, target)
+        self.assertEqual(self.runner.send_calls(), [])
+
+    def test_wrong_live_chat_name_fails_closed_for_that_target(self):
+        self.runner.chat_names[REQUIREMENTS_CHAT_ID] = "错误群名"
+        monitor = self._monitor(enabled=True, alert_roles=BOTH_ROLES)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         sends = self.runner.send_calls()
         self.assertEqual(len(sends), 1)
-        self.assertEqual(sends[0][sends[0].index("--chat-id") + 1], "oc_f86adbf0010f3e648400c377bf26179b")
+        self.assertEqual(sends[0][sends[0].index("--chat-id") + 1], PROJECT_CHAT_ID)
         states = result["active_incidents"][0]["delivery_states"]
-        self.assertEqual(states[first], "failed_before_verification")
-        self.assertEqual(states["oc_f86adbf0010f3e648400c377bf26179b"], "verified")
+        self.assertEqual(states[REQUIREMENTS_CHAT_ID], "failed_before_verification")
+        self.assertEqual(states[PROJECT_CHAT_ID], "verified")
 
     def test_send_success_with_readback_failure_is_not_retried_as_duplicate(self):
         self.runner.fail_readback = True
         monitor = self._monitor(enabled=True)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         first = monitor.run_cycle()
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         states = first["active_incidents"][0]["delivery_states"]
         self.assertEqual(set(states.values()), {"sent_pending_readback"})
         self.now += timedelta(minutes=1)
         monitor.run_cycle()
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
 
     def test_one_chat_failure_does_not_block_the_other_chat(self):
-        failed_chat = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
-        self.runner.fail_send_chats.add(failed_chat)
-        monitor = self._monitor(enabled=True)
+        self.runner.fail_send_chats.add(REQUIREMENTS_CHAT_ID)
+        monitor = self._monitor(enabled=True, alert_roles=BOTH_ROLES)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         states = result["active_incidents"][0]["delivery_states"]
-        self.assertEqual(states[failed_chat], "failed_before_verification")
-        self.assertEqual(states["oc_f86adbf0010f3e648400c377bf26179b"], "verified")
+        self.assertEqual(states[REQUIREMENTS_CHAT_ID], "failed_before_verification")
+        self.assertEqual(states[PROJECT_CHAT_ID], "verified")
 
     def test_resolved_condition_is_local_only_and_never_sends_recovery(self):
         monitor = self._monitor(enabled=True)
@@ -880,11 +930,11 @@ class ProjectMonitorTests(unittest.TestCase):
         issues[0]["terminal"] = False
         monitor.collect_issues = lambda: list(issues)
         monitor.run_cycle()
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         issues.clear()
         result = monitor.run_cycle()
         self.assertEqual(result["active_incidents"], [])
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         events = self.state_dir.joinpath("events.jsonl").read_text()
         self.assertIn("incident_resolved_local_only", events)
 
@@ -951,7 +1001,7 @@ class ProjectMonitorTests(unittest.TestCase):
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         self.assertIsNone(result["error_ledger"]["last_error"])
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         incident_id = result["active_incidents"][0]["incident_id"]
         matching_rows = [row for row in self.runner.ledger_rows if row[0] == incident_id]
         self.assertEqual(len(matching_rows), 1)
@@ -976,7 +1026,7 @@ class ProjectMonitorTests(unittest.TestCase):
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         self.assertEqual(len(self.runner.ledger_rows), 1)
-        self.assertEqual(len(self.runner.send_calls()), 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
         events = self.state_dir.joinpath("events.jsonl").read_text()
         self.assertIn("error_ledger_style_failed_local_only", events)
 
