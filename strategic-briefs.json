@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-17T14:44:44+08:00",
+  "generated_at": "2026-08-17T17:08:10+08:00",
   "items": [
+    {
+      "id": "NEWS-8026108AFE5032",
+      "title": "广东推出大陆首个词元经济专项金融产品“Token贷”",
+      "summary": "广东推出大陆首个词元经济专项金融产品“Token贷”，为相关企业提供融资支持。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5Jc0htZWdza1FjSnFCX3czbUJzejRqbk9Cc1hIR1VFQm5rUWpnOERDV2d2cEFPaGlkTjJwNGs4NjFERUZ4a0dqWHlDNGk2c0dYYkNhT2xRTnRYZTAxRW1MWjUzSTNfZTY3eWVTcFY3ZG9Hdw?oc=5",
+      "published_at": "2026-08-17T02:59:03+08:00"
+    },
     {
       "id": "NEWS-38426C9F897E27",
       "title": "央行二季度货币政策报告：保持流动性充裕并适时调整工具",
@@ -57,15 +65,7 @@
       "category": "竞对动态",
       "source_url": "https://www.am730.com.hk/article/1046156",
       "published_at": "2026-08-07T08:01:00+08:00"
-    },
-    {
-      "id": "NEWS-7611603AFDB42E",
-      "title": "SmarTone推出SmarT Pass出机快证，优先抢购iPhone及送手机礼券",
-      "summary": "SmarTone推出SmarT Pass出机快证服务，用户可优先抢购iPhone 18及折叠屏手机，并享最高2500港元手机礼券。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxQZHg0X2hBUEJEQS1VRUtjOWtocjN5c0tSb2lkdlkwNFJnNnlCOVl2VjFQVV9DMjNRT1FKU1VINnpmUVZXcEQxN0lEQUtFNXVXb1ZxWWpldDRiNXJfbHZwaGt2Y3ViVXpQWVprQjRtaDV6Ni1oVFBfWnNRMVNZcS1keW8wbTM0aXNDTjRGTW1MNVl6TDVZZ3EtcUc4X29lWFNGT05JdGJ1b29RaHBXYW5RZXg1U05JQ3FiQTAyWkc1QzVPMnNvMFRhSkMyNjZoSHBPMklyeV93cHB6QXFJSGV4cDlpbnZVY0ZuUnpMQlEtcnphS0tKQVRsbHpGUVBtdHN0X3RvdHRuQ0lYb1J0ODlqN3UxUGl2X1JGUUJZWTVpNkZfV3Fka2huN3l5UWM1VTdOV2U0eUNVYjZMNkhGZHdVU3JWNG5YM3l0THZHMkRadG4ycWNINEVrcjdyV1ZNQVpFbEhPY0lhamRiLWlTZGVrUk43X1JKZ2twVFFSSzFYeVRNSlI5eFZVU19ST3doeGRYQkk0MEFqcXg3WExN?oc=5",
-      "published_at": "2026-08-06T19:03:00+08:00"
     }
   ],
-  "site_version": "60af44305facbf65e6fea2c1a78fd7f40bf258fcb59bb689d3908670f2d4fdb4"
+  "site_version": "ec1f027a87f9d8e45a47253f3207267461be3d2070ec1bee007d10d752b7eb54"
 }
