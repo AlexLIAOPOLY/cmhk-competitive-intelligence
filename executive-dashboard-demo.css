@@ -4097,3 +4097,46 @@ h1 {
   .topbar { height: 58px; min-height: 58px; }
   h1 { font-size: 24px; }
 }
+
+/* Keep the original title frame language, compressed to the shorter header. */
+.topbar::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 0;
+  top: 7px;
+  left: 50%;
+  width: min(520px, 60vw);
+  height: 44px;
+  transform: translateX(-50%);
+  clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
+  background:
+    linear-gradient(90deg, transparent, rgba(79, 207, 239, .1) 18%, rgba(43, 143, 182, .045) 50%, rgba(79, 207, 239, .1) 82%, transparent),
+    linear-gradient(180deg, rgba(105, 222, 250, .08), transparent 24%, transparent 76%, rgba(69, 207, 246, .08));
+  filter: drop-shadow(0 0 12px rgba(49, 200, 245, .08));
+}
+
+.cockpit-title { z-index: 1; }
+
+.topbar::after {
+  width: min(320px, 42vw);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(108, 207, 235, .72), transparent);
+  box-shadow: 0 0 8px rgba(53, 190, 228, .24);
+}
+
+@media (max-width: 700px) {
+  .topbar::before {
+    top: 9px;
+    width: min(420px, 80vw);
+    height: 40px;
+  }
+}
+
+@media (max-width: 400px) {
+  .topbar::before {
+    top: 10px;
+    width: 220px;
+    height: 38px;
+  }
+}
