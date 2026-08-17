@@ -3442,9 +3442,29 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
 .reach-dial-card::before {
   content: "";
   position: absolute;
+  z-index: 3;
   inset: 12px;
   pointer-events: none;
   border: 1px solid rgba(116, 212, 242, .06);
+}
+.reach-dial-card > * {
+  position: relative;
+  z-index: 2;
+}
+.reach-dial-card:first-child::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: .48;
+  background-image:
+    linear-gradient(90deg, rgba(3, 23, 40, .98) 0%, rgba(4, 27, 45, .9) 40%, rgba(5, 30, 47, .43) 74%, rgba(4, 24, 40, .3) 100%),
+    url("./assets/executive-dashboard/store-context-v1.webp");
+  background-position: center, center right;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: saturate(.62) contrast(.92) brightness(.82);
 }
 .reach-dial {
   position: relative;
@@ -3563,6 +3583,10 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   .finance-content > div { grid-template-columns: 1fr; grid-template-rows: 250px minmax(0, 1fr); }
   .finance-gauge-card { min-height: 145px; grid-template-columns: 108px minmax(0, 1fr); }
   .finance-gauge { width: 92px; }
+  .reach-dial-card:first-child::after {
+    opacity: .38;
+    background-position: center, 62% center;
+  }
 }
 
 @media (max-width: 400px) {

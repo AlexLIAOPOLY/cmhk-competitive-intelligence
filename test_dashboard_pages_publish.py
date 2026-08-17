@@ -122,7 +122,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=27"', html)
+            style = (first / "executive-dashboard-demo.css").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('href="./executive-dashboard-demo.css?v=28"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=5"',
@@ -130,6 +133,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('src="./executive-dashboard-demo.js?v=16"', html)
+            self.assertIn("store-context-v1.webp", style)
+            self.assertTrue(
+                (
+                    first
+                    / "assets"
+                    / "executive-dashboard"
+                    / "store-context-v1.webp"
+                ).is_file()
+            )
             self.assertIn("战略监控体系", html)
             self.assertIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)
