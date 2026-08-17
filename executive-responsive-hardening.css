@@ -14,7 +14,7 @@
     width: 100%;
     height: auto;
     min-height: 100vh;
-    grid-template-rows: 86px auto 22px;
+    grid-template-rows: 70px auto;
     overflow: visible;
   }
 
