@@ -3879,3 +3879,264 @@ h1 {
   .cockpit-title::before,
   .cockpit-title::after { display: none; }
 }
+
+/* Quiet command-screen pass: hierarchy first, decoration only where it carries meaning. */
+.cockpit {
+  grid-template-rows: 64px minmax(0, 1fr);
+}
+
+.topbar {
+  overflow: hidden;
+  border-bottom-color: rgba(92, 164, 190, .24);
+  background: linear-gradient(180deg, rgba(4, 18, 31, .96), rgba(3, 14, 25, .84));
+}
+
+.topbar::before { display: none; }
+
+.topbar::after {
+  width: min(260px, 34vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(108, 207, 235, .72), transparent);
+  box-shadow: none;
+  animation: none;
+}
+
+.cockpit-title { gap: 0; }
+.cockpit-title > span { display: none; }
+.cockpit-title::before,
+.cockpit-title::after {
+  top: 50%;
+  width: clamp(54px, 6vw, 112px);
+  height: 1px;
+  opacity: .42;
+  background: linear-gradient(90deg, transparent, rgba(112, 202, 228, .72));
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+.cockpit-title::before { right: calc(100% + 24px); }
+.cockpit-title::after { left: calc(100% + 24px); transform: translateY(-50%) scaleX(-1); }
+
+h1 {
+  font-size: clamp(32px, 2.2vw, 42px);
+  letter-spacing: .12em;
+  text-indent: .12em;
+  filter: drop-shadow(0 0 6px rgba(68, 210, 255, .18));
+}
+
+.dashboard-grid {
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.dashboard-grid::before,
+.dashboard-grid::after,
+.panel::before,
+.panel::after,
+.panel-glass::after {
+  display: none;
+}
+
+.panel {
+  border-color: rgba(96, 178, 208, .22);
+  background: rgba(4, 17, 29, .88);
+  box-shadow: inset 0 1px rgba(220, 249, 255, .035), 0 7px 18px rgba(0, 0, 0, .16);
+  transition: border-color .22s ease, box-shadow .22s ease;
+}
+
+.panel:hover {
+  border-color: rgba(98, 194, 222, .36);
+  box-shadow: inset 0 1px rgba(220, 249, 255, .045), 0 9px 22px rgba(0, 0, 0, .2);
+}
+
+.scene {
+  opacity: .2;
+  filter: saturate(.68) contrast(1.02) brightness(.68);
+  animation: none;
+}
+.scene-network { opacity: .24; filter: saturate(.72) contrast(1.02) brightness(.72); }
+.scene-finance { opacity: .22; filter: saturate(.72) contrast(1.02) brightness(.7); }
+
+.panel-heading {
+  min-height: 52px;
+  height: 52px;
+  padding: 0 14px;
+  gap: 10px;
+  border-bottom-color: rgba(91, 190, 234, .18);
+  background: linear-gradient(90deg, rgba(10, 38, 58, .7), rgba(5, 22, 36, .26));
+  background-size: 100% 100%;
+}
+
+.motion-enabled .panel-heading { animation: none; }
+.panel-heading::after {
+  right: 16px;
+  width: 72px;
+  height: 1px;
+  opacity: .34;
+  background: rgba(88, 202, 230, .7);
+  box-shadow: none;
+}
+.panel-heading > span {
+  min-width: 40px;
+  padding-right: 10px;
+  border-right-color: rgba(101, 210, 246, .2);
+  color: #72c8e6;
+  font-size: 30px;
+  text-shadow: none;
+}
+.panel-heading h2 {
+  font-size: clamp(18px, 1.1vw, 22px);
+  letter-spacing: .04em;
+}
+
+.monitor-content {
+  height: calc(100% - 52px);
+  padding: 10px;
+}
+
+.visual-stage,
+.business-card,
+.reach-primary,
+.finance-primary,
+.monitor-kpi,
+.reach-dial-card,
+.finance-revenue-hero,
+.finance-gauge-card {
+  border-color: rgba(94, 180, 211, .18);
+  box-shadow: inset 0 1px rgba(197, 242, 255, .04);
+}
+
+.visual-stage,
+.business-card,
+.reach-primary,
+.finance-primary {
+  box-shadow: inset 0 1px rgba(226, 250, 255, .04);
+}
+
+.visual-stage::after,
+.business-card::after,
+.reach-primary::after,
+.finance-primary::after,
+.monitor-kpi::before,
+.monitor-kpi::after,
+.panel-network .monitor-kpi::after {
+  display: none;
+}
+
+.monitor-kpi {
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.monitor-kpi > strong { text-shadow: none; }
+.monitor-kpi > em::before { box-shadow: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .monitor-kpi:hover {
+    transform: none;
+    border-color: rgba(102, 211, 235, .32);
+    background-color: rgba(15, 60, 82, .12);
+  }
+}
+
+.business-card header,
+.business-card.green header,
+.business-card.amber header {
+  height: 38px;
+  background: rgba(13, 52, 75, .55);
+  border-bottom: 1px solid rgba(103, 197, 222, .22);
+}
+.business-card.green header { background: rgba(20, 76, 67, .46); border-bottom-color: rgba(104, 218, 180, .24); }
+.business-card.amber header { background: rgba(91, 59, 24, .46); border-bottom-color: rgba(239, 188, 94, .24); }
+.business-card header::after { height: 1px; opacity: .4; box-shadow: none; }
+
+.reach-dial-card {
+  background:
+    linear-gradient(145deg, rgba(8, 34, 55, .62), rgba(4, 20, 34, .54));
+  box-shadow: inset 0 1px rgba(220, 249, 255, .04);
+}
+.reach-dial-card::before { display: none; }
+.reach-dial { box-shadow: inset 0 0 18px rgba(27, 94, 127, .14); }
+.reach-dial::after { border-color: rgba(135, 226, 250, .05); }
+
+.finance-revenue-hero,
+.finance-gauge-card {
+  background: linear-gradient(145deg, rgba(8, 34, 55, .64), rgba(4, 20, 34, .54));
+}
+.finance-line { filter: none; }
+.finance-gauge { box-shadow: inset 0 0 16px rgba(79, 218, 177, .1); }
+.gauge-2 .finance-gauge { box-shadow: inset 0 0 16px rgba(241, 186, 94, .1); }
+
+.motion-enabled .cockpit::before,
+.motion-enabled .panel.is-visible .visual-stage::after,
+.motion-enabled .panel.is-visible .business-card::after,
+.motion-enabled .panel.is-visible .reach-primary::after,
+.motion-enabled .panel.is-visible .finance-primary::after,
+.motion-enabled .panel.is-visible .bar-column > b::after {
+  animation: none;
+}
+
+@media (max-width: 1024px) {
+  .cockpit { grid-template-rows: 64px auto; }
+  h1 { font-size: clamp(30px, 3.8vw, 36px); }
+  .panel-heading { min-height: 52px; height: 52px; }
+  .monitor-content { height: calc(100% - 52px); }
+}
+
+@media (max-width: 900px) {
+  .topbar { height: 64px; min-height: 64px; }
+}
+
+@media (max-width: 700px) {
+  .cockpit { grid-template-rows: 58px auto; }
+  .topbar { height: 58px; min-height: 58px; }
+  .topbar::after { width: 180px; }
+  h1 { font-size: 26px; }
+  .panel-heading { min-height: 52px; height: 52px; }
+  .monitor-content { height: calc(100% - 52px); }
+}
+
+@media (max-width: 400px) {
+  .topbar { height: 58px; min-height: 58px; }
+  h1 { font-size: 24px; }
+}
+
+/* Keep the original title frame language, compressed to the shorter header. */
+.topbar::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 0;
+  top: 7px;
+  left: 50%;
+  width: min(520px, 60vw);
+  height: 44px;
+  transform: translateX(-50%);
+  clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
+  background:
+    linear-gradient(90deg, transparent, rgba(79, 207, 239, .1) 18%, rgba(43, 143, 182, .045) 50%, rgba(79, 207, 239, .1) 82%, transparent),
+    linear-gradient(180deg, rgba(105, 222, 250, .08), transparent 24%, transparent 76%, rgba(69, 207, 246, .08));
+  filter: drop-shadow(0 0 12px rgba(49, 200, 245, .08));
+}
+
+.cockpit-title { z-index: 1; }
+
+.topbar::after {
+  width: min(320px, 42vw);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(108, 207, 235, .72), transparent);
+  box-shadow: 0 0 8px rgba(53, 190, 228, .24);
+}
+
+@media (max-width: 700px) {
+  .topbar::before {
+    top: 9px;
+    width: min(420px, 80vw);
+    height: 40px;
+  }
+}
+
+@media (max-width: 400px) {
+  .topbar::before {
+    top: 10px;
+    width: 220px;
+    height: 38px;
+  }
+}

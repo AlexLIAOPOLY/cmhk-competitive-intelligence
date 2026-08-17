@@ -125,7 +125,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=31"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=32"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 '<a class="dashboard-brand" href="/" aria-label="返回主页面"',
@@ -133,7 +133,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./assets/china-mobile-blue-logo.png"', html)
             self.assertIn(
-                'href="./executive-responsive-hardening.css?v=6"',
+                'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
@@ -151,8 +151,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
                     (first / "assets" / "executive-dashboard" / asset).is_file()
                 )
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
-            self.assertIn("战略监控体系", html)
-            self.assertIn("STRATEGIC MONITORING SYSTEM", html)
+            self.assertIn("战略监控", html)
+            self.assertNotIn("战略监控体系</h1>", html)
+            self.assertNotIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)
             self.assertIn("客户与业务对标层", html)
             self.assertIn("渠道与品牌触达层", html)
