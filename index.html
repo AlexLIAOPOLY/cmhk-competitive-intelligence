@@ -5,62 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>中国移动香港｜战略监控体系</title>
-  <link rel="stylesheet" href="./executive-dashboard-demo.css?v=32">
-  <link rel="stylesheet" href="./executive-responsive-hardening.css?v=7">
+  <link rel="stylesheet" href="./executive-dashboard-demo.css?v=40">
+  <link rel="stylesheet" href="./executive-responsive-hardening.css?v=12">
 </head>
 <body>
-  <main class="cockpit">
-    <header class="topbar">
-      <a class="dashboard-brand" href="/" aria-label="返回主页面" title="返回主页面">
-        <img class="dashboard-brand-logo" src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile">
+  <div class="app">
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="返回主页面" title="返回主页面">
+        <img src="./assets/executive-dashboard/china-mobile-blue-logo.png" alt="中国移动 China Mobile">
       </a>
-      <div class="cockpit-title"><h1>战略监控体系</h1></div>
+
+      <div class="masthead-title">
+        <h1>战略监控体系</h1>
+        <p>STRATEGIC MONITORING SYSTEM</p>
+      </div>
+
+      <div class="masthead-meta">
+        <span class="live"><i aria-hidden="true"></i>数据同步中</span>
+        <time data-clock datetime=""></time>
+      </div>
     </header>
 
-    <section class="dashboard-grid" aria-label="CMHK战略监控四层体系">
-      <article class="panel panel-network">
-        <img class="scene scene-network" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>01</span><h2>资源与基础设施层</h2>
+    <main class="board" aria-label="CMHK 战略监控四层体系">
+      <section class="panel panel-network" aria-labelledby="panel-01-title">
+        <header class="panel-head">
+          <span class="panel-index">01</span>
+          <h2 id="panel-01-title">资源与基础设施层</h2>
+          <span class="panel-tag">网络与算力资源</span>
         </header>
-        <div class="monitor-content network-monitor" id="network-detail">
-          <div class="visual-stage" data-network-visual></div>
-          <div class="kpi-grid" data-network-metrics></div>
+        <div class="panel-body">
+          <div class="network-stage" data-network-visual></div>
+          <div class="network-metrics" data-network-metrics></div>
         </div>
-      </article>
+      </section>
 
-      <article class="panel panel-business">
-        <img class="scene scene-business" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>02</span><h2>客户与业务对标层</h2>
+      <section class="panel panel-business" aria-labelledby="panel-02-title">
+        <header class="panel-head">
+          <span class="panel-index">02</span>
+          <h2 id="panel-02-title">客户与业务对标层</h2>
+          <span class="panel-tag">三大业务板块</span>
         </header>
-        <div class="monitor-content business-content" id="business-detail">
-          <div class="business-cards" data-business-cards></div>
+        <div class="panel-body">
+          <div class="business-grid" data-business-cards></div>
         </div>
-      </article>
+      </section>
 
-      <article class="panel panel-reach">
-        <img class="scene scene-reach" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>03</span><h2>渠道与品牌触达层</h2>
+      <section class="panel panel-reach" aria-labelledby="panel-03-title">
+        <header class="panel-head">
+          <span class="panel-index">03</span>
+          <h2 id="panel-03-title">渠道与品牌触达层</h2>
+          <span class="panel-tag">线下与线上触点</span>
         </header>
-        <div class="monitor-content reach-content" id="reach-detail"><div data-reach-content></div></div>
-      </article>
+        <div class="panel-body">
+          <div class="reach-grid" data-reach-content></div>
+        </div>
+      </section>
 
-      <article class="panel panel-finance">
-        <img class="scene scene-finance" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>04</span><h2>财务成果</h2>
+      <section class="panel panel-finance" aria-labelledby="panel-04-title">
+        <header class="panel-head">
+          <span class="panel-index">04</span>
+          <h2 id="panel-04-title">财务成果</h2>
+          <span class="panel-tag">经营质量</span>
         </header>
-        <div class="monitor-content finance-content" id="finance-detail"><div data-finance-content></div></div>
-      </article>
-    </section>
+        <div class="panel-body">
+          <div class="finance-grid" data-finance-content></div>
+        </div>
+      </section>
+    </main>
 
-  </main>
-  <script src="./executive-dashboard-demo.js?v=16"></script>
+    <footer class="footnote">
+      <span>监控链路　资源 → 业务 → 渠道 → 财务</span>
+      <span>数值口径以各指标标注为准，变动幅度为同比</span>
+    </footer>
+  </div>
+  <script src="./executive-dashboard-demo.js?v=24"></script>
 </body>
 </html>
