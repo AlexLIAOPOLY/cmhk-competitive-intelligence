@@ -125,8 +125,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=30"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=31"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
+            self.assertIn(
+                '<a class="dashboard-brand" href="/" aria-label="返回主页面"',
+                html,
+            )
+            self.assertIn('src="./assets/china-mobile-blue-logo.png"', html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=6"',
                 html,
@@ -145,6 +150,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 self.assertTrue(
                     (first / "assets" / "executive-dashboard" / asset).is_file()
                 )
+            self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn("战略监控体系", html)
             self.assertIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)

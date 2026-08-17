@@ -3824,3 +3824,58 @@ h1 {
   .reach-dial-card:nth-child(2)::after { opacity: .24; background-position: center, 68% center; }
   .finance-revenue-hero { background-position: center, 62% center, center; }
 }
+
+/* Main-page brand entry: visible, compact and usable without competing with the title. */
+.dashboard-brand {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: clamp(12px, 2vw, 28px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 148px;
+  height: 42px;
+  padding: 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transform: translateY(-50%);
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+
+.dashboard-brand-logo {
+  display: block;
+  width: 148px;
+  height: 38px;
+  object-fit: contain;
+  object-position: left center;
+  filter: brightness(1.9) saturate(.7) drop-shadow(0 0 9px rgba(82, 207, 244, .18));
+  mix-blend-mode: normal;
+}
+
+.dashboard-brand:hover {
+  border-color: rgba(98, 211, 242, .28);
+  background: rgba(18, 62, 82, .28);
+  box-shadow: 0 0 18px rgba(47, 190, 232, .12);
+}
+
+.dashboard-brand:focus-visible {
+  outline: 2px solid rgba(141, 235, 255, .9);
+  outline-offset: 3px;
+  border-color: rgba(141, 235, 255, .5);
+  background: rgba(18, 62, 82, .36);
+}
+
+@media (max-width: 700px) {
+  .topbar { padding-left: 86px; padding-right: 8px; }
+  .dashboard-brand { left: 8px; width: 82px; height: 30px; padding: 1px; }
+  .dashboard-brand-logo { width: 82px; height: 28px; }
+}
+
+@media (max-width: 400px) {
+  .topbar { padding-left: 76px; }
+  .dashboard-brand { width: 72px; height: 28px; }
+  .dashboard-brand-logo { width: 72px; height: 26px; }
+  .cockpit-title::before,
+  .cockpit-title::after { display: none; }
+}

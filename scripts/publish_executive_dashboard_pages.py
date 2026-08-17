@@ -166,6 +166,10 @@ def _build_site(
         'src="./assets/executive-dashboard/',
     )
     html = html.replace(
+        'src="/static/assets/china-mobile-blue-logo.png',
+        'src="./assets/china-mobile-blue-logo.png',
+    )
+    html = html.replace(
         'src="/static/executive-dashboard-demo.js',
         'src="./executive-dashboard-demo.js',
     )
@@ -184,6 +188,10 @@ def _build_site(
     shutil.copytree(
         STATIC_DIR / "assets" / "executive-dashboard",
         destination / "assets" / "executive-dashboard",
+    )
+    shutil.copy2(
+        STATIC_DIR / "assets" / "china-mobile-blue-logo.png",
+        destination / "assets" / "china-mobile-blue-logo.png",
     )
     intelligence_source_dir = intelligence_static_dir or INTELLIGENCE_STATIC_DIR
     if intelligence_source_dir.is_dir():
