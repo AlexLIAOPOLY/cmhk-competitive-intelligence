@@ -14,17 +14,17 @@
     width: 100%;
     height: auto;
     min-height: 100vh;
-    grid-template-rows: 72px auto 24px;
+    grid-template-rows: 86px auto 22px;
     overflow: visible;
   }
 
   .dashboard-grid {
-    min-height: 720px;
-    grid-template-rows: repeat(2, minmax(360px, auto));
+    min-height: 700px;
+    grid-template-rows: repeat(2, minmax(350px, auto));
   }
 
   .panel {
-    min-height: 360px;
+    min-height: 350px;
   }
 }
 
@@ -40,7 +40,7 @@
 
   .cockpit {
     /* Do not stop at .80: browser chrome can leave a 600–650px viewport on a 13-inch screen. */
-    --fit-scale: clamp(.5, calc(100vh / 828px), 1);
+    --fit-scale: clamp(.5, calc(100vh / 808px), 1);
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));
@@ -55,7 +55,7 @@
   }
 
   .panel-business .business-content {
-    height: calc(100% - 60px);
+    height: calc(100% - 62px);
   }
 }
 
@@ -65,6 +65,6 @@
   }
 
   .panel-business .business-content {
-    height: calc(100% - 60px);
+    height: calc(100% - 62px);
   }
 }
