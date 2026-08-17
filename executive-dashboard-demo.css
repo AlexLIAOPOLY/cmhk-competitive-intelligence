@@ -3876,4 +3876,6 @@ h1 {
   .topbar { padding-left: 76px; }
   .dashboard-brand { width: 72px; height: 28px; }
   .dashboard-brand-logo { width: 72px; height: 26px; }
+  .cockpit-title::before,
+  .cockpit-title::after { display: none; }
 }
