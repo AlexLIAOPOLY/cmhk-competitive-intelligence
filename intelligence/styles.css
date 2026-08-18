@@ -6134,6 +6134,7 @@ pre {
 .crawl-run-item em { font-size: 10px; font-style: normal; font-weight: 750; }
 .crawl-run-item .status-running { color: #b66800; }
 .crawl-run-item .status-failed { color: #c43d3d; }
+.crawl-run-item .status-cutoff { color: #7a6640; }
 .crawl-run-item .status-completed { color: #16855b; }
 
 .log-viewer {
@@ -7274,6 +7275,7 @@ body.chat-image-lightbox-open {
 .run-status.status-running { color: #9a5b00; background: #fff4d9; }
 .run-status.status-completed { color: #0f704e; background: #e8f7f0; }
 .run-status.status-failed { color: #b4232b; background: #fdeced; }
+.run-status.status-cutoff { color: #6f5c32; background: #f5f0e5; }
 
 .crawl-audit-stats {
   display: flex;
