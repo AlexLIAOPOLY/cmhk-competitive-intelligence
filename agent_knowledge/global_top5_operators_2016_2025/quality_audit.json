@@ -3,9 +3,9 @@
   "status": "backlog_open",
   "row_count": 627,
   "available_value_rows": 421,
-  "three_distinct_source_certified_rows": 281,
-  "below_three_source_rows": 140,
-  "source_count": 230,
+  "three_distinct_source_certified_rows": 310,
+  "below_three_source_rows": 111,
+  "source_count": 239,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
@@ -13,9 +13,9 @@
     "not_applicable_precommercial": 27,
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
-    "official_single_source": 106,
-    "official_three_distinct_sources_verified": 281,
-    "official_two_distinct_sources": 18,
+    "official_single_source": 76,
+    "official_three_distinct_sources_verified": 310,
+    "official_two_distinct_sources": 19,
     "source_gap_confirmed": 179
   },
   "available_rows_by_operator": {
@@ -32,7 +32,7 @@
     "中国广电": 6,
     "中国电信": 60,
     "中国移动": 80,
-    "中国联通": 10
+    "中国联通": 39
   },
   "available_rows_by_metric": {
     "4g_base_stations": 8,

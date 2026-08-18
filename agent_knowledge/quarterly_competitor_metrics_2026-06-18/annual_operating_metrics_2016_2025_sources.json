@@ -3936,6 +3936,148 @@
       }
     },
     {
+      "source_id": "china_unicom_20f_2018",
+      "operator_id": "china_unicom",
+      "year": 2018,
+      "label": "China Unicom 2018 annual report on Form 20-F",
+      "url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "source_type": "official_sec_form_20f",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_20f_2018",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_subscribers": {
+            "value": 263.822,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "fixed_broadband_subscribers": {
+            "value": 75.236,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 104.551,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        },
+        "FY2017": {
+          "mobile_subscribers": {
+            "value": 284.163,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "fixed_broadband_subscribers": {
+            "value": 76.539,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 174.876,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 315.036,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 219.925,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_20f_2019",
+      "operator_id": "china_unicom",
+      "year": 2019,
+      "label": "China Unicom 2019 annual report on Form 20-F",
+      "url": "https://www.chinaunicom.com.hk/en/ir/reports/2019_20f.pdf",
+      "source_type": "official_sec_form_20f",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_20f_2019",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_subscribers": {
+            "value": 284.163,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 174.876,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        },
+        "FY2018": {
+          "mobile_subscribers": {
+            "value": 315.036,
+            "unit": "million_subscribers",
+            "locator": "FY2018 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 219.925,
+            "unit": "million_subscribers",
+            "locator": "FY2018 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 318.475,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 253.766,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_20f_2020",
+      "operator_id": "china_unicom",
+      "year": 2020,
+      "label": "China Unicom 2020 annual report on Form 20-F",
+      "url": "https://www.chinaunicom.com.hk/en/ir/reports/2020_20f.pdf",
+      "source_type": "official_sec_form_20f",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_20f_2020",
+      "comparative_evidence": {
+        "FY2019": {
+          "mobile_subscribers": {
+            "value": 318.475,
+            "unit": "million_subscribers",
+            "locator": "FY2019 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 253.766,
+            "unit": "million_subscribers",
+            "locator": "FY2019 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 305.811,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 270.181,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
       "source_id": "china_unicom_ar_2016",
       "operator_id": "china_unicom",
       "year": 2016,
@@ -3943,7 +4085,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2016.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2016"
+      "source_document_id": "china_unicom_ar_2016",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 46.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 49.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2017",
@@ -3953,7 +4107,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2017.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2017"
+      "source_document_id": "china_unicom_ar_2017",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 46.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2018",
@@ -3963,7 +4129,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2018.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2018"
+      "source_document_id": "china_unicom_ar_2018",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 44.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2019",
@@ -3973,7 +4151,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2019.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2019"
+      "source_document_id": "china_unicom_ar_2019",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 40.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2020",
@@ -3983,7 +4173,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2020.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2020"
+      "source_document_id": "china_unicom_ar_2020",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 42.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2021",
@@ -3993,7 +4195,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2021.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2021"
+      "source_document_id": "china_unicom_ar_2021",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 43.9,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2022",
@@ -4082,6 +4296,194 @@
           "value": 300,
           "unit": "million_users",
           "locator": "FY2025 service update; Cloud-AI products served more than 300 million users"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2018",
+      "operator_id": "china_unicom",
+      "year": 2018,
+      "label": "China Unicom Corporate Social Responsibility Report 2018",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2018.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2018",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_subscribers": {
+            "value": 263.822,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "fixed_broadband_subscribers": {
+            "value": 75.236,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 104.551,
+            "unit": "million_subscribers",
+            "locator": "FY2016 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        },
+        "FY2017": {
+          "mobile_subscribers": {
+            "value": 284.163,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+          },
+          "fixed_broadband_subscribers": {
+            "value": 76.539,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "4g_subscribers": {
+            "value": 174.876,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 315.036,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 80.88,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 219.925,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2019",
+      "operator_id": "china_unicom",
+      "year": 2019,
+      "label": "China Unicom Corporate Social Responsibility Report 2019",
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2020/0617/2020061700317.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2019",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 318.475,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 83.478,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 253.766,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2021",
+      "operator_id": "china_unicom",
+      "year": 2021,
+      "label": "China Unicom Sustainability Report 2021",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2021.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2021",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 317.115,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 95.046,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_dec_ops_2016",
+      "operator_id": "china_unicom",
+      "year": 2016,
+      "label": "China Unicom operational statistics for December 2016",
+      "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0119/LTN20170119339.pdf",
+      "source_type": "official_hkex_operating_announcement",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_dec_ops_2016",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 263.822,
+          "unit": "million_subscribers",
+          "locator": "FY2016 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 75.236,
+          "unit": "million_subscribers",
+          "locator": "FY2016 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 104.551,
+          "unit": "million_subscribers",
+          "locator": "FY2016 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_dec_ops_2020",
+      "operator_id": "china_unicom",
+      "year": 2020,
+      "label": "China Unicom operational statistics for December 2020",
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/0120/2021012000402.pdf",
+      "source_type": "official_hkex_operating_announcement",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_dec_ops_2020",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 305.811,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 86.095,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 270.181,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_dec_ops_2021",
+      "operator_id": "china_unicom",
+      "year": 2021,
+      "label": "China Unicom operational statistics for December 2021",
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2022/0120/2022012000495.pdf",
+      "source_type": "official_hkex_operating_announcement",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_dec_ops_2021",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 317.115,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 95.046,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
         }
       }
     },
@@ -4264,7 +4666,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre170315.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2016"
+      "source_document_id": "china_unicom_results_2016",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 46.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 49.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2017",
@@ -4274,7 +4688,33 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre180315.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2017"
+      "source_document_id": "china_unicom_results_2017",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_arpu": {
+            "value": 46.4,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2016 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 49.4,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2016 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 46.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2018",
@@ -4284,7 +4724,43 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre190313.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2018"
+      "source_document_id": "china_unicom_results_2018",
+      "comparative_evidence": {
+        "FY2017": {
+          "fixed_broadband_subscribers": {
+            "value": 76.539,
+            "unit": "million_subscribers",
+            "locator": "FY2017 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "mobile_arpu": {
+            "value": 48.0,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2017 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 46.3,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 80.88,
+          "unit": "million_subscribers",
+          "locator": "FY2018 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "mobile_arpu": {
+          "value": 45.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 44.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2019",
@@ -4294,7 +4770,43 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre200323.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2019"
+      "source_document_id": "china_unicom_results_2019",
+      "comparative_evidence": {
+        "FY2018": {
+          "fixed_broadband_subscribers": {
+            "value": 80.88,
+            "unit": "million_subscribers",
+            "locator": "FY2018 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "mobile_arpu": {
+            "value": 45.7,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2018 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 44.6,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2018 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 83.478,
+          "unit": "million_subscribers",
+          "locator": "FY2019 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "mobile_arpu": {
+          "value": 40.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2020",
@@ -4304,7 +4816,53 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre210311.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2020"
+      "source_document_id": "china_unicom_results_2020",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 305.811,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 86.095,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_subscribers": {
+          "value": 270.181,
+          "unit": "million_subscribers",
+          "locator": "FY2020 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        },
+        "mobile_arpu": {
+          "value": 42.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      },
+      "comparative_evidence": {
+        "FY2019": {
+          "fixed_broadband_subscribers": {
+            "value": 83.478,
+            "unit": "million_subscribers",
+            "locator": "FY2019 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "mobile_arpu": {
+            "value": 40.4,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2019 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 41.6,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2021",
@@ -4314,7 +4872,48 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2021"
+      "source_document_id": "china_unicom_results_2021",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 317.115,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 移动用户数 at the disclosed precision"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 95.046,
+          "unit": "million_subscribers",
+          "locator": "FY2021 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "mobile_arpu": {
+          "value": 43.9,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
+        "broadband_arpu": {
+          "value": 41.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        }
+      },
+      "comparative_evidence": {
+        "FY2020": {
+          "fixed_broadband_subscribers": {
+            "value": 86.095,
+            "unit": "million_subscribers",
+            "locator": "FY2020 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "mobile_arpu": {
+            "value": 42.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 41.5,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2022",
@@ -4325,7 +4924,26 @@
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
       "source_document_id": "china_unicom_results_2022",
+      "comparative_evidence": {
+        "FY2021": {
+          "mobile_arpu": {
+            "value": 43.9,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          },
+          "broadband_arpu": {
+            "value": 41.3,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          }
+        }
+      },
       "evidence": {
+        "mobile_arpu": {
+          "value": 44.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        },
         "5g_base_stations": {
           "value": 1.0,
           "unit": "million_base_stations",
@@ -4342,7 +4960,16 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre240319.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2023"
+      "source_document_id": "china_unicom_results_2023",
+      "comparative_evidence": {
+        "FY2022": {
+          "mobile_arpu": {
+            "value": 44.3,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2022 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+          }
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2024",

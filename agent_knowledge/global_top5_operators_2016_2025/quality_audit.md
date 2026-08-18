@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：627
 - 有值行：421
-- 来源条目：230
+- 来源条目：239
 - 重复键：0
 - 无效来源引用：0
 
@@ -12,9 +12,9 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 106
-- `official_three_distinct_sources_verified`: 281
-- `official_two_distinct_sources`: 18
+- `official_single_source`: 76
+- `official_three_distinct_sources_verified`: 310
+- `official_two_distinct_sources`: 19
 - `source_gap_confirmed`: 179
 
 ## 三来源认证行（按运营商）
@@ -24,7 +24,7 @@
 - 中国广电: 6
 - 中国电信: 60
 - 中国移动: 80
-- 中国联通: 10
+- 中国联通: 39
 
 ## 缺口（含不适用）
 

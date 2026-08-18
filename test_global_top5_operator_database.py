@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 60,
                 "中国移动": 80,
-                "中国联通": 10,
+                "中国联通": 39,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -500,6 +500,42 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         missing = self.index[("china_unicom", 2025, "mobile_arpu")]
         self.assertEqual(missing["distinct_source_document_count"], 0)
         self.assertEqual(missing["triple_source_status"], "not_applicable_missing_value")
+
+    def test_china_unicom_historical_operating_kpis_have_three_exact_documents(self):
+        expected = {
+            "mobile_subscribers": {
+                2016: 263.822, 2017: 284.163, 2018: 315.036,
+                2019: 318.475, 2020: 305.811, 2021: 317.115,
+            },
+            "fixed_broadband_subscribers": {
+                2016: 75.236, 2017: 76.539, 2018: 80.880,
+                2019: 83.478, 2020: 86.095, 2021: 95.046,
+            },
+            "4g_subscribers": {
+                2016: 104.551, 2017: 174.876, 2018: 219.925,
+                2019: 253.766, 2020: 270.181,
+            },
+            "mobile_arpu": {
+                2016: 46.4, 2017: 48.0, 2018: 45.7,
+                2019: 40.4, 2020: 42.1, 2021: 43.9,
+            },
+            "broadband_arpu": {
+                2016: 49.4, 2017: 46.3, 2018: 44.6,
+                2019: 41.6, 2020: 41.5, 2021: 41.3,
+            },
+        }
+        for metric_key, values in expected.items():
+            for year, value in values.items():
+                row = self.index[("china_unicom", year, metric_key)]
+                self.assertEqual(row["value"], value)
+                self.assertEqual(row["distinct_source_document_count"], 3)
+                self.assertEqual(row["verification_status"], "official_three_distinct_sources_verified")
+                self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        mobile_arpu_2022 = self.index[("china_unicom", 2022, "mobile_arpu")]
+        self.assertEqual(mobile_arpu_2022["value"], 44.3)
+        self.assertEqual(mobile_arpu_2022["distinct_source_document_count"], 2)
+        self.assertEqual(mobile_arpu_2022["triple_source_status"], "below_three_source_threshold")
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))

@@ -15798,26 +15798,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 104.6,
-      "official_value": 104.6,
+      "value": 104.551,
+      "official_value": 104.551,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "4G subscribers / billing subscribers using 4G or 5G network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018",
+        "china_unicom_dec_ops_2016"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_dec_ops_2016",
+      "primary_source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0119/LTN20170119339.pdf",
+      "verification_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year."
     },
     {
       "operator_id": "china_unicom",
@@ -15835,20 +15843,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2016",
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2016",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2016",
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -15860,26 +15876,34 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 75.2,
-      "official_value": 75.2,
+      "value": 75.236,
+      "official_value": 75.236,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018",
+        "china_unicom_dec_ops_2016"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_dec_ops_2016",
+      "primary_source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0119/LTN20170119339.pdf",
+      "verification_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -15897,20 +15921,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2016",
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2016",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2016",
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+        "china_unicom_results_2016",
+        "china_unicom_results_2017"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -15953,26 +15985,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 263.8,
-      "official_value": 263.8,
+      "value": 263.822,
+      "official_value": 263.822,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018",
+        "china_unicom_dec_ops_2016"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_dec_ops_2016",
+      "primary_source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0119/LTN20170119339.pdf",
+      "verification_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_dec_ops_2016",
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -15984,26 +16024,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 174.9,
-      "official_value": 174.9,
+      "value": 174.876,
+      "official_value": 174.876,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "4G subscribers / billing subscribers using 4G or 5G network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
-        "china_unicom_results_2017"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year."
     },
     {
       "operator_id": "china_unicom",
@@ -16021,20 +16069,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2017",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
-        "china_unicom_results_2017"
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -16046,26 +16102,34 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 76.5,
-      "official_value": 76.5,
+      "value": 76.539,
+      "official_value": 76.539,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
-        "china_unicom_results_2017"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_csr_2018",
+        "china_unicom_results_2018"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_results_2018",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_results_2018",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16083,20 +16147,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2017",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
-        "china_unicom_results_2017"
+        "china_unicom_results_2017",
+        "china_unicom_results_2018"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -16139,26 +16211,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 284.2,
-      "official_value": 284.2,
+      "value": 284.163,
+      "official_value": 284.163,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
-        "china_unicom_results_2017"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16170,26 +16250,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 219.9,
-      "official_value": 219.9,
+      "value": 219.925,
+      "official_value": 219.925,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "4G subscribers / billing subscribers using 4G or 5G network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year."
     },
     {
       "operator_id": "china_unicom",
@@ -16207,20 +16295,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2018",
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2018",
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -16238,20 +16334,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2018",
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre190313.pdf",
+      "verification_sources": [
+        "china_unicom_results_2018",
+        "china_unicom_results_2019",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2018",
+        "china_unicom_results_2019",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16269,20 +16373,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2018",
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2018",
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+        "china_unicom_results_2018",
+        "china_unicom_results_2019"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -16325,26 +16437,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 315.0,
-      "official_value": 315.0,
+      "value": 315.036,
+      "official_value": 315.036,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2018_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2018",
+        "china_unicom_20f_2019",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16356,26 +16476,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 253.8,
-      "official_value": 253.8,
+      "value": 253.766,
+      "official_value": 253.766,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "4G subscribers / billing subscribers using 4G or 5G network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2019_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
+      ],
+      "quality_note": "FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year."
     },
     {
       "operator_id": "china_unicom",
@@ -16393,20 +16521,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -16418,26 +16554,34 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 83.48,
-      "official_value": 83.48,
+      "value": 83.478,
+      "official_value": 83.478,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre200323.pdf",
+      "verification_sources": [
+        "china_unicom_results_2019",
+        "china_unicom_results_2020",
+        "china_unicom_csr_2019"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2019",
+        "china_unicom_results_2020",
+        "china_unicom_csr_2019"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16455,20 +16599,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -16511,26 +16663,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 318.47,
-      "official_value": 318.47,
+      "value": 318.475,
+      "official_value": 318.475,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2019_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2019",
+        "china_unicom_20f_2020",
+        "china_unicom_csr_2019"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16542,26 +16702,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 270.2,
-      "official_value": 270.2,
+      "value": 270.181,
+      "official_value": 270.181,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "4G subscribers / billing subscribers using 4G or 5G network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2020",
+        "china_unicom_dec_ops_2020",
         "china_unicom_results_2020"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2020_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2020",
+        "china_unicom_results_2020",
+        "china_unicom_dec_ops_2020"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2020",
+        "china_unicom_results_2020",
+        "china_unicom_dec_ops_2020"
+      ],
+      "quality_note": "FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year."
     },
     {
       "operator_id": "china_unicom",
@@ -16641,20 +16809,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
-        "china_unicom_results_2020"
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -16672,20 +16848,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
-        "china_unicom_results_2020"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_dec_ops_2020",
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre210311.pdf",
+      "verification_sources": [
+        "china_unicom_results_2020",
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2020"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2020",
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2020"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16703,20 +16887,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
-        "china_unicom_results_2020"
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -16759,26 +16951,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 305.81,
-      "official_value": 305.81,
+      "value": 305.811,
+      "official_value": 305.811,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_20f_2020",
+        "china_unicom_dec_ops_2020",
         "china_unicom_results_2020"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_20f_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/2020_20f.pdf",
+      "verification_sources": [
+        "china_unicom_20f_2020",
+        "china_unicom_results_2020",
+        "china_unicom_dec_ops_2020"
+      ],
+      "candidate_sources": [
+        "china_unicom_20f_2020",
+        "china_unicom_results_2020",
+        "china_unicom_dec_ops_2020"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16858,20 +17058,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband access ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2021",
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2021",
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2021",
-        "china_unicom_ops_2021",
-        "china_unicom_results_2021"
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -16883,26 +17091,34 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 95.05,
-      "official_value": 95.05,
+      "value": 95.046,
+      "official_value": 95.046,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2021",
-        "china_unicom_ops_2021",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2021",
+        "china_unicom_dec_ops_2021",
         "china_unicom_results_2021"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf",
+      "verification_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2021",
+        "china_unicom_csr_2021"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2021",
+        "china_unicom_csr_2021"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -16920,20 +17136,28 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2021",
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2021",
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2021",
-        "china_unicom_ops_2021",
-        "china_unicom_results_2021"
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -16976,26 +17200,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 317.12,
-      "official_value": 317.12,
+      "value": 317.115,
+      "official_value": 317.115,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "mobile billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2021",
-        "china_unicom_ops_2021",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2021",
+        "china_unicom_dec_ops_2021",
         "china_unicom_results_2021"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf",
+      "verification_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2021",
+        "china_unicom_csr_2021"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_dec_ops_2021",
+        "china_unicom_csr_2021"
+      ],
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -17096,7 +17328,7 @@
         "china_unicom_ops_2022",
         "china_unicom_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -17127,7 +17359,7 @@
         "china_unicom_ops_2022",
         "china_unicom_results_2022"
       ],
-      "quality_note": "2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases."
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -17145,20 +17377,25 @@
       "comparator": "=",
       "scope": "mobile billing subscriber ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2022",
-        "china_unicom_ops_2022",
-        "china_unicom_results_2022"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_unicom_results_2022",
+        "china_unicom_results_2023"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_unicom_results_2022",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf",
+      "verification_sources": [
+        "china_unicom_results_2022",
+        "china_unicom_results_2023"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2022",
+        "china_unicom_results_2023"
+      ],
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -17220,7 +17457,7 @@
         "china_unicom_ops_2022",
         "china_unicom_results_2022"
       ],
-      "quality_note": "2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals."
+      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
     },
     {
       "operator_id": "china_unicom",
@@ -17313,7 +17550,7 @@
         "china_unicom_ops_2023",
         "china_unicom_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -17375,7 +17612,7 @@
         "china_unicom_ops_2023",
         "china_unicom_results_2023"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -17530,7 +17767,7 @@
         "china_unicom_ops_2024",
         "china_unicom_results_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -17592,7 +17829,7 @@
         "china_unicom_ops_2024",
         "china_unicom_results_2024"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
@@ -17802,7 +18039,7 @@
         "china_unicom_ops_2025",
         "china_unicom_results_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
     },
     {
       "operator_id": "china_unicom",
@@ -18020,7 +18257,7 @@
         "china_unicom_ops_2025",
         "china_unicom_results_2025"
       ],
-      "quality_note": "From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
+      "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap."
     },
     {
       "operator_id": "china_unicom",
