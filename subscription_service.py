@@ -39,6 +39,7 @@ OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
 IMAGE_KEY_RE = re.compile(r"^img_[A-Za-z0-9_-]+$")
+NEWS_DIGEST_PREFIX = "CMHK_NEWS_DIGEST_V1\n"
 
 
 def _now_hkt() -> str:
@@ -196,67 +197,77 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     }
 
 
+def encode_strategic_news_digest(items: list[dict[str, Any]]) -> str:
+    """Persist a structured digest through the existing text queue column."""
+    return NEWS_DIGEST_PREFIX + json.dumps(items, ensure_ascii=False, separators=(",", ":"))
+
+
+def _news_business_impact(item: dict[str, Any]) -> str:
+    explicit = str(item.get("business_impact") or item.get("inclusion_reason") or "").strip()
+    if explicit:
+        return explicit[:220]
+    category = str(item.get("category") or "")
+    if category == "竞对动态":
+        return "反映相关运营商或企业的经营与技术布局变化，需持续跟踪其对竞争格局的影响。"
+    if category == "政策监管":
+        return "可能影响合规要求与市场环境，需评估对本地业务和客户需求的传导。"
+    if "宏观" in category or "地缘" in category:
+        return "反映外部经营环境变化，需关注对投资节奏、客户需求及供应链的潜在影响。"
+    return "反映行业技术、投资或商业化方向变化，需关注对网络、算力与产品布局的影响。"
+
+
 def strategic_news_card(*, title: str, body: str, published_at: str = "") -> dict[str, Any]:
-    """Compact Card 2.0 layout for a curated strategic-news brief."""
-    clean_title = re.sub(r"\s+", " ", str(title or "战略新闻")).strip()[:120] or "战略新闻"
-    clean_body = str(body or "").strip()
-    if len(clean_body) > 5200:
-        clean_body = clean_body[:5197].rstrip() + "…"
-    date_label = str(published_at or _now_hkt())[:10]
+    """Strategic-news card matching the established CMHK group digest format."""
+    clean_title = re.sub(r"\s+", " ", str(title or "CMHK战略订阅")).strip()[:120] or "CMHK战略订阅"
+    date_label = str(published_at or _now_hkt())[:16].replace("T", " ")
+    elements: list[dict[str, Any]] = []
+    if str(body).startswith(NEWS_DIGEST_PREFIX):
+        try:
+            parsed = json.loads(str(body)[len(NEWS_DIGEST_PREFIX):])
+        except (ValueError, TypeError, json.JSONDecodeError):
+            parsed = []
+        items = [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
+        top_titles = "；".join(str(item.get("title") or "").strip()[:42] for item in items[:3] if item.get("title"))
+        elements.append({
+            "tag": "markdown",
+            "content": f"**今日关键信号**\n重点涉及：{top_titles}。" if top_titles else "**本轮结果**  暂无可展示新闻。",
+        })
+        for index, item in enumerate(items, start=1):
+            item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
+            summary = str(item.get("summary") or "").strip()[:260]
+            category = str(item.get("category") or "战略动态").strip()[:80]
+            region = str(item.get("region") or "未分类").strip()[:40]
+            source = str(item.get("source") or "来源待核").strip()[:100]
+            published = str(item.get("published_at") or item.get("source_date") or "").strip()
+            try:
+                published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone().strftime("%m月%d日 %H:%M")
+            except ValueError:
+                published_text = published[:16] or "时间待核"
+            url = str(item.get("source_url") or item.get("url") or "").strip()
+            linked_title = f"[**{item_title}**]({url})" if url.startswith(("http://", "https://")) else f"**{item_title}**"
+            lines = [f"**{index:02d}｜{category} · {region}**", linked_title]
+            if summary:
+                lines.append(summary)
+            lines.append(f"**业务影响：** {_news_business_impact(item)}")
+            lines.append(f"<font color='grey'>{source} · {published_text}</font>")
+            elements.extend([{"tag": "hr"}, {"tag": "markdown", "content": "\n".join(lines)}])
+        elements.extend([
+            {"tag": "hr"},
+            {"tag": "note", "elements": [{"tag": "plain_text", "content": f"已完整列出本批 {len(items)} 条战略新闻。"}]},
+        ])
+    else:
+        clean_body = str(body or "").strip()
+        if len(clean_body) > 12000:
+            clean_body = clean_body[:11997].rstrip() + "…"
+        elements.append({"tag": "markdown", "content": clean_body})
     return {
-        "schema": "2.0",
-        "config": {
-            "width_mode": "default",
-            "summary": {"content": f"战略新闻 · {clean_title}"[:120]},
-        },
+        "config": {"wide_screen_mode": True, "enable_forward": True},
         "header": {
-            "title": {"tag": "plain_text", "content": "战略新闻精选"},
-            "subtitle": {"tag": "plain_text", "content": f"{date_label} · 战略竞对中心"},
             "template": "blue",
-            "icon": {"tag": "standard_icon", "token": "myai_colorful"},
-            "text_tag_list": [
-                {"tag": "text_tag", "text": {"tag": "plain_text", "content": "已整理"}, "color": "blue"}
-            ],
+            "title": {"tag": "plain_text", "content": clean_title},
+            "subtitle": {"tag": "plain_text", "content": f"截至 {date_label} · 香港时间"},
         },
-        "body": {
-            "direction": "vertical",
-            "padding": "12px 12px 20px 12px",
-            "vertical_spacing": "12px",
-            "elements": [
-                {"tag": "markdown", "content": f"**{clean_title}**"},
-                {
-                    "tag": "column_set",
-                    "flex_mode": "none",
-                    "horizontal_spacing": "8px",
-                    "background_style": "blue-50",
-                    "columns": [
-                        {
-                            "tag": "column", "width": "weighted", "weight": 1,
-                            "padding": "8px", "vertical_spacing": "2px",
-                            "elements": [
-                                {"tag": "markdown", "content": "<font color='grey'>内容类型</font>", "text_size": "notation"},
-                                {"tag": "markdown", "content": "战略新闻"},
-                            ],
-                        },
-                        {
-                            "tag": "column", "width": "weighted", "weight": 1,
-                            "padding": "8px", "vertical_spacing": "2px",
-                            "elements": [
-                                {"tag": "markdown", "content": "<font color='grey'>整理日期</font>", "text_size": "notation"},
-                                {"tag": "markdown", "content": date_label},
-                            ],
-                        },
-                    ],
-                },
-                {"tag": "markdown", "content": clean_body},
-                {
-                    "tag": "markdown",
-                    "content": "<font color='grey'>战略竞对中心 · 小竞整理</font>",
-                    "text_size": "notation",
-                    "text_align": "right",
-                },
-            ],
-        },
+        "elements": elements,
     }
 
 
@@ -1134,8 +1145,11 @@ class SubscriptionService:
             target_args = ["--chat-id", target_id]
         elif target_type == "user":
             primary = str(((self.config.get("card_actions") or {}).get("primary_handler_open_id") or ""))
-            if target_id != primary or not OPEN_ID_RE.fullmatch(target_id):
+            subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+            delivery_primary = str(subscriptions.get("primary_delivery_open_id") or "")
+            if target_id not in {primary, delivery_primary} or not OPEN_ID_RE.fullmatch(delivery_primary):
                 raise ValueError("测试卡片只允许发送给系统管理员")
+            target_id = delivery_primary
             target_args = ["--user-id", target_id]
         else:
             raise ValueError("目标类型无效")
@@ -1168,7 +1182,7 @@ class SubscriptionService:
         profile: str = "",
         recipient_name: str = "",
     ) -> dict[str, Any]:
-        source_profile = profile or self.entry_profile
+        source_profile = profile or self.delivery_profile
         if target_type == "chat":
             if not CHAT_ID_RE.fullmatch(target_id):
                 raise ValueError("目标群ID无效")
@@ -1507,10 +1521,14 @@ class SubscriptionService:
         if test_open_id:
             card_actions = self.config.get("card_actions") if isinstance(self.config.get("card_actions"), dict) else {}
             primary_test_open_id = str(card_actions.get("primary_handler_open_id") or "")
-            if test_open_id != primary_test_open_id:
+            subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+            primary_delivery_open_id = str(subscriptions.get("primary_delivery_open_id") or "")
+            if test_open_id not in {primary_test_open_id, primary_delivery_open_id}:
                 raise ValueError("测试推送只允许发送给系统管理员")
-            recipients = [{"open_id": test_open_id, "frequency": "immediate", "report_mode": mode}]
-            send_profile = self.entry_profile
+            if not OPEN_ID_RE.fullmatch(primary_delivery_open_id):
+                raise ValueError("组织推送应用缺少管理员身份映射")
+            recipients = [{"open_id": primary_delivery_open_id, "frequency": "immediate", "report_mode": mode}]
+            send_profile = self.delivery_profile
         elif not confirm_bulk:
             raise ValueError("批量推送必须在后台完成二次确认")
         if not recipients:

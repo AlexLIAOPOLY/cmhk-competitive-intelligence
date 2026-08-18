@@ -4,7 +4,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from subscription_service import SubscriptionService, strategic_news_card, subscription_entry_card
+from subscription_service import (
+    SubscriptionService,
+    encode_strategic_news_digest,
+    strategic_news_card,
+    subscription_entry_card,
+)
 
 
 class FakeLark:
@@ -234,18 +239,30 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(delivery["service"], "news")
         send_call = next(call for call in self.lark.calls if "+messages-send" in call)
         self.assertEqual(send_call[send_call.index("--msg-type") + 1], "interactive")
+        self.assertEqual(send_call[send_call.index("--profile") + 1], "org_test")
+        self.assertEqual(send_call[send_call.index("--user-id") + 1], "ou_delivery123")
         card = json.loads(send_call[send_call.index("--content") + 1])
-        self.assertEqual(card["schema"], "2.0")
-        self.assertEqual(card["header"]["title"]["content"], "战略新闻精选")
-        self.assertEqual(card["body"]["elements"][0]["content"], "**真实新闻**")
-        self.assertIn("经审核的新闻正文", card["body"]["elements"][2]["content"])
+        self.assertNotIn("schema", card)
+        self.assertEqual(card["header"]["title"]["content"], "真实新闻")
+        self.assertIn("经审核的新闻正文", card["elements"][0]["content"])
 
-    def test_strategic_news_card_is_compact_and_truncates_dynamic_body(self):
-        card = strategic_news_card(title="  重点   新闻  ", body="甲" * 6000, published_at="2026-08-19")
-        self.assertEqual(card["header"]["subtitle"]["content"], "2026-08-19 · 战略竞对中心")
-        self.assertEqual(card["body"]["elements"][0]["content"], "**重点 新闻**")
-        self.assertEqual(card["body"]["elements"][1]["tag"], "column_set")
-        self.assertLessEqual(len(card["body"]["elements"][2]["content"]), 5200)
+    def test_strategic_news_card_matches_group_format_and_lists_every_item(self):
+        items = [{
+            "title": f"新闻 {index}", "summary": f"摘要 {index}", "category": "竞对动态",
+            "region": "香港本地", "source": "测试来源", "published_at": "2026-08-19T09:00:00+08:00",
+            "source_url": f"https://example.test/{index}",
+        } for index in range(1, 7)]
+        card = strategic_news_card(
+            title="  CMHK战略订阅｜6条新闻  ",
+            body=encode_strategic_news_digest(items),
+            published_at="2026-08-19T10:00:00+08:00",
+        )
+        self.assertEqual(card["header"]["subtitle"]["content"], "截至 2026-08-19 10:00 · 香港时间")
+        text = "\n".join(str(item.get("content") or "") for item in card["elements"])
+        self.assertIn("**今日关键信号**", text)
+        self.assertIn("**01｜竞对动态 · 香港本地**", text)
+        self.assertIn("**06｜竞对动态 · 香港本地**", text)
+        self.assertIn("已完整列出本批 6 条战略新闻", json.dumps(card, ensure_ascii=False))
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from report_pdf_preview import pdf_preview_path
