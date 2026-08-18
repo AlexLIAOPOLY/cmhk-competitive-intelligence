@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国电信": 9,
+                "中国电信": 12,
                 "中国移动": 17,
                 "中国联通": 10,
             },
@@ -515,6 +515,41 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for question, expected_text in (
             ("中国电信2025年宽带ARPU", "official_value=47.1 RMB_per_user_month"),
             ("中国电信2025年智算规模", "official_value=46 EFLOPS_FP16"),
+        ):
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    question,
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn(expected_text, combined)
+            self.assertIn("distinct_source_document_count=3", combined)
+
+    def test_china_telecom_fy2025_precise_subscriber_totals_use_operating_documents(self):
+        expected_sources = {
+            "china_telecom_press_2025",
+            "china_telecom_kpi_2025",
+            "china_telecom_q4_operating_announcement_2025",
+        }
+        expected = {
+            "mobile_subscribers": 438.65,
+            "5g_network_subscribers": 301.81,
+            "fixed_broadband_subscribers": 201.12,
+        }
+        for metric_key, value in expected.items():
+            row = self.index[("china_telecom", 2025, metric_key)]
+            self.assertEqual((row["value"], row["unit"]), (value, "million_subscribers"))
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertNotIn("china_telecom_results_2025", row["verification_sources"])
+            self.assertNotIn("china_telecom_announcement_2025", row["verification_sources"])
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        for question, expected_text in (
+            ("中国电信2025年移动用户数", "official_value=438.65 million_subscribers"),
+            ("中国电信2025年5G网络用户数", "official_value=301.81 million_subscribers"),
+            ("中国电信2025年固定宽带用户数", "official_value=201.12 million_subscribers"),
         ):
             combined = "\n".join(
                 chunk["text"]

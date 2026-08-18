@@ -1738,7 +1738,24 @@
       "url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025",
       "source_type": "official_operating_statistics",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_kpi_2025"
+      "source_document_id": "china_telecom_kpi_2025",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ops_2025",
@@ -2845,6 +2862,21 @@
       "publisher": "China Telecom Corporation Limited",
       "source_document_id": "china_telecom_press_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
+        },
         "ten_g_pon_ports": {
           "value": 10,
           "unit": "million_ports",
@@ -2886,6 +2918,33 @@
           "value": 47.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2025 wireline broadband blended ARPU disclosure"
+        }
+      }
+    },
+    {
+      "source_id": "china_telecom_q4_operating_announcement_2025",
+      "operator_id": "china_telecom",
+      "year": 2025,
+      "label": "China Telecom key operating statistics for the fourth quarter of 2025",
+      "url": "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf",
+      "source_type": "official_hkex_operating_announcement",
+      "publisher": "China Telecom Corporation Limited",
+      "source_document_id": "china_telecom_q4_operating_announcement_2025",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
         }
       }
     },

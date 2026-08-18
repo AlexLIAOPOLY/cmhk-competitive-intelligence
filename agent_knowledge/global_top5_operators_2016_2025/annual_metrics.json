@@ -13793,19 +13793,29 @@
       "comparator": "=",
       "scope": "5G network subscribers; 2024 comparative was restated on the new network-user basis",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_kpi_2025",
+        "china_telecom_press_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_press_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+      "verification_sources": [
+        "china_telecom_press_2025",
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
         "china_telecom_announcement_2025",
-        "china_telecom_kpi_2025"
+        "china_telecom_press_2025",
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
       ],
       "quality_note": ""
     },
@@ -13864,20 +13874,29 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_kpi_2025",
+        "china_telecom_press_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_press_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+      "verification_sources": [
+        "china_telecom_press_2025",
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
         "china_telecom_announcement_2025",
         "china_telecom_press_2025",
-        "china_telecom_kpi_2025"
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
       ],
       "quality_note": ""
     },
@@ -14046,20 +14065,29 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_kpi_2025",
+        "china_telecom_press_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_press_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+      "verification_sources": [
+        "china_telecom_press_2025",
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
         "china_telecom_announcement_2025",
         "china_telecom_press_2025",
-        "china_telecom_kpi_2025"
+        "china_telecom_kpi_2025",
+        "china_telecom_q4_operating_announcement_2025"
       ],
       "quality_note": ""
     },

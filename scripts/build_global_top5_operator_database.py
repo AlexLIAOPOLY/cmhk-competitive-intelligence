@@ -448,6 +448,12 @@ SOURCES.update({
         "url": "https://www.chinatelecom-h.com/en/ir/factsheet/factsheet2604.pdf",
         "source_type": "official_investor_factsheet", "publisher": "China Telecom Corporation Limited",
     },
+    "china_telecom_q4_operating_announcement_2025": {
+        "source_id": "china_telecom_q4_operating_announcement_2025", "operator_id": "china_telecom", "year": 2025,
+        "label": "China Telecom key operating statistics for the fourth quarter of 2025",
+        "url": "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf",
+        "source_type": "official_hkex_operating_announcement", "publisher": "China Telecom Corporation Limited",
+    },
     "china_unicom_press_2025": {
         "source_id": "china_unicom_press_2025", "operator_id": "china_unicom", "year": 2025,
         "label": "China Unicom 2025 annual results press release",
@@ -1642,6 +1648,24 @@ for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china
         "unit": "million_base_stations",
         "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations",
     }
+for _source_id in ("china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"):
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_subscribers": {
+            "value": 438.65,
+            "unit": "million_subscribers",
+            "locator": "FY2025 year-end mobile subscriber operating statistics",
+        },
+        "5g_network_subscribers": {
+            "value": 301.81,
+            "unit": "million_subscribers",
+            "locator": "FY2025 year-end 5G network subscriber operating statistics",
+        },
+        "fixed_broadband_subscribers": {
+            "value": 201.12,
+            "unit": "million_subscribers",
+            "locator": "FY2025 year-end wireline broadband subscriber operating statistics",
+        },
+    })
 for _source_id in ("china_telecom_results_2025", "china_telecom_announcement_2025", "china_telecom_press_2025"):
     SOURCES[_source_id].setdefault("evidence", {}).update({
         "ten_g_pon_ports": {
@@ -1937,11 +1961,11 @@ add_series("china_mobile", "intelligent_compute_capacity", {2025:92.5}, scope="t
 
 # China Telecom: finance remains in the existing quarterly database.
 ct_years = YEARS
-add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025"]))
+add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
 add_series("china_telecom", "4g_subscribers", {2016:121.87, 2017:182.04, 2018:242.43}, scope="4G subscribers/users", source_ids=paired("china_telecom", [2016,2017,2018]))
 add_series("china_telecom", "5g_package_subscribers", {2019:10.73, 2020:86.50, 2021:187.80, 2022:267.96, 2023:318.66, 2024:351.48}, scope="5G package subscribers; not equivalent to active 5G network users", source_ids=paired("china_telecom", list(range(2019,2025))))
-add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=override_sources(paired("china_telecom", [2024,2025]), 2025, [*CT_2025_THREE, "china_telecom_kpi_2025"]))
-add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025"]))
+add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=override_sources(paired("china_telecom", [2024,2025]), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
+add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
 add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
 add_series("china_telecom", "broadband_arpu", {2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]})
 add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]))
