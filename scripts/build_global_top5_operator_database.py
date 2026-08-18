@@ -1020,6 +1020,13 @@ SOURCES["bharti_airtel_ar_2016"]["evidence"] = {
 SOURCES["bharti_airtel_ar_2017"]["comparative_evidence"] = {
     "FY2016": AIRTEL_FY2016_ANNUAL_COMPARATIVE_EVIDENCE,
 }
+SOURCES["bharti_airtel_ar_2017"]["evidence"] = {
+    "total_data_traffic": {
+        "value": 0.903,
+        "unit": "billion_GB",
+        "locator": "FY2016-17 corporate overview headline; converted from 903bn MB",
+    },
+}
 
 AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE = {
     "mobile_broadband_base_stations": {"value": 190860, "unit": "base_stations", "locator": "FY2016-17 India mobile network year-end comparative"},
@@ -1064,6 +1071,31 @@ SOURCES["bharti_airtel_ar_2021"]["comparative_evidence"] = {
     "FY2020": {
         "mobile_broadband_base_stations": {"value": 503883, "unit": "base_stations", "locator": "FY2019-20 comparative in India mobile network review, pages 154-155"},
         "total_data_traffic": {"value": 21.020, "unit": "billion_GB", "locator": "FY2019-20 comparative in India mobile data-usage chart, pages 154-155; converted from 21,020bn MB"},
+    },
+}
+SOURCES["bharti_airtel_ar_2020"]["evidence"] = {
+    **SOURCES["bharti_airtel_ar_2020"].get("evidence", {}),
+    "mobile_broadband_base_stations": {
+        "value": 503883,
+        "unit": "base_stations",
+        "locator": "FY2019-20 India mobile network review, year-end installed base",
+    },
+    "total_data_traffic": {
+        "value": 21.020,
+        "unit": "billion_GB",
+        "locator": "FY2019-20 India mobile data-usage chart; converted from 21,020bn MB",
+    },
+}
+SOURCES["airtel_2024_five_year"].setdefault("comparative_evidence", {})["FY2020"] = {
+    "mobile_broadband_base_stations": {
+        "value": 503883,
+        "unit": "base_stations",
+        "locator": "five-year manufactured-capital network KPI comparative",
+    },
+    "total_data_traffic": {
+        "value": 21.020,
+        "unit": "billion_GB",
+        "locator": "five-year India mobile data-traffic comparative; converted from 21,020bn MB",
     },
 }
 SOURCES["bharti_airtel_ar_2022"]["comparative_evidence"] = {
@@ -1504,11 +1536,98 @@ SOURCES.update({
         "source_type": "official_national_statistical_bulletin", "publisher": "国家统计局",
     },
 })
+SOURCES["china_mobile_ar_2020"].setdefault("evidence", {})["total_base_stations"] = {
+    "value": 5.14,
+    "unit": "million_base_stations",
+    "locator": "operating review; more than 5.14 million base stations at year end",
+}
+for _source_id in ("china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"):
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_dou": {
+            "value": 17.3,
+            "unit": "GB_per_user_month",
+            "locator": "FY2025 operating KPI disclosure",
+        },
+        "gigabit_broadband_customers": {
+            "value": 109,
+            "unit": "million_customers",
+            "locator": "FY2025 household-market operating KPI disclosure",
+        },
+        "iot_connections": {
+            "value": 1482,
+            "unit": "million_connections",
+            "locator": "FY2025 IoT card connection KPI disclosure",
+        },
+    })
+SOURCES["china_mobile_q1_2026_comparatives"].setdefault("comparative_evidence", {})["FY2025"] = {
+    "iot_connections": {
+        "value": 1482,
+        "unit": "million_connections",
+        "locator": "FY2025 comparative operating KPI column",
+    },
+}
+for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_press_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["integrated_broadband_network_customers"] = {
+        "value": 329,
+        "unit": "million_customers",
+        "locator": "FY2025 integrated broadband network customer disclosure",
+    }
+for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_a_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["household_customer_blended_arpu"] = {
+        "value": 44.5,
+        "unit": "RMB_per_user_month",
+        "locator": "FY2025 household customer blended ARPU disclosure",
+    }
+for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["mobile_arpu"] = {
+        "value": 45.1,
+        "unit": "RMB_per_user_month",
+        "locator": "FY2025 mobile service ARPU disclosure",
+    }
+for _source_id in ("china_unicom_ar_2025", "china_unicom_ops_2025", "china_unicom_q4_operating_announcement_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["5g_network_subscribers"] = {
+        "value": 232.18,
+        "unit": "million_subscribers",
+        "locator": "FY2025 5G network user disclosure",
+    }
+for _source_id in ("china_unicom_ar_2025", "china_unicom_results_2025", "china_unicom_press_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["total_connectivity_subscribers"] = {
+        "value": 1200,
+        "unit": "million_connections",
+        "locator": "FY2025 total connectivity subscriber disclosure",
+    }
 for _source_id, _source in SOURCES.items():
     _source.setdefault("source_document_id", _source_id)
 
 
 ROWS: list[dict[str, Any]] = []
+
+
+def source_has_exact_metric_evidence(
+    source: dict[str, Any],
+    *,
+    year: int,
+    metric_key: str,
+    value: float | int,
+    unit: str,
+) -> bool:
+    """Return True only when the document registry binds this exact value and unit."""
+    candidates: list[dict[str, Any]] = []
+    direct = source.get("evidence", {}).get(metric_key)
+    if isinstance(direct, dict):
+        candidates.append(direct)
+    comparative = source.get("comparative_evidence", {}).get(f"FY{year}", {}).get(metric_key)
+    if isinstance(comparative, dict):
+        candidates.append(comparative)
+    for evidence in candidates:
+        if evidence.get("unit") != unit:
+            continue
+        try:
+            if abs(float(evidence.get("value")) - float(value)) <= 1e-9:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
 
 
 def add_series(
@@ -1529,7 +1648,23 @@ def add_series(
         ids = (source_ids or {}).get(year)
         if ids is None:
             ids = [f"{operator_id}_ar_{year}"]
-        valid_ids = [sid for sid in ids if sid in SOURCES]
+        candidate_ids = [sid for sid in ids if sid in SOURCES]
+        row_unit = unit or default_unit
+        valid_ids = (
+            [
+                sid
+                for sid in candidate_ids
+                if source_has_exact_metric_evidence(
+                    SOURCES[sid],
+                    year=year,
+                    metric_key=metric_key,
+                    value=value,
+                    unit=row_unit,
+                )
+            ]
+            if value is not None
+            else []
+        )
         source_document_ids = sorted({
             str(SOURCES[sid].get("source_document_id") or SOURCES[sid]["url"])
             for sid in valid_ids
@@ -1556,7 +1691,7 @@ def add_series(
             "metric_zh": metric_zh,
             "value": value,
             "official_value": value,
-            "unit": unit or default_unit,
+            "unit": row_unit,
             "comparator": comparator,
             "scope": scope,
             "basis": basis,
@@ -1576,6 +1711,7 @@ def add_series(
             "primary_source_id": valid_ids[0] if valid_ids else "",
             "primary_source_url": SOURCES[valid_ids[0]]["url"] if valid_ids else "",
             "verification_sources": valid_ids,
+            "candidate_sources": candidate_ids,
             "quality_note": note,
         })
 
@@ -1866,7 +2002,7 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "basis", "verification_status", "verification_count", "distinct_source_document_count",
         "distinct_source_document_ids",
         "triple_source_status", "primary_source_id",
-        "primary_source_url", "verification_sources", "quality_note",
+        "primary_source_url", "verification_sources", "candidate_sources", "quality_note",
     ]
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)
@@ -1874,6 +2010,7 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         for row in rows:
             item = dict(row)
             item["verification_sources"] = json.dumps(item["verification_sources"], ensure_ascii=False)
+            item["candidate_sources"] = json.dumps(item["candidate_sources"], ensure_ascii=False)
             item["distinct_source_document_ids"] = json.dumps(item["distinct_source_document_ids"], ensure_ascii=False)
             writer.writerow(item)
 
@@ -1930,7 +2067,7 @@ def main() -> None:
             row["quality_note"] = "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
     keys = [(r["operator_id"], r["year"], r["metric_key"], r["scope"]) for r in rows]
     duplicate_keys = [list(key) for key, count in Counter(keys).items() if count > 1]
-    invalid_source_ids = sorted({sid for r in rows for sid in r["verification_sources"] if sid not in SOURCES})
+    invalid_source_ids = sorted({sid for r in rows for sid in r["candidate_sources"] if sid not in SOURCES})
     coverage = build_coverage(rows)
     available = [r for r in rows if r["value"] is not None]
     triple_source_rows = [
@@ -2035,7 +2172,7 @@ def main() -> None:
     }
     (ORIGINAL_DB / "annual_operating_metrics_2016_2025.json").write_text(json.dumps(china_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_csv(ORIGINAL_DB / "annual_operating_metrics_2016_2025.csv", china_rows)
-    china_source_ids = {sid for row in china_rows for sid in row["verification_sources"]}
+    china_source_ids = {sid for row in china_rows for sid in row["candidate_sources"]}
     china_sources = [SOURCES[sid] for sid in sorted(china_source_ids) if sid in SOURCES]
     (ORIGINAL_DB / "annual_operating_metrics_2016_2025_sources.json").write_text(
         json.dumps({"generated_at": BUILD_TIME, "sources": china_sources}, ensure_ascii=False, indent=2) + "\n",

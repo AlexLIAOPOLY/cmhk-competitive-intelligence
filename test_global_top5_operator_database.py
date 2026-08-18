@@ -37,11 +37,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 98,
-                "Reliance Jio": 50,
-                "中国广电": 24,
-                "中国电信": 58,
-                "中国移动": 83,
-                "中国联通": 53,
+                "Reliance Jio": 27,
+                "中国电信": 2,
+                "中国移动": 9,
+                "中国联通": 3,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -49,8 +48,15 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
         self.assertIn("- Bharti Airtel: 98", audit_text)
 
-    def test_jio_early_operating_and_financial_rows_have_three_documents(self):
-        certified = [
+    def test_candidate_source_ids_without_exact_metric_evidence_do_not_count(self):
+        row = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
+        self.assertGreaterEqual(len(row["candidate_sources"]), 3)
+        self.assertEqual(row["verification_sources"], [])
+        self.assertEqual(row["distinct_source_document_count"], 0)
+        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+
+    def test_jio_early_candidate_sources_without_exact_bindings_are_not_certified(self):
+        legacy_candidate_rows = [
             (2017, "total_customers"),
             (2018, "total_customers"),
             (2018, "value_of_sales_and_services"),
@@ -68,10 +74,11 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             (2021, "total_data_traffic"),
             (2021, "ebitda"),
         ]
-        for year, metric_key in certified:
+        for year, metric_key in legacy_candidate_rows:
             row = self.index[("reliance_jio", year, metric_key)]
-            self.assertGreaterEqual(row["distinct_source_document_count"], 3)
-            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertLess(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+            self.assertGreaterEqual(len(row["candidate_sources"]), len(row["verification_sources"]))
 
     def test_airtel_fy2017_mobile_broadband_base_stations_use_year_end_total(self):
         row = self.index[("bharti_airtel", 2017, "mobile_broadband_base_stations")]
@@ -107,46 +114,37 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=0.25 percent_per_month", text)
         self.assertIn("distinct_source_document_count=4", text)
 
-    def test_jio_early_financial_sources_preserve_exact_presentation_scope(self):
+    def test_jio_early_financial_sources_preserve_values_without_overcertifying(self):
         ebit_2019 = self.index[("reliance_jio", 2019, "ebit")]
         self.assertEqual(ebit_2019["value"], 8784)
-        self.assertEqual(ebit_2019["distinct_source_document_count"], 3)
-        self.assertEqual(ebit_2019["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(ebit_2019["verification_sources"], ["jio_2019_q4_media_release"])
+        self.assertEqual(ebit_2019["triple_source_status"], "below_three_source_threshold")
 
         value_2019 = self.index[("reliance_jio", 2019, "value_of_sales_and_services")]
         self.assertEqual(value_2019["value"], 46506)
-        self.assertEqual(
-            set(value_2019["verification_sources"]),
-            {"reliance_jio_ar_2019", "jio_2019_q4_media_release"},
-        )
+        self.assertEqual(value_2019["verification_sources"], ["jio_2019_q4_media_release"])
         self.assertNotIn("reliance_jio_ar_2020", value_2019["verification_sources"])
         self.assertEqual(value_2019["triple_source_status"], "below_three_source_threshold")
 
-        expected_2020_sources = {"reliance_jio_ar_2021", "reliance_jio_ar_2022"}
         for metric_key, value in (
             ("value_of_sales_and_services", 69605),
             ("revenue_from_operations", 59407),
         ):
             row = self.index[("reliance_jio", 2020, metric_key)]
             self.assertEqual(row["value"], value)
-            self.assertEqual(set(row["verification_sources"]), expected_2020_sources)
-            self.assertEqual(row["distinct_source_document_count"], 2)
+            self.assertEqual(row["verification_sources"], [])
+            self.assertEqual(row["distinct_source_document_count"], 0)
             self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
 
-        expected_2021_sources = {
-            "reliance_jio_ar_2021",
-            "reliance_jio_ar_2022",
-            "reliance_jio_ar_2023",
-        }
         for metric_key, value in (
             ("value_of_sales_and_services", 90287),
             ("revenue_from_operations", 76642),
         ):
             row = self.index[("reliance_jio", 2021, metric_key)]
             self.assertEqual(row["value"], value)
-            self.assertEqual(set(row["verification_sources"]), expected_2021_sources)
-            self.assertEqual(row["distinct_source_document_count"], 3)
-            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertEqual(row["verification_sources"], ["reliance_jio_ar_2023"])
+            self.assertEqual(row["distinct_source_document_count"], 1)
+            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
 
     def test_china_mobile_4g_base_station_history_uses_three_exact_documents(self):
         expected = {
@@ -159,20 +157,28 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             2022: 3.34,
             2023: 3.37,
         }
+        strict_counts = {2016: 2, 2017: 2, 2018: 2, 2019: 2, 2020: 3, 2021: 3, 2022: 3, 2023: 2}
         for year, value in expected.items():
             row = self.index[("china_mobile", year, "4g_base_stations")]
             self.assertEqual(row["value"], value)
-            self.assertEqual(row["distinct_source_document_count"], 3)
-            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertEqual(row["distinct_source_document_count"], strict_counts[year])
+            self.assertEqual(
+                row["triple_source_status"],
+                "three_distinct_sources_verified" if strict_counts[year] >= 3 else "below_three_source_threshold",
+            )
 
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
+        strict_counts = {2019: 2, 2020: 3, 2021: 1, 2022: 1, 2023: 1}
         for year, value in ((2019, 4.48), (2020, 5.14), (2021, 5.50), (2022, 6.0), (2023, 6.60)):
             row = self.index[("china_mobile", year, "total_base_stations")]
             self.assertEqual(row["value"], value)
-            self.assertEqual(row["distinct_source_document_count"], 3)
-            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertEqual(row["distinct_source_document_count"], strict_counts[year])
+            self.assertEqual(
+                row["triple_source_status"],
+                "three_distinct_sources_verified" if strict_counts[year] >= 3 else "below_three_source_threshold",
+            )
         row_2018 = self.index[("china_mobile", 2018, "total_base_stations")]
-        self.assertEqual(row_2018["distinct_source_document_count"], 2)
+        self.assertEqual(row_2018["distinct_source_document_count"], 1)
         self.assertEqual(row_2018["triple_source_status"], "below_three_source_threshold")
         self.assertEqual(
             self.index[("china_mobile", 2020, "total_base_stations")]["verification_sources"],
@@ -184,11 +190,11 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         )
         self.assertEqual(
             self.index[("china_mobile", 2022, "total_base_stations")]["verification_sources"],
-            ["china_mobile_ar_2022", "china_mobile_ar_a_2022", "china_mobile_ar_summary_2022"],
+            ["china_mobile_ar_summary_2022"],
         )
         self.assertEqual(
             self.index[("china_mobile", 2023, "total_base_stations")]["verification_sources"],
-            ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_ar_summary_2023"],
+            ["china_mobile_ar_summary_2023"],
         )
 
     def test_anchor_values_and_customer_scope(self):
@@ -212,12 +218,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for operator_id in ("china_telecom", "china_unicom"):
             row = self.index[(operator_id, 2025, "5g_base_stations")]
             self.assertIn("Shared-network scope", row["quality_note"])
-            self.assertEqual(row["distinct_source_document_count"], 3)
-        for year in (2020, 2021, 2022, 2023, 2024):
+            self.assertEqual(row["distinct_source_document_count"], 0)
+        for year in (2020, 2021, 2023, 2024):
             for operator_id in ("china_telecom", "china_unicom"):
                 self.assertEqual(
                     self.index[(operator_id, year, "5g_base_stations")]["triple_source_status"],
-                    "three_distinct_sources_verified",
+                    "below_three_source_threshold",
                 )
         for operator_id in ("china_telecom", "china_unicom"):
             row = self.index[(operator_id, 2022, "5g_base_stations")]
@@ -228,15 +234,15 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for year in range(2019, 2026):
             self.assertEqual(
                 self.index[("china_mobile", year, "5g_base_stations")]["triple_source_status"],
-                "three_distinct_sources_verified",
+                "below_three_source_threshold",
             )
         self.assertEqual(
             self.index[("china_mobile", 2019, "5g_base_stations")]["verification_sources"],
-            ["china_mobile_ar_2019", "china_mobile_20f_2019", "china_mobile_sd_2019"],
+            ["china_mobile_20f_2019", "china_mobile_sd_2019"],
         )
         self.assertEqual(
             self.index[("china_mobile", 2020, "5g_base_stations")]["verification_sources"],
-            ["china_mobile_ar_2020", "china_mobile_20f_2020", "china_mobile_sd_2020"],
+            ["china_mobile_20f_2020", "china_mobile_sd_2020"],
         )
 
     def test_precommercial_and_derived_values_are_not_overstated(self):
@@ -257,21 +263,22 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         financial_metrics = {"revenue", "ebitda", "ebit", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"}
         self.assertFalse(financial_metrics & {r["metric_key"] for r in sidecar["rows"]})
 
-    def test_china_broadnet_scope_gaps_and_three_source_values(self):
+    def test_china_broadnet_scope_gaps_and_unbound_candidate_sources(self):
         available = [
             row for row in self.rows
             if row["operator_id"] == "china_broadnet" and row["value"] is not None
         ]
         self.assertEqual(len(available), 24)
-        self.assertTrue(all(row["distinct_source_document_count"] >= 3 for row in available))
+        self.assertTrue(all(row["distinct_source_document_count"] < 3 for row in available))
+        self.assertTrue(all(len(row["candidate_sources"]) >= len(row["verification_sources"]) for row in available))
         users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertEqual(users_2024["value"], 32.7546)
-        self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")
-        self.assertGreaterEqual(users_2024["distinct_source_document_count"], 3)
+        self.assertEqual(users_2024["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(users_2024["distinct_source_document_count"], 0)
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])
-        self.assertEqual(base_2023["distinct_source_document_count"], 3)
+        self.assertEqual(base_2023["distinct_source_document_count"], 0)
         cable = self.index[("china_broadnet", 2024, "cable_tv_actual_users")]
         self.assertEqual(cable["value"], 208)
         self.assertIn("not China Broadnet consolidated", cable["scope"])
@@ -300,7 +307,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("operator=中国广电", value_text)
         self.assertIn("official_value=32.7546 million_subscribers", value_text)
         self.assertIn("official_value=208 million_users", value_text)
-        self.assertIn("distinct_source_document_count=3", value_text)
+        self.assertIn("distinct_source_document_count=0", value_text)
+        self.assertIn("triple_source_status=below_three_source_threshold", value_text)
         gap_chunks = rag_llm._global_operator_exact_metric_chunks(
             "中国广电2025年移动ARPU和固定宽带用户",
             dataset_ids={"global_top5_operators_2016_2025"},
@@ -470,17 +478,20 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
     def test_jio_2024_uses_exact_comparatives_and_corrected_home_scope(self):
         certified = {
-            "total_customers": 4,
+            "total_customers": 3,
             "value_of_sales_and_services": 3,
-            "mobile_arpu": 3,
-            "total_data_traffic": 4,
-            "5g_network_subscribers": 3,
+            "total_data_traffic": 3,
             "5g_base_stations": 3,
         }
         for metric_key, source_count in certified.items():
             row = self.index[("reliance_jio", 2024, metric_key)]
             self.assertEqual(row["distinct_source_document_count"], source_count)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        for metric_key in ("mobile_arpu", "mobile_dou", "5g_network_subscribers"):
+            row = self.index[("reliance_jio", 2024, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], 2)
+            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
 
         homes = self.index[("reliance_jio", 2024, "connected_homes")]
         self.assertEqual(homes["value"], 12)
@@ -566,10 +577,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         next_year_dou = self.index[("reliance_jio", 2024, "mobile_dou")]
         self.assertEqual(
             next_year_dou["verification_sources"],
-            ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2025_q4"],
+            ["reliance_jio_ar_2024", "jio_2025_q4"],
         )
-        self.assertEqual(next_year_dou["distinct_source_document_count"], 3)
-        self.assertEqual(next_year_dou["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(next_year_dou["distinct_source_document_count"], 2)
+        self.assertEqual(next_year_dou["triple_source_status"], "below_three_source_threshold")
 
         homes = self.index[("reliance_jio", 2023, "connected_homes")]
         self.assertEqual(homes["verification_sources"], ["reliance_jio_ar_2023"])
@@ -601,10 +612,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(homes["value"], 5)
         self.assertEqual(
             homes["verification_sources"],
-            ["reliance_jio_ar_2022", "jio_2022_q4", "jio_rjil_ar_2022"],
+            ["reliance_jio_ar_2022", "jio_rjil_ar_2022"],
         )
-        self.assertEqual(homes["distinct_source_document_count"], 3)
-        self.assertEqual(homes["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(homes["distinct_source_document_count"], 2)
+        self.assertEqual(homes["triple_source_status"], "below_three_source_threshold")
 
         home_chunks = rag_llm._global_operator_exact_metric_chunks(
             "Reliance Jio FY2022已连接家庭是多少？说明三来源状态。",
@@ -613,7 +624,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         home_text = "\n".join(chunk["text"] for chunk in home_chunks)
         self.assertIn("official_value=5 million_premises", home_text)
         self.assertIn("comparator=>=", home_text)
-        self.assertIn("distinct_source_document_count=3", home_text)
+        self.assertIn("distinct_source_document_count=2", home_text)
 
     def test_airtel_fy2025_uses_three_exact_comparative_documents(self):
         four_sources = {
@@ -931,7 +942,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("162,046", self.index[("bharti_airtel", 2017, "network_towers")]["quality_note"])
         traffic = self.index[("bharti_airtel", 2017, "total_data_traffic")]
         self.assertEqual(traffic["value"], 0.903)
-        self.assertEqual(traffic["distinct_source_document_count"], 2)
+        self.assertEqual(traffic["distinct_source_document_count"], 1)
         self.assertIn("consolidated annual headline", traffic["scope"])
 
     def test_airtel_fy2016_adds_common_financials_network_detail_and_preserves_scope_break(self):

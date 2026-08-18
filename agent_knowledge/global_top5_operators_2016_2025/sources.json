@@ -49,7 +49,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2020"
+      "source_document_id": "china_mobile_ar_2020",
+      "evidence": {
+        "total_base_stations": {
+          "value": 5.14,
+          "unit": "million_base_stations",
+          "locator": "operating review; more than 5.14 million base stations at year end"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2021",
@@ -99,7 +106,34 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2025"
+      "source_document_id": "china_mobile_ar_2025",
+      "evidence": {
+        "mobile_dou": {
+          "value": 17.3,
+          "unit": "GB_per_user_month",
+          "locator": "FY2025 operating KPI disclosure"
+        },
+        "gigabit_broadband_customers": {
+          "value": 109,
+          "unit": "million_customers",
+          "locator": "FY2025 household-market operating KPI disclosure"
+        },
+        "iot_connections": {
+          "value": 1482,
+          "unit": "million_connections",
+          "locator": "FY2025 IoT card connection KPI disclosure"
+        },
+        "integrated_broadband_network_customers": {
+          "value": 329,
+          "unit": "million_customers",
+          "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "household_customer_blended_arpu": {
+          "value": 44.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 household customer blended ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "bharti_airtel_ar_2016",
@@ -169,6 +203,13 @@
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
           }
+        }
+      },
+      "evidence": {
+        "total_data_traffic": {
+          "value": 0.903,
+          "unit": "billion_GB",
+          "locator": "FY2016-17 corporate overview headline; converted from 903bn MB"
         }
       }
     },
@@ -498,6 +539,18 @@
             "unit": "billion_GB",
             "locator": "FY2017-18 comparative India mobile data chart; converted from 3,901.8bn MB"
           }
+        }
+      },
+      "evidence": {
+        "mobile_broadband_base_stations": {
+          "value": 503883,
+          "unit": "base_stations",
+          "locator": "FY2019-20 India mobile network review, year-end installed base"
+        },
+        "total_data_traffic": {
+          "value": 21.02,
+          "unit": "billion_GB",
+          "locator": "FY2019-20 India mobile data-usage chart; converted from 21,020bn MB"
         }
       }
     },
@@ -1172,7 +1225,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2025"
+      "source_document_id": "china_telecom_ar_2025",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile service ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2016",
@@ -1280,7 +1340,19 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2025"
+      "source_document_id": "china_unicom_ar_2025",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 232.18,
+          "unit": "million_subscribers",
+          "locator": "FY2025 5G network user disclosure"
+        },
+        "total_connectivity_subscribers": {
+          "value": 1200,
+          "unit": "million_connections",
+          "locator": "FY2025 total connectivity subscriber disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ops_2016",
@@ -1580,7 +1652,14 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025",
       "source_type": "official_operating_statistics",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ops_2025"
+      "source_document_id": "china_unicom_ops_2025",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 232.18,
+          "unit": "million_subscribers",
+          "locator": "FY2025 5G network user disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2016",
@@ -1680,7 +1759,19 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2025"
+      "source_document_id": "china_mobile_results_2025",
+      "evidence": {
+        "integrated_broadband_network_customers": {
+          "value": 329,
+          "unit": "million_customers",
+          "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "household_customer_blended_arpu": {
+          "value": 44.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 household customer blended ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "china_telecom_results_2016",
@@ -1780,7 +1871,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre260324.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_results_2025"
+      "source_document_id": "china_telecom_results_2025",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile service ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2016",
@@ -1888,7 +1986,14 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2025"
+      "source_document_id": "china_unicom_results_2025",
+      "evidence": {
+        "total_connectivity_subscribers": {
+          "value": 1200,
+          "unit": "million_connections",
+          "locator": "FY2025 total connectivity subscriber disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_a_2021",
@@ -2332,7 +2437,29 @@
       "url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-03-27/600941_20260327_EIXS.pdf",
       "source_type": "official_a_share_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_a_2025"
+      "source_document_id": "china_mobile_ar_a_2025",
+      "evidence": {
+        "mobile_dou": {
+          "value": 17.3,
+          "unit": "GB_per_user_month",
+          "locator": "FY2025 operating KPI disclosure"
+        },
+        "gigabit_broadband_customers": {
+          "value": 109,
+          "unit": "million_customers",
+          "locator": "FY2025 household-market operating KPI disclosure"
+        },
+        "iot_connections": {
+          "value": 1482,
+          "unit": "million_connections",
+          "locator": "FY2025 IoT card connection KPI disclosure"
+        },
+        "household_customer_blended_arpu": {
+          "value": 44.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 household customer blended ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_summary_2025",
@@ -2342,7 +2469,24 @@
       "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260326/73569fff33d04e62bf68fe56c4599249.PDF",
       "source_type": "official_a_share_annual_report_summary",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_summary_2025"
+      "source_document_id": "china_mobile_ar_summary_2025",
+      "evidence": {
+        "mobile_dou": {
+          "value": 17.3,
+          "unit": "GB_per_user_month",
+          "locator": "FY2025 operating KPI disclosure"
+        },
+        "gigabit_broadband_customers": {
+          "value": 109,
+          "unit": "million_customers",
+          "locator": "FY2025 household-market operating KPI disclosure"
+        },
+        "iot_connections": {
+          "value": 1482,
+          "unit": "million_connections",
+          "locator": "FY2025 IoT card connection KPI disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_summary_2022",
@@ -2388,7 +2532,14 @@
       "url": "https://www.chinamobileltd.com/en/media/press/p260326.pdf",
       "source_type": "official_results_press_release",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_press_2025"
+      "source_document_id": "china_mobile_press_2025",
+      "evidence": {
+        "integrated_broadband_network_customers": {
+          "value": 329,
+          "unit": "million_customers",
+          "locator": "FY2025 integrated broadband network customer disclosure"
+        }
+      }
     },
     {
       "source_id": "china_mobile_q1_2026_comparatives",
@@ -2398,7 +2549,16 @@
       "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0420/2026042001454.pdf",
       "source_type": "official_quarterly_results_announcement",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_q1_2026_comparatives"
+      "source_document_id": "china_mobile_q1_2026_comparatives",
+      "comparative_evidence": {
+        "FY2025": {
+          "iot_connections": {
+            "value": 1482,
+            "unit": "million_connections",
+            "locator": "FY2025 comparative operating KPI column"
+          }
+        }
+      }
     },
     {
       "source_id": "china_telecom_announcement_2025",
@@ -2428,7 +2588,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/factsheet/factsheet2604.pdf",
       "source_type": "official_investor_factsheet",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_factsheet_2025"
+      "source_document_id": "china_telecom_factsheet_2025",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile service ARPU disclosure"
+        }
+      }
     },
     {
       "source_id": "china_unicom_press_2025",
@@ -2438,7 +2605,14 @@
       "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
       "source_type": "official_results_press_release",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_press_2025"
+      "source_document_id": "china_unicom_press_2025",
+      "evidence": {
+        "total_connectivity_subscribers": {
+          "value": 1200,
+          "unit": "million_connections",
+          "locator": "FY2025 total connectivity subscriber disclosure"
+        }
+      }
     },
     {
       "source_id": "china_unicom_q4_operating_announcement_2025",
@@ -2448,7 +2622,14 @@
       "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2026/0319/2026031900251.pdf",
       "source_type": "official_hkex_operating_announcement",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_q4_operating_announcement_2025"
+      "source_document_id": "china_unicom_q4_operating_announcement_2025",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 232.18,
+          "unit": "million_subscribers",
+          "locator": "FY2025 5G network user disclosure"
+        }
+      }
     },
     {
       "source_id": "airtel_2019_five_year",
@@ -2468,7 +2649,21 @@
       "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2023_24/Integrated_Report_and_Financial_Statements_Single_view.pdf",
       "source_type": "official_five_year_summary",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "airtel_integrated_report_fy2024"
+      "source_document_id": "airtel_integrated_report_fy2024",
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_broadband_base_stations": {
+            "value": 503883,
+            "unit": "base_stations",
+            "locator": "five-year manufactured-capital network KPI comparative"
+          },
+          "total_data_traffic": {
+            "value": 21.02,
+            "unit": "billion_GB",
+            "locator": "five-year India mobile data-traffic comparative; converted from 21,020bn MB"
+          }
+        }
+      }
     },
     {
       "source_id": "airtel_2025_ir_pack",
