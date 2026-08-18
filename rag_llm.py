@@ -605,7 +605,7 @@ def _global_operator_exact_metric_chunks(
         "integrated_package_arpu": ["融合套餐arpu", "融合arpu", "integrated package arpu"],
         "mobile_dou": ["移动dou", "户均流量", "月户均流量", "data consumption per user", "dou"],
         "total_data_traffic": ["总数据流量", "年度数据流量", "数据流量", "total data traffic"],
-        "handset_data_traffic": ["手机上网流量", "handset data traffic"],
+        "handset_data_traffic": ["手机上网流量", "手机数据流量", "手机流量", "handset data traffic"],
         "iot_connections": ["物联网连接", "物联网卡连接", "物联网卡客户", "iot connections", "iot connection"],
         "mobile_broadband_integration_rate": ["移动宽带融合率", "移宽融合率", "mobile broadband integration rate"],
         "government_enterprise_customers": ["政企客户", "government enterprise customers"],

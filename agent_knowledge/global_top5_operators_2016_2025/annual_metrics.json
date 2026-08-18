@@ -13254,20 +13254,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2016",
+        "china_telecom_results_2016",
+        "china_telecom_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2016",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2016.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2016",
+        "china_telecom_results_2016",
+        "china_telecom_results_2017"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2016",
-        "china_telecom_kpi_2016",
-        "china_telecom_results_2016"
+        "china_telecom_results_2016",
+        "china_telecom_results_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -13279,26 +13287,34 @@
       "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
-      "value": null,
-      "official_value": null,
+      "value": 55.5,
+      "official_value": 55.5,
       "unit": "RMB_per_user_month",
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2016",
-        "china_telecom_kpi_2016",
-        "china_telecom_results_2016"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_results_2016",
+        "china_telecom_results_2017",
+        "china_telecom_transcript_2016"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2016",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre170321.pdf",
+      "verification_sources": [
+        "china_telecom_results_2016",
+        "china_telecom_transcript_2016",
+        "china_telecom_results_2017"
+      ],
+      "candidate_sources": [
+        "china_telecom_results_2016",
+        "china_telecom_transcript_2016",
+        "china_telecom_results_2017"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -13433,20 +13449,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2017",
+        "china_telecom_results_2017",
+        "china_telecom_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2017",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2017.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2017",
+        "china_telecom_results_2017",
+        "china_telecom_results_2018"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2017",
-        "china_telecom_kpi_2017",
-        "china_telecom_results_2017"
+        "china_telecom_results_2017",
+        "china_telecom_results_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -13458,26 +13482,34 @@
       "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
-      "value": null,
-      "official_value": null,
+      "value": 55.1,
+      "official_value": 55.1,
       "unit": "RMB_per_user_month",
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2017",
-        "china_telecom_kpi_2017",
-        "china_telecom_results_2017"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_results_2017",
+        "china_telecom_results_2018",
+        "china_telecom_transcript_2017"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2017",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre180328.pdf",
+      "verification_sources": [
+        "china_telecom_results_2017",
+        "china_telecom_transcript_2017",
+        "china_telecom_results_2018"
+      ],
+      "candidate_sources": [
+        "china_telecom_results_2017",
+        "china_telecom_transcript_2017",
+        "china_telecom_results_2018"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -13612,20 +13644,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2018",
+        "china_telecom_results_2018",
+        "china_telecom_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2018",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2018.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2018",
+        "china_telecom_results_2018",
+        "china_telecom_results_2019"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2018",
-        "china_telecom_kpi_2018",
-        "china_telecom_results_2018"
+        "china_telecom_results_2018",
+        "china_telecom_results_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -13652,11 +13692,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_telecom_ar_2018",
-        "china_telecom_kpi_2018",
-        "china_telecom_results_2018"
+        "china_telecom_ar_2018"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -13744,6 +13782,45 @@
       "period": "FY2019",
       "period_end": "2019-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 42.6,
+      "official_value": 42.6,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2019",
+        "china_telecom_press_2019",
+        "china_telecom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2019",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2019.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2019",
+        "china_telecom_press_2019",
+        "china_telecom_results_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2019",
+        "china_telecom_press_2019",
+        "china_telecom_results_2020"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 153.13,
@@ -13791,20 +13868,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2019",
+        "china_telecom_results_2019",
+        "china_telecom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2019",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2019.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2019",
+        "china_telecom_results_2019",
+        "china_telecom_results_2020"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2019",
-        "china_telecom_kpi_2019",
-        "china_telecom_results_2019"
+        "china_telecom_results_2019",
+        "china_telecom_results_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -13831,11 +13916,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_telecom_ar_2019",
-        "china_telecom_kpi_2019",
-        "china_telecom_results_2019"
+        "china_telecom_ar_2019"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -13954,6 +14037,45 @@
       "period": "FY2020",
       "period_end": "2020-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 44.4,
+      "official_value": 44.4,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2020",
+        "china_telecom_press_2020",
+        "china_telecom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2020.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 158.53,
@@ -14001,20 +14123,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2020",
+        "china_telecom_results_2020",
+        "china_telecom_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2020.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2020",
+        "china_telecom_results_2020",
+        "china_telecom_results_2021"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2020",
-        "china_telecom_kpi_2020",
-        "china_telecom_results_2020"
+        "china_telecom_results_2020",
+        "china_telecom_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -14032,20 +14162,28 @@
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2020",
-        "china_telecom_kpi_2020",
-        "china_telecom_results_2020"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_results_2020",
+        "china_telecom_results_2021",
+        "china_telecom_transcript_2020"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre210309.pdf",
+      "verification_sources": [
+        "china_telecom_results_2020",
+        "china_telecom_transcript_2020",
+        "china_telecom_results_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_results_2020",
+        "china_telecom_transcript_2020",
+        "china_telecom_results_2021"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -14164,6 +14302,45 @@
       "period": "FY2021",
       "period_end": "2021-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 45.9,
+      "official_value": 45.9,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2021",
+        "china_telecom_press_2021",
+        "china_telecom_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2021.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 169.71,
@@ -14211,20 +14388,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2021.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_results_2022"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2021",
-        "china_telecom_kpi_2021",
-        "china_telecom_results_2021"
+        "china_telecom_results_2021",
+        "china_telecom_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -14242,20 +14427,28 @@
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_ar_2021",
-        "china_telecom_kpi_2021",
+        "china_telecom_press_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2021.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -14382,6 +14575,45 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 46.3,
+      "official_value": 46.3,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2022",
+        "china_telecom_press_2022",
+        "china_telecom_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 180.9,
@@ -14429,20 +14661,28 @@
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_results_2023"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2022",
-        "china_telecom_kpi_2022",
-        "china_telecom_results_2022"
+        "china_telecom_results_2022",
+        "china_telecom_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -14460,20 +14700,28 @@
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_ar_2022",
-        "china_telecom_kpi_2022",
+        "china_telecom_press_2022",
         "china_telecom_results_2022"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -14592,6 +14840,45 @@
       "period": "FY2023",
       "period_end": "2023-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 47.6,
+      "official_value": 47.6,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2023",
+        "china_telecom_press_2023",
+        "china_telecom_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2023.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 190.16,
@@ -14633,26 +14920,34 @@
       "grain": "annual",
       "metric_key": "handset_data_traffic",
       "metric_zh": "年度手机上网流量",
-      "value": null,
-      "official_value": null,
+      "value": 72.772,
+      "official_value": 72.772,
       "unit": "billion_GB",
       "comparator": "=",
       "scope": "annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_results_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2023.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_results_2024"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2023",
-        "china_telecom_kpi_2023",
-        "china_telecom_results_2023"
+        "china_telecom_results_2023",
+        "china_telecom_results_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -14670,20 +14965,28 @@
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_ar_2023",
-        "china_telecom_kpi_2023",
+        "china_telecom_press_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2023.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -14833,6 +15136,45 @@
       "period": "FY2024",
       "period_end": "2024-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 47.6,
+      "official_value": 47.6,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband blended ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_ar_2024",
+        "china_telecom_press_2024",
+        "china_telecom_results_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2024",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2024.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
+    },
+    {
+      "operator_id": "china_telecom",
+      "operator": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 197.44,
@@ -14893,7 +15235,7 @@
         "china_telecom_kpi_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -14911,20 +15253,28 @@
       "comparator": "=",
       "scope": "mobile service ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_ar_2024",
-        "china_telecom_kpi_2024",
+        "china_telecom_press_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2024",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2024.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "candidate_sources": [
+        "china_telecom_ar_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",
@@ -15123,7 +15473,7 @@
         "china_telecom_results_2025",
         "china_telecom_factsheet_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices."
     },
     {
       "operator_id": "china_telecom",
@@ -15236,7 +15586,7 @@
         "china_telecom_results_2025",
         "china_telecom_press_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value."
     },
     {
       "operator_id": "china_telecom",
@@ -15314,7 +15664,7 @@
         "china_telecom_results_2025",
         "china_telecom_factsheet_2025"
       ],
-      "quality_note": "2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure."
+      "quality_note": "FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted."
     },
     {
       "operator_id": "china_telecom",

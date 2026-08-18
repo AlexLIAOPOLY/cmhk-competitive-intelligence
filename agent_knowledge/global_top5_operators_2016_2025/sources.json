@@ -1493,7 +1493,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2016.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2016"
+      "source_document_id": "china_telecom_ar_2016",
+      "evidence": {
+        "handset_data_traffic": {
+          "value": 1.277,
+          "unit": "billion_GB",
+          "locator": "FY2016 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2017",
@@ -1503,7 +1510,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2017.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2017"
+      "source_document_id": "china_telecom_ar_2017",
+      "evidence": {
+        "handset_data_traffic": {
+          "value": 3.597,
+          "unit": "billion_GB",
+          "locator": "FY2017 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2018",
@@ -1513,7 +1527,14 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2018.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2018"
+      "source_document_id": "china_telecom_ar_2018",
+      "evidence": {
+        "handset_data_traffic": {
+          "value": 14.073,
+          "unit": "billion_GB",
+          "locator": "FY2018 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2019",
@@ -1523,7 +1544,19 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2019.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2019"
+      "source_document_id": "china_telecom_ar_2019",
+      "evidence": {
+        "handset_data_traffic": {
+          "value": 24.37,
+          "unit": "billion_GB",
+          "locator": "FY2019 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 42.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual report; broadband blended ARPU"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2020",
@@ -1533,7 +1566,19 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2020.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2020"
+      "source_document_id": "china_telecom_ar_2020",
+      "evidence": {
+        "handset_data_traffic": {
+          "value": 34.69,
+          "unit": "billion_GB",
+          "locator": "FY2020 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 44.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual report; broadband blended ARPU"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2021",
@@ -1543,7 +1588,24 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2021.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2021"
+      "source_document_id": "china_telecom_ar_2021",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual report; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 46.966,
+          "unit": "billion_GB",
+          "locator": "FY2021 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 45.9,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual report; broadband blended ARPU"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2022",
@@ -1555,6 +1617,21 @@
       "publisher": "China Telecom Corporation Limited",
       "source_document_id": "china_telecom_ar_2022",
       "evidence": {
+        "mobile_arpu": {
+          "value": 45.2,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual report; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 60.193,
+          "unit": "billion_GB",
+          "locator": "FY2022 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 46.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual report; broadband blended ARPU"
+        },
         "5g_base_stations": {
           "value": 1.0,
           "unit": "million_base_stations",
@@ -1571,7 +1648,24 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2023.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2023"
+      "source_document_id": "china_telecom_ar_2023",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual report; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 72.772,
+          "unit": "billion_GB",
+          "locator": "FY2023 annual report key operating table; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual report; broadband blended ARPU"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2024",
@@ -1581,7 +1675,19 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2024.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2024"
+      "source_document_id": "china_telecom_ar_2024",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 45.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual report; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual report; broadband blended ARPU"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2025",
@@ -3040,6 +3146,16 @@
           "value": 121.87,
           "unit": "million_subscribers",
           "locator": "FY2016 annual-results presentation; exact year-end 4G subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 55.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 annual-results presentation; current-year mobile ARPU"
+        },
+        "handset_data_traffic": {
+          "value": 1.277,
+          "unit": "billion_GB",
+          "locator": "FY2016 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
         }
       }
     },
@@ -3067,6 +3183,30 @@
           "value": 182.04,
           "unit": "million_subscribers",
           "locator": "FY2017 annual-results presentation; exact year-end 4G subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 55.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual-results presentation; current-year mobile ARPU"
+        },
+        "handset_data_traffic": {
+          "value": 3.597,
+          "unit": "billion_GB",
+          "locator": "FY2017 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      },
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_arpu": {
+            "value": 55.5,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2017 annual-results presentation; FY2016 comparative mobile ARPU"
+          },
+          "handset_data_traffic": {
+            "value": 1.277,
+            "unit": "billion_GB",
+            "locator": "FY2017 annual-results presentation comparative column; exact FY2016 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3094,6 +3234,25 @@
           "value": 242.43,
           "unit": "million_subscribers",
           "locator": "FY2018 annual-results presentation; exact year-end 4G subscriber table"
+        },
+        "handset_data_traffic": {
+          "value": 14.073,
+          "unit": "billion_GB",
+          "locator": "FY2018 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      },
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_arpu": {
+            "value": 55.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2018 annual-results presentation; FY2017 comparative mobile ARPU"
+          },
+          "handset_data_traffic": {
+            "value": 3.597,
+            "unit": "billion_GB",
+            "locator": "FY2018 annual-results presentation comparative column; exact FY2017 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3121,6 +3280,20 @@
           "value": 4.61,
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results presentation; December 2019 5G package subscribers"
+        },
+        "handset_data_traffic": {
+          "value": 24.37,
+          "unit": "billion_GB",
+          "locator": "FY2019 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        }
+      },
+      "comparative_evidence": {
+        "FY2018": {
+          "handset_data_traffic": {
+            "value": 14.073,
+            "unit": "billion_GB",
+            "locator": "FY2019 annual-results presentation comparative column; exact FY2018 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3148,6 +3321,21 @@
           "value": 86.5,
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results presentation; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 44.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results presentation; current-year mobile ARPU"
+        },
+        "handset_data_traffic": {
+          "value": 34.69,
+          "unit": "billion_GB",
+          "locator": "FY2020 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 44.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results presentation; broadband blended ARPU"
         }
       },
       "comparative_evidence": {
@@ -3156,6 +3344,16 @@
             "value": 4.61,
             "unit": "million_subscribers",
             "locator": "FY2020 annual-results presentation; exact FY2019 comparative 5G package subscriber value"
+          },
+          "handset_data_traffic": {
+            "value": 24.37,
+            "unit": "billion_GB",
+            "locator": "FY2020 annual-results presentation comparative column; exact FY2019 kTB value converted at 1 kTB = 0.001 billion GB"
+          },
+          "broadband_arpu": {
+            "value": 42.6,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 annual-results presentation; exact FY2019 comparative broadband blended ARPU"
           }
         }
       }
@@ -3184,6 +3382,35 @@
           "value": 187.8,
           "unit": "million_subscribers",
           "locator": "FY2021 annual-results presentation; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results presentation; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 46.966,
+          "unit": "billion_GB",
+          "locator": "FY2021 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 45.9,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results presentation; broadband blended ARPU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_arpu": {
+            "value": 44.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 annual-results presentation; FY2020 comparative mobile ARPU"
+          },
+          "handset_data_traffic": {
+            "value": 34.69,
+            "unit": "billion_GB",
+            "locator": "FY2021 annual-results presentation comparative column; exact FY2020 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3211,6 +3438,30 @@
           "value": 267.96,
           "unit": "million_subscribers",
           "locator": "FY2022 annual-results presentation; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.2,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results presentation; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 60.193,
+          "unit": "billion_GB",
+          "locator": "FY2022 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 46.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results presentation; broadband blended ARPU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2021": {
+          "handset_data_traffic": {
+            "value": 46.966,
+            "unit": "billion_GB",
+            "locator": "FY2022 annual-results presentation comparative column; exact FY2021 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3238,6 +3489,30 @@
           "value": 318.66,
           "unit": "million_subscribers",
           "locator": "FY2023 annual-results presentation; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results presentation; mobile ARPU disclosure"
+        },
+        "handset_data_traffic": {
+          "value": 72.772,
+          "unit": "billion_GB",
+          "locator": "FY2023 annual-results presentation current-year column; exact kTB value converted at 1 kTB = 0.001 billion GB"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results presentation; broadband blended ARPU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2022": {
+          "handset_data_traffic": {
+            "value": 60.193,
+            "unit": "billion_GB",
+            "locator": "FY2023 annual-results presentation comparative column; exact FY2022 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3265,6 +3540,25 @@
           "value": 351.48,
           "unit": "million_subscribers",
           "locator": "FY2024 annual-results presentation; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results presentation; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results presentation; broadband blended ARPU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2023": {
+          "handset_data_traffic": {
+            "value": 72.772,
+            "unit": "billion_GB",
+            "locator": "FY2024 annual-results presentation comparative column; exact FY2023 kTB value converted at 1 kTB = 0.001 billion GB"
+          }
         }
       }
     },
@@ -3555,6 +3849,11 @@
           "value": 153.13,
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results press release; exact year-end wireline broadband subscriber table"
+        },
+        "broadband_arpu": {
+          "value": 42.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual-results press release; broadband blended ARPU"
         }
       }
     },
@@ -3582,6 +3881,11 @@
           "value": 86.5,
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results press release; exact year-end 5G package subscriber table"
+        },
+        "broadband_arpu": {
+          "value": 44.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results press release; broadband blended ARPU"
         }
       },
       "comparative_evidence": {
@@ -3618,6 +3922,16 @@
           "value": 187.8,
           "unit": "million_subscribers",
           "locator": "FY2021 annual-results press release; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results press release; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 45.9,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results press release; broadband blended ARPU"
         }
       }
     },
@@ -3645,6 +3959,16 @@
           "value": 267.96,
           "unit": "million_subscribers",
           "locator": "FY2022 annual-results press release; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.2,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results press release; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 46.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results press release; broadband blended ARPU"
         }
       }
     },
@@ -3672,6 +3996,16 @@
           "value": 318.66,
           "unit": "million_subscribers",
           "locator": "FY2023 annual-results press release; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results press release; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results press release; broadband blended ARPU"
         }
       }
     },
@@ -3699,6 +4033,67 @@
           "value": 351.48,
           "unit": "million_subscribers",
           "locator": "FY2024 annual-results press release; exact year-end 5G package subscriber table"
+        },
+        "mobile_arpu": {
+          "value": 45.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results press release; mobile ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.6,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results press release; broadband blended ARPU"
+        }
+      }
+    },
+    {
+      "source_id": "china_telecom_transcript_2016",
+      "operator_id": "china_telecom",
+      "year": 2016,
+      "label": "China Telecom 2016 annual-results management transcript",
+      "url": "https://www.chinatelecom-h.com/en/ir/transcripts/tra_ar2016.pdf",
+      "source_type": "official_results_transcript",
+      "publisher": "China Telecom Corporation Limited",
+      "source_document_id": "china_telecom_transcript_2016",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 55.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 management transcript; current-year mobile ARPU"
+        }
+      }
+    },
+    {
+      "source_id": "china_telecom_transcript_2017",
+      "operator_id": "china_telecom",
+      "year": 2017,
+      "label": "China Telecom 2017 annual-results management transcript",
+      "url": "https://www.chinatelecom-h.com/en/ir/transcripts/tra_ar2017.pdf",
+      "source_type": "official_results_transcript",
+      "publisher": "China Telecom Corporation Limited",
+      "source_document_id": "china_telecom_transcript_2017",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 55.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 management transcript; current-year mobile ARPU"
+        }
+      }
+    },
+    {
+      "source_id": "china_telecom_transcript_2020",
+      "operator_id": "china_telecom",
+      "year": 2020,
+      "label": "China Telecom 2020 annual-results management transcript",
+      "url": "https://www.chinatelecom-h.com/en/ir/transcripts/tra_ar2020.pdf",
+      "source_type": "official_results_transcript",
+      "publisher": "China Telecom Corporation Limited",
+      "source_document_id": "china_telecom_transcript_2020",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 44.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 management transcript; current-year mobile ARPU"
         }
       }
     },

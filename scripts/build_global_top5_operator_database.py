@@ -224,6 +224,18 @@ for year, stem in CHINA_TELECOM_PRESS_RELEASES.items():
         "publisher": "China Telecom Corporation Limited",
     }
 
+for year in (2016, 2017, 2020):
+    sid = f"china_telecom_transcript_{year}"
+    SOURCES[sid] = {
+        "source_id": sid,
+        "operator_id": "china_telecom",
+        "year": year,
+        "label": f"China Telecom {year} annual-results management transcript",
+        "url": f"https://www.chinatelecom-h.com/en/ir/transcripts/tra_ar{year}.pdf",
+        "source_type": "official_results_transcript",
+        "publisher": "China Telecom Corporation Limited",
+    }
+
 SOURCES.update({
     "china_mobile_press_2017": {
         "source_id": "china_mobile_press_2017", "operator_id": "china_mobile", "year": 2017,
@@ -2064,6 +2076,112 @@ for _source_id, _label in (
         "unit": "million_subscribers",
         "locator": f"{_label}; exact FY2019 comparative 5G package subscriber value",
     }
+
+_CT_MOBILE_ARPU = {
+    2016: 55.5, 2017: 55.1,
+    2020: 44.1, 2021: 45.0, 2022: 45.2, 2023: 45.4, 2024: 45.6,
+}
+_CT_MOBILE_ARPU_SOURCES = {
+    2016: ["china_telecom_results_2016", "china_telecom_transcript_2016", "china_telecom_results_2017"],
+    2017: ["china_telecom_results_2017", "china_telecom_transcript_2017", "china_telecom_results_2018"],
+    2020: ["china_telecom_results_2020", "china_telecom_transcript_2020", "china_telecom_results_2021"],
+    **{
+        year: [f"china_telecom_ar_{year}", f"china_telecom_results_{year}", f"china_telecom_press_{year}"]
+        for year in range(2021, 2025)
+    },
+}
+for _year, _value in _CT_MOBILE_ARPU.items():
+    if _year in (2016, 2017, 2020):
+        SOURCES[f"china_telecom_results_{_year}"].setdefault("evidence", {})["mobile_arpu"] = {
+            "value": _value,
+            "unit": "RMB_per_user_month",
+            "locator": f"FY{_year} annual-results presentation; current-year mobile ARPU",
+        }
+        SOURCES[f"china_telecom_transcript_{_year}"].setdefault("evidence", {})["mobile_arpu"] = {
+            "value": _value,
+            "unit": "RMB_per_user_month",
+            "locator": f"FY{_year} management transcript; current-year mobile ARPU",
+        }
+        SOURCES[f"china_telecom_results_{_year + 1}"].setdefault("comparative_evidence", {}).setdefault(f"FY{_year}", {})["mobile_arpu"] = {
+            "value": _value,
+            "unit": "RMB_per_user_month",
+            "locator": f"FY{_year + 1} annual-results presentation; FY{_year} comparative mobile ARPU",
+        }
+    else:
+        for _source_id, _label in (
+            (f"china_telecom_ar_{_year}", "annual report"),
+            (f"china_telecom_results_{_year}", "annual-results presentation"),
+            (f"china_telecom_press_{_year}", "annual-results press release"),
+        ):
+            SOURCES[_source_id].setdefault("evidence", {})["mobile_arpu"] = {
+                "value": _value,
+                "unit": "RMB_per_user_month",
+                "locator": f"FY{_year} {_label}; mobile ARPU disclosure",
+            }
+
+_CT_HANDSET_DATA_TRAFFIC = {
+    2016: 1.277, 2017: 3.597, 2018: 14.073, 2019: 24.370,
+    2020: 34.690, 2021: 46.966, 2022: 60.193, 2023: 72.772,
+}
+_CT_HANDSET_DATA_TRAFFIC_SOURCES = {}
+for _year, _value in _CT_HANDSET_DATA_TRAFFIC.items():
+    _CT_HANDSET_DATA_TRAFFIC_SOURCES[_year] = [
+        f"china_telecom_ar_{_year}",
+        f"china_telecom_results_{_year}",
+        f"china_telecom_results_{_year + 1}",
+    ]
+    for _source_id, _label in (
+        (f"china_telecom_ar_{_year}", "annual report key operating table"),
+        (f"china_telecom_results_{_year}", "annual-results presentation current-year column"),
+    ):
+        SOURCES[_source_id].setdefault("evidence", {})["handset_data_traffic"] = {
+            "value": _value,
+            "unit": "billion_GB",
+            "locator": f"FY{_year} {_label}; exact kTB value converted at 1 kTB = 0.001 billion GB",
+        }
+    SOURCES[f"china_telecom_results_{_year + 1}"].setdefault("comparative_evidence", {}).setdefault(f"FY{_year}", {})["handset_data_traffic"] = {
+        "value": _value,
+        "unit": "billion_GB",
+        "locator": f"FY{_year + 1} annual-results presentation comparative column; exact FY{_year} kTB value converted at 1 kTB = 0.001 billion GB",
+    }
+
+_CT_BROADBAND_BLENDED_ARPU = {
+    2019: 42.6, 2020: 44.4, 2021: 45.9, 2022: 46.3, 2023: 47.6, 2024: 47.6,
+}
+_CT_BROADBAND_BLENDED_ARPU_SOURCES = {
+    2019: ["china_telecom_ar_2019", "china_telecom_press_2019", "china_telecom_results_2020"],
+    **{
+        year: [f"china_telecom_ar_{year}", f"china_telecom_results_{year}", f"china_telecom_press_{year}"]
+        for year in range(2020, 2025)
+    },
+}
+for _year, _value in _CT_BROADBAND_BLENDED_ARPU.items():
+    if _year == 2019:
+        for _source_id, _label in (
+            ("china_telecom_ar_2019", "FY2019 annual report"),
+            ("china_telecom_press_2019", "FY2019 annual-results press release"),
+        ):
+            SOURCES[_source_id].setdefault("evidence", {})["broadband_arpu"] = {
+                "value": _value,
+                "unit": "RMB_per_user_month",
+                "locator": f"{_label}; broadband blended ARPU",
+            }
+        SOURCES["china_telecom_results_2020"].setdefault("comparative_evidence", {}).setdefault("FY2019", {})["broadband_arpu"] = {
+            "value": _value,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 annual-results presentation; exact FY2019 comparative broadband blended ARPU",
+        }
+    else:
+        for _source_id, _label in (
+            (f"china_telecom_ar_{_year}", "annual report"),
+            (f"china_telecom_results_{_year}", "annual-results presentation"),
+            (f"china_telecom_press_{_year}", "annual-results press release"),
+        ):
+            SOURCES[_source_id].setdefault("evidence", {})["broadband_arpu"] = {
+                "value": _value,
+                "unit": "RMB_per_user_month",
+                "locator": f"FY{_year} {_label}; broadband blended ARPU",
+            }
 for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"):
     SOURCES[_source_id].setdefault("evidence", {}).update({
         "mobile_arpu": {
@@ -2509,9 +2627,9 @@ add_series("china_telecom", "4g_subscribers", {2016:121.87, 2017:182.04, 2018:24
 add_series("china_telecom", "5g_package_subscribers", _CT_5G_PACKAGE_SUBSCRIBERS, scope="5G package subscribers; not equivalent to active 5G network users", source_ids=CHINA_TELECOM_5G_PACKAGE_SOURCES, note="FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings.")
 add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=override_sources(paired("china_telecom", [2024,2025]), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
 add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=CHINA_TELECOM_SUBSCRIBER_SOURCES, note="FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered.")
-add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
-add_series("china_telecom", "broadband_arpu", {2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]})
-add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]))
+add_series("china_telecom", "mobile_arpu", {2016:55.5,2017:55.1,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids={**_CT_MOBILE_ARPU_SOURCES, 2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]}, note="FY2016, FY2017 and FY2020-FY2025 have three exact official document bindings. FY2018-FY2019 remain explicit gaps because only two exact annual-results presentations were verified; rounded or scope-mismatched references are not substituted.")
+add_series("china_telecom", "broadband_arpu", {**_CT_BROADBAND_BLENDED_ARPU, 2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={**_CT_BROADBAND_BLENDED_ARPU_SOURCES, 2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]}, note="FY2019-FY2025 use the integrated broadband-access, IPTV/e-Surfing HD and Smart Family blended definition; this series is not mixed with the narrower wireline broadband access ARPU shown in older presentation appendices.")
+add_series("china_telecom", "handset_data_traffic", {**_CT_HANDSET_DATA_TRAFFIC, 2024:89.979, 2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids={**_CT_HANDSET_DATA_TRAFFIC_SOURCES, 2024:paired("china_telecom", [2024])[2024], 2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]}, note="FY2016-FY2023 each use the annual report plus current-year and following-year annual-results presentation exact tables. FY2024-FY2025 retain their disclosed precision but remain below the strict three-exact-document threshold where later materials round the kTB value.")
 add_series("china_telecom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_telecom", "5g_network_penetration", {2025:68.8}, scope="5G network subscribers as a share of mobile subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
 add_series("china_telecom", "gigabit_broadband_penetration", {2025:31.6}, scope="gigabit broadband subscribers as a share of broadband subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})

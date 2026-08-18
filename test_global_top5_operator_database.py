@@ -39,7 +39,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
                 "中国广电": 6,
-                "中国电信": 39,
+                "中国电信": 60,
                 "中国移动": 80,
                 "中国联通": 10,
             },
@@ -91,6 +91,38 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             row = self.index[("china_telecom", year, "5g_package_subscribers")]
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_china_telecom_historical_arpu_and_traffic_keep_exact_scope(self):
+        for year in (2016, 2017, 2020, 2021, 2022, 2023, 2024):
+            row = self.index[("china_telecom", year, "mobile_arpu")]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        for year in (2018, 2019):
+            row = self.index[("china_telecom", year, "mobile_arpu")]
+            self.assertIsNone(row["value"])
+            self.assertEqual(row["triple_source_status"], "not_applicable_missing_value")
+
+        for year in range(2016, 2024):
+            row = self.index[("china_telecom", year, "handset_data_traffic")]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(self.index[("china_telecom", 2023, "handset_data_traffic")]["value"], 72.772)
+
+        for year in range(2019, 2025):
+            row = self.index[("china_telecom", year, "broadband_arpu")]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertIn("blended", row["scope"])
+
+        traffic_text = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国电信2023年手机数据流量",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("official_value=72.772 billion_GB", traffic_text)
+        self.assertIn("distinct_source_document_count=3", traffic_text)
 
     def test_jio_early_candidate_sources_without_exact_bindings_are_not_certified(self):
         legacy_candidate_rows = [
