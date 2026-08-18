@@ -1584,6 +1584,25 @@ for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china
         "unit": "RMB_per_user_month",
         "locator": "FY2025 mobile service ARPU disclosure",
     }
+for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["5g_base_stations"] = {
+        "value": 1.54,
+        "unit": "million_base_stations",
+        "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations",
+    }
+for _source_id in ("china_telecom_results_2025", "china_telecom_announcement_2025", "china_telecom_press_2025"):
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "ten_g_pon_ports": {
+            "value": 10,
+            "unit": "million_ports",
+            "locator": "FY2025 network infrastructure update; 10 million 10G PON ports constructed",
+        },
+        "urban_gigabit_coverage": {
+            "value": 97,
+            "unit": "percent",
+            "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas",
+        },
+    })
 for _source_id in ("china_unicom_ar_2025", "china_unicom_ops_2025", "china_unicom_q4_operating_announcement_2025"):
     SOURCES[_source_id].setdefault("evidence", {})["5g_network_subscribers"] = {
         "value": 232.18,

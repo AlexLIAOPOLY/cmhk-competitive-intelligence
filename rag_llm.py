@@ -619,7 +619,7 @@ def _global_operator_exact_metric_chunks(
         "cloud_ai_product_users": ["云ai产品用户", "cloud-ai users", "cloud ai product users"],
         "intelligent_compute_capacity": ["智算规模", "智算能力", "intelligent compute capacity"],
         "ten_g_pon_ports": ["10g pon端口", "10g pon ports"],
-        "urban_gigabit_coverage": ["城市千兆覆盖率", "urban gigabit coverage"],
+        "urban_gigabit_coverage": ["城市千兆覆盖率", "城市千兆宽带覆盖率", "urban gigabit coverage"],
         "network_towers": ["网络铁塔", "铁塔数", "network towers"],
         "mobile_broadband_base_stations": ["移动宽带基站", "mobile broadband base stations"],
         "total_base_stations": ["基站总数", "全部基站", "total base stations"],

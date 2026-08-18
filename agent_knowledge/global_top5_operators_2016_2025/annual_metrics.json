@@ -13650,14 +13650,22 @@
       "comparator": ">=",
       "scope": "5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_announcement_2025",
+        "china_telecom_ar_2025",
+        "china_telecom_results_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2025",
+        "china_telecom_results_2025",
+        "china_telecom_announcement_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
@@ -13975,14 +13983,22 @@
       "comparator": ">=",
       "scope": "10G PON ports in the gigabit fibre network",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_announcement_2025",
+        "china_telecom_press_2025",
+        "china_telecom_results_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre260324.pdf",
+      "verification_sources": [
+        "china_telecom_results_2025",
+        "china_telecom_announcement_2025",
+        "china_telecom_press_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
@@ -14007,14 +14023,22 @@
       "comparator": ">",
       "scope": "urban residential areas covered by gigabit broadband",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_announcement_2025",
+        "china_telecom_press_2025",
+        "china_telecom_results_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre260324.pdf",
+      "verification_sources": [
+        "china_telecom_results_2025",
+        "china_telecom_announcement_2025",
+        "china_telecom_press_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",
@@ -15946,14 +15970,22 @@
       "comparator": ">=",
       "scope": "5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_announcement_2025",
+        "china_telecom_ar_2025",
+        "china_telecom_results_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2025",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
+      "verification_sources": [
+        "china_telecom_ar_2025",
+        "china_telecom_results_2025",
+        "china_telecom_announcement_2025"
+      ],
       "candidate_sources": [
         "china_telecom_ar_2025",
         "china_telecom_results_2025",

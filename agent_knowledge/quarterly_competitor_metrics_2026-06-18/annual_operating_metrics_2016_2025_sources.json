@@ -1160,7 +1160,24 @@
       "url": "https://doc.irasia.com/listco/hk/chinatelecom/annual/2025/res.pdf",
       "source_type": "official_results_announcement",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_announcement_2025"
+      "source_document_id": "china_telecom_announcement_2025",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1.54,
+          "unit": "million_base_stations",
+          "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations"
+        },
+        "ten_g_pon_ports": {
+          "value": 10,
+          "unit": "million_ports",
+          "locator": "FY2025 network infrastructure update; 10 million 10G PON ports constructed"
+        },
+        "urban_gigabit_coverage": {
+          "value": 97,
+          "unit": "percent",
+          "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2016",
@@ -1274,6 +1291,11 @@
           "value": 45.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
+        },
+        "5g_base_stations": {
+          "value": 1.54,
+          "unit": "million_base_stations",
+          "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations"
         }
       }
     },
@@ -1402,7 +1424,19 @@
       "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
       "source_type": "official_results_press_release",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_press_2025"
+      "source_document_id": "china_telecom_press_2025",
+      "evidence": {
+        "ten_g_pon_ports": {
+          "value": 10,
+          "unit": "million_ports",
+          "locator": "FY2025 network infrastructure update; 10 million 10G PON ports constructed"
+        },
+        "urban_gigabit_coverage": {
+          "value": 97,
+          "unit": "percent",
+          "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        }
+      }
     },
     {
       "source_id": "china_telecom_results_2016",
@@ -1508,6 +1542,21 @@
           "value": 45.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
+        },
+        "5g_base_stations": {
+          "value": 1.54,
+          "unit": "million_base_stations",
+          "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations"
+        },
+        "ten_g_pon_ports": {
+          "value": 10,
+          "unit": "million_ports",
+          "locator": "FY2025 network infrastructure update; 10 million 10G PON ports constructed"
+        },
+        "urban_gigabit_coverage": {
+          "value": 97,
+          "unit": "percent",
+          "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
         }
       }
     },

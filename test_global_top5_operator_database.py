@@ -38,9 +38,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国电信": 2,
+                "中国电信": 5,
                 "中国移动": 9,
-                "中国联通": 9,
+                "中国联通": 10,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -218,7 +218,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for operator_id in ("china_telecom", "china_unicom"):
             row = self.index[(operator_id, 2025, "5g_base_stations")]
             self.assertIn("Shared-network scope", row["quality_note"])
-            self.assertEqual(row["distinct_source_document_count"], 0)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
         for year in (2020, 2021, 2023, 2024):
             for operator_id in ("china_telecom", "china_unicom"):
                 self.assertEqual(
@@ -385,6 +386,34 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             set(row["verification_sources"]),
             {"china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025", "china_mobile_q1_2026_comparatives"},
         )
+
+    def test_china_telecom_fy2025_network_upgrade_uses_three_documents(self):
+        expected_sources = {
+            "china_telecom_results_2025",
+            "china_telecom_announcement_2025",
+            "china_telecom_press_2025",
+        }
+        for metric_key, value, unit, comparator in (
+            ("ten_g_pon_ports", 10, "million_ports", ">="),
+            ("urban_gigabit_coverage", 97, "percent", ">"),
+        ):
+            row = self.index[("china_telecom", 2025, metric_key)]
+            self.assertEqual((row["value"], row["unit"], row["comparator"]), (value, unit, comparator))
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国电信2025年5G基站、10G PON端口和城市千兆宽带覆盖率是多少？",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("official_value=1.54 million_base_stations", combined)
+        self.assertIn("official_value=10 million_ports", combined)
+        self.assertIn("official_value=97 percent", combined)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 3)
 
     def test_china_unicom_fy2025_conservative_connectivity_bounds_use_three_documents(self):
         expected = {
