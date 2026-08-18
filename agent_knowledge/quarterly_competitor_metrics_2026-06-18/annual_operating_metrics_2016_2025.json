@@ -10019,11 +10019,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2016",
-        "china_unicom_ops_2016",
-        "china_unicom_results_2016"
+        "china_unicom_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -10230,26 +10228,34 @@
       "grain": "annual",
       "metric_key": "mobile_dou",
       "metric_zh": "月户均移动数据流量DOU",
-      "value": null,
-      "official_value": null,
+      "value": 2.433,
+      "official_value": 2.433,
       "unit": "GB_per_user_month",
       "comparator": "=",
       "scope": "monthly average DOU per handset subscriber",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_unicom_ar_2017",
-        "china_unicom_ops_2017",
+        "china_unicom_press_2017",
         "china_unicom_results_2017"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2017",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_press_2017"
+      ],
+      "candidate_sources": [
+        "china_unicom_ar_2017",
+        "china_unicom_results_2017",
+        "china_unicom_press_2017"
+      ],
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -10471,11 +10477,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2018",
-        "china_unicom_ops_2018",
-        "china_unicom_results_2018"
+        "china_unicom_ar_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -10682,26 +10686,34 @@
       "grain": "annual",
       "metric_key": "mobile_dou",
       "metric_zh": "月户均移动数据流量DOU",
-      "value": null,
-      "official_value": null,
+      "value": 8.0,
+      "official_value": 8.0,
       "unit": "GB_per_user_month",
       "comparator": "=",
       "scope": "monthly average DOU per handset subscriber",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2019",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2019",
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2019",
-        "china_unicom_ops_2019",
-        "china_unicom_results_2019"
+        "china_unicom_results_2019",
+        "china_unicom_results_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -10976,20 +10988,25 @@
       "comparator": "=",
       "scope": "monthly average DOU per handset subscriber",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
-        "china_unicom_results_2020"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
       ],
-      "quality_note": ""
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_unicom_results_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre210311.pdf",
+      "verification_sources": [
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2020",
+        "china_unicom_results_2021"
+      ],
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -11225,20 +11242,25 @@
       "comparator": "=",
       "scope": "monthly average DOU per handset subscriber",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2021",
-        "china_unicom_ops_2021",
-        "china_unicom_results_2021"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
       ],
-      "quality_note": ""
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_unicom_results_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf",
+      "verification_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2021",
+        "china_unicom_results_2022"
+      ],
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -11472,11 +11494,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2022",
-        "china_unicom_ops_2022",
-        "china_unicom_results_2022"
+        "china_unicom_ar_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -11689,11 +11709,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2023",
-        "china_unicom_ops_2023",
-        "china_unicom_results_2023"
+        "china_unicom_ar_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -11906,11 +11924,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2024",
-        "china_unicom_ops_2024",
-        "china_unicom_results_2024"
+        "china_unicom_ar_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",
@@ -12334,11 +12350,9 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [
-        "china_unicom_ar_2025",
-        "china_unicom_ops_2025",
-        "china_unicom_results_2025"
+        "china_unicom_ar_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified."
     },
     {
       "operator_id": "china_unicom",

@@ -1,6 +1,6 @@
 ﻿dataset_id,row_count,available_value_rows,source_gap_or_blank_rows,three_distinct_source_certified_rows,below_three_source_rows,three_source_coverage_pct,legacy_count_ge3_but_distinct_lt3,distinct_source_count_distribution,quality_gate_status,primary_csv
 quarterly_competitor_metrics_2026-08-18,2879,2704,175,672,2032,24.85,277,"{""1"": 88, ""2"": 757, ""3"": 1334, ""4"": 297, ""5"": 79, ""6"": 136, ""8"": 13}",backlog_open,agent_knowledge/quarterly_competitor_metrics_2026-08-18/quarterly_metrics.csv
 cmhk_macro_policy_2026-06-19,7580,7577,3,3992,3585,52.69,0,"{""2"": 3585, ""4"": 3992}",backlog_open,agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.csv
-global_top5_operators_2016_2025,627,421,206,310,111,73.63,0,"{""0"": 65, ""1"": 27, ""2"": 19, ""3"": 263, ""4"": 40, ""5"": 7}",backlog_open,agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv
+global_top5_operators_2016_2025,627,423,204,312,111,73.76,0,"{""0"": 63, ""1"": 27, ""2"": 21, ""3"": 265, ""4"": 40, ""5"": 7}",backlog_open,agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv
 local_hk_operator_operating_metrics_2016_2025,783,172,611,0,172,0.0,0,"{""1"": 158, ""2"": 14}",backlog_open,agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv
 competitor_product_tariffs,2002,1994,8,0,1994,0.0,399,"{""1"": 1994}",backlog_open,agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv

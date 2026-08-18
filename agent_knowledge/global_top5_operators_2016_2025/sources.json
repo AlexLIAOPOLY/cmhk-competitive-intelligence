@@ -1772,6 +1772,11 @@
           "value": 46.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 2.433,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       }
     },
@@ -1816,6 +1821,11 @@
           "value": 41.6,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 8.0,
+          "unit": "GB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       }
     },
@@ -3731,6 +3741,11 @@
           "value": 46.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 2.433,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       }
     },
@@ -3823,6 +3838,11 @@
           "value": 41.6,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 8.0,
+          "unit": "GB_per_user_month",
+          "locator": "FY2019 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       }
     },
@@ -3860,6 +3880,11 @@
           "value": 41.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 9.7,
+          "unit": "GB_per_user_month",
+          "locator": "FY2020 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -3878,6 +3903,11 @@
             "value": 41.6,
             "unit": "RMB_per_user_month",
             "locator": "FY2019 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          },
+          "mobile_dou": {
+            "value": 8.0,
+            "unit": "GB_per_user_month",
+            "locator": "FY2019 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
           }
         }
       }
@@ -3911,6 +3941,11 @@
           "value": 41.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "mobile_dou": {
+          "value": 12.7,
+          "unit": "GB_per_user_month",
+          "locator": "FY2021 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -3929,6 +3964,11 @@
             "value": 41.5,
             "unit": "RMB_per_user_month",
             "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          },
+          "mobile_dou": {
+            "value": 9.7,
+            "unit": "GB_per_user_month",
+            "locator": "FY2020 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
           }
         }
       }
@@ -3953,6 +3993,11 @@
             "value": 41.3,
             "unit": "RMB_per_user_month",
             "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          },
+          "mobile_dou": {
+            "value": 12.7,
+            "unit": "GB_per_user_month",
+            "locator": "FY2021 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
           }
         }
       },
@@ -4373,6 +4418,23 @@
           "value": 95.046,
           "unit": "million_subscribers",
           "locator": "FY2021 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_press_2017",
+      "operator_id": "china_unicom",
+      "year": 2017,
+      "label": "China Unicom 2017 annual-results press release",
+      "url": "https://www.chinaunicom.com.hk/en/media/press/p180315.pdf",
+      "source_type": "official_results_press_release",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_press_2017",
+      "evidence": {
+        "mobile_dou": {
+          "value": 2.433,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
         }
       }
     },

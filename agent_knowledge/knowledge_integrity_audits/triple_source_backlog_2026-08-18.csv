@@ -5675,10 +5675,10 @@ global_top5_operators_2016_2025,中国电信 | FY2024 | handset_data_traffic,中
 global_top5_operators_2016_2025,中国电信 | FY2025 | handset_data_traffic,中国电信,FY2025,handset_data_traffic,106.046,billion_GB,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2020 | 5g_base_stations,中国联通,FY2020,5g_base_stations,0.38,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2020 | 5g_package_subscribers,中国联通,FY2020,5g_package_subscribers,70.83,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2020 | mobile_dou,中国联通,FY2020,mobile_dou,9.7,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
+global_top5_operators_2016_2025,中国联通 | FY2020 | mobile_dou,中国联通,FY2020,mobile_dou,9.7,GB_per_user_month,2,2,1,needs_additional_distinct_sources,"[""https://www.chinaunicom.com.hk/en/ir/presentations/pre210311.pdf"", ""https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf""]"
 global_top5_operators_2016_2025,中国联通 | FY2021 | 5g_base_stations,中国联通,FY2021,5g_base_stations,0.69,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2021 | 5g_package_subscribers,中国联通,FY2021,5g_package_subscribers,154.93,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2021 | mobile_dou,中国联通,FY2021,mobile_dou,12.7,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
+global_top5_operators_2016_2025,中国联通 | FY2021 | mobile_dou,中国联通,FY2021,mobile_dou,12.7,GB_per_user_month,2,2,1,needs_additional_distinct_sources,"[""https://www.chinaunicom.com.hk/en/ir/presentations/pre220311.pdf"", ""https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf""]"
 global_top5_operators_2016_2025,中国联通 | FY2022 | 5g_package_subscribers,中国联通,FY2022,5g_package_subscribers,212.73,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2022 | fixed_broadband_subscribers,中国联通,FY2022,fixed_broadband_subscribers,103.63,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2022 | mobile_arpu,中国联通,FY2022,mobile_arpu,44.3,RMB_per_user_month,2,2,1,needs_additional_distinct_sources,"[""https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf"", ""https://www.chinaunicom.com.hk/en/ir/presentations/pre240319.pdf""]"

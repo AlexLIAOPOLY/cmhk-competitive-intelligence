@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 60,
                 "中国移动": 80,
-                "中国联通": 39,
+                "中国联通": 41,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -523,6 +523,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 2016: 49.4, 2017: 46.3, 2018: 44.6,
                 2019: 41.6, 2020: 41.5, 2021: 41.3,
             },
+            "mobile_dou": {
+                2017: 2.433, 2019: 8.0,
+            },
         }
         for metric_key, values in expected.items():
             for year, value in values.items():
@@ -536,6 +539,28 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(mobile_arpu_2022["value"], 44.3)
         self.assertEqual(mobile_arpu_2022["distinct_source_document_count"], 2)
         self.assertEqual(mobile_arpu_2022["triple_source_status"], "below_three_source_threshold")
+
+        for year, expected_sources in {
+            2020: {"china_unicom_results_2020", "china_unicom_results_2021"},
+            2021: {"china_unicom_results_2021", "china_unicom_results_2022"},
+        }.items():
+            dou = self.index[("china_unicom", year, "mobile_dou")]
+            self.assertEqual(set(dou["verification_sources"]), expected_sources)
+            self.assertEqual(dou["distinct_source_document_count"], 2)
+            self.assertEqual(dou["triple_source_status"], "below_three_source_threshold")
+
+    def test_xiaojing_retrieves_china_unicom_three_source_dou_history(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国联通2017年和2019年手机用户DOU月户均流量是多少？说明三来源。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        for value in ("2.433 GB_per_user_month", "8.0 GB_per_user_month"):
+            self.assertIn(f"official_value={value}", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 2)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 2)
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))

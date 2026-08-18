@@ -275,6 +275,15 @@ SOURCES.update({
         "source_type": "official_hkex_operating_announcement",
         "publisher": "China Unicom (Hong Kong) Limited",
     },
+    "china_unicom_press_2017": {
+        "source_id": "china_unicom_press_2017",
+        "operator_id": "china_unicom",
+        "year": 2017,
+        "label": "China Unicom 2017 annual-results press release",
+        "url": "https://www.chinaunicom.com.hk/en/media/press/p180315.pdf",
+        "source_type": "official_results_press_release",
+        "publisher": "China Unicom (Hong Kong) Limited",
+    },
 })
 
 # China Telecom's annual-results press releases are separate legal documents
@@ -2281,6 +2290,9 @@ _CU_BROADBAND_ACCESS_ARPU = {
     2016: 49.4, 2017: 46.3, 2018: 44.6,
     2019: 41.6, 2020: 41.5, 2021: 41.3,
 }
+_CU_MOBILE_DOU = {
+    2017: 2.433, 2019: 8.0, 2020: 9.7, 2021: 12.7,
+}
 
 _CU_MOBILE_SUBSCRIBER_SOURCES = {
     2016: ["china_unicom_dec_ops_2016", "china_unicom_20f_2018", "china_unicom_csr_2018"],
@@ -2324,6 +2336,15 @@ _CU_BROADBAND_ACCESS_ARPU_SOURCES = {
     ]
     for year in range(2016, 2022)
 }
+_CU_MOBILE_DOU_SOURCES = {
+    2017: ["china_unicom_ar_2017", "china_unicom_results_2017", "china_unicom_press_2017"],
+    2019: ["china_unicom_ar_2019", "china_unicom_results_2019", "china_unicom_results_2020"],
+    # These two rows are retained because they already existed in the database,
+    # but only the two exact presentation documents are bound.  Annual-report
+    # narrative uses approximate wording and is deliberately not counted.
+    2020: ["china_unicom_results_2020", "china_unicom_results_2021"],
+    2021: ["china_unicom_results_2021", "china_unicom_results_2022"],
+}
 
 
 def _bind_cu_historical_evidence(
@@ -2349,6 +2370,7 @@ for _metric_key, _values, _source_map, _unit in (
     ("4g_subscribers", _CU_4G_SUBSCRIBERS, _CU_4G_SUBSCRIBER_SOURCES, "million_subscribers"),
     ("mobile_arpu", _CU_MOBILE_ARPU, _CU_MOBILE_ARPU_SOURCES, "RMB_per_user_month"),
     ("broadband_arpu", _CU_BROADBAND_ACCESS_ARPU, _CU_BROADBAND_ACCESS_ARPU_SOURCES, "RMB_per_user_month"),
+    ("mobile_dou", _CU_MOBILE_DOU, _CU_MOBILE_DOU_SOURCES, "GB_per_user_month"),
 ):
     for _year, _value in _values.items():
         for _source_id in _source_map[_year]:
@@ -2827,7 +2849,7 @@ add_series("china_unicom", "5g_network_subscribers", {2025:232.18}, scope="custo
 add_series("china_unicom", "fixed_broadband_subscribers", {2016:75.236,2017:76.539,2018:80.880,2019:83.478,2020:86.095,2021:95.046,2022:103.63,2023:113.42,2024:122.26,2025:129.87}, scope="fixed-line broadband billing subscribers", source_ids={**paired("china_unicom", cu_years), **_CU_FIXED_BROADBAND_SUBSCRIBER_SOURCES}, note="FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions.")
 add_series("china_unicom", "mobile_arpu", {**_CU_MOBILE_ARPU,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids={**paired("china_unicom", ct_years), **_CU_MOBILE_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")
 add_series("china_unicom", "broadband_arpu", {**_CU_BROADBAND_ACCESS_ARPU,2022:None,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="fixed-line broadband access ARPU", source_ids={**paired("china_unicom", list(range(2016,2026))), **_CU_BROADBAND_ACCESS_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change.")
-add_series("china_unicom", "mobile_dou", {2016:None,2017:None,2018:None,2019:None,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=paired("china_unicom", cu_years))
+add_series("china_unicom", "mobile_dou", {2016:None,2017:2.433,2018:None,2019:8.0,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=_CU_MOBILE_DOU_SOURCES, note="FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified.")
 add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_unicom", "total_connectivity_subscribers", {2025:1200}, scope="mobile billing, fixed broadband, fixed local access, IoT terminals and networking leased lines", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "mobile_population_coverage", {2025:99}, scope="mobile network population coverage", comparator=">", source_ids={2025:CU_2025_THREE})

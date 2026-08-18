@@ -2,10 +2,10 @@
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "backlog_open",
   "row_count": 627,
-  "available_value_rows": 421,
-  "three_distinct_source_certified_rows": 310,
+  "available_value_rows": 423,
+  "three_distinct_source_certified_rows": 312,
   "below_three_source_rows": 111,
-  "source_count": 239,
+  "source_count": 240,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
@@ -13,10 +13,10 @@
     "not_applicable_precommercial": 27,
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
-    "official_single_source": 76,
-    "official_three_distinct_sources_verified": 310,
-    "official_two_distinct_sources": 19,
-    "source_gap_confirmed": 179
+    "official_single_source": 74,
+    "official_three_distinct_sources_verified": 312,
+    "official_two_distinct_sources": 21,
+    "source_gap_confirmed": 177
   },
   "available_rows_by_operator": {
     "Bharti Airtel": 100,
@@ -24,7 +24,7 @@
     "中国广电": 24,
     "中国电信": 67,
     "中国移动": 110,
-    "中国联通": 59
+    "中国联通": 61
   },
   "three_source_certified_rows_by_operator": {
     "Bharti Airtel": 98,
@@ -32,7 +32,7 @@
     "中国广电": 6,
     "中国电信": 60,
     "中国移动": 80,
-    "中国联通": 39
+    "中国联通": 41
   },
   "available_rows_by_metric": {
     "4g_base_stations": 8,
@@ -68,7 +68,7 @@
     "mobile_arpu": 32,
     "mobile_broadband_base_stations": 5,
     "mobile_broadband_integration_rate": 1,
-    "mobile_dou": 19,
+    "mobile_dou": 21,
     "mobile_population_coverage": 1,
     "mobile_subscribers": 30,
     "net_debt": 10,
