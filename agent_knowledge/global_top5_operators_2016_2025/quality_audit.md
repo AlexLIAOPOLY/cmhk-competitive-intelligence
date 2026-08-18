@@ -1,9 +1,9 @@
 # 全球五大运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：399
-- 有值行：354
-- 来源条目：147
+- 明细行：402
+- 有值行：357
+- 来源条目：151
 - 重复键：0
 - 无效来源引用：0
 
@@ -13,13 +13,13 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 22
-- `official_three_distinct_sources_verified`: 254
-- `official_two_distinct_sources`: 62
+- `official_three_distinct_sources_verified`: 265
+- `official_two_distinct_sources`: 54
 - `source_gap_confirmed`: 38
 
 ## 三来源认证行（按运营商）
 
-- Bharti Airtel: 54
+- Bharti Airtel: 65
 - Reliance Jio: 23
 - 中国电信: 57
 - 中国移动: 68
@@ -27,7 +27,7 @@
 
 ## 缺口（含不适用）
 
-- Bharti Airtel: 10
+- Bharti Airtel: 9
 - Reliance Jio: 43
 - 中国电信: 17
 - 中国移动: 9
@@ -39,6 +39,8 @@
 - 5G package subscribers and 5G network subscribers are distinct metrics.
 - China Telecom and China Unicom 5G base-station values describe a shared network and must not be added together.
 - Airtel network-tower scope changes around FY2020; the narrower 194,409 and group KPI 219,546 values are documented, with group KPI retained.
+- Airtel FY2019 group KPI packs report 204,356 towers while the India-mobile manufactured-capital disclosure reports 181,079; the group KPI is retained and the two scopes must not be mixed.
+- Airtel FY2019 annual KPI earnings before tax is INR-17,318m, while the results-pack profit-before-tax line is INR-46,606m; both are official but use different exceptional-item definitions.
 - Jio FY2023 reports 5G sites while FY2024 onward reports 5G cells; growth is not calculated across the break.
 - Airtel latest comparative basis restates FY2023-FY2025 financials; latest official comparative basis is retained.
 - Airtel FY2021 profit before tax is retained on the later four-pack comparative basis of INR22,586m; the earlier INR-42,063m loss-before-tax basis remains documented in the row note.

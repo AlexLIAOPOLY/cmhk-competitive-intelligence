@@ -36,7 +36,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "Bharti Airtel": 54,
+                "Bharti Airtel": 65,
                 "Reliance Jio": 23,
                 "中国电信": 57,
                 "中国移动": 68,
@@ -46,7 +46,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
-        self.assertIn("- Bharti Airtel: 54", audit_text)
+        self.assertIn("- Bharti Airtel: 65", audit_text)
 
     def test_anchor_values_and_customer_scope(self):
         expected = {
@@ -588,6 +588,76 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("annual-KPI loss-before-tax value of INR-42,063m", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=4"), 9)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 9)
+
+    def test_airtel_fy2019_adds_common_financials_and_uses_metric_specific_sources(self):
+        expected_values = {
+            "total_customers": 403.645,
+            "revenue": 807802,
+            "ebitda": 262937,
+            "earnings_before_tax": -17318,
+            "net_profit": 4095,
+            "capex": 287427,
+            "net_debt": 1129899,
+            "shareholders_equity": 714222,
+            "network_towers": 204356,
+            "mobile_broadband_base_stations": 417613,
+            "total_data_traffic": 11.733,
+        }
+        for metric_key, expected_value in expected_values.items():
+            row = self.index[("bharti_airtel", 2019, metric_key)]
+            self.assertEqual(row["value"], expected_value)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertIn("181,079", self.index[("bharti_airtel", 2019, "network_towers")]["quality_note"])
+        self.assertIn("402.418m", self.index[("bharti_airtel", 2019, "total_customers")]["quality_note"])
+        self.assertIn("INR-46,606m", self.index[("bharti_airtel", 2019, "earnings_before_tax")]["quality_note"])
+        self.assertIn("INR327,931m", self.index[("bharti_airtel", 2019, "capex")]["quality_note"])
+        self.assertIn("INR1,082,346m", self.index[("bharti_airtel", 2019, "net_debt")]["quality_note"])
+
+    def test_airtel_fy2019_registry_does_not_double_count_annual_report_landing(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        self.assertEqual(
+            sources["bharti_airtel_ar_2019"]["source_document_id"],
+            sources["airtel_2019_five_year"]["source_document_id"],
+        )
+        annual = sources["bharti_airtel_ar_2019"]["evidence"]
+        self.assertEqual(annual["total_data_traffic"]["value"], 11.733)
+        self.assertEqual(annual["mobile_broadband_base_stations"]["value"], 417613)
+        for source_id in ("airtel_q4_2020_ir_pack", "airtel_q1_2021_ir_pack"):
+            evidence = sources[source_id]["comparative_evidence"]["FY2019"]
+            self.assertEqual(evidence["network_towers"]["value"], 204356)
+            self.assertEqual(evidence["net_debt"]["value"], 1129899)
+
+    def test_xiaojing_retrieves_airtel_fy2019_three_source_rows_and_scope_breaks(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Bharti Airtel FY2019总客户数、营业收入、EBITDA、税前利润、净利润、资本开支、净债务、股东权益、网络铁塔、移动宽带基站和数据流量是多少？解释口径冲突。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected_values = {
+            "total_customers": "403.645 million_customers",
+            "revenue": "807802 INR_million",
+            "ebitda": "262937 INR_million",
+            "earnings_before_tax": "-17318 INR_million",
+            "net_profit": "4095 INR_million",
+            "capex": "287427 INR_million",
+            "net_debt": "1129899 INR_million",
+            "shareholders_equity": "714222 INR_million",
+            "network_towers": "204356 sites",
+            "mobile_broadband_base_stations": "417613 base_stations",
+            "total_data_traffic": "11.733 billion_GB",
+        }
+        for metric_key, value_text in expected_values.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(f"official_value={value_text}", combined)
+        self.assertIn("181,079", combined)
+        self.assertIn("INR-46,606m", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 11)
 
     def test_airtel_fy2020_uses_metric_specific_three_source_matrix(self):
         expected_values = {

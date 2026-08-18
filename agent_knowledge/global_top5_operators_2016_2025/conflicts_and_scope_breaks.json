@@ -11,6 +11,46 @@
     },
     {
       "operator_id": "bharti_airtel",
+      "years": "2019",
+      "metric": "network_towers",
+      "type": "scope_conflict",
+      "selected_basis": "group KPI 204,356",
+      "detail": "The FY2019 India-mobile manufactured-capital section reports 181,079 network towers. The group performance-at-a-glance series reports 204,356 and is retained for cross-year comparability."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2019",
+      "metric": "total_customers",
+      "type": "restatement_or_scope_change",
+      "selected_basis": "403.645 million repeated by three independent official documents",
+      "detail": "The later FY2023 annual report alone gives 402.418 million for FY2019. It is preserved as a later single-document restatement but cannot replace the three-document exact basis."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2019",
+      "metric": "earnings_before_tax",
+      "type": "definition_conflict",
+      "selected_basis": "annual KPI earnings before tax INR -17,318 million",
+      "detail": "Three annual reports repeat INR -17,318 million on the annual KPI basis; the contemporaneous IR-pack profit-before-tax line of INR -46,606 million uses a different exceptional-item presentation and is excluded from the exact-source set."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2019",
+      "metric": "capex",
+      "type": "scope_conflict",
+      "selected_basis": "IR-pack consolidated capex INR 287,427 million",
+      "detail": "Three IR packs repeat INR 287,427 million. The annual-report segment note totals INR 327,931 million on a different accounting perimeter and is excluded."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2019",
+      "metric": "net_debt",
+      "type": "definition_change",
+      "selected_basis": "comparable net debt including finance lease obligations INR 1,129,899 million",
+      "detail": "The pre-lease net debt subtotal is INR 1,082,346 million; adding disclosed lease obligations of INR 47,553 million gives the comparable KPI used by later reports."
+    },
+    {
+      "operator_id": "bharti_airtel",
       "years": "2021",
       "metric": "earnings_before_tax",
       "type": "restatement_or_scope_change",
