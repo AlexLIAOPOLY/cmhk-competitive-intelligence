@@ -4288,6 +4288,36 @@
       "source_document_id": "china_broadnet_digital_china_2023"
     },
     {
+      "source_id": "china_broadnet_cctv_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "央视网：2023年全国广播电视和网络视听行业统计",
+      "url": "https://news.cctv.com/2024/05/08/ARTIo3ZmzWpgQu6QOgRqR6vw240508.shtml",
+      "source_type": "central_media_report",
+      "publisher": "央视网",
+      "source_document_id": "china_broadnet_cctv_2023"
+    },
+    {
+      "source_id": "china_broadnet_cww_network_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "通信世界网：中国广电可调度4G/5G基站超400万站",
+      "url": "https://www.cww.net.cn/article?id=583903",
+      "source_type": "industry_media_report",
+      "publisher": "通信世界网",
+      "source_document_id": "china_broadnet_cww_network_2023"
+    },
+    {
+      "source_id": "china_broadnet_broker_network_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "证券研究报告：广电可调度4G/5G基站超400万站",
+      "url": "https://pdf.dfcfw.com/pdf/H3_AP202310311607124281_1.pdf",
+      "source_type": "broker_research_report",
+      "publisher": "证券研究机构",
+      "source_document_id": "china_broadnet_broker_network_2023"
+    },
+    {
       "source_id": "china_broadnet_nrta_2024",
       "operator_id": "china_broadnet",
       "year": 2024,
@@ -4356,6 +4386,36 @@
       "source_type": "industry_media_report",
       "publisher": "通信世界网",
       "source_document_id": "china_broadnet_cww_2025"
+    },
+    {
+      "source_id": "china_broadnet_cena_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "中国电子报：2025年全国广播电视行业统计公报数据",
+      "url": "https://epaper.cena.com.cn/pc/attachment/202605/15/bcd96469-d762-41b6-b25d-0f123a5bc13c.pdf",
+      "source_type": "industry_newspaper_report",
+      "publisher": "中国电子报",
+      "source_document_id": "china_broadnet_cena_2025"
+    },
+    {
+      "source_id": "china_broadnet_zhonghong_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "中宏网：2025年广播电视和网络视听行业统计数据",
+      "url": "https://www.zhonghongwang.com/show-258-460651-1.html",
+      "source_type": "media_report",
+      "publisher": "中宏网",
+      "source_document_id": "china_broadnet_zhonghong_2025"
+    },
+    {
+      "source_id": "china_broadnet_chinacatv_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "中国有线电视网：2025年全国广播电视行业统计公报",
+      "url": "https://m.chinacatv.org.cn/site/content/2572.html",
+      "source_type": "industry_association_media_report",
+      "publisher": "中国有线电视网",
+      "source_document_id": "china_broadnet_chinacatv_2025"
     },
     {
       "source_id": "china_broadnet_szse_filing_2025",

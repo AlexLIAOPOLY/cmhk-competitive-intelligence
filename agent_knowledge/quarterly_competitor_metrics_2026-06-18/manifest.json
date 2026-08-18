@@ -99,8 +99,8 @@
     "china_carrier_operating_sidecar": {
       "status": "backlog_open",
       "available_value_rows": 232,
-      "three_distinct_source_certified_rows": 209,
-      "below_three_source_rows": 23
+      "three_distinct_source_certified_rows": 216,
+      "below_three_source_rows": 16
     }
   },
   "version": "2026-06-19T09:50:20",

@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 95,
                 "Reliance Jio": 23,
-                "中国广电": 17,
+                "中国广电": 24,
                 "中国电信": 57,
                 "中国移动": 68,
                 "中国联通": 52,
@@ -107,6 +107,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertFalse(financial_metrics & {r["metric_key"] for r in sidecar["rows"]})
 
     def test_china_broadnet_scope_gaps_and_three_source_values(self):
+        available = [
+            row for row in self.rows
+            if row["operator_id"] == "china_broadnet" and row["value"] is not None
+        ]
+        self.assertEqual(len(available), 24)
+        self.assertTrue(all(row["distinct_source_document_count"] >= 3 for row in available))
         users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertEqual(users_2024["value"], 32.7546)
         self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")

@@ -3,9 +3,9 @@
   "status": "backlog_open",
   "row_count": 582,
   "available_value_rows": 391,
-  "three_distinct_source_certified_rows": 312,
-  "below_three_source_rows": 79,
-  "source_count": 176,
+  "three_distinct_source_certified_rows": 319,
+  "below_three_source_rows": 72,
+  "source_count": 182,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
@@ -13,9 +13,9 @@
     "not_applicable_precommercial": 25,
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
-    "official_single_source": 28,
-    "official_three_distinct_sources_verified": 312,
-    "official_two_distinct_sources": 35,
+    "official_single_source": 23,
+    "official_three_distinct_sources_verified": 319,
+    "official_two_distinct_sources": 33,
     "source_gap_confirmed": 166
   },
   "available_rows_by_operator": {
@@ -29,7 +29,7 @@
   "three_source_certified_rows_by_operator": {
     "Bharti Airtel": 95,
     "Reliance Jio": 23,
-    "中国广电": 17,
+    "中国广电": 24,
     "中国电信": 57,
     "中国移动": 68,
     "中国联通": 52

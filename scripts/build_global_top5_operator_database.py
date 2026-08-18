@@ -1012,6 +1012,24 @@ SOURCES.update({
         "url": "https://www.digitalchina.gov.cn/2024/xwzx/szkx/202407/t20240712_4858448.htm",
         "source_type": "official_government_feature", "publisher": "数字中国建设峰会",
     },
+    "china_broadnet_cctv_2023": {
+        "source_id": "china_broadnet_cctv_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "央视网：2023年全国广播电视和网络视听行业统计",
+        "url": "https://news.cctv.com/2024/05/08/ARTIo3ZmzWpgQu6QOgRqR6vw240508.shtml",
+        "source_type": "central_media_report", "publisher": "央视网",
+    },
+    "china_broadnet_cww_network_2023": {
+        "source_id": "china_broadnet_cww_network_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "通信世界网：中国广电可调度4G/5G基站超400万站",
+        "url": "https://www.cww.net.cn/article?id=583903",
+        "source_type": "industry_media_report", "publisher": "通信世界网",
+    },
+    "china_broadnet_broker_network_2023": {
+        "source_id": "china_broadnet_broker_network_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "证券研究报告：广电可调度4G/5G基站超400万站",
+        "url": "https://pdf.dfcfw.com/pdf/H3_AP202310311607124281_1.pdf",
+        "source_type": "broker_research_report", "publisher": "证券研究机构",
+    },
     "china_broadnet_nrta_2024": {
         "source_id": "china_broadnet_nrta_2024", "operator_id": "china_broadnet", "year": 2024,
         "label": "国家广播电视总局 2024年全国广播电视行业统计公报",
@@ -1055,6 +1073,24 @@ SOURCES.update({
         "label": "通信世界网：中国广电5G用户4200万户",
         "url": "https://www.cww.net.cn/article?id=778C9D26DAFB4E278A395F1F65F5F824",
         "source_type": "industry_media_report", "publisher": "通信世界网",
+    },
+    "china_broadnet_cena_2025": {
+        "source_id": "china_broadnet_cena_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "中国电子报：2025年全国广播电视行业统计公报数据",
+        "url": "https://epaper.cena.com.cn/pc/attachment/202605/15/bcd96469-d762-41b6-b25d-0f123a5bc13c.pdf",
+        "source_type": "industry_newspaper_report", "publisher": "中国电子报",
+    },
+    "china_broadnet_zhonghong_2025": {
+        "source_id": "china_broadnet_zhonghong_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "中宏网：2025年广播电视和网络视听行业统计数据",
+        "url": "https://www.zhonghongwang.com/show-258-460651-1.html",
+        "source_type": "media_report", "publisher": "中宏网",
+    },
+    "china_broadnet_chinacatv_2025": {
+        "source_id": "china_broadnet_chinacatv_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "中国有线电视网：2025年全国广播电视行业统计公报",
+        "url": "https://m.chinacatv.org.cn/site/content/2572.html",
+        "source_type": "industry_association_media_report", "publisher": "中国有线电视网",
     },
     "china_broadnet_szse_filing_2025": {
         "source_id": "china_broadnet_szse_filing_2025", "operator_id": "china_broadnet", "year": 2025,
@@ -1335,10 +1371,15 @@ add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, s
 CBN_2022_STATS = ["china_broadnet_nrta_2022", "china_broadnet_jiacreat_filing_2022", "china_broadnet_lianhe_rating_2022"]
 CBN_2022_REVENUE = ["china_broadnet_nrta_2022", "china_broadnet_lianhe_rating_2022", "china_broadnet_lianhe_rating_revenue_2022"]
 CBN_2023_STATS = ["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_guangxi_ar_2023"]
+CBN_2023_HD = ["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_cctv_2023"]
+CBN_2023_SHARED_NETWORK = ["china_broadnet_digital_china_2023", "china_broadnet_cww_network_2023", "china_broadnet_broker_network_2023"]
 CBN_2024_STATS = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_jiangsu_bond_2024"]
 CBN_2024_CABLE_REVENUE = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_people_2024"]
 CBN_2025_USERS = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_szse_filing_2025"]
 CBN_2025_CABLE = ["china_broadnet_nrta_2025", "china_broadnet_nbs_2025", "china_broadnet_szse_filing_2025"]
+CBN_2025_TWO_WAY = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_cena_2025"]
+CBN_2025_HD = ["china_broadnet_nrta_2025", "china_broadnet_cena_2025", "china_broadnet_zhonghong_2025"]
+CBN_2025_REVENUE = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_chinacatv_2025"]
 CBN_CABLE_SCOPE = "nationwide cable-TV industry/federated operating system; not China Broadnet consolidated owned customer count"
 CBN_SOURCE_GAP_NOTE = "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
 
@@ -1357,13 +1398,13 @@ add_series("china_broadnet", "5g_base_stations", {y:None for y in range(2016, 20
 add_series("china_broadnet", "5g_base_stations", {2022:0.48}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2022:["china_broadnet_nrta_tech_review_2022", "china_mobile_ar_2022", "china_mobile_ar_a_2022"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
 add_series("china_broadnet", "5g_base_stations", {2023:0.62}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2023:["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
 add_series("china_broadnet", "5g_base_stations", {2024:None, 2025:None}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={2024:[], 2025:[]}, note="Only interim or differently scoped shared-network totals were found; no year-end value is substituted.")
-add_series("china_broadnet", "shared_4g_5g_base_stations", {2023:4.0}, scope="China Mobile 4G/5G base stations available to China Broadnet through network sharing", comparator=">", source_ids={2023:["china_broadnet_digital_china_2023"]}, note="Useful network-access evidence but below the three-document threshold; not owned assets.")
+add_series("china_broadnet", "shared_4g_5g_base_stations", {2023:4.0}, scope="China Mobile 4G/5G base stations available to China Broadnet through network sharing", comparator=">", source_ids={2023:CBN_2023_SHARED_NETWORK}, note="Network-access evidence appears in three distinct public documents, but downstream reports share the China Broadnet chairman statement lineage; these are available shared stations, not owned assets.")
 
 add_series("china_broadnet", "cable_tv_actual_users", {2022:200, 2023:202, 2024:208, 2025:207}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_CABLE}, note="Industry/federated scope only; provincial legal entities were not fully consolidated into a single comparable corporate customer base. Corroborating documents can share the same regulator-statistic lineage.")
-add_series("china_broadnet", "two_way_digital_cable_tv_users", {2022:98.2, 2023:100, 2024:None, 2025:105}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:[], 2025:["china_broadnet_nrta_2025"]}, note="2025 currently has only one exact public document for the two-way subset and remains below the three-source threshold.")
-add_series("china_broadnet", "hd_uhd_cable_tv_users", {2022:110, 2023:109, 2024:110, 2025:111}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023"], 2024:CBN_2024_STATS, 2025:["china_broadnet_nrta_2025"]}, note="Industry/federated scope; years with fewer than three matching documents remain below threshold.")
-add_series("china_broadnet", "uhd_cable_tv_users", {2023:42, 2024:45, 2025:56}, scope=CBN_CABLE_SCOPE, source_ids={2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023"], 2024:CBN_2024_STATS, 2025:["china_broadnet_nrta_2025"]}, note="Industry/federated scope; years with fewer than three matching documents remain below threshold.")
-add_series("china_broadnet", "cable_network_industry_revenue", {2022:71955, 2023:None, 2024:73937, 2025:72158}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:["china_broadnet_nrta_2025"]}, note="Stored only as industry context. Never answer this as China Broadnet corporate revenue; corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "two_way_digital_cable_tv_users", {2022:98.2, 2023:100, 2024:None, 2025:105}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:[], 2025:CBN_2025_TWO_WAY}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "hd_uhd_cable_tv_users", {2022:110, 2023:109, 2024:110, 2025:111}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "uhd_cable_tv_users", {2023:42, 2024:45, 2025:56}, scope=CBN_CABLE_SCOPE, source_ids={2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "cable_network_industry_revenue", {2022:71955, 2023:None, 2024:73937, 2025:72158}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_REVENUE}, note="Stored only as industry context. Never answer this as China Broadnet corporate revenue; corroborating documents can share the same regulator-statistic lineage.")
 for metric_key in ["revenue", "ebitda", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"]:
     add_series("china_broadnet", metric_key, {y:None for y in YEARS}, unit="RMB_million", scope=f"China Broadnet consolidated {METRICS[metric_key][0]}", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
 
