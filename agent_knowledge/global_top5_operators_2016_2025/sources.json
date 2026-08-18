@@ -2082,6 +2082,242 @@
       }
     },
     {
+      "source_id": "airtel_q1_2024_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2024,
+      "label": "Bharti Airtel FY2023-24 Q1 investor relations pack with FY2022 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q1_2024_ir_pack",
+      "comparative_evidence": {
+        "FY2022": {
+          "total_customers": {
+            "value": 489.729,
+            "unit": "million_customers",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1165469,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 581103,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 107845,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 42549,
+            "unit": "INR_million",
+            "locator": "FY2022 net income, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 256616,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1603073,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 665543,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 268848,
+            "unit": "sites",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q2_2024_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2024,
+      "label": "Bharti Airtel FY2023-24 Q2 investor relations pack with FY2022 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q2_2024_ir_pack",
+      "comparative_evidence": {
+        "FY2022": {
+          "total_customers": {
+            "value": 489.729,
+            "unit": "million_customers",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1165469,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 581103,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 107845,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 42549,
+            "unit": "INR_million",
+            "locator": "FY2022 net income, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 256616,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1603073,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 665543,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 268848,
+            "unit": "sites",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q3_2024_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2024,
+      "label": "Bharti Airtel FY2023-24 Q3 investor relations pack with FY2022 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q3_2024_ir_pack",
+      "comparative_evidence": {
+        "FY2022": {
+          "total_customers": {
+            "value": 489.729,
+            "unit": "million_customers",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1165469,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 581103,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 107845,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 42549,
+            "unit": "INR_million",
+            "locator": "FY2022 net income, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 256616,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1603073,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 665543,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 268848,
+            "unit": "sites",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q4_2024_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2024,
+      "label": "Bharti Airtel FY2023-24 Q4 investor relations pack with FY2022 comparatives",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q4_2024_ir_pack",
+      "comparative_evidence": {
+        "FY2022": {
+          "total_customers": {
+            "value": 489.729,
+            "unit": "million_customers",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1165469,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 581103,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 107845,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 42549,
+            "unit": "INR_million",
+            "locator": "FY2022 net income, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 256616,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1603073,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 665543,
+            "unit": "INR_million",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 268848,
+            "unit": "sites",
+            "locator": "FY2022 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
       "source_id": "jio_2025_q4",
       "operator_id": "reliance_jio",
       "year": 2025,
