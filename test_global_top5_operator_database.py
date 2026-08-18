@@ -131,21 +131,47 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn(value_text, combined)
             self.assertIn(f"distinct_source_document_count={strict_count}", combined)
 
-    def test_exact_iot_value_does_not_count_rounded_documents(self):
+    def test_exact_iot_value_uses_three_exact_documents_not_rounded_materials(self):
         row = self.index[("china_mobile", 2025, "iot_connections")]
         self.assertEqual(row["value"], 1482)
-        self.assertEqual(row["distinct_source_document_count"], 2)
-        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
-
-    def test_2025_dou_keeps_honest_two_document_status(self):
-        row = self.index[("china_mobile", 2025, "mobile_dou")]
-        self.assertEqual(row["value"], 17.3)
-        self.assertEqual(row["distinct_source_document_count"], 2)
-        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(row["distinct_source_document_count"], 4)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
         self.assertEqual(
             set(row["verification_sources"]),
-            {"china_mobile_ar_2025", "china_mobile_ar_a_2025"},
+            {"china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025", "china_mobile_q1_2026_comparatives"},
         )
+
+    def test_2025_dou_has_three_separate_legal_disclosure_documents(self):
+        row = self.index[("china_mobile", 2025, "mobile_dou")]
+        self.assertEqual(row["value"], 17.3)
+        self.assertEqual(row["distinct_source_document_count"], 3)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(
+            set(row["verification_sources"]),
+            {"china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"},
+        )
+
+    def test_2025_gigabit_broadband_uses_exact_not_rounded_values(self):
+        row = self.index[("china_mobile", 2025, "gigabit_broadband_customers")]
+        self.assertEqual(row["value"], 109)
+        self.assertEqual(row["distinct_source_document_count"], 3)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_xiaojing_compound_query_inherits_single_operator_across_clauses(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国移动2025年DOU、千兆宽带客户和物联网卡连接数分别是多少？三来源状态呢？",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("metric_key=mobile_dou", combined)
+        self.assertIn("official_value=17.3 GB_per_user_month", combined)
+        self.assertIn("metric_key=gigabit_broadband_customers", combined)
+        self.assertIn("official_value=109 million_customers", combined)
+        self.assertIn("metric_key=iot_connections", combined)
+        self.assertIn("official_value=1482 million_connections", combined)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 3)
 
     def test_source_registry_has_canonical_document_identity(self):
         sources = json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]

@@ -205,11 +205,23 @@ SOURCES.update({
         "url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-03-27/600941_20260327_EIXS.pdf",
         "source_type": "official_a_share_annual_report", "publisher": "China Mobile Limited",
     },
+    "china_mobile_ar_summary_2025": {
+        "source_id": "china_mobile_ar_summary_2025", "operator_id": "china_mobile", "year": 2025,
+        "label": "China Mobile 2025 A-share annual report summary",
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260326/73569fff33d04e62bf68fe56c4599249.PDF",
+        "source_type": "official_a_share_annual_report_summary", "publisher": "China Mobile Limited",
+    },
     "china_mobile_press_2025": {
         "source_id": "china_mobile_press_2025", "operator_id": "china_mobile", "year": 2025,
         "label": "China Mobile 2025 annual results press release",
         "url": "https://www.chinamobileltd.com/en/media/press/p260326.pdf",
         "source_type": "official_results_press_release", "publisher": "China Mobile Limited",
+    },
+    "china_mobile_q1_2026_comparatives": {
+        "source_id": "china_mobile_q1_2026_comparatives", "operator_id": "china_mobile", "year": 2025,
+        "label": "China Mobile 2026 first-quarter results with FY2025 comparatives",
+        "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0420/2026042001454.pdf",
+        "source_type": "official_quarterly_results_announcement", "publisher": "China Mobile Limited",
     },
     "china_telecom_announcement_2025": {
         "source_id": "china_telecom_announcement_2025", "operator_id": "china_telecom", "year": 2025,
@@ -413,14 +425,14 @@ add_series("china_mobile", "5g_network_subscribers", {2021:207, 2022:327, 2023:4
 add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.7,187.0,210.3,240,272,298,315,None])), scope="group wireline broadband customers", source_ids=override_sources(paired("china_mobile", cm_years), 2025, []), note="FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series.")
 add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.1,47.4,48.8,49.0,49.3,48.5,46.8])), unit="RMB_per_user_month", scope="group mobile business annual ARPU", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_ARPU_THREE))
 add_series("china_mobile", "household_customer_blended_arpu", {2025:44.5}, unit="RMB_per_user_month", scope="household customer blended ARPU", source_ids={2025:CM_2025_ARPU_THREE})
-add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025"]), note="The H-share and A-share annual reports disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU, and no third exact independent document is counted.")
+add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]), note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU.")
 add_series("china_mobile", "handset_data_traffic", dict(zip(cm_years, [5.6807,12.5693,35.4534,65.89,90.70,124.8,144.7,165.9,168.2,183.8])), scope="sum of four official quarterly handset-data-traffic values; 2016-18 converted from billion MB", basis="official_quarterly_sum", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ops_2025"]), note="Derived only by summing the four official quarterly values; no interpolation.")
 add_series("china_mobile", "total_base_stations", {2018:3.85, 2019:4.48, 2020:5.14, 2021:5.50, 2022:6.0, 2023:6.60}, scope="all commissioned mobile base stations", comparator=">=", note="Annual reports use 'more than/over' for some years.")
 add_series("china_mobile", "4g_base_stations", {2016:1.51, 2017:1.87, 2018:2.41, 2019:3.09, 2021:3.32}, scope="commissioned 4G base stations")
 add_series("china_mobile", "5g_base_stations", {2019:0.05, 2020:0.39, 2021:0.73, 2022:1.285, 2023:1.94, 2024:2.40, 2025:2.77}, scope="commissioned 5G base stations, including applicable 700MHz co-built sites", comparator=">=", source_ids=CHINA_MOBILE_5G_BASE_STATION_SOURCES)
 add_series("china_mobile", "integrated_broadband_network_customers", {2025:329}, scope="household broadband, enterprise broadband, dedicated Internet lines and dedicated data lines", source_ids={2025:CM_2025_THREE})
-add_series("china_mobile", "gigabit_broadband_customers", {2025:109}, scope="group gigabit broadband customers", source_ids={2025:["china_mobile_ar_2025"]}, note="The annual report gives 109 million; the presentation and press release round to 110 million, so this row remains below the exact three-source threshold.")
-add_series("china_mobile", "iot_connections", {2025:1482}, scope="cellular IoT card connections", source_ids={2025:["china_mobile_ar_2025", "china_mobile_ar_a_2025"]}, note="The annual reports disclose the exact value of 1,482 million. The presentation and press release round it to about 1,480 million, so they are not counted as exact-value corroboration.")
+add_series("china_mobile", "gigabit_broadband_customers", {2025:109}, scope="group gigabit broadband customers", source_ids={2025:["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]}, note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each give the exact 109 million value. The presentation and press release round to 110 million and are not counted.")
+add_series("china_mobile", "iot_connections", {2025:1482}, scope="cellular IoT card connections", source_ids={2025:["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025", "china_mobile_q1_2026_comparatives"]}, note="The H-share annual report, A-share annual report, separately filed annual report summary and the FY2025 comparative column in the 2026 first-quarter results each disclose the exact value of 1,482 million. Rounded presentation and press-release values are not counted.")
 add_series("china_mobile", "mobile_broadband_integration_rate", {2025:96.5}, scope="integration rate between mobile and broadband customers", source_ids={2025:CM_2025_THREE})
 add_series("china_mobile", "government_enterprise_customers", {2025:36.17}, scope="government and enterprise customers", source_ids={2025:CM_2025_THREE})
 add_series("china_mobile", "households_gigabit_coverage", {2025:530}, scope="households covered by gigabit network", source_ids={2025:CM_2025_THREE})

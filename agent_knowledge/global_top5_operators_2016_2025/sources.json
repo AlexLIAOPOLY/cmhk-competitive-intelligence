@@ -1162,6 +1162,16 @@
       "source_document_id": "china_mobile_ar_a_2025"
     },
     {
+      "source_id": "china_mobile_ar_summary_2025",
+      "operator_id": "china_mobile",
+      "year": 2025,
+      "label": "China Mobile 2025 A-share annual report summary",
+      "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260326/73569fff33d04e62bf68fe56c4599249.PDF",
+      "source_type": "official_a_share_annual_report_summary",
+      "publisher": "China Mobile Limited",
+      "source_document_id": "china_mobile_ar_summary_2025"
+    },
+    {
       "source_id": "china_mobile_press_2025",
       "operator_id": "china_mobile",
       "year": 2025,
@@ -1170,6 +1180,16 @@
       "source_type": "official_results_press_release",
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_press_2025"
+    },
+    {
+      "source_id": "china_mobile_q1_2026_comparatives",
+      "operator_id": "china_mobile",
+      "year": 2025,
+      "label": "China Mobile 2026 first-quarter results with FY2025 comparatives",
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0420/2026042001454.pdf",
+      "source_type": "official_quarterly_results_announcement",
+      "publisher": "China Mobile Limited",
+      "source_document_id": "china_mobile_q1_2026_comparatives"
     },
     {
       "source_id": "china_telecom_announcement_2025",
