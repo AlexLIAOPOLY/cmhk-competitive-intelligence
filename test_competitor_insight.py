@@ -114,6 +114,24 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("规模", lens)
         self.assertIn("不自动代表", lens)
 
+    def test_rejects_wrong_insight_labels(self):
+        insights = ["数据摘要｜0.1", "公司定位｜HKT 0.8、SmarTone 0.7", "业务含义｜0.1"]
+        with self.assertRaisesRegex(RuntimeError, "标签或顺序"):
+            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
+
+    def test_rejects_company_position_that_omits_selected_company(self):
+        insights = ["竞争格局｜差距0.1", "公司定位｜HKT为0.8", "业务含义｜流失率0.8"]
+        with self.assertRaisesRegex(RuntimeError, "未覆盖全部"):
+            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
+
+    def test_rejects_causal_or_overall_superiority_claim(self):
+        insights = ["竞争格局｜差距0.1证明竞争稳定", "公司定位｜HKT为0.8、SmarTone为0.7", "业务含义｜HKT整体经营领先0.1"]
+        with self.assertRaisesRegex(RuntimeError, "过强因果"):
+            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
+
+    def test_demo_report_listing_excludes_test_output(self):
+        self.assertFalse(web_app.is_report_file_name("test_out.docx"))
+
 
 if __name__ == "__main__":
     unittest.main()

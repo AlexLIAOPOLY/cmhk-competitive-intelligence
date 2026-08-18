@@ -158,7 +158,7 @@
       ${chart}
       <section class="competitor-insight is-loading" id="competitorInsight" role="status" aria-live="polite" aria-busy="true">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 多公司竞争洞察</b><small data-competitor-insight-status>正在识别竞争格局与公司分化</small></div></div>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在识别竞争格局与公司分化</small></div></div>
           <span class="competitor-insight-badge" data-competitor-insight-badge>ANALYSING</span>
         </header>
         <div class="competitor-insight-body">
@@ -168,13 +168,7 @@
             <li><b>公司定位</b><span>正在识别各公司的规模、动能与稳定性特征…</span></li>
             <li><b>业务含义</b><span>正在把数据变化转换为可解释的竞争信号…</span></li>
           </ol>
-          <dl class="competitor-insight-facts">
-            <div><dt>可比区间</dt><dd>${esc(fallbackInsight.period)}</dd></div>
-            <div><dt>最新共同年差距</dt><dd>${esc(fallbackInsight.gap)}</dd></div>
-            <div><dt>趋势关系</dt><dd>${esc(fallbackInsight.relation)}</dd></div>
-          </dl>
         </div>
-        <footer><span>数据口径</span><p>${esc(fallbackInsight.caveat)}</p></footer>
       </section>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
@@ -309,13 +303,13 @@
     card.classList.remove("is-loading");
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
-    card.querySelector("[data-competitor-insight-icon]").textContent = isAi ? "AI" : "数据";
-    card.querySelector("[data-competitor-insight-title]").textContent = isAi ? "AI 多公司竞争洞察" : "可比数据观察";
-    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "已完成竞争格局与公司定位分析" : "AI 服务等待安全加载";
-    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "DATA ONLY";
+    card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
+    card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
+    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "已完成竞争格局与公司定位分析" : "服务正在等待安全加载";
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "WAITING";
     const list = card.querySelector("[data-competitor-insight-list]");
     list.replaceChildren(...items.map((item, index) => {
-      const labels = isAi ? ["竞争格局", "公司定位", "业务含义"] : ["数据格局", "共同年度", "解读边界"];
+      const labels = isAi ? ["竞争格局", "公司定位", "业务含义"] : ["状态"];
       const li = document.createElement("li");
       const label = document.createElement("b");
       const copy = document.createElement("span");
@@ -341,11 +335,7 @@
       if (error.name === "AbortError") return;
       const card = document.querySelector("#competitorInsight");
       if (requestId === state.competitorInsightRequest && card) {
-        settleCompetitorInsight(card, { mode: "data", insights: [
-          fallbackInsight.headline,
-          `结论仅使用 ${fallbackInsight.period} 的共同披露数据，未补齐任何缺失年度。`,
-          "当前内容只是可比数据观察；公司策略、竞争位置与业务含义将在 AI 服务安全加载后生成。",
-        ] });
+        settleCompetitorInsight(card, { mode: "data", insights: ["AI 竞争洞察服务正在等待安全加载，趋势图与原始数据仍可正常查看。"] });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;

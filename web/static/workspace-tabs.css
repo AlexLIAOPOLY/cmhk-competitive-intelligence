@@ -258,19 +258,11 @@
 .competitor-insight b { color: #f0fafb; font-size: 14px; letter-spacing: .04em; }
 .competitor-insight small { color: #789ba7; font-size: 9px; }
 .competitor-insight-badge { padding: 5px 8px; border: 1px solid rgba(95,196,215,.35); border-radius: 999px; color: #75bdca; background: rgba(5,26,35,.42); font: 700 8px/1 system-ui; letter-spacing: .12em; }
-.competitor-insight-body { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 22px; }
+.competitor-insight-body { display: grid; grid-template-columns: minmax(0,1fr); align-items: center; gap: 22px; }
 .competitor-insight-list { display: grid; gap: 10px; max-width: 900px; margin: 0; padding: 0; list-style: none; }
 .competitor-insight-list li { display: grid; grid-template-columns: 74px minmax(0,1fr); gap: 12px; align-items: start; }
 .competitor-insight-list li b { padding-top: 3px; color: #71d1e2; font-size: 9px; letter-spacing: .08em; }
 .competitor-insight-list li span { color: #e7f3f5; font-size: 13px; font-weight: 620; line-height: 1.62; letter-spacing: .01em; }
-.competitor-insight-facts { display: grid; grid-template-columns: repeat(3,minmax(82px,1fr)); min-width: 300px; margin: 0; border: 1px solid rgba(73,123,139,.46); border-radius: 9px; background: rgba(4,22,30,.38); }
-.competitor-insight-facts > div { display: grid; gap: 5px; padding: 10px 12px; border-right: 1px solid rgba(73,123,139,.38); }
-.competitor-insight-facts > div:last-child { border-right: 0; }
-.competitor-insight-facts dt { color: #7195a1; font-size: 8px; }
-.competitor-insight-facts dd { margin: 0; color: #d8eaed; font-size: 11px; font-weight: 700; white-space: nowrap; }
-.competitor-insight footer { display: flex; align-items: flex-start; gap: 9px; padding-top: 11px; border-top: 1px solid rgba(73,123,139,.34); }
-.competitor-insight footer span { flex: 0 0 auto; color: #65c6d9; font-size: 8px; font-weight: 700; letter-spacing: .08em; }
-.competitor-insight footer p { margin: 0; color: #789ba7; font-size: 9px; line-height: 1.55; }
 .competitor-insight-loading { display: none; gap: 9px; }
 .competitor-insight-loading span { display: block; height: 13px; border-radius: 4px; background: linear-gradient(90deg,rgba(89,143,158,.12),rgba(109,196,214,.32),rgba(89,143,158,.12)); background-size: 220% 100%; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-insight-loading span:nth-child(1) { width: 78%; }
@@ -279,7 +271,6 @@
 .competitor-insight.is-loading .competitor-insight-loading { display: grid; }
 .competitor-insight.is-loading .competitor-insight-list { display: none; }
 .competitor-insight.is-loading .competitor-insight-identity i { animation: competitor-insight-pulse 1.6s ease-in-out infinite; }
-.competitor-insight.is-loading .competitor-insight-facts { opacity: .55; }
 .competitor-insight.is-ai { border-color: rgba(104,215,178,.56); }
 .competitor-insight.is-ai::before { opacity: .92; }
 @keyframes competitor-insight-shimmer { 0% { background-position: 110% 0; } 100% { background-position: -110% 0; } }
@@ -740,7 +731,6 @@ body.has-maximized-report-preview { overflow: hidden; }
   .competitor-chart { width: 680px; }
   .competitor-insight { min-height: 0; padding: 16px; }
   .competitor-insight-body { grid-template-columns: 1fr; gap: 15px; }
-  .competitor-insight-facts { min-width: 0; width: 100%; }
   .news-process-toolbar { align-items: flex-start; flex-direction: column; }
   .news-run-controls { width: 100%; flex-wrap: wrap; }
   .news-run-controls label { flex: 1 1 150px; }
@@ -780,9 +770,6 @@ body.has-maximized-report-preview { overflow: hidden; }
   .competitor-insight { margin-inline: 10px; }
   .competitor-insight-list li { grid-template-columns: 68px minmax(0,1fr); gap: 8px; }
   .competitor-insight-list li span { font-size: 12px; line-height: 1.65; }
-  .competitor-insight-facts { grid-template-columns: 1fr; }
-  .competitor-insight-facts > div { grid-template-columns: 86px 1fr; align-items: center; border-right: 0; border-bottom: 1px solid rgba(73,123,139,.38); }
-  .competitor-insight-facts > div:last-child { border-bottom: 0; }
   .workspace-inline-surface .floating-chat,
   #logModal.workspace-inline-surface .log-modal { height: calc(100vh - 100px) !important; min-height: 560px; }
 }

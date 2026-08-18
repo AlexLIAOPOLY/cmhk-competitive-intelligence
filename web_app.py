@@ -72,6 +72,7 @@ REPORT_FILE_RE = re.compile(
 )
 REPORT_METADATA_PATH = ROOT / "report_file_metadata.json"
 EXCLUDED_REPORT_NAMES = {
+    "test_out.docx",
     "weekly_report.docx",
     "weekly_report_from_word_template.docx",
     "weekly_report_template.docx",
@@ -260,10 +261,36 @@ def _parse_competitor_business_insights(content: object) -> list[str]:
     lines = [line for line in lines if line]
     if len(lines) == 1:
         lines = [part.strip() for part in re.split(r"(?=(?:竞争格局|公司分化|公司定位|业务含义)[：|｜])", lines[0]) if part.strip()]
-    insights = [line[:220] for line in lines[:3]]
+    insights = lines[:3]
     if len(insights) != 3:
         raise RuntimeError("AI 竞争洞察结构不完整")
+    if any(len(line) > 220 for line in insights):
+        raise RuntimeError("AI 竞争洞察超出长度限制")
     return insights
+
+
+def _validate_competitor_business_insights(insights: list[str], companies: list[str], rows: list[dict]) -> None:
+    prefixes = ("竞争格局｜", "公司定位｜", "业务含义｜")
+    if len(insights) != 3 or any(not line.startswith(prefix) for line, prefix in zip(insights, prefixes)):
+        raise RuntimeError("AI 竞争洞察标签或顺序不正确")
+    if any(not re.search(r"\d", line) for line in insights):
+        raise RuntimeError("AI 竞争洞察缺少数据证据")
+    position_line = insights[1]
+    if any(company not in position_line for company in companies):
+        raise RuntimeError("AI 公司定位未覆盖全部所选公司")
+    combined = " ".join(insights)
+    if re.search(r"证明|导致|因为.{0,40}所以|战略成功|整体经营领先|整体经营更优", combined):
+        raise RuntimeError("AI 竞争洞察包含过强因果或整体优劣断言")
+    has_shared_scope = any(re.search(r"shared|共建|共享", str(row.get("scope") or ""), flags=re.I) for row in rows)
+    has_scope_break = any(re.search(r"scope change|口径变化|unsafe|not comparable|不可比|restated", " ".join(str(row.get(key) or "") for key in ("scope", "basis", "note")), flags=re.I) for row in rows)
+    comparators = {str(row.get("comparator") or "=") for row in rows}
+    has_bounds = any(value != "=" for value in comparators)
+    if has_shared_scope and not ("共享" in combined and "不可相加" in combined):
+        raise RuntimeError("AI 竞争洞察遗漏共建共享限制")
+    if has_scope_break and not ("口径" in combined and re.search(r"不可比|不作|不能", combined)):
+        raise RuntimeError("AI 竞争洞察遗漏口径变化限制")
+    if has_bounds and not re.search(r"下限|上限|约数|边界", combined):
+        raise RuntimeError("AI 竞争洞察遗漏边界披露限制")
 
 
 def generate_competitor_insight(payload: dict) -> dict:
@@ -331,7 +358,7 @@ def generate_competitor_insight(payload: dict) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是把多家公司在同一指标上的共同数据转化为公司层面的竞争洞察。必须恰好输出三行，依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头：第一行判断竞争格局是收敛、分化、追赶、反转还是稳定；第二行比较每家公司的位置、动能和稳定性，所选公司都必须被覆盖；第三行解释这种结构对客户留存、变现、采用进程、规模竞争或网络投入意味着什么。每行都要包含至少一个当前表格中的数字证据，但数字只作证据，不能成为整行主体。只能基于表格和给出的指标解释边界进行审慎推断；不能声称已证明公司的主观战略、具体原因或因果关系，必要时使用‘显示’‘可能反映’。不要提供行动建议。趋势、差距和最新比较只能使用所有公司共同首尾年度。不得逐家公司机械罗列起止值。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。必须保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
+            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是把多家公司在同一指标上的共同数据转化为公司层面的竞争洞察。必须恰好输出三行，依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头：第一行判断竞争格局是收敛、分化、追赶、反转还是稳定；第二行比较每家公司的位置、动能和稳定性，所选公司都必须被覆盖；第三行解释这种结构对客户留存、变现、采用进程、规模竞争或网络投入意味着什么。每行都要包含至少一个当前表格中的数字证据，但数字只作证据，不能成为整行主体。最终三行不要出现‘共同可比年度’‘共同首尾锚点’‘数据口径’等方法说明，也不要以年份区间开头；这些边界仅用于保证内部计算正确。只能基于表格和给出的指标解释边界进行审慎推断；不能声称已证明公司的主观战略、具体原因或因果关系，必要时使用‘显示’‘可能反映’。不要提供行动建议。趋势、差距和最新比较只能使用所有公司共同首尾年度。不得逐家公司机械罗列起止值。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。必须保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
             {"role": "user", "content": f"指标：{metric_label}\n指标解释边界：{business_lens}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
         "temperature": 0.1,
@@ -349,6 +376,7 @@ def generate_competitor_insight(payload: dict) -> dict:
         result = json.loads(response.read().decode("utf-8"))
     message = ((result.get("choices") or [{}])[0].get("message") or {})
     insights = _parse_competitor_business_insights(message.get("content") or message.get("reasoning_content") or "")
+    _validate_competitor_business_insights(insights, companies, comparison_rows)
     return {"requestId": request_id, "insight": "\n".join(insights), "insights": insights, "model": model}
 
 
