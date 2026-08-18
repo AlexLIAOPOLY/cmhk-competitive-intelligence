@@ -3887,6 +3887,7 @@ def polish_candidates_before_review(
             f"需调用模型 {len(pending)} 条；缓存版本 {AI_EDITOR_VERSION}。"
         ),
     )
+    reused_before_model = len(resolved) + len(excluded_decisions)
 
     single_retry_attempts = 0
     retry_time_budget_exhausted_count = 0
@@ -3909,8 +3910,9 @@ def polish_candidates_before_review(
             progress_callback,
             "AI批量审核",
             (
-                f"开始第 {batch_number}/{batch_total} 批，"
-                f"候选 {offset + 1}-{offset + len(batch)}/{len(pending)}，"
+                f"开始剩余未命中缓存队列第 {batch_number}/{batch_total} 批，"
+                f"剩余候选 {offset + 1}-{offset + len(batch)}/{len(pending)}，"
+                f"本轮已复用 {reused_before_model} 条，"
                 f"本批 {len(batch)} 条。"
             ),
         )
@@ -4361,7 +4363,8 @@ def polish_candidates_before_review(
             progress_callback,
             "AI批量审核",
             (
-                f"完成第 {batch_number}/{batch_total} 批；累计解析决策 "
+                f"完成剩余队列第 {batch_number}/{batch_total} 批并已写入断点缓存；"
+                f"本轮全量累计解析决策 "
                 f"{len(resolved) + len(excluded_decisions)}/{len(items)} 条，"
                 f"延期 {len(deferred_reviews)} 条，逐条重试 {single_retry_attempts} 次。"
             ),
@@ -5404,6 +5407,81 @@ def _interrupted_strategic_attempts(slot_key: str) -> list[dict[str, Any]]:
     ]
 
 
+def _crawl_record_time(record: dict[str, Any], *keys: str) -> datetime | None:
+    for key in keys:
+        value = str(record.get(key) or "").strip()
+        if not value:
+            continue
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=HKT)
+        return parsed.astimezone(HKT)
+    return None
+
+
+def _prior_strategic_slot_delayed(
+    slot_key: str,
+    slot_at: datetime,
+) -> bool:
+    """Whether an earlier same-day scan occupied this slot's scheduled time."""
+    slot_day = slot_key.split("@", 1)[0]
+    scope_pattern = re.compile(r"（(\d{4}-\d{2}-\d{2}@\d{2}:\d{2})）$")
+    for record in load_crawl_run_index():
+        if not isinstance(record, dict):
+            continue
+        if str(record.get("task_kind") or "") != "strategic-news":
+            continue
+        if str(record.get("trigger") or "") != "战略新闻定时爬虫":
+            continue
+        match = scope_pattern.search(str(record.get("scope") or ""))
+        if not match:
+            continue
+        prior_key = match.group(1)
+        if prior_key.split("@", 1)[0] != slot_day or prior_key >= slot_key:
+            continue
+        last_activity = _crawl_record_time(
+            record,
+            "completed_at_hkt",
+            "completed_at",
+            "heartbeat_at_hkt",
+            "heartbeat_at",
+            "last_activity_at_hkt",
+            "last_activity_at",
+        )
+        if last_activity is not None and last_activity >= slot_at:
+            return True
+    return False
+
+
+def _later_unattempted_slot_is_due(
+    current_index: int,
+    now: datetime,
+) -> bool:
+    """Give a newly due later slot one turn before retrying an older failure."""
+    records = load_crawl_run_index()
+    for later_time in SCAN_TIMES[current_index + 1 :]:
+        later_at = datetime.combine(now.date(), later_time, tzinfo=HKT)
+        if later_at > now:
+            continue
+        later_key = f"{now:%Y-%m-%d}@{later_time:%H:%M}"
+        if _completed_scan_archive(later_key):
+            continue
+        scope_suffix = f"（{later_key}）"
+        attempted = any(
+            isinstance(record, dict)
+            and str(record.get("task_kind") or "") == "strategic-news"
+            and str(record.get("trigger") or "") == "战略新闻定时爬虫"
+            and str(record.get("scope") or "").endswith(scope_suffix)
+            for record in records
+        )
+        if not attempted:
+            return True
+    return False
+
+
 def _next_scan_at(now: datetime) -> datetime:
     for scan_time in SCAN_TIMES:
         candidate = datetime.combine(now.date(), scan_time, tzinfo=HKT)
@@ -5425,6 +5503,7 @@ def _next_group_check_at(now: datetime) -> datetime:
 def run_cycle(now: datetime | None = None) -> dict[str, Any]:
     if not MONITOR_ENABLED:
         return {"enabled": False}
+    fixed_now = now is not None
     now = (now or datetime.now(HKT)).astimezone(HKT)
     if not _THREAD_LOCK.acquire(blocking=False):
         return {"enabled": True, "skipped": "thread_cycle_running"}
@@ -5470,8 +5549,9 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
         }
         scan_slots = state.setdefault("scan_slots", {})
         for index, scan_time in enumerate(SCAN_TIMES):
-            slot_at = datetime.combine(now.date(), scan_time, tzinfo=HKT)
-            slot_key = f"{now:%Y-%m-%d}@{scan_time:%H:%M}"
+            current_now = now if fixed_now else datetime.now(HKT)
+            slot_at = datetime.combine(current_now.date(), scan_time, tzinfo=HKT)
+            slot_key = f"{current_now:%Y-%m-%d}@{scan_time:%H:%M}"
             archived = _completed_scan_archive(slot_key)
             if archived:
                 _recover_completed_scan_slot(state, slot_key, archived)
@@ -5481,17 +5561,33 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 if isinstance(scan_slots.get(slot_key), dict)
                 else {}
             )
-            if slot_at > now or entry.get("status") in {"completed", "baseline"}:
+            if slot_at > current_now or entry.get("status") in {"completed", "baseline"}:
                 continue
-            age_minutes = (now - slot_at).total_seconds() / 60
+            age_minutes = (current_now - slot_at).total_seconds() / 60
             interrupted_attempts = _interrupted_strategic_attempts(slot_key)
             recover_interruption = (
                 bool(interrupted_attempts)
                 and age_minutes <= INTERRUPTED_SCAN_RECOVERY_MINUTES
             )
-            if entry.get("status") == "skipped" and not recover_interruption:
+            deferred_by_prior_slot = _prior_strategic_slot_delayed(
+                slot_key,
+                slot_at,
+            )
+            recover_or_deferred = (
+                recover_interruption
+                or (
+                    deferred_by_prior_slot
+                    and age_minutes <= INTERRUPTED_SCAN_RECOVERY_MINUTES
+                )
+            )
+            if (
+                recover_interruption
+                and _later_unattempted_slot_is_due(index, current_now)
+            ):
                 continue
-            if age_minutes > SCAN_CATCHUP_MINUTES and not recover_interruption:
+            if entry.get("status") == "skipped" and not recover_or_deferred:
+                continue
+            if age_minutes > SCAN_CATCHUP_MINUTES and not recover_or_deferred:
                 scan_slots[slot_key] = {
                     "status": "skipped",
                     "reason": "catchup_window_expired",
@@ -5499,7 +5595,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 }
                 continue
             last_attempt = str(entry.get("last_attempt") or "")
-            if entry.get("status") == "failed" and last_attempt and not recover_interruption:
+            if entry.get("status") == "failed" and last_attempt and not recover_or_deferred:
                 try:
                     if (
                         now - datetime.fromisoformat(last_attempt)
@@ -5510,7 +5606,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                     pass
             try:
                 scan_result = _run_scan(
-                    now,
+                    current_now,
                     slot_key,
                     _slot_label(index),
                     state,
@@ -5522,6 +5618,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                     "candidate_count": scan_result["candidate_count"],
                     "message_id": scan_result["message_id"],
                     "auto_recovered_after_disconnect": recover_interruption,
+                    "deferred_by_prior_slot": deferred_by_prior_slot,
                     "interrupted_attempts": len(interrupted_attempts),
                 }
                 result["scans"].append(scan_result)

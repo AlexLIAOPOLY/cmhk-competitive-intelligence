@@ -751,6 +751,153 @@ class StrategicBriefingTests(unittest.TestCase):
         )
         self.assertEqual(saved["scan_slots"][slot_key]["interrupted_attempts"], 50)
 
+    def test_cycle_runs_afternoon_slot_after_morning_crossed_its_start_time(self):
+        now = datetime(2026, 8, 18, 17, 30, tzinfo=briefing.HKT)
+        morning_key = "2026-08-18@09:00"
+        afternoon_key = "2026-08-18@15:00"
+        stale_state = {
+            "initialized_at": "2026-08-18T08:00:00+08:00",
+            "scan_slots": {
+                afternoon_key: {
+                    "status": "skipped",
+                    "reason": "catchup_window_expired",
+                }
+            },
+            "last_group_bucket": int(now.timestamp())
+            // briefing.GROUP_CHECK_SECONDS,
+        }
+        morning_archive = {
+            "slot": morning_key,
+            "status": "completed",
+            "candidate_count": 3,
+            "message_id": "om_morning",
+        }
+        records = [
+            {
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": f"晨间扫描（{morning_key}）",
+                "run_status": "completed",
+                "completed_at_hkt": "2026-08-18T17:10:00+08:00",
+            }
+        ]
+        saved = {}
+
+        def completed_archive(key):
+            return morning_archive if key == morning_key else {}
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "DATA_DIR", Path(temporary)),
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary) / "runs"),
+            mock.patch.object(
+                briefing,
+                "PROCESS_LOCK_PATH",
+                Path(temporary) / "cycle.lock",
+            ),
+            mock.patch.object(briefing, "MONITOR_ENABLED", True),
+            mock.patch.object(briefing, "SCAN_CATCHUP_MINUTES", 120),
+            mock.patch.object(briefing, "INTERRUPTED_SCAN_RECOVERY_MINUTES", 720),
+            mock.patch.object(briefing, "_load_state", return_value=stale_state),
+            mock.patch.object(
+                briefing,
+                "_completed_scan_archive",
+                side_effect=completed_archive,
+            ),
+            mock.patch.object(
+                briefing,
+                "load_crawl_run_index",
+                return_value=records,
+            ),
+            mock.patch.object(
+                briefing,
+                "_run_scan",
+                return_value={"candidate_count": 2, "message_id": "om_afternoon"},
+            ) as run_scan,
+            mock.patch.object(
+                briefing,
+                "_flush_pending_scan_notifications",
+                return_value=[],
+            ),
+            mock.patch.object(
+                briefing,
+                "_save_state",
+                side_effect=lambda state: saved.update(state),
+            ),
+        ):
+            briefing.run_cycle(now)
+
+        run_scan.assert_called_once_with(
+            now,
+            afternoon_key,
+            "午后扫描",
+            mock.ANY,
+            ensure_group_notifications=True,
+        )
+        self.assertTrue(
+            saved["scan_slots"][afternoon_key]["deferred_by_prior_slot"]
+        )
+
+    def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
+        now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)
+        morning_key = "2026-08-18@09:00"
+        afternoon_key = "2026-08-18@15:00"
+        stale_state = {
+            "initialized_at": "2026-08-18T08:00:00+08:00",
+            "scan_slots": {morning_key: {"status": "failed"}},
+            "last_group_bucket": int(now.timestamp())
+            // briefing.GROUP_CHECK_SECONDS,
+        }
+        records = [
+            {
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": f"晨间扫描（{morning_key}）",
+                "run_status": "failed",
+                "interrupted": True,
+                "completed_at_hkt": "2026-08-18T15:05:00+08:00",
+            }
+        ]
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "DATA_DIR", Path(temporary)),
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary) / "runs"),
+            mock.patch.object(
+                briefing,
+                "PROCESS_LOCK_PATH",
+                Path(temporary) / "cycle.lock",
+            ),
+            mock.patch.object(briefing, "MONITOR_ENABLED", True),
+            mock.patch.object(briefing, "_load_state", return_value=stale_state),
+            mock.patch.object(briefing, "_completed_scan_archive", return_value={}),
+            mock.patch.object(
+                briefing,
+                "load_crawl_run_index",
+                return_value=records,
+            ),
+            mock.patch.object(
+                briefing,
+                "_run_scan",
+                return_value={"candidate_count": 1, "message_id": "om_afternoon"},
+            ) as run_scan,
+            mock.patch.object(
+                briefing,
+                "_flush_pending_scan_notifications",
+                return_value=[],
+            ),
+            mock.patch.object(briefing, "_save_state"),
+        ):
+            briefing.run_cycle(now)
+
+        run_scan.assert_called_once_with(
+            now,
+            afternoon_key,
+            "午后扫描",
+            mock.ANY,
+            ensure_group_notifications=True,
+        )
+
     def test_paused_completed_archive_recovers_pending_notification(self):
         slot_key = "2026-07-30@15:00"
         archived = {
