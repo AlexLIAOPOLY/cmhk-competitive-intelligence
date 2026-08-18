@@ -201,13 +201,22 @@
     const firstSpread = spread(firstValues);
     const lastSpread = spread(lastValues);
     const hasBounds = [...firstValues, ...lastValues].some((item) => item.cell.comparator && item.cell.comparator !== "=");
+    const endpointComparators = [...firstValues, ...lastValues].map((item) => String(item.cell.comparator || "="));
+    const hasDirectionalBounds = endpointComparators.some((value) => /[<>]/.test(value));
+    const hasApproxValues = endpointComparators.some((value) => ["~", "approx"].includes(value.toLowerCase()));
     const spreadDelta = lastSpread - firstSpread;
     const tolerance = Math.max(Math.abs(firstSpread), Math.abs(lastSpread), 1) * .005;
     const relation = hasScopeBreak ? "口径变化" : hasSharedScope ? "共享口径" : hasBounds ? "边界值" : Math.abs(spreadDelta) <= tolerance ? "绝对差距稳定" : spreadDelta < 0 ? "绝对差距收窄" : "绝对差距扩大";
     const directions = [...new Set(movements.map((item) => item.direction))];
-    const directionSummary = directions.length === 1
-      ? directions[0] === "稳定" ? `较${firstYear}年均保持稳定` : `较${firstYear}年均${directions[0]}`
-      : `较${firstYear}年走势出现分化`;
+    const commonDirection = directions.length === 1 ? directions[0] : "";
+    const boundLabel = endpointComparators.every((value) => value.includes(">")) ? "披露下限" : endpointComparators.every((value) => value.includes("<")) ? "披露上限" : "披露边界值";
+    const directionSummary = hasDirectionalBounds
+      ? commonDirection ? `${boundLabel}较${firstYear}年均${commonDirection}` : `${boundLabel}变化方向不同`
+      : hasApproxValues
+        ? commonDirection ? `约数显示较${firstYear}年均${commonDirection}` : `约数显示走势出现分化`
+        : commonDirection
+          ? commonDirection === "稳定" ? `较${firstYear}年均保持稳定` : `较${firstYear}年均${commonDirection}`
+          : `较${firstYear}年走势出现分化`;
     const sharedSameValue = hasSharedScope && lastValues.every((item) => item.cell.value === lastValues[0]?.cell.value && item.cell.comparator === lastValues[0]?.cell.comparator);
     const latestComparison = sharedSameValue
       ? `${lastYear}年双方披露同一共建共享口径${competitorComparator(lastValues[0].cell.comparator)}${format(lastValues[0].cell.value)}${unit}`

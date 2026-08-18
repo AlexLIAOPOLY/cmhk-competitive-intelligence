@@ -280,11 +280,13 @@ def generate_competitor_insight(payload: dict) -> dict:
     per_company_years = {company: {row["year"] for row in normalized if row["company"] == company} for company in companies}
     if any(len(company_years) < 2 for company_years in per_company_years.values()):
         raise ValueError("每家竞对至少需要两个有效年度")
-    if len(set.intersection(*(set(value) for value in per_company_years.values()))) < 2:
+    common_years = sorted(set.intersection(*(set(value) for value in per_company_years.values())))
+    if len(common_years) < 2:
         raise ValueError("共同可比年度不足两个，暂不生成 AI 解析")
+    comparison_rows = [row for row in normalized if row["year"] in common_years]
     table = "\n".join(
         "\t".join(str(row[key]) for key in ("company", "year", "comparator", "value", "unit", "period", "period_end", "scope", "basis", "status", "source", "note"))
-        for row in normalized
+        for row in comparison_rows
     )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).strip().rstrip("/")
@@ -295,8 +297,8 @@ def generate_competitor_insight(payload: dict) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的权威数据表，输出一句不超过100字的中文数据洞察。优先指出差距扩大或收窄、趋势分化、反转、共同变化等最有决策价值的比较发现，不要逐家公司机械复述起止值；除非指标方向和口径都明确，不得擅自使用领先、落后或表现更好。必须保留大于、至少、约等比较符；下限或近似值区间可能重叠时不得排序或精算差距；财年结束日不同只能比较趋势，不得冒充同一自然年度排名；scope显示共建共享时不得把两家公司数值相加或解释为两套网络；备注显示口径变化或不可比时不得跨口径计算趋势；不得补数、预测或引用外部知识；数据不足或口径不可比时必须明确说明。"},
-            {"role": "user", "content": f"指标：{str(metric.get('label') or metric_key)[:120]}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
+            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的权威数据表，输出一句不超过100字的中文数据洞察。趋势方向、差距变化和最新比较只能使用所有公司均有值的共同首尾年度，不得使用各公司各自首尾年。优先指出差距扩大或收窄、趋势分化、反转、共同变化等最有决策价值的比较发现，不要逐家公司机械复述起止值；除非指标方向和口径都明确，不得擅自使用领先、落后或表现更好。必须保留大于、至少、约等比较符；下限或近似值区间可能重叠时不得排序或精算差距，下限变化只能描述为披露下限变化；财年结束日不同只能比较趋势，不得冒充同一自然年度排名；scope显示共建共享时不得把两家公司数值相加或解释为两套网络；备注显示口径变化或不可比时不得跨口径计算趋势；不得补数、预测或引用外部知识；数据不足或口径不可比时必须明确说明。"},
+            {"role": "user", "content": f"指标：{str(metric.get('label') or metric_key)[:120]}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
         "temperature": 0.1,
         "max_tokens": 120,

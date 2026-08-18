@@ -68,6 +68,28 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("999999", prompt)
         self.assertNotIn("fake", prompt)
 
+    def test_model_receives_only_common_comparison_years(self):
+        captured = {}
+
+        def open_request(request, timeout):
+            captured["body"] = json.loads(request.data.decode())
+            return _Response()
+
+        payload = self.payload()
+        payload["metric"] = {"key": "mobile_postpaid_exit_arpu", "label": "移动后付期末ARPU"}
+        payload["years"] = [2018, 2019, 2020, 2021, 2022]
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", side_effect=open_request
+        ):
+            web_app.generate_competitor_insight(payload)
+
+        prompt = captured["body"]["messages"][1]["content"]
+        self.assertIn("共同首尾锚点：2020—2022", prompt)
+        self.assertNotIn("HKT\t2018", prompt)
+        self.assertNotIn("HKT\t2019", prompt)
+        self.assertIn("SmarTone\t2022", prompt)
+
     def test_rejects_stale_evidence_version(self):
         payload = self.payload()
         payload["evidenceVersion"] = "stale"
