@@ -36,7 +36,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "Bharti Airtel": 95,
+                "Bharti Airtel": 97,
                 "Reliance Jio": 42,
                 "中国广电": 24,
                 "中国电信": 58,
@@ -47,7 +47,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
-        self.assertIn("- Bharti Airtel: 95", audit_text)
+        self.assertIn("- Bharti Airtel: 97", audit_text)
 
     def test_jio_early_operating_and_financial_rows_have_three_documents(self):
         certified = [
@@ -1096,11 +1096,35 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         annual = sources["bharti_airtel_ar_2023"]["comparative_evidence"]["FY2020"]
         self.assertEqual(set(annual), {"total_customers"})
 
+    def test_airtel_fy2020_network_and_traffic_use_three_annual_documents(self):
+        expected_sources = {
+            "bharti_airtel_ar_2020",
+            "bharti_airtel_ar_2021",
+            "airtel_2024_five_year",
+        }
+        for metric_key, value in (
+            ("mobile_broadband_base_stations", 503883),
+            ("total_data_traffic", 21.020),
+        ):
+            row = self.index[("bharti_airtel", 2020, metric_key)]
+            self.assertEqual(row["value"], value)
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        comparative = sources["bharti_airtel_ar_2021"]["comparative_evidence"]["FY2020"]
+        self.assertEqual(comparative["mobile_broadband_base_stations"]["value"], 503883)
+        self.assertEqual(comparative["total_data_traffic"]["value"], 21.020)
+
     def test_xiaojing_retrieves_airtel_fy2020_three_source_definition_breaks(self):
         combined = "\n".join(
             chunk["text"]
             for chunk in rag_llm._global_operator_exact_metric_chunks(
-                "Bharti Airtel FY2020总客户数、营业收入、EBITDA、税前利润、净利润、资本开支、净债务、股东权益和网络铁塔是多少？解释税前利润和客户数口径差异。",
+                "Bharti Airtel FY2020总客户数、营业收入、EBITDA、税前利润、净利润、资本开支、净债务、股东权益、网络铁塔、移动宽带基站和数据流量是多少？解释税前利润和客户数口径差异。",
                 dataset_ids={"global_top5_operators_2016_2025"},
             )
         )
@@ -1114,13 +1138,15 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             "net_debt": "1245209 INR_million",
             "shareholders_equity": "771448 INR_million",
             "network_towers": "219546 sites",
+            "mobile_broadband_base_stations": "503883 base_stations",
+            "total_data_traffic": "21.02 billion_GB",
         }
         for metric_key, value_text in expected_values.items():
             self.assertIn(f"metric_key={metric_key}", combined)
             self.assertIn(f"official_value={value_text}", combined)
         self.assertIn("annual-report KPI earnings-before-tax value of INR-445,711m", combined)
         self.assertIn("earlier Q1 pack's 423.287m is excluded", combined)
-        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 9)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 11)
 
     def test_xiaojing_retrieves_airtel_fy2024_three_source_rows(self):
         combined = "\n".join(

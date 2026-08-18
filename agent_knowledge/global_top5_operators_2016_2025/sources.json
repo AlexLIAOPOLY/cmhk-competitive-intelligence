@@ -528,6 +528,18 @@
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
           }
+        },
+        "FY2020": {
+          "mobile_broadband_base_stations": {
+            "value": 503883,
+            "unit": "base_stations",
+            "locator": "FY2019-20 comparative in India mobile network review, pages 154-155"
+          },
+          "total_data_traffic": {
+            "value": 21.02,
+            "unit": "billion_GB",
+            "locator": "FY2019-20 comparative in India mobile data-usage chart, pages 154-155; converted from 21,020bn MB"
+          }
         }
       }
     },

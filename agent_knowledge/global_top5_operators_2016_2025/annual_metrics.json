@@ -1858,18 +1858,20 @@
       "comparator": "=",
       "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2024",
-        "bharti_airtel_ar_2020"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2021"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "bharti_airtel_ar_2020",
       "primary_source_url": "https://www.airtel.in/airtel-annual-report-2019-20/",
       "verification_sources": [
         "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2021",
         "airtel_2024_five_year"
       ],
       "quality_note": ""
@@ -2094,18 +2096,20 @@
       "comparator": "=",
       "scope": "FY2016-FY2017 are consolidated annual headlines; FY2018-FY2020 are India mobile annual data traffic, converted from billion MB to billion GB",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2024",
-        "bharti_airtel_ar_2020"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2021"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "bharti_airtel_ar_2020",
       "primary_source_url": "https://www.airtel.in/airtel-annual-report-2019-20/",
       "verification_sources": [
         "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2021",
         "airtel_2024_five_year"
       ],
       "quality_note": "FY2016's 597bn-MB and FY2017's 903bn-MB figures are consolidated annual headlines and are not directly comparable with the later India-mobile series. FY2016 is supported only by the contemporaneous annual report and FY2017 remains below the three-document threshold."
