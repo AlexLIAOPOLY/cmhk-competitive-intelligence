@@ -152,16 +152,34 @@
     const companyLabel = (company) => companyMeta.get(company)?.label || company;
     const unitLabel = metricMeta.unitLabel || metricMeta.unit;
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
+    const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
     host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header>
-      <div class="competitor-insight" id="competitorInsight" role="status" aria-live="polite"><i>AI</i><div><b>AI 对比解析</b><span>正在读取当前对比图中的真实数据…</span></div></div>
+      <div class="competitor-insight" id="competitorInsight" role="status" aria-live="polite"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 对比解析</b><span>正在读取当前对比图中的真实数据…</span></div></div>
       ${chart}
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
-    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
+    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
   }
 
   function competitorComparator(value) {
     return ({ ">=": "≥", "<=": "≤", "~": "≈", "approx": "≈" })[String(value || "").toLowerCase()] || (value === "=" ? "" : String(value || ""));
+  }
+
+  function buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit }) {
+    const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
+    const summaries = companies.map((company) => {
+      const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
+      const first = points[0];
+      const last = points.at(-1);
+      if (!first || !last) return "";
+      const change = last.cell.value - first.cell.value;
+      const direction = Math.abs(change) < 1e-9 ? "保持不变" : change > 0 ? "上升" : "下降";
+      return `${companyLabel(company)} ${first.year}—${last.year}由${competitorComparator(first.cell.comparator)}${format(first.cell.value)}${unit}至${competitorComparator(last.cell.comparator)}${format(last.cell.value)}${unit}，整体${direction}`;
+    }).filter(Boolean);
+    const cells = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)).filter(Boolean));
+    const hasSharedScope = cells.some((cell) => /shared|共建|共享/i.test(String(cell.scope || "")));
+    const caveat = hasSharedScope ? "存在共建共享口径，相关数值不可相加。" : "披露期可能不同，仅用于比较已披露趋势。";
+    return `${summaries.slice(0, 3).join("；")}${summaries.length > 3 ? `；另有${summaries.length - 3}家公司见图` : ""}。${caveat}`;
   }
 
   function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
@@ -213,7 +231,7 @@
     return `<figure class="competitor-chart-card"><figcaption><div><strong>多年趋势对比</strong><span>缺失年度保持断点，不做估算或补齐</span></div><div class="competitor-chart-legend">${legend}</div></figcaption><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><p>注：按各公司披露年度展示；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
   }
 
-  async function requestCompetitorInsight(payload, requestId) {
+  async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
     try {
@@ -221,12 +239,22 @@
       const result = (response.headers.get("content-type") || "").includes("application/json") ? await response.json() : {};
       if (!response.ok || !result.ok) throw new Error(response.status === 404 ? "HTTP 404" : (result.error || `HTTP ${response.status}`));
       if (requestId !== state.competitorInsightRequest) return;
-      const target = document.querySelector("#competitorInsight div span");
-      if (target) target.textContent = result.insight;
+      const card = document.querySelector("#competitorInsight");
+      if (card) {
+        card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
+        card.querySelector("[data-competitor-insight-title]").textContent = "AI 对比解析";
+        card.querySelector("div span").textContent = result.insight;
+      }
     } catch (error) {
       if (error.name === "AbortError") return;
-      const target = document.querySelector("#competitorInsight div span");
-      if (requestId === state.competitorInsightRequest && target) target.textContent = error.message.includes("404") ? "AI 解析服务正在等待安全加载，图表与真实数据可先正常查看。" : `AI 解析暂不可用：${error.message}`;
+      const card = document.querySelector("#competitorInsight");
+      if (requestId === state.competitorInsightRequest && card) {
+        card.querySelector("[data-competitor-insight-icon]").textContent = "数据";
+        card.querySelector("[data-competitor-insight-title]").textContent = "即时数据解读";
+        card.querySelector("div span").textContent = error.message.includes("404")
+          ? `AI 服务正在等待安全加载；${fallbackInsight}`
+          : `AI 解析暂不可用；${fallbackInsight}`;
+      }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;
     }
