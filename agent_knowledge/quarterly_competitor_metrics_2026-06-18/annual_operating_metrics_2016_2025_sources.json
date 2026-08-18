@@ -2,6 +2,186 @@
   "generated_at": "2026-08-18T00:00:00+08:00",
   "sources": [
     {
+      "source_id": "china_broadnet_crta_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "中国广播电视设备工业协会 广电行业综合信息2024年第05期",
+      "url": "https://www.crta.com.cn/upload/default/666a5f9f184a0.pdf",
+      "source_type": "industry_association_report",
+      "publisher": "中国广播电视设备工业协会",
+      "source_document_id": "china_broadnet_crta_2023"
+    },
+    {
+      "source_id": "china_broadnet_crta_2024",
+      "operator_id": "china_broadnet",
+      "year": 2024,
+      "label": "中国广播电视设备工业协会 广电行业综合信息2025年第06期",
+      "url": "https://www.crta.com.cn/upload/default/686f2e532b64a.pdf",
+      "source_type": "industry_association_report",
+      "publisher": "中国广播电视设备工业协会",
+      "source_document_id": "china_broadnet_crta_2024"
+    },
+    {
+      "source_id": "china_broadnet_cww_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "通信世界网：中国广电5G用户4200万户",
+      "url": "https://www.cww.net.cn/article?id=778C9D26DAFB4E278A395F1F65F5F824",
+      "source_type": "industry_media_report",
+      "publisher": "通信世界网",
+      "source_document_id": "china_broadnet_cww_2025"
+    },
+    {
+      "source_id": "china_broadnet_digital_china_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "数字中国建设峰会：开创网络共建共享新模式",
+      "url": "https://www.digitalchina.gov.cn/2024/xwzx/szkx/202407/t20240712_4858448.htm",
+      "source_type": "official_government_feature",
+      "publisher": "数字中国建设峰会",
+      "source_document_id": "china_broadnet_digital_china_2023"
+    },
+    {
+      "source_id": "china_broadnet_guangxi_ar_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "广西广电网络2023年年度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2024-04-26/1219840147.PDF",
+      "source_type": "official_exchange_annual_report",
+      "publisher": "广西广播电视信息网络股份有限公司",
+      "source_document_id": "china_broadnet_guangxi_ar_2023"
+    },
+    {
+      "source_id": "china_broadnet_jiacreat_filing_2022",
+      "operator_id": "china_broadnet",
+      "year": 2022,
+      "label": "佳创视讯监管问询回复（引用2022年广电行业统计公报）",
+      "url": "https://static.cninfo.com.cn/finalpage/2023-06-05/1216993014.PDF",
+      "source_type": "official_exchange_filing",
+      "publisher": "深圳市佳创视讯技术股份有限公司",
+      "source_document_id": "china_broadnet_jiacreat_filing_2022"
+    },
+    {
+      "source_id": "china_broadnet_jiangsu_bond_2024",
+      "operator_id": "china_broadnet",
+      "year": 2024,
+      "label": "江苏有线2025年科技创新公司债券募集说明书（载2024年行业数据）",
+      "url": "https://static.sse.com.cn/bond/bridge2/disclosure/announcement/c/202507/7d9670_20250715_AT3P.pdf",
+      "source_type": "official_exchange_bond_prospectus",
+      "publisher": "江苏省广电有线信息网络股份有限公司",
+      "source_document_id": "china_broadnet_jiangsu_bond_2024"
+    },
+    {
+      "source_id": "china_broadnet_lianhe_rating_2022",
+      "operator_id": "china_broadnet",
+      "year": 2022,
+      "label": "联合资信2023年跟踪评级报告（载2022年广电行业数据）",
+      "url": "https://www.lhratings.com/reports/B007919-P49578-2020-GZ2023.pdf",
+      "source_type": "credit_rating_report",
+      "publisher": "联合资信评估股份有限公司",
+      "source_document_id": "china_broadnet_lianhe_rating_2022"
+    },
+    {
+      "source_id": "china_broadnet_lianhe_rating_revenue_2022",
+      "operator_id": "china_broadnet",
+      "year": 2022,
+      "label": "联合资信2023年另一主体跟踪评级报告（载2022年广电行业数据）",
+      "url": "https://www.lhratings.com/reports/B025317-P65910-2022-GZ2023.pdf",
+      "source_type": "credit_rating_report",
+      "publisher": "联合资信评估股份有限公司",
+      "source_document_id": "china_broadnet_lianhe_rating_revenue_2022"
+    },
+    {
+      "source_id": "china_broadnet_nbs_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "国家统计局 2025年国民经济和社会发展统计公报",
+      "url": "https://www.stats.gov.cn/xxgk/sjfb/zxfb2020/202602/t20260228_1962662.html",
+      "source_type": "official_national_statistical_bulletin",
+      "publisher": "国家统计局",
+      "source_document_id": "china_broadnet_nbs_2025"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2022",
+      "operator_id": "china_broadnet",
+      "year": 2022,
+      "label": "国家广播电视总局 2022年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2023/4/27/art_113_64140.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2022"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "国家广播电视总局 2023年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2024/5/8/art_113_67383.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_2023"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2024",
+      "operator_id": "china_broadnet",
+      "year": 2024,
+      "label": "国家广播电视总局 2024年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2025/5/9/art_113_70729.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "国家广播电视总局 2025年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2026/5/13/art_113_73265.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_2025"
+    },
+    {
+      "source_id": "china_broadnet_nrta_tech_review_2022",
+      "operator_id": "china_broadnet",
+      "year": 2022,
+      "label": "国家广播电视总局 2022广电视听十大科技关键词",
+      "url": "https://www.nrta.gov.cn/art/2023/2/11/art_113_63379.html",
+      "source_type": "official_regulator_technology_review",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_tech_review_2022"
+    },
+    {
+      "source_id": "china_broadnet_people_2024",
+      "operator_id": "china_broadnet",
+      "year": 2024,
+      "label": "人民网：广电总局发布2024年全国广播电视行业统计公报",
+      "url": "https://ent-app.people.cn/n1/2025/0509/c1012-40476621.html",
+      "source_type": "central_media_report",
+      "publisher": "人民网",
+      "source_document_id": "china_broadnet_people_2024"
+    },
+    {
+      "source_id": "china_broadnet_shaanxi_ar_2023",
+      "operator_id": "china_broadnet",
+      "year": 2023,
+      "label": "陕西广电网络2023年年度报告",
+      "url": "https://dataclouds.cninfo.com.cn/shgonggao/2024/2024-04-25/ea120bea023211ef932efa163e26e5de.pdf",
+      "source_type": "official_exchange_annual_report",
+      "publisher": "陕西广电网络传媒（集团）股份有限公司",
+      "source_document_id": "china_broadnet_shaanxi_ar_2023"
+    },
+    {
+      "source_id": "china_broadnet_szse_filing_2025",
+      "operator_id": "china_broadnet",
+      "year": 2025,
+      "label": "深交所上市公司2025年年度报告（载2025年广电行业数据）",
+      "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-04-22/38c75996-c060-42ac-bd14-3d032fdcd871.PDF",
+      "source_type": "official_exchange_annual_report",
+      "publisher": "深圳证券交易所",
+      "source_document_id": "china_broadnet_szse_filing_2025"
+    },
+    {
       "source_id": "china_mobile_20f_2021",
       "operator_id": "china_mobile",
       "year": 2021,

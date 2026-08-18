@@ -1,12 +1,13 @@
 {
   "id": "china_carriers_annual_operating_metrics_2016_2025",
-  "title": "中国三大运营商2016–2025年度运营指标补充库",
+  "title": "中国四家基础电信运营商2016–2025年度运营指标补充库",
   "generated_at": "2026-08-18T00:00:00+08:00",
-  "row_count": 229,
+  "row_count": 329,
   "operators": [
     "中国移动",
     "中国电信",
-    "中国联通"
+    "中国联通",
+    "中国广电"
   ],
   "relationship": "quarterly_metrics.json remains the financial fact source; this sidecar adds only operating KPIs.",
   "entrypoints": [
@@ -16,8 +17,8 @@
   ],
   "quality": {
     "status": "backlog_open",
-    "available_value_rows": 208,
-    "three_distinct_source_certified_rows": 192,
-    "below_three_source_rows": 16
+    "available_value_rows": 232,
+    "three_distinct_source_certified_rows": 209,
+    "below_three_source_rows": 23
   }
 }

@@ -93,13 +93,14 @@
       "云厂商缺失季度以 documented source gap、annual-only 或 non-forecast legacy 口径登记，不计入预测值覆盖。",
       "公司合并、重组、分部重分类、代理口径和披露边界导致的趋势跳变风险见 corporate_action_risk_annotations_2026-07-03.md/csv。",
       "自动刷新采用保守合并：保留既有已核验行，只新增构建器发现的新键或升级更高验证等级的行。",
-      "中国移动、中国电信、中国联通年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次。"
+      "中国移动、中国电信、中国联通年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次。",
+      "中国移动、中国电信、中国联通、中国广电年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次；中国广电的全国有线电视行业口径不等同于集团合并口径。"
     ],
     "china_carrier_operating_sidecar": {
       "status": "backlog_open",
-      "available_value_rows": 208,
-      "three_distinct_source_certified_rows": 192,
-      "below_three_source_rows": 16
+      "available_value_rows": 232,
+      "three_distinct_source_certified_rows": 209,
+      "below_three_source_rows": 23
     }
   },
   "version": "2026-06-19T09:50:20",

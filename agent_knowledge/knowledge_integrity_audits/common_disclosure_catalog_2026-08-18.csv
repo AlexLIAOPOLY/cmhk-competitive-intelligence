@@ -23,7 +23,7 @@ quarterly_competitor_metrics_2026-08-18,cloud,data_centers,数据中心数,low,n
 global_top5_operators_2016_2025,operating,mobile_subscribers,移动用户,high,yes,30,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,4g_subscribers,4G用户,medium,yes,14,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,5g_package_subscribers,5G套餐用户,high,yes,16,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-global_top5_operators_2016_2025,operating,5g_network_subscribers,5G网络用户,high,yes,10,4,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
+global_top5_operators_2016_2025,operating,5g_network_subscribers,5G网络用户,high,yes,14,5,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,fixed_broadband_subscribers,固网宽带用户,high,yes,29,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,mobile_arpu,移动ARPU,high,yes,30,4,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,broadband_arpu,宽带ARPU,medium,yes,7,2,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
@@ -32,7 +32,7 @@ global_top5_operators_2016_2025,operating,mobile_dou,户均移动流量DOU,high,
 global_top5_operators_2016_2025,operating,handset_data_traffic,手机数据流量,high,yes,19,2,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,total_base_stations,基站总数,medium,yes,6,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,4g_base_stations,4G基站,medium,yes,5,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-global_top5_operators_2016_2025,network,5g_base_stations,5G基站,high,yes,22,4,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
+global_top5_operators_2016_2025,network,5g_base_stations,5G基站,high,yes,24,5,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,churn,用户流失率,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,5g_population_coverage,5G人口覆盖率,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,spectrum_holdings,频谱持有量,low,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.

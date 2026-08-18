@@ -578,6 +578,7 @@ def _global_operator_exact_metric_chunks(
         "china_mobile": ["中国移动", "中移动", "china mobile"],
         "china_telecom": ["中国电信", "china telecom"],
         "china_unicom": ["中国联通", "china unicom"],
+        "china_broadnet": ["中国广电", "中广电", "china broadnet", "china broadcasting network", "cbn"],
         "bharti_airtel": ["bharti airtel", "airtel"],
         "reliance_jio": ["reliance jio", "jio"],
     }
@@ -592,7 +593,7 @@ def _global_operator_exact_metric_chunks(
         "mobile_subscribers": ["移动用户数", "移动用户", "移动客户数", "移动客户", "mobile subscribers", "mobile customers"],
         "4g_subscribers": ["4g用户", "4g subscribers"],
         "5g_package_subscribers": ["5g套餐用户", "5g package subscribers"],
-        "5g_network_subscribers": ["5g网络用户", "5g users", "5g network subscribers"],
+        "5g_network_subscribers": ["5g网络用户", "5g用户", "5g users", "5g network subscribers"],
         "fixed_broadband_subscribers": ["固定宽带用户", "固网宽带用户", "宽带用户", "fixed broadband"],
         "integrated_broadband_network_customers": ["融合宽带网络客户", "融合宽带客户", "integrated broadband network customers"],
         "gigabit_broadband_customers": ["千兆宽带客户", "千兆宽带用户", "gigabit broadband customers"],
@@ -623,6 +624,12 @@ def _global_operator_exact_metric_chunks(
         "total_base_stations": ["基站总数", "全部基站", "total base stations"],
         "4g_base_stations": ["4g基站", "4g base stations"],
         "5g_base_stations": ["5g基站", "5g base stations", "5g sites", "5g cells"],
+        "shared_4g_5g_base_stations": ["共享4g/5g基站", "共享基站", "可共享基站", "shared 4g/5g base stations"],
+        "cable_tv_actual_users": ["有线电视实际用户", "有线电视用户", "cable tv users", "cable television users"],
+        "two_way_digital_cable_tv_users": ["双向数字电视用户", "双向数字有线用户", "two-way digital cable"],
+        "hd_uhd_cable_tv_users": ["高清超高清有线用户", "高清和超高清用户", "hd uhd cable users"],
+        "uhd_cable_tv_users": ["超高清有线用户", "uhd cable users"],
+        "cable_network_industry_revenue": ["有线电视网络收入", "有线网络行业收入", "cable network industry revenue"],
         "revenue": ["营业收入", "总收入", "revenue"],
         "value_of_sales_and_services": ["销售及服务价值", "value of sales and services"],
         "revenue_from_operations": ["经营收入", "revenue from operations"],
@@ -652,24 +659,52 @@ def _global_operator_exact_metric_chunks(
     # Keep subject-to-metric associations in compound questions instead of
     # returning every metric for every named operator.
     requested_pairs: set[tuple[str, str]] = set()
-    for clause in re.split(r"[,，、;；]", lowered):
-        clause_subjects = {
-            operator_id
-            for operator_id, aliases in subject_aliases.items()
-            if any(alias in clause for alias in aliases)
-        }
-        if not clause_subjects and len(matched_subjects) == 1:
-            clause_subjects = set(matched_subjects)
-        clause_metrics = {
-            metric_key
-            for metric_key, aliases in metric_aliases.items()
-            if any(alias in clause for alias in aliases)
-        }
-        if "broadband_arpu" in clause_metrics or "household_customer_blended_arpu" in clause_metrics or "integrated_package_arpu" in clause_metrics:
-            clause_metrics.discard("mobile_arpu")
-        if "integrated_package_arpu" in clause_metrics:
-            clause_metrics.discard("broadband_arpu")
-        requested_pairs.update((subject, metric) for subject in clause_subjects for metric in clause_metrics)
+    requested_years_by_pair: dict[tuple[str, str], set[int]] = {}
+    for sentence in re.split(r"[。！？\n]", lowered):
+        carried_subjects: set[str] = set()
+        carried_years: set[int] = set()
+        for clause in re.split(r"[,，、;；]", sentence):
+            clause_subjects = {
+                operator_id
+                for operator_id, aliases in subject_aliases.items()
+                if any(alias in clause for alias in aliases)
+            }
+            if clause_subjects:
+                carried_subjects = set(clause_subjects)
+            elif carried_subjects:
+                clause_subjects = set(carried_subjects)
+            elif len(matched_subjects) == 1:
+                clause_subjects = set(matched_subjects)
+            clause_metrics = {
+                metric_key
+                for metric_key, aliases in metric_aliases.items()
+                if any(alias in clause for alias in aliases)
+            }
+            if "broadband_arpu" in clause_metrics or "household_customer_blended_arpu" in clause_metrics or "integrated_package_arpu" in clause_metrics:
+                clause_metrics.discard("mobile_arpu")
+            if "integrated_package_arpu" in clause_metrics:
+                clause_metrics.discard("broadband_arpu")
+            clause_years = {
+                int(value)
+                for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", clause)
+            }
+            for start_text, end_text in re.findall(
+                r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+                clause,
+            ):
+                start_year, end_year = int(start_text), int(end_text)
+                if start_year <= end_year:
+                    clause_years.update(range(start_year, end_year + 1))
+            if clause_years:
+                carried_years = set(clause_years)
+            elif carried_years:
+                clause_years = set(carried_years)
+            for subject in clause_subjects:
+                for metric in clause_metrics:
+                    pair = (subject, metric)
+                    requested_pairs.add(pair)
+                    if clause_years:
+                        requested_years_by_pair.setdefault(pair, set()).update(clause_years)
 
     years = {
         int(value)
@@ -695,11 +730,18 @@ def _global_operator_exact_metric_chunks(
             (row.get("metric_key") or "").strip(),
         ) not in requested_pairs:
             continue
-        if not str(row.get("official_value") or "").strip():
+        if not str(row.get("official_value") or "").strip() and (row.get("operator_id") or "").strip() != "china_broadnet":
             continue
         try:
             row_year = int((row.get("year") or "0").strip())
         except ValueError:
+            continue
+        pair = (
+            (row.get("operator_id") or "").strip(),
+            (row.get("metric_key") or "").strip(),
+        )
+        pair_years = requested_years_by_pair.get(pair)
+        if pair_years and row_year not in pair_years:
             continue
         if years and row_year not in years:
             continue
@@ -710,14 +752,20 @@ def _global_operator_exact_metric_chunks(
     chunks: list[dict[str, Any]] = []
     for row in filtered[:24]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
+        value_text = (
+            f"{row.get('official_value')} {row.get('unit')}"
+            if str(row.get("official_value") or "").strip()
+            else "未披露（source_gap_confirmed / not_applicable_precommercial）"
+        )
         text = (
             f"精确年度运营商指标行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
-            f"metric_zh={row.get('metric_zh')}; official_value={row.get('official_value')} {row.get('unit')}; "
+            f"metric_zh={row.get('metric_zh')}; official_value={value_text}; "
             f"comparator={row.get('comparator')}; scope={row.get('scope')}; basis={row.get('basis')}; "
             f"verification_status={row.get('verification_status')}; verification_count={row.get('verification_count')}; "
             f"{_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
+            "如果值为未披露，只能回答未披露或商用前不适用，不能当作0、行业汇总或估算值。"
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
     return chunks
@@ -1485,6 +1533,7 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
         "中国移动": ["中移动", "China Mobile"],
         "中国电信": ["China Telecom"],
         "中国联通": ["China Unicom"],
+        "中国广电": ["China Broadnet", "China Broadcasting Network", "CBN"],
         "中国铁塔": ["China Tower"],
         "Microsoft Azure / Intelligent Cloud": ["Azure", "Microsoft Intelligent Cloud", "微软云"],
         "Google Cloud": ["谷歌云"],

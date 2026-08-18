@@ -1,26 +1,27 @@
-# 全球五大运营商数据库质量审计
+# 全球重点六家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：412
-- 有值行：367
-- 来源条目：155
+- 明细行：582
+- 有值行：391
+- 来源条目：176
 - 重复键：0
 - 无效来源引用：0
 
 ## 全库核验等级
 
-- `not_applicable_precommercial`: 7
+- `not_applicable_precommercial`: 25
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 23
-- `official_three_distinct_sources_verified`: 295
-- `official_two_distinct_sources`: 33
-- `source_gap_confirmed`: 38
+- `official_single_source`: 28
+- `official_three_distinct_sources_verified`: 312
+- `official_two_distinct_sources`: 35
+- `source_gap_confirmed`: 166
 
 ## 三来源认证行（按运营商）
 
 - Bharti Airtel: 95
 - Reliance Jio: 23
+- 中国广电: 17
 - 中国电信: 57
 - 中国移动: 68
 - 中国联通: 52
@@ -29,6 +30,7 @@
 
 - Bharti Airtel: 5
 - Reliance Jio: 43
+- 中国广电: 120
 - 中国电信: 17
 - 中国移动: 9
 - 中国联通: 24

@@ -38,6 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 95,
                 "Reliance Jio": 23,
+                "中国广电": 17,
                 "中国电信": 57,
                 "中国移动": 68,
                 "中国联通": 52,
@@ -55,6 +56,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             ("china_unicom", 2025, "5g_network_subscribers"): 232.18,
             ("bharti_airtel", 2025, "total_customers"): 590.514,
             ("reliance_jio", 2025, "total_customers"): 488.2,
+            ("china_broadnet", 2024, "5g_network_subscribers"): 32.7546,
         }
         for key, value in expected.items():
             self.assertEqual(self.index[key]["value"], value)
@@ -100,9 +102,73 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))
-        self.assertEqual({r["operator_id"] for r in sidecar["rows"]}, {"china_mobile", "china_telecom", "china_unicom"})
+        self.assertEqual({r["operator_id"] for r in sidecar["rows"]}, {"china_mobile", "china_telecom", "china_unicom", "china_broadnet"})
         financial_metrics = {"revenue", "ebitda", "ebit", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"}
         self.assertFalse(financial_metrics & {r["metric_key"] for r in sidecar["rows"]})
+
+    def test_china_broadnet_scope_gaps_and_three_source_values(self):
+        users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
+        self.assertEqual(users_2024["value"], 32.7546)
+        self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")
+        self.assertGreaterEqual(users_2024["distinct_source_document_count"], 3)
+        base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
+        self.assertEqual(base_2023["value"], 0.62)
+        self.assertIn("co-built and shared", base_2023["scope"])
+        self.assertEqual(base_2023["distinct_source_document_count"], 3)
+        cable = self.index[("china_broadnet", 2024, "cable_tv_actual_users")]
+        self.assertEqual(cable["value"], 208)
+        self.assertIn("not China Broadnet consolidated", cable["scope"])
+        mobile_arpu = self.index[("china_broadnet", 2025, "mobile_arpu")]
+        self.assertIsNone(mobile_arpu["value"])
+        self.assertEqual(mobile_arpu["verification_status"], "source_gap_confirmed")
+
+    def test_china_broadnet_regulator_reposts_share_document_identity(self):
+        source_payload = json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))
+        sources = {source["source_id"]: source for source in source_payload["sources"]}
+        self.assertEqual(
+            sources["china_broadnet_nrta_2022"]["source_document_id"],
+            sources["china_broadnet_guangdong_2022"]["source_document_id"],
+        )
+        self.assertEqual(
+            sources["china_broadnet_nrta_2024"]["source_document_id"],
+            sources["china_broadnet_pingliang_gov_2024"]["source_document_id"],
+        )
+
+    def test_xiaojing_ai_retrieves_china_broadnet_values_and_gaps(self):
+        value_chunks = rag_llm._global_operator_exact_metric_chunks(
+            "中国广电2024年5G用户和有线电视实际用户",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        value_text = "\n".join(chunk["text"] for chunk in value_chunks)
+        self.assertIn("operator=中国广电", value_text)
+        self.assertIn("official_value=32.7546 million_subscribers", value_text)
+        self.assertIn("official_value=208 million_users", value_text)
+        self.assertIn("distinct_source_document_count=3", value_text)
+        gap_chunks = rag_llm._global_operator_exact_metric_chunks(
+            "中国广电2025年移动ARPU和固定宽带用户",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        gap_text = "\n".join(chunk["text"] for chunk in gap_chunks)
+        self.assertIn("未披露（source_gap_confirmed", gap_text)
+        self.assertIn("不能当作0", gap_text)
+
+    def test_china_broadnet_compound_year_metric_associations_fit_tool_limit(self):
+        question = (
+            "中国广电2022至2025年5G用户、2023年700MHz 5G基站、2024年全国有线电视实际用户分别是多少？"
+            "再说明2025年中国广电移动ARPU、固定宽带用户、移动数据流量是否披露。"
+        )
+        chunks = rag_llm.retrieve_context(
+            question,
+            limit=12,
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        for year in (2022, 2023, 2024, 2025):
+            self.assertIn(f"period=FY{year}", combined)
+        self.assertIn("official_value=42 million_subscribers", combined)
+        self.assertIn("metric_key=mobile_arpu", combined)
+        self.assertIn("metric_key=fixed_broadband_subscribers", combined)
+        self.assertIn("metric_key=total_data_traffic", combined)
 
     def test_xiaojing_ai_exact_retrieval_respects_selected_database(self):
         question = "中国移动2025移动用户数、中国电信2025年5G网络用户数、Jio FY2025总客户数和移动ARPU"

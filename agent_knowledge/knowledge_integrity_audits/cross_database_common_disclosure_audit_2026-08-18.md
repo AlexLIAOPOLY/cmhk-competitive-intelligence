@@ -12,7 +12,7 @@
 |---|---:|---:|---:|---:|---:|---|
 | quarterly_competitor_metrics_2026-08-18 | 2704 | 672 | 2032 | 24.85% | 277 | backlog_open |
 | cmhk_macro_policy_2026-06-19 | 7577 | 3992 | 3585 | 52.69% | 0 | backlog_open |
-| global_top5_operators_2016_2025 | 367 | 295 | 72 | 80.38% | 0 | backlog_open |
+| global_top5_operators_2016_2025 | 391 | 312 | 79 | 79.8% | 0 | backlog_open |
 | local_hk_operator_operating_metrics_2016_2025 | 172 | 0 | 172 | 0.0% | 0 | backlog_open |
 | competitor_product_tariffs | 1994 | 0 | 1994 | 0.0% | 399 | backlog_open |
 

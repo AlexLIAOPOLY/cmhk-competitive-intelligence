@@ -1,4 +1,4 @@
-# 全球五大运营商 2016–2025 数据库
+# 全球重点六家运营商 2016–2025 数据库
 
 ## 入口
 
@@ -12,7 +12,7 @@
 
 ## 与原数据库的关系
 
-中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；新增运营指标的规范侧表写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录主表提供五家整合视图。Airtel 与 Jio 为新增主体，财务和运营数据均在本库。
+中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；中国广电及四家内地运营商的新增运营指标写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录沿用历史兼容 ID `global_top5_operators_2016_2025`，但内容现为六家整合视图。Airtel 与 Jio 为新增主体，财务和运营数据均在本库。
 
 ## 重建
 

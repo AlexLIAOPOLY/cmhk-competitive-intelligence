@@ -45,6 +45,12 @@ OPERATORS = {
         "fiscal_year_end": "12-31",
         "existing_financial_reference": "../quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json#subject=中国联通",
     },
+    "china_broadnet": {
+        "name": "中国广电",
+        "legal_name": "China Broadcasting Network Group Corporation Ltd. / China Broadnet",
+        "fiscal_year_end": "12-31",
+        "existing_financial_reference": "",
+    },
 }
 
 METRICS = {
@@ -66,6 +72,12 @@ METRICS = {
     "total_base_stations": ("移动基站总数", "million_base_stations"),
     "4g_base_stations": ("4G基站数", "million_base_stations"),
     "5g_base_stations": ("5G基站数", "million_base_stations"),
+    "shared_4g_5g_base_stations": ("可共享4G/5G基站数", "million_base_stations"),
+    "cable_tv_actual_users": ("全国有线电视实际用户", "million_users"),
+    "two_way_digital_cable_tv_users": ("全国有线电视双向数字实际用户", "million_users"),
+    "hd_uhd_cable_tv_users": ("全国有线电视高清及超高清用户", "million_users"),
+    "uhd_cable_tv_users": ("全国有线电视超高清用户", "million_users"),
+    "cable_network_industry_revenue": ("全国有线电视网络收入", "RMB_million"),
     "integrated_broadband_network_customers": ("融合宽带网络客户", "million_customers"),
     "gigabit_broadband_customers": ("千兆宽带客户", "million_customers"),
     "iot_connections": ("物联网连接", "million_connections"),
@@ -115,6 +127,11 @@ def annual_url(operator_id: str, year: int) -> str:
 
 SOURCES: dict[str, dict[str, Any]] = {}
 for operator_id, spec in OPERATORS.items():
+    if operator_id == "china_broadnet":
+        # China Broadnet is not listed and does not publish a comparable annual-
+        # report series.  Only explicit regulator, government and filing sources
+        # are registered below; never manufacture annual-report URLs for it.
+        continue
     for year in YEARS:
         sid = f"{operator_id}_ar_{year}"
         SOURCES[sid] = {
@@ -926,6 +943,142 @@ SOURCES["reliance_jio_ar_2022"]["evidence"] = {
 }
 
 
+SOURCES.update({
+    "china_broadnet_nrta_2022": {
+        "source_id": "china_broadnet_nrta_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "国家广播电视总局 2022年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2023/4/27/art_113_64140.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2022",
+    },
+    "china_broadnet_guangdong_2022": {
+        "source_id": "china_broadnet_guangdong_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "广东省广播电视局转载2022年全国广播电视行业统计公报",
+        "url": "https://gbdsj.gd.gov.cn/zxzx/hydt/content/post_4172060.html",
+        "source_type": "official_provincial_government_publication", "publisher": "广东省广播电视局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2022",
+    },
+    "china_broadnet_nrta_tech_review_2022": {
+        "source_id": "china_broadnet_nrta_tech_review_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "国家广播电视总局 2022广电视听十大科技关键词",
+        "url": "https://www.nrta.gov.cn/art/2023/2/11/art_113_63379.html",
+        "source_type": "official_regulator_technology_review", "publisher": "国家广播电视总局",
+    },
+    "china_broadnet_jiacreat_filing_2022": {
+        "source_id": "china_broadnet_jiacreat_filing_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "佳创视讯监管问询回复（引用2022年广电行业统计公报）",
+        "url": "https://static.cninfo.com.cn/finalpage/2023-06-05/1216993014.PDF",
+        "source_type": "official_exchange_filing", "publisher": "深圳市佳创视讯技术股份有限公司",
+    },
+    "china_broadnet_lianhe_rating_2022": {
+        "source_id": "china_broadnet_lianhe_rating_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "联合资信2023年跟踪评级报告（载2022年广电行业数据）",
+        "url": "https://www.lhratings.com/reports/B007919-P49578-2020-GZ2023.pdf",
+        "source_type": "credit_rating_report", "publisher": "联合资信评估股份有限公司",
+    },
+    "china_broadnet_lianhe_rating_revenue_2022": {
+        "source_id": "china_broadnet_lianhe_rating_revenue_2022", "operator_id": "china_broadnet", "year": 2022,
+        "label": "联合资信2023年另一主体跟踪评级报告（载2022年广电行业数据）",
+        "url": "https://www.lhratings.com/reports/B025317-P65910-2022-GZ2023.pdf",
+        "source_type": "credit_rating_report", "publisher": "联合资信评估股份有限公司",
+    },
+    "china_broadnet_nrta_2023": {
+        "source_id": "china_broadnet_nrta_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "国家广播电视总局 2023年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2024/5/8/art_113_67383.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+    },
+    "china_broadnet_crta_2023": {
+        "source_id": "china_broadnet_crta_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "中国广播电视设备工业协会 广电行业综合信息2024年第05期",
+        "url": "https://www.crta.com.cn/upload/default/666a5f9f184a0.pdf",
+        "source_type": "industry_association_report", "publisher": "中国广播电视设备工业协会",
+    },
+    "china_broadnet_guangxi_ar_2023": {
+        "source_id": "china_broadnet_guangxi_ar_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "广西广电网络2023年年度报告",
+        "url": "https://static.cninfo.com.cn/finalpage/2024-04-26/1219840147.PDF",
+        "source_type": "official_exchange_annual_report", "publisher": "广西广播电视信息网络股份有限公司",
+    },
+    "china_broadnet_shaanxi_ar_2023": {
+        "source_id": "china_broadnet_shaanxi_ar_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "陕西广电网络2023年年度报告",
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/2024/2024-04-25/ea120bea023211ef932efa163e26e5de.pdf",
+        "source_type": "official_exchange_annual_report", "publisher": "陕西广电网络传媒（集团）股份有限公司",
+    },
+    "china_broadnet_digital_china_2023": {
+        "source_id": "china_broadnet_digital_china_2023", "operator_id": "china_broadnet", "year": 2023,
+        "label": "数字中国建设峰会：开创网络共建共享新模式",
+        "url": "https://www.digitalchina.gov.cn/2024/xwzx/szkx/202407/t20240712_4858448.htm",
+        "source_type": "official_government_feature", "publisher": "数字中国建设峰会",
+    },
+    "china_broadnet_nrta_2024": {
+        "source_id": "china_broadnet_nrta_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "国家广播电视总局 2024年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2025/5/9/art_113_70729.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024",
+    },
+    "china_broadnet_crta_2024": {
+        "source_id": "china_broadnet_crta_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "中国广播电视设备工业协会 广电行业综合信息2025年第06期",
+        "url": "https://www.crta.com.cn/upload/default/686f2e532b64a.pdf",
+        "source_type": "industry_association_report", "publisher": "中国广播电视设备工业协会",
+    },
+    "china_broadnet_pingliang_gov_2024": {
+        "source_id": "china_broadnet_pingliang_gov_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "平凉市文旅局转载2024年全国广播电视行业统计公报",
+        "url": "https://wlj.pingliang.gov.cn/xwdt/gddt/art/2025/art_6465492f99c348a2bc7a8202dfecd639.html",
+        "source_type": "official_local_government_publication", "publisher": "平凉市文化广电和旅游局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024",
+    },
+    "china_broadnet_jiangsu_bond_2024": {
+        "source_id": "china_broadnet_jiangsu_bond_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "江苏有线2025年科技创新公司债券募集说明书（载2024年行业数据）",
+        "url": "https://static.sse.com.cn/bond/bridge2/disclosure/announcement/c/202507/7d9670_20250715_AT3P.pdf",
+        "source_type": "official_exchange_bond_prospectus", "publisher": "江苏省广电有线信息网络股份有限公司",
+    },
+    "china_broadnet_people_2024": {
+        "source_id": "china_broadnet_people_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "人民网：广电总局发布2024年全国广播电视行业统计公报",
+        "url": "https://ent-app.people.cn/n1/2025/0509/c1012-40476621.html",
+        "source_type": "central_media_report", "publisher": "人民网",
+    },
+    "china_broadnet_nrta_2025": {
+        "source_id": "china_broadnet_nrta_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "国家广播电视总局 2025年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2026/5/13/art_113_73265.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+    },
+    "china_broadnet_cww_2025": {
+        "source_id": "china_broadnet_cww_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "通信世界网：中国广电5G用户4200万户",
+        "url": "https://www.cww.net.cn/article?id=778C9D26DAFB4E278A395F1F65F5F824",
+        "source_type": "industry_media_report", "publisher": "通信世界网",
+    },
+    "china_broadnet_szse_filing_2025": {
+        "source_id": "china_broadnet_szse_filing_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "深交所上市公司2025年年度报告（载2025年广电行业数据）",
+        "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-04-22/38c75996-c060-42ac-bd14-3d032fdcd871.PDF",
+        "source_type": "official_exchange_annual_report", "publisher": "深圳证券交易所",
+    },
+    "china_broadnet_miit_scope_2024": {
+        "source_id": "china_broadnet_miit_scope_2024", "operator_id": "china_broadnet", "year": 2024,
+        "label": "工信部2024年通信业统计口径说明（自2月起含中国广电）",
+        "url": "https://www.miit.gov.cn/gxsj/tjfx/txy/art/2024/art_261a6af193fb4cc6a0dbe5fff0deadfd.html",
+        "source_type": "official_regulator_scope_note", "publisher": "工业和信息化部",
+    },
+    "china_broadnet_nbs_2025": {
+        "source_id": "china_broadnet_nbs_2025", "operator_id": "china_broadnet", "year": 2025,
+        "label": "国家统计局 2025年国民经济和社会发展统计公报",
+        "url": "https://www.stats.gov.cn/xxgk/sjfb/zxfb2020/202602/t20260228_1962662.html",
+        "source_type": "official_national_statistical_bulletin", "publisher": "国家统计局",
+    },
+})
+for _source_id, _source in SOURCES.items():
+    _source.setdefault("source_document_id", _source_id)
+
+
 ROWS: list[dict[str, Any]] = []
 
 
@@ -1173,6 +1326,47 @@ add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:19
 add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:12,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_factsheet"]), note="FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis.")
 add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count.")
 
+# China Broadnet: nationwide mobile service started in 2022.  It is not a
+# listed company and does not publish a comparable consolidated annual-report
+# series.  Mobile, broadband, ARPU, traffic and financial gaps are therefore
+# explicit rather than filled from MIIT industry totals or provincial network
+# companies.  Nationwide cable-TV rows are retained as a separate federated /
+# industry scope and must never be treated as China Broadnet-owned customers.
+CBN_2022_STATS = ["china_broadnet_nrta_2022", "china_broadnet_jiacreat_filing_2022", "china_broadnet_lianhe_rating_2022"]
+CBN_2022_REVENUE = ["china_broadnet_nrta_2022", "china_broadnet_lianhe_rating_2022", "china_broadnet_lianhe_rating_revenue_2022"]
+CBN_2023_STATS = ["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_guangxi_ar_2023"]
+CBN_2024_STATS = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_jiangsu_bond_2024"]
+CBN_2024_CABLE_REVENUE = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_people_2024"]
+CBN_2025_USERS = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_szse_filing_2025"]
+CBN_2025_CABLE = ["china_broadnet_nrta_2025", "china_broadnet_nbs_2025", "china_broadnet_szse_filing_2025"]
+CBN_CABLE_SCOPE = "nationwide cable-TV industry/federated operating system; not China Broadnet consolidated owned customer count"
+CBN_SOURCE_GAP_NOTE = "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+
+add_series("china_broadnet", "mobile_subscribers", {y:None for y in YEARS}, scope="China Broadnet nationwide mobile subscriber base excluding IoT; separately disclosed total not found", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+add_series("china_broadnet", "5g_network_subscribers", {y:None for y in range(2016, 2022)}, scope="China Broadnet 5G users", source_ids={y:[] for y in range(2016, 2022)}, note="Nationwide commercial mobile service had not launched; not a zero estimate.")
+add_series("china_broadnet", "5g_network_subscribers", {2022:5.5}, scope="China Broadnet 5G users", comparator=">", source_ids={2022:CBN_2022_STATS}, note="Official lower bound; three distinct public documents repeat the same nationwide regulator statistic, not three independent measurements.")
+add_series("china_broadnet", "5g_network_subscribers", {2023:23}, scope="China Broadnet 5G users", comparator=">", source_ids={2023:CBN_2023_STATS}, note="Official lower bound; three distinct public documents corroborate the value.")
+add_series("china_broadnet", "5g_network_subscribers", {2024:32.7546}, scope="China Broadnet 5G users", source_ids={2024:CBN_2024_STATS + ["china_broadnet_people_2024"]}, note="Exact year-end figure appears in four distinct public documents; downstream documents repeat the regulator statistic rather than providing independent measurements.")
+add_series("china_broadnet", "5g_network_subscribers", {2025:42}, scope="China Broadnet 5G users", comparator="≈", source_ids={2025:CBN_2025_USERS}, note="Official wording is 'nearly 42 million'; retained as an approximate value, never as an exact closing count.")
+add_series("china_broadnet", "fixed_broadband_subscribers", {y:None for y in YEARS}, scope="China Broadnet consolidated nationwide fixed-broadband subscribers", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+add_series("china_broadnet", "mobile_arpu", {y:None for y in YEARS}, unit="RMB_per_user_month", scope="China Broadnet mobile ARPU", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+add_series("china_broadnet", "broadband_arpu", {y:None for y in YEARS}, unit="RMB_per_user_month", scope="China Broadnet fixed-broadband ARPU", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+add_series("china_broadnet", "mobile_dou", {y:None for y in YEARS}, scope="China Broadnet monthly mobile data usage per user", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+add_series("china_broadnet", "total_data_traffic", {y:None for y in YEARS}, scope="China Broadnet annual mobile data traffic", source_ids={y:[] for y in YEARS}, note="MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted.")
+add_series("china_broadnet", "5g_base_stations", {y:None for y in range(2016, 2022)}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={y:[] for y in range(2016, 2022)}, note="Pre-network years; not a zero estimate.")
+add_series("china_broadnet", "5g_base_stations", {2022:0.48}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2022:["china_broadnet_nrta_tech_review_2022", "china_mobile_ar_2022", "china_mobile_ar_a_2022"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
+add_series("china_broadnet", "5g_base_stations", {2023:0.62}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2023:["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
+add_series("china_broadnet", "5g_base_stations", {2024:None, 2025:None}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={2024:[], 2025:[]}, note="Only interim or differently scoped shared-network totals were found; no year-end value is substituted.")
+add_series("china_broadnet", "shared_4g_5g_base_stations", {2023:4.0}, scope="China Mobile 4G/5G base stations available to China Broadnet through network sharing", comparator=">", source_ids={2023:["china_broadnet_digital_china_2023"]}, note="Useful network-access evidence but below the three-document threshold; not owned assets.")
+
+add_series("china_broadnet", "cable_tv_actual_users", {2022:200, 2023:202, 2024:208, 2025:207}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_CABLE}, note="Industry/federated scope only; provincial legal entities were not fully consolidated into a single comparable corporate customer base. Corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "two_way_digital_cable_tv_users", {2022:98.2, 2023:100, 2024:None, 2025:105}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:[], 2025:["china_broadnet_nrta_2025"]}, note="2025 currently has only one exact public document for the two-way subset and remains below the three-source threshold.")
+add_series("china_broadnet", "hd_uhd_cable_tv_users", {2022:110, 2023:109, 2024:110, 2025:111}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023"], 2024:CBN_2024_STATS, 2025:["china_broadnet_nrta_2025"]}, note="Industry/federated scope; years with fewer than three matching documents remain below threshold.")
+add_series("china_broadnet", "uhd_cable_tv_users", {2023:42, 2024:45, 2025:56}, scope=CBN_CABLE_SCOPE, source_ids={2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023"], 2024:CBN_2024_STATS, 2025:["china_broadnet_nrta_2025"]}, note="Industry/federated scope; years with fewer than three matching documents remain below threshold.")
+add_series("china_broadnet", "cable_network_industry_revenue", {2022:71955, 2023:None, 2024:73937, 2025:72158}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:["china_broadnet_nrta_2025"]}, note="Stored only as industry context. Never answer this as China Broadnet corporate revenue; corroborating documents can share the same regulator-statistic lineage.")
+for metric_key in ["revenue", "ebitda", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"]:
+    add_series("china_broadnet", metric_key, {y:None for y in YEARS}, unit="RMB_million", scope=f"China Broadnet consolidated {METRICS[metric_key][0]}", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+
 
 def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     fields = [
@@ -1198,6 +1392,7 @@ def build_coverage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "china_mobile": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","mobile_dou","handset_data_traffic","5g_base_stations"],
         "china_telecom": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","handset_data_traffic","5g_base_stations"],
         "china_unicom": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","mobile_dou","5g_base_stations"],
+        "china_broadnet": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","broadband_arpu","mobile_dou","total_data_traffic","5g_base_stations","cable_tv_actual_users","revenue","ebitda","net_profit","capex"],
         "bharti_airtel": ["total_customers","revenue","ebitda","net_profit","capex","network_towers","total_data_traffic"],
         "reliance_jio": ["total_customers","value_of_sales_and_services","revenue_from_operations","ebitda","mobile_arpu","mobile_dou","total_data_traffic","5g_network_subscribers","connected_homes","5g_base_stations"],
     }
@@ -1210,7 +1405,10 @@ def build_coverage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 if not row:
                     status = "not_collected"
                 elif row["value"] is None:
-                    status = "not_applicable_precommercial" if operator_id == "reliance_jio" and year <= 2016 else "source_gap_confirmed"
+                    status = "not_applicable_precommercial" if (
+                        (operator_id == "reliance_jio" and year <= 2016)
+                        or (operator_id == "china_broadnet" and year <= 2021 and metric in {"mobile_subscribers", "5g_network_subscribers", "5g_base_stations"})
+                    ) else "source_gap_confirmed"
                 else:
                     status = "available"
                 result.append({"operator_id":operator_id,"operator":OPERATORS[operator_id]["name"],"year":year,"metric_key":metric,"status":status})
@@ -1223,6 +1421,9 @@ def main() -> None:
     rows = sorted(ROWS, key=lambda r: (r["operator_id"], r["year"], r["metric_key"]))
     for row in rows:
         if row["operator_id"] == "reliance_jio" and row["year"] == 2016:
+            row["verification_status"] = "not_applicable_precommercial"
+            row["basis"] = "precommercial_not_applicable"
+        if row["operator_id"] == "china_broadnet" and row["year"] <= 2021 and row["metric_key"] in {"mobile_subscribers", "5g_network_subscribers", "5g_base_stations"}:
             row["verification_status"] = "not_applicable_precommercial"
             row["basis"] = "precommercial_not_applicable"
         if row["operator_id"] == "china_unicom" and row["metric_key"] in {"mobile_subscribers", "fixed_broadband_subscribers"} and row["year"] >= 2023:
@@ -1313,19 +1514,27 @@ def main() -> None:
         {"operator_id":"china_telecom/china_unicom","years":"2020-2025","metric":"5g_base_stations","type":"shared_network","selected_basis":"same shared-network figure retained for both with warning","detail":"The figures describe co-built/shared mid-band stations and must never be summed across the two operators."},
         {"operator_id":"china_mobile/china_telecom/china_unicom","years":"2019-2025","metric":"5g_subscribers","type":"definition_change","selected_basis":"package and network users stored as separate metrics","detail":"5G package subscribers and active/network subscribers are not interchangeable."},
         {"operator_id":"china_unicom","years":"2023-2025","metric":"mobile_subscribers/fixed_broadband_subscribers","type":"official_derived","selected_basis":"prior official closing plus disclosed official net addition","detail":"Derived values are marked approximate; they are not presented as directly disclosed exact closings."},
+        {"operator_id":"china_broadnet","years":"2022-2025","metric":"5g_network_subscribers","type":"disclosure_precision_change","selected_basis":"retain regulator wording and comparator for each year","detail":"FY2022-23 are lower bounds, FY2024 is exact, and FY2025 is approximate; they must not all be presented as exact closings."},
+        {"operator_id":"china_mobile/china_broadnet","years":"2022-2025","metric":"5g_base_stations","type":"shared_network","selected_basis":"same 700MHz co-built/shared network with explicit scope warning","detail":"China Broadnet rows describe access to the China Mobile co-built 700MHz network and must never be added to China Mobile's total or treated as wholly owned assets."},
+        {"operator_id":"china_broadnet","years":"2022-2025","metric":"cable_tv_actual_users/cable_network_industry_revenue","type":"industry_scope","selected_basis":"retain as separately labelled nationwide cable-industry context","detail":"The nationwide cable figures cover a federated industry system and are not a consolidated China Broadnet corporate customer or revenue series."},
     ]
     payload = {
         "dataset_id": "global_top5_operators_2016_2025",
         "generated_at": BUILD_TIME,
         "ranking_basis": "FY2025/latest-available officially reported group customer scale; scopes are mixed and the ranking is used only to select research subjects.",
-        "non_duplication_policy": "China Mobile/Telecom/Unicom financial rows are referenced from the existing quarterly database and are not copied. This dataset adds operating history for those three and complete disclosed history for Airtel/Jio.",
+        "non_duplication_policy": "China Mobile/Telecom/Unicom financial rows are referenced from the existing quarterly database and are not copied. This dataset adds operating history for those three, disclosed China Broadnet history plus explicit corporate gaps, and complete disclosed history for Airtel/Jio.",
         "operators": OPERATORS,
         "metrics": {k:{"metric_zh":v[0],"default_unit":v[1]} for k,v in METRICS.items()},
         "rows": rows,
     }
     (OUT / "annual_metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_csv(OUT / "annual_metrics.csv", rows)
-    china_rows = [r for r in rows if r["operator_id"] in {"china_mobile", "china_telecom", "china_unicom"}]
+    china_financial_metrics = {"revenue", "ebitda", "ebit", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"}
+    china_rows = [
+        r for r in rows
+        if r["operator_id"] in {"china_mobile", "china_telecom", "china_unicom", "china_broadnet"}
+        and r["metric_key"] not in china_financial_metrics
+    ]
     china_payload = {
         "dataset_id": "china_carriers_annual_operating_metrics_2016_2025",
         "generated_at": BUILD_TIME,
@@ -1345,10 +1554,10 @@ def main() -> None:
     china_triple = [row for row in china_available if row["distinct_source_document_count"] >= 3]
     china_manifest = {
         "id": "china_carriers_annual_operating_metrics_2016_2025",
-        "title": "中国三大运营商2016–2025年度运营指标补充库",
+        "title": "中国四家基础电信运营商2016–2025年度运营指标补充库",
         "generated_at": BUILD_TIME,
         "row_count": len(china_rows),
-        "operators": ["中国移动", "中国电信", "中国联通"],
+        "operators": ["中国移动", "中国电信", "中国联通", "中国广电"],
         "relationship": "quarterly_metrics.json remains the financial fact source; this sidecar adds only operating KPIs.",
         "entrypoints": ["annual_operating_metrics_2016_2025.json", "annual_operating_metrics_2016_2025.csv", "annual_operating_metrics_2016_2025_sources.json"],
         "quality": {
@@ -1374,7 +1583,7 @@ def main() -> None:
     parent_manifest["updated_at"] = BUILD_TIME
     parent_quality = dict(parent_manifest.get("quality") or {})
     parent_quality["china_carrier_operating_sidecar"] = china_manifest["quality"]
-    parent_note = "中国移动、中国电信、中国联通年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次。"
+    parent_note = "中国移动、中国电信、中国联通、中国广电年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次；中国广电的全国有线电视行业口径不等同于集团合并口径。"
     parent_notes = parent_quality.setdefault("notes", [])
     if parent_note not in parent_notes:
         parent_notes.append(parent_note)
@@ -1393,7 +1602,7 @@ def main() -> None:
         writer.writeheader(); writer.writerows(conflicts)
     missing = Counter(r["operator"] for r in coverage if r["status"] != "available")
     quality_md = "\n".join([
-        "# 全球五大运营商数据库质量审计", "",
+        "# 全球重点六家运营商数据库质量审计", "",
         f"- 结论：`{quality['status']}`", f"- 明细行：{len(rows)}", f"- 有值行：{len(available)}", f"- 来源条目：{len(SOURCES)}",
         f"- 重复键：{len(duplicate_keys)}", f"- 无效来源引用：{len(invalid_source_ids)}", "",
         "## 全库核验等级", "", *[f"- `{name}`: {count}" for name,count in sorted(status_counts.items())], "",
@@ -1404,24 +1613,24 @@ def main() -> None:
     ])
     (OUT / "quality_audit.md").write_text(quality_md, encoding="utf-8")
     summary = "\n".join([
-        "# 全球五大运营商 2016–2025 数据摘要", "",
-        "本库以官方披露的集团客户规模选取中国移动、Bharti Airtel、Reliance Jio、中国电信和中国联通。各公司披露范围并不完全一致，排名只用于确定研究对象。中国三家既有财务数据不复制，只补运营指标；Airtel 与 Jio 收录可获得的完整财务及运营历史。", "",
+        "# 全球重点六家运营商 2016–2025 数据摘要", "",
+        "本库保留原五家客户规模研究对象，并按中国内地第四家基础电信运营商口径加入中国广电。各公司披露范围并不完全一致，排名只用于确定研究对象；中国广电不纳入原五家排名。中国三家上市运营商既有财务数据不复制，中国广电只收录可核验的公开值并保留集团未披露缺口；Airtel 与 Jio 收录可获得的完整财务及运营历史。", "",
         "## 2025 年末客户规模", "",
         "| 排名 | 运营商 | 客户数（百万） | 口径 |", "|---:|---|---:|---|",
-        "| 1 | 中国移动 | 1,005.0 | 移动客户 |", "| 2 | Bharti Airtel | 590.5 | 集团总客户口径 |", "| 3 | Reliance Jio | 488.2 | 移动及固网总客户 |", "| 4 | 中国电信 | 438.7 | 移动客户 |", "| 5 | 中国联通 | ≈357.3 | 由官方期初与净增推导的移动出账用户 |", "",
+        "| 1 | 中国移动 | 1,005.0 | 移动客户 |", "| 2 | Bharti Airtel | 590.5 | 集团总客户口径 |", "| 3 | Reliance Jio | 488.2 | 移动及固网总客户 |", "| 4 | 中国电信 | 438.7 | 移动客户 |", "| 5 | 中国联通 | ≈357.3 | 由官方期初与净增推导的移动出账用户 |", "| 补充 | 中国广电 | ≈42.0 | 广电5G用户；非集团总客户口径，不参与原排名 |", "",
         "## 使用边界", "", "- 排名用于确定研究对象，不代表收入、市值或网络资产排名。", "- 5G套餐用户与5G网络用户不合并。", "- 共建共享基站不在运营商间相加。", "- 财年结束日在中国公司与印度公司之间不同，比较时必须使用 `period_end`。", "- 所有缺口、重述和口径断点见 `quality_audit.md` 与逐行 `quality_note`。", "",
     ])
     (OUT / "summary.md").write_text(summary, encoding="utf-8")
     readme = "\n".join([
-        "# 全球五大运营商 2016–2025 数据库", "",
+        "# 全球重点六家运营商 2016–2025 数据库", "",
         "## 入口", "", "- `annual_metrics.json`：主数据和元数据。", "- `annual_metrics.csv`：长表。", "- `sources.json`：官方来源登记。", "- `coverage.csv`：逐运营商、逐年、逐指标覆盖/缺口。", "- `quality_audit.json` / `quality_audit.md`：质量门禁。", "- `conflicts_and_scope_breaks.json` / `.csv`：重述、冲突、推导值与口径断点。", "- `summary.md`：研究对象与使用边界。", "",
-        "## 与原数据库的关系", "", "中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；新增运营指标的规范侧表写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录主表提供五家整合视图。Airtel 与 Jio 为新增主体，财务和运营数据均在本库。", "",
+        "## 与原数据库的关系", "", "中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；中国广电及四家内地运营商的新增运营指标写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录沿用历史兼容 ID `global_top5_operators_2016_2025`，但内容现为六家整合视图。Airtel 与 Jio 为新增主体，财务和运营数据均在本库。", "",
         "## 重建", "", "```bash", "python3 scripts/build_global_top5_operator_database.py", "```", "",
     ])
     (OUT / "README.md").write_text(readme, encoding="utf-8")
     manifest = {
-        "id":"global_top5_operators_2016_2025", "title":"全球五大运营商2016–2025财务与运营数据库",
-        "summary":"按客户规模选取五家；中国三家链接既有财务库并补运营指标，Airtel/Jio新增完整披露历史。",
+        "id":"global_top5_operators_2016_2025", "title":"全球重点六家运营商2016–2025财务与运营数据库",
+        "summary":"保留原五家研究对象并补入中国广电；中国三家链接既有财务库，中国广电保留公开值及明确缺口，Airtel/Jio收录完整披露历史。",
         "source_type":"official_public_multi_source", "updated_at":BUILD_TIME,
         "tags":["global_carriers","10_year_history","subscribers","5g","broadband","arpu","traffic","base_stations","financials"],
         "entrypoints":["README.md","summary.md","annual_metrics.json","annual_metrics.csv","sources.json","coverage.csv","quality_audit.json","quality_audit.md","conflicts_and_scope_breaks.json","conflicts_and_scope_breaks.csv"],
