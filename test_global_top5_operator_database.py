@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 64,
                 "中国移动": 80,
-                "中国联通": 63,
+                "中国联通": 64,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -535,6 +535,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             "mobile_dou": {
                 2017: 2.433, 2019: 8.0,
             },
+            "handset_data_traffic": {2017: 7.786},
             "4g_base_stations": {
                 2016: 0.740, 2017: 0.852, 2018: 0.987,
                 2020: 1.503, 2021: 1.560,
@@ -580,6 +581,19 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn(f"official_value={value}", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 2)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 2)
+
+    def test_xiaojing_retrieves_china_unicom_fy2017_handset_data_traffic(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国联通2017年手机数据流量是多少？说明三来源。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("metric_key=handset_data_traffic", combined)
+        self.assertIn("official_value=7.786 billion_GB", combined)
+        self.assertIn("distinct_source_document_count=3", combined)
+        self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
 
     def test_xiaojing_retrieves_china_unicom_precise_4g_base_station_history(self):
         expected = {

@@ -1,8 +1,8 @@
 # 全球重点六家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：666
-- 有值行：440
+- 明细行：676
+- 有值行：441
 - 来源条目：248
 - 重复键：0
 - 无效来源引用：0
@@ -13,9 +13,9 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 65
-- `official_three_distinct_sources_verified`: 338
+- `official_three_distinct_sources_verified`: 339
 - `official_two_distinct_sources`: 21
-- `source_gap_confirmed`: 199
+- `source_gap_confirmed`: 208
 
 ## 三来源认证行（按运营商）
 
@@ -24,7 +24,7 @@
 - 中国广电: 6
 - 中国电信: 64
 - 中国移动: 80
-- 中国联通: 63
+- 中国联通: 64
 
 ## 缺口（含不适用）
 

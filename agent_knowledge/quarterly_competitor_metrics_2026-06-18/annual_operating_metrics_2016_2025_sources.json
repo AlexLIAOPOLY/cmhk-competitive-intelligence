@@ -4132,6 +4132,11 @@
           "value": 2.433,
           "unit": "GB_per_user_month",
           "locator": "FY2017 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
+        },
+        "handset_data_traffic": {
+          "value": 7.786,
+          "unit": "billion_GB",
+          "locator": "FY2017 exact China Unicom operating KPI; 年度手机上网流量 at the disclosed precision"
         }
       }
     },
@@ -5144,6 +5149,11 @@
           "value": 2.433,
           "unit": "GB_per_user_month",
           "locator": "FY2017 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
+        },
+        "handset_data_traffic": {
+          "value": 7.786,
+          "unit": "billion_GB",
+          "locator": "FY2017 exact China Unicom operating KPI; 年度手机上网流量 at the disclosed precision"
         }
       }
     },
@@ -5172,6 +5182,11 @@
             "value": 46.3,
             "unit": "RMB_per_user_month",
             "locator": "FY2017 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+          },
+          "handset_data_traffic": {
+            "value": 7.786,
+            "unit": "billion_GB",
+            "locator": "FY2017 exact China Unicom operating KPI; 年度手机上网流量 at the disclosed precision"
           }
         }
       },

@@ -2316,6 +2316,9 @@ _CU_BROADBAND_ACCESS_ARPU = {
 _CU_MOBILE_DOU = {
     2017: 2.433, 2019: 8.0, 2020: 9.7, 2021: 12.7,
 }
+_CU_HANDSET_DATA_TRAFFIC = {
+    2017: 7.786,
+}
 _CU_4G_BASE_STATIONS = {
     2016: 0.740, 2017: 0.852, 2018: 0.987,
     2020: 1.503, 2021: 1.560,
@@ -2382,6 +2385,9 @@ _CU_MOBILE_DOU_SOURCES = {
     2020: ["china_unicom_results_2020", "china_unicom_results_2021"],
     2021: ["china_unicom_results_2021", "china_unicom_results_2022"],
 }
+_CU_HANDSET_DATA_TRAFFIC_SOURCES = {
+    2017: ["china_unicom_ar_2017", "china_unicom_results_2017", "china_unicom_results_2018"],
+}
 _CU_4G_BASE_STATION_SOURCES = {
     2016: ["china_unicom_csr_2016", "china_unicom_csr_2017", "china_unicom_csr_2018"],
     2017: ["china_unicom_csr_2017", "china_unicom_csr_2018", "china_unicom_csr_2019"],
@@ -2438,6 +2444,7 @@ for _metric_key, _values, _source_map, _unit in (
     ("mobile_arpu", _CU_MOBILE_ARPU, _CU_MOBILE_ARPU_SOURCES, "RMB_per_user_month"),
     ("broadband_arpu", _CU_BROADBAND_ACCESS_ARPU, _CU_BROADBAND_ACCESS_ARPU_SOURCES, "RMB_per_user_month"),
     ("mobile_dou", _CU_MOBILE_DOU, _CU_MOBILE_DOU_SOURCES, "GB_per_user_month"),
+    ("handset_data_traffic", _CU_HANDSET_DATA_TRAFFIC, _CU_HANDSET_DATA_TRAFFIC_SOURCES, "billion_GB"),
     ("4g_base_stations", _CU_4G_BASE_STATIONS, _CU_4G_BASE_STATION_SOURCES, "million_base_stations"),
     ("fixed_broadband_access_ports", _CU_FIXED_BROADBAND_ACCESS_PORTS, _CU_FIXED_BROADBAND_ACCESS_PORT_SOURCES, "million_ports"),
     ("iot_connections", _CU_IOT_CONNECTIONS, _CU_IOT_CONNECTION_SOURCES, "million_connections"),
@@ -2937,6 +2944,7 @@ add_series("china_unicom", "fixed_broadband_subscribers", {2016:75.236,2017:76.5
 add_series("china_unicom", "mobile_arpu", {**_CU_MOBILE_ARPU,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids={**paired("china_unicom", ct_years), **_CU_MOBILE_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")
 add_series("china_unicom", "broadband_arpu", {**_CU_BROADBAND_ACCESS_ARPU,2022:None,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="fixed-line broadband access ARPU", source_ids={**paired("china_unicom", list(range(2016,2026))), **_CU_BROADBAND_ACCESS_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change.")
 add_series("china_unicom", "mobile_dou", {2016:None,2017:2.433,2018:None,2019:8.0,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=_CU_MOBILE_DOU_SOURCES, note="FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified.")
+add_series("china_unicom", "handset_data_traffic", {2016:None,2017:7.786,2018:None,2019:None,2020:None,2021:None,2022:None,2023:None,2024:None,2025:None}, scope="annual total mobile handset data traffic", source_ids=_CU_HANDSET_DATA_TRAFFIC_SOURCES, note="FY2017 is converted deterministically from the disclosed 7,786.0 billion MB at 1,000 MB = 1 GB and is supported by the H-share annual report plus current-year and following-year annual-results presentations. FY2016 remains blank because the annual report states 1,608.1 billion MB while the presentations round to 1,608. Later annual reports use approximate totals or growth-only wording, so no other year is promoted without a third exact document.")
 add_series("china_unicom", "4g_base_stations", {2016:0.740,2017:0.852,2018:0.987,2019:None,2020:1.503,2021:1.560,2022:None,2023:None,2024:None,2025:None}, scope="China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures", source_ids=_CU_4G_BASE_STATION_SOURCES, note="FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series.")
 add_series("china_unicom", "fixed_broadband_access_ports", {2016:None,2017:None,2018:215,2019:221,2020:225,2021:239,2022:250,2023:266,2024:None,2025:None}, scope="fixed-network broadband access ports; network capacity, not subscriber count", source_ids=_CU_FIXED_BROADBAND_ACCESS_PORT_SOURCES, note="FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule.")
 add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")

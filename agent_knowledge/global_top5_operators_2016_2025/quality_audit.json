@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "backlog_open",
-  "row_count": 666,
-  "available_value_rows": 440,
-  "three_distinct_source_certified_rows": 338,
+  "row_count": 676,
+  "available_value_rows": 441,
+  "three_distinct_source_certified_rows": 339,
   "below_three_source_rows": 102,
   "source_count": 248,
   "duplicate_key_count": 0,
@@ -14,9 +14,9 @@
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
     "official_single_source": 65,
-    "official_three_distinct_sources_verified": 338,
+    "official_three_distinct_sources_verified": 339,
     "official_two_distinct_sources": 21,
-    "source_gap_confirmed": 199
+    "source_gap_confirmed": 208
   },
   "available_rows_by_operator": {
     "Bharti Airtel": 100,
@@ -24,7 +24,7 @@
     "中国广电": 24,
     "中国电信": 67,
     "中国移动": 110,
-    "中国联通": 78
+    "中国联通": 79
   },
   "three_source_certified_rows_by_operator": {
     "Bharti Airtel": 98,
@@ -32,7 +32,7 @@
     "中国广电": 6,
     "中国电信": 64,
     "中国移动": 80,
-    "中国联通": 63
+    "中国联通": 64
   },
   "available_rows_by_metric": {
     "4g_base_stations": 13,
@@ -58,7 +58,7 @@
     "gigabit_broadband_customers": 1,
     "gigabit_broadband_penetration": 1,
     "government_enterprise_customers": 1,
-    "handset_data_traffic": 20,
+    "handset_data_traffic": 21,
     "hd_uhd_cable_tv_users": 4,
     "household_customer_blended_arpu": 9,
     "households_gigabit_coverage": 1,
