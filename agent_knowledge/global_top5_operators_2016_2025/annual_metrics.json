@@ -9104,6 +9104,45 @@
       "period": "FY2016",
       "period_end": "2016-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 32.1,
+      "official_value": 32.1,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2016",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 77.62,
@@ -9360,6 +9399,45 @@
         "china_mobile_results_2018"
       ],
       "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 35.1,
+      "official_value": 35.1,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
     },
     {
       "operator_id": "china_mobile",
@@ -9664,6 +9742,45 @@
         "china_mobile_results_2019"
       ],
       "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 33.5,
+      "official_value": 33.5,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
     },
     {
       "operator_id": "china_mobile",
@@ -10084,6 +10201,45 @@
       "period": "FY2019",
       "period_end": "2019-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 32.8,
+      "official_value": 32.8,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 187.04,
@@ -10489,6 +10645,45 @@
         "china_mobile_results_2021"
       ],
       "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 34.0,
+      "official_value": 34.0,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
     },
     {
       "operator_id": "china_mobile",
@@ -10939,6 +11134,45 @@
       "period": "FY2021",
       "period_end": "2021-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 34.7,
+      "official_value": 34.7,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 240.11,
@@ -11345,6 +11579,45 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 34.1,
+      "official_value": 34.1,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 272.17,
@@ -11740,6 +12013,45 @@
         "china_mobile_results_2023"
       ],
       "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "broadband_arpu",
+      "metric_zh": "宽带ARPU",
+      "value": 34.5,
+      "official_value": 34.5,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "wireline broadband ARPU; earlier-year scope includes combinations of household, small-business/corporate broadband and dedicated-line revenue as disclosed",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2016-FY2023 each use three exact official documents. This access-business ARPU is stored separately from household broadband/customer blended ARPU; China Mobile stopped presenting it in the FY2024 annual operating table."
     },
     {
       "operator_id": "china_mobile",

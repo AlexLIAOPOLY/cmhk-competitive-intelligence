@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "backlog_open",
-  "row_count": 613,
-  "available_value_rows": 404,
-  "three_distinct_source_certified_rows": 225,
+  "row_count": 621,
+  "available_value_rows": 412,
+  "three_distinct_source_certified_rows": 233,
   "below_three_source_rows": 179,
   "source_count": 218,
   "duplicate_key_count": 0,
@@ -14,7 +14,7 @@
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
     "official_single_source": 145,
-    "official_three_distinct_sources_verified": 225,
+    "official_three_distinct_sources_verified": 233,
     "official_two_distinct_sources": 18,
     "source_gap_confirmed": 182
   },
@@ -23,7 +23,7 @@
     "Reliance Jio": 61,
     "中国广电": 24,
     "中国电信": 58,
-    "中国移动": 102,
+    "中国移动": 110,
     "中国联通": 59
   },
   "three_source_certified_rows_by_operator": {
@@ -31,7 +31,7 @@
     "Reliance Jio": 27,
     "中国广电": 6,
     "中国电信": 12,
-    "中国移动": 72,
+    "中国移动": 80,
     "中国联通": 10
   },
   "available_rows_by_metric": {
@@ -42,7 +42,7 @@
     "5g_network_penetration": 1,
     "5g_network_subscribers": 14,
     "5g_package_subscribers": 16,
-    "broadband_arpu": 7,
+    "broadband_arpu": 15,
     "cable_network_industry_revenue": 3,
     "cable_tv_actual_users": 4,
     "capex": 10,

@@ -1,8 +1,8 @@
 # 全球重点六家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：613
-- 有值行：404
+- 明细行：621
+- 有值行：412
 - 来源条目：218
 - 重复键：0
 - 无效来源引用：0
@@ -13,7 +13,7 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 145
-- `official_three_distinct_sources_verified`: 225
+- `official_three_distinct_sources_verified`: 233
 - `official_two_distinct_sources`: 18
 - `source_gap_confirmed`: 182
 
@@ -23,7 +23,7 @@
 - Reliance Jio: 27
 - 中国广电: 6
 - 中国电信: 12
-- 中国移动: 72
+- 中国移动: 80
 - 中国联通: 10
 
 ## 缺口（含不适用）

@@ -502,6 +502,11 @@
           "unit": "million_subscribers",
           "locator": "FY2016 annual report key operating data; year-end 4G customers"
         },
+        "broadband_arpu": {
+          "value": 32.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 annual report key operating data; wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -538,6 +543,11 @@
           "value": 33.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2017 annual report key operating data; household broadband/customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 35.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual report key operating data; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 1.399,
@@ -581,6 +591,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual report key operating data; household broadband/customer blended ARPU"
         },
+        "broadband_arpu": {
+          "value": 33.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual report key operating data; wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -622,6 +637,11 @@
           "value": 35.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual report key operating data; household broadband/customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 32.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual report key operating data; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -669,6 +689,11 @@
           "value": 37.7,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual report key operating data; household broadband/customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual report key operating data; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -721,6 +746,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual report key operating data; household broadband/customer blended ARPU"
         },
+        "broadband_arpu": {
+          "value": 34.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual report key operating data; wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 12.6,
           "unit": "GB_per_user_month",
@@ -763,6 +793,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual report key operating data; household broadband/customer blended ARPU"
         },
+        "broadband_arpu": {
+          "value": 34.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual report key operating data; wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 14.1,
           "unit": "GB_per_user_month",
@@ -804,6 +839,11 @@
           "value": 43.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 H-share annual report; household customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 H-share annual report; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -986,6 +1026,11 @@
           "value": 43.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 A-share annual report; household customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 A-share annual report; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -1412,6 +1457,11 @@
           "unit": "million_subscribers",
           "locator": "FY2016 annual-results presentation operating-data appendix; current-year 4G customers"
         },
+        "broadband_arpu": {
+          "value": 32.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -1454,6 +1504,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2017 annual-results presentation household-market operating table; current-year blended ARPU"
         },
+        "broadband_arpu": {
+          "value": 35.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 1.399,
           "unit": "GB_per_user_month",
@@ -1476,6 +1531,11 @@
             "value": 535.04,
             "unit": "million_subscribers",
             "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative 4G customers"
+          },
+          "broadband_arpu": {
+            "value": 32.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative wireline broadband ARPU"
           },
           "mobile_dou": {
             "value": 0.697,
@@ -1520,6 +1580,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual-results presentation household-market operating table; current-year blended ARPU"
         },
+        "broadband_arpu": {
+          "value": 33.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -1547,6 +1612,11 @@
             "value": 33.3,
             "unit": "RMB_per_user_month",
             "locator": "FY2018 annual-results presentation household-market table; FY2017 comparative blended ARPU"
+          },
+          "broadband_arpu": {
+            "value": 35.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2018 annual-results presentation operating-data appendix; FY2017 comparative wireline broadband ARPU"
           }
         }
       }
@@ -1587,6 +1657,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2019 annual-results presentation household-market table; FY2018 comparative blended ARPU"
           },
+          "broadband_arpu": {
+            "value": 33.5,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative wireline broadband ARPU"
+          },
           "mobile_dou": {
             "value": 3.6,
             "unit": "GB_per_user_month",
@@ -1624,6 +1699,11 @@
           "value": 35.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 32.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -1668,6 +1748,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2020 annual-results presentation household-market table; FY2019 comparative blended ARPU"
           },
+          "broadband_arpu": {
+            "value": 32.8,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative wireline broadband ARPU"
+          },
           "mobile_dou": {
             "value": 6.7,
             "unit": "GB_per_user_month",
@@ -1705,6 +1790,11 @@
           "value": 37.7,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -1754,6 +1844,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2021 annual-results presentation household-market table; FY2020 comparative blended ARPU"
           },
+          "broadband_arpu": {
+            "value": 34.0,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative wireline broadband ARPU"
+          },
           "mobile_dou": {
             "value": 9.4,
             "unit": "GB_per_user_month",
@@ -1791,6 +1886,11 @@
           "value": 39.8,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -1840,6 +1940,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2022 annual-results presentation household-market table; FY2021 comparative blended ARPU"
           },
+          "broadband_arpu": {
+            "value": 34.7,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative wireline broadband ARPU"
+          },
           "mobile_dou": {
             "value": 12.6,
             "unit": "GB_per_user_month",
@@ -1877,6 +1982,11 @@
           "value": 42.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results presentation operating-data appendix; current-year wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 14.1,
@@ -1931,6 +2041,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2023 annual-results presentation household-market table; FY2022 comparative blended ARPU"
           },
+          "broadband_arpu": {
+            "value": 34.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative wireline broadband ARPU"
+          },
           "mobile_dou": {
             "value": 14.1,
             "unit": "GB_per_user_month",
@@ -1963,6 +2078,11 @@
           "value": 43.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 annual-results presentation; household customer blended ARPU"
+        },
+        "broadband_arpu": {
+          "value": 34.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results presentation; wireline broadband ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
