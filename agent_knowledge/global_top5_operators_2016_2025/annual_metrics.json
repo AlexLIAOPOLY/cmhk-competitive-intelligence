@@ -70,6 +70,10 @@
       "metric_zh": "已连接家庭/场所",
       "default_unit": "million_premises"
     },
+    "churn": {
+      "metric_zh": "月度用户流失率",
+      "default_unit": "percent_per_month"
+    },
     "mobile_arpu": {
       "metric_zh": "移动ARPU",
       "default_unit": "local_currency_per_user_month"
@@ -16162,6 +16166,34 @@
       "period": "FY2016",
       "period_end": "2016-03-31",
       "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "precommercial_not_applicable",
+      "verification_status": "not_applicable_precommercial",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2016",
+      "primary_source_url": "https://www.ril.com/ar2015-16/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2016"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-03-31",
+      "grain": "annual",
       "metric_key": "ebitda",
       "metric_zh": "EBITDA",
       "value": null,
@@ -16349,6 +16381,34 @@
         "reliance_jio_ar_2016"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2017",
+      "primary_source_url": "https://www.ril.com/ar2016-17/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2017"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -16557,6 +16617,42 @@
         "reliance_jio_ar_2018"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": 0.25,
+      "official_value": 0.25,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
+      "distinct_source_document_ids": [
+        "jio_2018_q4_media_release",
+        "jio_2018_standalone_media_release",
+        "reliance_jio_ar_2018",
+        "reliance_sustainability_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "reliance_jio_ar_2018",
+      "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2018",
+        "jio_2018_q4_media_release",
+        "jio_2018_standalone_media_release",
+        "reliance_sustainability_2018"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -16804,6 +16900,34 @@
         "jio_2018_q4_media_release"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2019",
+      "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2019"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -17074,6 +17198,34 @@
       "period": "FY2020",
       "period_end": "2020-03-31",
       "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2020",
+      "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2020"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-03-31",
+      "grain": "annual",
       "metric_key": "ebitda",
       "metric_zh": "EBITDA",
       "value": 23348,
@@ -17294,6 +17446,34 @@
         "reliance_jio_ar_2022"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2021",
+      "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2021"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -17561,6 +17741,34 @@
         "reliance_jio_ar_2023"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2022",
+      "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2022"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -17892,6 +18100,34 @@
         "reliance_jio_ar_2024"
       ],
       "quality_note": ""
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2023",
+      "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2023"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",
@@ -18237,6 +18473,34 @@
       "period": "FY2024",
       "period_end": "2024-03-31",
       "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2024",
+      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2024"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-03-31",
+      "grain": "annual",
       "metric_key": "connected_homes",
       "metric_zh": "已连接家庭/场所",
       "value": 12,
@@ -18564,6 +18828,34 @@
         "jio_2025_factsheet"
       ],
       "quality_note": ""
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "churn",
+      "metric_zh": "月度用户流失率",
+      "value": null,
+      "official_value": null,
+      "unit": "percent_per_month",
+      "comparator": "=",
+      "scope": "monthly subscriber churn disclosed in the FY2018 year-end operating update",
+      "basis": "exit_quarter",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2025",
+      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2025"
+      ],
+      "quality_note": "Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values."
     },
     {
       "operator_id": "reliance_jio",

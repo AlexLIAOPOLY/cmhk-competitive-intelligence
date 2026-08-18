@@ -598,6 +598,7 @@ def _global_operator_exact_metric_chunks(
         "integrated_broadband_network_customers": ["融合宽带网络客户", "融合宽带客户", "integrated broadband network customers"],
         "gigabit_broadband_customers": ["千兆宽带客户", "千兆宽带用户", "gigabit broadband customers"],
         "connected_homes": ["连接家庭", "已连接家庭", "connected homes", "connected premises"],
+        "churn": ["用户流失率", "月度流失率", "流失率", "monthly churn", "churn"],
         "mobile_arpu": ["移动arpu", "mobile arpu", "arpu"],
         "broadband_arpu": ["宽带arpu", "broadband arpu"],
         "household_customer_blended_arpu": ["家庭客户综合arpu", "家庭综合arpu", "household customer blended arpu"],

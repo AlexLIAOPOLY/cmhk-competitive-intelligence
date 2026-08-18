@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 47,
+                "Reliance Jio": 48,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -72,6 +72,32 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             row = self.index[("reliance_jio", year, metric_key)]
             self.assertGreaterEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_jio_fy2018_churn_has_four_independent_official_documents(self):
+        row = self.index[("reliance_jio", 2018, "churn")]
+        self.assertEqual(row["value"], 0.25)
+        self.assertEqual(row["unit"], "percent_per_month")
+        self.assertEqual(row["basis"], "exit_quarter")
+        self.assertEqual(row["distinct_source_document_count"], 4)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(
+            set(row["verification_sources"]),
+            {
+                "reliance_jio_ar_2018",
+                "jio_2018_q4_media_release",
+                "jio_2018_standalone_media_release",
+                "reliance_sustainability_2018",
+            },
+        )
+
+        chunks = rag_llm._global_operator_exact_metric_chunks(
+            "Jio FY2018月度用户流失率是多少？",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        text = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("metric_key=churn", text)
+        self.assertIn("official_value=0.25 percent_per_month", text)
+        self.assertIn("distinct_source_document_count=4", text)
 
     def test_jio_early_financial_sources_preserve_exact_presentation_scope(self):
         ebit_2019 = self.index[("reliance_jio", 2019, "ebit")]

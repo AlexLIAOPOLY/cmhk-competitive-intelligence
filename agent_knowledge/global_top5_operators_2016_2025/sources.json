@@ -728,7 +728,14 @@
       "url": "https://www.ril.com/ar2017-18/digital-services.html",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
-      "source_document_id": "reliance_jio_ar_2018"
+      "source_document_id": "reliance_jio_ar_2018",
+      "evidence": {
+        "churn": {
+          "value": 0.25,
+          "unit": "percent_per_month",
+          "locator": "Digital Services operating review; lowest monthly churn at FY2018 year end"
+        }
+      }
     },
     {
       "source_id": "reliance_jio_ar_2019",
@@ -4235,6 +4242,11 @@
           "value": 3174,
           "unit": "INR_crore",
           "locator": "Digital Services segment EBIT, page 11"
+        },
+        "churn": {
+          "value": 0.25,
+          "unit": "percent_per_month",
+          "locator": "Digital Services results summary and customer growth, page 11"
         }
       },
       "comparative_evidence": {
@@ -4247,6 +4259,40 @@
         }
       },
       "source_document_id": "jio_2018_q4_media_release"
+    },
+    {
+      "source_id": "jio_2018_standalone_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2018,
+      "label": "Reliance Jio Infocomm FY2017-18 Q4 standalone media release",
+      "url": "https://www.ril.com/sites/default/files/2023-01/Jio-Media-Release-4Q-FY-1718.pdf",
+      "source_type": "official_subsidiary_results_release",
+      "publisher": "Reliance Jio Infocomm Limited",
+      "evidence": {
+        "churn": {
+          "value": 0.25,
+          "unit": "percent_per_month",
+          "locator": "quarter highlights and customer growth, page 1"
+        }
+      },
+      "source_document_id": "jio_2018_standalone_media_release"
+    },
+    {
+      "source_id": "reliance_sustainability_2018",
+      "operator_id": "reliance_jio",
+      "year": 2018,
+      "label": "Reliance Industries FY2017-18 sustainability report",
+      "url": "https://www.ril.com/sites/default/files/2023-11/RILs-Sustainability-Report-2017-18.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "churn": {
+          "value": 0.25,
+          "unit": "percent_per_month",
+          "locator": "customer satisfaction performance table, page 47"
+        }
+      },
+      "source_document_id": "reliance_sustainability_2018"
     },
     {
       "source_id": "jio_2019_q4_analyst_presentation",

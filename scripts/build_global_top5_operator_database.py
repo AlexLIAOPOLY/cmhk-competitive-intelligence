@@ -61,6 +61,7 @@ METRICS = {
     "5g_network_subscribers": ("5G网络用户数", "million_subscribers"),
     "fixed_broadband_subscribers": ("固网宽带用户数", "million_subscribers"),
     "connected_homes": ("已连接家庭/场所", "million_premises"),
+    "churn": ("月度用户流失率", "percent_per_month"),
     "mobile_arpu": ("移动ARPU", "local_currency_per_user_month"),
     "broadband_arpu": ("宽带ARPU", "local_currency_per_user_month"),
     "household_customer_blended_arpu": ("家庭客户综合ARPU", "local_currency_per_user_month"),
@@ -655,11 +656,30 @@ SOURCES.update({
             "total_customers": {"value": 186.6, "unit": "million_customers", "locator": "Digital Services business table, page 11"},
             "value_of_sales_and_services": {"value": 23916, "unit": "INR_crore", "locator": "Digital Services segment revenue, page 11"},
             "ebit": {"value": 3174, "unit": "INR_crore", "locator": "Digital Services segment EBIT, page 11"},
+            "churn": {"value": 0.25, "unit": "percent_per_month", "locator": "Digital Services results summary and customer growth, page 11"},
         },
         "comparative_evidence": {
             "FY2017": {
                 "total_customers": {"value": 108.9, "unit": "million_customers", "locator": "Digital Services business table, FY2017 comparative column, page 11"},
             }
+        },
+    },
+    "jio_2018_standalone_media_release": {
+        "source_id": "jio_2018_standalone_media_release", "operator_id": "reliance_jio", "year": 2018,
+        "label": "Reliance Jio Infocomm FY2017-18 Q4 standalone media release",
+        "url": "https://www.ril.com/sites/default/files/2023-01/Jio-Media-Release-4Q-FY-1718.pdf",
+        "source_type": "official_subsidiary_results_release", "publisher": "Reliance Jio Infocomm Limited",
+        "evidence": {
+            "churn": {"value": 0.25, "unit": "percent_per_month", "locator": "quarter highlights and customer growth, page 1"},
+        },
+    },
+    "reliance_sustainability_2018": {
+        "source_id": "reliance_sustainability_2018", "operator_id": "reliance_jio", "year": 2018,
+        "label": "Reliance Industries FY2017-18 sustainability report",
+        "url": "https://www.ril.com/sites/default/files/2023-11/RILs-Sustainability-Report-2017-18.pdf",
+        "source_type": "official_sustainability_report", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "churn": {"value": 0.25, "unit": "percent_per_month", "locator": "customer satisfaction performance table, page 47"},
         },
     },
     "jio_2019_q4_analyst_presentation": {
@@ -1182,6 +1202,11 @@ SOURCES["reliance_jio_ar_2025"]["evidence"] = {
     "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": "~", "locator": "Digital Services network adoption"},
     "connected_homes": {"value": 18, "unit": "million_premises", "comparator": "~", "locator": "Digital Services homes update"},
 }
+SOURCES["reliance_jio_ar_2018"].setdefault("evidence", {})["churn"] = {
+    "value": 0.25,
+    "unit": "percent_per_month",
+    "locator": "Digital Services operating review; lowest monthly churn at FY2018 year end",
+}
 SOURCES["reliance_jio_ar_2025"]["comparative_evidence"] = {
     "FY2024": {
         "value_of_sales_and_services": {"value": 132938, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
@@ -1699,6 +1724,7 @@ for _year, _source_ids in {
 }.items():
     jio_customer_sources[_year] = _source_ids
 add_series("reliance_jio", "total_customers", {2016:None,2017:108.9,2018:186.6,2019:306.7,2020:387.5,2021:426.2,2022:410.2,2023:439.3,2024:481.8,2025:488.2}, scope="Jio total mobile/fixed customer base at fiscal year end", source_ids={2016:["reliance_jio_ar_2016"], **jio_customer_sources}, note="FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error.")
+add_series("reliance_jio", "churn", {2016:None,2017:None,2018:0.25,2019:None,2020:None,2021:None,2022:None,2023:None,2024:None,2025:None}, unit="percent_per_month", scope="monthly subscriber churn disclosed in the FY2018 year-end operating update", basis="exit_quarter", source_ids=override_sources({y:[f"reliance_jio_ar_{y}"] for y in YEARS}, 2018, ["reliance_jio_ar_2018", "jio_2018_q4_media_release", "jio_2018_standalone_media_release", "reliance_sustainability_2018"]), note="Only FY2018 is populated because four separate official documents state the exact 0.25% monthly churn. Later qualitative or differently timed churn disclosures are not substituted for annual values.")
 add_series("reliance_jio", "value_of_sales_and_services", {2016:None,2017:None,2018:23916,2019:46506,2020:69605,2021:90287,2022:100166,2023:119791,2024:132938,2025:154119}, unit="INR_crore", scope="RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)", source_ids={2016:["reliance_jio_ar_2016"],2017:["reliance_jio_ar_2017"], **override_sources(override_sources(override_sources(override_sources(override_sources(override_sources(override_sources(override_sources(jio_sources, 2018, jio_2018_financial_three), 2019, jio_2019_value_two), 2020, jio_2020_financial_two), 2021, jio_2021_financial_three), 2022, ["reliance_jio_ar_2023"]), 2023, ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_q2_2024_media_release"]), 2024, ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, jio_2025_financial_three)}, note="FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded.")
 add_series("reliance_jio", "revenue_from_operations", {2016:None,2017:None,2018:None,2019:None,2020:59407,2021:76642,2022:85122,2023:101961,2024:113176,2025:131336}, unit="INR_crore", scope="RIL Digital Services segment revenue from operations", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2020, jio_2020_financial_two), 2021, jio_2021_financial_three), 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025"]), 2025, ["reliance_jio_ar_2025"]), note="FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count.")
 add_series("reliance_jio", "ebitda", {2016:None,2017:None,2018:None,2019:None,2020:23348,2021:34035,2022:40268,2023:50286,2024:56675,2025:65001}, unit="INR_crore", scope="RIL Digital Services segment EBITDA", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2020, jio_2020_ebitda_three), 2021, jio_2021_operating_three), 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "reliance_jio_ar_2023"]), 2023, ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_2023_q4", "jio_2023_media_release"]), 2024, jio_2024_financial_sources), 2025, jio_2025_financial_three), note="FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value.")
