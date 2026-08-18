@@ -389,6 +389,24 @@ SOURCES.update({
         "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260326/73569fff33d04e62bf68fe56c4599249.PDF",
         "source_type": "official_a_share_annual_report_summary", "publisher": "China Mobile Limited",
     },
+    "china_mobile_ar_summary_2022": {
+        "source_id": "china_mobile_ar_summary_2022", "operator_id": "china_mobile", "year": 2022,
+        "label": "China Mobile 2022 A-share annual report summary",
+        "url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca230324a.pdf",
+        "source_type": "official_a_share_annual_report_summary", "publisher": "China Mobile Limited",
+        "evidence": {
+            "total_base_stations": {"value": 6.0, "unit": "million_base_stations", "comparator": ">=", "locator": "infrastructure section; total commissioned base stations exceeded 6 million"},
+        },
+    },
+    "china_mobile_ar_summary_2023": {
+        "source_id": "china_mobile_ar_summary_2023", "operator_id": "china_mobile", "year": 2023,
+        "label": "China Mobile 2023 A-share annual report summary",
+        "url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca240322a.pdf",
+        "source_type": "official_a_share_annual_report_summary", "publisher": "China Mobile Limited",
+        "evidence": {
+            "total_base_stations": {"value": 6.60, "unit": "million_base_stations", "comparator": ">=", "locator": "infrastructure section; total commissioned base stations exceeded 6.60 million"},
+        },
+    },
     "china_mobile_press_2025": {
         "source_id": "china_mobile_press_2025", "operator_id": "china_mobile", "year": 2025,
         "label": "China Mobile 2025 annual results press release",
@@ -1492,8 +1510,8 @@ CHINA_MOBILE_TOTAL_BASE_STATION_SOURCES = {
     2019: ["china_mobile_ar_2019", "china_mobile_20f_2019", "china_mobile_prospectus_2021"],
     2020: ["china_mobile_ar_2020", "china_mobile_prospectus_2021"],
     2021: ["china_mobile_ar_2021", "china_mobile_ar_a_2021", "china_mobile_20f_2021"],
-    2022: ["china_mobile_ar_2022", "china_mobile_ar_a_2022"],
-    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023"],
+    2022: ["china_mobile_ar_2022", "china_mobile_ar_a_2022", "china_mobile_ar_summary_2022"],
+    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_ar_summary_2023"],
 }
 
 
@@ -1514,7 +1532,7 @@ add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.
 add_series("china_mobile", "household_customer_blended_arpu", {2025:44.5}, unit="RMB_per_user_month", scope="household customer blended ARPU", source_ids={2025:CM_2025_ARPU_THREE})
 add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]), note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU.")
 add_series("china_mobile", "handset_data_traffic", dict(zip(cm_years, [5.6807,12.5693,35.4534,65.89,90.70,124.8,144.7,165.9,168.2,183.8])), scope="sum of four official quarterly handset-data-traffic values; 2016-18 converted from billion MB", basis="official_quarterly_sum", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ops_2025"]), note="Derived only by summing the four official quarterly values; no interpolation.")
-add_series("china_mobile", "total_base_stations", {2018:3.85, 2019:4.48, 2020:5.14, 2021:5.50, 2022:6.0, 2023:6.60}, scope="all commissioned mobile base stations", comparator=">=", source_ids=CHINA_MOBILE_TOTAL_BASE_STATION_SOURCES, note="Annual reports use 'more than/over' for some years. FY2019 and FY2021 have three exact independent legal documents. FY2018, FY2020, FY2022 and FY2023 remain at two exact documents; rounded or same-document mirrors are excluded.")
+add_series("china_mobile", "total_base_stations", {2018:3.85, 2019:4.48, 2020:5.14, 2021:5.50, 2022:6.0, 2023:6.60}, scope="all commissioned mobile base stations", comparator=">=", source_ids=CHINA_MOBILE_TOTAL_BASE_STATION_SOURCES, note="Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded.")
 add_series("china_mobile", "4g_base_stations", {2016:1.51, 2017:1.87, 2018:2.41, 2019:3.09, 2020:3.28, 2021:3.32, 2022:3.34, 2023:3.37}, scope="commissioned 4G base stations", source_ids=CHINA_MOBILE_4G_BASE_STATION_SOURCES, note="FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document.")
 add_series("china_mobile", "5g_base_stations", {2019:0.05, 2020:0.39, 2021:0.73, 2022:1.285, 2023:1.94, 2024:2.40, 2025:2.77}, scope="commissioned 5G base stations, including applicable 700MHz co-built sites", comparator=">=", source_ids=CHINA_MOBILE_5G_BASE_STATION_SOURCES)
 add_series("china_mobile", "integrated_broadband_network_customers", {2025:329}, scope="household broadband, enterprise broadband, dedicated Internet lines and dedicated data lines", source_ids={2025:CM_2025_THREE})

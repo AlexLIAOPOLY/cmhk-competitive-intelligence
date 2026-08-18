@@ -2268,6 +2268,42 @@
       "source_document_id": "china_mobile_ar_summary_2025"
     },
     {
+      "source_id": "china_mobile_ar_summary_2022",
+      "operator_id": "china_mobile",
+      "year": 2022,
+      "label": "China Mobile 2022 A-share annual report summary",
+      "url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca230324a.pdf",
+      "source_type": "official_a_share_annual_report_summary",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "total_base_stations": {
+          "value": 6.0,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "infrastructure section; total commissioned base stations exceeded 6 million"
+        }
+      },
+      "source_document_id": "china_mobile_ar_summary_2022"
+    },
+    {
+      "source_id": "china_mobile_ar_summary_2023",
+      "operator_id": "china_mobile",
+      "year": 2023,
+      "label": "China Mobile 2023 A-share annual report summary",
+      "url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca240322a.pdf",
+      "source_type": "official_a_share_annual_report_summary",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "total_base_stations": {
+          "value": 6.6,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "infrastructure section; total commissioned base stations exceeded 6.60 million"
+        }
+      },
+      "source_document_id": "china_mobile_ar_summary_2023"
+    },
+    {
       "source_id": "china_mobile_press_2025",
       "operator_id": "china_mobile",
       "year": 2025,

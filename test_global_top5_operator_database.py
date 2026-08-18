@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 42,
                 "中国广电": 24,
                 "中国电信": 58,
-                "中国移动": 80,
+                "中国移动": 82,
                 "中国联通": 53,
             },
         )
@@ -117,18 +117,26 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
-        for year, value in ((2019, 4.48), (2021, 5.50)):
+        for year, value in ((2019, 4.48), (2021, 5.50), (2022, 6.0), (2023, 6.60)):
             row = self.index[("china_mobile", year, "total_base_stations")]
             self.assertEqual(row["value"], value)
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
-        for year in (2018, 2020, 2022, 2023):
+        for year in (2018, 2020):
             row = self.index[("china_mobile", year, "total_base_stations")]
             self.assertEqual(row["distinct_source_document_count"], 2)
             self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
         self.assertNotIn(
             "china_mobile_20f_2018",
             self.index[("china_mobile", 2018, "total_base_stations")]["verification_sources"],
+        )
+        self.assertEqual(
+            self.index[("china_mobile", 2022, "total_base_stations")]["verification_sources"],
+            ["china_mobile_ar_2022", "china_mobile_ar_a_2022", "china_mobile_ar_summary_2022"],
+        )
+        self.assertEqual(
+            self.index[("china_mobile", 2023, "total_base_stations")]["verification_sources"],
+            ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_ar_summary_2023"],
         )
 
     def test_anchor_values_and_customer_scope(self):
