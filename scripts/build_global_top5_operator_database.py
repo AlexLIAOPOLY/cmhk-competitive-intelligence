@@ -1655,6 +1655,22 @@ for _source_id, _year, _value in (
         "unit": "RMB_per_user_month",
         "locator": f"official operating table; FY{_year} comparative mobile ARPU",
     }
+for _year, _value in ((2018, 53.1), (2019, 49.1), (2020, 47.4), (2021, 48.8), (2022, 49.0)):
+    SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["mobile_arpu"] = {
+        "value": _value,
+        "unit": "RMB_per_user_month",
+        "locator": f"FY{_year} annual report key operating data; mobile ARPU",
+    }
+    SOURCES[f"china_mobile_results_{_year}"].setdefault("evidence", {})["mobile_arpu"] = {
+        "value": _value,
+        "unit": "RMB_per_user_month",
+        "locator": f"FY{_year} annual-results presentation operating-data appendix; current-year mobile ARPU",
+    }
+    SOURCES[f"china_mobile_results_{_year + 1}"].setdefault("comparative_evidence", {}).setdefault(f"FY{_year}", {})["mobile_arpu"] = {
+        "value": _value,
+        "unit": "RMB_per_user_month",
+        "locator": f"FY{_year + 1} annual-results presentation operating-data appendix; FY{_year} comparative mobile ARPU",
+    }
 SOURCES["china_broadnet_nrta_tech_review_2022"].setdefault("evidence", {})["5g_base_stations"] = {
     "value": 0.48, "unit": "million_base_stations", "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站",
 }
@@ -2079,6 +2095,10 @@ CHINA_MOBILE_ARPU_SOURCES = paired("china_mobile", cm_years)
 CHINA_MOBILE_ARPU_SOURCES.update({
     2016: ["china_mobile_results_2016", "china_mobile_results_2017", "china_mobile_press_2017"],
     2017: ["china_mobile_results_2017", "china_mobile_press_2017", "china_mobile_results_2018"],
+    **{
+        year: [f"china_mobile_ar_{year}", f"china_mobile_results_{year}", f"china_mobile_results_{year + 1}"]
+        for year in range(2018, 2023)
+    },
     2025: CM_2025_ARPU_THREE,
 })
 add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887, 925, 950, 942, 957, 975, 991, 1004, 1005])), scope="group mobile customer base", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_THREE))

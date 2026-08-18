@@ -54,6 +54,11 @@
           "value": 2.41,
           "unit": "million_base_stations",
           "locator": "FY2018 annual report operating review; year-end 4G base-station total"
+        },
+        "mobile_arpu": {
+          "value": 53.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual report key operating data; mobile ARPU"
         }
       }
     },
@@ -71,6 +76,11 @@
           "value": 3.09,
           "unit": "million_base_stations",
           "locator": "FY2019 annual report operating review; year-end 4G base-station total"
+        },
+        "mobile_arpu": {
+          "value": 49.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual report key operating data; mobile ARPU"
         }
       }
     },
@@ -88,6 +98,11 @@
           "value": 5.14,
           "unit": "million_base_stations",
           "locator": "operating review; more than 5.14 million base stations at year end"
+        },
+        "mobile_arpu": {
+          "value": 47.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual report key operating data; mobile ARPU"
         }
       }
     },
@@ -99,7 +114,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2021"
+      "source_document_id": "china_mobile_ar_2021",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual report key operating data; mobile ARPU"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2022",
@@ -109,7 +131,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2022"
+      "source_document_id": "china_mobile_ar_2022",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 49.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual report key operating data; mobile ARPU"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2023",
@@ -1881,6 +1910,11 @@
           "value": 156.69,
           "unit": "million_subscribers",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 53.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year mobile ARPU"
         }
       },
       "comparative_evidence": {
@@ -1908,6 +1942,11 @@
             "value": 156.69,
             "unit": "million_subscribers",
             "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative wireline broadband customers"
+          },
+          "mobile_arpu": {
+            "value": 53.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative mobile ARPU"
           }
         }
       },
@@ -1916,6 +1955,11 @@
           "value": 187.04,
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 49.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year mobile ARPU"
         }
       }
     },
@@ -1934,6 +1978,11 @@
             "value": 187.04,
             "unit": "million_subscribers",
             "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative wireline broadband customers"
+          },
+          "mobile_arpu": {
+            "value": 49.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative mobile ARPU"
           }
         }
       },
@@ -1942,6 +1991,11 @@
           "value": 210.32,
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 47.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year mobile ARPU"
         }
       }
     },
@@ -1960,6 +2014,11 @@
             "value": 210.32,
             "unit": "million_subscribers",
             "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative wireline broadband customers"
+          },
+          "mobile_arpu": {
+            "value": 47.4,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative mobile ARPU"
           }
         }
       },
@@ -1968,6 +2027,11 @@
           "value": 240.11,
           "unit": "million_subscribers",
           "locator": "FY2021 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 48.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results presentation operating-data appendix; current-year mobile ARPU"
         }
       }
     },
@@ -1986,6 +2050,11 @@
             "value": 240.11,
             "unit": "million_subscribers",
             "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative wireline broadband customers"
+          },
+          "mobile_arpu": {
+            "value": 48.8,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative mobile ARPU"
           }
         }
       },
@@ -1994,6 +2063,11 @@
           "value": 272.17,
           "unit": "million_subscribers",
           "locator": "FY2022 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 49.0,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results presentation operating-data appendix; current-year mobile ARPU"
         },
         "5g_base_stations": {
           "value": 0.48,
@@ -2017,6 +2091,11 @@
             "value": 272.17,
             "unit": "million_subscribers",
             "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative wireline broadband customers"
+          },
+          "mobile_arpu": {
+            "value": 49.0,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative mobile ARPU"
           }
         }
       },
