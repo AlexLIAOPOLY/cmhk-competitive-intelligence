@@ -3825,6 +3825,60 @@
       "source_document_id": "jio_2019_q4_analyst_presentation"
     },
     {
+      "source_id": "jio_2020_rjil_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2020,
+      "label": "Reliance Jio Infocomm FY2019-20 Q4 media release",
+      "url": "https://www.ril.com/sites/default/files/2023-01/RJIL_Media-Release_Mar-20.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Jio Infocomm Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 387.5,
+          "unit": "million_customers",
+          "locator": "Q4 performance highlights, page 1"
+        },
+        "mobile_arpu": {
+          "value": 130.6,
+          "unit": "INR_per_user_month",
+          "locator": "Q4 performance highlights, page 1"
+        },
+        "mobile_dou": {
+          "value": 11.3,
+          "unit": "GB_per_user_month",
+          "locator": "customer engagement update"
+        }
+      },
+      "source_document_id": "jio_2020_rjil_media_release"
+    },
+    {
+      "source_id": "jio_2020_ril_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2020,
+      "label": "RIL FY2019-20 Q4 annual results media release",
+      "url": "https://www.ril.com/sites/default/files/2022-12/RIL-Media-Release-4Q-FY-19-20.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 387.5,
+          "unit": "million_customers",
+          "locator": "Digital Services business table"
+        },
+        "mobile_arpu": {
+          "value": 130.6,
+          "unit": "INR_per_user_month",
+          "locator": "Digital Services operating update"
+        },
+        "mobile_dou": {
+          "value": 11.3,
+          "unit": "GB_per_user_month",
+          "locator": "Digital Services customer engagement update"
+        }
+      },
+      "source_document_id": "jio_2020_ril_media_release"
+    },
+    {
       "source_id": "jio_2021_q4_analyst_presentation",
       "operator_id": "reliance_jio",
       "year": 2021,

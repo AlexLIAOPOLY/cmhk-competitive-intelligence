@@ -16018,7 +16018,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -16215,7 +16215,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -16457,7 +16457,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -16702,7 +16702,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -16912,21 +16912,23 @@
       "comparator": "=",
       "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2021_q4_analyst_presentation",
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2020",
-      "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "reliance_jio_ar_2021",
+      "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022",
+        "jio_2021_q4_analyst_presentation"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -16944,19 +16946,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_ril_media_release",
+        "jio_2020_rjil_media_release",
+        "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2020",
       "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_rjil_media_release",
+        "jio_2020_ril_media_release"
       ],
       "quality_note": ""
     },
@@ -16976,19 +16980,21 @@
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_ril_media_release",
+        "jio_2020_rjil_media_release",
+        "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2020",
       "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_rjil_media_release",
+        "jio_2020_ril_media_release"
       ],
       "quality_note": ""
     },
@@ -17040,19 +17046,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_ril_media_release",
+        "jio_2020_rjil_media_release",
+        "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2020",
       "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "jio_2020_rjil_media_release",
+        "jio_2020_ril_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -17178,7 +17186,7 @@
         "reliance_jio_ar_2022",
         "jio_2021_q4_analyst_presentation"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -17444,7 +17452,7 @@
         "jio_2022_q4",
         "reliance_jio_ar_2023"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -17773,7 +17781,7 @@
         "jio_2023_q4",
         "jio_2023_media_release"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -18103,7 +18111,7 @@
         "reliance_jio_ar_2025",
         "jio_2025_media_release"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -18439,7 +18447,7 @@
         "jio_2025_media_release",
         "jio_q2_2026_integrated_filing"
       ],
-      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
+      "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",

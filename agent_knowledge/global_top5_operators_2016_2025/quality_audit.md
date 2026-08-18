@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：582
 - 有值行：391
-- 来源条目：185
+- 来源条目：187
 - 重复键：0
 - 无效来源引用：0
 
@@ -13,14 +13,14 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 23
-- `official_three_distinct_sources_verified`: 331
-- `official_two_distinct_sources`: 21
+- `official_three_distinct_sources_verified`: 335
+- `official_two_distinct_sources`: 17
 - `source_gap_confirmed`: 166
 
 ## 三来源认证行（按运营商）
 
 - Bharti Airtel: 95
-- Reliance Jio: 35
+- Reliance Jio: 39
 - 中国广电: 24
 - 中国电信: 57
 - 中国移动: 68
