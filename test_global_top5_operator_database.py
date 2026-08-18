@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 95,
-                "Reliance Jio": 23,
+                "Reliance Jio": 35,
                 "中国广电": 24,
                 "中国电信": 57,
                 "中国移动": 68,
@@ -48,6 +48,26 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
         self.assertIn("- Bharti Airtel: 95", audit_text)
+
+    def test_jio_early_operating_and_financial_rows_have_three_documents(self):
+        certified = [
+            (2017, "total_customers"),
+            (2018, "total_customers"),
+            (2018, "value_of_sales_and_services"),
+            (2018, "ebit"),
+            (2019, "total_customers"),
+            (2019, "mobile_arpu"),
+            (2019, "mobile_dou"),
+            (2021, "total_customers"),
+            (2021, "mobile_arpu"),
+            (2021, "mobile_dou"),
+            (2021, "total_data_traffic"),
+            (2021, "ebitda"),
+        ]
+        for year, metric_key in certified:
+            row = self.index[("reliance_jio", year, metric_key)]
+            self.assertGreaterEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_anchor_values_and_customer_scope(self):
         expected = {

@@ -16320,19 +16320,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2018_q4_media_release",
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2017",
       "primary_source_url": "https://www.ril.com/ar2016-17/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2017",
-        "reliance_jio_ar_2018"
+        "reliance_jio_ar_2018",
+        "jio_2018_q4_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -16410,19 +16412,21 @@
       "comparator": "=",
       "scope": "Digital Services segment EBIT; EBITDA was not provided in the reviewed early-year summary",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2018_q4_media_release",
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2018",
       "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2018",
-        "reliance_jio_ar_2019"
+        "reliance_jio_ar_2019",
+        "jio_2018_q4_media_release"
       ],
       "quality_note": ""
     },
@@ -16558,19 +16562,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2018_q4_media_release",
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2018",
       "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2018",
-        "reliance_jio_ar_2019"
+        "reliance_jio_ar_2019",
+        "jio_2018_q4_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -16619,19 +16625,21 @@
       "comparator": "=",
       "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2018_q4_media_release",
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2018",
       "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2018",
-        "reliance_jio_ar_2019"
+        "reliance_jio_ar_2019",
+        "jio_2018_q4_media_release"
       ],
       "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
@@ -16712,19 +16720,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2019_q4_analyst_presentation",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2019",
       "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "reliance_jio_ar_2020",
+        "jio_2019_q4_analyst_presentation"
       ],
       "quality_note": ""
     },
@@ -16744,19 +16754,21 @@
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2019_q4_analyst_presentation",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2019",
       "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "reliance_jio_ar_2020",
+        "jio_2019_q4_analyst_presentation"
       ],
       "quality_note": ""
     },
@@ -16805,19 +16817,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2019_q4_analyst_presentation",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2019",
       "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "reliance_jio_ar_2020",
+        "jio_2019_q4_analyst_presentation"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -17148,19 +17162,21 @@
       "comparator": "=",
       "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2021_q4_analyst_presentation",
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2021",
       "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "jio_2021_q4_analyst_presentation"
       ],
       "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
@@ -17180,19 +17196,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2021_q4_analyst_presentation",
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2021",
       "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "jio_2021_q4_analyst_presentation"
       ],
       "quality_note": ""
     },
@@ -17212,19 +17230,21 @@
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2021_q4_analyst_presentation",
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2021",
       "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "jio_2021_q4_analyst_presentation"
       ],
       "quality_note": ""
     },
@@ -17276,19 +17296,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2021_q4_analyst_presentation",
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2021",
       "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "jio_2021_q4_analyst_presentation"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -17308,19 +17330,21 @@
       "comparator": "=",
       "scope": "annual Jio network data traffic",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2021",
       "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2021",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "reliance_jio_ar_2023"
       ],
       "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },

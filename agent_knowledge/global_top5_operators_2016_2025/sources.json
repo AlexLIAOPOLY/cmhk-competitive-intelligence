@@ -3762,6 +3762,101 @@
       }
     },
     {
+      "source_id": "jio_2018_q4_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2018,
+      "label": "RIL FY2017-18 Q4 annual results media release",
+      "url": "https://www.ril.com/sites/default/files/2023-01/RIL-Media-Release-4Q-FY-1718%20%281%29.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 186.6,
+          "unit": "million_customers",
+          "locator": "Digital Services business table, page 11"
+        },
+        "value_of_sales_and_services": {
+          "value": 23916,
+          "unit": "INR_crore",
+          "locator": "Digital Services segment revenue, page 11"
+        },
+        "ebit": {
+          "value": 3174,
+          "unit": "INR_crore",
+          "locator": "Digital Services segment EBIT, page 11"
+        }
+      },
+      "comparative_evidence": {
+        "FY2017": {
+          "total_customers": {
+            "value": 108.9,
+            "unit": "million_customers",
+            "locator": "Digital Services business table, FY2017 comparative column, page 11"
+          }
+        }
+      },
+      "source_document_id": "jio_2018_q4_media_release"
+    },
+    {
+      "source_id": "jio_2019_q4_analyst_presentation",
+      "operator_id": "reliance_jio",
+      "year": 2019,
+      "label": "RIL FY2018-19 Q4 analyst presentation",
+      "url": "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY19-Analyst-Presentation-18Apr19.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 306.7,
+          "unit": "million_customers",
+          "locator": "Digital Services segment performance"
+        },
+        "mobile_arpu": {
+          "value": 126.2,
+          "unit": "INR_per_user_month",
+          "locator": "subscriber engagement KPI table"
+        },
+        "mobile_dou": {
+          "value": 10.9,
+          "unit": "GB_per_user_month",
+          "locator": "subscriber engagement KPI table"
+        }
+      },
+      "source_document_id": "jio_2019_q4_analyst_presentation"
+    },
+    {
+      "source_id": "jio_2021_q4_analyst_presentation",
+      "operator_id": "reliance_jio",
+      "year": 2021,
+      "label": "RIL FY2020-21 Q4 analyst presentation",
+      "url": "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY21-Analyst-Presentation-30Apr21.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 426.2,
+          "unit": "million_customers",
+          "locator": "RJIL operating metrics table"
+        },
+        "mobile_arpu": {
+          "value": 138.2,
+          "unit": "INR_per_user_month",
+          "locator": "RJIL operating metrics table"
+        },
+        "mobile_dou": {
+          "value": 13.3,
+          "unit": "GB_per_user_month",
+          "locator": "RJIL operating metrics table"
+        },
+        "ebitda": {
+          "value": 34035,
+          "unit": "INR_crore",
+          "locator": "FY2021 consolidated segment EBITDA summary"
+        }
+      },
+      "source_document_id": "jio_2021_q4_analyst_presentation"
+    },
+    {
       "source_id": "jio_2025_q4",
       "operator_id": "reliance_jio",
       "year": 2025,

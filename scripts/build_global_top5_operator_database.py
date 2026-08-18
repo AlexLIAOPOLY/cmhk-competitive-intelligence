@@ -469,6 +469,45 @@ SOURCES.update({
         "url": "https://assets.airtel.in/teams/simplycms/web/docs/quarterly-ir-pack-bharti-airtel-consolidated-nov-21121.pdf",
         "source_type": "official_results_presentation", "publisher": "Bharti Airtel Limited",
     },
+    "jio_2018_q4_media_release": {
+        "source_id": "jio_2018_q4_media_release", "operator_id": "reliance_jio", "year": 2018,
+        "label": "RIL FY2017-18 Q4 annual results media release",
+        "url": "https://www.ril.com/sites/default/files/2023-01/RIL-Media-Release-4Q-FY-1718%20%281%29.pdf",
+        "source_type": "official_results_media_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 186.6, "unit": "million_customers", "locator": "Digital Services business table, page 11"},
+            "value_of_sales_and_services": {"value": 23916, "unit": "INR_crore", "locator": "Digital Services segment revenue, page 11"},
+            "ebit": {"value": 3174, "unit": "INR_crore", "locator": "Digital Services segment EBIT, page 11"},
+        },
+        "comparative_evidence": {
+            "FY2017": {
+                "total_customers": {"value": 108.9, "unit": "million_customers", "locator": "Digital Services business table, FY2017 comparative column, page 11"},
+            }
+        },
+    },
+    "jio_2019_q4_analyst_presentation": {
+        "source_id": "jio_2019_q4_analyst_presentation", "operator_id": "reliance_jio", "year": 2019,
+        "label": "RIL FY2018-19 Q4 analyst presentation",
+        "url": "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY19-Analyst-Presentation-18Apr19.pdf",
+        "source_type": "official_results_presentation", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 306.7, "unit": "million_customers", "locator": "Digital Services segment performance"},
+            "mobile_arpu": {"value": 126.2, "unit": "INR_per_user_month", "locator": "subscriber engagement KPI table"},
+            "mobile_dou": {"value": 10.9, "unit": "GB_per_user_month", "locator": "subscriber engagement KPI table"},
+        },
+    },
+    "jio_2021_q4_analyst_presentation": {
+        "source_id": "jio_2021_q4_analyst_presentation", "operator_id": "reliance_jio", "year": 2021,
+        "label": "RIL FY2020-21 Q4 analyst presentation",
+        "url": "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY21-Analyst-Presentation-30Apr21.pdf",
+        "source_type": "official_results_presentation", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 426.2, "unit": "million_customers", "locator": "RJIL operating metrics table"},
+            "mobile_arpu": {"value": 138.2, "unit": "INR_per_user_month", "locator": "RJIL operating metrics table"},
+            "mobile_dou": {"value": 13.3, "unit": "GB_per_user_month", "locator": "RJIL operating metrics table"},
+            "ebitda": {"value": 34035, "unit": "INR_crore", "locator": "FY2021 consolidated segment EBITDA summary"},
+        },
+    },
     "jio_2025_q4": {
         "source_id": "jio_2025_q4", "operator_id": "reliance_jio", "year": 2025,
         "label": "RIL FY2024-25 Q4 analyst presentation",
@@ -1350,14 +1389,31 @@ jio_2022_operating_sources = ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q
 jio_2023_operating_three = ["reliance_jio_ar_2023", "jio_2023_q4", "jio_2023_media_release"]
 jio_2025_operating_three = ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release"]
 jio_2025_financial_three = ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_q2_2026_integrated_filing"]
-add_series("reliance_jio", "total_customers", {2016:None,2017:108.9,2018:186.6,2019:306.7,2020:387.5,2021:426.2,2022:410.2,2023:439.3,2024:481.8,2025:488.2}, scope="Jio total mobile/fixed customer base at fiscal year end", source_ids={2016:["reliance_jio_ar_2016"], **override_sources(override_sources(override_sources(override_sources(jio_sources, 2022, jio_2022_operating_sources), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, jio_2025_operating_three)}, note="FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error.")
-add_series("reliance_jio", "value_of_sales_and_services", {2016:None,2017:None,2018:23916,2019:46506,2020:69605,2021:90287,2022:100166,2023:119791,2024:132938,2025:154119}, unit="INR_crore", scope="RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)", source_ids={2016:["reliance_jio_ar_2016"],2017:["reliance_jio_ar_2017"], **override_sources(override_sources(override_sources(jio_sources, 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, jio_2025_financial_three)}, note="FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded.")
+jio_2017_customer_three = ["reliance_jio_ar_2017", "reliance_jio_ar_2018", "jio_2018_q4_media_release"]
+jio_2018_financial_three = ["reliance_jio_ar_2018", "reliance_jio_ar_2019", "jio_2018_q4_media_release"]
+jio_2019_operating_three = ["reliance_jio_ar_2019", "reliance_jio_ar_2020", "jio_2019_q4_analyst_presentation"]
+jio_2021_operating_three = ["reliance_jio_ar_2021", "reliance_jio_ar_2022", "jio_2021_q4_analyst_presentation"]
+jio_2021_traffic_three = ["reliance_jio_ar_2021", "reliance_jio_ar_2022", "reliance_jio_ar_2023"]
+jio_customer_sources = dict(jio_sources)
+for _year, _source_ids in {
+    2017: jio_2017_customer_three,
+    2018: jio_2018_financial_three,
+    2019: jio_2019_operating_three,
+    2021: jio_2021_operating_three,
+    2022: jio_2022_operating_sources,
+    2023: jio_2023_operating_three,
+    2024: jio_2024_operating_sources,
+    2025: jio_2025_operating_three,
+}.items():
+    jio_customer_sources[_year] = _source_ids
+add_series("reliance_jio", "total_customers", {2016:None,2017:108.9,2018:186.6,2019:306.7,2020:387.5,2021:426.2,2022:410.2,2023:439.3,2024:481.8,2025:488.2}, scope="Jio total mobile/fixed customer base at fiscal year end", source_ids={2016:["reliance_jio_ar_2016"], **jio_customer_sources}, note="FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error.")
+add_series("reliance_jio", "value_of_sales_and_services", {2016:None,2017:None,2018:23916,2019:46506,2020:69605,2021:90287,2022:100166,2023:119791,2024:132938,2025:154119}, unit="INR_crore", scope="RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)", source_ids={2016:["reliance_jio_ar_2016"],2017:["reliance_jio_ar_2017"], **override_sources(override_sources(override_sources(override_sources(jio_sources, 2018, jio_2018_financial_three), 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, jio_2025_financial_three)}, note="FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded.")
 add_series("reliance_jio", "revenue_from_operations", {2016:None,2017:None,2018:None,2019:None,2020:59407,2021:76642,2022:85122,2023:101961,2024:113176,2025:131336}, unit="INR_crore", scope="RIL Digital Services segment revenue from operations", source_ids=override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025"]), 2025, ["reliance_jio_ar_2025"]), note="FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count.")
-add_series("reliance_jio", "ebitda", {2016:None,2017:None,2018:None,2019:None,2020:23348,2021:34035,2022:40268,2023:50286,2024:56675,2025:65001}, unit="INR_crore", scope="RIL Digital Services segment EBITDA", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "reliance_jio_ar_2023"]), 2023, ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_2023_q4", "jio_2023_media_release"]), 2024, jio_2024_financial_sources), 2025, jio_2025_financial_three), note="FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value.")
-add_series("reliance_jio", "ebit", {2018:3174,2019:8784}, unit="INR_crore", scope="Digital Services segment EBIT; EBITDA was not provided in the reviewed early-year summary", source_ids=jio_sources)
-add_series("reliance_jio", "mobile_arpu", {2016:None,2017:None,2018:None,2019:126.2,2020:130.6,2021:138.2,2022:167.6,2023:178.8,2024:181.7,2025:206.2}, unit="INR_per_user_month", scope="exit-quarter ARPU, not full-year average", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, jio_2022_operating_sources), 2023, jio_2023_operating_three), 2024, ["jio_2024_q4", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, ["jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
-add_series("reliance_jio", "mobile_dou", {2016:None,2017:None,2018:None,2019:10.9,2020:11.3,2021:13.3,2022:19.7,2023:23.1,2024:28.7,2025:33.6}, scope="exit-quarter average data consumption per user per month", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q4"]), 2023, ["reliance_jio_ar_2023", "jio_2023_q4"]), 2024, ["reliance_jio_ar_2024", "jio_2024_q4"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
-add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:62.5,2022:91.4,2023:113.3,2024:148.5,2025:184.5}, scope="annual Jio network data traffic", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_media_release"]), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, ["jio_2025_media_release"]), note="FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration.")
+add_series("reliance_jio", "ebitda", {2016:None,2017:None,2018:None,2019:None,2020:23348,2021:34035,2022:40268,2023:50286,2024:56675,2025:65001}, unit="INR_crore", scope="RIL Digital Services segment EBITDA", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2021, jio_2021_operating_three), 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "reliance_jio_ar_2023"]), 2023, ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_2023_q4", "jio_2023_media_release"]), 2024, jio_2024_financial_sources), 2025, jio_2025_financial_three), note="FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value.")
+add_series("reliance_jio", "ebit", {2018:3174,2019:8784}, unit="INR_crore", scope="Digital Services segment EBIT; EBITDA was not provided in the reviewed early-year summary", source_ids=override_sources(jio_sources, 2018, jio_2018_financial_three))
+add_series("reliance_jio", "mobile_arpu", {2016:None,2017:None,2018:None,2019:126.2,2020:130.6,2021:138.2,2022:167.6,2023:178.8,2024:181.7,2025:206.2}, unit="INR_per_user_month", scope="exit-quarter ARPU, not full-year average", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2019, jio_2019_operating_three), 2021, jio_2021_operating_three), 2022, jio_2022_operating_sources), 2023, jio_2023_operating_three), 2024, ["jio_2024_q4", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, ["jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
+add_series("reliance_jio", "mobile_dou", {2016:None,2017:None,2018:None,2019:10.9,2020:11.3,2021:13.3,2022:19.7,2023:23.1,2024:28.7,2025:33.6}, scope="exit-quarter average data consumption per user per month", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2019, jio_2019_operating_three), 2021, jio_2021_operating_three), 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q4"]), 2023, ["reliance_jio_ar_2023", "jio_2023_q4"]), 2024, ["reliance_jio_ar_2024", "jio_2024_q4"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
+add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:62.5,2022:91.4,2023:113.3,2024:148.5,2025:184.5}, scope="annual Jio network data traffic", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2021, jio_2021_traffic_three), 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_media_release"]), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, ["jio_2025_media_release"]), note="FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration.")
 add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:191}, scope="5G users on Jio True5G network", source_ids=override_sources(override_sources(jio_sources, 2024, ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
 add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:12,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_factsheet"]), note="FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis.")
 add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count.")
