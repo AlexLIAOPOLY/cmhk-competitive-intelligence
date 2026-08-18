@@ -3253,6 +3253,7 @@ function taskLifecycleCompact(task) {
 
 function crawlRunStatusLabel(run) {
   if (run.run_status === "running") return "运行中";
+  if (run.run_status === "cutoff") return "已截止";
   if (run.run_status === "failed" || Number(run.crawl_return_code || 0) !== 0) return "失败";
   return "已完成";
 }

@@ -350,7 +350,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.now = datetime(2026, 8, 16, 14, 0, tzinfo=HKT)
         self.runner = FakeCommandRunner()
         self.ai_calls = 0
-        self._write_completed_slot("09:00")
+        self._write_completed_slot("07:00")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -446,7 +446,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_empty_agentic_gap_search_alerts_even_when_scan_completes(self):
         self._write_slot_archive(
-            "09:00",
+            "07:00",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -466,7 +466,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_agentic_gap_search_with_results_is_not_alerted(self):
         self._write_slot_archive(
-            "09:00",
+            "07:00",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -481,7 +481,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_no_agentic_queries_planned_is_not_treated_as_failure(self):
         self._write_slot_archive(
-            "09:00",
+            "07:00",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -496,7 +496,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_blocked_dirty_copy_raises_a_p1_alert(self):
         self._write_slot_archive(
-            "09:00",
+            "07:00",
             {
                 "review_sheet": {
                     "dirty_copy_blocked_count": 2,
@@ -700,6 +700,39 @@ class ProjectMonitorTests(unittest.TestCase):
         issues = self._monitor().collect_issues()
         issue = next(item for item in issues if item["condition_key"] == "strategic-slot-not-started:2026-08-16@15-00")
         self.assertEqual(issue["severity"], "P1")
+
+    def test_running_scan_is_allowed_until_next_midnight_cutoff(self):
+        self.now = datetime(2026, 8, 16, 23, 30, tzinfo=HKT)
+        monitor = self._monitor()
+        monitor._strategic_task_started = lambda _slot: True
+
+        issues = monitor._detect_strategic_slots()
+
+        self.assertNotIn(
+            "strategic-slot-incomplete:2026-08-16@07-00",
+            {item["condition_key"] for item in issues},
+        )
+
+    def test_planned_midnight_cutoff_archive_is_not_reported_as_failure(self):
+        self.now = datetime(2026, 8, 16, 23, 59, tzinfo=HKT)
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-00.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "slot": "2026-08-16@07:00",
+                    "status": "cutoff",
+                    "notification_status": "not_sent_cutoff",
+                    "cutoff_at": "2026-08-17T00:00:00+08:00",
+                }
+            )
+        )
+
+        issues = self._monitor()._detect_strategic_slots()
+
+        self.assertNotIn(
+            "strategic-slot-failed:2026-08-16@07-00:cutoff:not_sent_cutoff",
+            {item["condition_key"] for item in issues},
+        )
 
     def test_active_strategic_scan_heartbeat_prevents_false_monitor_stale_alarm(self):
         self.now = datetime(2026, 8, 16, 15, 10, tzinfo=HKT)

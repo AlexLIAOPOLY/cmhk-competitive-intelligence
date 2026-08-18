@@ -635,6 +635,7 @@
     if (task.interrupted) return { key: "attention", label: "中断", tone: "is-alert" };
     if (task.run_status === "failed") return { key: "attention", label: "失败", tone: "is-alert" };
     if (task.run_status === "running") return { key: "running", label: "运行中", tone: "is-running" };
+    if (task.run_status === "cutoff") return { key: "completed", label: "已截止", tone: "is-muted" };
     return { key: "completed", label: "已完成", tone: "is-ok" };
   }
 

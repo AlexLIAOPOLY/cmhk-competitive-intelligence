@@ -316,6 +316,7 @@ def finalize_operational_crawl_run(
     progress_detail: str,
     failure_stage: str = "",
     summary: dict[str, Any] | None = None,
+    run_status_override: str = "",
 ) -> dict[str, Any]:
     """Finalize a crawler-shaped operational task without borrowing full-crawl metrics."""
     with REGISTRY_LOCK:
@@ -325,17 +326,21 @@ def finalize_operational_crawl_run(
         relative = str((record.get("local_files") or {}).get("stream_log") or "")
         stream_path = ROOT / relative if relative else RUNS_DIR / f"{crawl_run_id}.jsonl"
         now = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
+        run_status = str(run_status_override or ("completed" if ok else "failed"))
+        if run_status not in {"completed", "failed", "cutoff"}:
+            raise ValueError(f"unsupported operational run status: {run_status}")
+        phase = {"completed": "已完成", "failed": "失败", "cutoff": "已截止"}[run_status]
         record.update(
             {
-                "run_status": "completed" if ok else "failed",
+                "run_status": run_status,
                 "worker_pid": 0,
-                "phase": "已完成" if ok else "失败",
+                "phase": phase,
                 "progress_detail": progress_detail,
                 "status_detail": progress_detail,
                 "failure_stage": failure_stage,
                 "heartbeat_at_hkt": now,
                 "completed_at_hkt": now,
-                "crawl_return_code": 0 if ok else 1,
+                "crawl_return_code": 0 if run_status in {"completed", "cutoff"} else 1,
                 "duration_ms": max(0, int(duration_ms or 0)),
                 "operational_summary": dict(summary or {}),
             }

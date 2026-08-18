@@ -392,10 +392,45 @@ def _parse_scan_times(raw: str) -> tuple[clock_time, ...]:
             parsed.append(clock_time(hour=int(hour_text), minute=int(minute_text)))
         except (TypeError, ValueError):
             logging.warning("忽略无效战略快讯扫描时间：%s", text)
-    return tuple(sorted(set(parsed))) or (clock_time(9, 0), clock_time(15, 0))
+    return tuple(sorted(set(parsed))) or (clock_time(7, 0), clock_time(15, 0))
 
 
-SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "09:00,15:00"))
+SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "07:00,15:00"))
+
+
+def _parse_clock(value: str, fallback: clock_time) -> clock_time:
+    try:
+        hour_text, minute_text = str(value or "").strip().split(":", 1)
+        return clock_time(hour=int(hour_text), minute=int(minute_text))
+    except (TypeError, ValueError):
+        return fallback
+
+
+DAILY_SCAN_CUTOFF = _parse_clock(
+    os.environ.get("CMHK_STRATEGY_DAILY_CUTOFF", "00:00"),
+    clock_time(0, 0),
+)
+
+
+class StrategicScanCutoff(BaseException):
+    """Control signal that must pass through broad Exception recovery blocks."""
+
+
+def _daily_cutoff_at(slot_at: datetime) -> datetime:
+    """Return the next-day cutoff shared by both scans for this business date."""
+    return datetime.combine(
+        slot_at.date() + timedelta(days=1), DAILY_SCAN_CUTOFF, tzinfo=HKT
+    )
+
+
+def _enforce_scan_deadline(
+    deadline_monotonic: float | None,
+    deadline_at: datetime | None,
+) -> None:
+    if deadline_monotonic is None or time.monotonic() < deadline_monotonic:
+        return
+    cutoff_text = _now_iso(deadline_at) if deadline_at else "计划截止时间"
+    raise StrategicScanCutoff(f"当日战略新闻爬虫已到 {cutoff_text}，停止本轮后续处理")
 
 
 def _now_iso(now: datetime | None = None) -> str:
@@ -449,6 +484,41 @@ def _completed_scan_archive(slot_key: str) -> dict[str, Any]:
     if notification_status not in {"sent", "queued_while_paused"}:
         return {}
     return payload
+
+
+def _cutoff_scan_archive(slot_key: str) -> dict[str, Any]:
+    payload = _read_json(_scan_run_path(slot_key), {})
+    if not isinstance(payload, dict) or payload.get("slot") != slot_key:
+        return {}
+    if (
+        payload.get("status") == "cutoff"
+        and payload.get("notification_status") == "not_sent_cutoff"
+    ):
+        return payload
+    return {}
+
+
+def _cutoff_scan_payload(
+    slot_key: str,
+    slot_label: str,
+    cutoff_at: datetime,
+    *,
+    started_at: datetime | None = None,
+    reason: str = "daily_midnight_deadline_reached",
+) -> dict[str, Any]:
+    return {
+        "slot": slot_key,
+        "slot_label": slot_label,
+        "status": "cutoff",
+        "notification_status": "not_sent_cutoff",
+        "message_id": "",
+        "candidate_count": 0,
+        "scanned_at": _now_iso(started_at or cutoff_at),
+        "completed_at": _now_iso(cutoff_at),
+        "cutoff_at": _now_iso(cutoff_at),
+        "reason": reason,
+        "preserved_progress": True,
+    }
 
 
 def _reviewed_candidate_count(review: dict[str, Any], fallback: int = 0) -> int:
@@ -1921,6 +1991,8 @@ def _run_scan(
     state: dict[str, Any],
     *,
     ensure_group_notifications: bool = False,
+    deadline_at: datetime | None = None,
+    deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     archived = _completed_scan_archive(slot_key)
     if archived:
@@ -1975,7 +2047,40 @@ def _run_scan(
             state,
             crawl_run_id=crawl_run_id,
             stream_log_path=stream_log_path,
+            deadline_at=deadline_at,
+            deadline_monotonic=deadline_monotonic,
         )
+    except StrategicScanCutoff:
+        effective_cutoff = deadline_at or datetime.now(HKT)
+        detail = (
+            f"当日轮次已到 {_now_iso(effective_cutoff)} 截止时间，停止后续爬取、审核和通知；"
+            "已完成缓存、历史去重结果和延期队列全部保留，次日轮次按计划独立执行。"
+        )
+        run_payload = _cutoff_scan_payload(
+            slot_key,
+            slot_label,
+            effective_cutoff,
+            started_at=now,
+        )
+        _atomic_write_json(_scan_run_path(slot_key), run_payload)
+        if crawl_run_id:
+            _strategic_task_progress(crawl_run_id, stream_log_path, "已截止", detail)
+            append_crawl_run_event(
+                stream_log_path,
+                {"type": "done", "ok": False, "stage": "scheduled_cutoff", "error": detail},
+            )
+            finalize_operational_crawl_run(
+                crawl_run_id,
+                ok=False,
+                duration_ms=round((time.monotonic() - started_monotonic) * 1000),
+                progress_detail=detail,
+                failure_stage="scheduled_cutoff",
+                summary={"slot": slot_key, "cutoff_at": _now_iso(effective_cutoff)},
+                run_status_override="cutoff",
+            )
+            run_payload["task_run_id"] = crawl_run_id
+        _append_event({"type": "scan_cutoff", **run_payload})
+        return run_payload
     except Exception as exc:
         detail = f"战略新闻扫描失败：{_clean_text(exc, 500)}"
         if crawl_run_id:
@@ -2043,8 +2148,11 @@ def _run_scan_impl(
     *,
     crawl_run_id: str = "",
     stream_log_path: str | Path = "",
+    deadline_at: datetime | None = None,
+    deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     def task_progress(phase: str, detail: str) -> None:
+        _enforce_scan_deadline(deadline_monotonic, deadline_at)
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
@@ -2052,6 +2160,7 @@ def _run_scan_impl(
             detail,
         )
 
+    _enforce_scan_deadline(deadline_monotonic, deadline_at)
     spec = read_monitoring_spec()
     _strategic_task_progress(
         crawl_run_id,
@@ -2408,6 +2517,7 @@ def _run_scan_impl(
         ),
     )
     try:
+        _enforce_scan_deadline(deadline_monotonic, deadline_at)
         message_id, identity = _send_scan_message(
             now=now,
             slot_label=slot_label,
@@ -5533,7 +5643,8 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
             state["scan_slots"] = state.get("scan_slots") or {}
             for index, scan_time in enumerate(SCAN_TIMES):
                 slot_at = datetime.combine(now.date(), scan_time, tzinfo=HKT)
-                if slot_at <= now:
+                cutoff_at = _daily_cutoff_at(slot_at)
+                if slot_at <= now and not (cutoff_at is not None and now >= cutoff_at):
                     key = f"{now:%Y-%m-%d}@{scan_time:%H:%M}"
                     state["scan_slots"][key] = {
                         "status": "baseline",
@@ -5556,12 +5667,38 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
             if archived:
                 _recover_completed_scan_slot(state, slot_key, archived)
                 continue
+            cutoff_archive = _cutoff_scan_archive(slot_key)
+            if cutoff_archive:
+                scan_slots[slot_key] = {
+                    "status": "cutoff",
+                    "at": str(cutoff_archive.get("completed_at") or ""),
+                    "reason": str(cutoff_archive.get("reason") or "daily_midnight_deadline_reached"),
+                }
+                continue
             entry = (
                 scan_slots.get(slot_key)
                 if isinstance(scan_slots.get(slot_key), dict)
                 else {}
             )
-            if slot_at > current_now or entry.get("status") in {"completed", "baseline"}:
+            if slot_at > current_now or entry.get("status") == "completed":
+                continue
+            cutoff_at = _daily_cutoff_at(slot_at)
+            if cutoff_at is not None and current_now >= cutoff_at:
+                cutoff_payload = _cutoff_scan_payload(
+                    slot_key,
+                    _slot_label(index),
+                    cutoff_at,
+                    reason="daily_midnight_cutoff_passed_before_start",
+                )
+                _atomic_write_json(_scan_run_path(slot_key), cutoff_payload)
+                scan_slots[slot_key] = {
+                    "status": "cutoff",
+                    "at": _now_iso(current_now),
+                    "reason": cutoff_payload["reason"],
+                }
+                result["scans"].append(cutoff_payload)
+                continue
+            if entry.get("status") == "baseline":
                 continue
             age_minutes = (current_now - slot_at).total_seconds() / 60
             interrupted_attempts = _interrupted_strategic_attempts(slot_key)
@@ -5605,13 +5742,34 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 except ValueError:
                     pass
             try:
+                deadline_monotonic = (
+                    time.monotonic() + max(0.0, (cutoff_at - current_now).total_seconds())
+                    if cutoff_at is not None
+                    else None
+                )
+                scan_kwargs: dict[str, Any] = {"ensure_group_notifications": True}
+                if cutoff_at is not None:
+                    scan_kwargs.update(
+                        {
+                            "deadline_at": cutoff_at,
+                            "deadline_monotonic": deadline_monotonic,
+                        }
+                    )
                 scan_result = _run_scan(
                     current_now,
                     slot_key,
                     _slot_label(index),
                     state,
-                    ensure_group_notifications=True,
+                    **scan_kwargs,
                 )
+                if scan_result.get("status") == "cutoff":
+                    scan_slots[slot_key] = {
+                        "status": "cutoff",
+                        "at": str(scan_result.get("completed_at") or _now_iso(current_now)),
+                        "reason": str(scan_result.get("reason") or "daily_midnight_deadline_reached"),
+                    }
+                    result["scans"].append(scan_result)
+                    continue
                 scan_slots[slot_key] = {
                     "status": "completed",
                     "at": _now_iso(now),

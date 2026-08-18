@@ -1,4 +1,4 @@
-"""Bridge completed fixed-source crawls into the 09:00/15:00 news scans.
+"""Bridge completed fixed-source crawls into the 07:00/15:00 news scans.
 
 The scheduled crawler is deliberately a fixed-source monitor.  This module
 does not turn every changed page into a news item.  It records newly discovered
@@ -382,7 +382,7 @@ def commit_signal_attempts(
     *,
     max_attempts: int = 4,
 ) -> dict[str, Any]:
-    """Update retry counters only after the 09:00/15:00 scan completes."""
+    """Update retry counters only after the 07:00/15:00 scan completes."""
     attempts = state.get("scheduled_crawl_signal_attempts")
     if not isinstance(attempts, dict):
         attempts = {}

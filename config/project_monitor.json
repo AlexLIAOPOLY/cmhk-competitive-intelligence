@@ -46,7 +46,7 @@
     },
     {
       "id": "strategic-news",
-      "name": "09:00/15:00战略新闻爬虫",
+      "name": "07:00/15:00战略新闻爬虫",
       "stale_after_seconds": 4200
     },
     {
@@ -86,9 +86,10 @@
     "executive_intelligence_refresh"
   ],
   "strategic_scan_times": [
-    "09:00",
+    "07:00",
     "15:00"
   ],
+  "strategic_daily_cutoff": "00:00",
   "strategic_start_grace_minutes": 15,
   "strategic_finish_grace_minutes": 70,
   "strategic_deferred_queue_limit": 40,

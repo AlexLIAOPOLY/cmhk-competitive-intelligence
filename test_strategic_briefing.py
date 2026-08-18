@@ -550,6 +550,92 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(completed["notification_status"], "queued_while_paused")
 
+    def test_daily_midnight_deadline_archives_cutoff_without_notification(self):
+        cutoff_at = datetime(2026, 8, 20, 0, 0, tzinfo=briefing.HKT)
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+            mock.patch.object(briefing, "_completed_scan_archive", return_value={}),
+            mock.patch.object(
+                briefing,
+                "start_crawl_run",
+                return_value={
+                    "crawl_run_id": "morning-cutoff-test",
+                    "stream_log_path": str(Path(temporary) / "morning.jsonl"),
+                },
+            ),
+            mock.patch.object(briefing, "_strategic_task_progress"),
+            mock.patch.object(briefing, "append_crawl_run_event"),
+            mock.patch.object(briefing, "_append_event"),
+            mock.patch.object(
+                briefing,
+                "_run_scan_impl",
+                side_effect=briefing.StrategicScanCutoff("deadline"),
+            ),
+            mock.patch.object(
+                briefing, "finalize_operational_crawl_run"
+            ) as finalize_run,
+        ):
+            result = briefing._run_scan(
+                datetime(2026, 8, 19, 7, 0, tzinfo=briefing.HKT),
+                "2026-08-19@07:00",
+                "晨间扫描",
+                {},
+                ensure_group_notifications=True,
+                deadline_at=cutoff_at,
+                deadline_monotonic=0.0,
+            )
+
+        self.assertEqual(result["status"], "cutoff")
+        self.assertEqual(result["notification_status"], "not_sent_cutoff")
+        self.assertTrue(result["preserved_progress"])
+        self.assertEqual(
+            finalize_run.call_args.kwargs["run_status_override"], "cutoff"
+        )
+
+    def test_both_daily_slots_share_next_midnight_deadline(self):
+        self.assertEqual(
+            [value.strftime("%H:%M") for value in briefing.SCAN_TIMES],
+            ["07:00", "15:00"],
+        )
+        for hour in (7, 15):
+            slot_at = datetime(2026, 8, 19, hour, 0, tzinfo=briefing.HKT)
+            self.assertEqual(
+                briefing._daily_cutoff_at(slot_at),
+                datetime(2026, 8, 20, 0, 0, tzinfo=briefing.HKT),
+            )
+
+    def test_cycle_after_daily_midnight_does_not_retry_previous_day_slot(self):
+        now = datetime(2026, 8, 20, 0, 1, tzinfo=briefing.HKT)
+        state = {
+            "initialized_at": "2026-08-19T06:00:00+08:00",
+            "scan_slots": {},
+            "last_group_bucket": int(now.timestamp()) // briefing.GROUP_CHECK_SECONDS,
+        }
+        saved = {}
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "DATA_DIR", Path(temporary)),
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary) / "runs"),
+            mock.patch.object(
+                briefing, "PROCESS_LOCK_PATH", Path(temporary) / "cycle.lock"
+            ),
+            mock.patch.object(briefing, "MONITOR_ENABLED", True),
+            mock.patch.object(briefing, "_load_state", return_value=state),
+            mock.patch.object(briefing, "_completed_scan_archive", return_value={}),
+            mock.patch.object(briefing, "_run_scan") as run_scan,
+            mock.patch.object(
+                briefing, "_flush_pending_scan_notifications", return_value=[]
+            ),
+            mock.patch.object(
+                briefing, "_save_state", side_effect=lambda value: saved.update(value)
+            ),
+        ):
+            result = briefing.run_cycle(now)
+
+        run_scan.assert_not_called()
+        self.assertFalse(result["scans"])
+
     def test_completed_scan_archive_prevents_any_second_run(self):
         slot_key = "2026-07-30@09:00"
         archived = {
@@ -616,7 +702,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_recovers_completed_archive_from_stale_state(self):
         now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
-        slot_key = "2026-07-30@09:00"
+        slot_key = "2026-07-30@07:00"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -683,7 +769,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_restarts_interrupted_scan_after_normal_catchup_window(self):
         now = datetime(2026, 8, 18, 11, 6, tzinfo=briefing.HKT)
-        slot_key = "2026-08-18@09:00"
+        slot_key = "2026-08-18@07:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {
@@ -753,7 +839,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_runs_afternoon_slot_after_morning_crossed_its_start_time(self):
         now = datetime(2026, 8, 18, 17, 30, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@09:00"
+        morning_key = "2026-08-18@07:00"
         afternoon_key = "2026-08-18@15:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
@@ -827,20 +913,22 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             briefing.run_cycle(now)
 
-        run_scan.assert_called_once_with(
-            now,
-            afternoon_key,
-            "午后扫描",
-            mock.ANY,
-            ensure_group_notifications=True,
+        run_scan.assert_called_once()
+        args, kwargs = run_scan.call_args
+        self.assertEqual(args[:3], (now, afternoon_key, "午后扫描"))
+        self.assertTrue(kwargs["ensure_group_notifications"])
+        self.assertEqual(
+            kwargs["deadline_at"],
+            datetime(2026, 8, 19, 0, 0, tzinfo=briefing.HKT),
         )
+        self.assertGreater(kwargs["deadline_monotonic"], 0)
         self.assertTrue(
             saved["scan_slots"][afternoon_key]["deferred_by_prior_slot"]
         )
 
     def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
         now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@09:00"
+        morning_key = "2026-08-18@07:00"
         afternoon_key = "2026-08-18@15:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
@@ -890,12 +978,13 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             briefing.run_cycle(now)
 
-        run_scan.assert_called_once_with(
-            now,
-            afternoon_key,
-            "午后扫描",
-            mock.ANY,
-            ensure_group_notifications=True,
+        run_scan.assert_called_once()
+        args, kwargs = run_scan.call_args
+        self.assertEqual(args[:3], (now, afternoon_key, "午后扫描"))
+        self.assertTrue(kwargs["ensure_group_notifications"])
+        self.assertEqual(
+            kwargs["deadline_at"],
+            datetime(2026, 8, 19, 0, 0, tzinfo=briefing.HKT),
         )
 
     def test_paused_completed_archive_recovers_pending_notification(self):

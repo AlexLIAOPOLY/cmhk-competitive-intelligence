@@ -592,7 +592,7 @@ class ProjectMonitor:
                 "保留抓取结果，只恢复审核阶段，不重新触发已完成抓取。",
             ],
             "strategic_news": [
-                "检查对应 09:00/15:00 归档、进程锁、候选队列与飞书回读。",
+                "检查对应 07:00/15:00 归档、进程锁、候选队列与飞书回读。",
                 "先确认是否已经完成或发送，禁止直接补跑造成重复消息。",
             ],
             "executive_intelligence_refresh": [
@@ -829,7 +829,7 @@ class ProjectMonitor:
                     severity="P1",
                     summary="战略新闻监视器状态文件不存在或不可读",
                     error=f"无法读取 {path}",
-                    impact="09:00/15:00 扫描及群消息回读监视可能已经停止。",
+                    impact="07:00/15:00 扫描及群消息回读监视可能已经停止。",
                     suggestions=[
                         "检查主Web服务和 strategic-briefing-monitor 后台线程日志。",
                         "确认没有战略新闻任务在执行后，再恢复主Web服务。",
@@ -887,7 +887,19 @@ class ProjectMonitor:
         now = self.now()
         start_grace = max(5, int(self.config.get("strategic_start_grace_minutes") or 15))
         finish_grace = max(start_grace + 10, int(self.config.get("strategic_finish_grace_minutes") or 70))
-        for raw in self.config.get("strategic_scan_times") or []:
+        try:
+            cutoff_hour, cutoff_minute = [
+                int(value)
+                for value in str(self.config.get("strategic_daily_cutoff") or "00:00").split(":", 1)
+            ]
+            daily_cutoff = datetime.combine(
+                now.date() + timedelta(days=1), clock_time(cutoff_hour, cutoff_minute), HKT
+            )
+        except (TypeError, ValueError):
+            daily_cutoff = datetime.combine(
+                now.date() + timedelta(days=1), clock_time(0, 0), HKT
+            )
+        for slot_index, raw in enumerate(self.config.get("strategic_scan_times") or []):
             try:
                 hour, minute = [int(value) for value in str(raw).split(":", 1)]
                 slot = datetime.combine(now.date(), clock_time(hour, minute), HKT)
@@ -899,7 +911,8 @@ class ProjectMonitor:
             path = self.runtime_root / "strategy_briefing" / "runs" / f"{slot_key}.json"
             archive = _read_json(path, {})
             if not isinstance(archive, dict) or not archive:
-                if not self._strategic_task_started(slot):
+                task_started = self._strategic_task_started(slot)
+                if not task_started:
                     issues.append(
                         self._issue(
                             condition_key=f"strategic-slot-not-started:{slot_key}",
@@ -914,6 +927,10 @@ class ProjectMonitor:
                             evidence=[str(path)],
                         )
                     )
+                elif now < daily_cutoff:
+                    # Both runs may continue until the next 00:00 cutoff;
+                    # task-heartbeat monitoring detects a real stall meanwhile.
+                    continue
                 elif now >= slot + timedelta(minutes=finish_grace):
                     issues.append(
                         self._issue(
@@ -932,6 +949,8 @@ class ProjectMonitor:
                 continue
             status = str(archive.get("status") or "")
             notification = str(archive.get("notification_status") or "")
+            if status == "cutoff" and notification == "not_sent_cutoff":
+                continue
             if status not in {"completed"} or notification == "failed":
                 issues.append(
                     self._issue(
