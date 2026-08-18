@@ -1603,6 +1603,19 @@ for _source_id in ("china_telecom_results_2025", "china_telecom_announcement_202
             "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas",
         },
     })
+for _source_id in ("china_telecom_ar_2025", "china_telecom_announcement_2025", "china_telecom_press_2025"):
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "5g_network_penetration": {
+            "value": 68.8,
+            "unit": "percent",
+            "locator": "FY2025 fundamental-business review; 5G network subscriber penetration rate",
+        },
+        "gigabit_broadband_penetration": {
+            "value": 31.6,
+            "unit": "percent",
+            "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate",
+        },
+    })
 for _source_id in ("china_unicom_ar_2025", "china_unicom_ops_2025", "china_unicom_q4_operating_announcement_2025"):
     SOURCES[_source_id].setdefault("evidence", {})["5g_network_subscribers"] = {
         "value": 232.18,

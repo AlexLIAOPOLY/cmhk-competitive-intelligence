@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国电信": 5,
+                "中国电信": 7,
                 "中国移动": 9,
                 "中国联通": 10,
             },
@@ -414,6 +414,34 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=10 million_ports", combined)
         self.assertIn("official_value=97 percent", combined)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 3)
+
+    def test_china_telecom_fy2025_penetration_rates_use_three_exact_documents(self):
+        expected_sources = {
+            "china_telecom_ar_2025",
+            "china_telecom_announcement_2025",
+            "china_telecom_press_2025",
+        }
+        for metric_key, value in (
+            ("5g_network_penetration", 68.8),
+            ("gigabit_broadband_penetration", 31.6),
+        ):
+            row = self.index[("china_telecom", 2025, metric_key)]
+            self.assertEqual((row["value"], row["unit"]), (value, "percent"))
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertNotIn("china_telecom_results_2025", row["verification_sources"])
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国电信2025年5G网络用户渗透率和千兆宽带渗透率是多少？",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("official_value=68.8 percent", combined)
+        self.assertIn("official_value=31.6 percent", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 2)
 
     def test_china_unicom_fy2025_conservative_connectivity_bounds_use_three_documents(self):
         expected = {

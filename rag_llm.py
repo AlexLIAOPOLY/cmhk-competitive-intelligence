@@ -610,7 +610,7 @@ def _global_operator_exact_metric_chunks(
         "mobile_broadband_integration_rate": ["移动宽带融合率", "移宽融合率", "mobile broadband integration rate"],
         "government_enterprise_customers": ["政企客户", "government enterprise customers"],
         "households_gigabit_coverage": ["千兆覆盖家庭", "千兆家庭覆盖", "households gigabit coverage"],
-        "5g_network_penetration": ["5g网络渗透率", "5g渗透率", "5g network penetration"],
+        "5g_network_penetration": ["5g网络用户渗透率", "5g网络渗透率", "5g渗透率", "5g network subscriber penetration", "5g network penetration"],
         "gigabit_broadband_penetration": ["千兆宽带渗透率", "gigabit broadband penetration"],
         "total_connectivity_subscribers": ["连接用户总规模", "总连接用户", "total connectivity subscribers"],
         "integrated_subscriber_penetration": ["融合用户渗透率", "integrated subscriber penetration"],
@@ -653,6 +653,8 @@ def _global_operator_exact_metric_chunks(
     if "integrated_package_arpu" in matched_metrics:
         matched_metrics.discard("mobile_arpu")
         matched_metrics.discard("broadband_arpu")
+    if "5g_network_penetration" in matched_metrics:
+        matched_metrics.discard("5g_network_subscribers")
     if "revenue_from_operations" in matched_metrics or "value_of_sales_and_services" in matched_metrics:
         matched_metrics.discard("revenue")
     if "ebitda" in matched_metrics:
@@ -686,6 +688,8 @@ def _global_operator_exact_metric_chunks(
                 clause_metrics.discard("mobile_arpu")
             if "integrated_package_arpu" in clause_metrics:
                 clause_metrics.discard("broadband_arpu")
+            if "5g_network_penetration" in clause_metrics:
+                clause_metrics.discard("5g_network_subscribers")
             clause_years = {
                 int(value)
                 for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", clause)
