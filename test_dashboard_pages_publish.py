@@ -125,7 +125,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=37"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=38"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
@@ -142,6 +142,16 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("骨干承载层", script)
             self.assertIn("核心调度层", script)
             self.assertNotIn("topology-orbit", script)
+            for network_background in (
+                "network-4g-bg-v1.jpg",
+                "network-5g-bg-v1.jpg",
+                "network-backbone-bg-v1.jpg",
+                "network-core-bg-v1.jpg",
+            ):
+                self.assertIn(network_background, style)
+                self.assertTrue(
+                    (first / "assets" / "executive-dashboard" / network_background).is_file()
+                )
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)
             self.assertIn(
