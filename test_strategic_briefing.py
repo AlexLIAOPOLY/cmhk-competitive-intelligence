@@ -697,13 +697,14 @@ class StrategicBriefingTests(unittest.TestCase):
         }
         interrupted = [
             {
-                "crawl_run_id": "disconnect-1",
+                "crawl_run_id": f"disconnect-{attempt}",
                 "task_kind": "strategic-news",
                 "trigger": "战略新闻定时爬虫",
                 "scope": f"晨间扫描（{slot_key}）",
                 "run_status": "failed",
                 "interrupted": True,
             }
+            for attempt in range(1, 51)
         ]
         saved = {}
 
@@ -748,7 +749,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(
             saved["scan_slots"][slot_key]["auto_recovered_after_disconnect"]
         )
-        self.assertEqual(saved["scan_slots"][slot_key]["interrupted_attempts"], 1)
+        self.assertEqual(saved["scan_slots"][slot_key]["interrupted_attempts"], 50)
 
     def test_paused_completed_archive_recovers_pending_notification(self):
         slot_key = "2026-07-30@15:00"
