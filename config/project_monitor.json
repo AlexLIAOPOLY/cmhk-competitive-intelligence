@@ -98,8 +98,8 @@
   ],
   "media_metrics_grace_minutes": 20,
   "alert_routing": {
-    "policy": "project_group_only",
-    "reason": "需求沟通群不再接收任何机器人主动推送；报障、战略新闻和全量通报只发总群",
+    "policy": "incident_group_only",
+    "reason": "故障通知只发战略竞对故障处理群；原项目总群和需求沟通群不再接收新报障卡片",
     "env_override": "CMHK_ALERT_TARGET_ROLES"
   },
   "targets": [
@@ -113,7 +113,14 @@
       "role": "project",
       "chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
       "expected_name": "揭榜-竞争对手与行业情报监测AI应用",
-      "alert_notify": true
+      "alert_notify": false
+    },
+    {
+      "role": "incident",
+      "chat_id": "oc_4b8863e13b04e8d70023ba165b496a6b",
+      "expected_name": "战略竞对故障处理群",
+      "alert_notify": true,
+      "notify_from_hkt": "2026-08-18T17:14:19+08:00"
     }
   ],
   "bot": {

@@ -331,15 +331,24 @@ class ProjectMonitor:
     def alert_targets(self) -> list[dict[str, Any]]:
         """Groups that still receive incident cards.
 
-        The requirements group stays in ``targets`` for historical card-callback
-        trust checks, but it no longer receives new incident cards. All bot
-        group pushes go to the project group only.
+        Previous groups stay in ``targets`` for historical card-callback trust
+        checks, but only entries with ``alert_notify`` receive new cards.
         """
         override = str(self.environ.get("CMHK_ALERT_TARGET_ROLES") or "").strip()
         if override:
             wanted = {part.strip() for part in override.split(",") if part.strip()}
             return [item for item in self.configured_targets if str(item.get("role") or "") in wanted]
         return [item for item in self.configured_targets if item.get("alert_notify", True)]
+
+    def _target_accepts_incident(
+        self, incident: dict[str, Any], target: dict[str, Any]
+    ) -> bool:
+        """Keep a route cutover from replaying already-open incidents."""
+        notify_from = _parse_datetime(target.get("notify_from_hkt"))
+        if not notify_from:
+            return True
+        first_seen = _parse_datetime(incident.get("first_seen_at_hkt"))
+        return bool(first_seen and first_seen >= notify_from)
 
     @property
     def ai_enabled(self) -> bool:
@@ -2142,6 +2151,8 @@ class ProjectMonitor:
         chat_id = str(target.get("chat_id") or "")
         if chat_id not in {str(item.get("chat_id") or "") for item in self.alert_targets}:
             raise RuntimeError("目标群未在报障推送路由内，发送已关闭")
+        if not self._target_accepts_incident(incident, target):
+            raise RuntimeError("故障早于目标群路由生效时间，禁止历史补发")
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
         self._verify_bot_identity()
@@ -2243,12 +2254,27 @@ class ProjectMonitor:
         if not incident.get("detected_with_notifications_enabled"):
             incident["delivery_suppressed"] = "detected_while_notifications_disabled"
             return
+        deliveries = incident.setdefault("delivery", {})
+        eligible_targets: list[dict[str, Any]] = []
+        for target in self.alert_targets:
+            chat_id = str(target.get("chat_id") or "")
+            if self._target_accepts_incident(incident, target):
+                eligible_targets.append(target)
+                continue
+            if not isinstance(deliveries.get(chat_id), dict):
+                deliveries[chat_id] = {
+                    "state": "suppressed_route_cutover",
+                    "reason": "incident_first_seen_before_target_notify_from",
+                    "suppressed_at_hkt": _iso(self.now()),
+                }
+        if not eligible_targets:
+            incident["delivery_suppressed"] = "detected_before_active_route_cutover"
+            return
         if not self._ensure_ai_diagnosis(incident):
             incident["delivery_suppressed"] = "awaiting_successful_ai_diagnosis"
             return
         incident.pop("delivery_suppressed", None)
-        deliveries = incident.setdefault("delivery", {})
-        for target in self.alert_targets:
+        for target in eligible_targets:
             chat_id = str(target.get("chat_id") or "")
             current = deliveries.get(chat_id)
             if isinstance(current, dict) and current.get("state") == "verified":
@@ -2452,6 +2478,8 @@ class ProjectMonitor:
             return "已发送，等待回读"
         if any(state == "failed_before_verification" for state in states):
             return "发送失败，等待本地重试"
+        if states and all(state == "suppressed_route_cutover" for state in states):
+            return "未发送（路由切换前故障）"
         if not self.notifications_enabled or not incident.get("detected_with_notifications_enabled"):
             return "未发送（影子期）"
         diagnosis = incident.get("diagnosis") if isinstance(incident.get("diagnosis"), dict) else {}
@@ -2876,6 +2904,7 @@ class ProjectMonitor:
                     "chat_id": item.get("chat_id"),
                     "expected_name": item.get("expected_name"),
                     "alert_notify": bool(item.get("alert_notify", True)),
+                    "notify_from_hkt": item.get("notify_from_hkt"),
                 }
                 for item in self.configured_targets
             ],

@@ -17,6 +17,7 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 CONFIG_PATH = Path(__file__).resolve().parent / "config" / "project_monitor.json"
 REQUIREMENTS_CHAT_ID = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
 PROJECT_CHAT_ID = "oc_f86adbf0010f3e648400c377bf26179b"
+INCIDENT_CHAT_ID = "oc_4b8863e13b04e8d70023ba165b496a6b"
 BOTH_ROLES = "requirements,project"
 
 
@@ -34,6 +35,7 @@ class FakeCommandRunner:
         self.chat_names = {
             "oc_22bf3c7febc4bab295fedfb0b8e6c176": "竞对AI项目需求沟通群",
             "oc_f86adbf0010f3e648400c377bf26179b": "揭榜-竞争对手与行业情报监测AI应用",
+            "oc_4b8863e13b04e8d70023ba165b496a6b": "战略竞对故障处理群",
         }
         self.service_pid = 4242
         self.service_started = "Mon Aug 17 17:40:26 2026"
@@ -387,6 +389,7 @@ class ProjectMonitorTests(unittest.TestCase):
         ai=None,
         enable_ledger=False,
         alert_roles: str | None = None,
+        respect_route_cutover: bool = False,
     ) -> project_monitor.ProjectMonitor:
         environ = {
             "CMHK_ALERT_NOTIFICATIONS": "1" if enabled else "0",
@@ -398,7 +401,7 @@ class ProjectMonitorTests(unittest.TestCase):
         }
         if alert_roles is not None:
             environ["CMHK_ALERT_TARGET_ROLES"] = alert_roles
-        return project_monitor.ProjectMonitor(
+        monitor = project_monitor.ProjectMonitor(
             runtime_root=self.root,
             config_path=CONFIG_PATH,
             state_dir=self.state_dir,
@@ -416,6 +419,10 @@ class ProjectMonitorTests(unittest.TestCase):
             },
             ai_diagnoser=ai or self._ai,
         )
+        if not respect_route_cutover:
+            for target in monitor.configured_targets:
+                target.pop("notify_from_hkt", None)
+        return monitor
 
     def _issue(self, monitor, key="test-error"):
         return monitor._issue(
@@ -550,7 +557,11 @@ class ProjectMonitorTests(unittest.TestCase):
             },
         )
         self.assertIn("token-hub", config["excluded_components"])
-        self.assertEqual(len(config["targets"]), 2)
+        self.assertEqual(len(config["targets"]), 3)
+        self.assertEqual(
+            [item["chat_id"] for item in config["targets"] if item.get("alert_notify")],
+            [INCIDENT_CHAT_ID],
+        )
         self.assertEqual(config["bot"]["app_id"], "cli_a9575e70ae799cb2")
         self.assertEqual(
             config["card_actions"]["primary_handler_open_id"],
@@ -860,7 +871,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(self.ai_calls, 0)
         self.assertEqual(self.runner.send_calls(), [])
 
-    def test_error_is_ai_analysed_once_then_sent_as_expected_bot_to_project_group(self):
+    def test_error_is_ai_analysed_once_then_sent_as_expected_bot_to_incident_group(self):
         monitor = self._monitor(enabled=True)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
@@ -868,7 +879,7 @@ class ProjectMonitorTests(unittest.TestCase):
         sends = self.runner.send_calls()
         self.assertEqual(len(sends), 1)
         sent_chats = {args[args.index("--chat-id") + 1] for args in sends}
-        self.assertEqual(sent_chats, {PROJECT_CHAT_ID})
+        self.assertEqual(sent_chats, {INCIDENT_CHAT_ID})
         for args in sends:
             self.assertEqual(args[args.index("--as") + 1], "bot")
             self.assertEqual(args[args.index("--profile") + 1], "cli_a9575e70ae799cb2")
@@ -1006,10 +1017,10 @@ class ProjectMonitorTests(unittest.TestCase):
         states = result["active_incidents"][0]["delivery_states"]
         self.assertEqual(set(states.values()), {"failed_before_verification"})
 
-    def test_requirements_group_is_excluded_from_alert_routing_by_default(self):
+    def test_previous_groups_are_excluded_from_alert_routing_by_default(self):
         monitor = self._monitor(enabled=True)
         routed = {str(item.get("chat_id")) for item in monitor.alert_targets}
-        self.assertEqual(routed, {PROJECT_CHAT_ID})
+        self.assertEqual(routed, {INCIDENT_CHAT_ID})
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
         chat_calls = {
@@ -1018,15 +1029,32 @@ class ProjectMonitorTests(unittest.TestCase):
             if len(args) >= 4 and args[1:4] == ["im", "chats", "get"]
         }
         self.assertNotIn(REQUIREMENTS_CHAT_ID, chat_calls)
+        self.assertNotIn(PROJECT_CHAT_ID, chat_calls)
         self.assertEqual(
             set(result["active_incidents"][0]["delivery_states"]),
-            {PROJECT_CHAT_ID},
+            {INCIDENT_CHAT_ID},
         )
-        self.assertEqual(result["alert_routing_policy"], "project_group_only")
+        self.assertEqual(result["alert_routing_policy"], "incident_group_only")
         self.assertEqual(
             {item["chat_id"]: item["alert_notify"] for item in result["targets"]},
-            {REQUIREMENTS_CHAT_ID: False, PROJECT_CHAT_ID: True},
+            {
+                REQUIREMENTS_CHAT_ID: False,
+                PROJECT_CHAT_ID: False,
+                INCIDENT_CHAT_ID: True,
+            },
         )
+
+    def test_route_cutover_does_not_replay_incident_first_seen_before_activation(self):
+        monitor = self._monitor(enabled=True, respect_route_cutover=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        result = monitor.run_cycle()
+        self.assertEqual(self.runner.send_calls(), [])
+        self.assertEqual(self.ai_calls, 0)
+        self.assertEqual(
+            result["active_incidents"][0]["delivery_states"][INCIDENT_CHAT_ID],
+            "suppressed_route_cutover",
+        )
+        self.assertEqual(self.runner.ledger_rows, [])
 
     def test_ledger_notification_status_counts_routed_group_only(self):
         monitor = self._monitor(enabled=True, enable_ledger=True)
