@@ -39,8 +39,11 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn("wait_until_idle_or_midnight", worker)
         self.assertLess(
             worker.index("wait_until_idle_or_midnight"),
-            worker.index('"$SOURCE/sync_app_runtime.sh"'),
+            worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
         )
+        self.assertIn("web-reload-releases", queue)
+        self.assertIn("WORKER_COPY", queue)
+        self.assertNotIn("/Desktop/", worker)
         self.assertIn('kickstart -k "$DOMAIN/$WEB_LABEL"', worker)
 
 
