@@ -154,6 +154,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         results = self.service.search_people_directory("测试")
         self.assertEqual(results[0]["avatar_url"], "https://example.test/avatar.png")
         self.assertEqual(results[0]["department_names"], ["战略部"])
+        self.assertEqual(self.service.invitation_permission_snapshot()["people_count"], 1)
+        self.assertEqual(self.service.invitation_permission_snapshot()["status"], "ready")
         added = self.service.add_directory_candidates(["ou_delivery123"])
         self.assertEqual(added["added_count"], 1)
         self.assertEqual(added["candidates"][0]["display_name"], "测试用户")

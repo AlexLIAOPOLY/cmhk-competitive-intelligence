@@ -615,9 +615,15 @@ class SubscriptionService:
 
     def invitation_permission_snapshot(self) -> dict[str, Any]:
         app_id = str((self.config.get("bot") or {}).get("app_id") or self.entry_profile)
+        with closing(self._connect()) as db:
+            directory = db.execute(
+                """SELECT COUNT(*) AS people_count, MAX(synced_at) AS synced_at
+                   FROM subscription_directory_people WHERE active=1"""
+            ).fetchone()
+        people_count = int(directory["people_count"] or 0) if directory else 0
         return {
             "mode": "authorized_directory",
-            "status": "ready" if self.directory_profile else "limited",
+            "status": "ready" if self.directory_profile and people_count > 0 else "limited",
             "summary": "通过已授权的飞书通讯录应用搜索姓名并显示头像；只有授权范围内且可由推送应用解析的人员才能被邀请。",
             "required_scopes": [
                 {"scope": "contact:user.base:readonly", "purpose": "回读姓名、open_id 与 union_id", "level": "required"},
@@ -627,6 +633,8 @@ class SubscriptionService:
             "not_requested": ["contact:contact:access_as_app", "任何通讯录写权限"],
             "availability_note": "应用可用范围与通讯录权限范围都必须包含受邀人；后台不会越过任一范围。",
             "directory_profile": self.directory_profile,
+            "people_count": people_count,
+            "synced_at": str(directory["synced_at"] or "") if directory else "",
             "console_url": f"https://open.feishu.cn/app/{app_id}/permission" if app_id else "",
             "updated_at": _now_hkt(),
         }
