@@ -107,6 +107,8 @@ def annual_url(operator_id: str, year: int) -> str:
     if operator_id == "bharti_airtel":
         if year <= 2020:
             return f"https://www.airtel.in/airtel-annual-report-{year-1}-{str(year)[-2:]}/"
+        if year == 2025:
+            return "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf"
         return "https://www.airtel.in/about-bharti/equity/results/annual-results"
     return f"https://www.ril.com/ar{year-1}-{str(year)[-2:]}/digital-services.html"
 
@@ -270,6 +272,51 @@ SOURCES.update({
         "label": "Bharti Airtel FY2025-26 Q4 investor relations pack (comparatives)",
         "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
         "source_type": "official_results_presentation", "publisher": "Bharti Airtel Limited",
+        "evidence": {
+            "total_customers": {"value": 590.514, "unit": "million_customers", "locator": "performance at a glance, page 4"},
+            "revenue": {"value": 1815110, "unit": "INR_million", "locator": "FY2025 comparative consolidated financials, pages 4 and 8"},
+            "ebitda": {"value": 1049994, "unit": "INR_million", "locator": "FY2025 comparative consolidated financials, pages 4 and 8"},
+            "earnings_before_tax": {"value": 369712, "unit": "INR_million", "locator": "FY2025 comparative consolidated financials, pages 4 and 11"},
+            "net_profit": {"value": 337440, "unit": "INR_million", "locator": "FY2025 net income after exceptional items, pages 4 and 8"},
+            "capex": {"value": 422904, "unit": "INR_million", "locator": "FY2025 comparative consolidated financials, pages 4 and 8"},
+            "net_debt": {"value": 2038384, "unit": "INR_million", "locator": "FY2025 comparative net debt, page 8"},
+            "shareholders_equity": {"value": 1136718, "unit": "INR_million", "locator": "FY2025 comparative statement of financial position"},
+            "network_towers": {"value": 375146, "unit": "sites", "locator": "performance at a glance, page 4"},
+        },
+    },
+    "airtel_q1_2026_ir_pack": {
+        "source_id": "airtel_q1_2026_ir_pack", "operator_id": "bharti_airtel", "year": 2025,
+        "label": "Bharti Airtel FY2025-26 Q1 investor relations pack with FY2025 comparatives",
+        "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+        "source_type": "official_results_presentation", "publisher": "Bharti Airtel Limited",
+        "evidence": {
+            "total_customers": {"value": 590.514, "unit": "million_customers", "locator": "performance at a glance, page 4"},
+            "revenue": {"value": 1815110, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "ebitda": {"value": 1049994, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "earnings_before_tax": {"value": 369712, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "net_profit": {"value": 337440, "unit": "INR_million", "locator": "net income after exceptional items, page 4"},
+            "capex": {"value": 422904, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "net_debt": {"value": 2038384, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "shareholders_equity": {"value": 1136718, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "network_towers": {"value": 375146, "unit": "sites", "locator": "performance at a glance, page 4"},
+        },
+    },
+    "airtel_q2_2026_ir_pack": {
+        "source_id": "airtel_q2_2026_ir_pack", "operator_id": "bharti_airtel", "year": 2025,
+        "label": "Bharti Airtel FY2025-26 Q2 investor relations pack with FY2025 comparatives",
+        "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+        "source_type": "official_results_presentation", "publisher": "Bharti Airtel Limited",
+        "evidence": {
+            "total_customers": {"value": 590.514, "unit": "million_customers", "locator": "performance at a glance, page 4"},
+            "revenue": {"value": 1815110, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "ebitda": {"value": 1049994, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "earnings_before_tax": {"value": 369712, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "net_profit": {"value": 337440, "unit": "INR_million", "locator": "net income after exceptional items, page 4"},
+            "capex": {"value": 422904, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "net_debt": {"value": 2038384, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "shareholders_equity": {"value": 1136718, "unit": "INR_million", "locator": "performance at a glance, page 4"},
+            "network_towers": {"value": 375146, "unit": "sites", "locator": "performance at a glance, page 4"},
+        },
     },
     "jio_2025_q4": {
         "source_id": "jio_2025_q4", "operator_id": "reliance_jio", "year": 2025,
@@ -423,6 +470,16 @@ SOURCES.update({
 # as one source document, not several.
 for _source_id, _source in SOURCES.items():
     _source.setdefault("source_document_id", _source_id)
+
+SOURCES["bharti_airtel_ar_2025"]["evidence"] = {
+    "total_customers": {"value": 590.514, "unit": "million_customers", "locator": "key performance indicators, pages 56-57"},
+    "revenue": {"value": 1815110, "unit": "INR_million", "locator": "key performance indicators and financial review"},
+    "ebitda": {"value": 1049994, "unit": "INR_million", "locator": "key performance indicators and financial review"},
+    "earnings_before_tax": {"value": 369712, "unit": "INR_million", "locator": "key performance indicators and financial review"},
+    "net_profit": {"value": 337440, "unit": "INR_million", "locator": "financial review; profit for the year after exceptional items"},
+    "net_debt": {"value": 2038384, "unit": "INR_million", "locator": "consolidated key ratios table"},
+    "shareholders_equity": {"value": 1136719, "unit": "INR_million", "locator": "consolidated key ratios table; differs by INR1m from later IR packs"},
+}
 
 SOURCES["reliance_jio_ar_2025"]["evidence"] = {
     "total_customers": {"value": 488.2, "unit": "million_customers", "locator": "Digital Services business performance"},
@@ -663,15 +720,17 @@ add_series("china_unicom", "cloud_ai_product_users", {2025:300}, scope="users se
 # Bharti Airtel: complete consolidated financial history plus disclosed operating KPIs.
 airtel_years = YEARS
 airtel_sources = {y:[f"bharti_airtel_ar_{y}", "airtel_2019_five_year" if y <= 2019 else "airtel_2024_five_year" if y <= 2024 else "airtel_2025_ir_pack"] for y in airtel_years}
-add_series("bharti_airtel", "total_customers", dict(zip(airtel_years, [357.428,372.354,413.822,403.645,422.100,469.864,489.729,518.446,561.970,590.514])), scope="group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table", source_ids=airtel_sources)
-add_series("bharti_airtel", "revenue", dict(zip(airtel_years, [965321,942506,826388,807802,846765,1006158,1165469,1391448,1643643,1815110])), scope="consolidated Bharti Airtel; latest comparable basis preferred", source_ids=airtel_sources, note="FY2024-25 follow the latest investor-pack comparative basis; older reports showed lower FY2024 revenue before consolidation/restatement changes.")
-add_series("bharti_airtel", "ebitda", dict(zip(airtel_years, [341682,356208,304479,262937,347696,461387,581103,717330,889064,1049994])), scope="consolidated EBITDA; latest comparable basis preferred", source_ids=airtel_sources)
-add_series("bharti_airtel", "earnings_before_tax", dict(zip(airtel_years, [128463,77232,32669,-17318,-445711,-42063,107845,172305,250532,369712])), scope="consolidated earnings before tax", source_ids=airtel_sources)
-add_series("bharti_airtel", "net_profit", dict(zip(airtel_years, [60767,37997,10990,4095,-321832,-150835,42549,83459,77820,337440])), scope="consolidated net profit after exceptional items where disclosed", source_ids=airtel_sources, note="Latest pack basis used for FY2024-25; exceptional-item effects make net profit less comparable than EBITDA.")
-add_series("bharti_airtel", "capex", {2020:244866,2021:241685,2022:256616,2023:341947,2024:489268,2025:422904}, scope="consolidated capital expenditure", source_ids=airtel_sources)
-add_series("bharti_airtel", "net_debt", {2020:1245209,2021:1485076,2022:1603073,2023:2131264,2024:1943799,2025:2038384}, scope="consolidated year-end net debt", source_ids=airtel_sources)
-add_series("bharti_airtel", "shareholders_equity", {2020:771448,2021:589527,2022:665543,2023:775629,2024:820188,2025:1136718}, scope="consolidated shareholder equity", source_ids=airtel_sources)
-add_series("bharti_airtel", "network_towers", dict(zip(airtel_years, [154097,162046,165748,181079,219546,244504,268848,309054,355150,375146])), scope="reported mobile network towers; FY2020 onward uses group KPI pack scope, earlier years use annual-report manufactured-capital scope", source_ids=airtel_sources, note="FY2020 annual report also showed 194,409 in a narrower mobile-network scope; group KPI value 219,546 is retained and the scope break is flagged.")
+airtel_2025_ir_sources = ["airtel_q1_2026_ir_pack", "airtel_q2_2026_ir_pack", "airtel_2025_ir_pack"]
+airtel_2025_with_annual = ["bharti_airtel_ar_2025", *airtel_2025_ir_sources]
+add_series("bharti_airtel", "total_customers", dict(zip(airtel_years, [357.428,372.354,413.822,403.645,422.100,469.864,489.729,518.446,561.970,590.514])), scope="group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual))
+add_series("bharti_airtel", "revenue", dict(zip(airtel_years, [965321,942506,826388,807802,846765,1006158,1165469,1391448,1643643,1815110])), scope="consolidated Bharti Airtel; latest comparable basis preferred", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual), note="FY2024-25 follow the latest investor-pack comparative basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is not the same comparable basis and is excluded.")
+add_series("bharti_airtel", "ebitda", dict(zip(airtel_years, [341682,356208,304479,262937,347696,461387,581103,717330,889064,1049994])), scope="consolidated EBITDA; latest comparable basis preferred", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual))
+add_series("bharti_airtel", "earnings_before_tax", dict(zip(airtel_years, [128463,77232,32669,-17318,-445711,-42063,107845,172305,250532,369712])), scope="consolidated earnings before tax", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual))
+add_series("bharti_airtel", "net_profit", dict(zip(airtel_years, [60767,37997,10990,4095,-321832,-150835,42549,83459,77820,337440])), scope="consolidated net profit after exceptional items where disclosed", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual), note="Latest comparable pack basis used for FY2024-25; INR337,440m includes exceptional items and must not be confused with INR177,611m net income before exceptional items.")
+add_series("bharti_airtel", "capex", {2020:244866,2021:241685,2022:256616,2023:341947,2024:489268,2025:422904}, scope="consolidated capital expenditure", source_ids=override_sources(airtel_sources, 2025, airtel_2025_ir_sources))
+add_series("bharti_airtel", "net_debt", {2020:1245209,2021:1485076,2022:1603073,2023:2131264,2024:1943799,2025:2038384}, scope="consolidated year-end net debt", source_ids=override_sources(airtel_sources, 2025, airtel_2025_with_annual))
+add_series("bharti_airtel", "shareholders_equity", {2020:771448,2021:589527,2022:665543,2023:775629,2024:820188,2025:1136718}, scope="consolidated shareholder equity", source_ids=override_sources(airtel_sources, 2025, airtel_2025_ir_sources), note="Three later official IR packs state INR1,136,718m. The FY2025 annual report KPI table shows INR1,136,719m, so that report is documented but excluded from the exact-source count for this row.")
+add_series("bharti_airtel", "network_towers", dict(zip(airtel_years, [154097,162046,165748,181079,219546,244504,268848,309054,355150,375146])), scope="reported mobile network towers; FY2020 onward uses group KPI pack scope, earlier years use annual-report manufactured-capital scope", source_ids=override_sources(airtel_sources, 2025, airtel_2025_ir_sources), note="FY2020 annual report also showed 194,409 in a narrower mobile-network scope; group KPI value 219,546 is retained and the scope break is flagged. FY2025 is bound to three exact quarterly IR-pack documents.")
 add_series("bharti_airtel", "mobile_broadband_base_stations", {2016:118197,2017:136479,2018:298014,2019:417613,2020:503883}, scope="mobile broadband base stations disclosed in annual reports; 2017 figure is cumulative two-year rollout wording", source_ids=airtel_sources)
 add_series("bharti_airtel", "total_data_traffic", {2017:0.903,2018:3.9018,2019:11.733,2020:21.020}, scope="group/mobile data traffic converted from billion MB to billion GB", source_ids=airtel_sources)
 

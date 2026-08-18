@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：399
 - 有值行：354
-- 来源条目：137
+- 来源条目：139
 - 重复键：0
 - 无效来源引用：0
 
@@ -13,8 +13,8 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 22
-- `official_three_distinct_sources_verified`: 200
-- `official_two_distinct_sources`: 116
+- `official_three_distinct_sources_verified`: 209
+- `official_two_distinct_sources`: 107
 - `source_gap_confirmed`: 38
 
 ## 缺口（含不适用）

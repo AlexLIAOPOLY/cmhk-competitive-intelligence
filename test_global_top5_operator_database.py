@@ -281,6 +281,67 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(homes["distinct_source_document_count"], 2)
         self.assertEqual(homes["triple_source_status"], "below_three_source_threshold")
 
+    def test_airtel_fy2025_uses_three_exact_comparative_documents(self):
+        four_sources = {
+            "total_customers",
+            "revenue",
+            "ebitda",
+            "earnings_before_tax",
+            "net_profit",
+            "net_debt",
+        }
+        three_sources = {"capex", "shareholders_equity", "network_towers"}
+        for metric_key in four_sources:
+            row = self.index[("bharti_airtel", 2025, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], 4)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        for metric_key in three_sources:
+            row = self.index[("bharti_airtel", 2025, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        equity = self.index[("bharti_airtel", 2025, "shareholders_equity")]
+        self.assertEqual(equity["value"], 1136718)
+        self.assertNotIn("bharti_airtel_ar_2025", equity["verification_sources"])
+        self.assertIn("1,136,719", equity["quality_note"])
+
+        revenue = self.index[("bharti_airtel", 2025, "revenue")]
+        self.assertEqual(revenue["value"], 1815110)
+        self.assertIn("1,729,850", revenue["quality_note"])
+
+    def test_airtel_fy2025_source_registry_has_metric_level_evidence(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        self.assertEqual(sources["airtel_q1_2026_ir_pack"]["evidence"]["revenue"]["value"], 1815110)
+        self.assertEqual(sources["airtel_q2_2026_ir_pack"]["evidence"]["shareholders_equity"]["value"], 1136718)
+        self.assertEqual(sources["airtel_2025_ir_pack"]["evidence"]["network_towers"]["value"], 375146)
+        self.assertEqual(sources["bharti_airtel_ar_2025"]["evidence"]["shareholders_equity"]["value"], 1136719)
+
+    def test_xiaojing_retrieves_airtel_fy2025_three_source_rows(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Bharti Airtel FY2025总客户数、营业收入、EBITDA、净利润、资本开支、净债务、股东权益和网络铁塔是多少？逐项说明三来源状态。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected_values = {
+            "total_customers": "590.514 million_customers",
+            "revenue": "1815110 INR_million",
+            "ebitda": "1049994 INR_million",
+            "net_profit": "337440 INR_million",
+            "capex": "422904 INR_million",
+            "net_debt": "2038384 INR_million",
+            "shareholders_equity": "1136718 INR_million",
+            "network_towers": "375146 sites",
+        }
+        for metric_key, value_text in expected_values.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(f"official_value={value_text}", combined)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 8)
+
     def test_xiaojing_understands_common_customer_and_traffic_shorthand(self):
         combined = "\n".join(
             chunk["text"]

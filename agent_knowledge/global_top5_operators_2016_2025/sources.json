@@ -196,10 +196,47 @@
       "operator_id": "bharti_airtel",
       "year": 2025,
       "label": "Bharti Airtel Limited 2025 annual report",
-      "url": "https://www.airtel.in/about-bharti/equity/results/annual-results",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2025"
+      "source_document_id": "bharti_airtel_ar_2025",
+      "evidence": {
+        "total_customers": {
+          "value": 590.514,
+          "unit": "million_customers",
+          "locator": "key performance indicators, pages 56-57"
+        },
+        "revenue": {
+          "value": 1815110,
+          "unit": "INR_million",
+          "locator": "key performance indicators and financial review"
+        },
+        "ebitda": {
+          "value": 1049994,
+          "unit": "INR_million",
+          "locator": "key performance indicators and financial review"
+        },
+        "earnings_before_tax": {
+          "value": 369712,
+          "unit": "INR_million",
+          "locator": "key performance indicators and financial review"
+        },
+        "net_profit": {
+          "value": 337440,
+          "unit": "INR_million",
+          "locator": "financial review; profit for the year after exceptional items"
+        },
+        "net_debt": {
+          "value": 2038384,
+          "unit": "INR_million",
+          "locator": "consolidated key ratios table"
+        },
+        "shareholders_equity": {
+          "value": 1136719,
+          "unit": "INR_million",
+          "locator": "consolidated key ratios table; differs by INR1m from later IR packs"
+        }
+      }
     },
     {
       "source_id": "reliance_jio_ar_2016",
@@ -1487,7 +1524,168 @@
       "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
       "source_type": "official_results_presentation",
       "publisher": "Bharti Airtel Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 590.514,
+          "unit": "million_customers",
+          "locator": "performance at a glance, page 4"
+        },
+        "revenue": {
+          "value": 1815110,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative consolidated financials, pages 4 and 8"
+        },
+        "ebitda": {
+          "value": 1049994,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative consolidated financials, pages 4 and 8"
+        },
+        "earnings_before_tax": {
+          "value": 369712,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative consolidated financials, pages 4 and 11"
+        },
+        "net_profit": {
+          "value": 337440,
+          "unit": "INR_million",
+          "locator": "FY2025 net income after exceptional items, pages 4 and 8"
+        },
+        "capex": {
+          "value": 422904,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative consolidated financials, pages 4 and 8"
+        },
+        "net_debt": {
+          "value": 2038384,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative net debt, page 8"
+        },
+        "shareholders_equity": {
+          "value": 1136718,
+          "unit": "INR_million",
+          "locator": "FY2025 comparative statement of financial position"
+        },
+        "network_towers": {
+          "value": 375146,
+          "unit": "sites",
+          "locator": "performance at a glance, page 4"
+        }
+      },
       "source_document_id": "airtel_2025_ir_pack"
+    },
+    {
+      "source_id": "airtel_q1_2026_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2025,
+      "label": "Bharti Airtel FY2025-26 Q1 investor relations pack with FY2025 comparatives",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 590.514,
+          "unit": "million_customers",
+          "locator": "performance at a glance, page 4"
+        },
+        "revenue": {
+          "value": 1815110,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "ebitda": {
+          "value": 1049994,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "earnings_before_tax": {
+          "value": 369712,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_profit": {
+          "value": 337440,
+          "unit": "INR_million",
+          "locator": "net income after exceptional items, page 4"
+        },
+        "capex": {
+          "value": 422904,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_debt": {
+          "value": 2038384,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "shareholders_equity": {
+          "value": 1136718,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "network_towers": {
+          "value": 375146,
+          "unit": "sites",
+          "locator": "performance at a glance, page 4"
+        }
+      },
+      "source_document_id": "airtel_q1_2026_ir_pack"
+    },
+    {
+      "source_id": "airtel_q2_2026_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2025,
+      "label": "Bharti Airtel FY2025-26 Q2 investor relations pack with FY2025 comparatives",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 590.514,
+          "unit": "million_customers",
+          "locator": "performance at a glance, page 4"
+        },
+        "revenue": {
+          "value": 1815110,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "ebitda": {
+          "value": 1049994,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "earnings_before_tax": {
+          "value": 369712,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_profit": {
+          "value": 337440,
+          "unit": "INR_million",
+          "locator": "net income after exceptional items, page 4"
+        },
+        "capex": {
+          "value": 422904,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_debt": {
+          "value": 2038384,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "shareholders_equity": {
+          "value": 1136718,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "network_towers": {
+          "value": 375146,
+          "unit": "sites",
+          "locator": "performance at a glance, page 4"
+        }
+      },
+      "source_document_id": "airtel_q2_2026_ir_pack"
     },
     {
       "source_id": "jio_2025_q4",
