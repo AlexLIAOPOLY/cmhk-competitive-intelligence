@@ -234,6 +234,38 @@ def analyze_chat_image(payload: dict) -> dict:
     return {"description": description, "model": model}
 
 
+def _competitor_metric_business_lens(metric_key: str, metric_label: str) -> str:
+    text = f"{metric_key} {metric_label}".lower()
+    if "churn" in text or "流失率" in text:
+        return "该指标反映客户留存压力，通常越低代表留存更稳；不能据此推断整体经营优劣。"
+    if any(token in text for token in ("arpu", "arph")):
+        return "该指标反映客户变现能力与客户结构；较高值不自动等于整体经营更优，也可能受套餐和客群结构影响。"
+    if "growth" in text or "增长" in text or "擴展幅度" in text:
+        return "该指标反映业务动能；需要同时观察动能是否持续、公司间是否收敛，以及基数差异。"
+    if "penetration" in text or "渗透率" in text or "滲透率" in text:
+        return "该指标反映产品或网络采用进程；适合判断转化节奏与公司间采用差异，不直接代表利润。"
+    if "dou" in text or "traffic" in text or "流量" in text:
+        return "该指标反映使用强度与网络承载需求；使用量上升不自动等于收入或利润同比上升。"
+    if any(token in text for token in ("subscriber", "customer", "user", "connection", "homes", "building", "base_station", "客户", "用戶", "用户", "基站", "覆盖", "覆蓋", "连接", "連接")):
+        return "该指标主要反映业务、客户或网络规模；规模领先不自动代表效率、利润或客户质量领先。"
+    return "该指标只能用于判断所选维度上的竞争位置与变化，不能单独代表公司的整体经营优劣。"
+
+
+def _parse_competitor_business_insights(content: object) -> list[str]:
+    text = str(content or "").strip()
+    if not text:
+        raise RuntimeError("AI 未返回可用洞察")
+    text = re.sub(r"^```(?:json|text)?\s*|\s*```$", "", text, flags=re.I)
+    lines = [re.sub(r"^\s*(?:[-*•]|\d+[.)、])\s*", "", line).strip() for line in text.splitlines()]
+    lines = [line for line in lines if line]
+    if len(lines) == 1:
+        lines = [part.strip() for part in re.split(r"(?=(?:竞争格局|公司分化|公司定位|业务含义)[：|｜])", lines[0]) if part.strip()]
+    insights = [line[:220] for line in lines[:3]]
+    if len(insights) != 3:
+        raise RuntimeError("AI 竞争洞察结构不完整")
+    return insights
+
+
 def generate_competitor_insight(payload: dict) -> dict:
     request_id = str(payload.get("requestId") or "")[:80]
     companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
@@ -294,14 +326,16 @@ def generate_competitor_insight(payload: dict) -> dict:
     model = str(config.get("model") or "").strip()
     if not base_url or not api_key or not model or not is_internal_ai_base_url(base_url):
         raise RuntimeError("公司内网 AI 配置不完整")
+    metric_label = str(metric.get("label") or metric_key)[:120]
+    business_lens = _competitor_metric_business_lens(metric_key, metric_label)
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的权威数据表，输出一句不超过100字的中文数据洞察。趋势方向、差距变化和最新比较只能使用所有公司均有值的共同首尾年度，不得使用各公司各自首尾年。优先指出差距扩大或收窄、趋势分化、反转、共同变化等最有决策价值的比较发现，不要逐家公司机械复述起止值；除非指标方向和口径都明确，不得擅自使用领先、落后或表现更好。必须保留大于、至少、约等比较符；下限或近似值区间可能重叠时不得排序或精算差距，下限变化只能描述为披露下限变化；财年结束日不同只能比较趋势，不得冒充同一自然年度排名；scope显示共建共享时不得把两家公司数值相加或解释为两套网络；备注显示口径变化或不可比时不得跨口径计算趋势；不得补数、预测或引用外部知识；数据不足或口径不可比时必须明确说明。"},
-            {"role": "user", "content": f"指标：{str(metric.get('label') or metric_key)[:120]}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
+            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是把多家公司在同一指标上的共同数据转化为公司层面的竞争洞察。必须恰好输出三行，依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头：第一行判断竞争格局是收敛、分化、追赶、反转还是稳定；第二行比较每家公司的位置、动能和稳定性，所选公司都必须被覆盖；第三行解释这种结构对客户留存、变现、采用进程、规模竞争或网络投入意味着什么。每行都要包含至少一个当前表格中的数字证据，但数字只作证据，不能成为整行主体。只能基于表格和给出的指标解释边界进行审慎推断；不能声称已证明公司的主观战略、具体原因或因果关系，必要时使用‘显示’‘可能反映’。不要提供行动建议。趋势、差距和最新比较只能使用所有公司共同首尾年度。不得逐家公司机械罗列起止值。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。必须保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
+            {"role": "user", "content": f"指标：{metric_label}\n指标解释边界：{business_lens}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
         "temperature": 0.1,
-        "max_tokens": 120,
+        "max_tokens": 420,
         "stream": False,
     }
     request = urllib.request.Request(
@@ -314,10 +348,8 @@ def generate_competitor_insight(payload: dict) -> dict:
     with urllib.request.urlopen(request, timeout=45) as response:
         result = json.loads(response.read().decode("utf-8"))
     message = ((result.get("choices") or [{}])[0].get("message") or {})
-    insight = " ".join(str(message.get("content") or message.get("reasoning_content") or "").split())[:160]
-    if not insight:
-        raise RuntimeError("AI 未返回可用洞察")
-    return {"requestId": request_id, "insight": insight, "model": model}
+    insights = _parse_competitor_business_insights(message.get("content") or message.get("reasoning_content") or "")
+    return {"requestId": request_id, "insight": "\n".join(insights), "insights": insights, "model": model}
 
 
 def transcribe_chat_audio(payload: dict) -> dict:

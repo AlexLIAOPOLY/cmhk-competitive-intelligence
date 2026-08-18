@@ -13,7 +13,12 @@ class _Response:
         return False
 
     def read(self):
-        return json.dumps({"choices": [{"message": {"content": "HKT近三年保持领先，但SmarTone增速更快。"}}]}).encode()
+        content = (
+            "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
+            "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
+            "业务含义｜较低流失率可能反映后付客户稳定性增强，但0.1个百分点差距不足以代表整体经营优劣。"
+        )
+        return json.dumps({"choices": [{"message": {"content": content}}]}).encode()
 
 
 class CompetitorInsightTests(unittest.TestCase):
@@ -46,9 +51,13 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("HKT\t2020\t=\t0.9\tpercent", captured["body"]["messages"][1]["content"])
         self.assertIn("官方来源", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
-        self.assertLessEqual(len(result["insight"]), 160)
-        self.assertIn("不要逐家公司机械复述", captured["body"]["messages"][0]["content"])
-        self.assertIn("差距扩大或收窄", captured["body"]["messages"][0]["content"])
+        self.assertEqual(len(result["insights"]), 3)
+        self.assertIn("竞争格局", result["insights"][0])
+        self.assertIn("不是复述数据", captured["body"]["messages"][0]["content"])
+        self.assertIn("公司层面的竞争洞察", captured["body"]["messages"][0]["content"])
+        self.assertIn("所选公司都必须被覆盖", captured["body"]["messages"][0]["content"])
+        self.assertIn("指标解释边界", captured["body"]["messages"][1]["content"])
+        self.assertIn("客户留存压力", captured["body"]["messages"][1]["content"])
 
     def test_browser_cells_are_not_trusted(self):
         captured = {}
@@ -95,6 +104,15 @@ class CompetitorInsightTests(unittest.TestCase):
         payload["evidenceVersion"] = "stale"
         with self.assertRaisesRegex(ValueError, "数据版本已更新"):
             web_app.generate_competitor_insight(payload)
+
+    def test_rejects_incomplete_business_insight_structure(self):
+        with self.assertRaisesRegex(RuntimeError, "结构不完整"):
+            web_app._parse_competitor_business_insights("只有一条数据摘要")
+
+    def test_business_lens_does_not_equate_scale_with_overall_performance(self):
+        lens = web_app._competitor_metric_business_lens("mobile_subscribers", "移动用户数")
+        self.assertIn("规模", lens)
+        self.assertIn("不自动代表", lens)
 
 
 if __name__ == "__main__":
