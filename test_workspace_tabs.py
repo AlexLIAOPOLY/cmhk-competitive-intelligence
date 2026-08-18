@@ -52,10 +52,15 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
+        self.assertIn('/static/workspace-tabs.css?v=27', INDEX)
+        self.assertIn("backdrop-filter: blur(22px) saturate(138%)", STYLE)
+        self.assertIn("border-radius: 18px", STYLE)
+        self.assertIn(".workspace-tab.is-active::after", STYLE)
+        self.assertIn("prefers-reduced-motion: reduce", STYLE)
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=4', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=5', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
