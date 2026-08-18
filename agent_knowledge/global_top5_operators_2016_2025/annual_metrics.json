@@ -376,7 +376,7 @@
       "official_value": 118197,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations at fiscal year end",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -394,7 +394,7 @@
         "airtel_q4_2016_ir_pack",
         "airtel_q1_2017_ir_pack"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -742,27 +742,33 @@
       "grain": "annual",
       "metric_key": "mobile_broadband_base_stations",
       "metric_zh": "移动宽带基站",
-      "value": 136479,
-      "official_value": 136479,
+      "value": 190860,
+      "official_value": 190860,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 5,
+      "distinct_source_document_count": 5,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2017"
+        "airtel_q4_2017_ir_pack",
+        "airtel_q4_2018_ir_pack",
+        "bharti_airtel_ar_2018",
+        "bharti_airtel_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2017",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2016-17/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2017_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q4FY17_v1_26E1845963512A6EA80F781D752B6F6A_1518159193004.pdf",
       "verification_sources": [
-        "bharti_airtel_ar_2017",
-        "airtel_2019_five_year"
+        "airtel_q4_2017_ir_pack",
+        "bharti_airtel_ar_2018",
+        "airtel_q4_2018_ir_pack",
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1116,7 +1122,7 @@
       "official_value": 298014,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations at fiscal year end",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -1134,7 +1140,7 @@
         "bharti_airtel_ar_2020",
         "airtel_q4_2019_ir_pack"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1490,7 +1496,7 @@
       "official_value": 417613,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations at fiscal year end",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -1508,7 +1514,7 @@
         "bharti_airtel_ar_2020",
         "airtel_q4_2019_ir_pack"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1864,7 +1870,7 @@
       "official_value": 503883,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations at fiscal year end",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -1882,7 +1888,7 @@
         "bharti_airtel_ar_2021",
         "airtel_2024_five_year"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded."
     },
     {
       "operator_id": "bharti_airtel",

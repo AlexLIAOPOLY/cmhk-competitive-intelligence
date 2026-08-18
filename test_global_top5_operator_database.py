@@ -36,7 +36,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "Bharti Airtel": 97,
+                "Bharti Airtel": 98,
                 "Reliance Jio": 50,
                 "中国广电": 24,
                 "中国电信": 58,
@@ -47,7 +47,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
-        self.assertIn("- Bharti Airtel: 97", audit_text)
+        self.assertIn("- Bharti Airtel: 98", audit_text)
 
     def test_jio_early_operating_and_financial_rows_have_three_documents(self):
         certified = [
@@ -72,6 +72,14 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             row = self.index[("reliance_jio", year, metric_key)]
             self.assertGreaterEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_airtel_fy2017_mobile_broadband_base_stations_use_year_end_total(self):
+        row = self.index[("bharti_airtel", 2017, "mobile_broadband_base_stations")]
+        self.assertEqual(row["value"], 190860)
+        self.assertNotEqual(row["value"], 136479)
+        self.assertEqual(row["distinct_source_document_count"], 5)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertIn("cumulative rollout over two years", row["quality_note"])
 
     def test_jio_fy2018_churn_has_four_independent_official_documents(self):
         row = self.index[("reliance_jio", 2018, "churn")]

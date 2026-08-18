@@ -180,7 +180,16 @@
       "url": "https://www.airtel.in/airtel-annual-report-2017-18/",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2018"
+      "source_document_id": "bharti_airtel_ar_2018",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
+          }
+        }
+      }
     },
     {
       "source_id": "bharti_airtel_ar_2019",
@@ -291,6 +300,11 @@
             "value": 674563,
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
           }
         },
         "FY2016": {
@@ -409,6 +423,11 @@
             "value": 674563,
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
           }
         },
         "FY2016": {
@@ -527,6 +546,11 @@
             "value": 674563,
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
           }
         },
         "FY2020": {
@@ -3732,6 +3756,11 @@
             "unit": "sites",
             "locator": "FY2017 group KPI performance-at-a-glance comparative"
           },
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
+          },
           "revenue": {
             "value": 942506,
             "unit": "INR_million",
@@ -3812,6 +3841,11 @@
             "value": 184255,
             "unit": "sites",
             "locator": "FY2017 group KPI performance-at-a-glance comparative"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 190860,
+            "unit": "base_stations",
+            "locator": "FY2016-17 India mobile network year-end comparative"
           }
         },
         "FY2016": {
@@ -3896,6 +3930,11 @@
           "value": 184255,
           "unit": "sites",
           "locator": "FY2017 group KPI performance-at-a-glance, page 4"
+        },
+        "mobile_broadband_base_stations": {
+          "value": 190860,
+          "unit": "base_stations",
+          "locator": "India network and coverage trends, page 55"
         }
       },
       "source_document_id": "airtel_q4_2017_ir_pack",

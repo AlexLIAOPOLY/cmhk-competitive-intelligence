@@ -612,6 +612,7 @@ SOURCES.update({
             "net_debt": {"value": 913999, "unit": "INR_million", "locator": "FY2017 performance-at-a-glance, page 4"},
             "shareholders_equity": {"value": 674563, "unit": "INR_million", "locator": "FY2017 performance-at-a-glance, page 4"},
             "network_towers": {"value": 184255, "unit": "sites", "locator": "FY2017 group KPI performance-at-a-glance, page 4"},
+            "mobile_broadband_base_stations": {"value": 190860, "unit": "base_stations", "locator": "India network and coverage trends, page 55"},
         },
     },
     "airtel_q4_2016_ir_pack": {
@@ -1020,6 +1021,11 @@ SOURCES["bharti_airtel_ar_2017"]["comparative_evidence"] = {
     "FY2016": AIRTEL_FY2016_ANNUAL_COMPARATIVE_EVIDENCE,
 }
 
+AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE = {
+    "mobile_broadband_base_stations": {"value": 190860, "unit": "base_stations", "locator": "FY2016-17 India mobile network year-end comparative"},
+}
+SOURCES["bharti_airtel_ar_2018"].setdefault("comparative_evidence", {})["FY2017"] = AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE
+
 AIRTEL_FY2017_ANNUAL_COMPARATIVE_EVIDENCE = {
     "total_customers": {"value": 372.354, "unit": "million_customers", "locator": "five-year consolidated KPI table"},
     "revenue": {"value": 942506, "unit": "INR_million", "locator": "five-year consolidated KPI table; later comparable basis"},
@@ -1107,7 +1113,9 @@ SOURCES["bharti_airtel_ar_2019"]["comparative_evidence"] = {
     "FY2017": AIRTEL_FY2017_ANNUAL_COMPARATIVE_EVIDENCE,
     "FY2016": AIRTEL_FY2016_ANNUAL_COMPARATIVE_EVIDENCE,
 }
+SOURCES["bharti_airtel_ar_2019"]["comparative_evidence"]["FY2017"].update(AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE)
 SOURCES["bharti_airtel_ar_2020"]["comparative_evidence"]["FY2018"] = AIRTEL_FY2018_ANNUAL_COMPARATIVE_EVIDENCE
+SOURCES["bharti_airtel_ar_2020"]["comparative_evidence"]["FY2017"].update(AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE)
 SOURCES["bharti_airtel_ar_2022"]["comparative_evidence"]["FY2018"] = {
     "revenue": {"value": 826388, "unit": "INR_million", "locator": "five-year KPI, page 36"},
     "ebitda": {"value": 304479, "unit": "INR_million", "locator": "five-year KPI, page 36"},
@@ -1147,6 +1155,7 @@ AIRTEL_FY2017_IR_COMPARATIVE_EVIDENCE = {
     "network_towers": {"value": 184255, "unit": "sites", "locator": "FY2017 group KPI performance-at-a-glance comparative"},
 }
 SOURCES["airtel_q4_2018_ir_pack"].setdefault("comparative_evidence", {})["FY2017"] = AIRTEL_FY2017_IR_COMPARATIVE_EVIDENCE
+SOURCES["airtel_q4_2018_ir_pack"]["comparative_evidence"]["FY2017"].update(AIRTEL_FY2017_NETWORK_COMPARATIVE_EVIDENCE)
 SOURCES["airtel_q4_2019_ir_pack"].setdefault("comparative_evidence", {})["FY2017"] = {
     **AIRTEL_FY2017_IR_COMPARATIVE_EVIDENCE,
     "revenue": {"value": 942506, "unit": "INR_million", "locator": "FY2017 later comparable performance-at-a-glance"},
@@ -1729,6 +1738,7 @@ airtel_2017_ir_kpi_sources = ["airtel_q4_2017_ir_pack", "airtel_q4_2018_ir_pack"
 airtel_2016_annual_financial_sources = ["bharti_airtel_ar_2017", "bharti_airtel_ar_2019", "bharti_airtel_ar_2020"]
 airtel_2016_ir_kpi_sources = ["airtel_q4_2016_ir_pack", "airtel_q4_2017_ir_pack", "airtel_q4_2018_ir_pack"]
 airtel_2016_network_detail_sources = ["bharti_airtel_ar_2016", "airtel_q4_2016_ir_pack", "airtel_q1_2017_ir_pack"]
+airtel_2017_network_detail_sources = ["airtel_q4_2017_ir_pack", "bharti_airtel_ar_2018", "airtel_q4_2018_ir_pack", "bharti_airtel_ar_2019", "bharti_airtel_ar_2020"]
 airtel_2016_traffic_sources = ["bharti_airtel_ar_2016"]
 airtel_sources_with_exact_2024 = override_sources(airtel_sources, 2024, airtel_2024_ir_sources)
 airtel_sources_with_exact_2023_2024 = override_sources(airtel_sources_with_exact_2024, 2023, airtel_2023_ir_sources)
@@ -1752,7 +1762,7 @@ add_series("bharti_airtel", "capex", {2016:205919,2017:198745,2018:268176,2019:2
 add_series("bharti_airtel", "net_debt", {2016:835106,2017:913999,2018:1001060,2019:1129899,2020:1245209,2021:1485076,2022:1603073,2023:2042234,2024:1943799,2025:2038384}, scope="consolidated year-end net debt including finance lease obligations where the comparable KPI basis requires it", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(airtel_sources_with_exact_2020_2024, 2016, airtel_2016_ir_kpi_sources), 2017, airtel_2017_ir_kpi_sources), 2018, airtel_2018_net_debt_sources), 2019, airtel_2019_ir_kpi_sources), 2025, airtel_2025_with_annual), note=f"{airtel_fy2016_scope_note} {airtel_fy2017_scope_note} FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. {airtel_fy2020_scope_note} {airtel_fy2021_2022_scope_note} FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis.")
 add_series("bharti_airtel", "shareholders_equity", {2016:667693,2017:674563,2018:695344,2019:714222,2020:771448,2021:589527,2022:665543,2023:775629,2024:820188,2025:1136718}, scope="consolidated shareholder equity", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(airtel_sources_with_exact_2020_2024, 2016, airtel_2016_ir_kpi_sources), 2017, airtel_2017_ir_kpi_sources), 2018, airtel_2018_ir_kpi_sources), 2019, airtel_2019_ir_kpi_sources), 2025, airtel_2025_ir_sources), note=f"{airtel_fy2016_scope_note} {airtel_fy2017_scope_note} FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. {airtel_fy2020_scope_note} {airtel_fy2021_2022_scope_note} Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count.")
 add_series("bharti_airtel", "network_towers", dict(zip(airtel_years, [181376,184255,187541,204356,219546,244504,268848,309054,355150,375146])), scope="group KPI network towers reported in performance-at-a-glance packs", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(airtel_sources_with_exact_2020_2024, 2016, airtel_2016_ir_kpi_sources), 2017, airtel_2017_ir_kpi_sources), 2018, airtel_2018_ir_kpi_sources), 2019, airtel_2019_ir_kpi_sources), 2025, airtel_2025_ir_sources), note=f"{airtel_fy2016_scope_note} {airtel_fy2017_scope_note} {airtel_fy2018_scope_note} {airtel_fy2019_scope_note} {airtel_fy2020_scope_note} {airtel_fy2021_2022_scope_note} FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs.")
-add_series("bharti_airtel", "mobile_broadband_base_stations", {2016:118197,2017:136479,2018:298014,2019:417613,2020:503883}, scope="India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording", source_ids=override_sources(override_sources(override_sources(override_sources(airtel_sources, 2016, airtel_2016_network_detail_sources), 2018, airtel_2018_network_detail_sources), 2019, airtel_2019_network_detail_sources), 2020, airtel_2020_network_detail_sources))
+add_series("bharti_airtel", "mobile_broadband_base_stations", {2016:118197,2017:190860,2018:298014,2019:417613,2020:503883}, scope="India mobile broadband base stations at fiscal year end", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources(airtel_sources, 2016, airtel_2016_network_detail_sources), 2017, airtel_2017_network_detail_sources), 2018, airtel_2018_network_detail_sources), 2019, airtel_2019_network_detail_sources), 2020, airtel_2020_network_detail_sources), note="FY2017 stores the exact 190,860 year-end total repeated in the FY2017 results pack and later annual/results comparatives. The FY2017 annual report's 136,479 figure describes cumulative rollout over two years, not the year-end installed total, and is excluded.")
 add_series("bharti_airtel", "total_data_traffic", {2016:0.597,2017:0.903,2018:3.9018,2019:11.733,2020:21.020}, scope="FY2016-FY2017 are consolidated annual headlines; FY2018-FY2020 are India mobile annual data traffic, converted from billion MB to billion GB", source_ids=override_sources(override_sources(override_sources(override_sources(airtel_sources, 2016, airtel_2016_traffic_sources), 2018, airtel_2018_network_detail_sources), 2019, airtel_2019_network_detail_sources), 2020, airtel_2020_network_detail_sources), note="FY2016's 597bn-MB and FY2017's 903bn-MB figures are consolidated annual headlines and are not directly comparable with the later India-mobile series. FY2016 is supported only by the contemporaneous annual report and FY2017 remains below the three-document threshold.")
 
 # Reliance Jio: commercial service launched September 2016; FY2016 is not applicable.
