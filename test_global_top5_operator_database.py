@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 27,
                 "中国广电": 6,
                 "中国电信": 12,
-                "中国移动": 64,
+                "中国移动": 72,
                 "中国联通": 10,
             },
         )
@@ -318,6 +318,16 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.index[("china_mobile", 2019, "5g_package_subscribers")]["verification_sources"],
             ["china_mobile_results_2019", "china_mobile_ar_2020", "china_mobile_20f_2020"],
         )
+
+    def test_china_mobile_fy2017_to_fy2024_household_blended_arpu_has_three_documents(self):
+        expected = {2017: 33.3, 2018: 34.4, 2019: 35.3, 2020: 37.7, 2021: 39.8, 2022: 42.1, 2023: 43.1, 2024: 43.8}
+        for year, value in expected.items():
+            row = self.index[("china_mobile", year, "household_customer_blended_arpu")]
+            self.assertEqual(row["value"], value)
+            self.assertEqual(row["unit"], "RMB_per_user_month")
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertIn("not interchangeable with wireline broadband ARPU", row["quality_note"])
 
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
         strict_counts = {2019: 2, 2020: 3, 2021: 1, 2022: 1, 2023: 1}

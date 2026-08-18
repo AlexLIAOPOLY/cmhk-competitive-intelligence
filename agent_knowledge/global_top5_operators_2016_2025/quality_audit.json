@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "backlog_open",
-  "row_count": 605,
-  "available_value_rows": 396,
-  "three_distinct_source_certified_rows": 217,
+  "row_count": 613,
+  "available_value_rows": 404,
+  "three_distinct_source_certified_rows": 225,
   "below_three_source_rows": 179,
   "source_count": 218,
   "duplicate_key_count": 0,
@@ -14,7 +14,7 @@
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
     "official_single_source": 145,
-    "official_three_distinct_sources_verified": 217,
+    "official_three_distinct_sources_verified": 225,
     "official_two_distinct_sources": 18,
     "source_gap_confirmed": 182
   },
@@ -23,7 +23,7 @@
     "Reliance Jio": 61,
     "中国广电": 24,
     "中国电信": 58,
-    "中国移动": 94,
+    "中国移动": 102,
     "中国联通": 59
   },
   "three_source_certified_rows_by_operator": {
@@ -31,7 +31,7 @@
     "Reliance Jio": 27,
     "中国广电": 6,
     "中国电信": 12,
-    "中国移动": 64,
+    "中国移动": 72,
     "中国联通": 10
   },
   "available_rows_by_metric": {
@@ -58,7 +58,7 @@
     "government_enterprise_customers": 1,
     "handset_data_traffic": 19,
     "hd_uhd_cable_tv_users": 4,
-    "household_customer_blended_arpu": 1,
+    "household_customer_blended_arpu": 9,
     "households_gigabit_coverage": 1,
     "integrated_broadband_network_customers": 1,
     "integrated_package_arpu": 1,

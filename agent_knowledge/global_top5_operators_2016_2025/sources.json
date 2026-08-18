@@ -63,6 +63,11 @@
           "unit": "million_subscribers",
           "locator": "FY2017 annual report key operating data; year-end 4G customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 33.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual report key operating data; household broadband/customer blended ARPU"
+        },
         "mobile_dou": {
           "value": 1.399,
           "unit": "GB_per_user_month",
@@ -100,6 +105,11 @@
           "unit": "million_subscribers",
           "locator": "FY2018 annual report key operating data; year-end 4G customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 34.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual report key operating data; household broadband/customer blended ARPU"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -136,6 +146,11 @@
           "value": 758.01,
           "unit": "million_subscribers",
           "locator": "FY2019 annual report key operating data; year-end 4G customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 35.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual report key operating data; household broadband/customer blended ARPU"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -178,6 +193,11 @@
           "value": 165,
           "unit": "million_subscribers",
           "locator": "FY2020 annual report key operating data; year-end 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 37.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual report key operating data; household broadband/customer blended ARPU"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -225,6 +245,11 @@
           "unit": "million_subscribers",
           "locator": "FY2021 annual report key operating data; year-end 5G package customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 39.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual report key operating data; household broadband/customer blended ARPU"
+        },
         "mobile_dou": {
           "value": 12.6,
           "unit": "GB_per_user_month",
@@ -261,6 +286,11 @@
           "value": 614,
           "unit": "million_subscribers",
           "locator": "FY2022 annual report key operating data; year-end 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 42.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual report key operating data; household broadband/customer blended ARPU"
         },
         "mobile_dou": {
           "value": 14.1,
@@ -299,6 +329,11 @@
           "unit": "million_subscribers",
           "locator": "FY2023 H-share annual report; year-end 5G package customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 43.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 H-share annual report; household customer blended ARPU"
+        },
         "mobile_dou": {
           "value": 15.9,
           "unit": "GB_per_user_month",
@@ -335,6 +370,11 @@
           "value": 552,
           "unit": "million_subscribers",
           "locator": "FY2024 H-share annual report; year-end 5G network customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 43.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 H-share annual report; household customer blended ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -2086,6 +2126,11 @@
           "unit": "million_subscribers",
           "locator": "FY2017 annual-results presentation operating-data appendix; current-year 4G customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 33.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
         "mobile_dou": {
           "value": 1.399,
           "unit": "GB_per_user_month",
@@ -2147,6 +2192,11 @@
           "unit": "million_subscribers",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year 4G customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 34.4,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2018 annual-results presentation household-market operating table; current-year blended ARPU"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -2169,6 +2219,11 @@
             "value": 649.51,
             "unit": "million_subscribers",
             "locator": "FY2018 annual-results presentation operating-data appendix; FY2017 comparative 4G customers"
+          },
+          "household_customer_blended_arpu": {
+            "value": 33.3,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2018 annual-results presentation household-market table; FY2017 comparative blended ARPU"
           }
         }
       }
@@ -2204,6 +2259,11 @@
             "unit": "million_subscribers",
             "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative 4G customers"
           },
+          "household_customer_blended_arpu": {
+            "value": 34.4,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2019 annual-results presentation household-market table; FY2018 comparative blended ARPU"
+          },
           "mobile_dou": {
             "value": 3.6,
             "unit": "GB_per_user_month",
@@ -2236,6 +2296,11 @@
           "value": 2.55,
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results presentation customer-market chart; December 2019 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 35.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2019 annual-results presentation household-market operating table; current-year blended ARPU"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -2275,6 +2340,11 @@
             "unit": "million_subscribers",
             "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative 4G customers"
           },
+          "household_customer_blended_arpu": {
+            "value": 35.3,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2020 annual-results presentation household-market table; FY2019 comparative blended ARPU"
+          },
           "mobile_dou": {
             "value": 6.7,
             "unit": "GB_per_user_month",
@@ -2307,6 +2377,11 @@
           "value": 165,
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results presentation customer-market chart; current-year 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 37.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2020 annual-results presentation household-market operating table; current-year blended ARPU"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -2351,6 +2426,11 @@
             "unit": "million_subscribers",
             "locator": "FY2021 annual-results presentation customer-market chart; FY2020 comparative 5G package customers"
           },
+          "household_customer_blended_arpu": {
+            "value": 37.7,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2021 annual-results presentation household-market table; FY2020 comparative blended ARPU"
+          },
           "mobile_dou": {
             "value": 9.4,
             "unit": "GB_per_user_month",
@@ -2383,6 +2463,11 @@
           "value": 387,
           "unit": "million_subscribers",
           "locator": "FY2021 annual-results presentation customer-market chart; current-year 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 39.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2021 annual-results presentation household-market operating table; current-year blended ARPU"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -2427,6 +2512,11 @@
             "unit": "million_subscribers",
             "locator": "FY2022 annual-results presentation customer-market chart; FY2021 comparative 5G package customers"
           },
+          "household_customer_blended_arpu": {
+            "value": 39.8,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2022 annual-results presentation household-market table; FY2021 comparative blended ARPU"
+          },
           "mobile_dou": {
             "value": 12.6,
             "unit": "GB_per_user_month",
@@ -2459,6 +2549,11 @@
           "value": 614,
           "unit": "million_subscribers",
           "locator": "FY2022 annual-results presentation customer-market chart; current-year 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 42.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 annual-results presentation household-market operating table; current-year blended ARPU"
         },
         "mobile_dou": {
           "value": 14.1,
@@ -2508,6 +2603,11 @@
             "unit": "million_subscribers",
             "locator": "FY2023 annual-results presentation customer-market chart; FY2022 comparative 5G package customers"
           },
+          "household_customer_blended_arpu": {
+            "value": 42.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2023 annual-results presentation household-market table; FY2022 comparative blended ARPU"
+          },
           "mobile_dou": {
             "value": 14.1,
             "unit": "GB_per_user_month",
@@ -2535,6 +2635,11 @@
           "value": 795,
           "unit": "million_subscribers",
           "locator": "FY2023 annual-results presentation; year-end 5G package customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 43.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results presentation; household customer blended ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -2572,6 +2677,11 @@
           "value": 552,
           "unit": "million_subscribers",
           "locator": "FY2024 annual-results presentation; year-end 5G network customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 43.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results presentation; household customer blended ARPU"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -3001,6 +3111,11 @@
           "unit": "million_subscribers",
           "locator": "FY2023 A-share annual report; year-end 5G package customers"
         },
+        "household_customer_blended_arpu": {
+          "value": 43.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 A-share annual report; household customer blended ARPU"
+        },
         "mobile_dou": {
           "value": 15.9,
           "unit": "GB_per_user_month",
@@ -3032,6 +3147,11 @@
           "value": 552,
           "unit": "million_subscribers",
           "locator": "FY2024 A-share annual report; year-end 5G network customers"
+        },
+        "household_customer_blended_arpu": {
+          "value": 43.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 A-share annual report; household customer blended ARPU"
         },
         "mobile_dou": {
           "value": 15.9,

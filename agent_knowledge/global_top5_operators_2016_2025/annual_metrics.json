@@ -9439,6 +9439,45 @@
       "period": "FY2017",
       "period_end": "2017-12-31",
       "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 33.3,
+      "official_value": 33.3,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
       "value": 57.7,
@@ -9692,6 +9731,45 @@
         "china_mobile_results_2018"
       ],
       "quality_note": "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 34.4,
+      "official_value": 34.4,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
     },
     {
       "operator_id": "china_mobile",
@@ -10073,6 +10151,45 @@
       "period": "FY2019",
       "period_end": "2019-12-31",
       "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 35.3,
+      "official_value": 35.3,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
       "value": 49.1,
@@ -10439,6 +10556,45 @@
         "china_mobile_results_2020"
       ],
       "quality_note": "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 37.7,
+      "official_value": 37.7,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
     },
     {
       "operator_id": "china_mobile",
@@ -10850,6 +11006,45 @@
       "period": "FY2021",
       "period_end": "2021-12-31",
       "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 39.8,
+      "official_value": 39.8,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
       "value": 48.8,
@@ -11208,6 +11403,45 @@
         "china_mobile_results_2022"
       ],
       "quality_note": "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 42.1,
+      "official_value": 42.1,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
     },
     {
       "operator_id": "china_mobile",
@@ -11577,6 +11811,45 @@
       "period": "FY2023",
       "period_end": "2023-12-31",
       "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 43.1,
+      "official_value": 43.1,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
       "value": 49.3,
@@ -11852,6 +12125,45 @@
         "china_mobile_results_2024"
       ],
       "quality_note": "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "household_customer_blended_arpu",
+      "metric_zh": "家庭客户综合ARPU",
+      "value": 43.8,
+      "official_value": 43.8,
+      "unit": "RMB_per_user_month",
+      "comparator": "=",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2024",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
     },
     {
       "operator_id": "china_mobile",
@@ -12196,7 +12508,7 @@
       "official_value": 44.5,
       "unit": "RMB_per_user_month",
       "comparator": "=",
-      "scope": "household customer blended ARPU",
+      "scope": "household broadband/customer blended ARPU; terminology changed from household broadband to household customer without merging with wireline broadband access ARPU",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -12219,7 +12531,7 @@
         "china_mobile_results_2025",
         "china_mobile_ar_summary_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017-FY2024 each use three exact official documents. The blended household metric is not interchangeable with wireline broadband ARPU, which includes different business scopes in earlier years."
     },
     {
       "operator_id": "china_mobile",
