@@ -1874,6 +1874,74 @@
       "source_document_id": "china_mobile_20f_2018"
     },
     {
+      "source_id": "china_mobile_20f_2016",
+      "operator_id": "china_mobile",
+      "year": 2016,
+      "label": "China Mobile 2016 annual report on Form 20-F",
+      "url": "https://www.sec.gov/Archives/edgar/data/1117795/000119312517142311/d240713d20f.htm",
+      "source_type": "official_sec_annual_filing",
+      "publisher": "China Mobile Limited / U.S. SEC",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.51,
+          "unit": "million_base_stations",
+          "locator": "Item 4, Mobile Market"
+        }
+      },
+      "source_document_id": "china_mobile_20f_2016"
+    },
+    {
+      "source_id": "china_mobile_sd_2016",
+      "operator_id": "china_mobile",
+      "year": 2016,
+      "label": "China Mobile 2016 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2016/sd2016.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.51,
+          "unit": "million_base_stations",
+          "locator": "Big Connectivity, year-end network scale"
+        }
+      },
+      "source_document_id": "china_mobile_sd_2016"
+    },
+    {
+      "source_id": "china_mobile_20f_2017",
+      "operator_id": "china_mobile",
+      "year": 2017,
+      "label": "China Mobile 2017 annual report on Form 20-F",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2017/2017_20f.pdf",
+      "source_type": "official_sec_annual_filing",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.87,
+          "unit": "million_base_stations",
+          "locator": "Personal Mobile Market, year-end network scale"
+        }
+      },
+      "source_document_id": "china_mobile_20f_2017"
+    },
+    {
+      "source_id": "china_mobile_sd_2017",
+      "operator_id": "china_mobile",
+      "year": 2017,
+      "label": "China Mobile 2017 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2017/sd2017.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.87,
+          "unit": "million_base_stations",
+          "locator": "Optimizing Connectivity Capabilities"
+        }
+      },
+      "source_document_id": "china_mobile_sd_2017"
+    },
+    {
       "source_id": "china_mobile_sd_2018",
       "operator_id": "china_mobile",
       "year": 2018,

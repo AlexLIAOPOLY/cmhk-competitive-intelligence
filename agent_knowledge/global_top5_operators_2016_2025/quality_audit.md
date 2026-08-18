@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：585
 - 有值行：394
-- 来源条目：195
+- 来源条目：199
 - 重复键：0
 - 无效来源引用：0
 
@@ -12,8 +12,8 @@
 - `not_applicable_precommercial`: 25
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 20
-- `official_three_distinct_sources_verified`: 342
+- `official_single_source`: 18
+- `official_three_distinct_sources_verified`: 344
 - `official_two_distinct_sources`: 16
 - `source_gap_confirmed`: 166
 
@@ -23,7 +23,7 @@
 - Reliance Jio: 40
 - 中国广电: 24
 - 中国电信: 57
-- 中国移动: 74
+- 中国移动: 76
 - 中国联通: 52
 
 ## 缺口（含不适用）

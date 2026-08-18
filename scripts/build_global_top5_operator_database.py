@@ -227,6 +227,42 @@ SOURCES.update({
             "4g_base_stations": {"value": 2.41, "unit": "million_base_stations", "locator": "Personal Mobile Market, year-end network scale"},
         },
     },
+    "china_mobile_20f_2016": {
+        "source_id": "china_mobile_20f_2016", "operator_id": "china_mobile", "year": 2016,
+        "label": "China Mobile 2016 annual report on Form 20-F",
+        "url": "https://www.sec.gov/Archives/edgar/data/1117795/000119312517142311/d240713d20f.htm",
+        "source_type": "official_sec_annual_filing", "publisher": "China Mobile Limited / U.S. SEC",
+        "evidence": {
+            "4g_base_stations": {"value": 1.51, "unit": "million_base_stations", "locator": "Item 4, Mobile Market"},
+        },
+    },
+    "china_mobile_sd_2016": {
+        "source_id": "china_mobile_sd_2016", "operator_id": "china_mobile", "year": 2016,
+        "label": "China Mobile 2016 sustainability report",
+        "url": "https://www.chinamobileltd.com/en/ir/reports/ar2016/sd2016.pdf",
+        "source_type": "official_sustainability_report", "publisher": "China Mobile Limited",
+        "evidence": {
+            "4g_base_stations": {"value": 1.51, "unit": "million_base_stations", "locator": "Big Connectivity, year-end network scale"},
+        },
+    },
+    "china_mobile_20f_2017": {
+        "source_id": "china_mobile_20f_2017", "operator_id": "china_mobile", "year": 2017,
+        "label": "China Mobile 2017 annual report on Form 20-F",
+        "url": "https://www.chinamobileltd.com/en/ir/reports/ar2017/2017_20f.pdf",
+        "source_type": "official_sec_annual_filing", "publisher": "China Mobile Limited",
+        "evidence": {
+            "4g_base_stations": {"value": 1.87, "unit": "million_base_stations", "locator": "Personal Mobile Market, year-end network scale"},
+        },
+    },
+    "china_mobile_sd_2017": {
+        "source_id": "china_mobile_sd_2017", "operator_id": "china_mobile", "year": 2017,
+        "label": "China Mobile 2017 sustainability report",
+        "url": "https://www.chinamobileltd.com/en/ir/reports/ar2017/sd2017.pdf",
+        "source_type": "official_sustainability_report", "publisher": "China Mobile Limited",
+        "evidence": {
+            "4g_base_stations": {"value": 1.87, "unit": "million_base_stations", "locator": "Optimizing Connectivity Capabilities"},
+        },
+    },
     "china_mobile_sd_2018": {
         "source_id": "china_mobile_sd_2018", "operator_id": "china_mobile", "year": 2018,
         "label": "China Mobile 2018 sustainability report",
@@ -1373,6 +1409,8 @@ CHINA_MOBILE_5G_BASE_STATION_SOURCES = {
 }
 
 CHINA_MOBILE_4G_BASE_STATION_SOURCES = {
+    2016: ["china_mobile_ar_2016", "china_mobile_20f_2016", "china_mobile_sd_2016"],
+    2017: ["china_mobile_ar_2017", "china_mobile_20f_2017", "china_mobile_sd_2017"],
     2018: ["china_mobile_ar_2018", "china_mobile_20f_2018", "china_mobile_sd_2018"],
     2019: ["china_mobile_ar_2019", "china_mobile_prospectus_2021", "china_mobile_sd_2021"],
     2020: ["china_mobile_prospectus_2021", "china_mobile_sd_2021", "china_mobile_sd_2022"],
@@ -1400,7 +1438,7 @@ add_series("china_mobile", "household_customer_blended_arpu", {2025:44.5}, unit=
 add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]), note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU.")
 add_series("china_mobile", "handset_data_traffic", dict(zip(cm_years, [5.6807,12.5693,35.4534,65.89,90.70,124.8,144.7,165.9,168.2,183.8])), scope="sum of four official quarterly handset-data-traffic values; 2016-18 converted from billion MB", basis="official_quarterly_sum", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ops_2025"]), note="Derived only by summing the four official quarterly values; no interpolation.")
 add_series("china_mobile", "total_base_stations", {2018:3.85, 2019:4.48, 2020:5.14, 2021:5.50, 2022:6.0, 2023:6.60}, scope="all commissioned mobile base stations", comparator=">=", note="Annual reports use 'more than/over' for some years.")
-add_series("china_mobile", "4g_base_stations", {2016:1.51, 2017:1.87, 2018:2.41, 2019:3.09, 2020:3.28, 2021:3.32, 2022:3.34, 2023:3.37}, scope="commissioned 4G base stations", source_ids=CHINA_MOBILE_4G_BASE_STATION_SOURCES, note="FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document.")
+add_series("china_mobile", "4g_base_stations", {2016:1.51, 2017:1.87, 2018:2.41, 2019:3.09, 2020:3.28, 2021:3.32, 2022:3.34, 2023:3.37}, scope="commissioned 4G base stations", source_ids=CHINA_MOBILE_4G_BASE_STATION_SOURCES, note="FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document.")
 add_series("china_mobile", "5g_base_stations", {2019:0.05, 2020:0.39, 2021:0.73, 2022:1.285, 2023:1.94, 2024:2.40, 2025:2.77}, scope="commissioned 5G base stations, including applicable 700MHz co-built sites", comparator=">=", source_ids=CHINA_MOBILE_5G_BASE_STATION_SOURCES)
 add_series("china_mobile", "integrated_broadband_network_customers", {2025:329}, scope="household broadband, enterprise broadband, dedicated Internet lines and dedicated data lines", source_ids={2025:CM_2025_THREE})
 add_series("china_mobile", "gigabit_broadband_customers", {2025:109}, scope="group gigabit broadband customers", source_ids={2025:["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]}, note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each give the exact 109 million value. The presentation and press release round to 110 million and are not counted.")

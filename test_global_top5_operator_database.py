@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 40,
                 "中国广电": 24,
                 "中国电信": 57,
-                "中国移动": 74,
+                "中国移动": 76,
                 "中国联通": 52,
             },
         )
@@ -101,6 +101,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
     def test_china_mobile_4g_base_station_history_uses_three_exact_documents(self):
         expected = {
+            2016: 1.51,
+            2017: 1.87,
             2018: 2.41,
             2019: 3.09,
             2020: 3.28,
@@ -113,10 +115,6 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertEqual(row["value"], value)
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
-        for year in (2016, 2017):
-            row = self.index[("china_mobile", year, "4g_base_stations")]
-            self.assertEqual(row["distinct_source_document_count"], 1)
-            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
 
     def test_anchor_values_and_customer_scope(self):
         expected = {

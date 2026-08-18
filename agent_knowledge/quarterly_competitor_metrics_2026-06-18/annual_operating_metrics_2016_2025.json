@@ -3023,19 +3023,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2016"
+        "china_mobile_20f_2016",
+        "china_mobile_ar_2016",
+        "china_mobile_sd_2016"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2016",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
       "verification_sources": [
-        "china_mobile_ar_2016"
+        "china_mobile_ar_2016",
+        "china_mobile_20f_2016",
+        "china_mobile_sd_2016"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3257,19 +3261,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2017"
+        "china_mobile_20f_2017",
+        "china_mobile_ar_2017",
+        "china_mobile_sd_2017"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2017",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
       "verification_sources": [
-        "china_mobile_ar_2017"
+        "china_mobile_ar_2017",
+        "china_mobile_20f_2017",
+        "china_mobile_sd_2017"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3507,7 +3515,7 @@
         "china_mobile_20f_2018",
         "china_mobile_sd_2018"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3775,7 +3783,7 @@
         "china_mobile_prospectus_2021",
         "china_mobile_sd_2021"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4107,7 +4115,7 @@
         "china_mobile_sd_2021",
         "china_mobile_sd_2022"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4439,7 +4447,7 @@
         "china_mobile_sd_2022",
         "china_mobile_sd_2023"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4809,7 +4817,7 @@
         "china_mobile_sd_2023",
         "china_mobile_sd_2024"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -5145,7 +5153,7 @@
         "china_mobile_sd_2023",
         "china_mobile_sd_2024"
       ],
-      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+      "quality_note": "FY2016-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
