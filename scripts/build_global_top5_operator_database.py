@@ -74,6 +74,7 @@ METRICS = {
     "4g_base_stations": ("4G基站数", "million_base_stations"),
     "5g_base_stations": ("5G基站数", "million_base_stations"),
     "shared_4g_5g_base_stations": ("可共享4G/5G基站数", "million_base_stations"),
+    "spectrum_holdings": ("频谱持有量", "MHz_uplink_plus_downlink"),
     "cable_tv_actual_users": ("全国有线电视实际用户", "million_users"),
     "two_way_digital_cable_tv_users": ("全国有线电视双向数字实际用户", "million_users"),
     "hd_uhd_cable_tv_users": ("全国有线电视高清及超高清用户", "million_users"),
@@ -766,6 +767,33 @@ SOURCES.update({
             }
         },
     },
+    "jio_q1_2025_analyst_presentation": {
+        "source_id": "jio_q1_2025_analyst_presentation", "operator_id": "reliance_jio", "year": 2025,
+        "label": "RIL FY2024-25 Q1 analyst presentation",
+        "url": "https://www.ril.com/sites/default/files/2024-07/RIL_1Q_FY25_Analyst_Presentation_19July24.pdf",
+        "source_type": "official_results_presentation", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "spectrum_holdings": {"value": 26801, "unit": "MHz_uplink_plus_downlink", "locator": "Jio consolidates leadership in spectrum footprint, page 19"},
+        },
+    },
+    "jio_2024_spectrum_acquisition_release": {
+        "source_id": "jio_2024_spectrum_acquisition_release", "operator_id": "reliance_jio", "year": 2025,
+        "label": "Jio spectrum acquisition media release, 26 June 2024",
+        "url": "https://www.ril.com/sites/default/files/2024-06/26062024_MR_Jio_consolidates_its_leadership_position.pdf",
+        "source_type": "official_corporate_media_release", "publisher": "Reliance Jio Infocomm Limited",
+        "evidence": {
+            "spectrum_holdings": {"value": 26801, "unit": "MHz_uplink_plus_downlink", "locator": "spectrum footprint statement, page 1"},
+        },
+    },
+    "jio_q1_2025_media_release": {
+        "source_id": "jio_q1_2025_media_release", "operator_id": "reliance_jio", "year": 2025,
+        "label": "RIL FY2024-25 Q1 results media release",
+        "url": "https://www.ril.com/sites/default/files/2024-07/19072024-Media-Release-RIL-Q1-FY2024-25-Financial-and-Operational-Performance_0.pdf",
+        "source_type": "official_results_media_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "spectrum_holdings": {"value": 26801, "unit": "MHz_uplink_plus_downlink", "locator": "JPL strategic progress, page 6"},
+        },
+    },
     "jio_2025_media_release": {
         "source_id": "jio_2025_media_release", "operator_id": "reliance_jio", "year": 2025,
         "label": "RIL FY2024-25 annual results media release",
@@ -1228,6 +1256,7 @@ SOURCES["reliance_jio_ar_2025"]["evidence"] = {
     "mobile_dou": {"value": 33.6, "unit": "GB_per_user_month", "locator": "Digital Services customer engagement"},
     "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": "~", "locator": "Digital Services network adoption"},
     "connected_homes": {"value": 18, "unit": "million_premises", "comparator": "~", "locator": "Digital Services homes update"},
+    "spectrum_holdings": {"value": 26801, "unit": "MHz_uplink_plus_downlink", "locator": "Digital Services regulatory developments; spectrum footprint"},
 }
 SOURCES["reliance_jio_ar_2018"].setdefault("evidence", {})["churn"] = {
     "value": 0.25,
@@ -1762,6 +1791,7 @@ add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,
 add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:191}, scope="5G users on Jio True5G network", source_ids=override_sources(override_sources(jio_sources, 2024, ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
 add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:12,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=override_sources(override_sources(override_sources(override_sources(jio_sources, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_rjil_ar_2022"]), 2023, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_factsheet"]), note="FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis.")
 add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count.")
+add_series("reliance_jio", "spectrum_holdings", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:None,2022:None,2023:None,2024:None,2025:26801}, unit="MHz_uplink_plus_downlink", scope="total Jio spectrum footprint across bands, uplink plus downlink", source_ids=override_sources({y:[f"reliance_jio_ar_{y}"] for y in YEARS}, 2025, ["reliance_jio_ar_2025", "jio_q1_2025_analyst_presentation", "jio_2024_spectrum_acquisition_release", "jio_q1_2025_media_release"]), note="FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint.")
 
 # China Broadnet: nationwide mobile service started in 2022.  It is not a
 # listed company and does not publish a comparable consolidated annual-report

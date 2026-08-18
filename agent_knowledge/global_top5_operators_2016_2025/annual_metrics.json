@@ -122,6 +122,10 @@
       "metric_zh": "可共享4G/5G基站数",
       "default_unit": "million_base_stations"
     },
+    "spectrum_holdings": {
+      "metric_zh": "频谱持有量",
+      "default_unit": "MHz_uplink_plus_downlink"
+    },
     "cable_tv_actual_users": {
       "metric_zh": "全国有线电视实际用户",
       "default_unit": "million_users"
@@ -16306,6 +16310,34 @@
       "period": "FY2016",
       "period_end": "2016-03-31",
       "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "precommercial_not_applicable",
+      "verification_status": "not_applicable_precommercial",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2016",
+      "primary_source_url": "https://www.ril.com/ar2015-16/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2016"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-03-31",
+      "grain": "annual",
       "metric_key": "total_customers",
       "metric_zh": "集团总客户数",
       "value": null,
@@ -16525,6 +16557,34 @@
         "reliance_jio_ar_2018"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2017",
+      "primary_source_url": "https://www.ril.com/ar2016-17/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2017"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -16803,6 +16863,34 @@
         "reliance_jio_ar_2019"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2018",
+      "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2018"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -17101,6 +17189,34 @@
       "period": "FY2019",
       "period_end": "2019-03-31",
       "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2019",
+      "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2019"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-03-31",
+      "grain": "annual",
       "metric_key": "total_customers",
       "metric_zh": "集团总客户数",
       "value": 306.7,
@@ -17351,6 +17467,34 @@
         "reliance_jio_ar_2022"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2020",
+      "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2020"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -17639,6 +17783,34 @@
         "reliance_jio_ar_2023"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2021",
+      "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2021"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -17937,6 +18109,34 @@
         "reliance_jio_ar_2023"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2022",
+      "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2022"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -18294,6 +18494,34 @@
         "reliance_jio_ar_2024"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2023",
+      "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2023"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",
@@ -18665,6 +18893,34 @@
       "period": "FY2024",
       "period_end": "2024-03-31",
       "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": null,
+      "official_value": null,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 1,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "reliance_jio_ar_2024",
+      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2024"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-03-31",
+      "grain": "annual",
       "metric_key": "total_customers",
       "metric_zh": "集团总客户数",
       "value": 481.8,
@@ -19024,6 +19280,42 @@
         "reliance_jio_ar_2025"
       ],
       "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "operator": "Reliance Jio",
+      "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "spectrum_holdings",
+      "metric_zh": "频谱持有量",
+      "value": 26801,
+      "official_value": 26801,
+      "unit": "MHz_uplink_plus_downlink",
+      "comparator": "=",
+      "scope": "total Jio spectrum footprint across bands, uplink plus downlink",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
+      "distinct_source_document_ids": [
+        "jio_2024_spectrum_acquisition_release",
+        "jio_q1_2025_analyst_presentation",
+        "jio_q1_2025_media_release",
+        "reliance_jio_ar_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "reliance_jio_ar_2025",
+      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2025",
+        "jio_q1_2025_analyst_presentation",
+        "jio_2024_spectrum_acquisition_release",
+        "jio_q1_2025_media_release"
+      ],
+      "quality_note": "FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint."
     },
     {
       "operator_id": "reliance_jio",

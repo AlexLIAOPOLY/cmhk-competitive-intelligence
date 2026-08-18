@@ -12,7 +12,7 @@
 |---|---:|---:|---:|---:|---:|---|
 | quarterly_competitor_metrics_2026-08-18 | 2704 | 672 | 2032 | 24.85% | 277 | backlog_open |
 | cmhk_macro_policy_2026-06-19 | 7577 | 3992 | 3585 | 52.69% | 0 | backlog_open |
-| global_top5_operators_2016_2025 | 395 | 363 | 32 | 91.9% | 0 | backlog_open |
+| global_top5_operators_2016_2025 | 396 | 364 | 32 | 91.92% | 0 | backlog_open |
 | local_hk_operator_operating_metrics_2016_2025 | 172 | 0 | 172 | 0.0% | 0 | backlog_open |
 | competitor_product_tariffs | 1994 | 0 | 1994 | 0.0% | 399 | backlog_open |
 
@@ -28,7 +28,6 @@
 - `quarterly_competitor_metrics_2026-08-18`：可用区数 (`availability_zones`)，优先级 low。
 - `quarterly_competitor_metrics_2026-08-18`：数据中心数 (`data_centers`)，优先级 low。
 - `global_top5_operators_2016_2025`：5G人口覆盖率 (`5g_population_coverage`)，优先级 medium。
-- `global_top5_operators_2016_2025`：频谱持有量 (`spectrum_holdings`)，优先级 low。
 - `local_hk_operator_operating_metrics_2016_2025`：户均移动流量DOU (`mobile_data_dou`)，优先级 high。
 - `local_hk_operator_operating_metrics_2016_2025`：年度移动数据流量 (`annual_mobile_data_traffic`)，优先级 high。
 - `local_hk_operator_operating_metrics_2016_2025`：基站总数 (`total_base_stations`)，优先级 medium。

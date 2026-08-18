@@ -1015,6 +1015,11 @@
           "unit": "million_premises",
           "comparator": "~",
           "locator": "Digital Services homes update"
+        },
+        "spectrum_holdings": {
+          "value": 26801,
+          "unit": "MHz_uplink_plus_downlink",
+          "locator": "Digital Services regulatory developments; spectrum footprint"
         }
       },
       "comparative_evidence": {
@@ -4503,6 +4508,57 @@
         }
       },
       "source_document_id": "jio_2025_q4"
+    },
+    {
+      "source_id": "jio_q1_2025_analyst_presentation",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL FY2024-25 Q1 analyst presentation",
+      "url": "https://www.ril.com/sites/default/files/2024-07/RIL_1Q_FY25_Analyst_Presentation_19July24.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "spectrum_holdings": {
+          "value": 26801,
+          "unit": "MHz_uplink_plus_downlink",
+          "locator": "Jio consolidates leadership in spectrum footprint, page 19"
+        }
+      },
+      "source_document_id": "jio_q1_2025_analyst_presentation"
+    },
+    {
+      "source_id": "jio_2024_spectrum_acquisition_release",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "Jio spectrum acquisition media release, 26 June 2024",
+      "url": "https://www.ril.com/sites/default/files/2024-06/26062024_MR_Jio_consolidates_its_leadership_position.pdf",
+      "source_type": "official_corporate_media_release",
+      "publisher": "Reliance Jio Infocomm Limited",
+      "evidence": {
+        "spectrum_holdings": {
+          "value": 26801,
+          "unit": "MHz_uplink_plus_downlink",
+          "locator": "spectrum footprint statement, page 1"
+        }
+      },
+      "source_document_id": "jio_2024_spectrum_acquisition_release"
+    },
+    {
+      "source_id": "jio_q1_2025_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL FY2024-25 Q1 results media release",
+      "url": "https://www.ril.com/sites/default/files/2024-07/19072024-Media-Release-RIL-Q1-FY2024-25-Financial-and-Operational-Performance_0.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "spectrum_holdings": {
+          "value": 26801,
+          "unit": "MHz_uplink_plus_downlink",
+          "locator": "JPL strategic progress, page 6"
+        }
+      },
+      "source_document_id": "jio_q1_2025_media_release"
     },
     {
       "source_id": "jio_2025_media_release",

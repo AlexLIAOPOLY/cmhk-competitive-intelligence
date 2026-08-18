@@ -626,6 +626,7 @@ def _global_operator_exact_metric_chunks(
         "4g_base_stations": ["4g基站", "4g base stations"],
         "5g_base_stations": ["5g基站", "5g base stations", "5g sites", "5g cells"],
         "shared_4g_5g_base_stations": ["共享4g/5g基站", "共享基站", "可共享基站", "shared 4g/5g base stations"],
+        "spectrum_holdings": ["频谱持有量", "频谱资源", "频谱规模", "spectrum holdings", "spectrum footprint"],
         "cable_tv_actual_users": ["有线电视实际用户", "有线电视用户", "cable tv users", "cable television users"],
         "two_way_digital_cable_tv_users": ["双向数字电视用户", "双向数字有线用户", "two-way digital cable"],
         "hd_uhd_cable_tv_users": ["高清超高清有线用户", "高清和超高清用户", "hd uhd cable users"],

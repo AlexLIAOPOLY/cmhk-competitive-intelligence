@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 49,
+                "Reliance Jio": 50,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -421,6 +421,32 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         cells = self.index[("reliance_jio", 2025, "5g_base_stations")]
         self.assertEqual(cells["verification_sources"], ["jio_2025_factsheet"])
         self.assertEqual(cells["triple_source_status"], "below_three_source_threshold")
+
+        spectrum = self.index[("reliance_jio", 2025, "spectrum_holdings")]
+        self.assertEqual(spectrum["value"], 26801)
+        self.assertEqual(spectrum["unit"], "MHz_uplink_plus_downlink")
+        self.assertEqual(spectrum["distinct_source_document_count"], 4)
+        self.assertEqual(spectrum["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(
+            spectrum["verification_sources"],
+            [
+                "reliance_jio_ar_2025",
+                "jio_q1_2025_analyst_presentation",
+                "jio_2024_spectrum_acquisition_release",
+                "jio_q1_2025_media_release",
+            ],
+        )
+
+        spectrum_text = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Jio FY2025频谱持有量是多少？有几份独立来源？",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("official_value=26801 MHz_uplink_plus_downlink", spectrum_text)
+        self.assertIn("distinct_source_document_count=4", spectrum_text)
+        self.assertIn("triple_source_status=three_distinct_sources_verified", spectrum_text)
 
     def test_jio_2025_source_registry_carries_metric_level_evidence(self):
         sources = {
