@@ -179,7 +179,16 @@
       "url": "https://www.airtel.in/about-bharti/equity/results/annual-results",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2023"
+      "source_document_id": "bharti_airtel_ar_2023",
+      "comparative_evidence": {
+        "FY2020": {
+          "total_customers": {
+            "value": 422.1,
+            "unit": "million_customers",
+            "locator": "FY2020 later comparative total customer base"
+          }
+        }
+      }
     },
     {
       "source_id": "bharti_airtel_ar_2024",
@@ -2501,6 +2510,178 @@
             "value": 268848,
             "unit": "sites",
             "locator": "FY2022 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q1_2023_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2023,
+      "label": "Bharti Airtel FY2022-23 Q1 investor relations pack with FY2020 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/web/docs/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q1_2023_ir_pack",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 846765,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "ebitda": {
+            "value": 347696,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "earnings_before_tax": {
+            "value": -44819,
+            "unit": "INR_million",
+            "locator": "FY2020 IR-pack profit before tax, performance at a glance, page 3"
+          },
+          "net_profit": {
+            "value": -321832,
+            "unit": "INR_million",
+            "locator": "FY2020 net income, performance at a glance, page 3"
+          },
+          "capex": {
+            "value": 244866,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "net_debt": {
+            "value": 1245209,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "shareholders_equity": {
+            "value": 771448,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "network_towers": {
+            "value": 219546,
+            "unit": "sites",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q2_2023_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2023,
+      "label": "Bharti Airtel FY2022-23 Q2 board-outcome investor pack with FY2020 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/web/docs/BM-Outcome-October-31-2022-140123.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q2_2023_ir_pack",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 846765,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "ebitda": {
+            "value": 347696,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "earnings_before_tax": {
+            "value": -44819,
+            "unit": "INR_million",
+            "locator": "FY2020 IR-pack profit before tax, performance at a glance, page 3"
+          },
+          "net_profit": {
+            "value": -321832,
+            "unit": "INR_million",
+            "locator": "FY2020 net income, performance at a glance, page 3"
+          },
+          "capex": {
+            "value": 244866,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "net_debt": {
+            "value": 1245209,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "shareholders_equity": {
+            "value": 771448,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "network_towers": {
+            "value": 219546,
+            "unit": "sites",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "total_customers": {
+            "value": 422.1,
+            "unit": "million_customers",
+            "locator": "FY2020 later comparative total customer base"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q3_2023_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2023,
+      "label": "Bharti Airtel FY2022-23 Q3 investor relations pack with FY2020 comparatives",
+      "url": "https://assets.airtel.in/teams/simplycms/web/docs/quarterly-ir-pack-bharti-airtel-consolidated-07022023.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q3_2023_ir_pack",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 846765,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "ebitda": {
+            "value": 347696,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "earnings_before_tax": {
+            "value": -44819,
+            "unit": "INR_million",
+            "locator": "FY2020 IR-pack profit before tax, performance at a glance, page 3"
+          },
+          "net_profit": {
+            "value": -321832,
+            "unit": "INR_million",
+            "locator": "FY2020 net income, performance at a glance, page 3"
+          },
+          "capex": {
+            "value": 244866,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "net_debt": {
+            "value": 1245209,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "shareholders_equity": {
+            "value": 771448,
+            "unit": "INR_million",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "network_towers": {
+            "value": 219546,
+            "unit": "sites",
+            "locator": "FY2020 comparative, performance at a glance, page 3"
+          },
+          "total_customers": {
+            "value": 422.1,
+            "unit": "million_customers",
+            "locator": "FY2020 later comparative total customer base"
           }
         }
       }

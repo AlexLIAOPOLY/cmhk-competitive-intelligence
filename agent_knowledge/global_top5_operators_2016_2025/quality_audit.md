@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：399
 - 有值行：354
-- 来源条目：144
+- 来源条目：147
 - 重复键：0
 - 无效来源引用：0
 
@@ -13,13 +13,13 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 22
-- `official_three_distinct_sources_verified`: 245
-- `official_two_distinct_sources`: 71
+- `official_three_distinct_sources_verified`: 254
+- `official_two_distinct_sources`: 62
 - `source_gap_confirmed`: 38
 
 ## 三来源认证行（按运营商）
 
-- Bharti Airtel: 45
+- Bharti Airtel: 54
 - Reliance Jio: 23
 - 中国电信: 57
 - 中国移动: 68
@@ -42,6 +42,7 @@
 - Jio FY2023 reports 5G sites while FY2024 onward reports 5G cells; growth is not calculated across the break.
 - Airtel latest comparative basis restates FY2023-FY2025 financials; latest official comparative basis is retained.
 - Airtel FY2021 profit before tax is retained on the later four-pack comparative basis of INR22,586m; the earlier INR-42,063m loss-before-tax basis remains documented in the row note.
+- Airtel FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI INR-445,711m uses a different exceptional-item definition. FY2020 total customers also changed from an earlier 423.287m to the later 422.100m basis.
 - Airtel FY2022 exact comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers; FY2023 onward uses a later recast basis, so direct growth across the boundary needs a scope warning.
 - Jio value of sales/services is not the same as revenue from operations; both are stored separately.
 - Airtel and Jio use total_customers because their group disclosures include non-mobile categories; these rows are not mobile-subscriber counts.

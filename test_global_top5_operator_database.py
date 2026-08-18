@@ -36,7 +36,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "Bharti Airtel": 45,
+                "Bharti Airtel": 54,
                 "Reliance Jio": 23,
                 "中国电信": 57,
                 "中国移动": 68,
@@ -46,7 +46,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
-        self.assertIn("- Bharti Airtel: 45", audit_text)
+        self.assertIn("- Bharti Airtel: 54", audit_text)
 
     def test_anchor_values_and_customer_scope(self):
         expected = {
@@ -585,9 +585,76 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for metric_key, value_text in expected_values.items():
             self.assertIn(f"metric_key={metric_key}", combined)
             self.assertIn(f"official_value={value_text}", combined)
-        self.assertIn("earlier loss-before-tax value of INR-42,063m", combined)
+        self.assertIn("annual-KPI loss-before-tax value of INR-42,063m", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=4"), 9)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 9)
+
+    def test_airtel_fy2020_uses_metric_specific_three_source_matrix(self):
+        expected_values = {
+            "total_customers": 422.100,
+            "revenue": 846765,
+            "ebitda": 347696,
+            "earnings_before_tax": -44819,
+            "net_profit": -321832,
+            "capex": 244866,
+            "net_debt": 1245209,
+            "shareholders_equity": 771448,
+            "network_towers": 219546,
+        }
+        common_sources = {"airtel_q1_2023_ir_pack", "airtel_q2_2023_ir_pack", "airtel_q3_2023_ir_pack"}
+        customer_sources = {"airtel_q2_2023_ir_pack", "airtel_q3_2023_ir_pack", "bharti_airtel_ar_2023"}
+        for metric_key, expected_value in expected_values.items():
+            row = self.index[("bharti_airtel", 2020, metric_key)]
+            self.assertEqual(row["value"], expected_value)
+            self.assertEqual(set(row["verification_sources"]), customer_sources if metric_key == "total_customers" else common_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        pbt_note = self.index[("bharti_airtel", 2020, "earnings_before_tax")]["quality_note"]
+        self.assertIn("INR-44,819m", pbt_note)
+        self.assertIn("INR-445,711m", pbt_note)
+        customer_note = self.index[("bharti_airtel", 2020, "total_customers")]["quality_note"]
+        self.assertIn("423.287m is excluded", customer_note)
+
+    def test_airtel_fy2020_registry_carries_metric_specific_evidence(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        q1 = sources["airtel_q1_2023_ir_pack"]["comparative_evidence"]["FY2020"]
+        self.assertNotIn("total_customers", q1)
+        self.assertEqual(q1["earnings_before_tax"]["value"], -44819)
+        for source_id in ("airtel_q2_2023_ir_pack", "airtel_q3_2023_ir_pack"):
+            evidence = sources[source_id]["comparative_evidence"]["FY2020"]
+            self.assertEqual(evidence["total_customers"]["value"], 422.100)
+            self.assertEqual(evidence["network_towers"]["value"], 219546)
+        annual = sources["bharti_airtel_ar_2023"]["comparative_evidence"]["FY2020"]
+        self.assertEqual(set(annual), {"total_customers"})
+
+    def test_xiaojing_retrieves_airtel_fy2020_three_source_definition_breaks(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Bharti Airtel FY2020总客户数、营业收入、EBITDA、税前利润、净利润、资本开支、净债务、股东权益和网络铁塔是多少？解释税前利润和客户数口径差异。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected_values = {
+            "total_customers": "422.1 million_customers",
+            "revenue": "846765 INR_million",
+            "ebitda": "347696 INR_million",
+            "earnings_before_tax": "-44819 INR_million",
+            "net_profit": "-321832 INR_million",
+            "capex": "244866 INR_million",
+            "net_debt": "1245209 INR_million",
+            "shareholders_equity": "771448 INR_million",
+            "network_towers": "219546 sites",
+        }
+        for metric_key, value_text in expected_values.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(f"official_value={value_text}", combined)
+        self.assertIn("annual-report KPI earnings-before-tax value of INR-445,711m", combined)
+        self.assertIn("earlier Q1 pack's 423.287m is excluded", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 9)
 
     def test_xiaojing_retrieves_airtel_fy2024_three_source_rows(self):
         combined = "\n".join(
