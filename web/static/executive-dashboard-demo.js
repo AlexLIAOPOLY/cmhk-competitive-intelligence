@@ -76,11 +76,23 @@
     const metrics = document.querySelector("[data-network-metrics]");
     visual.innerHTML = `
       <div class="section-label"><span>CHINA MOBILE NETWORK</span><strong>网络与算力资源</strong></div>
-      <div class="network-topology" aria-hidden="true">
-        <div class="topology-orbit orbit-one"><i></i><i></i><i></i></div>
-        <div class="topology-orbit orbit-two"><i></i><i></i><i></i><i></i></div>
-        <div class="topology-core"><b>CMCC</b><span>CORE</span></div>
-        <div class="topology-beam beam-a"></div><div class="topology-beam beam-b"></div><div class="topology-beam beam-c"></div>
+      <div class="network-architecture" role="img" aria-label="中国移动网络架构：4G和5G无线接入，经互联网骨干承载，连接CMCC核心网">
+        <section class="architecture-stage stage-access">
+          <span class="stage-label"><b>01</b> 无线接入层</span>
+          <div class="access-stack">
+            <div class="architecture-node node-4g"><small>4G 基站</small><strong>&gt;339<em>万座</em></strong></div>
+            <div class="architecture-node node-5g"><small>5G 基站</small><strong>&gt;240<em>万座</em></strong></div>
+          </div>
+        </section>
+        <section class="architecture-stage stage-backbone">
+          <span class="stage-label"><b>02</b> 骨干承载层</span>
+          <div class="architecture-node node-backbone"><small>互联网骨干带宽</small><strong>633<em>Tbps</em></strong></div>
+        </section>
+        <section class="architecture-stage stage-core">
+          <span class="stage-label"><b>03</b> 核心调度层</span>
+          <div class="architecture-core"><b>CMCC</b><span>CORE NETWORK</span><small>全国统一核心网</small></div>
+        </section>
+        <div class="architecture-caption"><span>无线接入</span><i>→</i><span>全国骨干承载</span><i>→</i><span>核心网调度</span></div>
       </div>`;
     metrics.innerHTML = networkMetrics.map(metricCard).join("");
   }
