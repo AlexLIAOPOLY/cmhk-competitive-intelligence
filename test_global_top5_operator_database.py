@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国广电": 3,
+                "中国广电": 4,
                 "中国电信": 12,
                 "中国移动": 17,
                 "中国联通": 10,
@@ -281,6 +281,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 (2022, "5g_network_subscribers"),
                 (2023, "5g_network_subscribers"),
                 (2024, "5g_network_subscribers"),
+                (2025, "5g_network_subscribers"),
             ],
         )
         self.assertTrue(all(len(row["candidate_sources"]) >= len(row["verification_sources"]) for row in available))
@@ -295,6 +296,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         users_2022 = self.index[("china_broadnet", 2022, "5g_network_subscribers")]
         self.assertEqual(users_2022["comparator"], ">")
         self.assertEqual(users_2022["distinct_source_document_count"], 3)
+        users_2025 = self.index[("china_broadnet", 2025, "5g_network_subscribers")]
+        self.assertEqual(users_2025["comparator"], "≈")
+        self.assertEqual(users_2025["distinct_source_document_count"], 3)
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])

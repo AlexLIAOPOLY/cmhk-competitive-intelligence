@@ -1528,18 +1528,27 @@ SOURCES.update({
         "label": "国家广播电视总局 2025年全国广播电视行业统计公报",
         "url": "https://www.nrta.gov.cn/art/2026/5/13/art_113_73265.html",
         "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "evidence": {
+            "5g_network_subscribers": {"value": 42, "unit": "million_subscribers", "comparator": "≈", "locator": "截至2025年底；广电5G用户近4200万户"},
+        },
     },
     "china_broadnet_cww_2025": {
         "source_id": "china_broadnet_cww_2025", "operator_id": "china_broadnet", "year": 2025,
         "label": "通信世界网：中国广电5G用户4200万户",
         "url": "https://www.cww.net.cn/article?id=778C9D26DAFB4E278A395F1F65F5F824",
         "source_type": "industry_media_report", "publisher": "通信世界网",
+        "evidence": {
+            "5g_network_subscribers": {"value": 42, "unit": "million_subscribers", "comparator": "≈", "locator": "广电总局2025年统计公报报道；广电5G用户近4200万户"},
+        },
     },
     "china_broadnet_cena_2025": {
         "source_id": "china_broadnet_cena_2025", "operator_id": "china_broadnet", "year": 2025,
         "label": "中国电子报：2025年全国广播电视行业统计公报数据",
         "url": "https://epaper.cena.com.cn/pc/attachment/202605/15/bcd96469-d762-41b6-b25d-0f123a5bc13c.pdf",
         "source_type": "industry_newspaper_report", "publisher": "中国电子报",
+        "evidence": {
+            "5g_network_subscribers": {"value": 42, "unit": "million_subscribers", "comparator": "≈", "locator": "2026年5月15日版面；广电5G用户近4200万户"},
+        },
     },
     "china_broadnet_zhonghong_2025": {
         "source_id": "china_broadnet_zhonghong_2025", "operator_id": "china_broadnet", "year": 2025,
@@ -2137,7 +2146,7 @@ CBN_2023_HD = ["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_br
 CBN_2023_SHARED_NETWORK = ["china_broadnet_digital_china_2023", "china_broadnet_cww_network_2023", "china_broadnet_broker_network_2023"]
 CBN_2024_STATS = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_jiangsu_bond_2024"]
 CBN_2024_CABLE_REVENUE = ["china_broadnet_nrta_2024", "china_broadnet_crta_2024", "china_broadnet_people_2024"]
-CBN_2025_USERS = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_szse_filing_2025"]
+CBN_2025_USERS = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_cena_2025"]
 CBN_2025_CABLE = ["china_broadnet_nrta_2025", "china_broadnet_nbs_2025", "china_broadnet_szse_filing_2025"]
 CBN_2025_TWO_WAY = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_cena_2025"]
 CBN_2025_HD = ["china_broadnet_nrta_2025", "china_broadnet_cena_2025", "china_broadnet_zhonghong_2025"]
