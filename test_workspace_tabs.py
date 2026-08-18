@@ -134,6 +134,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('isAi ? "AI" : "数据"', SCRIPT)
         self.assertIn("competitor-insight-facts", SCRIPT)
         self.assertIn("差距收窄", SCRIPT)
+        self.assertIn('["~", "approx", "≈"]', SCRIPT)
         self.assertIn("competitor-insight-shimmer", STYLE)
         self.assertIn("competitor-matrix", STYLE)
         self.assertIn("competitor-chart-series", STYLE)
