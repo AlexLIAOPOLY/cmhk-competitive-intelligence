@@ -13,8 +13,8 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 193
-- `official_three_distinct_sources_verified`: 170
-- `official_two_distinct_sources`: 17
+- `official_three_distinct_sources_verified`: 174
+- `official_two_distinct_sources`: 13
 - `source_gap_confirmed`: 182
 
 ## 三来源认证行（按运营商）
@@ -23,7 +23,7 @@
 - Reliance Jio: 27
 - 中国广电: 6
 - 中国电信: 12
-- 中国移动: 17
+- 中国移动: 21
 - 中国联通: 10
 
 ## 缺口（含不适用）

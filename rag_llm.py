@@ -716,6 +716,13 @@ def _global_operator_exact_metric_chunks(
         int(value)
         for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)
     }
+    for start_text, end_text in re.findall(
+        r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+        normalized,
+    ):
+        start_year, end_year = int(start_text), int(end_text)
+        if start_year <= end_year:
+            years.update(range(start_year, end_year + 1))
     if not matched_subjects or not matched_metrics:
         return []
 

@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 27,
                 "中国广电": 6,
                 "中国电信": 12,
-                "中国移动": 17,
+                "中国移动": 21,
                 "中国联通": 10,
             },
         )
@@ -158,7 +158,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             2022: 3.34,
             2023: 3.37,
         }
-        strict_counts = {2016: 2, 2017: 2, 2018: 2, 2019: 2, 2020: 3, 2021: 3, 2022: 3, 2023: 2}
+        strict_counts = {2016: 3, 2017: 3, 2018: 3, 2019: 3, 2020: 3, 2021: 3, 2022: 3, 2023: 2}
         for year, value in expected.items():
             row = self.index[("china_mobile", year, "4g_base_stations")]
             self.assertEqual(row["value"], value)
@@ -167,6 +167,19 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 row["triple_source_status"],
                 "three_distinct_sources_verified" if strict_counts[year] >= 3 else "below_three_source_threshold",
             )
+
+    def test_xiaojing_expands_global_operator_year_ranges(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "中国移动2016到2019年4G基站分别是多少？三来源状态呢？",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        for year, value in ((2016, "1.51"), (2017, "1.87"), (2018, "2.41"), (2019, "3.09")):
+            self.assertIn(f"period=FY{year}", combined)
+            self.assertIn(f"official_value={value} million_base_stations", combined)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 4)
 
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
         strict_counts = {2019: 2, 2020: 3, 2021: 1, 2022: 1, 2023: 1}

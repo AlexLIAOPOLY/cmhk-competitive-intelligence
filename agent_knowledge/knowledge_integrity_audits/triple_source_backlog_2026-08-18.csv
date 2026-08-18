@@ -5636,21 +5636,18 @@ global_top5_operators_2016_2025,中国广电 | FY2025 | cable_tv_actual_users,�
 global_top5_operators_2016_2025,中国广电 | FY2025 | hd_uhd_cable_tv_users,中国广电,FY2025,hd_uhd_cable_tv_users,111,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2025 | two_way_digital_cable_tv_users,中国广电,FY2025,two_way_digital_cable_tv_users,105,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2025 | uhd_cable_tv_users,中国广电,FY2025,uhd_cable_tv_users,56,million_users,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2016 | 4g_base_stations,中国移动,FY2016,4g_base_stations,1.51,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/en/ir/reports/ar2016/sd2016.pdf"", ""https://www.sec.gov/Archives/edgar/data/1117795/000119312517142311/d240713d20f.htm""]"
 global_top5_operators_2016_2025,中国移动 | FY2016 | 4g_subscribers,中国移动,FY2016,4g_subscribers,535.04,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2016 | fixed_broadband_subscribers,中国移动,FY2016,fixed_broadband_subscribers,77.62,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2016 | handset_data_traffic,中国移动,FY2016,handset_data_traffic,5.6807,billion_GB,0,0,3,derived_not_directly_disclosed,[]
 global_top5_operators_2016_2025,中国移动 | FY2016 | mobile_arpu,中国移动,FY2016,mobile_arpu,57.5,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2016 | mobile_dou,中国移动,FY2016,mobile_dou,0.697,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2016 | mobile_subscribers,中国移动,FY2016,mobile_subscribers,848.9,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2017 | 4g_base_stations,中国移动,FY2017,4g_base_stations,1.87,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/en/ir/reports/ar2017/2017_20f.pdf"", ""https://www.chinamobileltd.com/en/ir/reports/ar2017/sd2017.pdf""]"
 global_top5_operators_2016_2025,中国移动 | FY2017 | 4g_subscribers,中国移动,FY2017,4g_subscribers,650,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2017 | fixed_broadband_subscribers,中国移动,FY2017,fixed_broadband_subscribers,112.69,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2017 | handset_data_traffic,中国移动,FY2017,handset_data_traffic,12.5693,billion_GB,0,0,3,derived_not_directly_disclosed,[]
 global_top5_operators_2016_2025,中国移动 | FY2017 | mobile_arpu,中国移动,FY2017,mobile_arpu,57.7,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2017 | mobile_dou,中国移动,FY2017,mobile_dou,1.399,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2017 | mobile_subscribers,中国移动,FY2017,mobile_subscribers,887,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2018 | 4g_base_stations,中国移动,FY2018,4g_base_stations,2.41,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/en/ir/reports/ar2018/2018_20f.pdf"", ""https://www.chinamobileltd.com/en/ir/reports/ar2018/sd2018.pdf""]"
 global_top5_operators_2016_2025,中国移动 | FY2018 | 4g_subscribers,中国移动,FY2018,4g_subscribers,713,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2018 | fixed_broadband_subscribers,中国移动,FY2018,fixed_broadband_subscribers,156.7,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2018 | handset_data_traffic,中国移动,FY2018,handset_data_traffic,35.4534,billion_GB,0,0,3,derived_not_directly_disclosed,[]
@@ -5658,7 +5655,6 @@ global_top5_operators_2016_2025,中国移动 | FY2018 | mobile_arpu,中国移动
 global_top5_operators_2016_2025,中国移动 | FY2018 | mobile_dou,中国移动,FY2018,mobile_dou,3.6,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2018 | mobile_subscribers,中国移动,FY2018,mobile_subscribers,925,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2018 | total_base_stations,中国移动,FY2018,total_base_stations,3.85,million_base_stations,1,1,2,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf""]"
-global_top5_operators_2016_2025,中国移动 | FY2019 | 4g_base_stations,中国移动,FY2019,4g_base_stations,3.09,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/sc/esg/sd/2021_ashare/09.pdf"", ""https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf""]"
 global_top5_operators_2016_2025,中国移动 | FY2019 | 4g_subscribers,中国移动,FY2019,4g_subscribers,758,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2019 | 5g_base_stations,中国移动,FY2019,5g_base_stations,0.05,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/en/ir/reports/ar2019/2019_20f.pdf"", ""https://www.chinamobileltd.com/en/ir/reports/ar2019/sd2019.pdf""]"
 global_top5_operators_2016_2025,中国移动 | FY2019 | 5g_package_subscribers,中国移动,FY2019,5g_package_subscribers,2.55,million_subscribers,0,0,3,needs_additional_distinct_sources,[]

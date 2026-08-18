@@ -466,7 +466,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2016"
+      "source_document_id": "china_mobile_ar_2016",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.51,
+          "unit": "million_base_stations",
+          "locator": "FY2016 annual report operating review; year-end 4G base-station total"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2017",
@@ -476,7 +483,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2017"
+      "source_document_id": "china_mobile_ar_2017",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.87,
+          "unit": "million_base_stations",
+          "locator": "FY2017 annual report operating review; year-end 4G base-station total"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2018",
@@ -486,7 +500,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2018"
+      "source_document_id": "china_mobile_ar_2018",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 2.41,
+          "unit": "million_base_stations",
+          "locator": "FY2018 annual report operating review; year-end 4G base-station total"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2019",
@@ -496,7 +517,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2019"
+      "source_document_id": "china_mobile_ar_2019",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 3.09,
+          "unit": "million_base_stations",
+          "locator": "FY2019 annual report operating review; year-end 4G base-station total"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2020",

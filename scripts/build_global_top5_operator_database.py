@@ -1586,6 +1586,12 @@ SOURCES["china_mobile_ar_2020"].setdefault("evidence", {})["total_base_stations"
     "unit": "million_base_stations",
     "locator": "operating review; more than 5.14 million base stations at year end",
 }
+for _year, _value in ((2016, 1.51), (2017, 1.87), (2018, 2.41), (2019, 3.09)):
+    SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["4g_base_stations"] = {
+        "value": _value,
+        "unit": "million_base_stations",
+        "locator": f"FY{_year} annual report operating review; year-end 4G base-station total",
+    }
 SOURCES["china_broadnet_nrta_tech_review_2022"].setdefault("evidence", {})["5g_base_stations"] = {
     "value": 0.48, "unit": "million_base_stations", "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站",
 }
