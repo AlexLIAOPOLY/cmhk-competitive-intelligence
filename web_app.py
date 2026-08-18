@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import ipaddress
 import json
 import mimetypes
 import os
@@ -48,6 +49,7 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
+from subscription_service import SubscriptionService
 
 
 ROOT = Path(__file__).resolve().parent
@@ -130,6 +132,20 @@ CHAT_STARTER_POOL = (
         "prompt": "请梳理香港近期频谱分配、5G、SIM 实名制、电信监管和消费者保护政策的变化，分析对 CMHK 产品、网络、营销和运营的影响，并提出应对建议。",
     },
 )
+
+
+def subscription_service() -> SubscriptionService:
+    return SubscriptionService(runtime_root=ROOT)
+
+
+def is_loopback_client(address: str) -> bool:
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped:
+        parsed = parsed.ipv4_mapped
+    return parsed.is_loopback
 
 
 def sample_chat_starters(limit: int = 4) -> list[dict]:
@@ -3476,6 +3492,40 @@ class AppHandler(BaseHTTPRequestHandler):
                     {"ok": False, "error": str(exc), "items": []},
                     status=500,
                 )
+            return
+        if path == "/api/subscriptions":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
+                return
+            try:
+                service = subscription_service()
+                summary = service.list_summary()
+                status = build_status()
+                reports = [
+                    {
+                        "name": str(item.get("name") or ""),
+                        "path": str(item.get("path_str") or ""),
+                        "report_type": str(item.get("reportType") or ""),
+                        "mtime_text": str(item.get("mtimeText") or ""),
+                        "audio": bool((item.get("audio") or {}).get("exists")) if isinstance(item.get("audio"), dict) else False,
+                    }
+                    for item in (status.get("outputs") or [])
+                    if isinstance(item, dict) and item.get("reportType") in {"weekly", "carrier-performance"}
+                ]
+                card_actions = service.config.get("card_actions") if isinstance(service.config.get("card_actions"), dict) else {}
+                json_response(self, {
+                    "ok": True,
+                    **summary,
+                    "targets": service.available_targets(),
+                    "reports": reports,
+                    "test_target": {
+                        "callback_open_id": str(card_actions.get("primary_handler_open_id") or ""),
+                        "delivery_open_id": str(card_actions.get("primary_handler_open_id") or ""),
+                        "name": str(card_actions.get("primary_handler_expected_name") or "系统管理员"),
+                    },
+                })
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=500)
             return
         if path == "/api/news-review-sheet":
             try:

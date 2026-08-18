@@ -1854,7 +1854,32 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2021/2021_20f.pdf",
       "source_type": "official_sec_annual_filing",
       "publisher": "China Mobile Limited",
+      "evidence": {
+        "total_base_stations": {
+          "value": 5.5,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "Base Stations, year-end network scale"
+        }
+      },
       "source_document_id": "china_mobile_20f_2021"
+    },
+    {
+      "source_id": "china_mobile_20f_2019",
+      "operator_id": "china_mobile",
+      "year": 2019,
+      "label": "China Mobile 2019 annual report on Form 20-F",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2019/2019_20f.pdf",
+      "source_type": "official_sec_annual_filing",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "total_base_stations": {
+          "value": 4.48,
+          "unit": "million_base_stations",
+          "locator": "Base Stations, year-end network scale"
+        }
+      },
+      "source_document_id": "china_mobile_20f_2019"
     },
     {
       "source_id": "china_mobile_20f_2018",
@@ -1972,6 +1997,11 @@
             "value": 2.41,
             "unit": "million_base_stations",
             "locator": "operating KPI table"
+          },
+          "total_base_stations": {
+            "value": 3.85,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
           }
         },
         "FY2019": {
@@ -1979,11 +2009,21 @@
             "value": 3.09,
             "unit": "million_base_stations",
             "locator": "operating KPI table"
+          },
+          "total_base_stations": {
+            "value": 4.48,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
           }
         },
         "FY2020": {
           "4g_base_stations": {
             "value": 3.28,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
+          },
+          "total_base_stations": {
+            "value": 5.14,
             "unit": "million_base_stations",
             "locator": "operating KPI table"
           }
