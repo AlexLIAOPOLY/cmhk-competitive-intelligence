@@ -64,6 +64,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
+        frequency = next(item for item in form["elements"] if item["tag"] == "select_static")
+        self.assertEqual(frequency["name"], "frequency")
+        self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
         pause = next(item for item in card["body"]["elements"] if item.get("behaviors"))
@@ -78,10 +81,11 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["weekly", "news"]}),
+            "form_value": json.dumps({"services": ["weekly", "news"], "frequency": "daily"}),
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
+        self.assertEqual(first["frequency"], "daily")
         self.service.handle_card_event({
             "type": "card.action.trigger",
             "action_tag": "button",
@@ -89,11 +93,12 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["performance"]}),
+            "form_value": json.dumps({"services": ["performance"], "frequency": "weekly"}),
         })
         summary = self.service.list_summary()
         self.assertEqual(summary["active_subscriber_count"], 1)
         self.assertEqual(summary["subscribers"][0]["services"], ["performance"])
+        self.assertEqual(summary["subscribers"][0]["frequency"], "weekly")
         counts = {item["key"]: item["subscriber_count"] for item in summary["services"]}
         self.assertEqual(counts["performance"], 1)
 
@@ -118,7 +123,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "operator_id": "ou_callback123",
                 "chat_id": "oc_test123",
                 "message_id": "om_unpublished123",
-                "form_value": json.dumps({"services": ["news"]}),
+                "form_value": json.dumps({"services": ["news"], "frequency": "immediate"}),
             })
 
     def test_publish_is_whitelisted_and_read_back(self):
@@ -191,6 +196,67 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
         with self.assertRaisesRegex(ValueError, "二次确认"):
             self.service.push(service="news", mode="text", title="新闻", body="正文")
+
+    def test_daily_frequency_queues_then_dispatches_when_due(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions(
+            "ou_delivery123",
+            "测试用户",
+            ["news"],
+            frequency="daily",
+        )
+        queued = self.service.push(
+            service="news",
+            mode="text",
+            title="延时新闻",
+            body="按订阅频率投递",
+            confirm_bulk=True,
+        )
+        self.assertEqual(queued["queued_count"], 1)
+        self.assertEqual(queued["verified_count"], 0)
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+        dispatched = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
+        self.assertEqual(dispatched["verified_count"], 1)
+        self.assertTrue(any("+messages-send" in call for call in self.lark.calls))
+        self.assertEqual(self.service.list_summary()["deliveries"][0]["status"], "verified")
+
+    def test_invalid_frequency_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "接收频率无效"):
+            self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="hourly")
+
+    def test_failed_scheduled_delivery_retries_without_a_fixed_attempt_cap(self):
+        from datetime import datetime
+        import sqlite3
+
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="daily")
+        self.service.push(
+            service="news",
+            mode="text",
+            title="重试新闻",
+            body="网络恢复后继续发送",
+            confirm_bulk=True,
+        )
+
+        def offline(argv, timeout=45):
+            raise RuntimeError("temporary offline")
+
+        self.service.command_runner = offline
+        first = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
+        second = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T20:00:00+08:00"))
+        self.assertEqual(first["retrying_count"], 1)
+        self.assertEqual(second["retrying_count"], 1)
+        db = sqlite3.connect(self.service.db_path)
+        try:
+            status, attempts = db.execute(
+                "SELECT status, attempts FROM pending_subscription_deliveries"
+            ).fetchone()
+            delivery_status = db.execute("SELECT status FROM deliveries").fetchone()[0]
+        finally:
+            db.close()
+        self.assertEqual(status, "queued")
+        self.assertEqual(attempts, 2)
+        self.assertEqual(delivery_status, "retrying")
 
     def test_long_report_paragraphs_are_split_below_message_limit(self):
         chunks = self.service._text_chunks("长报告", "甲" * 12000)

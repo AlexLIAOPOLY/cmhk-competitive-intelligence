@@ -11,7 +11,7 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=1', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=2', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -27,6 +27,12 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("PDF 文件", SCRIPT)
         self.assertIn('value="pdf_audio"', SCRIPT)
         self.assertIn("PDF + 单独语音", SCRIPT)
+
+    def test_admin_exposes_real_subscription_frequency_controls(self):
+        self.assertIn("data-subscriber-frequency", SCRIPT)
+        self.assertIn("每天 18:00", SCRIPT)
+        self.assertIn("每周五 18:00", SCRIPT)
+        self.assertIn("等待频率时点", SCRIPT)
 
 
 if __name__ == "__main__":

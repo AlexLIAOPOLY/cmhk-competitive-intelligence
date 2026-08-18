@@ -673,6 +673,27 @@ class FinancialResultScheduleTests(unittest.TestCase):
         self.assertEqual(audit[0]["schedule_policy"], "financial_results_next_day_sla")
 
 
+class SubscriptionDispatchScheduleTests(unittest.TestCase):
+    def test_frequency_scheduler_flushes_due_subscription_queue(self) -> None:
+        with mock.patch("subscription_service.SubscriptionService") as service_class:
+            service_class.return_value.flush_due.return_value = {
+                "processed_count": 2,
+                "verified_count": 2,
+            }
+            result = scheduler.dispatch_subscription_queue()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["processed_count"], 2)
+        service_class.assert_called_once_with(runtime_root=scheduler.ROOT)
+        service_class.return_value.flush_due.assert_called_once_with()
+
+    def test_subscription_dispatch_failure_does_not_raise_into_crawler_cycle(self) -> None:
+        with mock.patch("subscription_service.SubscriptionService", side_effect=RuntimeError("offline")):
+            result = scheduler.dispatch_subscription_queue()
+        self.assertFalse(result["ok"])
+        self.assertIn("offline", result["error"])
+
+
 class TaskLogScrollTests(unittest.TestCase):
     def test_running_task_log_scroll_waits_for_layout_and_stays_at_bottom(self) -> None:
         app = (scheduler.ROOT / "web/static/app.js").read_text(encoding="utf-8")

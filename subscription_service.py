@@ -9,7 +9,7 @@ import sqlite3
 import subprocess
 import zipfile
 from contextlib import closing
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
 from xml.etree import ElementTree
@@ -23,6 +23,12 @@ SERVICE_LABELS = {
 }
 VALID_SERVICES = frozenset(SERVICE_LABELS)
 VALID_DELIVERY_MODES = frozenset({"text", "audio", "both", "pdf", "pdf_audio"})
+FREQUENCY_LABELS = {
+    "immediate": "即时接收",
+    "daily": "每天 18:00",
+    "weekly": "每周五 18:00",
+}
+VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
@@ -30,6 +36,22 @@ MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
 
 def _now_hkt() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def _next_due_at(frequency: str, now: datetime | None = None) -> str:
+    current = (now or datetime.now().astimezone()).astimezone()
+    if frequency == "daily":
+        due = current.replace(hour=18, minute=0, second=0, microsecond=0)
+        if due <= current:
+            due += timedelta(days=1)
+    elif frequency == "weekly":
+        days = (4 - current.weekday()) % 7
+        due = (current + timedelta(days=days)).replace(hour=18, minute=0, second=0, microsecond=0)
+        if due <= current:
+            due += timedelta(days=7)
+    else:
+        due = current
+    return due.isoformat(timespec="seconds")
 
 
 def _command_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -96,6 +118,18 @@ def subscription_entry_card() -> dict[str, Any]:
                                 {"text": {"tag": "plain_text", "content": "战略双周报（PDF / 可选独立语音）"}, "value": "weekly"},
                                 {"text": {"tag": "plain_text", "content": "运营商业绩摘要"}, "value": "performance"},
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
+                            ],
+                        },
+                        {
+                            "tag": "select_static",
+                            "name": "frequency",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "请选择接收频率"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": "即时接收"}, "value": "immediate"},
+                                {"text": {"tag": "plain_text", "content": "每天 18:00"}, "value": "daily"},
+                                {"text": {"tag": "plain_text", "content": "每周五 18:00"}, "value": "weekly"},
                             ],
                         },
                         {
@@ -190,6 +224,7 @@ class SubscriptionService:
                     union_id TEXT NOT NULL DEFAULT '',
                     display_name TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'active',
+                    frequency TEXT NOT NULL DEFAULT 'immediate',
                     source_chat_id TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -221,6 +256,25 @@ class SubscriptionService:
                     chat_id TEXT NOT NULL,
                     created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS pending_subscription_deliveries (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    delivery_id INTEGER NOT NULL REFERENCES deliveries(id) ON DELETE CASCADE,
+                    open_id TEXT NOT NULL,
+                    service TEXT NOT NULL,
+                    mode TEXT NOT NULL,
+                    content_ref TEXT NOT NULL DEFAULT '',
+                    title TEXT NOT NULL DEFAULT '',
+                    body TEXT NOT NULL DEFAULT '',
+                    frequency TEXT NOT NULL,
+                    due_at TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'queued',
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    last_error TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    dispatched_at TEXT NOT NULL DEFAULT ''
+                );
+                CREATE INDEX IF NOT EXISTS pending_subscription_due_idx
+                    ON pending_subscription_deliveries(status, due_at);
                 """
             )
             columns = {str(row[1]) for row in db.execute("PRAGMA table_info(subscribers)").fetchall()}
@@ -228,6 +282,16 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN callback_open_id TEXT NOT NULL DEFAULT ''")
             if "union_id" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN union_id TEXT NOT NULL DEFAULT ''")
+            if "frequency" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN frequency TEXT NOT NULL DEFAULT 'immediate'")
+            pending_columns = {
+                str(row[1])
+                for row in db.execute("PRAGMA table_info(pending_subscription_deliveries)").fetchall()
+            }
+            if "attempts" not in pending_columns:
+                db.execute("ALTER TABLE pending_subscription_deliveries ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0")
+            if "last_error" not in pending_columns:
+                db.execute("ALTER TABLE pending_subscription_deliveries ADD COLUMN last_error TEXT NOT NULL DEFAULT ''")
 
     def _run(self, argv: list[str], *, timeout: float = 45) -> subprocess.CompletedProcess[str]:
         if self.command_runner is not None:
@@ -275,19 +339,31 @@ class SubscriptionService:
             raise RuntimeError("组织推送应用无法解析该订阅者，请确认应用可用范围")
         return {"display_name": name, "callback_open_id": open_id, "union_id": union_id, "open_id": delivery_open_id}
 
-    def save_subscriptions(self, open_id: str, display_name: str, services: list[str], source_chat_id: str = "", callback_open_id: str = "", union_id: str = "") -> dict[str, Any]:
+    def save_subscriptions(
+        self,
+        open_id: str,
+        display_name: str,
+        services: list[str],
+        source_chat_id: str = "",
+        callback_open_id: str = "",
+        union_id: str = "",
+        frequency: str = "immediate",
+    ) -> dict[str, Any]:
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
             raise ValueError("至少选择一个订阅服务")
+        if frequency not in VALID_FREQUENCIES:
+            raise ValueError("接收频率无效")
         now = _now_hkt()
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, source_chat_id, created_at, updated_at)
-                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?)
+                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, source_chat_id, created_at, updated_at)
+                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?)
                    ON CONFLICT(open_id) DO UPDATE SET display_name=excluded.display_name,
                    callback_open_id=excluded.callback_open_id, union_id=excluded.union_id,
-                   status='active', source_chat_id=excluded.source_chat_id, updated_at=excluded.updated_at""",
-                (open_id, callback_open_id, union_id, display_name, source_chat_id, now, now),
+                   status='active', frequency=excluded.frequency,
+                   source_chat_id=excluded.source_chat_id, updated_at=excluded.updated_at""",
+                (open_id, callback_open_id, union_id, display_name, frequency, source_chat_id, now, now),
             )
             for service in VALID_SERVICES:
                 db.execute(
@@ -295,7 +371,14 @@ class SubscriptionService:
                        ON CONFLICT(open_id, service) DO UPDATE SET active=excluded.active, updated_at=excluded.updated_at""",
                     (open_id, service, int(service in normalized), now),
                 )
-        return {"open_id": open_id, "display_name": display_name, "services": normalized, "updated_at": now}
+        return {
+            "open_id": open_id,
+            "display_name": display_name,
+            "services": normalized,
+            "frequency": frequency,
+            "frequency_label": FREQUENCY_LABELS[frequency],
+            "updated_at": now,
+        }
 
     def handle_card_event(self, event: dict[str, Any]) -> dict[str, Any] | None:
         if str(event.get("type") or "") != "card.action.trigger" or str(event.get("action_tag") or "") != "button":
@@ -310,6 +393,7 @@ class SubscriptionService:
         if not form_raw and not is_pause and action_name != "cmhk_subscription_save_v1":
             return None
         services: list[str] = []
+        frequency = "immediate"
         if not is_pause:
             try:
                 form = json.loads(form_raw or "{}")
@@ -323,6 +407,9 @@ class SubscriptionService:
             if not isinstance(selected, list):
                 raise ValueError("订阅服务选择格式无效")
             services = [str(item) for item in selected]
+            frequency = str(form.get("frequency") or "")
+            if frequency not in VALID_FREQUENCIES:
+                raise ValueError("请选择有效的接收频率")
         open_id = str(event.get("operator_id") or "")
         chat_id = str(event.get("chat_id") or "")
         message_id = str(event.get("message_id") or "")
@@ -372,11 +459,12 @@ class SubscriptionService:
         saved = self.save_subscriptions(
             identity["open_id"], identity["display_name"], services, chat_id,
             callback_open_id=identity["callback_open_id"], union_id=identity["union_id"],
+            frequency=frequency,
         )
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
-            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n以后重新提交订阅卡片即可覆盖选择。",
+            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n接收频率：**{saved['frequency_label']}**。以后重新提交订阅卡片即可覆盖选择。",
             idempotency_key=f"suback-{event_id}"[:50],
             profile=self.entry_profile,
         )
@@ -387,7 +475,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -404,7 +492,11 @@ class SubscriptionService:
                 for service in services:
                     if service in counts:
                         counts[service] += 1
-            subscribers.append({**dict(row), "services": services})
+            subscribers.append({
+                **dict(row),
+                "services": services,
+                "frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
+            })
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
             "subscribers": subscribers,
@@ -413,7 +505,14 @@ class SubscriptionService:
             "updated_at": _now_hkt(),
         }
 
-    def update_subscriber(self, open_id: str, *, services: list[str], status: str = "active") -> dict[str, Any]:
+    def update_subscriber(
+        self,
+        open_id: str,
+        *,
+        services: list[str],
+        status: str = "active",
+        frequency: str = "immediate",
+    ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
             raise ValueError("订阅者状态只能是 active 或 paused")
         with closing(self._connect()) as db, db:
@@ -430,6 +529,7 @@ class SubscriptionService:
             str(row["source_chat_id"]),
             callback_open_id=str(row["callback_open_id"]),
             union_id=str(row["union_id"]),
+            frequency=frequency,
         )
         with closing(self._connect()) as db, db:
             db.execute("UPDATE subscribers SET status=?, updated_at=? WHERE open_id=?", (status, _now_hkt(), open_id))
@@ -459,10 +559,16 @@ class SubscriptionService:
             target_args = ["--user-id", target_id]
         else:
             raise ValueError("目标类型无效")
-        key = hashlib.sha256(f"subscription-entry:{target_type}:{target_id}:{datetime.now().date()}".encode()).hexdigest()[:32]
+        card = subscription_entry_card()
+        card_version = hashlib.sha256(
+            json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
+        ).hexdigest()[:12]
+        key = hashlib.sha256(
+            f"subscription-entry:{target_type}:{target_id}:{datetime.now().date()}:{card_version}".encode()
+        ).hexdigest()[:32]
         payload = self._lark([
             "lark-cli", "im", "+messages-send", *target_args,
-            "--msg-type", "interactive", "--content", json.dumps(subscription_entry_card(), ensure_ascii=False),
+            "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),
             "--idempotency-key", key, "--as", "bot", "--profile", self.entry_profile, "--format", "json",
         ])
         message_id = self._message_id(payload)
@@ -582,14 +688,153 @@ class SubscriptionService:
             raise RuntimeError("报告 PDF 未生成")
         return target
 
-    def _subscribers_for(self, service: str) -> list[str]:
+    def _subscribers_for(self, service: str) -> list[dict[str, str]]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
+                """SELECT s.open_id, s.frequency FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service=? AND x.active=1 ORDER BY s.open_id""",
                 (service,),
             ).fetchall()
-        return [str(row["open_id"]) for row in rows]
+        return [
+            {
+                "open_id": str(row["open_id"]),
+                "frequency": str(row["frequency"] or "immediate"),
+            }
+            for row in rows
+        ]
+
+    def _resolve_report(self, path: str) -> tuple[Path, str]:
+        relative = Path(path)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("报告路径无效")
+        report_path = (self.runtime_root / relative).resolve()
+        if (
+            self.runtime_root.resolve() not in report_path.parents
+            or report_path.suffix.lower() != ".docx"
+            or not report_path.exists()
+        ):
+            raise ValueError("报告文件不存在或不允许推送")
+        return report_path, str(relative)
+
+    def _deliver_one(
+        self,
+        *,
+        open_id: str,
+        service: str,
+        mode: str,
+        content_ref: str,
+        title: str,
+        body: str,
+        batch_id: str,
+        profile: str,
+    ) -> list[str]:
+        report_path: Path | None = None
+        if service in {"weekly", "performance"}:
+            report_path, _ = self._resolve_report(content_ref)
+        message_ids: list[str] = []
+        if mode in {"text", "both"}:
+            text = body if service == "news" else self._report_text(report_path)  # type: ignore[arg-type]
+            for index, chunk in enumerate(self._text_chunks(title, text), start=1):
+                message_ids.append(self._send_markdown(
+                    open_id,
+                    chunk,
+                    idempotency_key=f"{batch_id}-t{index}-{open_id[-6:]}",
+                    profile=profile,
+                ))
+        if mode in {"pdf", "pdf_audio"}:
+            pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
+            message_ids.append(self._send_file(
+                open_id,
+                pdf,
+                idempotency_key=f"{batch_id}-p-{open_id[-6:]}",
+                profile=profile,
+            ))
+        if mode in {"audio", "both", "pdf_audio"}:
+            audio = self._find_audio(report_path)  # type: ignore[arg-type]
+            message_ids.append(self._send_audio(
+                open_id,
+                audio,
+                idempotency_key=f"{batch_id}-a-{open_id[-6:]}",
+                profile=profile,
+            ))
+        for message_id in message_ids:
+            self._verify_message(message_id, profile=profile)
+        return message_ids
+
+    def due_count(self, *, now: datetime | None = None) -> int:
+        current = (now or datetime.now().astimezone()).astimezone().isoformat(timespec="seconds")
+        with closing(self._connect()) as db:
+            row = db.execute(
+                "SELECT COUNT(*) FROM pending_subscription_deliveries WHERE status='queued' AND due_at<=?",
+                (current,),
+            ).fetchone()
+        return int(row[0] if row else 0)
+
+    def flush_due(self, *, now: datetime | None = None, limit: int = 100) -> dict[str, Any]:
+        current = (now or datetime.now().astimezone()).astimezone().isoformat(timespec="seconds")
+        with closing(self._connect()) as db:
+            rows = db.execute(
+                """SELECT p.*, d.batch_id FROM pending_subscription_deliveries p
+                   JOIN deliveries d ON d.id=p.delivery_id
+                   WHERE p.status='queued' AND p.due_at<=?
+                   ORDER BY p.due_at, p.id LIMIT ?""",
+                (current, max(1, min(limit, 500))),
+            ).fetchall()
+        results: list[dict[str, Any]] = []
+        for row in rows:
+            message_ids: list[str] = []
+            status = "verified"
+            error = ""
+            try:
+                message_ids = self._deliver_one(
+                    open_id=str(row["open_id"]),
+                    service=str(row["service"]),
+                    mode=str(row["mode"]),
+                    content_ref=str(row["content_ref"]),
+                    title=str(row["title"]),
+                    body=str(row["body"]),
+                    batch_id=str(row["batch_id"]),
+                    profile=self.delivery_profile,
+                )
+            except Exception as exc:
+                status = "retrying"
+                error = str(exc)[:900]
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
+                    (status, json.dumps(message_ids), error, int(row["delivery_id"])),
+                )
+                if status == "verified":
+                    db.execute(
+                        """UPDATE pending_subscription_deliveries
+                           SET status='verified', dispatched_at=?, last_error=''
+                           WHERE id=?""",
+                        (_now_hkt(), int(row["id"])),
+                    )
+                else:
+                    retry_at = ((now or datetime.now().astimezone()).astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    db.execute(
+                        """UPDATE pending_subscription_deliveries
+                           SET status='queued', attempts=attempts+1, last_error=?, due_at=?
+                           WHERE id=?""",
+                        (error, retry_at, int(row["id"])),
+                    )
+            results.append({
+                "pending_id": int(row["id"]),
+                "open_id": str(row["open_id"]),
+                "status": status,
+                "message_ids": message_ids,
+                "error": error,
+            })
+        return {
+            "checked_at": current,
+            "processed_count": len(results),
+            "verified_count": sum(1 for item in results if item["status"] == "verified"),
+            "retrying_count": sum(1 for item in results if item["status"] == "retrying"),
+            "failed_count": 0,
+            "remaining_due_count": self.due_count(now=now),
+            "results": results,
+        }
 
     def push(
         self,
@@ -615,7 +860,7 @@ class SubscriptionService:
             primary_test_open_id = str(card_actions.get("primary_handler_open_id") or "")
             if test_open_id != primary_test_open_id:
                 raise ValueError("测试推送只允许发送给系统管理员")
-            recipients = [test_open_id]
+            recipients = [{"open_id": test_open_id, "frequency": "immediate"}]
             send_profile = self.entry_profile
         elif not confirm_bulk:
             raise ValueError("批量推送必须在后台完成二次确认")
@@ -624,14 +869,8 @@ class SubscriptionService:
         report_path: Path | None = None
         content_ref = ""
         if service in {"weekly", "performance"}:
-            relative = Path(path)
-            if relative.is_absolute() or ".." in relative.parts:
-                raise ValueError("报告路径无效")
-            report_path = (self.runtime_root / relative).resolve()
-            if self.runtime_root.resolve() not in report_path.parents or report_path.suffix.lower() != ".docx" or not report_path.exists():
-                raise ValueError("报告文件不存在或不允许推送")
+            report_path, content_ref = self._resolve_report(path)
             title = title.strip() or report_path.stem
-            content_ref = str(relative)
         else:
             title = title.strip() or "战略新闻"
             body = body.strip()
@@ -640,39 +879,66 @@ class SubscriptionService:
             content_ref = title
         batch_id = hashlib.sha256(f"{service}:{mode}:{content_ref}:{_now_hkt()}".encode()).hexdigest()[:24]
         results = []
-        for open_id in recipients:
+        for recipient in recipients:
+            open_id = recipient["open_id"]
+            frequency = recipient["frequency"] if recipient["frequency"] in VALID_FREQUENCIES else "immediate"
             message_ids: list[str] = []
-            status = "verified"
+            status = "queued" if frequency != "immediate" else "sending"
             error = ""
-            try:
-                if mode in {"text", "both"}:
-                    text = body if service == "news" else self._report_text(report_path)  # type: ignore[arg-type]
-                    for index, chunk in enumerate(self._text_chunks(title, text), start=1):
-                        message_ids.append(self._send_markdown(open_id, chunk, idempotency_key=f"{batch_id}-t{index}-{open_id[-6:]}", profile=send_profile))
-                if mode in {"pdf", "pdf_audio"}:
-                    pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
-                    message_ids.append(self._send_file(open_id, pdf, idempotency_key=f"{batch_id}-p-{open_id[-6:]}", profile=send_profile))
-                if mode in {"audio", "both", "pdf_audio"}:
-                    audio = self._find_audio(report_path)  # type: ignore[arg-type]
-                    message_ids.append(self._send_audio(open_id, audio, idempotency_key=f"{batch_id}-a-{open_id[-6:]}", profile=send_profile))
-                for message_id in message_ids:
-                    self._verify_message(message_id, profile=send_profile)
-            except Exception as exc:
-                status = "failed"
-                error = str(exc)[:900]
             with closing(self._connect()) as db, db:
-                db.execute(
+                cursor = db.execute(
                     """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (batch_id, open_id, service, mode, content_ref, status, json.dumps(message_ids), error, _now_hkt()),
                 )
-            results.append({"open_id": open_id, "status": status, "message_ids": message_ids, "error": error})
+                delivery_id = int(cursor.lastrowid)
+                if frequency != "immediate":
+                    due_at = _next_due_at(frequency)
+                    db.execute(
+                        """INSERT INTO pending_subscription_deliveries(
+                               delivery_id, open_id, service, mode, content_ref, title, body,
+                               frequency, due_at, status, created_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?)""",
+                        (delivery_id, open_id, service, mode, content_ref, title, body, frequency, due_at, _now_hkt()),
+                    )
+                else:
+                    due_at = ""
+            if frequency == "immediate":
+                try:
+                    message_ids = self._deliver_one(
+                        open_id=open_id,
+                        service=service,
+                        mode=mode,
+                        content_ref=content_ref,
+                        title=title,
+                        body=body,
+                        batch_id=batch_id,
+                        profile=send_profile,
+                    )
+                    status = "verified"
+                except Exception as exc:
+                    status = "failed"
+                    error = str(exc)[:900]
+                with closing(self._connect()) as db, db:
+                    db.execute(
+                        "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
+                        (status, json.dumps(message_ids), error, delivery_id),
+                    )
+            results.append({
+                "open_id": open_id,
+                "frequency": frequency,
+                "status": status,
+                "due_at": due_at,
+                "message_ids": message_ids,
+                "error": error,
+            })
         return {
             "batch_id": batch_id,
             "service": service,
             "mode": mode,
             "recipient_count": len(results),
             "verified_count": sum(1 for item in results if item["status"] == "verified"),
+            "queued_count": sum(1 for item in results if item["status"] == "queued"),
             "failed_count": sum(1 for item in results if item["status"] == "failed"),
             "results": results,
         }

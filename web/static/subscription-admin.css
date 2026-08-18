@@ -55,6 +55,8 @@ tbody tr:hover { background: rgba(48,100,116,.1); }
 td select { min-width: 84px; }
 .status { display: inline-flex; padding: 3px 7px; border-radius: 10px; font-size: 8px; }
 .status.verified { color: #79d7b5; background: rgba(43,139,105,.16); }
+.status.queued { color: #8ec8ee; background: rgba(51,112,154,.18); }
+.status.retrying { color: #e8c479; background: rgba(148,108,38,.18); }
 .status.failed { color: #e6a4a9; background: rgba(160,70,78,.17); }
 .empty { padding: 26px; color: #6b909c; text-align: center; }
 [hidden] { display: none !important; }

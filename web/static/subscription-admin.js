@@ -13,6 +13,15 @@
       .map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
   }
 
+  function frequencyOptions(selected = "immediate") {
+    const frequencies = state.data?.frequencies || [
+      { key: "immediate", label: "即时接收" },
+      { key: "daily", label: "每天 18:00" },
+      { key: "weekly", label: "每周五 18:00" },
+    ];
+    return frequencies.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
+  }
+
   function reportOptions() {
     const reports = state.data?.reports || [];
     if (!reports.length) return '<option value="">当前没有可推送报告</option>';
@@ -21,10 +30,11 @@
 
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
-    if (!rows.length) return '<tr><td colspan="7" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
+    if (!rows.length) return '<tr><td colspan="8" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
     return rows.map((item) => `<tr data-subscriber-row="${esc(item.open_id)}">
       <td class="name">${esc(item.display_name)}</td><td class="muted">${esc(item.open_id.slice(0, 8))}…</td>
       ${["weekly", "performance", "news"].map((service) => `<td><label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label></td>`).join("")}
+      <td><select data-subscriber-frequency>${frequencyOptions(item.frequency)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td><button class="button" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
   }
@@ -32,7 +42,7 @@
   function deliveryRows() {
     const rows = state.data?.deliveries || [];
     if (!rows.length) return '<tr><td colspan="6" class="empty">尚无推送记录</td></tr>';
-    return rows.slice(0, 40).map((item) => `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`).join("");
+    return rows.slice(0, 40).map((item) => `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待频率时点" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`).join("");
   }
 
   function render() {
@@ -51,7 +61,7 @@
         <article class="panel"><header class="panel-header"><div><h2>发布订阅入口</h2><span>自助多选卡片</span></div></header><div class="panel-body"><form class="publish-form" id="publishForm"><label>目标群<select name="targetId" required>${targets || '<option value="">暂无白名单群</option>'}</select></label><button class="button primary" type="submit">发布到群</button><button class="button" type="button" data-test-card>先发给我测试</button></form><p class="form-note">群发布只发送订阅入口，不会自动推送报告或新闻。</p></div></article>
         <article class="panel"><header class="panel-header"><div><h2>执行内容推送</h2><span>逐条回读消息 ID</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试；取消勾选后才可向全部有效订阅者推送</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
       </section>
-      <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 可调整服务或暂停</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
+      <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 可调整服务、频率或暂停</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>接收频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
       <section class="panel"><header class="panel-header"><div><h2>推送台账</h2><span>发送与回读证据</span></div></header><div class="table-wrap"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div></section>
     </div>`;
     syncPushFields();
@@ -120,7 +130,7 @@
     if (save) {
       const row = save.closest("[data-subscriber-row]");
       const services = Array.from(row.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, frequency: row.querySelector("[data-subscriber-frequency]").value, status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });

@@ -1537,9 +1537,24 @@ def resume_pending_run(
     return True
 
 
+def dispatch_subscription_queue(*, dry_run: bool = False) -> dict[str, object]:
+    """Dispatch due subscriber messages without coupling failures to crawler scheduling."""
+    try:
+        from subscription_service import SubscriptionService
+
+        service = SubscriptionService(runtime_root=ROOT)
+        if dry_run:
+            return {"ok": True, "dry_run": True, "due_count": service.due_count()}
+        return {"ok": True, **service.flush_due()}
+    except Exception as exc:
+        logging.exception("订阅频率派发失败")
+        return {"ok": False, "error": str(exc)[:900]}
+
+
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
+    subscription_dispatch = dispatch_subscription_queue(dry_run=dry_run)
     watchdog = (
         {"ok": True, "skipped": True, "reason": "dry_run"}
         if dry_run
@@ -1553,6 +1568,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             "checked_at_hkt": now.isoformat(timespec="seconds"),
             "timezone": "Asia/Hong_Kong",
             "executive_intelligence_watchdog": watchdog,
+            "subscription_dispatch": subscription_dispatch,
             "pending_run_id": pending.get("crawl_run_id"),
             "pending_stage": pending.get("stage"),
         }
@@ -1584,6 +1600,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
         "checked_at_hkt": now.isoformat(timespec="seconds"),
         "timezone": "Asia/Hong_Kong",
         "executive_intelligence_watchdog": watchdog,
+        "subscription_dispatch": subscription_dispatch,
         "due_rows": due,
         "rows": audit,
     }
