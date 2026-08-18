@@ -12,8 +12,8 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 154
-- `official_three_distinct_sources_verified`: 208
+- `official_single_source`: 150
+- `official_three_distinct_sources_verified`: 212
 - `official_two_distinct_sources`: 18
 - `source_gap_confirmed`: 182
 
@@ -23,7 +23,7 @@
 - Reliance Jio: 27
 - 中国广电: 6
 - 中国电信: 12
-- 中国移动: 55
+- 中国移动: 59
 - 中国联通: 10
 
 ## 缺口（含不适用）

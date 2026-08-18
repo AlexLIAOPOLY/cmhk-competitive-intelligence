@@ -4741,26 +4741,34 @@
       "grain": "annual",
       "metric_key": "5g_network_subscribers",
       "metric_zh": "5G网络用户数",
-      "value": 207,
-      "official_value": 207,
+      "value": 206.65,
+      "official_value": 206.65,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "customers that used the 5G network; definition differs from 5G package customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2021",
-        "china_mobile_ops_2021",
-        "china_mobile_results_2021"
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5092,26 +5100,34 @@
       "grain": "annual",
       "metric_key": "5g_network_subscribers",
       "metric_zh": "5G网络用户数",
-      "value": 327,
-      "official_value": 327,
+      "value": 327.16,
+      "official_value": 327.16,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "customers that used the 5G network; definition differs from 5G package customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2022",
-        "china_mobile_ops_2022",
-        "china_mobile_results_2022"
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5441,26 +5457,34 @@
       "grain": "annual",
       "metric_key": "5g_network_subscribers",
       "metric_zh": "5G网络用户数",
-      "value": 465,
-      "official_value": 465,
+      "value": 464.81,
+      "official_value": 464.81,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "customers that used the 5G network; definition differs from 5G package customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2023",
-        "china_mobile_ops_2023",
+        "china_mobile_ar_a_2023",
         "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5754,20 +5778,28 @@
       "comparator": "=",
       "scope": "customers that used the 5G network; definition differs from 5G package customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2024",
-        "china_mobile_ops_2024",
+        "china_mobile_ar_a_2024",
         "china_mobile_results_2024"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2024",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "quality_note": "FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -6024,7 +6056,7 @@
         "china_mobile_results_2025",
         "china_mobile_press_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
