@@ -150,6 +150,11 @@
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_ar_2023",
       "evidence": {
+        "mobile_arpu": {
+          "value": 49.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 H-share annual report; mobile ARPU operating KPI"
+        },
         "5g_base_stations": {
           "value": 0.62,
           "unit": "million_base_stations",
@@ -165,7 +170,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2024"
+      "source_document_id": "china_mobile_ar_2024",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 H-share annual report; mobile ARPU operating KPI"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2025",
@@ -2100,6 +2112,11 @@
         }
       },
       "evidence": {
+        "mobile_arpu": {
+          "value": 49.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 annual-results presentation; mobile ARPU operating KPI"
+        },
         "5g_base_stations": {
           "value": 0.62,
           "unit": "million_base_stations",
@@ -2115,7 +2132,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre250320.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2024"
+      "source_document_id": "china_mobile_results_2024",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 annual-results presentation; mobile ARPU operating KPI"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2025",
@@ -2516,7 +2540,14 @@
       "url": "https://www.chinamobileltd.com/sc/ir/reports/ar2023_ashare.pdf",
       "source_type": "official_a_share_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_a_2023"
+      "source_document_id": "china_mobile_ar_a_2023",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 49.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2023 A-share annual report; mobile ARPU operating KPI"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_a_2024",
@@ -2526,7 +2557,14 @@
       "url": "https://www.chinamobileltd.com/sc/ir/reports/ar2024_ashare.pdf",
       "source_type": "official_a_share_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_a_2024"
+      "source_document_id": "china_mobile_ar_a_2024",
+      "evidence": {
+        "mobile_arpu": {
+          "value": 48.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2024 A-share annual report; mobile ARPU operating KPI"
+        }
+      }
     },
     {
       "source_id": "china_mobile_20f_2021",

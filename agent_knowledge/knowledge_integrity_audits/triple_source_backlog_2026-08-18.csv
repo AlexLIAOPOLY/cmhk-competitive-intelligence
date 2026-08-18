@@ -5688,7 +5688,6 @@ global_top5_operators_2016_2025,中国移动 | FY2023 | 5g_network_subscribers,�
 global_top5_operators_2016_2025,中国移动 | FY2023 | 5g_package_subscribers,中国移动,FY2023,5g_package_subscribers,795,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2023 | fixed_broadband_subscribers,中国移动,FY2023,fixed_broadband_subscribers,298,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2023 | handset_data_traffic,中国移动,FY2023,handset_data_traffic,165.9,billion_GB,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国移动 | FY2023 | mobile_arpu,中国移动,FY2023,mobile_arpu,49.3,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2023 | mobile_dou,中国移动,FY2023,mobile_dou,15.9,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2023 | mobile_subscribers,中国移动,FY2023,mobile_subscribers,991,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2023 | total_base_stations,中国移动,FY2023,total_base_stations,6.6,million_base_stations,1,1,2,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/sc/ir/sse_filings/sca240322a.pdf""]"
@@ -5696,7 +5695,6 @@ global_top5_operators_2016_2025,中国移动 | FY2024 | 5g_base_stations,中国�
 global_top5_operators_2016_2025,中国移动 | FY2024 | 5g_network_subscribers,中国移动,FY2024,5g_network_subscribers,552,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2024 | fixed_broadband_subscribers,中国移动,FY2024,fixed_broadband_subscribers,315,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2024 | handset_data_traffic,中国移动,FY2024,handset_data_traffic,168.2,billion_GB,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国移动 | FY2024 | mobile_arpu,中国移动,FY2024,mobile_arpu,48.5,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2024 | mobile_dou,中国移动,FY2024,mobile_dou,15.9,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2024 | mobile_subscribers,中国移动,FY2024,mobile_subscribers,1004,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | handset_data_traffic,中国移动,FY2025,handset_data_traffic,183.8,billion_GB,0,0,3,derived_not_directly_disclosed,[]

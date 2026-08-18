@@ -1671,6 +1671,17 @@ for _year, _value in ((2018, 53.1), (2019, 49.1), (2020, 47.4), (2021, 48.8), (2
         "unit": "RMB_per_user_month",
         "locator": f"FY{_year + 1} annual-results presentation operating-data appendix; FY{_year} comparative mobile ARPU",
     }
+for _year, _value in ((2023, 49.3), (2024, 48.5)):
+    for _source_id, _label in (
+        (f"china_mobile_ar_{_year}", "H-share annual report"),
+        (f"china_mobile_ar_a_{_year}", "A-share annual report"),
+        (f"china_mobile_results_{_year}", "annual-results presentation"),
+    ):
+        SOURCES[_source_id].setdefault("evidence", {})["mobile_arpu"] = {
+            "value": _value,
+            "unit": "RMB_per_user_month",
+            "locator": f"FY{_year} {_label}; mobile ARPU operating KPI",
+        }
 SOURCES["china_broadnet_nrta_tech_review_2022"].setdefault("evidence", {})["5g_base_stations"] = {
     "value": 0.48, "unit": "million_base_stations", "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站",
 }
@@ -2099,6 +2110,8 @@ CHINA_MOBILE_ARPU_SOURCES.update({
         year: [f"china_mobile_ar_{year}", f"china_mobile_results_{year}", f"china_mobile_results_{year + 1}"]
         for year in range(2018, 2023)
     },
+    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"],
+    2024: ["china_mobile_ar_2024", "china_mobile_ar_a_2024", "china_mobile_results_2024"],
     2025: CM_2025_ARPU_THREE,
 })
 add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887, 925, 950, 942, 957, 975, 991, 1004, 1005])), scope="group mobile customer base", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_THREE))

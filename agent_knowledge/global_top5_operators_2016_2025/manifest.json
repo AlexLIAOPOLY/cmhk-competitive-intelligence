@@ -32,16 +32,16 @@
     "status": "backlog_open",
     "source_count": 218,
     "available_value_rows": 396,
-    "three_distinct_source_certified_rows": 183,
+    "three_distinct_source_certified_rows": 185,
     "three_source_certified_rows_by_operator": {
       "Bharti Airtel": 98,
       "Reliance Jio": 27,
       "中国广电": 6,
       "中国电信": 12,
-      "中国移动": 30,
+      "中国移动": 32,
       "中国联通": 10
     },
-    "below_three_source_rows": 213
+    "below_three_source_rows": 211
   },
   "linked_existing_datasets": [
     "quarterly_competitor_metrics_2026-06-18"
