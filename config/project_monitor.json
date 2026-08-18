@@ -135,6 +135,13 @@
     "primary_handler_open_id": "ou_c90bf12154574fc836d69f4bf1429ddc",
     "primary_handler_expected_name": "廖望 Alex LIAO Wang"
   },
+  "subscriptions": {
+    "entry_profile": "cli_a9575e70ae799cb2",
+    "delivery_profile": "cmhk-innovation-digital",
+    "delivery_app_id": "cli_aac933f059a2dbfb",
+    "delivery_app_name": "科创及数智化",
+    "primary_delivery_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+  },
   "error_ledger": {
     "enabled": true,
     "spreadsheet_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",

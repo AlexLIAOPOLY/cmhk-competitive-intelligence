@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+from report_pdf_preview import convert_docx_to_pdf_preview
 import subprocess
 import sys
 import tempfile
@@ -1839,8 +1840,15 @@ def main() -> None:
             write_performance_quality_sidecar(output_path, model)
         except Exception:
             pass
+    preview_pdf = None
+    try:
+        preview_pdf = convert_docx_to_pdf_preview(output_path)
+    except Exception as exc:
+        print(f"[业绩摘要局限][pdf_preview] {exc}；Word主报告仍可下载。", flush=True)
     print("[生成成功] 最终输出文件：")
     print(" ->", output_path)
+    if preview_pdf and preview_pdf.exists():
+        print(" ->", preview_pdf)
     sidecar_path = performance_quality_sidecar_path(output_path)
     if sidecar_path.exists():
         print(" ->", sidecar_path)

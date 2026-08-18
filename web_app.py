@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import ipaddress
 import json
 import mimetypes
 import os
@@ -48,6 +49,7 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
+from subscription_service import SubscriptionService
 
 
 ROOT = Path(__file__).resolve().parent
@@ -130,6 +132,20 @@ CHAT_STARTER_POOL = (
         "prompt": "请梳理香港近期频谱分配、5G、SIM 实名制、电信监管和消费者保护政策的变化，分析对 CMHK 产品、网络、营销和运营的影响，并提出应对建议。",
     },
 )
+
+
+def subscription_service() -> SubscriptionService:
+    return SubscriptionService(runtime_root=ROOT)
+
+
+def is_loopback_client(address: str) -> bool:
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped:
+        parsed = parsed.ipv4_mapped
+    return parsed.is_loopback
 
 
 def sample_chat_starters(limit: int = 4) -> list[dict]:
@@ -215,6 +231,68 @@ def analyze_chat_image(payload: dict) -> dict:
     if not description:
         raise ValueError("视觉模型没有返回可用的图片描述")
     return {"description": description, "model": model}
+
+
+def generate_competitor_insight(payload: dict) -> dict:
+    request_id = str(payload.get("requestId") or "")[:80]
+    companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
+    metric = payload.get("metric") if isinstance(payload.get("metric"), dict) else {}
+    years = [int(value) for value in (payload.get("years") or [])]
+    rows = payload.get("cells") if isinstance(payload.get("cells"), list) else []
+    if not (2 <= len(companies) <= 6) or not (1 <= len(years) <= 10) or not rows:
+        raise ValueError("竞对、年份或表格数据不完整")
+    if len(rows) > 80:
+        raise ValueError("当前比较表格超过 80 个数据点")
+    allowed = set(companies)
+    normalized = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        company = str(row.get("company") or "")[:80]
+        year = int(row.get("year") or 0)
+        if company not in allowed or year not in years:
+            raise ValueError("表格包含选择范围外的数据")
+        normalized.append({
+            "company": company,
+            "year": year,
+            "value": float(row.get("value")),
+            "unit": str(row.get("unit") or "")[:80],
+            "status": str(row.get("status") or "")[:80],
+        })
+    table = "\n".join(
+        f"{row['company']}\t{row['year']}\t{row['value']}\t{row['unit']}\t{row['status']}"
+        for row in normalized
+    )
+    config = load_ai_config(include_key=True)
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).strip().rstrip("/")
+    api_key = str(config.get("api_key") or "").strip()
+    model = str(config.get("model") or "").strip()
+    if not base_url or not api_key or not model or not is_internal_ai_base_url(base_url):
+        raise RuntimeError("公司内网 AI 配置不完整")
+    body = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的表格，输出一句不超过80字的中文洞察；不得补数、预测或引用外部知识；数据不足或单位不可比时必须明确说明。"},
+            {"role": "user", "content": f"指标：{str(metric.get('label') or metric.get('key') or '')[:120]}\n列：公司、年度、数值、单位、核验状态\n{table}"},
+        ],
+        "temperature": 0.1,
+        "max_tokens": 120,
+        "stream": False,
+    }
+    request = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    wait_for_internal_ai_slot("competitor-insight")
+    with urllib.request.urlopen(request, timeout=45) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    message = ((result.get("choices") or [{}])[0].get("message") or {})
+    insight = " ".join(str(message.get("content") or message.get("reasoning_content") or "").split())[:160]
+    if not insight:
+        raise RuntimeError("AI 未返回可用洞察")
+    return {"requestId": request_id, "insight": insight, "model": model}
 
 
 def transcribe_chat_audio(payload: dict) -> dict:
@@ -1461,6 +1539,40 @@ def load_strategic_news_run(slot: str) -> dict:
     except (OSError, json.JSONDecodeError):
         return {}
     return payload if isinstance(payload, dict) else {}
+
+
+def strategic_news_items_for_crawl_run(run: object) -> list[dict]:
+    """Return the published news rows that belong to one archived strategic run."""
+    if not isinstance(run, dict) or str(run.get("task_kind") or "") != "strategic-news":
+        return []
+    summary = run.get("operational_summary")
+    slot = str(summary.get("slot") or "") if isinstance(summary, dict) else ""
+    payload = load_strategic_news_run(slot)
+    review_sheet = payload.get("review_sheet")
+    raw_items = review_sheet.get("new_items") if isinstance(review_sheet, dict) else []
+    if not isinstance(raw_items, list):
+        return []
+    items: list[dict] = []
+    for raw in raw_items[:100]:
+        if not isinstance(raw, dict):
+            continue
+        raw_url = str(raw.get("url") or "").strip()
+        parsed_url = urlparse(raw_url)
+        items.append(
+            {
+                "newsId": str(raw.get("news_id") or ""),
+                "title": str(raw.get("title") or ""),
+                "summary": str(raw.get("summary") or ""),
+                "category": str(raw.get("category") or ""),
+                "region": str(raw.get("region") or ""),
+                "source": str(raw.get("source") or ""),
+                "publishedAt": str(raw.get("published_at") or ""),
+                "url": raw_url if parsed_url.scheme in {"http", "https"} else "",
+                "inclusionReason": str(raw.get("inclusion_reason") or ""),
+                "businessImpact": str(raw.get("business_impact") or ""),
+            }
+        )
+    return items
 
 
 def build_today_news_rounds(today_key: str = "") -> list[dict]:
@@ -3477,6 +3589,40 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/subscriptions":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
+                return
+            try:
+                service = subscription_service()
+                summary = service.list_summary()
+                status = build_status()
+                reports = [
+                    {
+                        "name": str(item.get("name") or ""),
+                        "path": str(item.get("path_str") or ""),
+                        "report_type": str(item.get("reportType") or ""),
+                        "mtime_text": str(item.get("mtimeText") or ""),
+                        "audio": bool((item.get("audio") or {}).get("exists")) if isinstance(item.get("audio"), dict) else False,
+                    }
+                    for item in (status.get("outputs") or [])
+                    if isinstance(item, dict) and item.get("reportType") in {"weekly", "carrier-performance"}
+                ]
+                card_actions = service.config.get("card_actions") if isinstance(service.config.get("card_actions"), dict) else {}
+                json_response(self, {
+                    "ok": True,
+                    **summary,
+                    "targets": service.available_targets(),
+                    "reports": reports,
+                    "test_target": {
+                        "callback_open_id": str(card_actions.get("primary_handler_open_id") or ""),
+                        "delivery_open_id": str(card_actions.get("primary_handler_open_id") or ""),
+                        "name": str(card_actions.get("primary_handler_expected_name") or "系统管理员"),
+                    },
+                })
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=500)
+            return
         if path == "/api/news-review-sheet":
             try:
                 from news_review_sheet import review_sheet_snapshot
@@ -3613,6 +3759,8 @@ class AppHandler(BaseHTTPRequestHandler):
             query = parse_qs(parsed.query)
             crawl_run_id = str(query.get("id", [""])[0] or "")
             result = load_crawl_run_log(crawl_run_id)
+            if result.get("ok"):
+                result["newsItems"] = strategic_news_items_for_crawl_run(result.get("run"))
             json_response(self, result, 200 if result.get("ok") else 404)
             return
         if path == "/api/curation-quality-records":
@@ -3670,6 +3818,53 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/competitor-insight":
+            try:
+                result = generate_competitor_insight(read_request_json(self))
+                json_response(self, {"ok": True, **result})
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 503)
+            return
+        if parsed.path == "/api/subscriptions":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, 403)
+                return
+            try:
+                payload = read_request_json(self)
+                action = str(payload.get("action") or "")
+                service = subscription_service()
+                if action == "publish":
+                    result = service.publish_entry_card(
+                        target_id=str(payload.get("targetId") or ""),
+                        target_type=str(payload.get("targetType") or "chat"),
+                    )
+                elif action == "update":
+                    services = payload.get("services") if isinstance(payload.get("services"), list) else []
+                    result = service.update_subscriber(
+                        str(payload.get("openId") or ""),
+                        services=services,
+                        status=str(payload.get("status") or "active"),
+                    )
+                elif action == "push":
+                    result = service.push(
+                        service=str(payload.get("service") or ""),
+                        mode=str(payload.get("mode") or "text"),
+                        path=str(payload.get("path") or ""),
+                        title=str(payload.get("title") or ""),
+                        body=str(payload.get("body") or ""),
+                        test_open_id=str(payload.get("testOpenId") or ""),
+                        confirm_bulk=payload.get("confirmBulk") is True,
+                    )
+                else:
+                    raise ValueError("未知订阅管理动作")
+                json_response(self, {"ok": True, "result": result, "subscriptions": service.list_summary()})
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
+            return
         if parsed.path == "/api/executive-intelligence/regenerate-discovery":
             if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(timeout=60):
                 json_response(self, {"ok": False, "error": "数据解读服务仍在处理上一项任务，请稍后重试。"}, 409)

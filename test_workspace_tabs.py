@@ -6,6 +6,8 @@ ROOT = Path(__file__).resolve().parent
 INDEX = (ROOT / "web" / "static" / "index.html").read_text(encoding="utf-8")
 SCRIPT = (ROOT / "web" / "static" / "workspace-tabs.js").read_text(encoding="utf-8")
 STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf-8")
+SUBSCRIPTION_SCRIPT = (ROOT / "web" / "static" / "subscription-admin.js").read_text(encoding="utf-8")
+SUBSCRIPTION_STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding="utf-8")
 
 
 class WorkspaceTabsTests(unittest.TestCase):
@@ -17,8 +19,11 @@ class WorkspaceTabsTests(unittest.TestCase):
             "news",
             "weekly",
             "performance",
+            "review",
+            "subscriptions",
             "ai",
             "log",
+            "fault",
         )
         for module in modules:
             self.assertIn(f'id="workspace-tab-{module}"', INDEX)
@@ -48,11 +53,17 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
 
-    def test_subscription_preference_is_described_as_browser_local(self):
-        self.assertIn("订阅服务 UI DEMO", SCRIPT)
-        self.assertIn("本机方案草案", SCRIPT)
-        self.assertIn("尚未连接收件人管理或飞书自动发送后台", SCRIPT)
-        self.assertIn('localStorage.setItem("cmhk-weekly-subscription"', SCRIPT)
+    def test_subscription_management_uses_server_and_feishu_delivery(self):
+        self.assertIn('id="workspace-tab-subscriptions"', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=1', INDEX)
+        self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
+        self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
+        self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
+        self.assertIn("推送台账", SUBSCRIPTION_SCRIPT)
+        self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
+        self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
+        self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
+        self.assertNotIn('localStorage.setItem("cmhk-weekly-subscription"', SCRIPT)
 
     def test_external_links_are_protocol_checked_and_api_failures_are_isolated(self):
         self.assertIn('const safeUrl =', SCRIPT)
@@ -72,6 +83,73 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('class="workspace-monitoring-frame"', INDEX)
         self.assertIn("CMHK战略竞对中心", INDEX)
         self.assertIn("executive-dashboard-demo.html?embedded=1&amp;v=2", INDEX)
+
+    def test_report_modules_open_pdf_previews_and_keep_word_downloads_without_top_kpi_strip(self):
+        self.assertNotIn("docx-preview", INDEX)
+        self.assertIn("reportPreviewPdfUrl", SCRIPT)
+        self.assertIn("PDF 版式预览 · 下载保留原始 Word", SCRIPT)
+        self.assertIn("data-report-preview-expand", SCRIPT)
+        self.assertIn("workspaceReportSide-${kind}", SCRIPT)
+        self.assertIn("showReportPreview(row.dataset.path)", SCRIPT)
+        render_reports = SCRIPT[SCRIPT.index("function renderReports"):SCRIPT.index("function subscriptionPanel")]
+        self.assertNotIn("workspace-kpi-strip", render_reports)
+        self.assertIn(".report-preview.is-maximized", STYLE)
+        self.assertIn("height: 100dvh", STYLE)
+        self.assertIn(".workspace-content { height: 100%;", STYLE)
+        self.assertIn("transform: none !important", STYLE)
+        self.assertGreaterEqual(SCRIPT.count("state.previewRequest += 1"), 2)
+        self.assertIn("border-radius: 10px", STYLE)
+
+    def test_existing_feishu_review_sheet_is_reused_as_a_workspace_tab(self):
+        self.assertIn('id="workspace-tab-review"', INDEX)
+        self.assertIn("飞书表格审核栏", INDEX)
+        self.assertIn('document.querySelector("#newsReviewWorkspace")', SCRIPT)
+        self.assertIn('appendChild(review)', SCRIPT)
+
+    def test_fault_monitor_uses_real_task_archive_without_control_actions(self):
+        self.assertIn('id="workspace-tab-fault"', INDEX)
+        self.assertIn("故障报警监控系统", INDEX)
+        self.assertIn('fetch("/api/task-runs?limit=80"', SCRIPT)
+        self.assertIn("renderFaultMonitor", SCRIPT)
+        self.assertIn('data-fault-filter="status"', SCRIPT)
+        self.assertIn('data-fault-filter="kind"', SCRIPT)
+        self.assertIn("data-fault-detail", SCRIPT)
+        self.assertNotIn("fault-summary", SCRIPT)
+        self.assertNotIn("data-restart", SCRIPT)
+
+    def test_competitor_workbench_starts_empty_and_uses_historical_data(self):
+        self.assertIn("competitor-workbench-data.json", SCRIPT)
+        self.assertIn("选择竞对", SCRIPT)
+        self.assertIn("选择指标", SCRIPT)
+        self.assertIn("选择年限", SCRIPT)
+        self.assertIn("完成上方选择后生成对比表", SCRIPT)
+        self.assertIn('fetch("/api/competitor-insight"', SCRIPT)
+        self.assertIn("competitor-matrix", STYLE)
+        self.assertIn("competitorInsightController?.abort()", SCRIPT)
+        self.assertIn('error.name === "AbortError"', SCRIPT)
+        self.assertIn("仅展示所选竞对可比指标", SCRIPT)
+        self.assertIn("所选组合暂无可直接比较的数据", SCRIPT)
+
+    def test_review_sheet_uses_cached_snapshot_and_inline_escape_is_safe(self):
+        review_script = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")
+        self.assertIn("cmhk-news-review-snapshot-v1", review_script)
+        self.assertIn('workspace.classList.contains("workspace-inline-review")', review_script)
+
+    def test_news_module_replays_the_full_ai_review_pipeline_by_date_and_run(self):
+        self.assertIn('fetch("/api/crawl-runs?limit=50")', SCRIPT)
+        self.assertIn("/api/crawl-run-log?id=", SCRIPT)
+        self.assertIn("data-news-date-option", SCRIPT)
+        self.assertIn("data-news-run-option", SCRIPT)
+        self.assertIn("newsSelectedRunIds", SCRIPT)
+        self.assertIn("aggregateNewsStages", SCRIPT)
+        self.assertIn("本轮真实新增新闻", SCRIPT)
+        self.assertIn("AI纳入理由", SCRIPT)
+        for stage in ("线索发现", "确定性门禁", "AI 语义审核", "历史语义去重", "飞书写入回读", "群组推送"):
+            self.assertIn(stage, SCRIPT)
+        self.assertIn("newsRuns", SCRIPT)
+        self.assertNotIn("最新战略快讯", SCRIPT)
+        self.assertIn("@keyframes news-signal", STYLE)
+        self.assertIn("prefers-reduced-motion", STYLE)
 
 
 if __name__ == "__main__":

@@ -45,6 +45,7 @@
     activeEditor: null,
     cancelEditor: null,
   };
+  const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v1";
 
   const escapeHtml = (value) => String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -300,12 +301,26 @@
     render();
   }
 
+  function readCachedSnapshot() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(SNAPSHOT_CACHE_KEY) || "null");
+      if (!cached || !Array.isArray(cached.rows) || !Array.isArray(cached.headers)) return false;
+      applySnapshot(cached);
+      nodes.syncText.textContent = "正在后台更新 · 已显示上次审核表";
+      return true;
+    } catch (_error) {
+      localStorage.removeItem(SNAPSHOT_CACHE_KEY);
+      return false;
+    }
+  }
+
   async function loadSheet() {
     if (model.loading) return;
     model.loading = true;
     nodes.refresh.disabled = true;
-    nodes.grid.hidden = true;
-    nodes.loading.hidden = false;
+    const hasRows = model.rows.length > 0;
+    nodes.grid.hidden = !hasRows;
+    nodes.loading.hidden = hasRows;
     nodes.loading.classList.remove("is-error");
     nodes.loading.textContent = "正在读取飞书审核表…";
     nodes.syncText.textContent = "正在连接飞书审核表";
@@ -314,13 +329,18 @@
       const payload = await response.json();
       if (!response.ok || !payload.ok) throw new Error(payload.error || "审核表读取失败");
       applySnapshot(payload);
+      try { localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(payload)); } catch (_error) { /* cache is optional */ }
       setSaveStatus("实时回写飞书 · 修改后自动保存并回读");
     } catch (error) {
-      nodes.loading.hidden = false;
-      nodes.loading.classList.add("is-error");
-      nodes.loading.textContent = `读取失败：${error.message || String(error)}`;
-      nodes.syncText.textContent = "飞书连接失败";
-      setSaveStatus("尚未读取到可编辑数据", "error");
+      if (!hasRows) {
+        nodes.loading.hidden = false;
+        nodes.loading.classList.add("is-error");
+        nodes.loading.textContent = `读取失败：${error.message || String(error)}`;
+        setSaveStatus("尚未读取到可编辑数据", "error");
+      } else {
+        setSaveStatus("后台更新失败，当前显示上次成功读取的数据", "error");
+      }
+      nodes.syncText.textContent = hasRows ? "显示缓存 · 飞书后台更新失败" : "飞书连接失败";
     } finally {
       model.loading = false;
       nodes.refresh.disabled = false;
@@ -560,10 +580,12 @@
     workspace.hidden = false;
     document.body.classList.add("news-review-open");
     nodes.close.focus();
-    if (!model.rows.length) loadSheet();
+    if (!model.rows.length) readCachedSnapshot();
+    loadSheet();
   }
 
   function closeWorkspace() {
+    if (workspace.classList.contains("workspace-inline-review")) return;
     model.cancelEditor?.();
     workspace.hidden = true;
     nodes.filterMenu.hidden = true;
@@ -637,7 +659,7 @@
       event.stopImmediatePropagation();
       if (!nodes.filterMenu.hidden) nodes.filterMenu.hidden = true;
       else if (model.cancelEditor) model.cancelEditor();
-      else closeWorkspace();
+      else if (!workspace.classList.contains("workspace-inline-review")) closeWorkspace();
       return;
     }
     if (event.target.matches("input, textarea, select") || !model.selectionFocus) return;

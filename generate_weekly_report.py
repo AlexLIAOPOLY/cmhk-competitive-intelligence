@@ -24,6 +24,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph
+from report_pdf_preview import convert_docx_to_pdf_preview
 from bs4 import BeautifulSoup
 import httpx
 from opencc import OpenCC
@@ -6123,6 +6124,18 @@ def main() -> None:
                 weekly_to_emergency_docx(model, fallback_docx, reason=emergency_exc)
                 weekly_docx = fallback_docx
     quality_sidecar = weekly_quality_sidecar_path(weekly_docx)
+    preview_pdf = None
+    try:
+        preview_pdf = convert_docx_to_pdf_preview(weekly_docx)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "pdf_preview",
+            exc,
+            impact="Word主报告可下载，但浏览器 PDF 预览未生成",
+            action="保留Word主报告，后续可单独补转 PDF 预览",
+        )
+        model = finalize_weekly_limited_model(model)
     # SOURCE_WORD_TEMPLATE is an input asset. Never overwrite the repository
     # fallback template while generating a report.
     
@@ -6131,6 +6144,8 @@ def main() -> None:
         if output_path.exists():
             print(" ->", output_path)
     print(" ->", weekly_docx)
+    if preview_pdf and preview_pdf.exists():
+        print(" ->", preview_pdf)
     if quality_sidecar.exists():
         print(" ->", quality_sidecar)
     if TEMPLATE_MD.exists():
@@ -6142,8 +6157,8 @@ def main() -> None:
     archive_dir = ROOT / "archives" / timestamp
     try:
         archive_dir.mkdir(parents=True, exist_ok=True)
-        for output_path in (WEEKLY_MD, WEEKLY_HTML, weekly_docx, quality_sidecar):
-            if output_path.exists():
+        for output_path in (WEEKLY_MD, WEEKLY_HTML, weekly_docx, quality_sidecar, preview_pdf):
+            if output_path and output_path.exists():
                 shutil.copy2(output_path, archive_dir / output_path.name)
         print(f"\n[归档成功] 已自动备份此次报告至: archives/{timestamp}/")
     except Exception as exc:
