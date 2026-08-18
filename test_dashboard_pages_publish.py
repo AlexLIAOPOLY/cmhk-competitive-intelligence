@@ -125,7 +125,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=38"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=39"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
@@ -151,6 +151,17 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 self.assertIn(network_background, style)
                 self.assertTrue(
                     (first / "assets" / "executive-dashboard" / network_background).is_file()
+                )
+            for cockpit_background in (
+                "cockpit-background-v1.jpg",
+                "panel-network-bg-v1.jpg",
+                "panel-business-bg-v1.jpg",
+                "panel-reach-bg-v1.jpg",
+                "panel-finance-bg-v1.jpg",
+            ):
+                self.assertIn(cockpit_background, style)
+                self.assertTrue(
+                    (first / "assets" / "executive-dashboard" / cockpit_background).is_file()
                 )
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)
