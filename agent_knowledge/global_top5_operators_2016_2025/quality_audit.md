@@ -13,8 +13,8 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 22
-- `official_three_distinct_sources_verified`: 209
-- `official_two_distinct_sources`: 107
+- `official_three_distinct_sources_verified`: 218
+- `official_two_distinct_sources`: 98
 - `source_gap_confirmed`: 38
 
 ## 缺口（含不适用）

@@ -189,7 +189,7 @@
       "url": "https://www.airtel.in/about-bharti/equity/results/annual-results",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2024"
+      "source_document_id": "airtel_integrated_report_fy2024"
     },
     {
       "source_id": "bharti_airtel_ar_2025",
@@ -1514,7 +1514,7 @@
       "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2023_24/Integrated_Report_and_Financial_Statements_Single_view.pdf",
       "source_type": "official_five_year_summary",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "airtel_2024_five_year"
+      "source_document_id": "airtel_integrated_report_fy2024"
     },
     {
       "source_id": "airtel_2025_ir_pack",
@@ -1571,7 +1571,56 @@
           "locator": "performance at a glance, page 4"
         }
       },
-      "source_document_id": "airtel_2025_ir_pack"
+      "source_document_id": "airtel_2025_ir_pack",
+      "comparative_evidence": {
+        "FY2024": {
+          "total_customers": {
+            "value": 561.97,
+            "unit": "million_customers",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1643643,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 889064,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 250532,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 77820,
+            "unit": "INR_million",
+            "locator": "FY2024 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 489268,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1943799,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 820188,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 355150,
+            "unit": "sites",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          }
+        }
+      }
     },
     {
       "source_id": "airtel_q1_2026_ir_pack",
@@ -1628,7 +1677,56 @@
           "locator": "performance at a glance, page 4"
         }
       },
-      "source_document_id": "airtel_q1_2026_ir_pack"
+      "source_document_id": "airtel_q1_2026_ir_pack",
+      "comparative_evidence": {
+        "FY2024": {
+          "total_customers": {
+            "value": 561.97,
+            "unit": "million_customers",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1643643,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 889064,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 250532,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 77820,
+            "unit": "INR_million",
+            "locator": "FY2024 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 489268,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1943799,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 820188,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 355150,
+            "unit": "sites",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          }
+        }
+      }
     },
     {
       "source_id": "airtel_q2_2026_ir_pack",
@@ -1685,7 +1783,56 @@
           "locator": "performance at a glance, page 4"
         }
       },
-      "source_document_id": "airtel_q2_2026_ir_pack"
+      "source_document_id": "airtel_q2_2026_ir_pack",
+      "comparative_evidence": {
+        "FY2024": {
+          "total_customers": {
+            "value": 561.97,
+            "unit": "million_customers",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1643643,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 889064,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 250532,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 77820,
+            "unit": "INR_million",
+            "locator": "FY2024 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 489268,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1943799,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 820188,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 355150,
+            "unit": "sites",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          }
+        }
+      }
     },
     {
       "source_id": "jio_2025_q4",
