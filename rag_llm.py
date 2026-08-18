@@ -487,6 +487,119 @@ def _selected_quarterly_metrics_csv(dataset_ids: set[str] | None = None) -> Path
     return sorted(candidates, key=lambda path: (path.parent.name, path.stat().st_mtime), reverse=True)[0]
 
 
+def _global_operator_exact_metric_chunks(
+    question: str,
+    dataset_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    dataset_id = "global_top5_operators_2016_2025"
+    if dataset_ids is not None and dataset_id not in dataset_ids:
+        return []
+
+    csv_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "annual_metrics.csv"
+    if not csv_path.exists():
+        return []
+
+    normalized = re.sub(r"\s+", " ", question or "").strip()
+    lowered = normalized.lower()
+    if any(token in lowered for token in ["q1", "q2", "q3", "q4", "h1", "h2", "季度", "半年度"]):
+        return []
+
+    subject_aliases = {
+        "china_mobile": ["中国移动", "中移动", "china mobile"],
+        "china_telecom": ["中国电信", "china telecom"],
+        "china_unicom": ["中国联通", "china unicom"],
+        "bharti_airtel": ["bharti airtel", "airtel"],
+        "reliance_jio": ["reliance jio", "jio"],
+    }
+    matched_subjects = {
+        operator_id
+        for operator_id, aliases in subject_aliases.items()
+        if any(alias in lowered for alias in aliases)
+    }
+
+    metric_aliases = {
+        "total_customers": ["集团总客户", "总客户数", "总客户", "total customers", "total customer base"],
+        "mobile_subscribers": ["移动用户数", "移动用户", "移动客户数", "移动客户", "mobile subscribers", "mobile customers"],
+        "4g_subscribers": ["4g用户", "4g subscribers"],
+        "5g_package_subscribers": ["5g套餐用户", "5g package subscribers"],
+        "5g_network_subscribers": ["5g网络用户", "5g users", "5g network subscribers"],
+        "fixed_broadband_subscribers": ["固定宽带用户", "固网宽带用户", "宽带用户", "fixed broadband"],
+        "connected_homes": ["连接家庭", "已连接家庭", "connected homes", "connected premises"],
+        "mobile_arpu": ["移动arpu", "mobile arpu", "arpu"],
+        "broadband_arpu": ["宽带arpu", "broadband arpu"],
+        "mobile_dou": ["移动dou", "户均流量", "月户均流量", "data consumption per user", "dou"],
+        "total_data_traffic": ["总数据流量", "年度数据流量", "total data traffic"],
+        "handset_data_traffic": ["手机上网流量", "handset data traffic"],
+        "network_towers": ["网络铁塔", "铁塔数", "network towers"],
+        "mobile_broadband_base_stations": ["移动宽带基站", "mobile broadband base stations"],
+        "total_base_stations": ["基站总数", "全部基站", "total base stations"],
+        "4g_base_stations": ["4g基站", "4g base stations"],
+        "5g_base_stations": ["5g基站", "5g base stations", "5g sites", "5g cells"],
+        "revenue": ["营业收入", "总收入", "revenue"],
+        "value_of_sales_and_services": ["销售及服务价值", "value of sales and services"],
+        "revenue_from_operations": ["经营收入", "revenue from operations"],
+        "ebitda": ["ebitda"],
+        "ebit": ["ebit"],
+        "earnings_before_tax": ["税前利润", "profit before tax", "earnings before tax"],
+        "net_profit": ["净利润", "net profit", "net income"],
+        "capex": ["资本开支", "capex"],
+        "net_debt": ["净债务", "net debt"],
+        "shareholders_equity": ["股东权益", "shareholders equity", "shareholder's equity"],
+    }
+    matched_metrics = {
+        metric_key
+        for metric_key, aliases in metric_aliases.items()
+        if any(alias in lowered for alias in aliases)
+    }
+    if "broadband_arpu" in matched_metrics:
+        matched_metrics.discard("mobile_arpu")
+    if "revenue_from_operations" in matched_metrics or "value_of_sales_and_services" in matched_metrics:
+        matched_metrics.discard("revenue")
+    if "ebitda" in matched_metrics:
+        matched_metrics.discard("ebit")
+
+    years = {
+        int(value)
+        for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)
+    }
+    if not matched_subjects or not matched_metrics:
+        return []
+
+    try:
+        with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+    except Exception:
+        return []
+
+    filtered = []
+    for row in rows:
+        if (row.get("operator_id") or "").strip() not in matched_subjects:
+            continue
+        if (row.get("metric_key") or "").strip() not in matched_metrics:
+            continue
+        try:
+            row_year = int((row.get("year") or "0").strip())
+        except ValueError:
+            continue
+        if years and row_year not in years:
+            continue
+        filtered.append(row)
+
+    source = csv_path.relative_to(ROOT).as_posix()
+    chunks: list[dict[str, Any]] = []
+    for row in filtered[:24]:
+        text = (
+            f"精确年度运营商指标行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
+            f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
+            f"metric_zh={row.get('metric_zh')}; official_value={row.get('official_value')} {row.get('unit')}; "
+            f"comparator={row.get('comparator')}; scope={row.get('scope')}; basis={row.get('basis')}; "
+            f"verification_status={row.get('verification_status')}; verification_count={row.get('verification_count')}; "
+            f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
+        )
+        chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+    return chunks
+
+
 def _product_tariff_exact_chunks(
     question: str,
     dataset_ids: set[str] | None = None,
@@ -1324,6 +1437,7 @@ def retrieve_context(question: str, limit: int = 8, dataset_ids: set[str] | None
         for key in ["OFCA", "宏观", "政策", "渗透率", "频谱", "移动用户", "宽带", "Key Communications Statistics"]
     )
     exact_chunks = _product_tariff_exact_chunks(question, dataset_ids=dataset_ids)
+    exact_chunks.extend(_global_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids))
     if latest_period_intent:
         exact_chunks.sort(

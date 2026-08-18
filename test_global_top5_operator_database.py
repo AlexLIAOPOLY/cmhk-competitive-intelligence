@@ -4,6 +4,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import rag_llm
+
 
 ROOT = Path(__file__).resolve().parent
 GLOBAL = ROOT / "agent_knowledge" / "global_top5_operators_2016_2025"
@@ -64,6 +66,28 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual({r["operator_id"] for r in sidecar["rows"]}, {"china_mobile", "china_telecom", "china_unicom"})
         financial_metrics = {"revenue", "ebitda", "ebit", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"}
         self.assertFalse(financial_metrics & {r["metric_key"] for r in sidecar["rows"]})
+
+    def test_xiaojing_ai_exact_retrieval_respects_selected_database(self):
+        question = "中国移动2025移动用户数、中国电信2025年5G网络用户数、Jio FY2025总客户数和移动ARPU"
+        chunks = rag_llm._global_operator_exact_metric_chunks(
+            question,
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("operator=中国移动", combined)
+        self.assertIn("official_value=1005 million_subscribers", combined)
+        self.assertIn("operator=中国电信", combined)
+        self.assertIn("official_value=301.81 million_subscribers", combined)
+        self.assertIn("operator=Reliance Jio", combined)
+        self.assertIn("official_value=488.2 million_customers", combined)
+        self.assertIn("official_value=206.2 INR_per_user_month", combined)
+        self.assertEqual(
+            rag_llm._global_operator_exact_metric_chunks(
+                question,
+                dataset_ids={"cloud_vendor_database"},
+            ),
+            [],
+        )
 
 
 if __name__ == "__main__":
