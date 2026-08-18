@@ -8,9 +8,10 @@
   <link rel="stylesheet" href="/static/responsive-layout-hardening.css?v=5" />
   <link rel="stylesheet" href="/static/leadership-board.css?v=17" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
-  <link rel="stylesheet" href="/static/workspace-tabs.css?v=3" />
+  <link rel="stylesheet" href="/static/workspace-tabs.css?v=9" />
   </head>
   <body class="dashboard-page">
+    <script>if (!new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace") || new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace") === "dashboard") document.body.classList.add("workspace-dashboard-active");</script>
     <main class="app-shell">
       <header class="brand-bar">
         <a class="brand-mark" href="/" aria-label="返回主页面">
@@ -20,7 +21,7 @@
           <strong>CMHK市场竞争全景</strong>
           <span>CMHK COMPETITIVE LANDSCAPE</span>
         </div>
-        <div class="header-tools">
+        <div class="header-tools workspace-legacy-tools" aria-hidden="true">
           <button class="command-btn btn-library topbar-command" id="reportLibraryButton" type="button" aria-haspopup="dialog" aria-controls="outputArea">
             报告库
             <span class="report-library-count" id="reportLibraryCount">--</span>
@@ -44,16 +45,37 @@
         </div>
       </header>
 
-      <nav class="workspace-tabs" aria-label="项目能力模块">
-        <div class="workspace-tabs-scroll" role="tablist" aria-label="项目能力模块">
-          <button class="workspace-tab is-active" id="workspace-tab-dashboard" type="button" role="tab" aria-selected="true" aria-controls="workspace-panel-dashboard" tabindex="0" data-workspace-tab="dashboard"><span>00</span>驾驶舱</button>
-          <button class="workspace-tab" id="workspace-tab-competitor" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-competitor" tabindex="-1" data-workspace-tab="competitor"><span>01</span>竞对数据分析</button>
-          <button class="workspace-tab" id="workspace-tab-news" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-news" tabindex="-1" data-workspace-tab="news"><span>02</span>新闻获取与推送</button>
-          <button class="workspace-tab" id="workspace-tab-weekly" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-weekly" tabindex="-1" data-workspace-tab="weekly"><span>03</span>战略周报</button>
-          <button class="workspace-tab" id="workspace-tab-performance" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-performance" tabindex="-1" data-workspace-tab="performance"><span>04</span>业绩摘要</button>
-          <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span>05</span>AI问数</button>
-        </div>
-      </nav>
+      <div class="workspace-layout" id="workspaceLayout">
+        <nav class="workspace-tabs" aria-label="项目能力模块">
+          <div class="workspace-nav-topline">
+            <strong class="workspace-nav-title">CMHK战略竞对中心</strong>
+            <button class="workspace-nav-collapse" id="workspaceNavCollapse" type="button" aria-label="收回项目导航" aria-expanded="true" aria-controls="workspaceTabList"><span aria-hidden="true">‹</span></button>
+          </div>
+          <div class="workspace-tabs-scroll" id="workspaceTabList" role="tablist" aria-label="项目能力模块">
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-overview">
+              <h2 id="workspace-group-overview">总览</h2>
+              <button class="workspace-tab is-active" id="workspace-tab-dashboard" type="button" role="tab" aria-selected="true" aria-controls="workspace-panel-dashboard" tabindex="0" data-workspace-tab="dashboard"><span class="workspace-tab-index">00</span><span class="workspace-tab-label">驾驶舱</span></button>
+              <button class="workspace-tab" id="workspace-tab-monitoring" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-monitoring" tabindex="-1" data-workspace-tab="monitoring"><span class="workspace-tab-index">↗</span><span class="workspace-tab-label">战略监控体系</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-intelligence">
+              <h2 id="workspace-group-intelligence">情报生产</h2>
+              <button class="workspace-tab" id="workspace-tab-competitor" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-competitor" tabindex="-1" data-workspace-tab="competitor"><span class="workspace-tab-index">01</span><span class="workspace-tab-label">竞对数据分析</span></button>
+              <button class="workspace-tab" id="workspace-tab-news" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-news" tabindex="-1" data-workspace-tab="news"><span class="workspace-tab-index">02</span><span class="workspace-tab-label">新闻获取与推送</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-products">
+              <h2 id="workspace-group-products">内容产品</h2>
+              <button class="workspace-tab" id="workspace-tab-weekly" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-weekly" tabindex="-1" data-workspace-tab="weekly"><span class="workspace-tab-index">03</span><span class="workspace-tab-label">战略周报</span></button>
+              <button class="workspace-tab" id="workspace-tab-performance" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-performance" tabindex="-1" data-workspace-tab="performance"><span class="workspace-tab-index">04</span><span class="workspace-tab-label">业绩摘要</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-tools">
+              <h2 id="workspace-group-tools">智能与运维</h2>
+              <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span class="workspace-tab-index">05</span><span class="workspace-tab-label">AI问数</span></button>
+              <button class="workspace-tab" id="workspace-tab-log" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-log" tabindex="-1" data-workspace-tab="log"><span class="workspace-tab-index">06</span><span class="workspace-tab-label">日志</span><i class="workspace-running-dot" data-workspace-running hidden></i></button>
+            </section>
+          </div>
+        </nav>
+
+        <div class="workspace-content">
 
       <section class="console-shell" id="workspace-panel-dashboard" role="tabpanel" aria-labelledby="workspace-tab-dashboard" data-workspace-panel="dashboard">
         <section class="operations" aria-label="战略情报驾驶舱">
@@ -209,10 +231,16 @@
       </section>
 
       <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
+      <section class="workspace-module-shell workspace-monitoring-shell" id="workspace-panel-monitoring" role="tabpanel" aria-labelledby="workspace-tab-monitoring" data-workspace-panel="monitoring" hidden>
+        <iframe class="workspace-monitoring-frame" src="/executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
+      </section>
       <section class="workspace-module-shell" id="workspace-panel-news" role="tabpanel" aria-labelledby="workspace-tab-news" data-workspace-panel="news" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-log" role="tabpanel" aria-labelledby="workspace-tab-log" data-workspace-panel="log" hidden></section>
+        </div>
+      </div>
 
       <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
         <aside class="chat-panel floating-chat" aria-label="AI 对话">
@@ -493,6 +521,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=282"></script>
     <script src="/static/news-review-sheet.js?v=1"></script>
-    <script src="/static/workspace-tabs.js?v=3"></script>
+    <script src="/static/workspace-tabs.js?v=9"></script>
   </body>
 </html>
