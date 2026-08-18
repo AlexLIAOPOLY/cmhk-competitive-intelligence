@@ -10,11 +10,11 @@ mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs/cmhk_public_crawl"
 cp "$SOURCE/$LABEL.plist" "$PLIST"
 
 if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
-  # Strategic-news scans currently execute in the Web process. Reloading that
-  # process mid-scan turns a healthy crawl into an interrupted retry, so an
-  # already-loaded service must go through the task-aware reload gate. Runtime
-  # files are synchronized only after the gate is idle as well.
-  "$SOURCE/scripts/safe_reload_web_app.sh" "$SOURCE/sync_app_runtime.sh"
+  # Submission and runtime activation are deliberately decoupled. Queue one
+  # coalesced background reload and return immediately so callers can commit,
+  # synchronize repositories and finish without occupying a terminal while a
+  # strategic-news task is active.
+  "$SOURCE/scripts/queue_web_app_reload.sh"
 else
   "$SOURCE/sync_app_runtime.sh"
   launchctl enable "$DOMAIN/$LABEL"
@@ -32,4 +32,4 @@ else
   launchctl kickstart "$DOMAIN/$LABEL"
 fi
 
-echo "CMHK APP service started: http://127.0.0.1:8765/"
+echo "CMHK APP service start/reload requested: http://127.0.0.1:8765/"

@@ -39,6 +39,7 @@ Uncommitted files are included only in the private complete snapshot. They are n
 - If a task changes only an external system and leaves no project file or operational state in this workspace, a repository synchronization is not required.
 - If synchronization fails, report the exact failed destination and keep working or clearly report the blocker. Never claim that an update is complete while required remote synchronization is still pending.
 - Continue to exclude unrelated runtime files and secrets from the public development commit. The synchronization script remains the only approved path for including the sanitized complete workspace snapshot in private `main`.
+- Git commit and repository synchronization must never wait for a running `strategic-news` task. They are independent of runtime activation and should complete immediately. If Web code needs loading while a strategic task is active, run `./scripts/queue_web_app_reload.sh`; it records one coalesced background request and returns without waiting. Report repository submission separately from pending/live runtime activation.
 
 ## Secrets and internal model configuration
 
@@ -51,7 +52,7 @@ Uncommitted files are included only in the private complete snapshot. They are n
 ## Safety rules for Codex
 
 - Re-read every targeted file from the current working tree immediately before editing and treat that newest version as the baseline; multiple workers may update this repository concurrently, so prior-turn file contents must never be assumed current.
-- Never run `launchctl kickstart -k`, `bootout`, or another direct Web-service restart while a `strategic-news` task is running. Use `./scripts/safe_reload_web_app.sh`; it deliberately waits without a fixed retry cap until the task API confirms two consecutive idle checks. `start_backend_service.sh` already routes loaded services through this gate.
+- Do not make an interactive worker wait for a running `strategic-news` task. Use `./scripts/queue_web_app_reload.sh`; the single background worker coalesces all pending source changes, waits for two consecutive idle checks, synchronizes the latest source and reloads once. If the task is still active at the next Hong Kong midnight, the worker may interrupt it at that explicit daily cutoff, then load the queued release. Direct ad-hoc Web restarts remain prohibited.
 - When another worker has changed a targeted file, preserve those changes and layer the active request onto the latest version. Stop only when a same-line conflict cannot be merged safely without clarification.
 - Inspect the current branch and targeted file status before committing because this working tree may contain unrelated user edits.
 - Stage only files required by the active request; never clean, reset or revert unrelated changes.
