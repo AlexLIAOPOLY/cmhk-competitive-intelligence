@@ -34,8 +34,8 @@
     "status": "backlog_open",
     "datasets_checked": 5,
     "available_value_rows": 12843,
-    "three_distinct_source_certified_rows": 4838,
-    "below_three_source_rows": 8005,
+    "three_distinct_source_certified_rows": 4839,
+    "below_three_source_rows": 8004,
     "missing_common_disclosures": 23,
     "notes": [
       "三来源按不同文档URL去重，不以旧verification_count直接代替。",

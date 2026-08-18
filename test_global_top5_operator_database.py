@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 27,
                 "中国广电": 6,
                 "中国电信": 12,
-                "中国移动": 21,
+                "中国移动": 22,
                 "中国联通": 10,
             },
         )
@@ -180,6 +180,17 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn(f"period=FY{year}", combined)
             self.assertIn(f"official_value={value} million_base_stations", combined)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 4)
+
+    def test_china_mobile_fy2016_fixed_broadband_has_three_exact_documents(self):
+        row = self.index[("china_mobile", 2016, "fixed_broadband_subscribers")]
+        self.assertEqual(row["value"], 77.62)
+        self.assertEqual(row["unit"], "million_subscribers")
+        self.assertEqual(row["distinct_source_document_count"], 3)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(
+            set(row["verification_sources"]),
+            {"china_mobile_ar_2016", "china_mobile_results_2016", "china_mobile_sd_2016"},
+        )
 
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
         strict_counts = {2019: 2, 2020: 3, 2021: 1, 2022: 1, 2023: 1}

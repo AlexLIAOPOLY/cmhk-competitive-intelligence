@@ -15,6 +15,11 @@
           "value": 1.51,
           "unit": "million_base_stations",
           "locator": "FY2016 annual report operating review; year-end 4G base-station total"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 77.62,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual report company profile; year-end wireline broadband customers"
         }
       }
     },
@@ -1817,7 +1822,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre170323.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2016"
+      "source_document_id": "china_mobile_results_2016",
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 77.62,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual-results presentation household market; wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2017",
@@ -2434,6 +2446,11 @@
           "value": 1.51,
           "unit": "million_base_stations",
           "locator": "Big Connectivity, year-end network scale"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 77.62,
+          "unit": "million_subscribers",
+          "locator": "FY2016 sustainability report Big Connectivity; year-end wireline broadband customers"
         }
       },
       "source_document_id": "china_mobile_sd_2016"

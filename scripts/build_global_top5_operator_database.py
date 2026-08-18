@@ -1592,6 +1592,16 @@ for _year, _value in ((2016, 1.51), (2017, 1.87), (2018, 2.41), (2019, 3.09)):
         "unit": "million_base_stations",
         "locator": f"FY{_year} annual report operating review; year-end 4G base-station total",
     }
+for _source_id, _locator in (
+    ("china_mobile_ar_2016", "FY2016 annual report company profile; year-end wireline broadband customers"),
+    ("china_mobile_results_2016", "FY2016 annual-results presentation household market; wireline broadband customers"),
+    ("china_mobile_sd_2016", "FY2016 sustainability report Big Connectivity; year-end wireline broadband customers"),
+):
+    SOURCES[_source_id].setdefault("evidence", {})["fixed_broadband_subscribers"] = {
+        "value": 77.62,
+        "unit": "million_subscribers",
+        "locator": _locator,
+    }
 SOURCES["china_broadnet_nrta_tech_review_2022"].setdefault("evidence", {})["5g_base_stations"] = {
     "value": 0.48, "unit": "million_base_stations", "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站",
 }
@@ -2006,7 +2016,7 @@ add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887
 add_series("china_mobile", "4g_subscribers", {2016:535.04, 2017:650, 2018:713, 2019:758, 2020:775, 2021:822}, scope="group 4G customer base", source_ids=paired("china_mobile", list(range(2016, 2022))))
 add_series("china_mobile", "5g_package_subscribers", {2019:2.55, 2020:165, 2021:387, 2022:614, 2023:795}, scope="contracted 5G package customers; not equivalent to active 5G network users", source_ids=paired("china_mobile", list(range(2019, 2024))))
 add_series("china_mobile", "5g_network_subscribers", {2021:207, 2022:327, 2023:465, 2024:552, 2025:642}, scope="customers that used the 5G network; definition differs from 5G package customers", source_ids=override_sources(paired("china_mobile", list(range(2021, 2026))), 2025, CM_2025_THREE))
-add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.7,187.0,210.3,240,272,298,315,None])), scope="group wireline broadband customers", source_ids=override_sources(paired("china_mobile", cm_years), 2025, []), note="FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series.")
+add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.7,187.0,210.3,240,272,298,315,None])), scope="group wireline broadband customers", source_ids=override_sources(override_sources(paired("china_mobile", cm_years), 2016, ["china_mobile_ar_2016", "china_mobile_results_2016", "china_mobile_sd_2016"]), 2025, []), note="FY2016 is bound to the annual report, annual-results presentation and sustainability report. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series.")
 add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.1,47.4,48.8,49.0,49.3,48.5,46.8])), unit="RMB_per_user_month", scope="group mobile business annual ARPU", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_ARPU_THREE))
 add_series("china_mobile", "household_customer_blended_arpu", {2025:44.5}, unit="RMB_per_user_month", scope="household customer blended ARPU", source_ids={2025:CM_2025_ARPU_THREE})
 add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"]), note="The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU.")
