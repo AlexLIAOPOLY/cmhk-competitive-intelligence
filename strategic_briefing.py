@@ -28,6 +28,7 @@ from crawl_run_registry import (
     append_crawl_run_event,
     finalize_operational_crawl_run,
     heartbeat_crawl_run,
+    load_index as load_crawl_run_index,
     start_crawl_run,
 )
 from scheduled_crawl_news_bridge import (
@@ -359,6 +360,14 @@ TARGET_CHAT_NAME = os.environ.get("CMHK_STRATEGY_CHAT_NAME") or PROJECT_CHAT_NAM
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_STRATEGY_POLL_SECONDS", "60")))
 GROUP_CHECK_SECONDS = max(300, int(os.environ.get("CMHK_STRATEGY_GROUP_CHECK_SECONDS", "3600")))
 SCAN_CATCHUP_MINUTES = max(30, int(os.environ.get("CMHK_STRATEGY_SCAN_CATCHUP_MINUTES", "120")))
+INTERRUPTED_SCAN_RECOVERY_MINUTES = max(
+    SCAN_CATCHUP_MINUTES,
+    int(os.environ.get("CMHK_STRATEGY_INTERRUPTED_RECOVERY_MINUTES", "720")),
+)
+INTERRUPTED_SCAN_MAX_RETRIES = max(
+    1,
+    int(os.environ.get("CMHK_STRATEGY_INTERRUPTED_MAX_RETRIES", "3")),
+)
 MAX_QUERIES_PER_SCAN = max(4, int(os.environ.get("CMHK_STRATEGY_MAX_QUERIES", "24")))
 MAX_CANDIDATES_PER_SCAN = max(3, int(os.environ.get("CMHK_STRATEGY_MAX_CANDIDATES", "12")))
 MAX_SCHEDULED_CRAWL_SIGNALS = max(
@@ -5384,6 +5393,21 @@ def _slot_label(index: int) -> str:
     return "晨间扫描" if index == 0 else "午后扫描"
 
 
+def _interrupted_strategic_attempts(slot_key: str) -> list[dict[str, Any]]:
+    """Return durable disconnect failures for one scheduled scan slot."""
+    scope_suffix = f"（{slot_key}）"
+    return [
+        record
+        for record in load_crawl_run_index()
+        if isinstance(record, dict)
+        and str(record.get("task_kind") or "") == "strategic-news"
+        and str(record.get("trigger") or "") == "战略新闻定时爬虫"
+        and str(record.get("scope") or "").endswith(scope_suffix)
+        and str(record.get("run_status") or "") == "failed"
+        and bool(record.get("interrupted"))
+    ]
+
+
 def _next_scan_at(now: datetime) -> datetime:
     for scan_time in SCAN_TIMES:
         candidate = datetime.combine(now.date(), scan_time, tzinfo=HKT)
@@ -5461,13 +5485,18 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 if isinstance(scan_slots.get(slot_key), dict)
                 else {}
             )
-            if (
-                slot_at > now
-                or entry.get("status") in {"completed", "baseline", "skipped"}
-            ):
+            if slot_at > now or entry.get("status") in {"completed", "baseline"}:
                 continue
             age_minutes = (now - slot_at).total_seconds() / 60
-            if age_minutes > SCAN_CATCHUP_MINUTES:
+            interrupted_attempts = _interrupted_strategic_attempts(slot_key)
+            recover_interruption = (
+                bool(interrupted_attempts)
+                and len(interrupted_attempts) <= INTERRUPTED_SCAN_MAX_RETRIES
+                and age_minutes <= INTERRUPTED_SCAN_RECOVERY_MINUTES
+            )
+            if entry.get("status") == "skipped" and not recover_interruption:
+                continue
+            if age_minutes > SCAN_CATCHUP_MINUTES and not recover_interruption:
                 scan_slots[slot_key] = {
                     "status": "skipped",
                     "reason": "catchup_window_expired",
@@ -5475,7 +5504,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 }
                 continue
             last_attempt = str(entry.get("last_attempt") or "")
-            if entry.get("status") == "failed" and last_attempt:
+            if entry.get("status") == "failed" and last_attempt and not recover_interruption:
                 try:
                     if (
                         now - datetime.fromisoformat(last_attempt)
@@ -5497,6 +5526,8 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                     "at": _now_iso(now),
                     "candidate_count": scan_result["candidate_count"],
                     "message_id": scan_result["message_id"],
+                    "auto_recovered_after_disconnect": recover_interruption,
+                    "interrupted_attempts": len(interrupted_attempts),
                 }
                 result["scans"].append(scan_result)
             except Exception as exc:

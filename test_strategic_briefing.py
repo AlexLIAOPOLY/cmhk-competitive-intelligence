@@ -681,6 +681,75 @@ class StrategicBriefingTests(unittest.TestCase):
         )
         run_scan.assert_not_called()
 
+    def test_cycle_restarts_interrupted_scan_after_normal_catchup_window(self):
+        now = datetime(2026, 8, 18, 11, 6, tzinfo=briefing.HKT)
+        slot_key = "2026-08-18@09:00"
+        stale_state = {
+            "initialized_at": "2026-08-18T08:00:00+08:00",
+            "scan_slots": {
+                slot_key: {
+                    "status": "skipped",
+                    "reason": "catchup_window_expired",
+                }
+            },
+            "last_group_bucket": int(now.timestamp())
+            // briefing.GROUP_CHECK_SECONDS,
+        }
+        interrupted = [
+            {
+                "crawl_run_id": "disconnect-1",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": f"晨间扫描（{slot_key}）",
+                "run_status": "failed",
+                "interrupted": True,
+            }
+        ]
+        saved = {}
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "DATA_DIR", Path(temporary)),
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary) / "runs"),
+            mock.patch.object(
+                briefing,
+                "PROCESS_LOCK_PATH",
+                Path(temporary) / "cycle.lock",
+            ),
+            mock.patch.object(briefing, "MONITOR_ENABLED", True),
+            mock.patch.object(briefing, "SCAN_CATCHUP_MINUTES", 120),
+            mock.patch.object(briefing, "INTERRUPTED_SCAN_RECOVERY_MINUTES", 720),
+            mock.patch.object(briefing, "_load_state", return_value=stale_state),
+            mock.patch.object(briefing, "_completed_scan_archive", return_value={}),
+            mock.patch.object(
+                briefing,
+                "load_crawl_run_index",
+                return_value=interrupted,
+            ),
+            mock.patch.object(
+                briefing,
+                "_run_scan",
+                return_value={"candidate_count": 2, "message_id": "om_recovered"},
+            ) as run_scan,
+            mock.patch.object(
+                briefing,
+                "_flush_pending_scan_notifications",
+                return_value=[],
+            ),
+            mock.patch.object(
+                briefing,
+                "_save_state",
+                side_effect=lambda state: saved.update(state),
+            ),
+        ):
+            briefing.run_cycle(now)
+
+        run_scan.assert_called_once()
+        self.assertTrue(
+            saved["scan_slots"][slot_key]["auto_recovered_after_disconnect"]
+        )
+        self.assertEqual(saved["scan_slots"][slot_key]["interrupted_attempts"], 1)
+
     def test_paused_completed_archive_recovers_pending_notification(self):
         slot_key = "2026-07-30@15:00"
         archived = {
