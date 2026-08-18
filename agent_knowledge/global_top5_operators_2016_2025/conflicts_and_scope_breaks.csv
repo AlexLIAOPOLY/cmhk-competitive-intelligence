@@ -1,0 +1,8 @@
+﻿operator_id,years,metric,type,selected_basis,detail
+bharti_airtel,2024-2025,financials,restatement_or_scope_change,latest official comparative basis,Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained.
+bharti_airtel,2020,network_towers,scope_conflict,"group KPI 219,546","The same reporting set also presents 194,409 under a narrower mobile-network scope."
+reliance_jio,2020,value_of_sales_and_services,presentation_basis_conflict,"INR 69,605 crore from later official three-year table","An older narrative cited INR 68,462 crore under an earlier presentation basis."
+reliance_jio,2023-2025,5g_base_stations,scope_break,retain disclosed figure with scope label,FY2023 reports sites; FY2024-25 report cells. No cross-break growth calculation is valid.
+china_telecom/china_unicom,2020-2025,5g_base_stations,shared_network,same shared-network figure retained for both with warning,The figures describe co-built/shared mid-band stations and must never be summed across the two operators.
+china_mobile/china_telecom/china_unicom,2019-2025,5g_subscribers,definition_change,package and network users stored as separate metrics,5G package subscribers and active/network subscribers are not interchangeable.
+china_unicom,2023-2025,mobile_subscribers/fixed_broadband_subscribers,official_derived,prior official closing plus disclosed official net addition,Derived values are marked approximate; they are not presented as directly disclosed exact closings.

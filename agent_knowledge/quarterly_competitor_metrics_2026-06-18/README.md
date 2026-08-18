@@ -14,6 +14,8 @@
 - `online_verification_2026-06-18.csv`：逐行核验状态。
 - `prediction_history_coverage_2026-06-18.md` / `.csv`：7年/10年预测历史窗口覆盖缺口审计。
 - `prediction_history_source_plan_2026-06-18.md`：下一轮补 2016-2024 历史数据的来源入口、优先级和验收门禁。
+- `annual_operating_metrics_2016_2025.json` / `.csv`：中国移动、中国电信、中国联通 2016–2025 年用户、5G、宽带、基站、流量、ARPU 等运营指标补充侧表；不重复本目录既有财务数据。
+- `annual_operating_metrics_2016_2025_manifest.json`：运营指标侧表的范围、行数和入口说明。
 
 ## Agent 使用要求
 
@@ -26,3 +28,4 @@
 7. 对 `verification_status=needs_official_row_crosscheck` 的行，回答前必须再用联网搜索或本地官方来源核验关键数。
 8. 云厂商分部数据不得使用母公司总表替代；如果本包只给出来源入口或母公司总表线索，必须说明不能直接作为云收入结论。
 9. 回答 7年/10年覆盖、预测准备度或还缺哪些历史期间时，优先读取 `prediction_history_coverage_2026-06-18.*` 和 `prediction_history_source_plan_2026-06-18.md`。
+10. 回答三大运营商年度用户、5G、宽带、基站、流量或 ARPU 时，读取 `annual_operating_metrics_2016_2025.*`；不要把 5G 套餐用户与 5G 网络用户合并，也不要把电信与联通的共建共享基站相加。

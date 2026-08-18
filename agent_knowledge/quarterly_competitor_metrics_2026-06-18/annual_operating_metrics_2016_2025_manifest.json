@@ -1,0 +1,16 @@
+{
+  "id": "china_carriers_annual_operating_metrics_2016_2025",
+  "title": "中国三大运营商2016–2025年度运营指标补充库",
+  "generated_at": "2026-08-18T00:00:00+08:00",
+  "row_count": 208,
+  "operators": [
+    "中国移动",
+    "中国电信",
+    "中国联通"
+  ],
+  "relationship": "quarterly_metrics.json remains the financial fact source; this sidecar adds only operating KPIs.",
+  "entrypoints": [
+    "annual_operating_metrics_2016_2025.json",
+    "annual_operating_metrics_2016_2025.csv"
+  ]
+}

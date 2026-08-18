@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-08-18T00:00:00+08:00",
+  "items": [
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2024-2025",
+      "metric": "financials",
+      "type": "restatement_or_scope_change",
+      "selected_basis": "latest official comparative basis",
+      "detail": "Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2020",
+      "metric": "network_towers",
+      "type": "scope_conflict",
+      "selected_basis": "group KPI 219,546",
+      "detail": "The same reporting set also presents 194,409 under a narrower mobile-network scope."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "years": "2020",
+      "metric": "value_of_sales_and_services",
+      "type": "presentation_basis_conflict",
+      "selected_basis": "INR 69,605 crore from later official three-year table",
+      "detail": "An older narrative cited INR 68,462 crore under an earlier presentation basis."
+    },
+    {
+      "operator_id": "reliance_jio",
+      "years": "2023-2025",
+      "metric": "5g_base_stations",
+      "type": "scope_break",
+      "selected_basis": "retain disclosed figure with scope label",
+      "detail": "FY2023 reports sites; FY2024-25 report cells. No cross-break growth calculation is valid."
+    },
+    {
+      "operator_id": "china_telecom/china_unicom",
+      "years": "2020-2025",
+      "metric": "5g_base_stations",
+      "type": "shared_network",
+      "selected_basis": "same shared-network figure retained for both with warning",
+      "detail": "The figures describe co-built/shared mid-band stations and must never be summed across the two operators."
+    },
+    {
+      "operator_id": "china_mobile/china_telecom/china_unicom",
+      "years": "2019-2025",
+      "metric": "5g_subscribers",
+      "type": "definition_change",
+      "selected_basis": "package and network users stored as separate metrics",
+      "detail": "5G package subscribers and active/network subscribers are not interchangeable."
+    },
+    {
+      "operator_id": "china_unicom",
+      "years": "2023-2025",
+      "metric": "mobile_subscribers/fixed_broadband_subscribers",
+      "type": "official_derived",
+      "selected_basis": "prior official closing plus disclosed official net addition",
+      "detail": "Derived values are marked approximate; they are not presented as directly disclosed exact closings."
+    }
+  ]
+}

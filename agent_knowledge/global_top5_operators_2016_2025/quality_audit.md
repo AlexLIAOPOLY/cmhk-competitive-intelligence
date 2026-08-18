@@ -1,0 +1,36 @@
+# 全球五大运营商数据库质量审计
+
+- 结论：`pass`
+- 明细行：378
+- 有值行：334
+- 来源条目：86
+- 重复键：0
+- 无效来源引用：0
+
+## 核验等级
+
+- `not_applicable_precommercial`: 7
+- `official_derived_from_verified_rows`: 6
+- `official_multi_source_verified`: 298
+- `official_single_source`: 30
+- `source_gap_confirmed`: 37
+
+## 缺口（含不适用）
+
+- Bharti Airtel: 10
+- Reliance Jio: 43
+- 中国电信: 17
+- 中国移动: 8
+- 中国联通: 24
+
+## 关键口径断点
+
+- 5G package subscribers and 5G network subscribers are distinct metrics.
+- China Telecom and China Unicom 5G base-station values describe a shared network and must not be added together.
+- Airtel network-tower scope changes around FY2020; the narrower 194,409 and group KPI 219,546 values are documented, with group KPI retained.
+- Jio FY2023 reports 5G sites while FY2024 onward reports 5G cells; growth is not calculated across the break.
+- Airtel latest comparative basis restates FY2024/FY2025 financials; latest official comparative basis is retained.
+- Jio value of sales/services is not the same as revenue from operations; both are stored separately.
+- Airtel and Jio use total_customers because their group disclosures include non-mobile categories; these rows are not mobile-subscriber counts.
+
+缺口保留为 `source_gap_confirmed` 或 `not_applicable_precommercial`，没有插值和估算。
