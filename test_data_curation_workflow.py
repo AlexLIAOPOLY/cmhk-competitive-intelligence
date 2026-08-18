@@ -93,6 +93,15 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIn("Azure及其他云服务增速", extracted)
         self.assertNotIn("Intelligent Cloud收入", missing)
 
+    def test_smartone_profit_after_tax_maps_to_net_profit(self) -> None:
+        extracted, missing = find_field_snippets(
+            8,
+            "Financial Highlights HK$ million 1H'25 1H'26. "
+            "Reported Profit after tax 257 278 +8.4%.",
+        )
+        self.assertIn("净利润", extracted)
+        self.assertNotIn("净利润", missing)
+
     def test_third_party_metric_window_must_name_target_company(self) -> None:
         unicom_fact = "中国联通已在超过330个城市部署5G-A。"
         self.assertTrue(_evidence_mentions_company(unicom_fact, "中国联通"))
