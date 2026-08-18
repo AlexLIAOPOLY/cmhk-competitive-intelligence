@@ -11,6 +11,46 @@
     },
     {
       "operator_id": "bharti_airtel",
+      "years": "2016",
+      "metric": "revenue",
+      "type": "restatement_or_rounding_change",
+      "selected_basis": "annual KPI revenue INR 965,321 million",
+      "detail": "Three later annual KPI tables repeat INR 965,321 million. The contemporaneous FY2016 IR pack reported INR 965,320 million and is excluded from the exact-source set."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2016",
+      "metric": "earnings_before_tax",
+      "type": "definition_conflict",
+      "selected_basis": "annual KPI earnings before tax INR 128,463 million",
+      "detail": "Three later annual KPI tables repeat INR 128,463 million. The contemporaneous FY2016 IR pack reports INR 106,723 million as profit before tax before exceptional items, a different definition."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2016",
+      "metric": "net_profit",
+      "type": "restatement_or_rounding_change",
+      "selected_basis": "annual KPI net profit INR 60,767 million",
+      "detail": "Three later annual KPI tables repeat INR 60,767 million. The contemporaneous FY2016 IR pack reported INR 60,768 million and is excluded from the exact-source set."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2016",
+      "metric": "network_towers",
+      "type": "scope_conflict",
+      "selected_basis": "group KPI 181,376",
+      "detail": "The India-mobile operating review reports 154,097 network towers. Three full-year performance-at-a-glance packs repeat the broader group KPI of 181,376, which is retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2016",
+      "metric": "total_data_traffic",
+      "type": "scope_break",
+      "selected_basis": "consolidated annual headline 0.597 billion GB",
+      "detail": "FY2016 is a consolidated traffic headline supported by one underlying document; FY2018-FY2020 are India-mobile traffic. The FY2016 row remains below the three-document threshold and must not be used as a continuous like-for-like series point."
+    },
+    {
+      "operator_id": "bharti_airtel",
       "years": "2019",
       "metric": "network_towers",
       "type": "scope_conflict",

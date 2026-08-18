@@ -109,7 +109,19 @@
       "url": "https://www.airtel.in/airtel-annual-report-2015-16/",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2016"
+      "source_document_id": "bharti_airtel_ar_2016",
+      "evidence": {
+        "mobile_broadband_base_stations": {
+          "value": 118197,
+          "unit": "base_stations",
+          "locator": "India mobile network review"
+        },
+        "total_data_traffic": {
+          "value": 0.597,
+          "unit": "billion_GB",
+          "locator": "corporate overview annual headline; converted from 597bn MB"
+        }
+      }
     },
     {
       "source_id": "bharti_airtel_ar_2017",
@@ -119,7 +131,46 @@
       "url": "https://www.airtel.in/airtel-annual-report-2016-17/",
       "source_type": "official_annual_report",
       "publisher": "Bharti Airtel Limited",
-      "source_document_id": "bharti_airtel_ar_2017"
+      "source_document_id": "bharti_airtel_ar_2017",
+      "comparative_evidence": {
+        "FY2016": {
+          "total_customers": {
+            "value": 357.428,
+            "unit": "million_customers",
+            "locator": "five-year consolidated KPI table"
+          },
+          "revenue": {
+            "value": 965321,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table; Ind AS comparative"
+          },
+          "ebitda": {
+            "value": 341682,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "earnings_before_tax": {
+            "value": 128463,
+            "unit": "INR_million",
+            "locator": "five-year annual KPI; after exceptional items"
+          },
+          "net_profit": {
+            "value": 60767,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "net_debt": {
+            "value": 835106,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "shareholders_equity": {
+            "value": 667693,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          }
+        }
+      }
     },
     {
       "source_id": "bharti_airtel_ar_2018",
@@ -241,6 +292,43 @@
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
           }
+        },
+        "FY2016": {
+          "total_customers": {
+            "value": 357.428,
+            "unit": "million_customers",
+            "locator": "five-year consolidated KPI table"
+          },
+          "revenue": {
+            "value": 965321,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table; Ind AS comparative"
+          },
+          "ebitda": {
+            "value": 341682,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "earnings_before_tax": {
+            "value": 128463,
+            "unit": "INR_million",
+            "locator": "five-year annual KPI; after exceptional items"
+          },
+          "net_profit": {
+            "value": 60767,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "net_debt": {
+            "value": 835106,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "shareholders_equity": {
+            "value": 667693,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          }
         }
       }
     },
@@ -319,6 +407,43 @@
           },
           "shareholders_equity": {
             "value": 674563,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          }
+        },
+        "FY2016": {
+          "total_customers": {
+            "value": 357.428,
+            "unit": "million_customers",
+            "locator": "five-year consolidated KPI table"
+          },
+          "revenue": {
+            "value": 965321,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table; Ind AS comparative"
+          },
+          "ebitda": {
+            "value": 341682,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "earnings_before_tax": {
+            "value": 128463,
+            "unit": "INR_million",
+            "locator": "five-year annual KPI; after exceptional items"
+          },
+          "net_profit": {
+            "value": 60767,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "net_debt": {
+            "value": 835106,
+            "unit": "INR_million",
+            "locator": "five-year consolidated KPI table"
+          },
+          "shareholders_equity": {
+            "value": 667693,
             "unit": "INR_million",
             "locator": "five-year consolidated KPI table"
           }
@@ -3208,6 +3333,33 @@
             "unit": "sites",
             "locator": "FY2017 group KPI performance-at-a-glance comparative"
           }
+        },
+        "FY2016": {
+          "total_customers": {
+            "value": 357.428,
+            "unit": "million_customers",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "capex": {
+            "value": 205919,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "net_debt": {
+            "value": 835106,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "shareholders_equity": {
+            "value": 667693,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "network_towers": {
+            "value": 181376,
+            "unit": "sites",
+            "locator": "FY2016 group KPI performance-at-a-glance comparative"
+          }
         }
       }
     },
@@ -3266,7 +3418,97 @@
           "locator": "FY2017 group KPI performance-at-a-glance, page 4"
         }
       },
-      "source_document_id": "airtel_q4_2017_ir_pack"
+      "source_document_id": "airtel_q4_2017_ir_pack",
+      "comparative_evidence": {
+        "FY2016": {
+          "total_customers": {
+            "value": 357.428,
+            "unit": "million_customers",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "capex": {
+            "value": 205919,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "net_debt": {
+            "value": 835106,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "shareholders_equity": {
+            "value": 667693,
+            "unit": "INR_million",
+            "locator": "FY2016 performance-at-a-glance comparative"
+          },
+          "network_towers": {
+            "value": 181376,
+            "unit": "sites",
+            "locator": "FY2016 group KPI performance-at-a-glance comparative"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q4_2016_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2016,
+      "label": "Bharti Airtel FY2015-16 Q4 and full-year investor relations pack",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q4FY16_888E9E8BA8B6D373CBB53F526F3F4357.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 357.428,
+          "unit": "million_customers",
+          "locator": "FY2016 performance-at-a-glance"
+        },
+        "capex": {
+          "value": 205919,
+          "unit": "INR_million",
+          "locator": "FY2016 performance-at-a-glance"
+        },
+        "net_debt": {
+          "value": 835106,
+          "unit": "INR_million",
+          "locator": "FY2016 performance-at-a-glance"
+        },
+        "shareholders_equity": {
+          "value": 667693,
+          "unit": "INR_million",
+          "locator": "FY2016 performance-at-a-glance"
+        },
+        "network_towers": {
+          "value": 181376,
+          "unit": "sites",
+          "locator": "FY2016 group KPI performance-at-a-glance"
+        },
+        "mobile_broadband_base_stations": {
+          "value": 118197,
+          "unit": "base_stations",
+          "locator": "India mobile network and coverage trends"
+        }
+      },
+      "source_document_id": "airtel_q4_2016_ir_pack"
+    },
+    {
+      "source_id": "airtel_q1_2017_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2016,
+      "label": "Bharti Airtel FY2016-17 Q1 investor relations pack with March 2016 comparatives",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q1-FY17_380EA153EE667A65F7A9E10B6FDB8A60_1518162263552.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_broadband_base_stations": {
+            "value": 118197,
+            "unit": "base_stations",
+            "locator": "March 2016 India mobile network and coverage comparative"
+          }
+        }
+      },
+      "source_document_id": "airtel_q1_2017_ir_pack"
     },
     {
       "source_id": "airtel_q4_2020_ir_pack",
