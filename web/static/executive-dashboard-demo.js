@@ -64,33 +64,87 @@
       ? `<text x="${point.x}" y="${height - 5}" text-anchor="${index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"}">${escapeHtml(point.label)}</text>`
       : "").join("");
     const marks = points.map((point) => `<g class="chart-point" tabindex="0" role="img" aria-label="${escapeHtml(point.label)} ${formatNumber(point.value)} ${escapeHtml(series.unit)}"><circle cx="${point.x}" cy="${point.y}" r="3.2"><title>${escapeHtml(point.label)}：${formatNumber(point.value)} ${escapeHtml(series.unit)}</title></circle></g>`).join("");
-    return `<svg class="real-line-chart ${options.compact ? "is-compact" : ""}" style="--chart-color:${series.color}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${escapeHtml(series.title)}官方披露趋势"><path class="chart-grid" d="M${pad.left} ${pad.top}H${width - pad.right} M${pad.left} ${pad.top + chartHeight / 2}H${width - pad.right} M${pad.left} ${height - pad.bottom}H${width - pad.right}"/><path class="chart-area" d="${area}"/><path class="chart-line" pathLength="1" d="${line}"/>${marks}<g class="chart-labels">${labels}</g></svg>`;
+    return `<svg class="data-chart line-chart ${options.compact ? "is-compact" : ""}" style="--chart-color:${series.color}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(series.title)}官方披露趋势"><path class="chart-grid" d="M${pad.left} ${pad.top}H${width - pad.right} M${pad.left} ${pad.top + chartHeight / 2}H${width - pad.right} M${pad.left} ${height - pad.bottom}H${width - pad.right}"/><path class="chart-area" d="${area}"/><path class="chart-line" pathLength="1" d="${line}"/>${marks}<g class="chart-labels">${labels}</g></svg>`;
   }
+
+  function columnChart(series, options = {}) {
+    const width = 360;
+    const height = options.compact ? 96 : 164;
+    const pad = { left: 20, right: 12, top: 18, bottom: options.compact ? 21 : 30 };
+    const maxValue = Math.max(...series.values) * 1.16;
+    const plotHeight = height - pad.top - pad.bottom;
+    const slot = (width - pad.left - pad.right) / series.values.length;
+    const bars = series.values.map((value, index) => {
+      const barHeight = (value / maxValue) * plotHeight;
+      const barWidth = Math.min(slot * .56, options.compact ? 32 : 52);
+      const x = pad.left + index * slot + (slot - barWidth) / 2;
+      const y = height - pad.bottom - barHeight;
+      return `<g class="column-mark" tabindex="0" role="img" aria-label="${escapeHtml(series.labels[index])} ${formatNumber(value)} ${escapeHtml(series.unit)}"><rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"><title>${escapeHtml(series.labels[index])}：${formatNumber(value)} ${escapeHtml(series.unit)}</title></rect><text x="${x + barWidth / 2}" y="${Math.max(y - 5, 10)}" text-anchor="middle">${formatNumber(value, Number.isInteger(value) ? 0 : 2)}</text><text class="axis-label" x="${x + barWidth / 2}" y="${height - 5}" text-anchor="middle">${escapeHtml(series.labels[index])}</text></g>`;
+    }).join("");
+    return `<svg class="data-chart column-chart ${options.compact ? "is-compact" : ""}" style="--chart-color:${series.color}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(series.title)}官方柱状趋势"><path class="chart-grid" d="M${pad.left} ${height - pad.bottom}H${width - pad.right}"/>${bars}</svg>`;
+  }
+
+  function lollipopChart(series, options = {}) {
+    const width = 360;
+    const height = options.compact ? 96 : 164;
+    const pad = { left: 22, right: 12, top: 18, bottom: options.compact ? 21 : 30 };
+    const maxValue = Math.max(...series.values) * 1.17;
+    const plotHeight = height - pad.top - pad.bottom;
+    const slot = (width - pad.left - pad.right) / series.values.length;
+    const marks = series.values.map((value, index) => {
+      const x = pad.left + slot * index + slot / 2;
+      const y = height - pad.bottom - (value / maxValue) * plotHeight;
+      return `<g class="lollipop-mark" tabindex="0" role="img" aria-label="${escapeHtml(series.labels[index])} ${formatNumber(value)} ${escapeHtml(series.unit)}"><line x1="${x}" y1="${height - pad.bottom}" x2="${x}" y2="${y}"/><circle cx="${x}" cy="${y}" r="5"><title>${escapeHtml(series.labels[index])}：${formatNumber(value)} ${escapeHtml(series.unit)}</title></circle><text x="${x}" y="${Math.max(y - 8, 10)}" text-anchor="middle">${formatNumber(value, Number.isInteger(value) ? 0 : 2)}</text><text class="axis-label" x="${x}" y="${height - 5}" text-anchor="middle">${escapeHtml(series.labels[index])}</text></g>`;
+    }).join("");
+    return `<svg class="data-chart lollipop-chart ${options.compact ? "is-compact" : ""}" style="--chart-color:${series.color}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(series.title)}官方棒棒糖趋势"><path class="chart-grid" d="M${pad.left} ${height - pad.bottom}H${width - pad.right}"/>${marks}</svg>`;
+  }
+
+  function horizontalBarChart(series, options = {}) {
+    const width = 360;
+    const height = options.compact ? 96 : 164;
+    const maxValue = Math.max(...series.values) * 1.18;
+    const left = 50;
+    const right = 45;
+    const rowHeight = (height - 14) / series.values.length;
+    const rows = series.values.map((value, index) => {
+      const y = 7 + index * rowHeight + rowHeight * .2;
+      const barHeight = rowHeight * .42;
+      const barWidth = ((width - left - right) * value) / maxValue;
+      return `<g class="horizontal-mark" tabindex="0" role="img" aria-label="${escapeHtml(series.labels[index])} ${formatNumber(value)} ${escapeHtml(series.unit)}"><text class="axis-label" x="0" y="${y + barHeight * .78}">${escapeHtml(series.labels[index])}</text><rect x="${left}" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"><title>${escapeHtml(series.labels[index])}：${formatNumber(value)} ${escapeHtml(series.unit)}</title></rect><text x="${left + barWidth + 7}" y="${y + barHeight * .78}">${formatNumber(value, Number.isInteger(value) ? 0 : 2)}</text></g>`;
+    }).join("");
+    return `<svg class="data-chart horizontal-chart ${options.compact ? "is-compact" : ""}" style="--chart-color:${series.color}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(series.title)}官方横向条形趋势">${rows}</svg>`;
+  }
+
+  const CHARTS = { line: lineChart, column: columnChart, lollipop: lollipopChart, horizontal: horizontalBarChart };
 
   function renderNetwork() {
     const visual = document.querySelector("[data-network-visual]");
     const metrics = document.querySelector("[data-network-metrics]");
     const [primary, ...secondary] = DATA.infrastructure;
-    visual.innerHTML = `<div class="section-label"><span>CHINA MOBILE NETWORK</span><strong>基础设施真实年度趋势</strong></div><div class="network-primary-copy"><span>${escapeHtml(primary.title)}</span><strong>${escapeHtml(primary.prefix || "")}${formatNumber(primary.values.at(-1))}<small>${escapeHtml(primary.unit)}</small></strong><em>2022–2024 官方披露</em></div>${lineChart(primary)}${sourceLink("中国移动历年年报及可持续发展报告", OFFICIAL.sustainability, "2022–2024")}`;
-    metrics.innerHTML = secondary.map((series) => `<article class="infra-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${escapeHtml(series.prefix || "")}${formatNumber(series.values.at(-1), 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${lineChart(series, { compact: true })}</article>`).join("");
+    visual.innerHTML = `<div class="section-label"><span>CHINA MOBILE NETWORK</span><strong>基础设施真实年度趋势</strong></div><div class="network-primary-copy"><span>${escapeHtml(primary.title)}</span><strong>${escapeHtml(primary.prefix || "")}${formatNumber(primary.values.at(-1))}<small>${escapeHtml(primary.unit)}</small></strong><em>2022–2024 官方披露</em></div>${columnChart(primary)}${sourceLink("中国移动历年年报及可持续发展报告", OFFICIAL.sustainability, "2022–2024")}`;
+    const chartTypes = ["column", "line", "lollipop"];
+    metrics.innerHTML = secondary.map((series, index) => `<article class="infra-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${escapeHtml(series.prefix || "")}${formatNumber(series.values.at(-1), 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</article>`).join("");
   }
 
   function renderBusiness() {
-    document.querySelector("[data-business-cards]").innerHTML = DATA.customer.map((series) => {
+    const chartTypes = ["column", "line", "lollipop"];
+    document.querySelector("[data-business-cards]").innerHTML = DATA.customer.map((series, index) => {
       const latest = series.values.at(-1);
       const previous = series.values.at(-2);
       const delta = latest - previous;
-      return `<section class="business-card" style="--group-accent:${series.color}"><header><strong>${escapeHtml(series.title)}</strong><small>官方季度数据</small></header><div class="business-chart-copy"><strong>${formatNumber(latest, 0)}<small>${escapeHtml(series.unit)}</small></strong><em>25Q3 环比 ${delta >= 0 ? "+" : ""}${formatNumber(delta, 0)}</em></div>${lineChart(series, { compact: true })}${sourceLink("中国移动营运数据", OFFICIAL.quarterly, "2023Q4–2025Q3")}</section>`;
+      return `<section class="business-card" style="--group-accent:${series.color}"><header><strong>${escapeHtml(series.title)}</strong><small>官方季度数据</small></header><div class="business-chart-copy"><strong>${formatNumber(latest, 0)}<small>${escapeHtml(series.unit)}</small></strong><em>25Q3 环比 ${delta >= 0 ? "+" : ""}${formatNumber(delta, 0)}</em></div>${CHARTS[chartTypes[index]](series, { compact: true })}${sourceLink("中国移动营运数据", OFFICIAL.quarterly, "2023Q4–2025Q3")}</section>`;
     }).join("");
   }
 
   function renderReach() {
-    document.querySelector("[data-reach-content]").innerHTML = `<div class="reach-trend-grid">${DATA.reach.map((series) => `<section class="reach-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${formatNumber(series.values.at(-1), series.values.at(-1) < 100 ? 2 : 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${lineChart(series, { compact: true })}</section>`).join("")}</div>${sourceLink("中国移动2024年可持续发展报告", OFFICIAL.sustainability, "2022–2024 连续口径")}`;
+    const chartTypes = ["lollipop", "column", "horizontal", "column"];
+    document.querySelector("[data-reach-content]").innerHTML = `<div class="reach-trend-grid">${DATA.reach.map((series, index) => `<section class="reach-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${formatNumber(series.values.at(-1), series.values.at(-1) < 100 ? 2 : 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</section>`).join("")}</div>${sourceLink("中国移动2024年可持续发展报告", OFFICIAL.sustainability, "2022–2024 连续口径")}`;
   }
 
   function renderFinance() {
     const [revenue, ...secondary] = DATA.finance;
-    document.querySelector("[data-finance-content]").innerHTML = `<section class="finance-revenue-hero"><div class="finance-revenue-copy"><span>2025年前三季度营运收入</span><strong>${formatNumber(revenue.total)}<small>${escapeHtml(revenue.unit)}</small></strong><em>三季度累计官方值</em></div>${lineChart(revenue)}${sourceLink("中国移动季度营运数据", OFFICIAL.quarterly, "单季值 · 2024Q1–2025Q3")}</section><div class="finance-trend-stack">${secondary.map((series) => `<section class="finance-trend-card" style="--group-accent:${series.color}"><div class="finance-mini-copy"><span>2025年前三季度${escapeHtml(series.title)}</span><strong>${formatNumber(series.total)}<small>${escapeHtml(series.unit)}</small></strong></div>${lineChart(series, { compact: true })}</section>`).join("")}</div>`;
+    const chartTypes = ["line", "lollipop"];
+    document.querySelector("[data-finance-content]").innerHTML = `<section class="finance-revenue-hero"><div class="finance-revenue-copy"><span>2025年前三季度营运收入</span><strong>${formatNumber(revenue.total)}<small>${escapeHtml(revenue.unit)}</small></strong><em>三季度累计官方值</em></div>${columnChart(revenue)}${sourceLink("中国移动季度营运数据", OFFICIAL.quarterly, "单季值 · 2024Q1–2025Q3")}</section><div class="finance-trend-stack">${secondary.map((series, index) => `<section class="finance-trend-card" style="--group-accent:${series.color}"><div class="finance-mini-copy"><span>2025年前三季度${escapeHtml(series.title)}</span><strong>${formatNumber(series.total)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</section>`).join("")}</div>`;
   }
 
   function setupMotion() {
