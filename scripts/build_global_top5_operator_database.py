@@ -2712,21 +2712,28 @@ CT_2025_THREE = ["china_telecom_ar_2025", "china_telecom_results_2025", "china_t
 CU_2025_THREE = ["china_unicom_ar_2025", "china_unicom_results_2025", "china_unicom_press_2025"]
 
 SHARED_5G_BASE_STATION_SOURCES = {
-    2020: ["china_telecom_ar_2020", "china_unicom_ar_2020", "china_telecom_results_2020"],
-    2021: ["china_telecom_ar_2021", "china_unicom_ar_2021", "china_telecom_results_2021"],
-    2022: ["china_telecom_ar_2022", "china_unicom_ar_2022", "china_unicom_results_2022"],
-    2023: ["china_telecom_ar_2023", "china_unicom_ar_2023", "china_telecom_results_2023"],
-    2024: ["china_telecom_ar_2024", "china_unicom_ar_2024", "china_telecom_results_2024"],
+    2020: ["china_unicom_csr_2020", "china_telecom_transcript_2020", "china_telecom_results_2020"],
+    2021: ["china_unicom_csr_2021", "china_unicom_csr_2022", "china_unicom_csr_2023"],
+    2022: ["china_unicom_csr_2022", "china_unicom_csr_2023", "china_unicom_csr_2024"],
+    2023: ["china_unicom_csr_2023", "china_unicom_csr_2024", "china_unicom_csr_2025"],
+    2024: ["china_unicom_csr_2024", "china_unicom_csr_2025", "china_telecom_ar_2024"],
     2025: CT_2025_THREE,
 }
 
-for source_id in SHARED_5G_BASE_STATION_SOURCES[2022]:
-    SOURCES[source_id].setdefault("evidence", {})["5g_base_stations"] = {
-        "value": 1.0,
-        "unit": "million_base_stations",
-        "comparator": ">=",
-        "locator": "FY2022 5G co-build/co-share network scale",
-    }
+_SHARED_5G_BASE_STATION_VALUES = {
+    2020: 0.38, 2021: 0.69, 2022: 1.0,
+    2023: 1.21, 2024: 1.375,
+}
+for _year, _value in _SHARED_5G_BASE_STATION_VALUES.items():
+    for _source_id in SHARED_5G_BASE_STATION_SOURCES[_year]:
+        _bind_cu_historical_evidence(
+            _source_id,
+            year=_year,
+            metric_key="5g_base_stations",
+            value=_value,
+            unit="million_base_stations",
+            locator=f"FY{_year} 5G co-build/co-share network scale at the disclosed precision",
+        )
 
 CHINA_MOBILE_5G_BASE_STATION_SOURCES = {
     2019: ["china_mobile_ar_2019", "china_mobile_20f_2019", "china_mobile_sd_2019"],

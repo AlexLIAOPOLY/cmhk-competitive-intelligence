@@ -39,9 +39,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
                 "中国广电": 6,
-                "中国电信": 60,
+                "中国电信": 64,
                 "中国移动": 80,
-                "中国联通": 58,
+                "中国联通": 62,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -460,12 +460,11 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn("Shared-network scope", row["quality_note"])
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
-        for year in (2020, 2021, 2023, 2024):
+        for year in range(2020, 2026):
             for operator_id in ("china_telecom", "china_unicom"):
-                self.assertEqual(
-                    self.index[(operator_id, year, "5g_base_stations")]["triple_source_status"],
-                    "below_three_source_threshold",
-                )
+                row = self.index[(operator_id, year, "5g_base_stations")]
+                self.assertEqual(row["distinct_source_document_count"], 3)
+                self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
         for operator_id in ("china_telecom", "china_unicom"):
             row = self.index[(operator_id, 2022, "5g_base_stations")]
             self.assertEqual(row["value"], 1.0)

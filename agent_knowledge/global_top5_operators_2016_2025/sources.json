@@ -1631,12 +1631,6 @@
           "value": 46.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual report; broadband blended ARPU"
-        },
-        "5g_base_stations": {
-          "value": 1.0,
-          "unit": "million_base_stations",
-          "comparator": ">=",
-          "locator": "FY2022 5G co-build/co-share network scale"
         }
       }
     },
@@ -1686,6 +1680,11 @@
           "value": 47.6,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 annual report; broadband blended ARPU"
+        },
+        "5g_base_stations": {
+          "value": 1.375,
+          "unit": "million_base_stations",
+          "locator": "FY2024 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
@@ -1886,15 +1885,7 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2022.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2022",
-      "evidence": {
-        "5g_base_stations": {
-          "value": 1.0,
-          "unit": "million_base_stations",
-          "comparator": ">=",
-          "locator": "FY2022 5G co-build/co-share network scale"
-        }
-      }
+      "source_document_id": "china_unicom_ar_2022"
     },
     {
       "source_id": "china_unicom_ar_2023",
@@ -3423,6 +3414,11 @@
           "value": 44.4,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual-results presentation; broadband blended ARPU"
+        },
+        "5g_base_stations": {
+          "value": 0.38,
+          "unit": "million_base_stations",
+          "locator": "FY2020 5G co-build/co-share network scale at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -4011,12 +4007,6 @@
           "value": 44.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
-        },
-        "5g_base_stations": {
-          "value": 1.0,
-          "unit": "million_base_stations",
-          "comparator": ">=",
-          "locator": "FY2022 5G co-build/co-share network scale"
         }
       }
     },
@@ -4336,6 +4326,11 @@
           "value": 94,
           "unit": "percent",
           "locator": "FY2020 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
+        },
+        "5g_base_stations": {
+          "value": 0.38,
+          "unit": "million_base_stations",
+          "locator": "FY2020 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
@@ -4381,6 +4376,11 @@
             "value": 95,
             "unit": "percent",
             "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 0.69,
+            "unit": "million_base_stations",
+            "locator": "FY2021 5G co-build/co-share network scale at the disclosed precision"
           }
         }
       },
@@ -4394,6 +4394,11 @@
           "value": 385.54,
           "unit": "million_connections",
           "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+        },
+        "5g_base_stations": {
+          "value": 1.0,
+          "unit": "million_base_stations",
+          "locator": "FY2022 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
@@ -4417,6 +4422,11 @@
             "value": 95,
             "unit": "percent",
             "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 0.69,
+            "unit": "million_base_stations",
+            "locator": "FY2021 5G co-build/co-share network scale at the disclosed precision"
           }
         },
         "FY2022": {
@@ -4429,6 +4439,11 @@
             "value": 385.54,
             "unit": "million_connections",
             "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 1.0,
+            "unit": "million_base_stations",
+            "locator": "FY2022 5G co-build/co-share network scale at the disclosed precision"
           }
         }
       },
@@ -4442,6 +4457,11 @@
           "value": 493.911,
           "unit": "million_connections",
           "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+        },
+        "5g_base_stations": {
+          "value": 1.21,
+          "unit": "million_base_stations",
+          "locator": "FY2023 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
@@ -4465,6 +4485,11 @@
             "value": 385.54,
             "unit": "million_connections",
             "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 1.0,
+            "unit": "million_base_stations",
+            "locator": "FY2022 5G co-build/co-share network scale at the disclosed precision"
           }
         },
         "FY2023": {
@@ -4477,7 +4502,19 @@
             "value": 493.911,
             "unit": "million_connections",
             "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 1.21,
+            "unit": "million_base_stations",
+            "locator": "FY2023 5G co-build/co-share network scale at the disclosed precision"
           }
+        }
+      },
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1.375,
+          "unit": "million_base_stations",
+          "locator": "FY2024 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
@@ -4501,6 +4538,18 @@
             "value": 493.911,
             "unit": "million_connections",
             "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 1.21,
+            "unit": "million_base_stations",
+            "locator": "FY2023 5G co-build/co-share network scale at the disclosed precision"
+          }
+        },
+        "FY2024": {
+          "5g_base_stations": {
+            "value": 1.375,
+            "unit": "million_base_stations",
+            "locator": "FY2024 5G co-build/co-share network scale at the disclosed precision"
           }
         }
       }
@@ -4690,6 +4739,11 @@
           "value": 95,
           "unit": "percent",
           "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
+        },
+        "5g_base_stations": {
+          "value": 0.69,
+          "unit": "million_base_stations",
+          "locator": "FY2021 5G co-build/co-share network scale at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -5162,6 +5216,11 @@
           "value": 44.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 management transcript; current-year mobile ARPU"
+        },
+        "5g_base_stations": {
+          "value": 0.38,
+          "unit": "million_base_stations",
+          "locator": "FY2020 5G co-build/co-share network scale at the disclosed precision"
         }
       }
     },
