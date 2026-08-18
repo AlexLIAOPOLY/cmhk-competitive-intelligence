@@ -21,7 +21,7 @@ class FakeLark:
         elif "api" in argv and "/open-apis/contact/v3/users/find_by_department" in argv:
             payload = {"ok": True, "data": {"has_more": False, "items": [{
                 "open_id": "ou_delivery123", "union_id": "on_test123",
-                "name": "测试用户", "en_name": "Test User", "job_title": "经理",
+                "name": "测试用户", "en_name": "测试用户 Test User", "job_title": "经理",
                 "avatar": {"avatar_72": "https://example.test/avatar.png"},
             }]}}
         elif "+get-user" in argv:
@@ -74,7 +74,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_card_is_card_2_form_with_three_services(self):
-        card = subscription_entry_card(image_key="img_v3_subscription_poster")
+        card = subscription_entry_card(
+            image_key="img_v3_subscription_poster",
+            recipient_name="Alex LIAO Wang",
+        )
         self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["header"]["title"]["content"], "订阅战略情报")
         self.assertNotIn("subtitle", card["header"])
@@ -85,7 +88,12 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(poster["img_key"], "img_v3_subscription_poster")
         intro = card["body"]["elements"][1]
         self.assertEqual(intro["tag"], "markdown")
-        self.assertIn("可订阅的战略情报", intro["content"])
+        self.assertEqual(
+            intro["content"],
+            "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
+            "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
+            "并选择接收频率。感谢您的配合！",
+        )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual([item["content"] for item in form["elements"] if item["tag"] == "markdown"], ["**订阅内容**", "**接收频率**"])
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
@@ -180,6 +188,11 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.service.invite_users(["ou_delivery123"])
         sent = self.service.invite_users(["ou_delivery123"], confirm_invite=True)
         self.assertEqual(sent["sent_count"], 1)
+        send_call = next(call for call in self.lark.calls if "+messages-send" in call)
+        card = json.loads(send_call[send_call.index("--content") + 1])
+        intro = next(item for item in card["body"]["elements"] if item.get("tag") == "markdown")
+        self.assertTrue(intro["content"].startswith("尊敬的 Test User，您好！"))
+        self.assertTrue(intro["content"].endswith("感谢您的配合！"))
         self.assertEqual(self.service.list_summary()["invitations"][0]["status"], "pending")
         accepted = self.service.handle_card_event({
             "type": "card.action.trigger",

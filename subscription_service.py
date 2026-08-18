@@ -76,8 +76,14 @@ def _json_payload(process: subprocess.CompletedProcess[str]) -> dict[str, Any]:
     return payload
 
 
-def subscription_entry_card(*, image_key: str = "") -> dict[str, Any]:
+def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") -> dict[str, Any]:
     """Card 2.0 form used as the colleague-facing self-service entry point."""
+    salutation = f"尊敬的 {recipient_name.strip()}，您好！" if recipient_name.strip() else "您好！"
+    introduction = (
+        f"{salutation}我是战略竞对中心管家小竞。"
+        "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
+        "并选择接收频率。感谢您的配合！"
+    )
     return {
         "schema": "2.0",
         "config": {
@@ -111,7 +117,7 @@ def subscription_entry_card(*, image_key: str = "") -> dict[str, Any]:
                 ),
                 {
                     "tag": "markdown",
-                    "content": "我们把分散的竞对动态整理成可订阅的战略情报。按需选择双周报、业绩摘要或新闻，并决定接收频率。",
+                    "content": introduction,
                 },
                 {
                     "tag": "form",
@@ -917,8 +923,20 @@ class SubscriptionService:
             candidate = candidates[callback_open_id]
             try:
                 source_profile = str(candidate.get("source_profile") or self.entry_profile)
+                with closing(self._connect()) as db:
+                    directory_row = db.execute(
+                        "SELECT en_name FROM subscription_directory_people WHERE union_id=? AND active=1 LIMIT 1",
+                        (str(candidate.get("union_id") or ""),),
+                    ).fetchone()
+                directory_name = str(directory_row["en_name"] or "").strip() if directory_row else ""
+                source_name = directory_name or str(candidate.get("display_name") or "")
+                english_name = " ".join(re.findall(r"[A-Za-z]+(?:['-][A-Za-z]+)*", source_name))
+                recipient_name = english_name or str(candidate.get("display_name") or "同事")
                 sent = self._send_entry_card_to_user(
-                    callback_open_id, invitation=True, profile=source_profile
+                    callback_open_id,
+                    invitation=True,
+                    profile=source_profile,
+                    recipient_name=recipient_name,
                 )
                 now = _now_hkt()
                 with closing(self._connect()) as db, db:
@@ -1025,6 +1043,7 @@ class SubscriptionService:
         *,
         invitation: bool = False,
         profile: str = "",
+        recipient_name: str = "",
     ) -> dict[str, Any]:
         if not OPEN_ID_RE.fullmatch(callback_open_id):
             raise ValueError("受邀人 open_id 无效")
@@ -1033,6 +1052,7 @@ class SubscriptionService:
             target_type="user",
             key_context="invite" if invitation else "test",
             profile=profile or self.entry_profile,
+            recipient_name=recipient_name,
         )
 
     def _send_entry_card(
@@ -1042,6 +1062,7 @@ class SubscriptionService:
         target_type: str,
         key_context: str = "publish",
         profile: str = "",
+        recipient_name: str = "",
     ) -> dict[str, Any]:
         source_profile = profile or self.entry_profile
         if target_type == "chat":
@@ -1057,7 +1078,7 @@ class SubscriptionService:
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
         poster_keys = subscriptions.get("poster_image_keys") if isinstance(subscriptions.get("poster_image_keys"), dict) else {}
         image_key = str(poster_keys.get(source_profile) or poster_keys.get("default") or "")
-        card = subscription_entry_card(image_key=image_key)
+        card = subscription_entry_card(image_key=image_key, recipient_name=recipient_name)
         card_version = hashlib.sha256(
             json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()[:12]
