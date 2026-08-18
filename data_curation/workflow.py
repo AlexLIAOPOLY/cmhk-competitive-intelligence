@@ -805,18 +805,82 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
     if state.get("online_ai", True) and batches:
         effective_workers = min(ai_workers, len(batches))
 
-        def clean_online_batch(batch_item: tuple[int, list[dict[str, Any]], str]) -> tuple[int, str, list[dict[str, Any]], float, Exception | None]:
+        def clean_online_batch(
+            batch_item: tuple[int, list[dict[str, Any]], str],
+        ) -> tuple[
+            int,
+            str,
+            list[dict[str, Any]],
+            float,
+            Exception | None,
+            dict[str, Any],
+        ]:
             batch_index, payload, batch_label = batch_item
             started = time.monotonic()
             try:
-                return batch_index, batch_label, call_deepseek(payload), time.monotonic() - started, None
+                return (
+                    batch_index,
+                    batch_label,
+                    call_deepseek(payload),
+                    time.monotonic() - started,
+                    None,
+                    {},
+                )
             except Exception as exc:
-                return batch_index, batch_label, fallback_clean_batch(payload), time.monotonic() - started, exc
+                error_text = clean_text(exc, 400).lower()
+                if len(payload) > 1 and ("timed out" in error_text or "timeout" in error_text):
+                    split_at = max(1, len(payload) // 2)
+                    retry_chunks = [payload[:split_at], payload[split_at:]]
+                    recovered: list[dict[str, Any]] = []
+                    retry_errors: list[str] = []
+                    for retry_chunk in retry_chunks:
+                        if not retry_chunk:
+                            continue
+                        try:
+                            recovered.extend(call_deepseek(retry_chunk))
+                        except Exception as retry_exc:
+                            retry_errors.append(clean_text(retry_exc, 240))
+                            recovered.extend(fallback_clean_batch(retry_chunk))
+                    if not retry_errors:
+                        return (
+                            batch_index,
+                            batch_label,
+                            recovered,
+                            time.monotonic() - started,
+                            None,
+                            {
+                                "timeout_split_retry": True,
+                                "retry_chunk_sizes": [len(chunk) for chunk in retry_chunks if chunk],
+                            },
+                        )
+                    exc = RuntimeError(
+                        f"{clean_text(exc, 180)}; split retry failed: {'; '.join(retry_errors)}"
+                    )
+                    return (
+                        batch_index,
+                        batch_label,
+                        recovered,
+                        time.monotonic() - started,
+                        exc,
+                        {
+                            "timeout_split_retry": True,
+                            "retry_chunk_sizes": [len(chunk) for chunk in retry_chunks if chunk],
+                            "retry_errors": retry_errors,
+                        },
+                    )
+                return (
+                    batch_index,
+                    batch_label,
+                    fallback_clean_batch(payload),
+                    time.monotonic() - started,
+                    exc,
+                    {},
+                )
 
         with ThreadPoolExecutor(max_workers=effective_workers) as executor:
             future_map = {executor.submit(clean_online_batch, batch_item): batch_item for batch_item in batches}
             for future in as_completed(future_map):
-                batch_index, batch_label, cleaned, elapsed, exc = future.result()
+                batch_index, batch_label, cleaned, elapsed, exc, recovery = future.result()
                 cleaned_by_batch[batch_index] = cleaned
                 if exc is None:
                     online_used = True
@@ -834,6 +898,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                                 "returned": len(cleaned),
                                 "sample": cleaned[:3],
                                 "parallel_workers": effective_workers,
+                                **recovery,
                             },
                             status="success",
                             duration_ms=round(elapsed * 1000),

@@ -164,6 +164,71 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         self.assertEqual(result["summary"]["onlineBatches"], 4)
 
+    def test_timed_out_ai_batch_is_split_and_retried_before_offline_fallback(self) -> None:
+        tasks = []
+        for index in range(4):
+            tasks.append(
+                EvidenceTask.model_validate(
+                    {
+                        "id": f"retry-{index}",
+                        "company": "HKT",
+                        "metric": "漫游",
+                        "current_value": "",
+                        "raw_text": f"HKT roaming evidence {index}",
+                        "sources": ["https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"],
+                        "row_ref": "row_4",
+                        "evidence_hash": f"retry-hash-{index}",
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                    }
+                ).model_dump()
+            )
+
+        calls: list[list[str]] = []
+
+        def fake_call_deepseek(batch):
+            calls.append([item["id"] for item in batch])
+            if len(calls) == 1:
+                raise TimeoutError("timed out")
+            return [
+                {
+                    "id": item["id"],
+                    "status": "unavailable",
+                    "value": "未提取到有效数据",
+                    "basis": "split retry",
+                    "note": "",
+                    "entity_supported": True,
+                    "metric_supported": False,
+                    "value_supported": False,
+                    "confidence": 0.1,
+                }
+                for item in batch
+            ]
+
+        with patch("data_curation.workflow.call_deepseek", side_effect=fake_call_deepseek):
+            result = extract_facts(
+                {
+                    "run_id": "unit-test",
+                    "tasks": tasks,
+                    "existing_items": {},
+                    "batch_size": 4,
+                    "ai_workers": 1,
+                    "online_ai": True,
+                }
+            )
+
+        self.assertEqual(calls, [["retry-0", "retry-1", "retry-2", "retry-3"], ["retry-0", "retry-1"], ["retry-2", "retry-3"]])
+        self.assertEqual([item["id"] for item in result["candidates"]], ["retry-0", "retry-1", "retry-2", "retry-3"])
+        self.assertEqual(result["summary"]["onlineBatches"], 1)
+        self.assertEqual(result["summary"]["fallbackBatches"], 0)
+        tool_results = [
+            item
+            for item in result["agent_trace"]
+            if item.get("phase") == "tool_result" and item.get("tool") == "DeepSeek chat/completions"
+        ]
+        self.assertTrue(tool_results[0]["result"]["timeout_split_retry"])
+        self.assertEqual(tool_results[0]["result"]["retry_chunk_sizes"], [2, 2])
+
     def test_hkt_customer_exact_extractor(self) -> None:
         result = deterministic_extract_task(
             {

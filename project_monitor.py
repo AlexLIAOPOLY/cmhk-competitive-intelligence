@@ -39,6 +39,17 @@ except ImportError:  # local monitor prompts already require simplified Chinese
 
 ROOT = Path(__file__).resolve().parent
 HKT = ZoneInfo("Asia/Hong_Kong")
+
+STABLE_LOG_CONDITION_KEYS = {
+    "scheduler-log-error",
+    "feishu-media-metrics-error",
+    "project-monitor-log-error",
+    "project-monitor-card-actions-log-error",
+    "web-log-fatal",
+    "ai-http-400-burst",
+    "ai-timeout-burst",
+    "web-background-error",
+}
 DEFAULT_CONFIG_PATH = ROOT / "config" / "project_monitor.json"
 SEVERITY_ORDER = {"P1": 0, "P2": 1, "P3": 2}
 SEVERITY_LABELS = {
@@ -1071,12 +1082,6 @@ class ProjectMonitor:
         card_actions_text = self._read_new_log_text(card_actions_path)
         media_metrics_path = self._source_root() / "var" / "feishu_media_metrics" / "daemon.stderr.log"
         media_metrics_text = self._read_new_log_text(media_metrics_path)
-        log_offsets = self.state.get("log_offsets") if isinstance(self.state.get("log_offsets"), dict) else {}
-        scheduler_cursor = int(log_offsets.get(str(scheduler_path)) or 0)
-        web_cursor = int(log_offsets.get(str(log_root / "web_app.stderr.log")) or 0)
-        monitor_cursor = int(log_offsets.get(str(monitor_path)) or 0)
-        card_actions_cursor = int(log_offsets.get(str(card_actions_path)) or 0)
-        media_metrics_cursor = int(log_offsets.get(str(media_metrics_path)) or 0)
         issues: list[dict[str, Any]] = []
         try:
             scheduler_mtime = datetime.fromtimestamp(scheduler_path.stat().st_mtime, HKT)
@@ -1114,10 +1119,9 @@ class ProjectMonitor:
             if re.search(r"调度周期失败|Traceback \(most recent call last\)|CRITICAL|Unhandled", line, re.I)
         ]
         if scheduler_markers:
-            signature = _fingerprint(*scheduler_markers[-5:], scheduler_cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"scheduler-log-error:{signature}",
+                    condition_key="scheduler-log-error",
                     component="frequency-scheduler",
                     task_name="飞书频率调度周期",
                     severity="P1",
@@ -1142,10 +1146,9 @@ class ProjectMonitor:
             )
         ]
         if media_metrics_errors:
-            signature = _fingerprint(*media_metrics_errors[-5:], media_metrics_cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"feishu-media-metrics-error:{signature}",
+                    condition_key="feishu-media-metrics-error",
                     component="feishu-media-metrics",
                     task_name="Feishu媒体指标定时汇总",
                     severity="P2",
@@ -1164,7 +1167,6 @@ class ProjectMonitor:
             (
                 monitor_path,
                 monitor_text,
-                monitor_cursor,
                 "project-monitor",
                 "主项目错误监控器",
                 "project monitor cycle failed",
@@ -1175,7 +1177,6 @@ class ProjectMonitor:
             (
                 card_actions_path,
                 card_actions_text,
-                card_actions_cursor,
                 "project-monitor-card-actions",
                 "错误告警处理按钮监听器",
                 "card action failed locally|consumer exited before a healthy ready state",
@@ -1187,7 +1188,6 @@ class ProjectMonitor:
         for (
             path,
             text,
-            cursor,
             component,
             task_name,
             marker_pattern,
@@ -1207,10 +1207,9 @@ class ProjectMonitor:
             ]
             if not markers:
                 continue
-            signature = _fingerprint(*markers[-5:], cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"{component}-log-error:{signature}",
+                    condition_key=f"{component}-log-error",
                     component=component,
                     task_name=task_name,
                     severity=severity,
@@ -1235,10 +1234,9 @@ class ProjectMonitor:
             and "BrokenPipeError" not in line
         ]
         if fatal:
-            signature = _fingerprint(*fatal[-5:], web_cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"web-log-fatal:{signature}",
+                    condition_key="web-log-fatal",
                     component="web-app",
                     task_name="主项目Web后台",
                     severity="P1",
@@ -1254,13 +1252,9 @@ class ProjectMonitor:
                 )
             )
         if len(ai_400) >= 3:
-            signature = _fingerprint(
-                *(re.sub(r"候选\s+[0-9a-f]+", "候选", line) for line in ai_400[-12:]),
-                web_cursor,
-            )
             issues.append(
                 self._issue(
-                    condition_key=f"ai-http-400-burst:{signature}",
+                    condition_key="ai-http-400-burst",
                     component="strategic-news",
                     task_name="公司内部AI审核",
                     severity="P2",
@@ -1276,10 +1270,9 @@ class ProjectMonitor:
                 )
             )
         if len(ai_timeouts) >= 3:
-            signature = _fingerprint(*ai_timeouts[-12:], web_cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"ai-timeout-burst:{signature}",
+                    condition_key="ai-timeout-burst",
                     component="strategic-news",
                     task_name="公司内部AI审核",
                     severity="P2",
@@ -1305,19 +1298,9 @@ class ProjectMonitor:
         ]
         if generic_web_errors:
             samples = generic_web_errors[-12:]
-            normalized = [
-                re.sub(
-                    r"\b(?:[0-9a-f]{12,}|NEWS-[A-F0-9]+|\d+/\d+)\b",
-                    "<id>",
-                    line,
-                    flags=re.I,
-                )
-                for line in samples
-            ]
-            signature = _fingerprint(*normalized, web_cursor)
             issues.append(
                 self._issue(
-                    condition_key=f"web-background-error:{signature}",
+                    condition_key="web-background-error",
                     component="web-app",
                     task_name="主项目后台任务",
                     severity="P3",
@@ -1379,6 +1362,31 @@ class ProjectMonitor:
             record = incidents.get(str(incident_id))
             if not isinstance(record, dict) or record.get("status") != "open":
                 conditions.pop(key, None)
+                continue
+            # Older versions fingerprinted every log cursor. A noisy fallback
+            # therefore opened a new terminal incident every polling cycle and
+            # kept hundreds of already-consumed log fragments active. Stable
+            # category keys above now coalesce recurrences; retire the legacy
+            # fingerprinted records once they are no longer in this cycle.
+            legacy_log_key = any(
+                key.startswith(f"{stable_key}:")
+                for stable_key in STABLE_LOG_CONDITION_KEYS
+            )
+            if legacy_log_key:
+                record["status"] = "resolved"
+                record["resolved_at_hkt"] = now_text
+                record["resolution_reason"] = "superseded_by_stable_log_condition"
+                conditions.pop(key, None)
+                _append_jsonl(
+                    self.events_path,
+                    {
+                        "type": "incident_resolved_local_only",
+                        "at_hkt": now_text,
+                        "incident_id": record.get("incident_id"),
+                        "condition_key": key,
+                        "reason": "superseded_by_stable_log_condition",
+                    },
+                )
                 continue
             if record.get("terminal"):
                 occurred = _parse_datetime(record.get("occurred_at_hkt")) or _parse_datetime(

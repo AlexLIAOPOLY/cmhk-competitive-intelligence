@@ -672,7 +672,7 @@ class ProjectMonitorTests(unittest.TestCase):
         issue = next(
             item
             for item in issues
-            if item["condition_key"].startswith("feishu-media-metrics-error:")
+            if item["condition_key"] == "feishu-media-metrics-error"
         )
         self.assertEqual(issue["severity"], "P2")
 
@@ -687,6 +687,39 @@ class ProjectMonitorTests(unittest.TestCase):
         by_component = {item["component"]: item for item in issues}
         self.assertEqual(by_component["project-monitor"]["severity"], "P1")
         self.assertEqual(by_component["project-monitor-card-actions"]["severity"], "P2")
+
+    def test_runtime_log_conditions_use_stable_keys(self):
+        (self.log_root / "web_app.stderr.log").write_text(
+            "ERROR:root:候选 abcdef1234567890 批量编辑失败\n"
+        )
+        monitor = self._monitor()
+        issues = monitor.collect_issues()
+        issue = next(item for item in issues if item["component"] == "web-app")
+        self.assertEqual(issue["condition_key"], "web-background-error")
+
+    def test_legacy_fingerprinted_log_incidents_are_retired(self):
+        monitor = self._monitor(enabled=False)
+        legacy_key = "web-background-error:old-cursor-fingerprint"
+        legacy_id = "legacy-incident"
+        monitor.state["conditions"] = {legacy_key: legacy_id}
+        monitor.state["incidents"] = {
+            legacy_id: {
+                "incident_id": legacy_id,
+                "condition_key": legacy_key,
+                "status": "open",
+                "terminal": True,
+                "first_seen_at_hkt": self.now.isoformat(timespec="seconds"),
+            }
+        }
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        self.assertEqual(monitor.state["incidents"][legacy_id]["status"], "resolved")
+        self.assertEqual(
+            monitor.state["incidents"][legacy_id]["resolution_reason"],
+            "superseded_by_stable_log_condition",
+        )
 
     def test_notifications_disabled_never_calls_ai_or_send(self):
         monitor = self._monitor(enabled=False)
