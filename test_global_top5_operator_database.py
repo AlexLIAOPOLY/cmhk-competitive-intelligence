@@ -36,7 +36,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "Bharti Airtel": 36,
+                "Bharti Airtel": 45,
                 "Reliance Jio": 23,
                 "中国电信": 57,
                 "中国移动": 68,
@@ -46,7 +46,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
-        self.assertIn("- Bharti Airtel: 36", audit_text)
+        self.assertIn("- Bharti Airtel: 45", audit_text)
 
     def test_anchor_values_and_customer_scope(self):
         expected = {
@@ -524,6 +524,70 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("explicitly exclude the consolidation impact", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=4"), 8)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 8)
+
+    def test_airtel_fy2021_uses_four_exact_later_comparative_documents(self):
+        expected_values = {
+            "total_customers": 469.864,
+            "revenue": 1006158,
+            "ebitda": 461387,
+            "earnings_before_tax": 22586,
+            "net_profit": -150835,
+            "capex": 241685,
+            "net_debt": 1485076,
+            "shareholders_equity": 589527,
+            "network_towers": 244504,
+        }
+        expected_sources = {
+            "airtel_q1_2024_ir_pack",
+            "airtel_q2_2024_ir_pack",
+            "airtel_q3_2024_ir_pack",
+            "airtel_q4_2024_ir_pack",
+        }
+        for metric_key, expected_value in expected_values.items():
+            row = self.index[("bharti_airtel", 2021, metric_key)]
+            self.assertEqual(row["value"], expected_value)
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertEqual(row["distinct_source_document_count"], 4)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+            self.assertIn("FY2021 and FY2022 are repeated exactly", row["quality_note"])
+        self.assertIn("INR-42,063m", self.index[("bharti_airtel", 2021, "earnings_before_tax")]["quality_note"])
+
+    def test_airtel_fy2021_registry_carries_metric_level_evidence(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        for source_id in ("airtel_q1_2024_ir_pack", "airtel_q2_2024_ir_pack", "airtel_q3_2024_ir_pack", "airtel_q4_2024_ir_pack"):
+            evidence = sources[source_id]["comparative_evidence"]["FY2021"]
+            self.assertEqual(evidence["total_customers"]["value"], 469.864)
+            self.assertEqual(evidence["earnings_before_tax"]["value"], 22586)
+            self.assertEqual(evidence["network_towers"]["value"], 244504)
+
+    def test_xiaojing_retrieves_airtel_fy2021_four_source_recast_rows(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Bharti Airtel FY2021总客户数、营业收入、EBITDA、税前利润、净利润、资本开支、净债务、股东权益和网络铁塔是多少？逐项说明三来源和税前利润重列。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected_values = {
+            "total_customers": "469.864 million_customers",
+            "revenue": "1006158 INR_million",
+            "ebitda": "461387 INR_million",
+            "earnings_before_tax": "22586 INR_million",
+            "net_profit": "-150835 INR_million",
+            "capex": "241685 INR_million",
+            "net_debt": "1485076 INR_million",
+            "shareholders_equity": "589527 INR_million",
+            "network_towers": "244504 sites",
+        }
+        for metric_key, value_text in expected_values.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(f"official_value={value_text}", combined)
+        self.assertIn("earlier loss-before-tax value of INR-42,063m", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=4"), 9)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 9)
 
     def test_xiaojing_retrieves_airtel_fy2024_three_source_rows(self):
         combined = "\n".join(

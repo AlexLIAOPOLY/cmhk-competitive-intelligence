@@ -11,6 +11,14 @@
     },
     {
       "operator_id": "bharti_airtel",
+      "years": "2021",
+      "metric": "earnings_before_tax",
+      "type": "restatement_or_scope_change",
+      "selected_basis": "INR 22,586 million from four later official comparative tables",
+      "detail": "The earlier stored INR -42,063 million loss-before-tax basis is retained in the row note but replaced by the value repeated consistently across four FY2023-24 investor packs."
+    },
+    {
+      "operator_id": "bharti_airtel",
       "years": "2022-2023",
       "metric": "financials_and_group_kpis",
       "type": "scope_break",
