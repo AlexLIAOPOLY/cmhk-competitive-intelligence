@@ -127,7 +127,36 @@ h1 { margin: 0; color: #f5fbfd; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .business-pair .monitor-kpi > strong { font-size: clamp(25px, 1.6vw, 61px); }
 .metric-sparkline { position: absolute; right: clamp(10px, .7vw, 28px); bottom: clamp(11px, .7vw, 28px); width: clamp(44px, 4vw, 150px); height: clamp(18px, 1.8vw, 68px); color: color-mix(in srgb, var(--group-accent) 76%, #8bdcff); opacity: .66; }
 .metric-sparkline path { fill: none; stroke: currentColor; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-.kpi-grid .metric-sparkline, .finance-gauge-card .metric-sparkline { display: none; }
+.metric-sparkline .spark-points circle { fill: #071827; stroke: currentColor; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.kpi-grid .metric-sparkline { display: block; }
+.finance-gauge-card .metric-sparkline { display: none; }
+.monitor-kpi > em.is-negative { color: var(--amber); }
+
+.has-data-tooltip { position: relative; }
+.has-data-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 30;
+  left: clamp(8px, .6vw, 22px);
+  bottom: clamp(8px, .6vw, 22px);
+  max-width: calc(100% - clamp(16px, 1.2vw, 44px));
+  padding: 9px 11px;
+  border: 1px solid rgba(100, 205, 244, .42);
+  border-radius: 3px;
+  color: #e7f7fc;
+  background: rgba(3, 14, 24, .96);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .36);
+  font-size: clamp(10px, .58vw, 19px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+  white-space: pre-line;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.has-data-tooltip:hover::after, .has-data-tooltip:focus-visible::after, .has-data-tooltip:focus-within::after { opacity: 1; transform: none; }
+.has-data-tooltip:focus-visible { outline: 1px solid rgba(100, 205, 244, .75); outline-offset: -2px; }
 
 .reach-content > div, .finance-content > div { width: 100%; height: 100%; min-height: 0; }
 .reach-content > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(8px, .65vw, 24px); }
@@ -141,8 +170,9 @@ h1 { margin: 0; color: #f5fbfd; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .reach-dial-copy > span { color: var(--text-secondary); font-size: clamp(13px, .82vw, 31px); line-height: 1.45; }
 .reach-dial-copy > strong { display: block; margin-top: clamp(10px, .8vw, 30px); font-size: clamp(36px, 2.7vw, 102px); font-weight: 650; letter-spacing: -.04em; line-height: 1; }
 .reach-wave { height: clamp(38px, 3.5vw, 132px); display: flex; align-items: end; gap: clamp(4px, .3vw, 12px); margin-top: clamp(10px, .8vw, 30px); border-bottom: 1px solid rgba(106, 180, 209, .15); }
-.reach-wave i { flex: 1; height: 28%; background: linear-gradient(var(--dial-color), rgba(62, 134, 163, .08)); opacity: .72; }
-.reach-wave i:nth-child(2) { height: 44%; } .reach-wave i:nth-child(3) { height: 36%; } .reach-wave i:nth-child(4) { height: 61%; } .reach-wave i:nth-child(5) { height: 53%; } .reach-wave i:nth-child(6) { height: 82%; }
+.reach-wave i { position: relative; flex: 1; background: linear-gradient(var(--dial-color), rgba(62, 134, 163, .08)); opacity: .72; transition: opacity 140ms ease, filter 140ms ease; }
+.reach-wave i:hover { opacity: 1; filter: brightness(1.2); }
+.reach-wave i span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .finance-content > div { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(235px, .82fr); gap: clamp(8px, .65vw, 24px); }
 .finance-revenue-hero { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: clamp(18px, 1.25vw, 48px); }
@@ -162,6 +192,7 @@ h1 { margin: 0; color: #f5fbfd; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .finance-gauge i { position: absolute; left: 47%; top: 47%; z-index: 2; width: 6%; aspect-ratio: 1; border-radius: 50%; background: #e0fbff; }
 .finance-gauge span { display: none; }
 .finance-gauge-card .monitor-kpi { padding: 0; border: 0; background: transparent; box-shadow: none; }
+.finance-gauge-card .monitor-kpi::after { display: none; }
 .finance-gauge-card .monitor-kpi > strong { font-size: clamp(25px, 1.75vw, 66px); }
 
 @media (max-width: 1180px) {

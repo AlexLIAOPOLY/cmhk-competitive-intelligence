@@ -125,14 +125,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=34"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=35"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=17"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=18"', html)
             self.assertIn("--surface: #091725", style)
             self.assertIn("metric-sparkline", script)
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
@@ -160,20 +160,20 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 self.assertNotIn(company, html)
                 self.assertNotIn(company, script)
             selected_metrics = (
-                "基站总数（4G）",
-                "基站总数（5G）",
-                "智算能力 PFLOPS",
-                "总移动用户数",
-                "移动综合ARPU",
-                "家庭宽带用户数",
-                "家庭户均收益（ARPU）",
-                "客户数（大中型企业/中小企业-参考政府公布的分类）",
-                "项目签约额",
-                "全港实体门市数量",
-                "官方手机应用程式 (如MyLink) 活跃用户数",
+                "4G基站总数",
+                "5G基站总数",
+                "互联网骨干带宽",
+                "移动客户数",
+                "移动ARPU",
+                "有线宽带客户数",
+                "家庭客户综合ARPU",
+                "政企客户数",
+                "物联网卡客户数",
+                "4G国际漫游覆盖",
+                "5G国际漫游覆盖",
                 "营运收入",
-                "EBITDA率",
-                "净利润",
+                "EBITDA",
+                "股东应占利润",
             )
             for metric in selected_metrics:
                 self.assertIn(metric, script)
@@ -188,6 +188,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertNotIn("setupTabs", script)
             self.assertNotIn("extendNewsRail", script)
             self.assertIn("IntersectionObserver", script)
+            self.assertIn("2024年末", script)
+            self.assertIn("data-tooltip", script)
+            self.assertIn("data-source", script)
+            self.assertIn("中国移动公开数据", script)
+            self.assertIn("[263.7, 283.0, 244.8, 249.3, 263.8, 280.0, 250.9]", script)
+            self.assertNotIn("342.8", script)
+            self.assertNotIn("6,880", script)
             self.assertIn('classList.add("motion-enabled")', script)
             self.assertNotIn("/api/strategic-briefs", script)
             self.assertNotIn("company-benchmarks", script)
