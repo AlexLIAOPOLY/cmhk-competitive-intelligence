@@ -1092,7 +1092,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre190321.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2018"
+      "source_document_id": "china_mobile_results_2018",
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 156.69,
+          "unit": "million_subscribers",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2019",
@@ -1102,7 +1109,23 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre200319.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2019"
+      "source_document_id": "china_mobile_results_2019",
+      "comparative_evidence": {
+        "FY2018": {
+          "fixed_broadband_subscribers": {
+            "value": 156.69,
+            "unit": "million_subscribers",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative wireline broadband customers"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 187.04,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2020",
@@ -1112,7 +1135,23 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre210325.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2020"
+      "source_document_id": "china_mobile_results_2020",
+      "comparative_evidence": {
+        "FY2019": {
+          "fixed_broadband_subscribers": {
+            "value": 187.04,
+            "unit": "million_subscribers",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative wireline broadband customers"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 210.32,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2021",
@@ -1122,7 +1161,23 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre220323.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2021"
+      "source_document_id": "china_mobile_results_2021",
+      "comparative_evidence": {
+        "FY2020": {
+          "fixed_broadband_subscribers": {
+            "value": 210.32,
+            "unit": "million_subscribers",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative wireline broadband customers"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 240.11,
+          "unit": "million_subscribers",
+          "locator": "FY2021 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2022",
@@ -1133,7 +1188,21 @@
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_results_2022",
+      "comparative_evidence": {
+        "FY2021": {
+          "fixed_broadband_subscribers": {
+            "value": 240.11,
+            "unit": "million_subscribers",
+            "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative wireline broadband customers"
+          }
+        }
+      },
       "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 272.17,
+          "unit": "million_subscribers",
+          "locator": "FY2022 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        },
         "5g_base_stations": {
           "value": 0.48,
           "unit": "million_base_stations",
@@ -1150,6 +1219,15 @@
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_results_2023",
+      "comparative_evidence": {
+        "FY2022": {
+          "fixed_broadband_subscribers": {
+            "value": 272.17,
+            "unit": "million_subscribers",
+            "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative wireline broadband customers"
+          }
+        }
+      },
       "evidence": {
         "5g_base_stations": {
           "value": 0.62,

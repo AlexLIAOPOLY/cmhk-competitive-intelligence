@@ -9125,7 +9125,7 @@
         "china_mobile_results_2016",
         "china_mobile_sd_2016"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -9358,7 +9358,7 @@
         "china_mobile_sd_2017",
         "china_mobile_press_2017"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -9564,26 +9564,31 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 156.7,
-      "official_value": 156.7,
+      "value": 156.69,
+      "official_value": 156.69,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group wireline broadband customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2018",
-        "china_mobile_ops_2018",
-        "china_mobile_results_2018"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_mobile_results_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre190321.pdf",
+      "verification_sources": [
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -9891,26 +9896,31 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 187.0,
-      "official_value": 187.0,
+      "value": 187.04,
+      "official_value": 187.04,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group wireline broadband customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2019",
-        "china_mobile_ops_2019",
-        "china_mobile_results_2019"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_mobile_results_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre200319.pdf",
+      "verification_sources": [
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -10221,26 +10231,31 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 210.3,
-      "official_value": 210.3,
+      "value": 210.32,
+      "official_value": 210.32,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group wireline broadband customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2020",
-        "china_mobile_ops_2020",
-        "china_mobile_results_2020"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_mobile_results_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre210325.pdf",
+      "verification_sources": [
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -10578,26 +10593,31 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 240,
-      "official_value": 240,
+      "value": 240.11,
+      "official_value": 240.11,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group wireline broadband customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2021",
-        "china_mobile_ops_2021",
-        "china_mobile_results_2021"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_mobile_results_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre220323.pdf",
+      "verification_sources": [
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -10900,26 +10920,31 @@
       "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
-      "value": 272,
-      "official_value": 272,
+      "value": 272.17,
+      "official_value": 272.17,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group wireline broadband customers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2022",
-        "china_mobile_ops_2022",
-        "china_mobile_results_2022"
+      "verification_status": "official_two_distinct_sources",
+      "verification_count": 2,
+      "distinct_source_document_count": 2,
+      "distinct_source_document_ids": [
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "china_mobile_results_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre230323.pdf",
+      "verification_sources": [
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -11239,7 +11264,7 @@
         "china_mobile_ops_2023",
         "china_mobile_results_2023"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -11491,7 +11516,7 @@
         "china_mobile_ops_2024",
         "china_mobile_results_2024"
       ],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",
@@ -11720,7 +11745,7 @@
       "primary_source_url": "",
       "verification_sources": [],
       "candidate_sources": [],
-      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
+      "quality_note": "FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series."
     },
     {
       "operator_id": "china_mobile",

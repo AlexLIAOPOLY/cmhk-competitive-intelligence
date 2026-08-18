@@ -203,6 +203,18 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {"china_mobile_results_2017", "china_mobile_sd_2017", "china_mobile_press_2017"},
         )
 
+    def test_china_mobile_fy2018_to_fy2022_broadband_preserves_exact_two_source_values(self):
+        expected = {2018: 156.69, 2019: 187.04, 2020: 210.32, 2021: 240.11, 2022: 272.17}
+        for year, value in expected.items():
+            row = self.index[("china_mobile", year, "fixed_broadband_subscribers")]
+            self.assertEqual(row["value"], value)
+            self.assertEqual(row["distinct_source_document_count"], 2)
+            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+            self.assertEqual(
+                row["verification_sources"],
+                [f"china_mobile_results_{year}", f"china_mobile_results_{year + 1}"],
+            )
+
     def test_china_mobile_total_base_station_history_keeps_exact_source_limits(self):
         strict_counts = {2019: 2, 2020: 3, 2021: 1, 2022: 1, 2023: 1}
         for year, value in ((2019, 4.48), (2020, 5.14), (2021, 5.50), (2022, 6.0), (2023, 6.60)):

@@ -37,7 +37,7 @@
       "below_three_source_rows": 220,
       "three_source_coverage_pct": 44.44,
       "legacy_count_ge3_but_distinct_lt3": 0,
-      "distinct_source_count_distribution": "{\"0\": 180, \"1\": 27, \"2\": 13, \"3\": 129, \"4\": 40, \"5\": 7}",
+      "distinct_source_count_distribution": "{\"0\": 175, \"1\": 27, \"2\": 18, \"3\": 129, \"4\": 40, \"5\": 7}",
       "quality_gate_status": "backlog_open",
       "primary_csv": "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
     },

@@ -12,9 +12,9 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 191
+- `official_single_source`: 186
 - `official_three_distinct_sources_verified`: 176
-- `official_two_distinct_sources`: 13
+- `official_two_distinct_sources`: 18
 - `source_gap_confirmed`: 182
 
 ## 三来源认证行（按运营商）
