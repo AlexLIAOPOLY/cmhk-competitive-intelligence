@@ -107,7 +107,7 @@
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span>${esc(group)}</span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metric.unitLabel || metric.unit)}</option>`).join("")}</select></label></fieldset>
-        <fieldset><legend><i>03</i>选择年限 <small>截至最后共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>最近 ${years} 个可比年度</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
+        <fieldset><legend><i>03</i>选择年限 <small>截至最后共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
       const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
@@ -155,8 +155,23 @@
     const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
     host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header>
-      <div class="competitor-insight" id="competitorInsight" role="status" aria-live="polite"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 对比解析</b><span>正在读取当前对比图中的真实数据…</span></div></div>
       ${chart}
+      <section class="competitor-insight is-loading" id="competitorInsight" role="status" aria-live="polite" aria-busy="true">
+        <header class="competitor-insight-header">
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 数据洞察</b><small data-competitor-insight-status>正在分析当前图表</small></div></div>
+          <span class="competitor-insight-badge" data-competitor-insight-badge>ANALYSING</span>
+        </header>
+        <div class="competitor-insight-body">
+          <div class="competitor-insight-loading" aria-hidden="true"><span></span><span></span><span></span></div>
+          <p class="competitor-insight-copy" data-competitor-insight-text>正在比较趋势方向、最新差距与区间变化…</p>
+          <dl class="competitor-insight-facts">
+            <div><dt>可比区间</dt><dd>${esc(fallbackInsight.period)}</dd></div>
+            <div><dt>最新共同年差距</dt><dd>${esc(fallbackInsight.gap)}</dd></div>
+            <div><dt>趋势关系</dt><dd>${esc(fallbackInsight.relation)}</dd></div>
+          </dl>
+        </div>
+        <footer><span>数据口径</span><p>${esc(fallbackInsight.caveat)}</p></footer>
+      </section>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
   }
@@ -167,19 +182,57 @@
 
   function buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit }) {
     const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
-    const summaries = companies.map((company) => {
-      const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
-      const first = points[0];
-      const last = points.at(-1);
-      if (!first || !last) return "";
-      const change = last.cell.value - first.cell.value;
-      const direction = Math.abs(change) < 1e-9 ? "保持不变" : change > 0 ? "上升" : "下降";
-      return `${companyLabel(company)} ${first.year}—${last.year}由${competitorComparator(first.cell.comparator)}${format(first.cell.value)}${unit}至${competitorComparator(last.cell.comparator)}${format(last.cell.value)}${unit}，整体${direction}`;
-    }).filter(Boolean);
     const cells = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)).filter(Boolean));
     const hasSharedScope = cells.some((cell) => /shared|共建|共享/i.test(String(cell.scope || "")));
-    const caveat = hasSharedScope ? "存在共建共享口径，相关数值不可相加。" : "披露期可能不同，仅用于比较已披露趋势。";
-    return `${summaries.slice(0, 3).join("；")}${summaries.length > 3 ? `；另有${summaries.length - 3}家公司见图` : ""}。${caveat}`;
+    const hasScopeBreak = cells.some((cell) => /scope change|口径变化|unsafe|not comparable|不可比|restated/i.test([cell.scope, cell.basis, cell.note].filter(Boolean).join(" ")));
+    const comparableYears = visibleYears.filter((year) => companies.every((company) => Number.isFinite(lookup.get(`${company}|${year}`)?.value)));
+    const firstYear = comparableYears[0];
+    const lastYear = comparableYears.at(-1);
+    const valuesAt = (year) => companies.map((company) => ({ company, label: companyLabel(company), cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
+    const firstValues = valuesAt(firstYear);
+    const lastValues = valuesAt(lastYear);
+    const movements = companies.map((company) => {
+      const first = lookup.get(`${company}|${firstYear}`);
+      const last = lookup.get(`${company}|${lastYear}`);
+      const change = last.value - first.value;
+      return { company, change, direction: Math.abs(change) < 1e-9 ? "稳定" : change > 0 ? "上升" : "下降" };
+    });
+    const spread = (values) => values.length > 1 ? Math.max(...values.map((item) => item.cell.value)) - Math.min(...values.map((item) => item.cell.value)) : 0;
+    const firstSpread = spread(firstValues);
+    const lastSpread = spread(lastValues);
+    const hasBounds = [...firstValues, ...lastValues].some((item) => item.cell.comparator && item.cell.comparator !== "=");
+    const spreadDelta = lastSpread - firstSpread;
+    const tolerance = Math.max(Math.abs(firstSpread), Math.abs(lastSpread), 1) * .005;
+    const relation = hasScopeBreak ? "口径变化" : hasSharedScope ? "共享口径" : hasBounds ? "边界值" : Math.abs(spreadDelta) <= tolerance ? "绝对差距稳定" : spreadDelta < 0 ? "绝对差距收窄" : "绝对差距扩大";
+    const directions = [...new Set(movements.map((item) => item.direction))];
+    const directionSummary = directions.length === 1
+      ? directions[0] === "稳定" ? `较${firstYear}年均保持稳定` : `较${firstYear}年均${directions[0]}`
+      : `较${firstYear}年走势出现分化`;
+    const sharedSameValue = hasSharedScope && lastValues.every((item) => item.cell.value === lastValues[0]?.cell.value && item.cell.comparator === lastValues[0]?.cell.comparator);
+    const latestComparison = sharedSameValue
+      ? `${lastYear}年双方披露同一共建共享口径${competitorComparator(lastValues[0].cell.comparator)}${format(lastValues[0].cell.value)}${unit}`
+      : `${lastYear}年${lastValues.map((item) => `${item.label}为${competitorComparator(item.cell.comparator)}${format(item.cell.value)}${unit}`).join("、")}`;
+    const gapFinding = hasScopeBreak
+      ? "区间内存在口径变化，不计算趋势差距"
+      : hasSharedScope
+      ? "该指标涉及共建共享口径，数值不可相加"
+      : hasBounds
+        ? "部分数值为边界披露，不对差距作精确计算"
+        : `所选公司最大最小值的绝对差较${firstYear}年${relation.replace("绝对差距", "")}`;
+    const caveats = ["披露期或财年结束日可能不同，仅比较共同披露年度，不推算缺失值。"];
+    if (hasSharedScope) caveats.push("存在共建共享口径，相关数值不可相加。");
+    if (hasScopeBreak) caveats.push("区间内存在口径变化，禁止跨口径计算趋势或差距。");
+    const isPercent = unit === "%" || /百分/.test(unit);
+    const headline = hasScopeBreak
+      ? `${firstYear}—${lastYear}共同披露期内存在口径变化；${latestComparison}，不作跨口径趋势或差距计算。`
+      : `${firstYear}—${lastYear}共同披露期内，所选公司${directionSummary}；${latestComparison}，${gapFinding}。`;
+    return {
+      headline,
+      period: `${firstYear}—${lastYear}`,
+      gap: hasScopeBreak || hasSharedScope || hasBounds ? `${lastYear} · 不作精算` : `${lastYear} · ${format(lastSpread)}${isPercent ? "个百分点" : unit}`,
+      relation,
+      caveat: caveats.join(" "),
+    };
   }
 
   function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
@@ -231,6 +284,19 @@
     return `<figure class="competitor-chart-card"><figcaption><div><strong>多年趋势对比</strong><span>缺失年度保持断点，不做估算或补齐</span></div><div class="competitor-chart-legend">${legend}</div></figcaption><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><p>注：按各公司披露年度展示；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
   }
 
+  function settleCompetitorInsight(card, { mode, text }) {
+    if (!card) return;
+    const isAi = mode === "ai";
+    card.classList.remove("is-loading");
+    card.classList.toggle("is-ai", isAi);
+    card.setAttribute("aria-busy", "false");
+    card.querySelector("[data-competitor-insight-icon]").textContent = isAi ? "AI" : "数据";
+    card.querySelector("[data-competitor-insight-title]").textContent = isAi ? "AI 数据洞察" : "数据即时洞察";
+    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "模型已完成对比分析" : "基于当前图表即时计算";
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "AI ANALYSED" : "DATA READY";
+    card.querySelector("[data-competitor-insight-text]").textContent = text;
+  }
+
   async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
@@ -240,20 +306,12 @@
       if (!response.ok || !result.ok) throw new Error(response.status === 404 ? "HTTP 404" : (result.error || `HTTP ${response.status}`));
       if (requestId !== state.competitorInsightRequest) return;
       const card = document.querySelector("#competitorInsight");
-      if (card) {
-        card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
-        card.querySelector("[data-competitor-insight-title]").textContent = "AI 对比解析";
-        card.querySelector("div span").textContent = result.insight;
-      }
+      settleCompetitorInsight(card, { mode: "ai", text: result.insight });
     } catch (error) {
       if (error.name === "AbortError") return;
       const card = document.querySelector("#competitorInsight");
       if (requestId === state.competitorInsightRequest && card) {
-        card.querySelector("[data-competitor-insight-icon]").textContent = "数据";
-        card.querySelector("[data-competitor-insight-title]").textContent = "即时数据解读";
-        card.querySelector("div span").textContent = error.message.includes("404")
-          ? `AI 服务正在等待安全加载；${fallbackInsight}`
-          : `AI 解析暂不可用；${fallbackInsight}`;
+        settleCompetitorInsight(card, { mode: "data", text: fallbackInsight.headline });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;

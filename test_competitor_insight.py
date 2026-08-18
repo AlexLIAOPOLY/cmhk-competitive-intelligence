@@ -47,6 +47,8 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("官方来源", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
         self.assertLessEqual(len(result["insight"]), 160)
+        self.assertIn("不要逐家公司机械复述", captured["body"]["messages"][0]["content"])
+        self.assertIn("差距扩大或收窄", captured["body"]["messages"][0]["content"])
 
     def test_browser_cells_are_not_trusted(self):
         captured = {}
