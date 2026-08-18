@@ -4305,6 +4305,15 @@
           "locator": "home subscribers update"
         }
       },
+      "comparative_evidence": {
+        "FY2024": {
+          "mobile_dou": {
+            "value": 28.7,
+            "unit": "GB_per_user_month",
+            "locator": "subscriber and usage KPI comparative column"
+          }
+        }
+      },
       "source_document_id": "jio_2025_q4"
     },
     {
@@ -4640,6 +4649,15 @@
       "url": "https://www.ril.com/sites/default/files/2024-04/RIL-4Q-FY24-Analyst-Presentation-22Apr24-website.pdf",
       "source_type": "official_results_presentation",
       "publisher": "Reliance Industries Limited",
+      "comparative_evidence": {
+        "FY2023": {
+          "mobile_dou": {
+            "value": 23.1,
+            "unit": "GB_per_user_month",
+            "locator": "RJIL key operating metrics comparative column"
+          }
+        }
+      },
       "source_document_id": "jio_2024_q4"
     },
     {

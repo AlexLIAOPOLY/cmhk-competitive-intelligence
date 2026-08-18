@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 95,
-                "Reliance Jio": 40,
+                "Reliance Jio": 42,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 78,
@@ -417,7 +417,20 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertNotIn("jio_2023_media_release", revenue["verification_sources"])
 
         dou = self.index[("reliance_jio", 2023, "mobile_dou")]
-        self.assertEqual(dou["distinct_source_document_count"], 2)
+        self.assertEqual(
+            dou["verification_sources"],
+            ["reliance_jio_ar_2023", "jio_2023_q4", "jio_2024_q4"],
+        )
+        self.assertEqual(dou["distinct_source_document_count"], 3)
+        self.assertEqual(dou["triple_source_status"], "three_distinct_sources_verified")
+
+        next_year_dou = self.index[("reliance_jio", 2024, "mobile_dou")]
+        self.assertEqual(
+            next_year_dou["verification_sources"],
+            ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2025_q4"],
+        )
+        self.assertEqual(next_year_dou["distinct_source_document_count"], 3)
+        self.assertEqual(next_year_dou["triple_source_status"], "three_distinct_sources_verified")
 
         homes = self.index[("reliance_jio", 2023, "connected_homes")]
         self.assertEqual(homes["verification_sources"], ["reliance_jio_ar_2023"])

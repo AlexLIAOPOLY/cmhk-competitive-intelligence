@@ -13,14 +13,14 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_single_source`: 10
-- `official_three_distinct_sources_verified`: 348
-- `official_two_distinct_sources`: 20
+- `official_three_distinct_sources_verified`: 350
+- `official_two_distinct_sources`: 18
 - `source_gap_confirmed`: 166
 
 ## 三来源认证行（按运营商）
 
 - Bharti Airtel: 95
-- Reliance Jio: 40
+- Reliance Jio: 42
 - 中国广电: 24
 - 中国电信: 58
 - 中国移动: 78
