@@ -1,30 +1,33 @@
 # 全球五大运营商数据库质量审计
 
-- 结论：`pass`
-- 明细行：378
-- 有值行：334
-- 来源条目：86
+- 结论：`backlog_open`
+- 明细行：399
+- 有值行：354
+- 来源条目：128
 - 重复键：0
 - 无效来源引用：0
 
 ## 核验等级
 
 - `not_applicable_precommercial`: 7
+- `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_multi_source_verified`: 298
-- `official_single_source`: 30
-- `source_gap_confirmed`: 37
+- `official_single_source`: 16
+- `official_three_distinct_sources_verified`: 174
+- `official_two_distinct_sources`: 148
+- `source_gap_confirmed`: 38
 
 ## 缺口（含不适用）
 
 - Bharti Airtel: 10
 - Reliance Jio: 43
 - 中国电信: 17
-- 中国移动: 8
+- 中国移动: 9
 - 中国联通: 24
 
 ## 关键口径断点
 
+- A formal three-source claim requires at least three distinct underlying source documents; mirrored URLs, evidence sections, and snapshots of one document count once.
 - 5G package subscribers and 5G network subscribers are distinct metrics.
 - China Telecom and China Unicom 5G base-station values describe a shared network and must not be added together.
 - Airtel network-tower scope changes around FY2020; the narrower 194,409 and group KPI 219,546 values are documented, with group KPI retained.

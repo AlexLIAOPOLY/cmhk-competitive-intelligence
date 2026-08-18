@@ -1,11 +1,11 @@
 {
   "id": "knowledge_integrity_audits",
   "title": "小竞AI知识库完整性审计",
-  "summary": "统一检查当前竞对/云厂商/宏观政策知识库的 manifest、入口文件、行数、official_value、verification_status、verification_count 和 source-gap 边界。",
+  "summary": "统一检查业务知识库的常见披露字段、严格三来源文档门槛、来源缺口和小竞AI使用边界。",
   "source_type": "local_audit",
   "visibility": "hidden",
   "scope": "小竞AI数据库选择、RAG 检索、预测前数据质量检查和维护验收。",
-  "updated_at": "2026-06-19",
+  "updated_at": "2026-08-18",
   "tags": [
     "audit",
     "knowledge-integrity",
@@ -23,21 +23,27 @@
   ],
   "entrypoints": [
     "knowledge_integrity_audit_2026-06-19.md",
-    "knowledge_integrity_audit_2026-06-19.csv"
+    "knowledge_integrity_audit_2026-06-19.csv",
+    "cross_database_common_disclosure_audit_2026-08-18.md",
+    "cross_database_common_disclosure_audit_2026-08-18.csv",
+    "cross_database_common_disclosure_audit_2026-08-18.json",
+    "triple_source_backlog_2026-08-18.csv",
+    "common_disclosure_catalog_2026-08-18.csv"
   ],
   "quality": {
-    "status": "pass",
-    "row_count": 9,
-    "datasets_checked": 9,
-    "passed": 9,
-    "failed": 0,
+    "status": "backlog_open",
+    "datasets_checked": 5,
+    "available_value_rows": 12798,
+    "three_distinct_source_certified_rows": 6109,
+    "below_three_source_rows": 6689,
+    "missing_common_disclosures": 26,
     "notes": [
-      "审计记录本身是维护证据，不是预测目标数据。",
-      "若 failed > 0，必须先修复对应知识库或登记 source-gap 边界，再用于正式结论。",
-      "当前审计检查 verification_count < 2、official_value 缺失、source-gap 带值、manifest row_count 和 entrypoints。"
+      "三来源按不同文档URL去重，不以旧verification_count直接代替。",
+      "未通过的现有值保留为可追溯资料，但小竞AI不得称为三来源验证。",
+      "新增正式数值必须先通过三来源文档门槛。"
     ]
   },
   "version": "2026-06-19",
   "built_at": "2026-06-19",
-  "last_audit_path": "agent_knowledge/knowledge_integrity_audits/knowledge_integrity_audit_2026-06-19.md"
+  "last_audit_path": "agent_knowledge/knowledge_integrity_audits/cross_database_common_disclosure_audit_2026-08-18.md"
 }

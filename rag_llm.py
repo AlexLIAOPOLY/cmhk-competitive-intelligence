@@ -8,6 +8,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
@@ -20,6 +21,73 @@ AGENT_KNOWLEDGE_SKIP_NAMES = {".DS_Store"}
 DEFAULT_CONTEXT_TOKEN_BUDGET = int(os.environ.get("CMHK_RAG_CONTEXT_TOKEN_BUDGET", "9000"))
 MAX_CHUNK_TOKENS = int(os.environ.get("CMHK_RAG_MAX_CHUNK_TOKENS", "1400"))
 TOKEN_HEADROOM = int(os.environ.get("CMHK_RAG_TOKEN_HEADROOM", "1200"))
+
+
+def _normalized_source_url(value: Any) -> str:
+    raw = str(value or "").strip()
+    if not re.match(r"^https?://", raw, re.IGNORECASE):
+        return ""
+    parts = urlsplit(raw)
+    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path, parts.query, ""))
+
+
+def _strict_source_document_count(
+    row: dict[str, Any],
+    *,
+    source_registry_path: Path | None = None,
+) -> int:
+    """Count underlying documents, deduplicating mirrors when metadata permits."""
+    documents = {
+        url
+        for field in ["official_source_url", "primary_source_url", "来源URL"]
+        if (url := _normalized_source_url(row.get(field)))
+    }
+    try:
+        sources = json.loads(str(row.get("verification_sources") or "[]"))
+    except Exception:
+        sources = []
+    if not isinstance(sources, list):
+        sources = []
+    registry: dict[str, dict[str, Any]] = {}
+    if source_registry_path and source_registry_path.exists():
+        try:
+            payload = json.loads(source_registry_path.read_text(encoding="utf-8"))
+            items = payload.get("sources", []) if isinstance(payload, dict) else payload
+            registry = {
+                str(item.get("source_id") or item.get("id")): item
+                for item in items
+                if isinstance(item, dict)
+            }
+        except Exception:
+            registry = {}
+    for source in sources:
+        item = source if isinstance(source, dict) else registry.get(str(source), {})
+        candidate = item.get("url") if isinstance(item, dict) else None
+        document_id = str(item.get("source_document_id") or "").strip() if isinstance(item, dict) else ""
+        if document_id:
+            if url := _normalized_source_url(candidate):
+                documents.discard(url)
+            documents.add(f"document:{document_id}")
+        elif url := _normalized_source_url(candidate):
+            documents.add(url)
+    return len(documents)
+
+
+def _strict_three_source_text(count: int) -> str:
+    status = "three_distinct_sources_verified" if count >= 3 else "below_three_source_threshold"
+    return f"distinct_source_document_count={count}; triple_source_status={status}"
+
+
+def _strict_three_source_row_text(row: dict[str, Any], count: int) -> str:
+    """Describe evidence without certifying missing or derived values."""
+    status_text = str(row.get("verification_status") or row.get("核验状态") or "").lower()
+    value_fields = [field for field in ("official_value", "standardized_value", "value") if field in row]
+    has_value = any(str(row.get(field) or "").strip() for field in value_fields) if value_fields else True
+    if not has_value:
+        return "distinct_source_document_count=0; triple_source_status=not_applicable_missing_value"
+    if "derived" in status_text or "推导" in status_text:
+        return f"distinct_source_document_count={count}; triple_source_status=derived_not_directly_disclosed"
+    return _strict_three_source_text(count)
 
 
 def _token_encoder(model: str | None = None):
@@ -524,12 +592,30 @@ def _global_operator_exact_metric_chunks(
         "5g_package_subscribers": ["5g套餐用户", "5g package subscribers"],
         "5g_network_subscribers": ["5g网络用户", "5g users", "5g network subscribers"],
         "fixed_broadband_subscribers": ["固定宽带用户", "固网宽带用户", "宽带用户", "fixed broadband"],
+        "integrated_broadband_network_customers": ["融合宽带网络客户", "融合宽带客户", "integrated broadband network customers"],
+        "gigabit_broadband_customers": ["千兆宽带客户", "千兆宽带用户", "gigabit broadband customers"],
         "connected_homes": ["连接家庭", "已连接家庭", "connected homes", "connected premises"],
         "mobile_arpu": ["移动arpu", "mobile arpu", "arpu"],
         "broadband_arpu": ["宽带arpu", "broadband arpu"],
+        "household_customer_blended_arpu": ["家庭客户综合arpu", "家庭综合arpu", "household customer blended arpu"],
+        "integrated_package_arpu": ["融合套餐arpu", "融合arpu", "integrated package arpu"],
         "mobile_dou": ["移动dou", "户均流量", "月户均流量", "data consumption per user", "dou"],
         "total_data_traffic": ["总数据流量", "年度数据流量", "total data traffic"],
         "handset_data_traffic": ["手机上网流量", "handset data traffic"],
+        "iot_connections": ["物联网连接", "iot connections", "iot connection"],
+        "mobile_broadband_integration_rate": ["移动宽带融合率", "移宽融合率", "mobile broadband integration rate"],
+        "government_enterprise_customers": ["政企客户", "government enterprise customers"],
+        "households_gigabit_coverage": ["千兆覆盖家庭", "千兆家庭覆盖", "households gigabit coverage"],
+        "5g_network_penetration": ["5g网络渗透率", "5g渗透率", "5g network penetration"],
+        "gigabit_broadband_penetration": ["千兆宽带渗透率", "gigabit broadband penetration"],
+        "total_connectivity_subscribers": ["连接用户总规模", "总连接用户", "total connectivity subscribers"],
+        "integrated_subscriber_penetration": ["融合用户渗透率", "integrated subscriber penetration"],
+        "mobile_population_coverage": ["移动人口覆盖率", "mobile population coverage"],
+        "5g_a_deployment_cities": ["5g-a城市", "5g-a部署城市", "5g a cities"],
+        "cloud_ai_product_users": ["云ai产品用户", "cloud-ai users", "cloud ai product users"],
+        "intelligent_compute_capacity": ["智算规模", "智算能力", "intelligent compute capacity"],
+        "ten_g_pon_ports": ["10g pon端口", "10g pon ports"],
+        "urban_gigabit_coverage": ["城市千兆覆盖率", "urban gigabit coverage"],
         "network_towers": ["网络铁塔", "铁塔数", "network towers"],
         "mobile_broadband_base_stations": ["移动宽带基站", "mobile broadband base stations"],
         "total_base_stations": ["基站总数", "全部基站", "total base stations"],
@@ -551,12 +637,35 @@ def _global_operator_exact_metric_chunks(
         for metric_key, aliases in metric_aliases.items()
         if any(alias in lowered for alias in aliases)
     }
-    if "broadband_arpu" in matched_metrics:
+    if "broadband_arpu" in matched_metrics or "household_customer_blended_arpu" in matched_metrics:
         matched_metrics.discard("mobile_arpu")
+    if "integrated_package_arpu" in matched_metrics:
+        matched_metrics.discard("mobile_arpu")
+        matched_metrics.discard("broadband_arpu")
     if "revenue_from_operations" in matched_metrics or "value_of_sales_and_services" in matched_metrics:
         matched_metrics.discard("revenue")
     if "ebitda" in matched_metrics:
         matched_metrics.discard("ebit")
+
+    # Keep subject-to-metric associations in compound questions instead of
+    # returning every metric for every named operator.
+    requested_pairs: set[tuple[str, str]] = set()
+    for clause in re.split(r"[,，、;；]", lowered):
+        clause_subjects = {
+            operator_id
+            for operator_id, aliases in subject_aliases.items()
+            if any(alias in clause for alias in aliases)
+        }
+        clause_metrics = {
+            metric_key
+            for metric_key, aliases in metric_aliases.items()
+            if any(alias in clause for alias in aliases)
+        }
+        if "broadband_arpu" in clause_metrics or "household_customer_blended_arpu" in clause_metrics or "integrated_package_arpu" in clause_metrics:
+            clause_metrics.discard("mobile_arpu")
+        if "integrated_package_arpu" in clause_metrics:
+            clause_metrics.discard("broadband_arpu")
+        requested_pairs.update((subject, metric) for subject in clause_subjects for metric in clause_metrics)
 
     years = {
         int(value)
@@ -577,6 +686,13 @@ def _global_operator_exact_metric_chunks(
             continue
         if (row.get("metric_key") or "").strip() not in matched_metrics:
             continue
+        if requested_pairs and (
+            (row.get("operator_id") or "").strip(),
+            (row.get("metric_key") or "").strip(),
+        ) not in requested_pairs:
+            continue
+        if not str(row.get("official_value") or "").strip():
+            continue
         try:
             row_year = int((row.get("year") or "0").strip())
         except ValueError:
@@ -586,14 +702,17 @@ def _global_operator_exact_metric_chunks(
         filtered.append(row)
 
     source = csv_path.relative_to(ROOT).as_posix()
+    registry_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "sources.json"
     chunks: list[dict[str, Any]] = []
     for row in filtered[:24]:
+        strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
         text = (
             f"精确年度运营商指标行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
             f"metric_zh={row.get('metric_zh')}; official_value={row.get('official_value')} {row.get('unit')}; "
             f"comparator={row.get('comparator')}; scope={row.get('scope')}; basis={row.get('basis')}; "
             f"verification_status={row.get('verification_status')}; verification_count={row.get('verification_count')}; "
+            f"{_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
@@ -690,15 +809,18 @@ def _local_hk_operator_exact_metric_chunks(
         filtered.append(row)
 
     source = csv_path.relative_to(ROOT).as_posix()
+    registry_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "sources.json"
     chunks: list[dict[str, Any]] = []
     for row in filtered[:30]:
+        strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
         value_text = f"{row.get('official_value')} {row.get('unit')}" if row.get("official_value") else "未披露（source_gap_confirmed）"
         text = (
             f"香港本地運營商精確年度指標行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
             f"metric_zh={row.get('metric_zh')}; official_value={value_text}; comparator={row.get('comparator')}; "
             f"scope={row.get('scope')}; basis={row.get('basis')}; verification_status={row.get('verification_status')}; "
-            f"verification_count={row.get('verification_count')}; primary_source_url={row.get('primary_source_url')}; "
+            f"verification_count={row.get('verification_count')}; {_strict_three_source_text(strict_sources)}; "
+            f"primary_source_url={row.get('primary_source_url')}; "
             f"quality_note={row.get('quality_note')}.如果狀態為source_gap_confirmed，只能回答未披露，不能當作0或推測。"
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
@@ -964,6 +1086,7 @@ def _product_tariff_exact_chunks(
 
     def row_line(row: dict[str, str]) -> str:
         price = compact_value(row, "月费_HKD", "平均月费_HKD", "公开价格_HKD")
+        strict_sources = _strict_source_document_count(row)
         return (
             f"正式套餐：brand={compact_value(row, '品牌')}; time={compact_value(row, '时间类型')}; "
             f"period={compact_value(row, '期间')}; kind={product_kind(row)}; "
@@ -971,7 +1094,8 @@ def _product_tariff_exact_chunks(
             f"monthly_fee_HKD={price}; local_data_GB={compact_value(row, '本地数据_GB')}; "
             f"broadband_speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
             f"contract_months={compact_value(row, '合约月数')}; "
-            f"verification={compact_value(row, '核验状态')}; source_id={compact_value(row, '来源ID')}."
+            f"verification={compact_value(row, '核验状态')}; {_strict_three_source_text(strict_sources)}; "
+            f"source_id={compact_value(row, '来源ID')}."
         )
 
     chunks: list[dict[str, Any]] = []
@@ -1463,14 +1587,17 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
         status = (row.get("verification_status") or "").strip()
         evidence = re.sub(r"\s+", " ", (row.get("official_evidence") or "").strip())
         note = re.sub(r"\s+", " ", (row.get("verification_note") or "").strip())
+        strict_sources = _strict_source_document_count(row)
         text = (
             f"精确季度指标行：subject={row.get('subject')}; period={row.get('period')}; "
             f"metric_key={row.get('metric_key')}; metric_zh={row.get('metric_zh')}; grain={row.get('grain')}; "
             f"standardized_value={standard_value} {row.get('unit')}; official_value={official_value} {official_unit}; "
             f"verification_status={status}; verification_count={verification_count}; "
+            f"{_strict_three_source_text(strict_sources)}; "
             f"official_source_label={row.get('official_source_label')}; official_source_url={row.get('official_source_url')}; "
             f"official_evidence={evidence}; verification_note={note}. "
-            "回答时：只要 verification_count>=2 即代表该行已有多来源核验；"
+            "回答时：只有 distinct_source_document_count>=3 才能称为已通过三来源核验；"
+            "verification_count 只是旧证据条数，同一文档多个章节不能重复计源；"
             "若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。"
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
@@ -1639,7 +1766,8 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
     system_prompt = (
         "你是中国移动战略部公开信息监测系统中的 RAG 助手。"
         "只能基于提供的本地周报、爬取结果和审计上下文回答；如果上下文不足，要明确说明。"
-        "上下文已按 token 预算筛选和必要压缩；回答必须优先使用 official_value、verification_count、source_gap 和审计状态。"
+        "上下文已按 token 预算筛选和必要压缩；回答必须优先使用 official_value、distinct_source_document_count、source_gap 和审计状态。"
+        "只有 distinct_source_document_count>=3 才能称为通过三来源核验；verification_count 可能只是同一文档内的多条证据。"
         "回答要正式、具体、可执行。涉及建议时，分为重点判断、风险、下一步建议。"
     )
     user_prompt = (
@@ -1753,7 +1881,8 @@ def stream_llm_with_rag(question: str):
     system_prompt = (
         "你是中国移动战略部公开信息监测系统中的 RAG 助手。"
         "只能基于提供的本地周报、爬取结果和审计上下文回答；如果上下文不足，要明确说明。"
-        "上下文已按 token 预算筛选和必要压缩；回答必须优先使用 official_value、verification_count、source_gap 和审计状态。"
+        "上下文已按 token 预算筛选和必要压缩；回答必须优先使用 official_value、distinct_source_document_count、source_gap 和审计状态。"
+        "只有 distinct_source_document_count>=3 才能称为通过三来源核验；verification_count 可能只是同一文档内的多条证据。"
         "回答要正式、具体、可执行。涉及建议时，分为：重点判断、风险、下一步建议。"
         "请使用清晰 Markdown：二级标题、编号列表、加粗关键词，避免大段文字堆在一起。"
         "非常重要：请在回答中通过标注如 [1], [2] 来内联引用相应片段的来源（数字对应上下文中的来源编号）。"

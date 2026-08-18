@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import rag_llm
+import agent
 
 
 ROOT = Path(__file__).resolve().parent
@@ -28,7 +29,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
     def test_quality_gate_and_unique_keys(self):
         audit = json.loads((GLOBAL / "quality_audit.json").read_text(encoding="utf-8"))
-        self.assertEqual(audit["status"], "pass")
+        self.assertEqual(audit["status"], "backlog_open")
+        self.assertGreater(audit["below_three_source_rows"], 0)
         self.assertEqual(audit["duplicate_key_count"], 0)
         self.assertEqual(audit["invalid_source_ids"], [])
 
@@ -52,6 +54,23 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for operator_id in ("china_telecom", "china_unicom"):
             row = self.index[(operator_id, 2025, "5g_base_stations")]
             self.assertIn("Shared-network scope", row["quality_note"])
+            self.assertEqual(row["distinct_source_document_count"], 3)
+        for year in (2020, 2021, 2023, 2024):
+            for operator_id in ("china_telecom", "china_unicom"):
+                self.assertEqual(
+                    self.index[(operator_id, year, "5g_base_stations")]["triple_source_status"],
+                    "three_distinct_sources_verified",
+                )
+        for operator_id in ("china_telecom", "china_unicom"):
+            self.assertEqual(
+                self.index[(operator_id, 2022, "5g_base_stations")]["triple_source_status"],
+                "below_three_source_threshold",
+            )
+        for year in range(2021, 2026):
+            self.assertEqual(
+                self.index[("china_mobile", year, "5g_base_stations")]["triple_source_status"],
+                "three_distinct_sources_verified",
+            )
 
     def test_precommercial_and_derived_values_are_not_overstated(self):
         jio = self.index[("reliance_jio", 2016, "total_customers")]
@@ -60,6 +79,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         unicom = self.index[("china_unicom", 2025, "mobile_subscribers")]
         self.assertEqual(unicom["verification_status"], "official_derived_from_verified_rows")
         self.assertEqual(unicom["comparator"], "≈")
+        self.assertEqual(unicom["triple_source_status"], "derived_not_directly_disclosed")
+        missing = self.index[("china_unicom", 2025, "mobile_arpu")]
+        self.assertEqual(missing["distinct_source_document_count"], 0)
+        self.assertEqual(missing["triple_source_status"], "not_applicable_missing_value")
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))
@@ -88,6 +111,85 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             ),
             [],
         )
+
+    def test_xiaojing_ai_retrieves_new_disclosures_with_strict_source_status(self):
+        cases = [
+            ("中国移动2025年融合宽带网络客户", "official_value=329 million_customers", 3),
+            ("中国移动2025年家庭客户综合ARPU", "official_value=44.5 RMB_per_user_month", 3),
+            ("中国电信2025年移动ARPU", "official_value=45.1 RMB_per_user_month", 3),
+            ("中国联通2025年5G网络用户", "official_value=232.18 million_subscribers", 3),
+            ("中国联通2025年连接用户总规模", "official_value=1200 million_connections", 3),
+        ]
+        for question, value_text, strict_count in cases:
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    question,
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn(value_text, combined)
+            self.assertIn(f"distinct_source_document_count={strict_count}", combined)
+
+    def test_exact_iot_value_does_not_count_rounded_documents(self):
+        row = self.index[("china_mobile", 2025, "iot_connections")]
+        self.assertEqual(row["value"], 1482)
+        self.assertEqual(row["distinct_source_document_count"], 2)
+        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+
+    def test_2025_dou_keeps_honest_two_document_status(self):
+        row = self.index[("china_mobile", 2025, "mobile_dou")]
+        self.assertEqual(row["value"], 17.3)
+        self.assertEqual(row["distinct_source_document_count"], 2)
+        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(
+            set(row["verification_sources"]),
+            {"china_mobile_ar_2025", "china_mobile_ar_a_2025"},
+        )
+
+    def test_source_registry_has_canonical_document_identity(self):
+        sources = json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        self.assertTrue(sources)
+        self.assertTrue(all(source.get("source_document_id") for source in sources))
+
+    def test_derived_annual_traffic_is_not_three_source_certified(self):
+        for year in range(2016, 2026):
+            row = self.index[("china_mobile", year, "handset_data_traffic")]
+            self.assertEqual(row["basis"], "official_quarterly_sum")
+            self.assertEqual(row["triple_source_status"], "derived_not_directly_disclosed")
+
+    def test_compound_question_keeps_operator_metric_pairs_and_skips_gaps(self):
+        question = "中国移动2025年融合宽带网络客户、中国电信2025年移动ARPU、中国联通2025年连接用户总规模"
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                question,
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("operator=中国移动", combined)
+        self.assertIn("metric_key=integrated_broadband_network_customers", combined)
+        self.assertIn("operator=中国电信", combined)
+        self.assertIn("official_value=45.1 RMB_per_user_month", combined)
+        self.assertIn("operator=中国联通", combined)
+        self.assertIn("metric_key=total_connectivity_subscribers", combined)
+        self.assertNotIn("operator=中国移动; operator_id=china_mobile; period=FY2025; period_end=2025-12-31; metric_key=mobile_arpu", combined)
+        self.assertNotIn("metric_key=mobile_arpu; metric_zh=移动ARPU; official_value= RMB", combined)
+
+    def test_agent_keeps_original_compound_exact_rows_when_tool_query_drifts(self):
+        dataset_token = agent.SELECTED_DATASET_IDS.set({"global_top5_operators_2016_2025"})
+        request_token = agent.CURRENT_USER_REQUEST.set(
+            "中国移动2025年融合宽带网络客户、中国电信2025年移动ARPU、中国联通2025年连接用户总规模"
+        )
+        try:
+            result = agent._search_local_reports_only("中国移动2025年资本开支", 6)
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+            agent.SELECTED_DATASET_IDS.reset(dataset_token)
+        first_results = result.split("[来源 4:", 1)[0]
+        self.assertIn("metric_key=integrated_broadband_network_customers", first_results)
+        self.assertIn("official_value=45.1 RMB_per_user_month", first_results)
+        self.assertIn("metric_key=total_connectivity_subscribers", first_results)
 
 
 if __name__ == "__main__":

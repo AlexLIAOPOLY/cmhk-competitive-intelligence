@@ -834,7 +834,12 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
             limit=limit,
             dataset_ids=selected_ids,
         )
-        exact_prefixes = ("精確年度運營商指標行：", "香港本地運營商精確年度指標行：")
+        exact_prefixes = (
+            "精确年度运营商指标行：",
+            "精確年度運營商指標行：",
+            "香港本地运营商精确年度指标行：",
+            "香港本地運營商精確年度指標行：",
+        )
         priority = [
             chunk for chunk in original_chunks
             if str(chunk.get("text") or "").startswith(exact_prefixes)

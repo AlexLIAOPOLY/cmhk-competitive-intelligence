@@ -64,7 +64,7 @@ china_mobile,中国移动,2024,handset_data_traffic,available
 china_mobile,中国移动,2024,5g_base_stations,available
 china_mobile,中国移动,2025,mobile_subscribers,available
 china_mobile,中国移动,2025,5g_network_subscribers,available
-china_mobile,中国移动,2025,fixed_broadband_subscribers,available
+china_mobile,中国移动,2025,fixed_broadband_subscribers,source_gap_confirmed
 china_mobile,中国移动,2025,mobile_arpu,available
 china_mobile,中国移动,2025,mobile_dou,available
 china_mobile,中国移动,2025,handset_data_traffic,available

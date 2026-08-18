@@ -57,6 +57,7 @@ METRICS = {
     "connected_homes": ("已连接家庭/场所", "million_premises"),
     "mobile_arpu": ("移动ARPU", "local_currency_per_user_month"),
     "broadband_arpu": ("宽带ARPU", "local_currency_per_user_month"),
+    "household_customer_blended_arpu": ("家庭客户综合ARPU", "local_currency_per_user_month"),
     "mobile_dou": ("月户均移动数据流量DOU", "GB_per_user_month"),
     "total_data_traffic": ("年度数据流量", "billion_GB"),
     "handset_data_traffic": ("年度手机上网流量", "billion_GB"),
@@ -65,6 +66,24 @@ METRICS = {
     "total_base_stations": ("移动基站总数", "million_base_stations"),
     "4g_base_stations": ("4G基站数", "million_base_stations"),
     "5g_base_stations": ("5G基站数", "million_base_stations"),
+    "integrated_broadband_network_customers": ("融合宽带网络客户", "million_customers"),
+    "gigabit_broadband_customers": ("千兆宽带客户", "million_customers"),
+    "iot_connections": ("物联网连接", "million_connections"),
+    "mobile_broadband_integration_rate": ("移动宽带融合率", "percent"),
+    "government_enterprise_customers": ("政企客户", "million_customers"),
+    "households_gigabit_coverage": ("千兆网络覆盖家庭", "million_households"),
+    "iptv_subscribers": ("IPTV用户", "million_subscribers"),
+    "gigabit_broadband_penetration": ("千兆宽带渗透率", "percent"),
+    "5g_network_penetration": ("5G网络用户渗透率", "percent"),
+    "total_connectivity_subscribers": ("连接用户总规模", "million_connections"),
+    "integrated_subscriber_penetration": ("融合用户渗透率", "percent"),
+    "integrated_package_arpu": ("融合套餐ARPU", "RMB_per_user_month"),
+    "mobile_population_coverage": ("移动网络人口覆盖率", "percent"),
+    "5g_a_deployment_cities": ("5G-A部署城市", "cities"),
+    "cloud_ai_product_users": ("云AI产品用户", "million_users"),
+    "intelligent_compute_capacity": ("智能算力", "EFLOPS_FP16"),
+    "ten_g_pon_ports": ("10G PON端口", "million_ports"),
+    "urban_gigabit_coverage": ("城市千兆宽带覆盖率", "percent"),
     "revenue": ("营业收入", "INR_million"),
     "value_of_sales_and_services": ("销售及服务价值", "INR_crore"),
     "revenue_from_operations": ("经营收入", "INR_crore"),
@@ -126,7 +145,102 @@ for year in YEARS:
         "source_type": "official_operating_statistics", "publisher": "China Unicom (Hong Kong) Limited",
     }
 
+# A results presentation is a separate official document from both the annual
+# report and the operating/KPI table.  It is the third document used for the
+# strict per-value source gate on the three mainland operators' disclosed KPIs.
+RESULTS_PRESENTATIONS = {
+    "china_mobile": {
+        2016: "pre170323", 2017: "pre180322", 2018: "pre190321", 2019: "pre200319",
+        2020: "pre210325", 2021: "pre220323", 2022: "pre230323", 2023: "pre240321",
+        2024: "pre250320", 2025: "pre260326",
+    },
+    "china_telecom": {
+        2016: "annpre170321", 2017: "annpre180328", 2018: "annpre190319", 2019: "annpre200324",
+        2020: "annpre210309", 2021: "annpre220317", 2022: "annpre230322", 2023: "annpre240326",
+        2024: "annpre250325", 2025: "annpre260324",
+    },
+    "china_unicom": {
+        2016: "pre170315", 2017: "pre180315", 2018: "pre190313", 2019: "pre200323",
+        2020: "pre210311", 2021: "pre220311", 2022: "pre230308", 2023: "pre240319",
+        2024: "pre250318", 2025: "pre260319",
+    },
+}
+PRESENTATION_BASE = {
+    "china_mobile": "https://www.chinamobileltd.com/en/ir/webcasts/",
+    "china_telecom": "https://www.chinatelecom-h.com/en/ir/presentations/",
+    "china_unicom": "https://www.chinaunicom.com.hk/en/ir/presentations/",
+}
+for operator_id, years in RESULTS_PRESENTATIONS.items():
+    for year, stem in years.items():
+        sid = f"{operator_id}_results_{year}"
+        SOURCES[sid] = {
+            "source_id": sid,
+            "operator_id": operator_id,
+            "year": year,
+            "label": f"{OPERATORS[operator_id]['legal_name']} {year} annual results presentation",
+            "url": f"{PRESENTATION_BASE[operator_id]}{stem}.pdf",
+            "source_type": "official_results_presentation",
+            "publisher": OPERATORS[operator_id]["legal_name"],
+        }
+
 SOURCES.update({
+    **{
+        f"china_mobile_ar_a_{year}": {
+            "source_id": f"china_mobile_ar_a_{year}", "operator_id": "china_mobile", "year": year,
+            "label": f"China Mobile {year} A-share annual report",
+            "url": f"https://www.chinamobileltd.com/sc/ir/reports/ar{year}_ashare.pdf",
+            "source_type": "official_a_share_annual_report", "publisher": "China Mobile Limited",
+        }
+        for year in range(2021, 2025)
+    },
+    "china_mobile_20f_2021": {
+        "source_id": "china_mobile_20f_2021", "operator_id": "china_mobile", "year": 2021,
+        "label": "China Mobile 2021 annual report on Form 20-F",
+        "url": "https://www.chinamobileltd.com/en/ir/reports/ar2021/2021_20f.pdf",
+        "source_type": "official_sec_annual_filing", "publisher": "China Mobile Limited",
+    },
+    "china_mobile_ar_a_2025": {
+        "source_id": "china_mobile_ar_a_2025", "operator_id": "china_mobile", "year": 2025,
+        "label": "China Mobile 2025 A-share annual report",
+        "url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-03-27/600941_20260327_EIXS.pdf",
+        "source_type": "official_a_share_annual_report", "publisher": "China Mobile Limited",
+    },
+    "china_mobile_press_2025": {
+        "source_id": "china_mobile_press_2025", "operator_id": "china_mobile", "year": 2025,
+        "label": "China Mobile 2025 annual results press release",
+        "url": "https://www.chinamobileltd.com/en/media/press/p260326.pdf",
+        "source_type": "official_results_press_release", "publisher": "China Mobile Limited",
+    },
+    "china_telecom_announcement_2025": {
+        "source_id": "china_telecom_announcement_2025", "operator_id": "china_telecom", "year": 2025,
+        "label": "China Telecom 2025 annual results announcement",
+        "url": "https://doc.irasia.com/listco/hk/chinatelecom/annual/2025/res.pdf",
+        "source_type": "official_results_announcement", "publisher": "China Telecom Corporation Limited",
+    },
+    "china_telecom_press_2025": {
+        "source_id": "china_telecom_press_2025", "operator_id": "china_telecom", "year": 2025,
+        "label": "China Telecom 2025 annual results press release",
+        "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+        "source_type": "official_results_press_release", "publisher": "China Telecom Corporation Limited",
+    },
+    "china_telecom_factsheet_2025": {
+        "source_id": "china_telecom_factsheet_2025", "operator_id": "china_telecom", "year": 2025,
+        "label": "China Telecom April 2026 investor factsheet with FY2025 operating KPIs",
+        "url": "https://www.chinatelecom-h.com/en/ir/factsheet/factsheet2604.pdf",
+        "source_type": "official_investor_factsheet", "publisher": "China Telecom Corporation Limited",
+    },
+    "china_unicom_press_2025": {
+        "source_id": "china_unicom_press_2025", "operator_id": "china_unicom", "year": 2025,
+        "label": "China Unicom 2025 annual results press release",
+        "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+        "source_type": "official_results_press_release", "publisher": "China Unicom (Hong Kong) Limited",
+    },
+    "china_unicom_q4_operating_announcement_2025": {
+        "source_id": "china_unicom_q4_operating_announcement_2025", "operator_id": "china_unicom", "year": 2025,
+        "label": "China Unicom operational statistics for the fourth quarter of 2025",
+        "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2026/0319/2026031900251.pdf",
+        "source_type": "official_hkex_operating_announcement", "publisher": "China Unicom (Hong Kong) Limited",
+    },
     "airtel_2019_five_year": {
         "source_id": "airtel_2019_five_year", "operator_id": "bharti_airtel", "year": 2019,
         "label": "Bharti Airtel FY2018-19 five-year performance highlights",
@@ -165,6 +279,12 @@ SOURCES.update({
     },
 })
 
+# Identify the underlying disclosure independently of its hosting URL.  An
+# issuer copy, exchange mirror, or archive copy of the same report must count
+# as one source document, not several.
+for _source_id, _source in SOURCES.items():
+    _source.setdefault("source_document_id", _source_id)
+
 
 ROWS: list[dict[str, Any]] = []
 
@@ -184,12 +304,23 @@ def add_series(
 ) -> None:
     metric_zh, default_unit = METRICS[metric_key]
     for year, value in values.items():
-        ids = (source_ids or {}).get(year) or [f"{operator_id}_ar_{year}"]
+        ids = (source_ids or {}).get(year)
+        if ids is None:
+            ids = [f"{operator_id}_ar_{year}"]
         valid_ids = [sid for sid in ids if sid in SOURCES]
+        source_document_ids = sorted({
+            str(SOURCES[sid].get("source_document_id") or SOURCES[sid]["url"])
+            for sid in valid_ids
+        }) if value is not None else []
+        distinct_source_document_count = len(source_document_ids)
         row_status = status
         if value is None:
             row_status = "source_gap_confirmed"
-        elif len(valid_ids) < 2 and status == "official_multi_source_verified":
+        elif distinct_source_document_count >= 3:
+            row_status = "official_three_distinct_sources_verified"
+        elif distinct_source_document_count == 2:
+            row_status = "official_two_distinct_sources"
+        elif status == "official_multi_source_verified":
             row_status = "official_single_source"
         ROWS.append({
             "operator_id": operator_id,
@@ -209,6 +340,17 @@ def add_series(
             "basis": basis,
             "verification_status": row_status,
             "verification_count": len(valid_ids),
+            "distinct_source_document_count": distinct_source_document_count,
+            "distinct_source_document_ids": source_document_ids,
+            "triple_source_status": (
+                "not_applicable_missing_value"
+                if value is None
+                else "three_distinct_sources_verified"
+                if distinct_source_document_count >= 3 and "derived" not in row_status
+                else "derived_not_directly_disclosed"
+                if "derived" in row_status
+                else "below_three_source_threshold"
+            ),
             "primary_source_id": valid_ids[0] if valid_ids else "",
             "primary_source_url": SOURCES[valid_ids[0]]["url"] if valid_ids else "",
             "verification_sources": valid_ids,
@@ -225,46 +367,100 @@ def paired(operator_id: str, years: list[int], secondary: str | None = None) -> 
             ids.append(f"{operator_id}_{suffix}_{year}")
         elif secondary:
             ids.append(secondary)
+        results_id = f"{operator_id}_results_{year}"
+        if results_id in SOURCES:
+            ids.append(results_id)
         result[year] = ids
+    return result
+
+
+CM_2025_THREE = ["china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_press_2025"]
+CM_2025_ARPU_THREE = ["china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_a_2025"]
+CT_2025_THREE = ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"]
+CU_2025_THREE = ["china_unicom_ar_2025", "china_unicom_results_2025", "china_unicom_press_2025"]
+
+SHARED_5G_BASE_STATION_SOURCES = {
+    2020: ["china_telecom_ar_2020", "china_unicom_ar_2020", "china_telecom_results_2020"],
+    2021: ["china_telecom_ar_2021", "china_unicom_ar_2021", "china_telecom_results_2021"],
+    # The reviewed 2022 presentation only states over one million, so it does
+    # not corroborate the more precise 1.05 million value.
+    2023: ["china_telecom_ar_2023", "china_unicom_ar_2023", "china_telecom_results_2023"],
+    2024: ["china_telecom_ar_2024", "china_unicom_ar_2024", "china_telecom_results_2024"],
+    2025: CT_2025_THREE,
+}
+
+CHINA_MOBILE_5G_BASE_STATION_SOURCES = {
+    2021: ["china_mobile_ar_2021", "china_mobile_ar_a_2021", "china_mobile_20f_2021"],
+    2022: ["china_mobile_ar_2022", "china_mobile_ar_a_2022", "china_mobile_results_2022"],
+    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"],
+    2024: ["china_mobile_ar_2024", "china_mobile_ar_a_2024", "china_mobile_results_2024"],
+    2025: CM_2025_THREE,
+}
+
+
+def override_sources(mapping: dict[int, list[str]], year: int, source_ids: list[str]) -> dict[int, list[str]]:
+    result = dict(mapping)
+    result[year] = source_ids
     return result
 
 
 # China Mobile: existing finance is linked, not copied. Operating values are official year-end/annual figures.
 cm_years = YEARS
-add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887, 925, 950, 942, 957, 975, 991, 1004, 1005])), scope="group mobile customer base", source_ids=paired("china_mobile", cm_years))
+add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887, 925, 950, 942, 957, 975, 991, 1004, 1005])), scope="group mobile customer base", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_THREE))
 add_series("china_mobile", "4g_subscribers", {2016:535.04, 2017:650, 2018:713, 2019:758, 2020:775, 2021:822}, scope="group 4G customer base", source_ids=paired("china_mobile", list(range(2016, 2022))))
 add_series("china_mobile", "5g_package_subscribers", {2019:2.55, 2020:165, 2021:387, 2022:614, 2023:795}, scope="contracted 5G package customers; not equivalent to active 5G network users", source_ids=paired("china_mobile", list(range(2019, 2024))))
-add_series("china_mobile", "5g_network_subscribers", {2021:207, 2022:327, 2023:465, 2024:552, 2025:642}, scope="customers that used the 5G network; definition differs from 5G package customers", source_ids=paired("china_mobile", list(range(2021, 2026))))
-add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.7,187.0,210.3,240,272,298,315,324])), scope="group wireline broadband customers", source_ids=paired("china_mobile", cm_years))
-add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.1,47.4,48.8,49.0,49.3,48.5,46.8])), unit="RMB_per_user_month", scope="group mobile business annual ARPU", source_ids=paired("china_mobile", cm_years))
-add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=paired("china_mobile", cm_years))
-add_series("china_mobile", "handset_data_traffic", dict(zip(cm_years, [5.6807,12.5693,35.4534,65.89,90.70,124.8,144.7,165.9,168.2,183.8])), scope="sum of four official quarterly handset-data-traffic values; 2016-18 converted from billion MB", basis="official_quarterly_sum", source_ids=paired("china_mobile", cm_years), note="Derived only by summing the four official quarterly values; no interpolation.")
+add_series("china_mobile", "5g_network_subscribers", {2021:207, 2022:327, 2023:465, 2024:552, 2025:642}, scope="customers that used the 5G network; definition differs from 5G package customers", source_ids=override_sources(paired("china_mobile", list(range(2021, 2026))), 2025, CM_2025_THREE))
+add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.7,187.0,210.3,240,272,298,315,None])), scope="group wireline broadband customers", source_ids=override_sources(paired("china_mobile", cm_years), 2025, []), note="FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series.")
+add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.1,47.4,48.8,49.0,49.3,48.5,46.8])), unit="RMB_per_user_month", scope="group mobile business annual ARPU", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_ARPU_THREE))
+add_series("china_mobile", "household_customer_blended_arpu", {2025:44.5}, unit="RMB_per_user_month", scope="household customer blended ARPU", source_ids={2025:CM_2025_ARPU_THREE})
+add_series("china_mobile", "mobile_dou", dict(zip(cm_years, [0.697,1.399,3.6,6.7,9.4,12.6,14.1,15.9,15.9,17.3])), scope="average handset data traffic per user per month; 2016-17 converted from MB to GB", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ar_2025", "china_mobile_ar_a_2025"]), note="The H-share and A-share annual reports disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU, and no third exact independent document is counted.")
+add_series("china_mobile", "handset_data_traffic", dict(zip(cm_years, [5.6807,12.5693,35.4534,65.89,90.70,124.8,144.7,165.9,168.2,183.8])), scope="sum of four official quarterly handset-data-traffic values; 2016-18 converted from billion MB", basis="official_quarterly_sum", source_ids=override_sources(paired("china_mobile", cm_years), 2025, ["china_mobile_ops_2025"]), note="Derived only by summing the four official quarterly values; no interpolation.")
 add_series("china_mobile", "total_base_stations", {2018:3.85, 2019:4.48, 2020:5.14, 2021:5.50, 2022:6.0, 2023:6.60}, scope="all commissioned mobile base stations", comparator=">=", note="Annual reports use 'more than/over' for some years.")
 add_series("china_mobile", "4g_base_stations", {2016:1.51, 2017:1.87, 2018:2.41, 2019:3.09, 2021:3.32}, scope="commissioned 4G base stations")
-add_series("china_mobile", "5g_base_stations", {2019:0.05, 2020:0.39, 2021:0.73, 2022:1.285, 2023:1.94, 2024:2.40, 2025:2.77}, scope="commissioned 5G base stations, including applicable 700MHz co-built sites", comparator=">=")
+add_series("china_mobile", "5g_base_stations", {2019:0.05, 2020:0.39, 2021:0.73, 2022:1.285, 2023:1.94, 2024:2.40, 2025:2.77}, scope="commissioned 5G base stations, including applicable 700MHz co-built sites", comparator=">=", source_ids=CHINA_MOBILE_5G_BASE_STATION_SOURCES)
+add_series("china_mobile", "integrated_broadband_network_customers", {2025:329}, scope="household broadband, enterprise broadband, dedicated Internet lines and dedicated data lines", source_ids={2025:CM_2025_THREE})
+add_series("china_mobile", "gigabit_broadband_customers", {2025:109}, scope="group gigabit broadband customers", source_ids={2025:["china_mobile_ar_2025"]}, note="The annual report gives 109 million; the presentation and press release round to 110 million, so this row remains below the exact three-source threshold.")
+add_series("china_mobile", "iot_connections", {2025:1482}, scope="cellular IoT card connections", source_ids={2025:["china_mobile_ar_2025", "china_mobile_ar_a_2025"]}, note="The annual reports disclose the exact value of 1,482 million. The presentation and press release round it to about 1,480 million, so they are not counted as exact-value corroboration.")
+add_series("china_mobile", "mobile_broadband_integration_rate", {2025:96.5}, scope="integration rate between mobile and broadband customers", source_ids={2025:CM_2025_THREE})
+add_series("china_mobile", "government_enterprise_customers", {2025:36.17}, scope="government and enterprise customers", source_ids={2025:CM_2025_THREE})
+add_series("china_mobile", "households_gigabit_coverage", {2025:530}, scope="households covered by gigabit network", source_ids={2025:CM_2025_THREE})
+add_series("china_mobile", "intelligent_compute_capacity", {2025:92.5}, scope="total self-built plus rented intelligent compute capacity", source_ids={2025:CM_2025_THREE})
 
 # China Telecom: finance remains in the existing quarterly database.
 ct_years = YEARS
-add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=paired("china_telecom", ct_years))
+add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025"]))
 add_series("china_telecom", "4g_subscribers", {2016:121.87, 2017:182.04, 2018:242.43}, scope="4G subscribers/users", source_ids=paired("china_telecom", [2016,2017,2018]))
 add_series("china_telecom", "5g_package_subscribers", {2019:10.73, 2020:86.50, 2021:187.80, 2022:267.96, 2023:318.66, 2024:351.48}, scope="5G package subscribers; not equivalent to active 5G network users", source_ids=paired("china_telecom", list(range(2019,2025))))
-add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=paired("china_telecom", [2024,2025]))
-add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=paired("china_telecom", ct_years))
-add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=paired("china_telecom", ct_years), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
-add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=paired("china_telecom", ct_years))
-add_series("china_telecom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator", comparator=">=", note="Shared-network scope; never sum China Telecom and China Unicom rows.")
+add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=override_sources(paired("china_telecom", [2024,2025]), 2025, [*CT_2025_THREE, "china_telecom_kpi_2025"]))
+add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025"]))
+add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
+add_series("china_telecom", "broadband_arpu", {2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]})
+add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]))
+add_series("china_telecom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million.")
+add_series("china_telecom", "5g_network_penetration", {2025:68.8}, scope="5G network subscribers as a share of mobile subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
+add_series("china_telecom", "gigabit_broadband_penetration", {2025:31.6}, scope="gigabit broadband subscribers as a share of broadband subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
+add_series("china_telecom", "ten_g_pon_ports", {2025:10}, scope="10G PON ports in the gigabit fibre network", comparator=">=", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
+add_series("china_telecom", "urban_gigabit_coverage", {2025:97}, scope="urban residential areas covered by gigabit broadband", comparator=">", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
+add_series("china_telecom", "intelligent_compute_capacity", {2025:46}, scope="self-owned intelligent computing power", source_ids={2025:CT_2025_THREE})
 
 # China Unicom: exact mobile/broadband values remain separate from the broader connectivity aggregate.
 cu_years = YEARS
 add_series("china_unicom", "mobile_subscribers", dict(zip(cu_years, [263.8,284.2,315.0,318.47,305.81,317.12,322.70,333.30,343.98,357.30])), scope="mobile billing subscribers", source_ids=paired("china_unicom", cu_years), note="2024-25 values reconstructed only from official year-end scale and official disclosed net additions; rounded to two decimals.")
 add_series("china_unicom", "4g_subscribers", {2016:104.6,2017:174.9,2018:219.9,2019:253.8,2020:270.2}, scope="4G subscribers / billing subscribers using 4G or 5G network", source_ids=paired("china_unicom", list(range(2016,2021))))
 add_series("china_unicom", "5g_package_subscribers", {2020:70.83,2021:154.93,2022:212.73,2023:259.64,2024:290.44}, scope="5G package subscribers; disclosure replaced by network-user measure in 2025", source_ids=paired("china_unicom", list(range(2020,2025))))
-add_series("china_unicom", "5g_network_subscribers", {2025:232.18}, scope="customers that used the 5G network during the period; not comparable with prior 5G package subscribers", source_ids={2025:["china_unicom_ar_2025","china_unicom_ops_2025"]})
+add_series("china_unicom", "5g_network_subscribers", {2025:232.18}, scope="customers that used the 5G network during the period; not comparable with prior 5G package subscribers", source_ids={2025:["china_unicom_ar_2025","china_unicom_ops_2025","china_unicom_q4_operating_announcement_2025"]})
 add_series("china_unicom", "fixed_broadband_subscribers", dict(zip(cu_years, [75.2,76.5,80.88,83.48,86.095,95.05,103.63,113.42,122.26,129.87])), scope="fixed-line broadband billing subscribers", source_ids=paired("china_unicom", cu_years), note="2023-25 year-end values use official scale/net-add disclosures; small rounding differences may occur versus monthly releases.")
 add_series("china_unicom", "mobile_arpu", {2016:46.4,2017:48.0,2018:45.7,2019:40.4,2020:42.1,2021:43.9,2022:44.3,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids=paired("china_unicom", ct_years), note="From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")
 add_series("china_unicom", "broadband_arpu", {2016:49.4,2017:46.3,2018:44.6,2019:41.6,2020:41.5,2021:41.3,2022:None,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="fixed-line broadband access ARPU", source_ids=paired("china_unicom", list(range(2016,2026))))
 add_series("china_unicom", "mobile_dou", {2016:None,2017:None,2018:None,2019:None,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=paired("china_unicom", cu_years))
-add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", note="Shared-network scope; never sum China Unicom and China Telecom rows.")
+add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million.")
+add_series("china_unicom", "total_connectivity_subscribers", {2025:1200}, scope="mobile billing, fixed broadband, fixed local access, IoT terminals and networking leased lines", comparator=">", source_ids={2025:CU_2025_THREE})
+add_series("china_unicom", "mobile_population_coverage", {2025:99}, scope="mobile network population coverage", comparator=">", source_ids={2025:CU_2025_THREE})
+add_series("china_unicom", "5g_a_deployment_cities", {2025:330}, scope="cities with 5G-A base-station deployment", comparator=">", source_ids={2025:CU_2025_THREE})
+add_series("china_unicom", "iot_connections", {2025:700}, scope="IoT terminal connections; presentation gives 720 million while press release uses over 700 million", comparator=">", source_ids={2025:CU_2025_THREE}, note="The conservative lower bound is common to all three official documents; use 720 million only when citing the presentation-specific precision.")
+add_series("china_unicom", "integrated_subscriber_penetration", {2025:78}, scope="integrated subscribers", comparator=">", source_ids={2025:CU_2025_THREE})
+add_series("china_unicom", "integrated_package_arpu", {2025:100}, scope="integrated package subscribers", comparator=">", source_ids={2025:CU_2025_THREE})
+add_series("china_unicom", "cloud_ai_product_users", {2025:300}, scope="users served by Cloud-AI products", comparator=">", source_ids={2025:CU_2025_THREE})
 
 # Bharti Airtel: complete consolidated financial history plus disclosed operating KPIs.
 airtel_years = YEARS
@@ -301,7 +497,9 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     fields = [
         "operator_id", "operator", "legal_name", "year", "period", "period_end", "grain",
         "metric_key", "metric_zh", "value", "official_value", "unit", "comparator", "scope",
-        "basis", "verification_status", "verification_count", "primary_source_id",
+        "basis", "verification_status", "verification_count", "distinct_source_document_count",
+        "distinct_source_document_ids",
+        "triple_source_status", "primary_source_id",
         "primary_source_url", "verification_sources", "quality_note",
     ]
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
@@ -310,6 +508,7 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         for row in rows:
             item = dict(row)
             item["verification_sources"] = json.dumps(item["verification_sources"], ensure_ascii=False)
+            item["distinct_source_document_ids"] = json.dumps(item["distinct_source_document_ids"], ensure_ascii=False)
             writer.writerow(item)
 
 
@@ -347,22 +546,34 @@ def main() -> None:
             row["basis"] = "precommercial_not_applicable"
         if row["operator_id"] == "china_unicom" and row["metric_key"] in {"mobile_subscribers", "fixed_broadband_subscribers"} and row["year"] >= 2023:
             row["verification_status"] = "official_derived_from_verified_rows"
+            row["triple_source_status"] = "derived_not_directly_disclosed"
             row["basis"] = "official_year_end_plus_disclosed_net_addition"
             row["comparator"] = "≈"
             row["quality_note"] = "Derived from official prior-year closing value plus official disclosed net additions; rounded to two decimals and not presented as a directly reported exact closing figure."
+        if row["operator_id"] == "china_mobile" and row["metric_key"] == "handset_data_traffic":
+            row["verification_status"] = "official_derived_from_verified_quarters"
+            row["triple_source_status"] = "derived_not_directly_disclosed"
+            row["basis"] = "official_quarterly_sum"
+            row["quality_note"] = "Derived only by summing the four official quarterly handset-data-traffic values; not treated as a directly disclosed annual value."
     keys = [(r["operator_id"], r["year"], r["metric_key"], r["scope"]) for r in rows]
     duplicate_keys = [list(key) for key, count in Counter(keys).items() if count > 1]
     invalid_source_ids = sorted({sid for r in rows for sid in r["verification_sources"] if sid not in SOURCES})
     coverage = build_coverage(rows)
     available = [r for r in rows if r["value"] is not None]
+    triple_source_rows = [
+        r for r in available
+        if r["distinct_source_document_count"] >= 3 and "derived" not in r["verification_status"]
+    ]
     status_counts = Counter(r["verification_status"] for r in rows)
     operator_counts = Counter(r["operator"] for r in available)
     metric_counts = Counter(r["metric_key"] for r in available)
     quality = {
         "generated_at": BUILD_TIME,
-        "status": "pass" if not duplicate_keys and not invalid_source_ids else "fail",
+        "status": "fail" if duplicate_keys or invalid_source_ids else ("pass" if len(triple_source_rows) == len(available) else "backlog_open"),
         "row_count": len(rows),
         "available_value_rows": len(available),
+        "three_distinct_source_certified_rows": len(triple_source_rows),
+        "below_three_source_rows": len(available) - len(triple_source_rows),
         "source_count": len(SOURCES),
         "duplicate_key_count": len(duplicate_keys),
         "duplicate_keys": duplicate_keys,
@@ -371,6 +582,7 @@ def main() -> None:
         "available_rows_by_operator": dict(sorted(operator_counts.items())),
         "available_rows_by_metric": dict(sorted(metric_counts.items())),
         "scope_breaks": [
+            "A formal three-source claim requires at least three distinct underlying source documents; mirrored URLs, evidence sections, and snapshots of one document count once.",
             "5G package subscribers and 5G network subscribers are distinct metrics.",
             "China Telecom and China Unicom 5G base-station values describe a shared network and must not be added together.",
             "Airtel network-tower scope changes around FY2020; the narrower 194,409 and group KPI 219,546 values are documented, with group KPI retained.",
@@ -410,6 +622,14 @@ def main() -> None:
     }
     (ORIGINAL_DB / "annual_operating_metrics_2016_2025.json").write_text(json.dumps(china_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_csv(ORIGINAL_DB / "annual_operating_metrics_2016_2025.csv", china_rows)
+    china_source_ids = {sid for row in china_rows for sid in row["verification_sources"]}
+    china_sources = [SOURCES[sid] for sid in sorted(china_source_ids) if sid in SOURCES]
+    (ORIGINAL_DB / "annual_operating_metrics_2016_2025_sources.json").write_text(
+        json.dumps({"generated_at": BUILD_TIME, "sources": china_sources}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    china_available = [row for row in china_rows if row["value"] is not None]
+    china_triple = [row for row in china_available if row["distinct_source_document_count"] >= 3]
     china_manifest = {
         "id": "china_carriers_annual_operating_metrics_2016_2025",
         "title": "中国三大运营商2016–2025年度运营指标补充库",
@@ -417,9 +637,36 @@ def main() -> None:
         "row_count": len(china_rows),
         "operators": ["中国移动", "中国电信", "中国联通"],
         "relationship": "quarterly_metrics.json remains the financial fact source; this sidecar adds only operating KPIs.",
-        "entrypoints": ["annual_operating_metrics_2016_2025.json", "annual_operating_metrics_2016_2025.csv"],
+        "entrypoints": ["annual_operating_metrics_2016_2025.json", "annual_operating_metrics_2016_2025.csv", "annual_operating_metrics_2016_2025_sources.json"],
+        "quality": {
+            "status": "pass" if len(china_triple) == len(china_available) else "backlog_open",
+            "available_value_rows": len(china_available),
+            "three_distinct_source_certified_rows": len(china_triple),
+            "below_three_source_rows": len(china_available) - len(china_triple),
+        },
     }
     (ORIGINAL_DB / "annual_operating_metrics_2016_2025_manifest.json").write_text(json.dumps(china_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    parent_manifest_path = ORIGINAL_DB / "manifest.json"
+    parent_manifest = json.loads(parent_manifest_path.read_text(encoding="utf-8"))
+    parent_entrypoints = list(parent_manifest.get("entrypoints") or [])
+    for name in [
+        "annual_operating_metrics_2016_2025_manifest.json",
+        "annual_operating_metrics_2016_2025.json",
+        "annual_operating_metrics_2016_2025.csv",
+        "annual_operating_metrics_2016_2025_sources.json",
+    ]:
+        if name not in parent_entrypoints:
+            parent_entrypoints.append(name)
+    parent_manifest["entrypoints"] = parent_entrypoints
+    parent_manifest["updated_at"] = BUILD_TIME
+    parent_quality = dict(parent_manifest.get("quality") or {})
+    parent_quality["china_carrier_operating_sidecar"] = china_manifest["quality"]
+    parent_note = "中国移动、中国电信、中国联通年度运营指标侧表已加入入口；三来源按底层文档身份去重，同一报告的镜像网址只计一次。"
+    parent_notes = parent_quality.setdefault("notes", [])
+    if parent_note not in parent_notes:
+        parent_notes.append(parent_note)
+    parent_manifest["quality"] = parent_quality
+    parent_manifest_path.write_text(json.dumps(parent_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     with (OUT / "sources.json").open("w", encoding="utf-8") as handle:
         json.dump({"generated_at":BUILD_TIME,"sources":list(SOURCES.values())}, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
@@ -464,7 +711,13 @@ def main() -> None:
         "source_type":"official_public_multi_source", "updated_at":BUILD_TIME,
         "tags":["global_carriers","10_year_history","subscribers","5g","broadband","arpu","traffic","base_stations","financials"],
         "entrypoints":["README.md","summary.md","annual_metrics.json","annual_metrics.csv","sources.json","coverage.csv","quality_audit.json","quality_audit.md","conflicts_and_scope_breaks.json","conflicts_and_scope_breaks.csv"],
-        "row_count":len(rows), "quality":{"status":quality["status"],"source_count":len(SOURCES),"available_value_rows":len(available)},
+        "row_count":len(rows), "quality":{
+            "status":quality["status"],
+            "source_count":len(SOURCES),
+            "available_value_rows":len(available),
+            "three_distinct_source_certified_rows":len(triple_source_rows),
+            "below_three_source_rows":len(available)-len(triple_source_rows),
+        },
         "linked_existing_datasets":["quarterly_competitor_metrics_2026-06-18"],
     }
     (OUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
