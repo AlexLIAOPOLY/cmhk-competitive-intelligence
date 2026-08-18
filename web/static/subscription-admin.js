@@ -32,6 +32,15 @@
     return frequencies.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
   }
 
+  function reportModeOptions(selected = "pdf") {
+    const modes = state.data?.report_modes || [
+      { key: "pdf", label: "仅 PDF" },
+      { key: "pdf_audio", label: "PDF + 单独语音" },
+      { key: "audio", label: "仅语音" },
+    ];
+    return modes.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
+  }
+
   function reportOptions() {
     const reports = state.data?.reports || [];
     if (!reports.length) return '<option value="">当前没有可推送报告</option>';
@@ -40,10 +49,11 @@
 
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
-    if (!rows.length) return '<tr><td colspan="8" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
+    if (!rows.length) return '<tr><td colspan="9" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
     return rows.map((item) => `<tr data-subscriber-row="${esc(item.open_id)}">
       <td class="name">${esc(item.display_name)}</td><td class="muted">${esc(item.open_id.slice(0, 8))}…</td>
       ${["weekly", "performance", "news"].map((service) => `<td><label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label></td>`).join("")}
+      <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-frequency>${frequencyOptions(item.frequency)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td><button class="button" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
@@ -97,8 +107,8 @@
         <article class="panel invite-pane"><header class="panel-header"><div><h2>邀请</h2><span>${number((data.invite_candidates || []).length)} 人待处理</span></div><button class="button primary compact-action" type="button" data-send-invites>${icon("send")}<span>发送邀请</span></button></header><div class="candidate-list">${candidateRows()}</div><div class="section-label"><span>邀请结果</span><small>待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</small></div><div class="history-list">${invitationRows()}</div></article>
       </section>
       <section class="operations-grid">
-        <article class="panel"><header class="panel-header"><div><h2>内容推送</h2><span>PDF；语音可单独发送</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
-        <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 服务、频率与状态</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>接收频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
+        <article class="panel"><header class="panel-header"><div><h2>内容推送</h2><span>PDF；语音可单独发送</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
+        <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 服务、报告形式、频率与状态</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>报告形式</th><th>接收频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
       </section>
       <section class="panel"><header class="panel-header"><div><h2>推送台账</h2><span>发送与回读证据</span></div></header><div class="table-wrap"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div></section>
     </div>`;
@@ -114,7 +124,7 @@
     if (news) {
       form.elements.mode.innerHTML = '<option value="text">飞书消息</option>';
     } else {
-      form.elements.mode.innerHTML = '<option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option>';
+      form.elements.mode.innerHTML = '<option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option>';
     }
     Array.from(form.elements.path.options).forEach((option) => {
       const type = form.elements.service.value === "weekly" ? "weekly" : "carrier-performance";
@@ -187,7 +197,7 @@
     if (save) {
       const row = save.closest("[data-subscriber-row]");
       const services = Array.from(row.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, frequency: row.querySelector("[data-subscriber-frequency]").value, status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, reportMode: row.querySelector("[data-subscriber-report-mode]").value, frequency: row.querySelector("[data-subscriber-frequency]").value, status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });

@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from subscription_service import SubscriptionService, subscription_entry_card
+from subscription_service import SubscriptionService, strategic_news_card, subscription_entry_card
 
 
 class FakeLark:
@@ -95,12 +95,17 @@ class SubscriptionServiceTests(unittest.TestCase):
             "并选择接收频率。感谢您的配合！",
         )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
-        self.assertEqual([item["content"] for item in form["elements"] if item["tag"] == "markdown"], ["**订阅内容**", "**接收频率**"])
+        self.assertEqual(
+            [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
+            ["**订阅内容**", "**接收方式与频率**"],
+        )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
-        frequency = next(item for item in form["elements"] if item["tag"] == "select_static")
-        self.assertEqual(frequency["name"], "frequency")
-        self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
+        delivery_plan = next(item for item in form["elements"] if item.get("name") == "delivery_plan")
+        self.assertEqual(len(delivery_plan["options"]), 9)
+        self.assertIn("daily_audio", {item["value"] for item in delivery_plan["options"]})
+        self.assertNotIn("report_mode", {item.get("name") for item in form["elements"]})
+        self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
         self.assertEqual(button["text"]["content"], "确认订阅")
@@ -117,11 +122,12 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["weekly", "news"], "frequency": "daily"}),
+            "form_value": json.dumps({"services": ["weekly", "news"], "delivery_plan": "daily_pdf_audio"}),
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
         self.assertEqual(first["frequency"], "daily")
+        self.assertEqual(first["report_mode"], "pdf_audio")
         self.service.handle_card_event({
             "type": "card.action.trigger",
             "action_tag": "button",
@@ -129,12 +135,13 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["performance"], "frequency": "weekly"}),
+            "form_value": json.dumps({"services": ["performance"], "report_mode": "pdf", "frequency": "weekly"}),
         })
         summary = self.service.list_summary()
         self.assertEqual(summary["active_subscriber_count"], 1)
         self.assertEqual(summary["subscribers"][0]["services"], ["performance"])
         self.assertEqual(summary["subscribers"][0]["frequency"], "weekly")
+        self.assertEqual(summary["subscribers"][0]["report_mode"], "pdf")
         counts = {item["key"]: item["subscriber_count"] for item in summary["services"]}
         self.assertEqual(counts["performance"], 1)
 
@@ -225,6 +232,20 @@ class SubscriptionServiceTests(unittest.TestCase):
         delivery = self.service.list_summary()["deliveries"][0]
         self.assertEqual(delivery["status"], "verified")
         self.assertEqual(delivery["service"], "news")
+        send_call = next(call for call in self.lark.calls if "+messages-send" in call)
+        self.assertEqual(send_call[send_call.index("--msg-type") + 1], "interactive")
+        card = json.loads(send_call[send_call.index("--content") + 1])
+        self.assertEqual(card["schema"], "2.0")
+        self.assertEqual(card["header"]["title"]["content"], "战略新闻精选")
+        self.assertEqual(card["body"]["elements"][0]["content"], "**真实新闻**")
+        self.assertIn("经审核的新闻正文", card["body"]["elements"][2]["content"])
+
+    def test_strategic_news_card_is_compact_and_truncates_dynamic_body(self):
+        card = strategic_news_card(title="  重点   新闻  ", body="甲" * 6000, published_at="2026-08-19")
+        self.assertEqual(card["header"]["subtitle"]["content"], "2026-08-19 · 战略竞对中心")
+        self.assertEqual(card["body"]["elements"][0]["content"], "**重点 新闻**")
+        self.assertEqual(card["body"]["elements"][1]["tag"], "column_set")
+        self.assertLessEqual(len(card["body"]["elements"][2]["content"]), 5200)
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from report_pdf_preview import pdf_preview_path
@@ -271,6 +292,42 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertIn("--file", sends[0])
         self.assertIn("--audio", sends[1])
 
+    def test_bulk_report_audio_respects_each_subscriber_preference(self):
+        from report_pdf_preview import pdf_preview_path
+
+        report = self.root / "偏好周报.docx"
+        report.write_bytes(b"docx placeholder")
+        pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+        pdf.parent.mkdir(parents=True)
+        pdf.write_bytes(b"%PDF-1.7\n")
+        audio = self.root / "audio" / "偏好周报.opus"
+        audio.parent.mkdir()
+        audio.write_bytes(b"OggS")
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf"
+        )
+        pdf_only = self.service.push(
+            service="weekly", mode="pdf_audio", path=report.name, confirm_bulk=True
+        )
+        self.assertEqual(pdf_only["results"][0]["mode"], "pdf")
+        self.assertEqual(len(pdf_only["results"][0]["message_ids"]), 1)
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf_audio"
+        )
+        with_audio = self.service.push(
+            service="weekly", mode="pdf_audio", path=report.name, confirm_bulk=True
+        )
+        self.assertEqual(with_audio["results"][0]["mode"], "pdf_audio")
+        self.assertEqual(len(with_audio["results"][0]["message_ids"]), 2)
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["weekly"], report_mode="audio"
+        )
+        audio_only = self.service.push(
+            service="weekly", mode="pdf_audio", path=report.name, confirm_bulk=True
+        )
+        self.assertEqual(audio_only["results"][0]["mode"], "audio")
+        self.assertEqual(len(audio_only["results"][0]["message_ids"]), 1)
+
     def test_bulk_push_requires_explicit_confirmation(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
         with self.assertRaisesRegex(ValueError, "二次确认"):
@@ -303,6 +360,10 @@ class SubscriptionServiceTests(unittest.TestCase):
     def test_invalid_frequency_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "接收频率无效"):
             self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="hourly")
+
+    def test_invalid_report_mode_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "报告接收形式无效"):
+            self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], report_mode="voice_note")
 
     def test_failed_scheduled_delivery_retries_without_a_fixed_attempt_cap(self):
         from datetime import datetime
