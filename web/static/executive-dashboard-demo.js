@@ -35,14 +35,14 @@
 
   const quarterlyPeriods = ["24Q1", "24Q2", "24Q3", "24Q4", "25Q1", "25Q2", "25Q3"];
   const financeMetrics = [
-    { label: "营运收入", value: "794.7", unit: "人民币十亿元", trend: "前三季度 +0.4%", periods: quarterlyPeriods, values: [263.7, 283.0, 244.8, 249.3, 263.8, 280.0, 250.9], source: SOURCES.quarterly },
-    { label: "EBITDA", value: "265.4", unit: "人民币十亿元", trend: "前三季度 +0.9%", periods: quarterlyPeriods, values: [78.0, 104.3, 80.8, 70.6, 80.7, 105.3, 79.4], source: SOURCES.quarterly, gauge: 75 },
-    { label: "股东应占利润", value: "115.4", unit: "人民币十亿元", trend: "前三季度 +4.0%", periods: quarterlyPeriods, values: [29.6, 50.6, 30.7, 27.5, 30.6, 53.6, 31.2], source: SOURCES.quarterly, gauge: 75 }
+    { label: "营运收入", value: "794.7", unit: "十亿元", fullUnit: "人民币十亿元", trend: "前三季度 +0.4%", periods: quarterlyPeriods, values: [263.7, 283.0, 244.8, 249.3, 263.8, 280.0, 250.9], source: SOURCES.quarterly },
+    { label: "EBITDA", value: "265.4", unit: "十亿元", fullUnit: "人民币十亿元", trend: "前三季度 +0.9%", periods: quarterlyPeriods, values: [78.0, 104.3, 80.8, 70.6, 80.7, 105.3, 79.4], source: SOURCES.quarterly, gauge: 75 },
+    { label: "股东应占利润", value: "115.4", unit: "十亿元", fullUnit: "人民币十亿元", trend: "前三季度 +4.0%", periods: quarterlyPeriods, values: [29.6, 50.6, 30.7, 27.5, 30.6, 53.6, 31.2], source: SOURCES.quarterly, gauge: 75 }
   ];
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const displayValue = (metric, index) => metric.valueLabels?.[index] ?? String(metric.values[index]);
-  const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.unit}`).join("\n")}\n来源：中国移动公开数据`;
+  const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.fullUnit || metric.unit}`).join("\n")}\n来源：中国移动公开数据`;
 
   function chartGeometry(values, width, height, padX = 4, padY = 5) {
     const min = Math.min(...values);
