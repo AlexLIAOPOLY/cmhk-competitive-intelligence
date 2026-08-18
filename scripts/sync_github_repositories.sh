@@ -146,8 +146,20 @@ if [[ -f "$RUNTIME_ROOT/curation_data/checkpoints.sqlite" ]]; then
 fi
 if [[ -f "$CHECKPOINT_SOURCE" ]]; then
   mkdir -p "$TMP_DIR/curation_data"
-  sqlite3 "$CHECKPOINT_SOURCE" \
-    ".backup '$TMP_DIR/curation_data/checkpoints.sqlite'"
+  CHECKPOINT_SNAPSHOT="$TMP_DIR/curation_data/checkpoints.sqlite"
+  # On APFS, clone the checkpoint after flushing its WAL. This avoids a second
+  # multi-gigabyte allocation while preserving a validated point-in-time image.
+  # Other filesystems retain the SQLite online-backup fallback.
+  if sqlite3 "$CHECKPOINT_SOURCE" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null \
+    && cp -c "$CHECKPOINT_SOURCE" "$CHECKPOINT_SNAPSHOT" 2>/dev/null \
+    && [[ "$(sqlite3 "$CHECKPOINT_SNAPSHOT" "PRAGMA quick_check;")" == "ok" ]]
+  then
+    echo "Created validated APFS clone of the SQLite checkpoint."
+  else
+    rm -f "$CHECKPOINT_SNAPSHOT"
+    sqlite3 "$CHECKPOINT_SOURCE" \
+      ".backup '$CHECKPOINT_SNAPSHOT'"
+  fi
   CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite" | tr -d ' ')"
   if (( CHECKPOINT_BYTES > 95000000 )); then
     echo "Compressing large SQLite snapshot (${CHECKPOINT_BYTES} bytes) for GitHub..."
