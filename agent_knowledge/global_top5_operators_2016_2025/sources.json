@@ -4582,6 +4582,57 @@
       "source_document_id": "jio_2025_media_release"
     },
     {
+      "source_id": "jio_q1_2026_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL Q1 FY2025-26 results media release with FY2025 comparatives",
+      "url": "https://www.ril.com/sites/default/files/2025-07/SE_MR.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_data_traffic": {
+          "value": 184.5,
+          "unit": "billion_GB",
+          "locator": "operational update FY2025 comparative column, page 5"
+        }
+      },
+      "source_document_id": "jio_q1_2026_media_release"
+    },
+    {
+      "source_id": "jio_q2_2026_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL Q2 FY2025-26 results media release with FY2025 comparatives",
+      "url": "https://www.ril.com/sites/default/files/2025-10/Media_Release_RIL_Q2_FY2025-26_Financial_and_Operational_Performance.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_data_traffic": {
+          "value": 184.5,
+          "unit": "billion_GB",
+          "locator": "operational update FY2025 comparative column, page 5"
+        }
+      },
+      "source_document_id": "jio_q2_2026_media_release"
+    },
+    {
+      "source_id": "jio_q3_2026_media_release",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL Q3 FY2025-26 results media release with FY2025 comparatives",
+      "url": "https://www.ril.com/sites/default/files/2026-01/SE_16012026_MR.pdf",
+      "source_type": "official_results_media_release",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "total_data_traffic": {
+          "value": 184.5,
+          "unit": "billion_GB",
+          "locator": "operational update FY2025 comparative column, page 5"
+        }
+      },
+      "source_document_id": "jio_q3_2026_media_release"
+    },
+    {
       "source_id": "jio_2025_integrated_financials",
       "operator_id": "reliance_jio",
       "year": 2025,

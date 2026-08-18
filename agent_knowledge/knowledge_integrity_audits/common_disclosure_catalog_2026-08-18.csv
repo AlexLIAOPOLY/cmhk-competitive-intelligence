@@ -11,9 +11,9 @@ quarterly_competitor_metrics_2026-08-18,financial,free_cash_flow,自由现金流
 quarterly_competitor_metrics_2026-08-18,financial,net_debt,净负债,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 quarterly_competitor_metrics_2026-08-18,financial,dividend_per_share,每股股息,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 quarterly_competitor_metrics_2026-08-18,financial,employees,员工数,low,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
-quarterly_competitor_metrics_2026-08-18,cloud,cloud_revenue,云收入,high,yes,20,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-quarterly_competitor_metrics_2026-08-18,cloud,cloud_revenue_growth,云收入增长,high,yes,19,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-quarterly_competitor_metrics_2026-08-18,cloud,cloud_operating_income,云经营利润,high,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
+quarterly_competitor_metrics_2026-08-18,cloud,cloud_revenue,云收入,high,yes,145,5,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
+quarterly_competitor_metrics_2026-08-18,cloud,cloud_revenue_growth,云收入增长,high,yes,95,4,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
+quarterly_competitor_metrics_2026-08-18,cloud,cloud_operating_income,云经营利润,high,yes,104,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 quarterly_competitor_metrics_2026-08-18,cloud,cloud_operating_margin,云经营利润率,high,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 quarterly_competitor_metrics_2026-08-18,cloud,remaining_performance_obligations,剩余履约义务/RPO,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 quarterly_competitor_metrics_2026-08-18,cloud,cloud_backlog,云订单积压,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
@@ -31,9 +31,9 @@ global_top5_operators_2016_2025,operating,household_customer_blended_arpu,家庭
 global_top5_operators_2016_2025,operating,mobile_dou,户均移动流量DOU,high,yes,19,3,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,handset_data_traffic,手机数据流量,high,yes,19,2,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,total_base_stations,基站总数,medium,yes,6,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-global_top5_operators_2016_2025,network,4g_base_stations,4G基站,medium,yes,5,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
+global_top5_operators_2016_2025,network,4g_base_stations,4G基站,medium,yes,8,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,5g_base_stations,5G基站,high,yes,24,5,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
-global_top5_operators_2016_2025,operating,churn,用户流失率,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
+global_top5_operators_2016_2025,operating,churn,用户流失率,medium,yes,1,1,present,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,5g_population_coverage,5G人口覆盖率,medium,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,network,spectrum_holdings,频谱持有量,low,no,0,0,missing_common_disclosure,Only write a value after >=3 distinct source documents; never estimate a source gap.
 global_top5_operators_2016_2025,operating,iot_connections,物联网连接,high,yes,2,2,present,Only write a value after >=3 distinct source documents; never estimate a source gap.

@@ -12,7 +12,7 @@
 |---|---:|---:|---:|---:|---:|---|
 | quarterly_competitor_metrics_2026-08-18 | 2704 | 672 | 2032 | 24.85% | 277 | backlog_open |
 | cmhk_macro_policy_2026-06-19 | 7577 | 3992 | 3585 | 52.69% | 0 | backlog_open |
-| global_top5_operators_2016_2025 | 395 | 362 | 33 | 91.65% | 0 | backlog_open |
+| global_top5_operators_2016_2025 | 395 | 363 | 32 | 91.9% | 0 | backlog_open |
 | local_hk_operator_operating_metrics_2016_2025 | 172 | 0 | 172 | 0.0% | 0 | backlog_open |
 | competitor_product_tariffs | 1994 | 0 | 1994 | 0.0% | 399 | backlog_open |
 
@@ -21,7 +21,6 @@
 - `quarterly_competitor_metrics_2026-08-18`：净负债 (`net_debt`)，优先级 medium。
 - `quarterly_competitor_metrics_2026-08-18`：每股股息 (`dividend_per_share`)，优先级 medium。
 - `quarterly_competitor_metrics_2026-08-18`：员工数 (`employees`)，优先级 low。
-- `quarterly_competitor_metrics_2026-08-18`：云经营利润 (`cloud_operating_income`)，优先级 high。
 - `quarterly_competitor_metrics_2026-08-18`：云经营利润率 (`cloud_operating_margin`)，优先级 high。
 - `quarterly_competitor_metrics_2026-08-18`：剩余履约义务/RPO (`remaining_performance_obligations`)，优先级 medium。
 - `quarterly_competitor_metrics_2026-08-18`：云订单积压 (`cloud_backlog`)，优先级 medium。

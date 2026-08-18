@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 48,
+                "Reliance Jio": 49,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -390,6 +390,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             "ebitda": 3,
             "mobile_arpu": 3,
             "mobile_dou": 4,
+            "total_data_traffic": 4,
             "5g_network_subscribers": 4,
             "connected_homes": 3,
         }
@@ -406,8 +407,16 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
         traffic = self.index[("reliance_jio", 2025, "total_data_traffic")]
         self.assertEqual(traffic["value"], 184.5)
-        self.assertEqual(traffic["verification_sources"], ["jio_2025_media_release"])
-        self.assertEqual(traffic["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(
+            traffic["verification_sources"],
+            [
+                "jio_2025_media_release",
+                "jio_q1_2026_media_release",
+                "jio_q2_2026_media_release",
+                "jio_q3_2026_media_release",
+            ],
+        )
+        self.assertEqual(traffic["triple_source_status"], "three_distinct_sources_verified")
 
         cells = self.index[("reliance_jio", 2025, "5g_base_stations")]
         self.assertEqual(cells["verification_sources"], ["jio_2025_factsheet"])
