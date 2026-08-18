@@ -12,8 +12,8 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 65
-- `official_three_distinct_sources_verified`: 339
+- `official_single_source`: 64
+- `official_three_distinct_sources_verified`: 340
 - `official_two_distinct_sources`: 21
 - `source_gap_confirmed`: 208
 
@@ -24,7 +24,7 @@
 - 中国广电: 6
 - 中国电信: 64
 - 中国移动: 80
-- 中国联通: 64
+- 中国联通: 65
 
 ## 缺口（含不适用）
 

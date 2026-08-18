@@ -16040,7 +16040,7 @@
         "china_unicom_20f_2018",
         "china_unicom_csr_2018"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -16419,7 +16419,7 @@
         "china_unicom_results_2018",
         "china_unicom_csr_2018"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -16838,7 +16838,7 @@
         "china_unicom_results_2019",
         "china_unicom_csr_2018"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -17227,7 +17227,7 @@
         "china_unicom_results_2020",
         "china_unicom_csr_2019"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -17714,7 +17714,7 @@
         "china_unicom_results_2021",
         "china_unicom_dec_ops_2020"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -18151,7 +18151,7 @@
         "china_unicom_dec_ops_2021",
         "china_unicom_csr_2021"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",
@@ -18539,20 +18539,28 @@
       "comparator": "=",
       "scope": "fixed-line broadband billing subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_unicom_ar_2022",
-        "china_unicom_ops_2022",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024",
         "china_unicom_results_2022"
       ],
-      "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_results_2022",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf",
+      "verification_sources": [
+        "china_unicom_results_2022",
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024"
+      ],
+      "candidate_sources": [
+        "china_unicom_results_2022",
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024"
+      ],
+      "quality_note": "FY2016-FY2022 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 uses the annual-results presentation plus the FY2023 and FY2024 sustainability-report comparative tables. FY2023-FY2025 remain approximate or below the strict three-document gate."
     },
     {
       "operator_id": "china_unicom",

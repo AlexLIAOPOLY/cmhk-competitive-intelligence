@@ -4008,6 +4008,18 @@
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
       "source_document_id": "china_unicom_results_2022",
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 103.63,
+          "unit": "million_subscribers",
+          "locator": "FY2022 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "mobile_arpu": {
+          "value": 44.3,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2022 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
+        }
+      },
       "comparative_evidence": {
         "FY2021": {
           "mobile_arpu": {
@@ -4025,13 +4037,6 @@
             "unit": "GB_per_user_month",
             "locator": "FY2021 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
           }
-        }
-      },
-      "evidence": {
-        "mobile_arpu": {
-          "value": 44.3,
-          "unit": "RMB_per_user_month",
-          "locator": "FY2022 exact China Unicom operating KPI; 移动ARPU at the disclosed precision"
         }
       }
     },
@@ -4437,6 +4442,28 @@
       "publisher": "China Unicom (Hong Kong) Limited",
       "source_document_id": "china_unicom_csr_2023",
       "comparative_evidence": {
+        "FY2022": {
+          "fixed_broadband_subscribers": {
+            "value": 103.63,
+            "unit": "million_subscribers",
+            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 250,
+            "unit": "million_ports",
+            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "iot_connections": {
+            "value": 385.54,
+            "unit": "million_connections",
+            "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
+          },
+          "5g_base_stations": {
+            "value": 1.0,
+            "unit": "million_base_stations",
+            "locator": "FY2022 5G co-build/co-share network scale at the disclosed precision"
+          }
+        },
         "FY2021": {
           "fixed_broadband_access_ports": {
             "value": 239,
@@ -4452,23 +4479,6 @@
             "value": 0.69,
             "unit": "million_base_stations",
             "locator": "FY2021 5G co-build/co-share network scale at the disclosed precision"
-          }
-        },
-        "FY2022": {
-          "fixed_broadband_access_ports": {
-            "value": 250,
-            "unit": "million_ports",
-            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
-          },
-          "iot_connections": {
-            "value": 385.54,
-            "unit": "million_connections",
-            "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
-          },
-          "5g_base_stations": {
-            "value": 1.0,
-            "unit": "million_base_stations",
-            "locator": "FY2022 5G co-build/co-share network scale at the disclosed precision"
           }
         }
       },
@@ -4501,6 +4511,11 @@
       "source_document_id": "china_unicom_csr_2024",
       "comparative_evidence": {
         "FY2022": {
+          "fixed_broadband_subscribers": {
+            "value": 103.63,
+            "unit": "million_subscribers",
+            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+          },
           "fixed_broadband_access_ports": {
             "value": 250,
             "unit": "million_ports",

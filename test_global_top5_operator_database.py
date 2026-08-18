@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 64,
                 "中国移动": 80,
-                "中国联通": 64,
+                "中国联通": 65,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -518,7 +518,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             },
             "fixed_broadband_subscribers": {
                 2016: 75.236, 2017: 76.539, 2018: 80.880,
-                2019: 83.478, 2020: 86.095, 2021: 95.046,
+                2019: 83.478, 2020: 86.095, 2021: 95.046, 2022: 103.630,
             },
             "4g_subscribers": {
                 2016: 104.551, 2017: 174.876, 2018: 219.925,
