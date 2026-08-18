@@ -76,7 +76,12 @@ class SubscriptionServiceTests(unittest.TestCase):
     def test_card_is_card_2_form_with_three_services(self):
         card = subscription_entry_card()
         self.assertEqual(card["schema"], "2.0")
+        self.assertEqual(card["header"]["title"]["content"], "订阅战略情报")
+        self.assertNotIn("subtitle", card["header"])
+        self.assertNotIn("icon", card["header"])
+        self.assertNotIn("text_tag_list", card["header"])
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
+        self.assertEqual([item["content"] for item in form["elements"] if item["tag"] == "markdown"], ["**订阅内容**", "**接收频率**"])
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
         frequency = next(item for item in form["elements"] if item["tag"] == "select_static")
@@ -84,7 +89,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
+        self.assertEqual(button["text"]["content"], "确认订阅")
         pause = next(item for item in card["body"]["elements"] if item.get("behaviors"))
+        self.assertEqual(pause["type"], "text")
         self.assertEqual(pause["behaviors"][0]["value"]["action"], "cmhk_subscription_pause_all_v1")
 
     def test_form_callback_persists_identity_and_replaces_services(self):

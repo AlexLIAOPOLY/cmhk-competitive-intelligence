@@ -82,52 +82,45 @@ def subscription_entry_card() -> dict[str, Any]:
         "config": {
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "CMHK战略情报订阅中心 · 自助选择推送服务"},
+            "summary": {"content": "订阅战略情报 · 选择服务与接收频率"},
         },
         "header": {
-            "title": {"tag": "plain_text", "content": "CMHK战略情报订阅中心"},
-            "subtitle": {"tag": "plain_text", "content": "按需订阅 · 可随时重新选择"},
+            "title": {"tag": "plain_text", "content": "订阅战略情报"},
             "template": "wathet",
-            "icon": {"tag": "standard_icon", "token": "file-form_colorful"},
-            "text_tag_list": [
-                {"tag": "text_tag", "text": {"tag": "plain_text", "content": "自助订阅"}, "color": "wathet"}
-            ],
         },
         "body": {
             "direction": "vertical",
-            "padding": "12px 12px 20px 12px",
-            "vertical_spacing": "12px",
+            "padding": "12px 12px 16px 12px",
+            "vertical_spacing": "8px",
             "elements": [
-                {
-                    "tag": "markdown",
-                    "content": "**选择希望接收的内容**\n提交后，机器人会把正式内容单独推送给你；再次提交会覆盖原选择。",
-                },
                 {
                     "tag": "form",
                     "name": "subscriptionForm",
                     "direction": "vertical",
-                    "vertical_spacing": "12px",
+                    "vertical_spacing": "8px",
                     "elements": [
+                        {"tag": "markdown", "content": "**订阅内容**"},
                         {
                             "tag": "multi_select_static",
                             "name": "services",
                             "required": True,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "请选择一个或多个订阅服务"},
+                            "placeholder": {"tag": "plain_text", "content": "选择一项或多项"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": "战略双周报（PDF / 可选独立语音）"}, "value": "weekly"},
+                                {"text": {"tag": "plain_text", "content": "战略双周报"}, "value": "weekly"},
                                 {"text": {"tag": "plain_text", "content": "运营商业绩摘要"}, "value": "performance"},
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
                             ],
                         },
+                        {"tag": "markdown", "content": "**接收频率**"},
                         {
                             "tag": "select_static",
                             "name": "frequency",
                             "required": True,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "请选择接收频率"},
+                            "placeholder": {"tag": "plain_text", "content": "选择频率"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": "即时接收"}, "value": "immediate"},
+                                {"text": {"tag": "plain_text", "content": "即时"}, "value": "immediate"},
                                 {"text": {"tag": "plain_text", "content": "每天 18:00"}, "value": "daily"},
                                 {"text": {"tag": "plain_text", "content": "每周五 18:00"}, "value": "weekly"},
                             ],
@@ -135,7 +128,7 @@ def subscription_entry_card() -> dict[str, Any]:
                         {
                             "tag": "button",
                             "name": "saveSubscriptions",
-                            "text": {"tag": "plain_text", "content": "保存我的订阅"},
+                            "text": {"tag": "plain_text", "content": "确认订阅"},
                             "type": "primary_filled",
                             "width": "fill",
                             "form_action_type": "submit",
@@ -144,21 +137,16 @@ def subscription_entry_card() -> dict[str, Any]:
                 },
                 {
                     "tag": "button",
-                    "text": {"tag": "plain_text", "content": "暂停我的全部订阅"},
-                    "type": "default",
-                    "width": "fill",
+                    "text": {"tag": "plain_text", "content": "暂停全部订阅"},
+                    "type": "text",
+                    "size": "small",
                     "confirm": {
                         "title": {"tag": "plain_text", "content": "暂停全部订阅？"},
-                        "text": {"tag": "plain_text", "content": "之后可重新提交上方表单恢复。"},
+                        "text": {"tag": "plain_text", "content": "之后仍可重新选择并恢复。"},
                     },
                     "behaviors": [
                         {"type": "callback", "value": {"action": "cmhk_subscription_pause_all_v1"}}
                     ],
-                },
-                {
-                    "tag": "markdown",
-                    "content": "<font color='grey'>仅记录你的飞书身份与订阅选择，不收集额外个人信息。</font>",
-                    "text_size": "notation",
                 },
             ],
         },
