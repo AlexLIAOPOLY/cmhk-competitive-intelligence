@@ -97,20 +97,20 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "并选择接收频率。感谢您的配合！",
+            "并选择接收方式和频率。感谢您的配合！",
         )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**订阅内容**", "**接收方式与频率**"],
+            ["**订阅内容**", "**接收方式**", "**接收频率**"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
-        delivery_plan = next(item for item in form["elements"] if item.get("name") == "delivery_plan")
-        self.assertEqual(len(delivery_plan["options"]), 9)
-        self.assertIn("daily_audio", {item["value"] for item in delivery_plan["options"]})
-        self.assertNotIn("report_mode", {item.get("name") for item in form["elements"]})
-        self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
+        report_mode = next(item for item in form["elements"] if item.get("name") == "report_mode")
+        frequency = next(item for item in form["elements"] if item.get("name") == "frequency")
+        self.assertEqual({item["value"] for item in report_mode["options"]}, {"pdf", "pdf_audio", "audio"})
+        self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
+        self.assertNotIn("delivery_plan", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
         self.assertEqual(button["text"]["content"], "确认订阅")

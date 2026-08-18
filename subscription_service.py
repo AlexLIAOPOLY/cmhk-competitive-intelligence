@@ -89,14 +89,14 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "并选择接收频率。感谢您的配合！"
+        "并选择接收方式和频率。感谢您的配合！"
     )
     return {
         "schema": "2.0",
         "config": {
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "订阅战略情报 · 选择服务与接收频率"},
+            "summary": {"content": "订阅战略情报 · 选择服务、接收方式与频率"},
         },
         "header": {
             "title": {"tag": "plain_text", "content": "订阅战略情报"},
@@ -145,23 +145,30 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
                             ],
                         },
-                        {"tag": "markdown", "content": "**接收方式与频率**"},
+                        {"tag": "markdown", "content": "**接收方式**"},
                         {
                             "tag": "select_static",
-                            "name": "delivery_plan",
+                            "name": "report_mode",
                             "required": True,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "选择接收方式与频率"},
+                            "placeholder": {"tag": "plain_text", "content": "选择接收方式"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": "即时 · 仅 PDF"}, "value": "immediate_pdf"},
-                                {"text": {"tag": "plain_text", "content": "即时 · PDF + 单独语音"}, "value": "immediate_pdf_audio"},
-                                {"text": {"tag": "plain_text", "content": "即时 · 仅语音"}, "value": "immediate_audio"},
-                                {"text": {"tag": "plain_text", "content": "每天 18:00 · 仅 PDF"}, "value": "daily_pdf"},
-                                {"text": {"tag": "plain_text", "content": "每天 18:00 · PDF + 单独语音"}, "value": "daily_pdf_audio"},
-                                {"text": {"tag": "plain_text", "content": "每天 18:00 · 仅语音"}, "value": "daily_audio"},
-                                {"text": {"tag": "plain_text", "content": "每周五 18:00 · 仅 PDF"}, "value": "weekly_pdf"},
-                                {"text": {"tag": "plain_text", "content": "每周五 18:00 · PDF + 单独语音"}, "value": "weekly_pdf_audio"},
-                                {"text": {"tag": "plain_text", "content": "每周五 18:00 · 仅语音"}, "value": "weekly_audio"},
+                                {"text": {"tag": "plain_text", "content": "仅 PDF"}, "value": "pdf"},
+                                {"text": {"tag": "plain_text", "content": "PDF + 单独语音"}, "value": "pdf_audio"},
+                                {"text": {"tag": "plain_text", "content": "仅语音"}, "value": "audio"},
+                            ],
+                        },
+                        {"tag": "markdown", "content": "**接收频率**"},
+                        {
+                            "tag": "select_static",
+                            "name": "frequency",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "选择接收频率"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": "即时接收"}, "value": "immediate"},
+                                {"text": {"tag": "plain_text", "content": "每天 18:00"}, "value": "daily"},
+                                {"text": {"tag": "plain_text", "content": "每周五 18:00"}, "value": "weekly"},
                             ],
                         },
                         {
