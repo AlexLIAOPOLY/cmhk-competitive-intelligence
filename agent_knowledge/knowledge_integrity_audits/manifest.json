@@ -33,8 +33,8 @@
   "quality": {
     "status": "backlog_open",
     "datasets_checked": 5,
-    "available_value_rows": 12881,
-    "three_distinct_source_certified_rows": 4987,
+    "available_value_rows": 12883,
+    "three_distinct_source_certified_rows": 4989,
     "below_three_source_rows": 7894,
     "missing_common_disclosures": 23,
     "notes": [

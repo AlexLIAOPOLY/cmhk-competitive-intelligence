@@ -4364,6 +4364,11 @@
           "value": 250,
           "unit": "million_ports",
           "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "iot_connections": {
+          "value": 385.54,
+          "unit": "million_connections",
+          "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
         }
       }
     },
@@ -4389,6 +4394,11 @@
             "value": 250,
             "unit": "million_ports",
             "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "iot_connections": {
+            "value": 385.54,
+            "unit": "million_connections",
+            "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
           }
         }
       },
@@ -4397,6 +4407,11 @@
           "value": 266,
           "unit": "million_ports",
           "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "iot_connections": {
+          "value": 493.911,
+          "unit": "million_connections",
+          "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
         }
       }
     },
@@ -4415,6 +4430,11 @@
             "value": 250,
             "unit": "million_ports",
             "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "iot_connections": {
+            "value": 385.54,
+            "unit": "million_connections",
+            "locator": "FY2022 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
           }
         },
         "FY2023": {
@@ -4422,6 +4442,11 @@
             "value": 266,
             "unit": "million_ports",
             "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "iot_connections": {
+            "value": 493.911,
+            "unit": "million_connections",
+            "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
           }
         }
       }
@@ -4441,6 +4466,11 @@
             "value": 266,
             "unit": "million_ports",
             "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "iot_connections": {
+            "value": 493.911,
+            "unit": "million_connections",
+            "locator": "FY2023 exact China Unicom operating KPI; 物联网连接 at the disclosed precision"
           }
         }
       }
