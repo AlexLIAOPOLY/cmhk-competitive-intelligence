@@ -125,7 +125,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=35"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=36"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
@@ -134,6 +134,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('src="./executive-dashboard-demo.js?v=18"', html)
             self.assertIn("--surface: #091725", style)
+            self.assertIn('--font-tech: "DIN Alternate"', style)
+            self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)
             self.assertIn("metric-sparkline", script)
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)

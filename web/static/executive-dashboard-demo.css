@@ -10,6 +10,8 @@
   --blue: #5c9cff;
   --mint: #60d9aa;
   --amber: #efb354;
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", Arial, sans-serif;
+  --font-tech: "DIN Alternate", "DIN Condensed", "Arial Narrow", "Roboto Condensed", "SF Pro Display", sans-serif;
   --panel-gap: clamp(8px, .52vw, 20px);
   --page-pad: clamp(12px, .82vw, 32px);
 }
@@ -20,7 +22,7 @@ body {
   overflow: hidden;
   color: var(--text);
   background: radial-gradient(circle at 50% -20%, rgba(38, 109, 148, .14), transparent 38%), linear-gradient(180deg, #06111d 0%, var(--bg) 68%);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+  font-family: var(--font-ui);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -51,7 +53,7 @@ body::before {
 .brand:focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
 .brand img { display: block; width: clamp(124px, 8.5vw, 326px); height: auto; object-fit: contain; object-position: left center; filter: brightness(1.75) saturate(.72); }
 .cockpit-title { display: grid; justify-items: center; gap: clamp(5px, .5vh, 11px); }
-h1 { margin: 0; color: #f5fbfd; font-size: clamp(29px, 2vw, 76px); font-weight: 650; letter-spacing: .12em; line-height: 1; text-indent: .12em; }
+h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 750; letter-spacing: .14em; line-height: 1; text-indent: .14em; text-shadow: 0 0 22px rgba(100, 205, 244, .14); }
 .cockpit-title > span { color: rgba(181, 211, 224, .68); font-size: clamp(8px, .5vw, 19px); font-weight: 650; letter-spacing: .32em; line-height: 1; text-indent: .32em; }
 
 .dashboard-grid { min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: var(--panel-gap); }
@@ -195,6 +197,50 @@ h1 { margin: 0; color: #f5fbfd; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .finance-gauge-card .monitor-kpi::after { display: none; }
 .finance-gauge-card .monitor-kpi > strong { font-size: clamp(24px, 1.5vw, 56px); }
 .finance-gauge-card .monitor-kpi > strong small { font-size: .32em; }
+
+/* Typography hierarchy: readable CJK UI text plus condensed instrument numerals. */
+.cockpit-title > span,
+.panel-heading > span,
+.section-label span,
+.topology-core b,
+.topology-core span,
+.monitor-kpi > strong,
+.monitor-kpi > em,
+.reach-dial b,
+.reach-dial-copy > strong,
+.reach-dial-copy > em,
+.finance-revenue-copy > strong,
+.finance-revenue-copy > em {
+  font-family: var(--font-tech);
+}
+.panel-heading > span { font-weight: 700; letter-spacing: -.015em; text-shadow: 0 0 18px rgba(100, 205, 244, .18); }
+.panel-heading h2,
+.section-label strong,
+.business-card > header strong { color: #f4f9fc; font-weight: 720; letter-spacing: .045em; }
+.section-label span,
+.cockpit-title > span { font-weight: 700; }
+.monitor-kpi > span,
+.reach-dial-copy > span,
+.finance-revenue-copy > span { font-weight: 560; letter-spacing: .018em; }
+.monitor-kpi > strong,
+.reach-dial-copy > strong,
+.finance-revenue-copy > strong {
+  color: #f9fcff;
+  font-weight: 700;
+  letter-spacing: -.012em;
+  text-shadow: 0 0 18px rgba(100, 205, 244, .11);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.monitor-kpi > strong small,
+.reach-dial-copy > strong small,
+.finance-revenue-copy > strong small {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  text-shadow: none;
+}
+.monitor-kpi > em,
+.reach-dial-copy > em,
+.finance-revenue-copy > em { font-weight: 700; letter-spacing: .025em; }
 
 @media (max-width: 1180px) {
   .network-monitor { grid-template-columns: minmax(0, 1.45fr) minmax(180px, 1fr); }
