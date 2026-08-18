@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 60,
                 "中国移动": 80,
-                "中国联通": 41,
+                "中国联通": 46,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -526,6 +526,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             "mobile_dou": {
                 2017: 2.433, 2019: 8.0,
             },
+            "4g_base_stations": {
+                2016: 0.740, 2017: 0.852, 2018: 0.987,
+                2020: 1.503, 2021: 1.560,
+            },
         }
         for metric_key, values in expected.items():
             for year, value in values.items():
@@ -561,6 +565,33 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn(f"official_value={value}", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 2)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 2)
+
+    def test_xiaojing_retrieves_china_unicom_precise_4g_base_station_history(self):
+        expected = {
+            2016: "0.74 million_base_stations",
+            2017: "0.852 million_base_stations",
+            2018: "0.987 million_base_stations",
+            2020: "1.503 million_base_stations",
+            2021: "1.56 million_base_stations",
+        }
+        for year, value_text in expected.items():
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    f"中国联通{year}年4G基站数是多少？说明三来源。",
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn(f"official_value={value_text}", combined)
+            self.assertIn("distinct_source_document_count=3", combined)
+            self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
+
+        conflict = self.index[("china_unicom", 2019, "4g_base_stations")]
+        self.assertIsNone(conflict["value"])
+        self.assertIn("restated 1.410 million to 1.407 million", conflict["quality_note"])
+        scope_break = self.index[("china_unicom", 2022, "4g_base_stations")]
+        self.assertIsNone(scope_break["value"])
+        self.assertIn("self-built and 2.276 million available", scope_break["quality_note"])
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))

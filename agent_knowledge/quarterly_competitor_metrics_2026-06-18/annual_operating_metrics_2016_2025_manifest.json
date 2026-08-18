@@ -2,7 +2,7 @@
   "id": "china_carriers_annual_operating_metrics_2016_2025",
   "title": "中国四家基础电信运营商2016–2025年度运营指标补充库",
   "generated_at": "2026-08-18T00:00:00+08:00",
-  "row_count": 354,
+  "row_count": 364,
   "operators": [
     "中国移动",
     "中国电信",
@@ -17,8 +17,8 @@
   ],
   "quality": {
     "status": "backlog_open",
-    "available_value_rows": 262,
-    "three_distinct_source_certified_rows": 187,
+    "available_value_rows": 267,
+    "three_distinct_source_certified_rows": 192,
     "below_three_source_rows": 75
   }
 }

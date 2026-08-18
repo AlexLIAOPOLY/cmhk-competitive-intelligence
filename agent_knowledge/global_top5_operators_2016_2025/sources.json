@@ -1870,6 +1870,11 @@
           "value": 41.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "4g_base_stations": {
+          "value": 1.56,
+          "unit": "million_base_stations",
+          "locator": "FY2021 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
         }
       }
     },
@@ -4234,6 +4239,101 @@
       }
     },
     {
+      "source_id": "china_unicom_csr_2016",
+      "operator_id": "china_unicom",
+      "year": 2016,
+      "label": "China Unicom Sustainability Report 2016",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2016.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2016",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 0.74,
+          "unit": "million_base_stations",
+          "locator": "FY2016 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2017",
+      "operator_id": "china_unicom",
+      "year": 2017,
+      "label": "China Unicom Sustainability Report 2017",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2017.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2017",
+      "comparative_evidence": {
+        "FY2016": {
+          "4g_base_stations": {
+            "value": 0.74,
+            "unit": "million_base_stations",
+            "locator": "FY2016 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "4g_base_stations": {
+          "value": 0.852,
+          "unit": "million_base_stations",
+          "locator": "FY2017 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2020",
+      "operator_id": "china_unicom",
+      "year": 2020,
+      "label": "China Unicom Sustainability Report 2020",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2020.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2020",
+      "comparative_evidence": {
+        "FY2018": {
+          "4g_base_stations": {
+            "value": 0.987,
+            "unit": "million_base_stations",
+            "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "4g_base_stations": {
+          "value": 1.503,
+          "unit": "million_base_stations",
+          "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2022",
+      "operator_id": "china_unicom",
+      "year": 2022,
+      "label": "China Unicom Sustainability Report 2022",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2022.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2022",
+      "comparative_evidence": {
+        "FY2020": {
+          "4g_base_stations": {
+            "value": 1.503,
+            "unit": "million_base_stations",
+            "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        },
+        "FY2021": {
+          "4g_base_stations": {
+            "value": 1.56,
+            "unit": "million_base_stations",
+            "locator": "FY2021 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        }
+      }
+    },
+    {
       "source_id": "china_unicom_csr_2018",
       "operator_id": "china_unicom",
       "year": 2018,
@@ -4258,6 +4358,11 @@
             "value": 104.551,
             "unit": "million_subscribers",
             "locator": "FY2016 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          },
+          "4g_base_stations": {
+            "value": 0.74,
+            "unit": "million_base_stations",
+            "locator": "FY2016 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
           }
         },
         "FY2017": {
@@ -4275,6 +4380,11 @@
             "value": 174.876,
             "unit": "million_subscribers",
             "locator": "FY2017 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+          },
+          "4g_base_stations": {
+            "value": 0.852,
+            "unit": "million_base_stations",
+            "locator": "FY2017 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
           }
         }
       },
@@ -4293,6 +4403,11 @@
           "value": 219.925,
           "unit": "million_subscribers",
           "locator": "FY2018 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        },
+        "4g_base_stations": {
+          "value": 0.987,
+          "unit": "million_base_stations",
+          "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
         }
       }
     },
@@ -4321,6 +4436,22 @@
           "unit": "million_subscribers",
           "locator": "FY2019 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
         }
+      },
+      "comparative_evidence": {
+        "FY2017": {
+          "4g_base_stations": {
+            "value": 0.852,
+            "unit": "million_base_stations",
+            "locator": "FY2017 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        },
+        "FY2018": {
+          "4g_base_stations": {
+            "value": 0.987,
+            "unit": "million_base_stations",
+            "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
+        }
       }
     },
     {
@@ -4342,6 +4473,20 @@
           "value": 95.046,
           "unit": "million_subscribers",
           "locator": "FY2021 exact China Unicom operating KPI; 固网宽带用户数 at the disclosed precision"
+        },
+        "4g_base_stations": {
+          "value": 1.56,
+          "unit": "million_base_stations",
+          "locator": "FY2021 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        }
+      },
+      "comparative_evidence": {
+        "FY2020": {
+          "4g_base_stations": {
+            "value": 1.503,
+            "unit": "million_base_stations",
+            "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          }
         }
       }
     },

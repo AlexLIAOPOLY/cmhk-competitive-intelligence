@@ -221,6 +221,18 @@ SOURCES.update({
         }
         for year in (2018, 2019, 2020)
     },
+    **{
+        f"china_unicom_csr_{year}": {
+            "source_id": f"china_unicom_csr_{year}",
+            "operator_id": "china_unicom",
+            "year": year,
+            "label": f"China Unicom Sustainability Report {year}",
+            "url": f"https://www.chinaunicom.com.hk/en/esg/reports/csr{year}.pdf",
+            "source_type": "official_sustainability_report",
+            "publisher": "China Unicom (Hong Kong) Limited",
+        }
+        for year in (2016, 2017, 2020, 2022)
+    },
     "china_unicom_csr_2018": {
         "source_id": "china_unicom_csr_2018",
         "operator_id": "china_unicom",
@@ -2293,6 +2305,10 @@ _CU_BROADBAND_ACCESS_ARPU = {
 _CU_MOBILE_DOU = {
     2017: 2.433, 2019: 8.0, 2020: 9.7, 2021: 12.7,
 }
+_CU_4G_BASE_STATIONS = {
+    2016: 0.740, 2017: 0.852, 2018: 0.987,
+    2020: 1.503, 2021: 1.560,
+}
 
 _CU_MOBILE_SUBSCRIBER_SOURCES = {
     2016: ["china_unicom_dec_ops_2016", "china_unicom_20f_2018", "china_unicom_csr_2018"],
@@ -2345,6 +2361,13 @@ _CU_MOBILE_DOU_SOURCES = {
     2020: ["china_unicom_results_2020", "china_unicom_results_2021"],
     2021: ["china_unicom_results_2021", "china_unicom_results_2022"],
 }
+_CU_4G_BASE_STATION_SOURCES = {
+    2016: ["china_unicom_csr_2016", "china_unicom_csr_2017", "china_unicom_csr_2018"],
+    2017: ["china_unicom_csr_2017", "china_unicom_csr_2018", "china_unicom_csr_2019"],
+    2018: ["china_unicom_csr_2018", "china_unicom_csr_2019", "china_unicom_csr_2020"],
+    2020: ["china_unicom_csr_2020", "china_unicom_csr_2021", "china_unicom_csr_2022"],
+    2021: ["china_unicom_csr_2021", "china_unicom_csr_2022", "china_unicom_ar_2021"],
+}
 
 
 def _bind_cu_historical_evidence(
@@ -2371,6 +2394,7 @@ for _metric_key, _values, _source_map, _unit in (
     ("mobile_arpu", _CU_MOBILE_ARPU, _CU_MOBILE_ARPU_SOURCES, "RMB_per_user_month"),
     ("broadband_arpu", _CU_BROADBAND_ACCESS_ARPU, _CU_BROADBAND_ACCESS_ARPU_SOURCES, "RMB_per_user_month"),
     ("mobile_dou", _CU_MOBILE_DOU, _CU_MOBILE_DOU_SOURCES, "GB_per_user_month"),
+    ("4g_base_stations", _CU_4G_BASE_STATIONS, _CU_4G_BASE_STATION_SOURCES, "million_base_stations"),
 ):
     for _year, _value in _values.items():
         for _source_id in _source_map[_year]:
@@ -2850,6 +2874,7 @@ add_series("china_unicom", "fixed_broadband_subscribers", {2016:75.236,2017:76.5
 add_series("china_unicom", "mobile_arpu", {**_CU_MOBILE_ARPU,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids={**paired("china_unicom", ct_years), **_CU_MOBILE_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")
 add_series("china_unicom", "broadband_arpu", {**_CU_BROADBAND_ACCESS_ARPU,2022:None,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="fixed-line broadband access ARPU", source_ids={**paired("china_unicom", list(range(2016,2026))), **_CU_BROADBAND_ACCESS_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change.")
 add_series("china_unicom", "mobile_dou", {2016:None,2017:2.433,2018:None,2019:8.0,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=_CU_MOBILE_DOU_SOURCES, note="FY2017 is converted exactly from the disclosed 2,433 MB at 1,000 MB = 1 GB. FY2017 and FY2019 each use three separate exact official documents. FY2020 and FY2021 retain the database's existing exact values with two exact presentation documents only; annual-report or press-release wording says approximately and is not counted as an exact third source. Other years remain explicit gaps until three same-scope exact documents are verified.")
+add_series("china_unicom", "4g_base_stations", {2016:0.740,2017:0.852,2018:0.987,2019:None,2020:1.503,2021:1.560,2022:None,2023:None,2024:None,2025:None}, scope="China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures", source_ids=_CU_4G_BASE_STATION_SOURCES, note="FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series.")
 add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_unicom", "total_connectivity_subscribers", {2025:1200}, scope="mobile billing, fixed broadband, fixed local access, IoT terminals and networking leased lines", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "mobile_population_coverage", {2025:99}, scope="mobile network population coverage", comparator=">", source_ids={2025:CU_2025_THREE})
@@ -3029,7 +3054,7 @@ def build_coverage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     required = {
         "china_mobile": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","mobile_dou","handset_data_traffic","5g_base_stations"],
         "china_telecom": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","handset_data_traffic","5g_base_stations"],
-        "china_unicom": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","mobile_dou","5g_base_stations"],
+        "china_unicom": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","mobile_dou","4g_base_stations","5g_base_stations"],
         "china_broadnet": ["mobile_subscribers","5g_network_subscribers","fixed_broadband_subscribers","mobile_arpu","broadband_arpu","mobile_dou","total_data_traffic","5g_base_stations","cable_tv_actual_users","revenue","ebitda","net_profit","capex"],
         "bharti_airtel": ["total_customers","revenue","ebitda","net_profit","capex","network_towers","total_data_traffic"],
         "reliance_jio": ["total_customers","value_of_sales_and_services","revenue_from_operations","ebitda","mobile_arpu","mobile_dou","total_data_traffic","5g_network_subscribers","connected_homes","5g_base_stations"],

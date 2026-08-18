@@ -15796,6 +15796,45 @@
       "period": "FY2016",
       "period_end": "2016-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 0.74,
+      "official_value": 0.74,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2016",
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2016",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2016.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2016",
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2016",
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
       "value": 104.551,
@@ -16011,6 +16050,45 @@
         "china_unicom_csr_2018"
       ],
       "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 0.852,
+      "official_value": 0.852,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2017",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2017.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2017",
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
     },
     {
       "operator_id": "china_unicom",
@@ -16254,6 +16332,45 @@
       "period": "FY2018",
       "period_end": "2018-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 0.987,
+      "official_value": 0.987,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2018.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
       "value": 219.925,
@@ -16469,6 +16586,35 @@
         "china_unicom_csr_2018"
       ],
       "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": null,
+      "official_value": null,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2019"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
     },
     {
       "operator_id": "china_unicom",
@@ -16703,6 +16849,45 @@
         "china_unicom_csr_2019"
       ],
       "quality_note": "FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 1.503,
+      "official_value": 1.503,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2020.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
     },
     {
       "operator_id": "china_unicom",
@@ -17005,6 +17190,45 @@
       "period": "FY2021",
       "period_end": "2021-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 1.56,
+      "official_value": 1.56,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2021",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2021.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022",
+        "china_unicom_ar_2021"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022",
+        "china_unicom_ar_2021"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 0.69,
@@ -17259,6 +17483,35 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": null,
+      "official_value": null,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2022"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 1.0,
@@ -17487,6 +17740,35 @@
       "period": "FY2023",
       "period_end": "2023-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": null,
+      "official_value": null,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2023"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 1.21,
@@ -17702,6 +17984,35 @@
       "period": "FY2024",
       "period_end": "2024-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": null,
+      "official_value": null,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2024"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 1.375,
@@ -17908,6 +18219,35 @@
         "china_unicom_results_2024"
       ],
       "quality_note": "Derived from official prior-year closing value plus official disclosed net additions; rounded to two decimals and not presented as a directly reported exact closing figure."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": null,
+      "official_value": null,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "China Unicom 4G base stations before the disclosure changed to available/self-built/shared network measures",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2025"
+      ],
+      "quality_note": "FY2016-FY2018 and FY2020-FY2021 each use three separate official annual or sustainability reports carrying the same value. FY2019 remains blank because later sustainability reporting restated 1.410 million to 1.407 million. FY2022 remains blank here because the company separately disclosed 1.696 million self-built and 2.276 million available stations; these scopes are not spliced into the earlier series."
     },
     {
       "operator_id": "china_unicom",
