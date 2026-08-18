@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国广电": 4,
+                "中国广电": 6,
                 "中国电信": 12,
                 "中国移动": 17,
                 "中国联通": 10,
@@ -278,7 +278,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             [(row["year"], row["metric_key"]) for row in certified],
             [
+                (2022, "5g_base_stations"),
                 (2022, "5g_network_subscribers"),
+                (2023, "5g_base_stations"),
                 (2023, "5g_network_subscribers"),
                 (2024, "5g_network_subscribers"),
                 (2025, "5g_network_subscribers"),
@@ -302,7 +304,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])
-        self.assertEqual(base_2023["distinct_source_document_count"], 0)
+        self.assertEqual(base_2023["distinct_source_document_count"], 3)
+        base_2022 = self.index[("china_broadnet", 2022, "5g_base_stations")]
+        self.assertEqual(base_2022["distinct_source_document_count"], 3)
+        self.assertIn("co-built and shared", base_2022["scope"])
         cable = self.index[("china_broadnet", 2024, "cable_tv_actual_users")]
         self.assertEqual(cable["value"], 208)
         self.assertIn("not China Broadnet consolidated", cable["scope"])

@@ -86,7 +86,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_ar_2023"
+      "source_document_id": "china_mobile_ar_2023",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.62,
+          "unit": "million_base_stations",
+          "locator": "2023 annual report chairman statement; 620,000 700MHz 5G base stations"
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_2024",
@@ -1842,7 +1849,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre230323.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2022"
+      "source_document_id": "china_mobile_results_2022",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.48,
+          "unit": "million_base_stations",
+          "locator": "2022 annual results presentation; 480k cumulative 700MHz base stations"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2023",
@@ -1852,7 +1866,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre240321.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2023"
+      "source_document_id": "china_mobile_results_2023",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.62,
+          "unit": "million_base_stations",
+          "locator": "2023 annual results presentation; 620k cumulative 700MHz base stations"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2024",
@@ -2569,7 +2590,14 @@
           }
         }
       },
-      "source_document_id": "china_mobile_sd_2022"
+      "source_document_id": "china_mobile_sd_2022",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.48,
+          "unit": "million_base_stations",
+          "locator": "2022 sustainability report; 480,000 700MHz 5G base stations built with China Broadnet"
+        }
+      }
     },
     {
       "source_id": "china_mobile_sd_2023",
@@ -2602,7 +2630,14 @@
           }
         }
       },
-      "source_document_id": "china_mobile_sd_2023"
+      "source_document_id": "china_mobile_sd_2023",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.62,
+          "unit": "million_base_stations",
+          "locator": "2023 sustainability report; 620,000 700MHz 5G base stations"
+        }
+      }
     },
     {
       "source_id": "china_mobile_sd_2024",
@@ -5699,6 +5734,13 @@
       "url": "https://www.nrta.gov.cn/art/2023/2/11/art_113_63379.html",
       "source_type": "official_regulator_technology_review",
       "publisher": "国家广播电视总局",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.48,
+          "unit": "million_base_stations",
+          "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站"
+        }
+      },
       "source_document_id": "china_broadnet_nrta_tech_review_2022"
     },
     {

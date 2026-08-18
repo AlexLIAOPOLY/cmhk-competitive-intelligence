@@ -1586,6 +1586,24 @@ SOURCES["china_mobile_ar_2020"].setdefault("evidence", {})["total_base_stations"
     "unit": "million_base_stations",
     "locator": "operating review; more than 5.14 million base stations at year end",
 }
+SOURCES["china_broadnet_nrta_tech_review_2022"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.48, "unit": "million_base_stations", "locator": "2022年广电视听十大科技关键词；共建共享完成48万个700MHz基站",
+}
+SOURCES["china_mobile_sd_2022"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.48, "unit": "million_base_stations", "locator": "2022 sustainability report; 480,000 700MHz 5G base stations built with China Broadnet",
+}
+SOURCES["china_mobile_results_2022"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.48, "unit": "million_base_stations", "locator": "2022 annual results presentation; 480k cumulative 700MHz base stations",
+}
+SOURCES["china_mobile_ar_2023"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.62, "unit": "million_base_stations", "locator": "2023 annual report chairman statement; 620,000 700MHz 5G base stations",
+}
+SOURCES["china_mobile_sd_2023"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.62, "unit": "million_base_stations", "locator": "2023 sustainability report; 620,000 700MHz 5G base stations",
+}
+SOURCES["china_mobile_results_2023"].setdefault("evidence", {})["5g_base_stations"] = {
+    "value": 0.62, "unit": "million_base_stations", "locator": "2023 annual results presentation; 620k cumulative 700MHz base stations",
+}
 for _source_id in ("china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"):
     SOURCES[_source_id].setdefault("evidence", {}).update({
         "mobile_dou": {
@@ -2166,8 +2184,8 @@ add_series("china_broadnet", "broadband_arpu", {y:None for y in YEARS}, unit="RM
 add_series("china_broadnet", "mobile_dou", {y:None for y in YEARS}, scope="China Broadnet monthly mobile data usage per user", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
 add_series("china_broadnet", "total_data_traffic", {y:None for y in YEARS}, scope="China Broadnet annual mobile data traffic", source_ids={y:[] for y in YEARS}, note="MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted.")
 add_series("china_broadnet", "5g_base_stations", {y:None for y in range(2016, 2022)}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={y:[] for y in range(2016, 2022)}, note="Pre-network years; not a zero estimate.")
-add_series("china_broadnet", "5g_base_stations", {2022:0.48}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2022:["china_broadnet_nrta_tech_review_2022", "china_mobile_ar_2022", "china_mobile_ar_a_2022"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
-add_series("china_broadnet", "5g_base_stations", {2023:0.62}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2023:["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
+add_series("china_broadnet", "5g_base_stations", {2022:0.48}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2022:["china_broadnet_nrta_tech_review_2022", "china_mobile_sd_2022", "china_mobile_results_2022"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
+add_series("china_broadnet", "5g_base_stations", {2023:0.62}, scope="700MHz 5G base stations co-built and shared with China Mobile; not wholly owned by China Broadnet", source_ids={2023:["china_mobile_ar_2023", "china_mobile_sd_2023", "china_mobile_results_2023"]}, note="Shared-network scope; never add this row to China Mobile's base-station total.")
 add_series("china_broadnet", "5g_base_stations", {2024:None, 2025:None}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={2024:[], 2025:[]}, note="Only interim or differently scoped shared-network totals were found; no year-end value is substituted.")
 add_series("china_broadnet", "shared_4g_5g_base_stations", {2023:4.0}, scope="China Mobile 4G/5G base stations available to China Broadnet through network sharing", comparator=">", source_ids={2023:CBN_2023_SHARED_NETWORK}, note="Network-access evidence appears in three distinct public documents, but downstream reports share the China Broadnet chairman statement lineage; these are available shared stations, not owned assets.")
 
