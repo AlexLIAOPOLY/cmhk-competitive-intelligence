@@ -7226,20 +7226,28 @@
       "comparator": "=",
       "scope": "4G subscribers/users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2016",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2016",
+        "china_telecom_press_2016",
         "china_telecom_results_2016"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2016",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2016",
+      "verification_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "quality_note": "Each value is bound to the exact December KPI table, annual-results presentation and separately published results press release."
     },
     {
       "operator_id": "china_telecom",
@@ -7257,20 +7265,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2016",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2016",
+        "china_telecom_press_2016",
         "china_telecom_results_2016"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2016",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2016",
+      "verification_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7350,20 +7366,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2016",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2016",
+        "china_telecom_press_2016",
         "china_telecom_results_2016"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2016",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2016",
+      "verification_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2016",
+        "china_telecom_results_2016",
+        "china_telecom_press_2016"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7381,20 +7405,28 @@
       "comparator": "=",
       "scope": "4G subscribers/users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2017",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2017",
+        "china_telecom_press_2017",
         "china_telecom_results_2017"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2017",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2017",
+      "verification_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "quality_note": "Each value is bound to the exact December KPI table, annual-results presentation and separately published results press release."
     },
     {
       "operator_id": "china_telecom",
@@ -7412,20 +7444,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2017",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2017",
+        "china_telecom_press_2017",
         "china_telecom_results_2017"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2017",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2017",
+      "verification_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7505,20 +7545,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2017",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2017",
+        "china_telecom_press_2017",
         "china_telecom_results_2017"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2017",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2017",
+      "verification_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2017",
+        "china_telecom_results_2017",
+        "china_telecom_press_2017"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7536,20 +7584,28 @@
       "comparator": "=",
       "scope": "4G subscribers/users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2018",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2018",
+        "china_telecom_press_2018",
         "china_telecom_results_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2018",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2018",
+      "verification_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "quality_note": "Each value is bound to the exact December KPI table, annual-results presentation and separately published results press release."
     },
     {
       "operator_id": "china_telecom",
@@ -7567,20 +7623,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2018",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2018",
+        "china_telecom_press_2018",
         "china_telecom_results_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2018",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2018",
+      "verification_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7660,20 +7724,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2018",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2018",
+        "china_telecom_press_2018",
         "china_telecom_results_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2018",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2018",
+      "verification_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2018",
+        "china_telecom_results_2018",
+        "china_telecom_press_2018"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7685,26 +7757,34 @@
       "grain": "annual",
       "metric_key": "5g_package_subscribers",
       "metric_zh": "5G套餐用户数",
-      "value": 10.73,
-      "official_value": 10.73,
+      "value": 4.61,
+      "official_value": 4.61,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2019",
-        "china_telecom_kpi_2019",
-        "china_telecom_results_2019"
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_telecom_press_2020",
+        "china_telecom_results_2019",
+        "china_telecom_results_2020"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_results_2019",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/presentations/annpre200324.pdf",
+      "verification_sources": [
+        "china_telecom_results_2019",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_results_2019",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -7722,20 +7802,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2019",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2019",
+        "china_telecom_press_2019",
         "china_telecom_results_2019"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2019",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2019",
+      "verification_sources": [
+        "china_telecom_kpi_2019",
+        "china_telecom_results_2019",
+        "china_telecom_press_2019"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2019",
+        "china_telecom_results_2019",
+        "china_telecom_press_2019"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7815,20 +7903,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2019",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2019",
+        "china_telecom_press_2019",
         "china_telecom_results_2019"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2019",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2019",
+      "verification_sources": [
+        "china_telecom_kpi_2019",
+        "china_telecom_results_2019",
+        "china_telecom_press_2019"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2019",
+        "china_telecom_results_2019",
+        "china_telecom_press_2019"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -7877,20 +7973,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2020",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2020",
+        "china_telecom_press_2020",
         "china_telecom_results_2020"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2020",
+      "verification_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -7908,20 +8012,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2020",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2020",
+        "china_telecom_press_2020",
         "china_telecom_results_2020"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2020",
+      "verification_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8001,20 +8113,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2020",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2020",
+        "china_telecom_press_2020",
         "china_telecom_results_2020"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2020",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2020",
+      "verification_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2020",
+        "china_telecom_results_2020",
+        "china_telecom_press_2020"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8063,20 +8183,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2021",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2021",
+        "china_telecom_press_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2021",
+      "verification_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -8094,20 +8222,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2021",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2021",
+        "china_telecom_press_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2021",
+      "verification_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8187,20 +8323,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2021",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2021",
+        "china_telecom_press_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2021",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2021",
+      "verification_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2021",
+        "china_telecom_results_2021",
+        "china_telecom_press_2021"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8257,20 +8401,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2022",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2022",
+        "china_telecom_press_2022",
         "china_telecom_results_2022"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2022",
+      "verification_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -8288,20 +8440,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2022",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2022",
+        "china_telecom_press_2022",
         "china_telecom_results_2022"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2022",
+      "verification_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8381,20 +8541,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2022",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2022",
+        "china_telecom_press_2022",
         "china_telecom_results_2022"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2022",
+      "verification_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2022",
+        "china_telecom_results_2022",
+        "china_telecom_press_2022"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8443,20 +8611,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2023",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2023",
+        "china_telecom_press_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2023",
+      "verification_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -8474,20 +8650,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2023",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2023",
+        "china_telecom_press_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2023",
+      "verification_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8567,20 +8751,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2023",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2023",
+        "china_telecom_press_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2023",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2023",
+      "verification_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2023",
+        "china_telecom_results_2023",
+        "china_telecom_press_2023"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8660,20 +8852,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2024",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2024",
+        "china_telecom_press_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2024",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2024",
+      "verification_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "quality_note": "FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings."
     },
     {
       "operator_id": "china_telecom",
@@ -8691,20 +8891,28 @@
       "comparator": "=",
       "scope": "wireline broadband subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2024",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2024",
+        "china_telecom_press_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2024",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2024",
+      "verification_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8784,20 +8992,28 @@
       "comparator": "=",
       "scope": "mobile subscribers",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_telecom_ar_2024",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_telecom_kpi_2024",
+        "china_telecom_press_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_kpi_2024",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2024",
+      "verification_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "candidate_sources": [
+        "china_telecom_kpi_2024",
+        "china_telecom_results_2024",
+        "china_telecom_press_2024"
+      ],
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -8999,7 +9215,7 @@
         "china_telecom_kpi_2025",
         "china_telecom_q4_operating_announcement_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",
@@ -9190,7 +9406,7 @@
         "china_telecom_kpi_2025",
         "china_telecom_q4_operating_announcement_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered."
     },
     {
       "operator_id": "china_telecom",

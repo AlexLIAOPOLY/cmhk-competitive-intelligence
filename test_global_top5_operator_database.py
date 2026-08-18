@@ -39,7 +39,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
                 "中国广电": 6,
-                "中国电信": 12,
+                "中国电信": 39,
                 "中国移动": 80,
                 "中国联通": 10,
             },
@@ -55,6 +55,42 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(len(row["verification_sources"]), 4)
         self.assertEqual(row["distinct_source_document_count"], 4)
         self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_china_telecom_historical_subscriber_series_use_three_exact_documents(self):
+        for year in range(2016, 2025):
+            expected_sources = {
+                f"china_telecom_kpi_{year}",
+                f"china_telecom_results_{year}",
+                f"china_telecom_press_{year}",
+            }
+            for metric_key in ("mobile_subscribers", "fixed_broadband_subscribers"):
+                row = self.index[("china_telecom", year, metric_key)]
+                self.assertEqual(set(row["verification_sources"]), expected_sources)
+                self.assertEqual(row["distinct_source_document_count"], 3)
+                self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        for year in range(2016, 2019):
+            row = self.index[("china_telecom", year, "4g_subscribers")]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+    def test_china_telecom_fy2019_5g_package_value_uses_year_end_scope(self):
+        row = self.index[("china_telecom", 2019, "5g_package_subscribers")]
+        self.assertEqual(row["value"], 4.61)
+        self.assertNotEqual(row["value"], 10.73)
+        self.assertEqual(
+            set(row["verification_sources"]),
+            {"china_telecom_results_2019", "china_telecom_results_2020", "china_telecom_press_2020"},
+        )
+        self.assertEqual(row["distinct_source_document_count"], 3)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertIn("February 2020", row["quality_note"])
+
+    def test_china_telecom_5g_package_history_uses_three_exact_documents(self):
+        for year in range(2020, 2025):
+            row = self.index[("china_telecom", year, "5g_package_subscribers")]
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_jio_early_candidate_sources_without_exact_bindings_are_not_certified(self):
         legacy_candidate_rows = [

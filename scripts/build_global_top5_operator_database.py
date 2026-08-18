@@ -204,6 +204,26 @@ for operator_id, years in RESULTS_PRESENTATIONS.items():
             "publisher": OPERATORS[operator_id]["legal_name"],
         }
 
+# China Telecom's annual-results press releases are separate legal documents
+# from both its KPI webpage and annual-results presentation.  They retain the
+# exact two-decimal subscriber tables needed by the strict source gate.
+CHINA_TELECOM_PRESS_RELEASES = {
+    2016: "p170321", 2017: "p180328", 2018: "p190319", 2019: "p200324",
+    2020: "p210309", 2021: "p220317", 2022: "p230322", 2023: "p240326",
+    2024: "p250325",
+}
+for year, stem in CHINA_TELECOM_PRESS_RELEASES.items():
+    sid = f"china_telecom_press_{year}"
+    SOURCES[sid] = {
+        "source_id": sid,
+        "operator_id": "china_telecom",
+        "year": year,
+        "label": f"China Telecom {year} annual-results press release",
+        "url": f"https://www.chinatelecom-h.com/en/media/press/{stem}.pdf",
+        "source_type": "official_results_press_release",
+        "publisher": "China Telecom Corporation Limited",
+    }
+
 SOURCES.update({
     "china_mobile_press_2017": {
         "source_id": "china_mobile_press_2017", "operator_id": "china_mobile", "year": 2017,
@@ -1979,6 +1999,71 @@ for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_m
             "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure",
         },
     })
+
+# China Telecom subscriber history: the KPI webpage, annual-results
+# presentation and results press release are three independently published
+# official documents.  Bind only the exact values shown in all three.
+_CT_MOBILE_SUBSCRIBERS = {
+    2016: 215.00, 2017: 249.96, 2018: 303.00, 2019: 335.57,
+    2020: 351.02, 2021: 372.43, 2022: 391.18, 2023: 407.77, 2024: 424.52,
+}
+_CT_FIXED_BROADBAND_SUBSCRIBERS = {
+    2016: 123.12, 2017: 133.53, 2018: 145.79, 2019: 153.13,
+    2020: 158.53, 2021: 169.71, 2022: 180.90, 2023: 190.16, 2024: 197.44,
+}
+_CT_4G_SUBSCRIBERS = {2016: 121.87, 2017: 182.04, 2018: 242.43}
+_CT_5G_PACKAGE_SUBSCRIBERS = {
+    2019: 4.61, 2020: 86.50, 2021: 187.80,
+    2022: 267.96, 2023: 318.66, 2024: 351.48,
+}
+for _year in range(2016, 2025):
+    for _source_id, _label in (
+        (f"china_telecom_kpi_{_year}", "December KPI table"),
+        (f"china_telecom_results_{_year}", "annual-results presentation"),
+        (f"china_telecom_press_{_year}", "annual-results press release"),
+    ):
+        SOURCES[_source_id].setdefault("evidence", {}).update({
+            "mobile_subscribers": {
+                "value": _CT_MOBILE_SUBSCRIBERS[_year],
+                "unit": "million_subscribers",
+                "locator": f"FY{_year} {_label}; exact year-end mobile subscriber table",
+            },
+            "fixed_broadband_subscribers": {
+                "value": _CT_FIXED_BROADBAND_SUBSCRIBERS[_year],
+                "unit": "million_subscribers",
+                "locator": f"FY{_year} {_label}; exact year-end wireline broadband subscriber table",
+            },
+        })
+        if _year in _CT_4G_SUBSCRIBERS:
+            SOURCES[_source_id].setdefault("evidence", {})["4g_subscribers"] = {
+                "value": _CT_4G_SUBSCRIBERS[_year],
+                "unit": "million_subscribers",
+                "locator": f"FY{_year} {_label}; exact year-end 4G subscriber table",
+            }
+        if _year in _CT_5G_PACKAGE_SUBSCRIBERS and _year >= 2020:
+            SOURCES[_source_id].setdefault("evidence", {})["5g_package_subscribers"] = {
+                "value": _CT_5G_PACKAGE_SUBSCRIBERS[_year],
+                "unit": "million_subscribers",
+                "locator": f"FY{_year} {_label}; exact year-end 5G package subscriber table",
+            }
+
+# FY2019's year-end 5G-package value is 4.61 million.  The previously captured
+# 10.73 million was explicitly dated February 2020 in the FY2019 annual report
+# and must not be stored as a December 2019 observation.
+SOURCES["china_telecom_results_2019"].setdefault("evidence", {})["5g_package_subscribers"] = {
+    "value": 4.61,
+    "unit": "million_subscribers",
+    "locator": "FY2019 annual-results presentation; December 2019 5G package subscribers",
+}
+for _source_id, _label in (
+    ("china_telecom_results_2020", "FY2020 annual-results presentation"),
+    ("china_telecom_press_2020", "FY2020 annual-results press release"),
+):
+    SOURCES[_source_id].setdefault("comparative_evidence", {}).setdefault("FY2019", {})["5g_package_subscribers"] = {
+        "value": 4.61,
+        "unit": "million_subscribers",
+        "locator": f"{_label}; exact FY2019 comparative 5G package subscriber value",
+    }
 for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"):
     SOURCES[_source_id].setdefault("evidence", {}).update({
         "mobile_arpu": {
@@ -2402,11 +2487,28 @@ add_series("china_mobile", "intelligent_compute_capacity", {2025:92.5}, scope="t
 
 # China Telecom: finance remains in the existing quarterly database.
 ct_years = YEARS
-add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
-add_series("china_telecom", "4g_subscribers", {2016:121.87, 2017:182.04, 2018:242.43}, scope="4G subscribers/users", source_ids=paired("china_telecom", [2016,2017,2018]))
-add_series("china_telecom", "5g_package_subscribers", {2019:10.73, 2020:86.50, 2021:187.80, 2022:267.96, 2023:318.66, 2024:351.48}, scope="5G package subscribers; not equivalent to active 5G network users", source_ids=paired("china_telecom", list(range(2019,2025))))
+CHINA_TELECOM_SUBSCRIBER_SOURCES = {
+    year: [f"china_telecom_kpi_{year}", f"china_telecom_results_{year}", f"china_telecom_press_{year}"]
+    for year in range(2016, 2025)
+}
+CHINA_TELECOM_SUBSCRIBER_SOURCES[2025] = [
+    *CT_2025_THREE,
+    "china_telecom_press_2025",
+    "china_telecom_kpi_2025",
+    "china_telecom_q4_operating_announcement_2025",
+]
+CHINA_TELECOM_5G_PACKAGE_SOURCES = {
+    2019: ["china_telecom_results_2019", "china_telecom_results_2020", "china_telecom_press_2020"],
+    **{
+        year: [f"china_telecom_kpi_{year}", f"china_telecom_results_{year}", f"china_telecom_press_{year}"]
+        for year in range(2020, 2025)
+    },
+}
+add_series("china_telecom", "mobile_subscribers", dict(zip(ct_years, [215.00,249.96,303.00,335.57,351.02,372.43,391.18,407.77,424.52,438.65])), scope="mobile subscribers", source_ids=CHINA_TELECOM_SUBSCRIBER_SOURCES, note="FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered.")
+add_series("china_telecom", "4g_subscribers", {2016:121.87, 2017:182.04, 2018:242.43}, scope="4G subscribers/users", source_ids={year: CHINA_TELECOM_SUBSCRIBER_SOURCES[year] for year in range(2016, 2019)}, note="Each value is bound to the exact December KPI table, annual-results presentation and separately published results press release.")
+add_series("china_telecom", "5g_package_subscribers", _CT_5G_PACKAGE_SUBSCRIBERS, scope="5G package subscribers; not equivalent to active 5G network users", source_ids=CHINA_TELECOM_5G_PACKAGE_SOURCES, note="FY2019 is corrected to the disclosed 31 December value of 4.61 million. The former 10.73 million observation was dated February 2020 and is excluded from FY2019. Each retained row has three exact official document bindings.")
 add_series("china_telecom", "5g_network_subscribers", {2024:250.73, 2025:301.81}, scope="5G network subscribers; 2024 comparative was restated on the new network-user basis", source_ids=override_sources(paired("china_telecom", [2024,2025]), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
-add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=override_sources(paired("china_telecom", ct_years), 2025, [*CT_2025_THREE, "china_telecom_press_2025", "china_telecom_kpi_2025", "china_telecom_q4_operating_announcement_2025"]))
+add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [123.12,133.53,145.79,153.13,158.53,169.71,180.90,190.16,197.44,201.12])), scope="wireline broadband subscribers", source_ids=CHINA_TELECOM_SUBSCRIBER_SOURCES, note="FY2016-FY2024 each use the exact December KPI table, annual-results presentation and separately published results press release; FY2025 uses the exact annual/operating disclosures already registered.")
 add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
 add_series("china_telecom", "broadband_arpu", {2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]})
 add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]))

@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：621
 - 有值行：412
-- 来源条目：218
+- 来源条目：227
 - 重复键：0
 - 无效来源引用：0
 
@@ -12,8 +12,8 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 145
-- `official_three_distinct_sources_verified`: 233
+- `official_single_source`: 118
+- `official_three_distinct_sources_verified`: 260
 - `official_two_distinct_sources`: 18
 - `source_gap_confirmed`: 182
 
@@ -22,7 +22,7 @@
 - Bharti Airtel: 98
 - Reliance Jio: 27
 - 中国广电: 6
-- 中国电信: 12
+- 中国电信: 39
 - 中国移动: 80
 - 中国联通: 10
 
