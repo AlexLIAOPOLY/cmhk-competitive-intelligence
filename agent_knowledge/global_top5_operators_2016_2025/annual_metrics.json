@@ -252,7 +252,7 @@
         "bharti_airtel_ar_2016",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -300,7 +300,7 @@
       "official_value": 118197,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and the FY2019 full-year results pack; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -348,7 +348,7 @@
         "bharti_airtel_ar_2016",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -380,7 +380,7 @@
         "bharti_airtel_ar_2016",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -412,7 +412,7 @@
         "bharti_airtel_ar_2016",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -444,7 +444,7 @@
         "bharti_airtel_ar_2016",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -476,7 +476,7 @@
         "bharti_airtel_ar_2017",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -524,7 +524,7 @@
       "official_value": 136479,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and the FY2019 full-year results pack; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -572,7 +572,7 @@
         "bharti_airtel_ar_2017",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -604,7 +604,7 @@
         "bharti_airtel_ar_2017",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -636,7 +636,7 @@
         "bharti_airtel_ar_2017",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -668,7 +668,7 @@
         "bharti_airtel_ar_2017",
         "airtel_2019_five_year"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -710,6 +710,40 @@
       "period": "FY2018",
       "period_end": "2018-03-31",
       "grain": "annual",
+      "metric_key": "capex",
+      "metric_zh": "资本开支",
+      "value": 268176,
+      "official_value": 268176,
+      "unit": "INR_million",
+      "comparator": "=",
+      "scope": "consolidated capital expenditure on the performance-at-a-glance basis",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "airtel_q4_2018_ir_pack",
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2018_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4FY18_E7BCAFF7FF854F1485F4E1BD1CEEE04F.pdf",
+      "verification_sources": [
+        "airtel_q4_2018_ir_pack",
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack"
+      ],
+      "quality_note": "FY2019 stores the repeated IR-pack capex of INR287,427m; the FY2019 annual-report segment-note total of INR327,931m uses a different accounting perimeter and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast capex to INR382,145m from the earlier INR341,947m basis."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "operator": "Bharti Airtel",
+      "legal_name": "Bharti Airtel Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-03-31",
+      "grain": "annual",
       "metric_key": "earnings_before_tax",
       "metric_zh": "税前利润",
       "value": 32669,
@@ -718,21 +752,23 @@
       "comparator": "=",
       "scope": "consolidated annual KPI earnings before tax, with later IR-pack profit-before-tax basis used where explicitly selected",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -750,19 +786,21 @@
       "comparator": "=",
       "scope": "consolidated EBITDA; latest comparable basis preferred",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
       "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast EBITDA to INR768,378m from the earlier INR717,330m basis."
     },
@@ -780,23 +818,59 @@
       "official_value": 298014,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and the FY2019 full-year results pack; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "airtel_q4_2019_ir_pack",
+        "bharti_airtel_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "airtel_q4_2019_ir_pack"
       ],
       "quality_note": ""
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "operator": "Bharti Airtel",
+      "legal_name": "Bharti Airtel Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "net_debt",
+      "metric_zh": "净债务",
+      "value": 1001060,
+      "official_value": 1001060,
+      "unit": "INR_million",
+      "comparator": "=",
+      "scope": "consolidated year-end net debt including finance lease obligations on the comparable KPI basis",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "airtel_q1_2021_ir_pack",
+        "airtel_q4_2020_ir_pack",
+        "bharti_airtel_ar_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2020_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/teams/simplycms/web/pdf/Quarterly_IR_Pack_Bharti_Airtel_Consolidated2_19052020.pdf",
+      "verification_sources": [
+        "airtel_q4_2020_ir_pack",
+        "airtel_q1_2021_ir_pack",
+        "bharti_airtel_ar_2022"
+      ],
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -814,21 +888,23 @@
       "comparator": "=",
       "scope": "consolidated net profit after exceptional items where disclosed",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -840,27 +916,29 @@
       "grain": "annual",
       "metric_key": "network_towers",
       "metric_zh": "网络铁塔/站点",
-      "value": 165748,
-      "official_value": 165748,
+      "value": 187541,
+      "official_value": 187541,
       "unit": "sites",
       "comparator": "=",
       "scope": "group KPI network towers reported in performance-at-a-glance packs",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "airtel_q1_2021_ir_pack",
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2019_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack",
+        "airtel_q1_2021_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -878,21 +956,57 @@
       "comparator": "=",
       "scope": "consolidated Bharti Airtel; latest comparable basis preferred",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "operator": "Bharti Airtel",
+      "legal_name": "Bharti Airtel Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "shareholders_equity",
+      "metric_zh": "股东权益",
+      "value": 695344,
+      "official_value": 695344,
+      "unit": "INR_million",
+      "comparator": "=",
+      "scope": "consolidated shareholder equity",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "airtel_q1_2021_ir_pack",
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2019_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf",
+      "verification_sources": [
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack",
+        "airtel_q1_2021_ir_pack"
+      ],
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -910,21 +1024,23 @@
       "comparator": "=",
       "scope": "group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "airtel_q1_2021_ir_pack",
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "airtel_q4_2019_ir_pack",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "airtel_q4_2019_ir_pack",
+        "airtel_q4_2020_ir_pack",
+        "airtel_q1_2021_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -942,19 +1058,21 @@
       "comparator": "=",
       "scope": "India mobile annual data traffic converted from billion MB to billion GB",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "airtel_integrated_report_fy2019",
-        "bharti_airtel_ar_2018"
+        "airtel_q4_2019_ir_pack",
+        "bharti_airtel_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "bharti_airtel_ar_2018",
-      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2017-18/",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "bharti_airtel_ar_2019",
+      "primary_source_url": "https://www.airtel.in/airtel-annual-report-2018-19/",
       "verification_sources": [
-        "bharti_airtel_ar_2018",
-        "airtel_2019_five_year"
+        "bharti_airtel_ar_2019",
+        "bharti_airtel_ar_2020",
+        "airtel_q4_2019_ir_pack"
       ],
       "quality_note": ""
     },
@@ -1024,7 +1142,7 @@
         "bharti_airtel_ar_2020",
         "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1074,7 +1192,7 @@
       "official_value": 417613,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and the FY2019 full-year results pack; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
@@ -1126,7 +1244,7 @@
         "airtel_q1_2021_ir_pack",
         "airtel_q2_2022_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1160,7 +1278,7 @@
         "bharti_airtel_ar_2020",
         "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1194,7 +1312,7 @@
         "airtel_q1_2021_ir_pack",
         "airtel_q2_2022_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1228,7 +1346,7 @@
         "bharti_airtel_ar_2020",
         "bharti_airtel_ar_2022"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1262,7 +1380,7 @@
         "airtel_q1_2021_ir_pack",
         "airtel_q2_2022_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1296,7 +1414,7 @@
         "airtel_q1_2021_ir_pack",
         "airtel_q2_2022_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1398,7 +1516,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1448,7 +1566,7 @@
       "official_value": 503883,
       "unit": "base_stations",
       "comparator": "=",
-      "scope": "India mobile broadband base stations disclosed in annual reports and the FY2019 full-year results pack; 2017 figure is cumulative two-year rollout wording",
+      "scope": "India mobile broadband base stations disclosed in annual reports and full-year results packs; 2017 figure is cumulative two-year rollout wording",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -1498,7 +1616,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1532,7 +1650,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1566,7 +1684,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1600,7 +1718,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1634,7 +1752,7 @@
         "airtel_q2_2023_ir_pack",
         "airtel_q3_2023_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1668,7 +1786,7 @@
         "airtel_q3_2023_ir_pack",
         "bharti_airtel_ar_2023"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1772,7 +1890,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1844,7 +1962,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1880,7 +1998,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1916,7 +2034,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1952,7 +2070,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -1988,7 +2106,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2024,7 +2142,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2096,7 +2214,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2168,7 +2286,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2204,7 +2322,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2240,7 +2358,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2276,7 +2394,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2312,7 +2430,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2348,7 +2466,7 @@
         "airtel_q3_2024_ir_pack",
         "airtel_q4_2024_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2416,7 +2534,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2484,7 +2602,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2518,7 +2636,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2552,7 +2670,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2586,7 +2704,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2620,7 +2738,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2654,7 +2772,7 @@
         "airtel_q2_2026_ir_pack",
         "airtel_q3_2026_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2726,7 +2844,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2798,7 +2916,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2834,7 +2952,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2870,7 +2988,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2906,7 +3024,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2942,7 +3060,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -2978,7 +3096,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3052,7 +3170,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
+      "quality_note": "FY2018 uses the annual KPI earnings-before-tax basis of INR32,669m; the results-pack profit-before-tax line of INR40,601m is a different exceptional-item basis and is excluded. FY2019 uses the annual KPI earnings-before-tax basis of INR-17,318m, repeated in the FY2019, FY2020 and FY2022 annual reports; the FY2019 IR-pack profit-before-tax value of INR-46,606m is a different exceptional-item basis and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2020 uses the IR-pack profit-before-tax basis of INR-44,819m; the annual-report KPI earnings-before-tax value of INR-445,711m is a different exceptional-item definition and remains documented but is not counted as an exact source. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2021 uses the later consistent comparative profit before tax of INR22,586m, replacing the annual-KPI loss-before-tax value of INR-42,063m. FY2023 later comparable packs recast profit before tax to INR185,701m from the earlier INR172,305m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3128,7 +3246,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
+      "quality_note": "FY2018 stores comparable net debt including lease obligations (INR1,001,060m); the contemporaneous pre-lease value of INR952,285m remains documented but is excluded. FY2019 stores comparable net debt including INR47,553m lease obligations (INR1,129,899m); the contemporaneous pre-lease net debt of INR1,082,346m remains documented but is excluded from the exact-source set. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs recast net debt to INR2,042,234m from the earlier INR2,131,264m basis."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3166,7 +3284,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
+      "quality_note": "FY2018 uses the later exact net income of INR10,990m; the original FY2018 results pack reported INR10,989m and is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 later comparable packs state INR82,526m after exceptional items instead of the earlier INR83,459m basis. Both are after-exceptional figures on different bases; INR83,459m is not a before-exceptional value. The latest FY2023 before-exceptional figure is INR82,390m."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3202,7 +3320,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2020 annual report also showed 194,409 in a narrower India-mobile scope; group KPI value 219,546 is retained. FY2023-FY2025 are bound to exact later quarterly IR packs."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3240,7 +3358,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
+      "quality_note": "FY2018 later annual-report comparatives recast revenue to INR826,388m from the earlier INR836,879m results-pack basis. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. FY2023 uses the later recast INR1,539,257m, replacing the earlier INR1,391,448m basis. FY2024 is repeated exactly in four later IR packs. FY2025 uses the latest pack basis with full-period Indus Towers consolidation; the May 2025 release's INR1,729,850m reported-basis figure is excluded."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3276,7 +3394,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
+      "quality_note": "FY2018 uses later comparable shareholder equity of INR695,344m; the original FY2018 results pack's INR695,322m is excluded. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning. Later official IR packs state FY2023 INR775,629m, FY2024 INR820,188m and FY2025 INR1,136,718m. The FY2025 annual report's INR1,136,719m is excluded from that year's exact-source count."
     },
     {
       "operator_id": "bharti_airtel",
@@ -3314,7 +3432,7 @@
         "airtel_q3_2026_ir_pack",
         "airtel_2025_ir_pack"
       ],
-      "quality_note": "FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
+      "quality_note": "FY2018 later comparable packs report group KPI towers of 187,541, while the India mobile manufactured-capital disclosure reports 165,748; the group KPI is retained. Later comparable revenue is INR826,388m rather than the earlier INR836,879m, and net debt including finance lease obligations is INR1,001,060m rather than the pre-lease INR952,285m. FY2019 group KPI packs report 204,356 towers, while the India mobile manufactured-capital disclosure reports 181,079; the group KPI is retained for cross-year comparability and the narrower value remains in the conflict register. The later FY2023 annual report alone restates total customers to 402.418m, so the exactly repeated 403.645m basis remains selected under the three-document rule. FY2020 IR-pack comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. Three FY2022-23 quarterly packs repeat the stored financial and tower values; the later FY2020 total-customer basis of 422.100m is supported by Q2, Q3 and the FY2023 annual report, while the earlier Q1 pack's 423.287m is excluded. FY2021 and FY2022 are repeated exactly in four FY2023-24 IR packs that explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers. FY2023 onward uses a later recast basis, so FY2022-FY2023 growth requires a scope-break warning."
     },
     {
       "operator_id": "china_mobile",

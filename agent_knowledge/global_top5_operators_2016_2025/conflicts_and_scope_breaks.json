@@ -51,6 +51,54 @@
     },
     {
       "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "revenue",
+      "type": "restatement_or_scope_change",
+      "selected_basis": "later comparative INR 826,388 million",
+      "detail": "The original FY2018 results pack reported INR 836,879 million; three later annual reports repeat INR 826,388 million, which is retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "earnings_before_tax",
+      "type": "definition_conflict",
+      "selected_basis": "annual KPI earnings before tax INR 32,669 million",
+      "detail": "Later annual KPI tables repeat INR 32,669 million. The FY2018 results-pack profit-before-tax line is INR 40,601 million on a different exceptional-item presentation."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "net_profit",
+      "type": "restatement_or_rounding_change",
+      "selected_basis": "later comparative INR 10,990 million",
+      "detail": "The original FY2018 results pack reported INR 10,989 million; three later annual reports repeat INR 10,990 million."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "net_debt",
+      "type": "definition_change",
+      "selected_basis": "comparable net debt including finance lease obligations INR 1,001,060 million",
+      "detail": "The contemporaneous pre-lease net debt was INR 952,285 million. Later comparative KPI tables include finance lease obligations and repeat INR 1,001,060 million."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "shareholders_equity",
+      "type": "restatement_or_rounding_change",
+      "selected_basis": "later comparative INR 695,344 million",
+      "detail": "The original FY2018 results pack stated INR 695,322 million; later official comparisons consistently state INR 695,344 million."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2018",
+      "metric": "network_towers",
+      "type": "scope_conflict",
+      "selected_basis": "group KPI 187,541",
+      "detail": "The India-mobile manufactured-capital disclosure reports 165,748 towers. The group performance-at-a-glance value is retained for cross-year comparability."
+    },
+    {
+      "operator_id": "bharti_airtel",
       "years": "2021",
       "metric": "earnings_before_tax",
       "type": "restatement_or_scope_change",

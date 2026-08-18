@@ -171,6 +171,40 @@
           "unit": "billion_GB",
           "locator": "manufactured capital, page 49; converted from 11,733bn MB"
         }
+      },
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "earnings_before_tax": {
+            "value": 32669,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative annual KPI; before exceptional items"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 298014,
+            "unit": "base_stations",
+            "locator": "FY2017-18 comparative India mobile network review"
+          },
+          "total_data_traffic": {
+            "value": 3.9018,
+            "unit": "billion_GB",
+            "locator": "FY2017-18 comparative India mobile data chart; converted from 3,901.8bn MB"
+          }
+        }
       }
     },
     {
@@ -213,6 +247,38 @@
             "value": 11.733,
             "unit": "billion_GB",
             "locator": "FY2018-19 comparative India mobile data chart; converted from 11,733bn MB"
+          }
+        },
+        "FY2018": {
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "earnings_before_tax": {
+            "value": 32669,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative annual KPI; before exceptional items"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "FY2017-18 comparative consolidated financial highlights"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 298014,
+            "unit": "base_stations",
+            "locator": "FY2017-18 comparative India mobile network review"
+          },
+          "total_data_traffic": {
+            "value": 3.9018,
+            "unit": "billion_GB",
+            "locator": "FY2017-18 comparative India mobile data chart; converted from 3,901.8bn MB"
           }
         }
       }
@@ -270,6 +336,38 @@
           },
           "shareholders_equity": {
             "value": 714222,
+            "unit": "INR_million",
+            "locator": "five-year consolidated financials, page 37"
+          }
+        },
+        "FY2018": {
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "five-year KPI, page 36"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "five-year KPI, page 36"
+          },
+          "earnings_before_tax": {
+            "value": 32669,
+            "unit": "INR_million",
+            "locator": "five-year KPI, page 36; before exceptional items"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "five-year KPI, page 36"
+          },
+          "net_debt": {
+            "value": 1001060,
+            "unit": "INR_million",
+            "locator": "five-year consolidated financials, page 37; includes finance lease obligations"
+          },
+          "shareholders_equity": {
+            "value": 695344,
             "unit": "INR_million",
             "locator": "five-year consolidated financials, page 37"
           }
@@ -2831,7 +2929,88 @@
           "locator": "India mobile full-year data traffic, page 25; converted from 11,733bn MB"
         }
       },
-      "source_document_id": "airtel_q4_2019_ir_pack"
+      "source_document_id": "airtel_q4_2019_ir_pack",
+      "comparative_evidence": {
+        "FY2018": {
+          "total_customers": {
+            "value": 413.822,
+            "unit": "million_customers",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable performance-at-a-glance"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable net income"
+          },
+          "capex": {
+            "value": 268176,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "shareholders_equity": {
+            "value": 695344,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable shareholder equity"
+          },
+          "network_towers": {
+            "value": 187541,
+            "unit": "sites",
+            "locator": "FY2018 group KPI performance-at-a-glance comparative"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 298014,
+            "unit": "base_stations",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review"
+          },
+          "total_data_traffic": {
+            "value": 3.9018,
+            "unit": "billion_GB",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review; converted from 3,902bn MB"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q4_2018_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2018,
+      "label": "Bharti Airtel FY2017-18 Q4 and full-year investor relations pack",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4FY18_E7BCAFF7FF854F1485F4E1BD1CEEE04F.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "evidence": {
+        "total_customers": {
+          "value": 413.822,
+          "unit": "million_customers",
+          "locator": "FY2018 performance-at-a-glance"
+        },
+        "ebitda": {
+          "value": 304479,
+          "unit": "INR_million",
+          "locator": "FY2018 performance-at-a-glance"
+        },
+        "capex": {
+          "value": 268176,
+          "unit": "INR_million",
+          "locator": "FY2018 performance-at-a-glance"
+        },
+        "network_towers": {
+          "value": 187541,
+          "unit": "sites",
+          "locator": "FY2018 group KPI performance-at-a-glance"
+        }
+      },
+      "source_document_id": "airtel_q4_2018_ir_pack"
     },
     {
       "source_id": "airtel_q4_2020_ir_pack",
@@ -2883,6 +3062,58 @@
             "value": 204356,
             "unit": "sites",
             "locator": "FY2019 group KPI performance-at-a-glance comparative"
+          }
+        },
+        "FY2018": {
+          "total_customers": {
+            "value": 413.822,
+            "unit": "million_customers",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable performance-at-a-glance"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable net income"
+          },
+          "capex": {
+            "value": 268176,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "net_debt": {
+            "value": 1001060,
+            "unit": "INR_million",
+            "locator": "FY2018 comparable net debt including lease obligations"
+          },
+          "shareholders_equity": {
+            "value": 695344,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable shareholder equity"
+          },
+          "network_towers": {
+            "value": 187541,
+            "unit": "sites",
+            "locator": "FY2018 group KPI performance-at-a-glance comparative"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 298014,
+            "unit": "base_stations",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review"
+          },
+          "total_data_traffic": {
+            "value": 3.9018,
+            "unit": "billion_GB",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review; converted from 3,902bn MB"
           }
         }
       }
@@ -2937,6 +3168,58 @@
             "value": 204356,
             "unit": "sites",
             "locator": "FY2019 group KPI performance-at-a-glance comparative"
+          }
+        },
+        "FY2018": {
+          "total_customers": {
+            "value": 413.822,
+            "unit": "million_customers",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "revenue": {
+            "value": 826388,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable performance-at-a-glance"
+          },
+          "ebitda": {
+            "value": 304479,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "net_profit": {
+            "value": 10990,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable net income"
+          },
+          "capex": {
+            "value": 268176,
+            "unit": "INR_million",
+            "locator": "FY2018 performance-at-a-glance comparative"
+          },
+          "net_debt": {
+            "value": 1001060,
+            "unit": "INR_million",
+            "locator": "FY2018 comparable net debt including lease obligations"
+          },
+          "shareholders_equity": {
+            "value": 695344,
+            "unit": "INR_million",
+            "locator": "FY2018 later comparable shareholder equity"
+          },
+          "network_towers": {
+            "value": 187541,
+            "unit": "sites",
+            "locator": "FY2018 group KPI performance-at-a-glance comparative"
+          },
+          "mobile_broadband_base_stations": {
+            "value": 298014,
+            "unit": "base_stations",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review"
+          },
+          "total_data_traffic": {
+            "value": 3.9018,
+            "unit": "billion_GB",
+            "locator": "FY2018 India mobile comparative in FY2019 operating review; converted from 3,902bn MB"
           }
         }
       }
