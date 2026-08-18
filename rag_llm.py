@@ -600,6 +600,111 @@ def _global_operator_exact_metric_chunks(
     return chunks
 
 
+def _local_hk_operator_exact_metric_chunks(
+    question: str,
+    dataset_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    dataset_id = "local_hk_operator_operating_metrics_2016_2025"
+    if dataset_ids is not None and dataset_id not in dataset_ids:
+        return []
+    csv_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "annual_metrics.csv"
+    if not csv_path.exists():
+        return []
+
+    normalized = re.sub(r"\s+", " ", question or "").strip()
+    lowered = normalized.lower()
+    if any(token in lowered for token in ["q1", "q2", "q3", "q4", "h1", "h2", "季度", "半年度"]):
+        return []
+    subject_aliases = {
+        "hkt": ["hkt", "香港電訊", "csl", "1o1o"],
+        "three_hk": ["3hk", "3 hong kong", "和記電訊香港", "和記電訊", "香港三"],
+        "smartone": ["smartone", "數碼通", "数码通"],
+        "hkbn": ["hkbn", "香港寬頻", "香港宽频"],
+        "hgc": ["hgc", "環球全域電訊", "环球全域电讯"],
+        "icable": ["i-cable", "icable", "i cable", "有線寬頻", "有线宽频"],
+    }
+    matched_subjects = {key for key, aliases in subject_aliases.items() if any(alias in lowered for alias in aliases)}
+    metric_aliases = {
+        "total_customers": ["總客戶", "总客户", "total customers", "customer base"],
+        "mobile_postpaid_customers": ["後付客戶", "后付客户", "postpaid customers", "post-paid customers"],
+        "mobile_prepaid_customers": ["預付客戶", "预付客户", "prepaid customers", "pre-paid customers"],
+        "5g_customers": ["5g客戶", "5g客户", "5g用戶", "5g用户", "5g customers"],
+        "5g_penetration": ["5g滲透率", "5g渗透率", "5g penetration"],
+        "consumer_broadband_customers": ["住宅寬頻", "住宅宽频", "寬頻客戶", "宽频客户", "broadband customers", "broadband subscriptions"],
+        "ftth_connections": ["ftth", "光纖入戶", "光纤入户"],
+        "homes_passed_or_connected": ["homes passed", "homes connected", "家庭覆蓋", "家庭接入", "網絡覆蓋", "网络覆盖"],
+        "commercial_buildings_covered": ["商業樓宇", "商业楼宇", "commercial buildings"],
+        "residential_arpu": ["住宅arpu", "residential arpu"],
+        "residential_arph": ["arph", "residential arph"],
+        "mobile_postpaid_arpu": ["後付arpu", "后付arpu", "postpaid arpu", "post-paid arpu", "arpu"],
+        "mobile_postpaid_exit_arpu": ["期末arpu", "exit arpu"],
+        "mobile_postpaid_net_arpu": ["淨arpu", "净arpu", "net arpu"],
+        "mobile_postpaid_net_ampu": ["淨ampu", "净ampu", "net ampu", "ampu"],
+        "mobile_postpaid_churn": ["後付流失率", "后付流失率", "churn"],
+        "pay_tv_customers": ["收費電視客戶", "收费电视客户", "pay tv customers", "pay-tv customers"],
+        "telephony_customers": ["固網電話客戶", "固网电话客户", "telephony customers"],
+        "5g_population_coverage": ["5g人口覆蓋", "5g population coverage"],
+        "mobile_data_dou": ["移動dou", "移动dou", "戶均流量", "户均流量", "data usage per user"],
+        "annual_mobile_data_traffic": ["年度移動數據流量", "年度移动数据流量", "總流量", "总流量", "annual mobile data traffic"],
+        "total_base_stations": ["基站總數", "基站总数", "total base stations"],
+        "5g_base_stations": ["5g基站數", "5g基站数", "5g base stations", "5g sites"],
+        "5g_base_station_expansion": ["5g基站擴展", "5g基站扩展", "5g base station expansion"],
+        "free_tv_population_coverage": ["免費電視覆蓋", "免费电视覆盖", "free tv coverage", "free-to-air coverage"],
+        "mtr_stations_5g_enhanced": ["地鐵站", "地铁站", "mtr stations"],
+        "residential_2gbps_plus_customers": ["住宅2gbps", "residential 2gbps"],
+        "enterprise_2gbps_plus_customers": ["企業2gbps", "企业2gbps", "enterprise 2gbps", "gigafast"],
+        "enterprise_core_churn": ["企業流失率", "企业流失率", "enterprise churn"],
+        "5g_home_broadband_revenue_growth": ["5g家庭寬頻收入", "5g家庭宽频收入", "5g home broadband revenue"],
+        "5g_home_broadband_ebitda_growth": ["5g家庭寬頻ebitda", "5g家庭宽频ebitda", "5g home broadband ebitda"],
+    }
+    matched_metrics = {key for key, aliases in metric_aliases.items() if any(alias in lowered for alias in aliases)}
+    if "5g_penetration" in matched_metrics:
+        matched_metrics.discard("5g_customers")
+    if "mobile_postpaid_exit_arpu" in matched_metrics or "mobile_postpaid_net_arpu" in matched_metrics:
+        matched_metrics.discard("mobile_postpaid_arpu")
+    if "residential_arpu" in matched_metrics:
+        matched_metrics.discard("mobile_postpaid_arpu")
+    if "5g_home_broadband_ebitda_growth" in matched_metrics:
+        matched_metrics.discard("5g_home_broadband_revenue_growth")
+    years = {int(value) for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)}
+    if not matched_subjects or not matched_metrics:
+        return []
+
+    try:
+        with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+    except Exception:
+        return []
+    filtered = []
+    for row in rows:
+        if (row.get("operator_id") or "").strip() not in matched_subjects:
+            continue
+        if (row.get("metric_key") or "").strip() not in matched_metrics:
+            continue
+        try:
+            row_year = int((row.get("year") or "0").strip())
+        except ValueError:
+            continue
+        if years and row_year not in years:
+            continue
+        filtered.append(row)
+
+    source = csv_path.relative_to(ROOT).as_posix()
+    chunks: list[dict[str, Any]] = []
+    for row in filtered[:30]:
+        value_text = f"{row.get('official_value')} {row.get('unit')}" if row.get("official_value") else "未披露（source_gap_confirmed）"
+        text = (
+            f"香港本地運營商精確年度指標行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
+            f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
+            f"metric_zh={row.get('metric_zh')}; official_value={value_text}; comparator={row.get('comparator')}; "
+            f"scope={row.get('scope')}; basis={row.get('basis')}; verification_status={row.get('verification_status')}; "
+            f"verification_count={row.get('verification_count')}; primary_source_url={row.get('primary_source_url')}; "
+            f"quality_note={row.get('quality_note')}.如果狀態為source_gap_confirmed，只能回答未披露，不能當作0或推測。"
+        )
+        chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+    return chunks
+
+
 def _product_tariff_exact_chunks(
     question: str,
     dataset_ids: set[str] | None = None,
@@ -1438,6 +1543,7 @@ def retrieve_context(question: str, limit: int = 8, dataset_ids: set[str] | None
     )
     exact_chunks = _product_tariff_exact_chunks(question, dataset_ids=dataset_ids)
     exact_chunks.extend(_global_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
+    exact_chunks.extend(_local_hk_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids))
     if latest_period_intent:
         exact_chunks.sort(

@@ -1,0 +1,8 @@
+﻿operator_id,years,metric,type,selected_basis,detail
+three_hk,2024-2025,customers_and_arpu,scope_change_and_restatement,retain original historical rows; record 2025 restated comparators,"FY2025 isolates Hong Kong after disposal of the Macau operation and restates FY2024 postpaid 1.316m, prepaid 3.162m, total 4.478m, gross ARPU HKD190 and net ARPU HKD175."
+smartone,2019,mobile_postpaid_arpu,accounting_standard_change,HKFRS 15 annual ARPU HKD224,The same report also showed HKD247 under the former HKAS 18 basis.
+smartone,2017-2025,period_end,fiscal_year_difference,30 June fiscal year end,Do not align SmarTone FY labels with HKT/3HK/i-CABLE calendar years without using period_end.
+hkbn,2024-2025,period_end,fiscal_year_difference,31 August fiscal year end,Do not align HKBN FY labels with calendar-year operators without using period_end.
+icable,2023-2025,pay_tv_customers,service_discontinuation,leave later annual rows absent/gap,Pay-TV service ceased in June 2023; no zero or synthetic continuation is inserted.
+icable,2022-2025,homes_passed_or_connected,scope_wording_change,retain comparator and scope text,2025 uses connected-households wording while prior disclosures describe households covered.
+hgc,2016-2025,all_operating_kpis,private_company_disclosure_gap,only assert explicitly published values,HGC does not publish a listed-company-style annual customer/ARPU series; missing values remain source gaps.

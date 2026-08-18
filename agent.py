@@ -818,11 +818,33 @@ def list_crawl_runs(limit: int = 5) -> str:
 def _search_local_reports_only(query: str, max_results: int = 12) -> str:
     """Return local retrieval evidence without deciding how the Agent uses it."""
     limit = max(1, int(max_results or 12))
+    selected_ids = _effective_selected_dataset_ids()
     chunks = retrieve_context(
         query,
         limit=limit,
-        dataset_ids=_effective_selected_dataset_ids(),
+        dataset_ids=selected_ids,
     )
+    # Models may shorten a tool query and accidentally drop a decisive metric
+    # qualifier. Keep exact rows matched from the original user request at the
+    # front of every local search in the same turn.
+    original_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
+    if original_request and original_request != _clean_search_text(query, 1200):
+        original_chunks = retrieve_context(
+            original_request,
+            limit=limit,
+            dataset_ids=selected_ids,
+        )
+        exact_prefixes = ("精確年度運營商指標行：", "香港本地運營商精確年度指標行：")
+        priority = [
+            chunk for chunk in original_chunks
+            if str(chunk.get("text") or "").startswith(exact_prefixes)
+        ]
+        if priority:
+            seen = {(str(chunk.get("source") or ""), str(chunk.get("text") or "")) for chunk in priority}
+            chunks = (priority + [
+                chunk for chunk in chunks
+                if (str(chunk.get("source") or ""), str(chunk.get("text") or "")) not in seen
+            ])[:limit]
     if not chunks:
         return "没有找到相关的本地报告信息。"
     context_package = build_context_package(chunks, model=_agent_model_name())
