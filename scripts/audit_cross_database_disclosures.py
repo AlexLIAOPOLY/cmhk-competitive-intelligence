@@ -216,7 +216,13 @@ COMMON_DISCLOSURES = {
 # key.  Alias matching prevents the gap report from treating an already
 # collected series as absent merely because its schema name is more precise.
 METRIC_ALIASES = {
-    "cloud_revenue_growth": ["cloud_revenue_growth_yoy"],
+    "cloud_revenue": ["revenue"],
+    "cloud_revenue_growth": [
+        "cloud_revenue_growth_yoy",
+        "revenue_growth_yoy",
+        "azure_and_other_cloud_services_growth_yoy",
+    ],
+    "cloud_operating_income": ["operating_income"],
     "real_gdp_growth": ["percentage_change_of_gross_domestic_product_and_selected_major_expenditure_components_in_real_terms_con"],
     "consumer_price_index": [
         "consumer_price_indices_a_cm_1920",
@@ -395,9 +401,21 @@ def disclosure_catalog(all_rows: dict[str, list[dict[str, str]]]) -> list[dict[s
                 subject_count = len({row.get(config["subject"], "") for row in rows if present and is_value(row.get(metric_key))})
             else:
                 candidates = [metric_key, *METRIC_ALIASES.get(metric_key, [])]
-                present = any(candidate in metric_counts for candidate in candidates)
-                values = sum(metric_counts.get(candidate, 0) for candidate in candidates)
-                subject_count = len(set().union(*(subjects_by_metric.get(candidate, set()) for candidate in candidates)))
+                if dataset_id == LATEST_QUARTERLY.name and group == "cloud":
+                    matching_rows = [
+                        row
+                        for row in rows
+                        if row.get("category") == "cloud"
+                        and row.get(metric_field, "") in candidates
+                        and is_value(row.get(value_field))
+                    ]
+                    present = bool(matching_rows)
+                    values = len(matching_rows)
+                    subject_count = len({row.get(config["subject"], "") for row in matching_rows})
+                else:
+                    present = any(candidate in metric_counts for candidate in candidates)
+                    values = sum(metric_counts.get(candidate, 0) for candidate in candidates)
+                    subject_count = len(set().union(*(subjects_by_metric.get(candidate, set()) for candidate in candidates)))
             result.append({
                 "dataset_id": dataset_id,
                 "disclosure_group": group,

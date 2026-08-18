@@ -1556,7 +1556,7 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
         key in lowered_question
         for key in ["最新", "最近", "latest", "recent", "current", "last quarter", "latest quarter"]
     )
-    series_intent = any(
+    explicit_series_intent = any(
         key in lowered_question
         for key in [
             "趋势",
@@ -1569,13 +1569,14 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             "多年",
             "过去",
             "变化",
-            "季度",
-            "quarterly",
             "trend",
             "time series",
             "historical",
         ]
     ) or len(set(re.findall(r"\b20\d{2}\b", lowered_question))) >= 2
+    series_intent = explicit_series_intent or (
+        not periods and any(key in lowered_question for key in ["季度", "quarterly"])
+    )
 
     filtered: list[dict[str, str]] = []
     for row in rows:
