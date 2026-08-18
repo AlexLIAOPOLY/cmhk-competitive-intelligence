@@ -1567,17 +1567,62 @@ SOURCES["china_mobile_q1_2026_comparatives"].setdefault("comparative_evidence", 
     },
 }
 for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_press_2025"):
-    SOURCES[_source_id].setdefault("evidence", {})["integrated_broadband_network_customers"] = {
-        "value": 329,
-        "unit": "million_customers",
-        "locator": "FY2025 integrated broadband network customer disclosure",
-    }
-for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_a_2025"):
-    SOURCES[_source_id].setdefault("evidence", {})["household_customer_blended_arpu"] = {
-        "value": 44.5,
-        "unit": "RMB_per_user_month",
-        "locator": "FY2025 household customer blended ARPU disclosure",
-    }
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_subscribers": {
+            "value": 1005,
+            "unit": "million_subscribers",
+            "locator": "FY2025 communications-services operating disclosure",
+        },
+        "5g_network_subscribers": {
+            "value": 642,
+            "unit": "million_subscribers",
+            "locator": "FY2025 communications-services operating disclosure",
+        },
+        "5g_base_stations": {
+            "value": 2.77,
+            "unit": "million_base_stations",
+            "comparator": ">",
+            "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations",
+        },
+        "integrated_broadband_network_customers": {
+            "value": 329,
+            "unit": "million_customers",
+            "locator": "FY2025 integrated broadband network customer disclosure",
+        },
+        "mobile_broadband_integration_rate": {
+            "value": 96.5,
+            "unit": "percent",
+            "locator": "FY2025 mass and corporate customer integration disclosure",
+        },
+        "government_enterprise_customers": {
+            "value": 36.17,
+            "unit": "million_customers",
+            "locator": "FY2025 government and enterprise customer disclosure",
+        },
+        "households_gigabit_coverage": {
+            "value": 530,
+            "unit": "million_households",
+            "locator": "FY2025 gigabit network household coverage disclosure",
+        },
+        "intelligent_compute_capacity": {
+            "value": 92.5,
+            "unit": "EFLOPS_FP16",
+            "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure",
+        },
+    })
+for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"):
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_arpu": {
+            "value": 46.8,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2025 mobile ARPU operating KPI disclosure",
+        },
+        "household_customer_blended_arpu": {
+            "value": 44.5,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2025 household customer blended ARPU disclosure",
+        },
+    })
 for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"):
     SOURCES[_source_id].setdefault("evidence", {})["mobile_arpu"] = {
         "value": 45.1,
@@ -1797,7 +1842,7 @@ def paired(operator_id: str, years: list[int], secondary: str | None = None) -> 
 
 
 CM_2025_THREE = ["china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_press_2025"]
-CM_2025_ARPU_THREE = ["china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_a_2025"]
+CM_2025_ARPU_THREE = ["china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"]
 CT_2025_THREE = ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"]
 CU_2025_THREE = ["china_unicom_ar_2025", "china_unicom_results_2025", "china_unicom_press_2025"]
 

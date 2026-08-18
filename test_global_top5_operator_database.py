@@ -39,7 +39,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
                 "中国电信": 7,
-                "中国移动": 9,
+                "中国移动": 17,
                 "中国联通": 10,
             },
         )
@@ -232,11 +232,14 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertEqual(row["comparator"], ">=")
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertIn("previous 1.05 million precision was not retained", row["quality_note"])
-        for year in range(2019, 2026):
+        for year in range(2019, 2025):
             self.assertEqual(
                 self.index[("china_mobile", year, "5g_base_stations")]["triple_source_status"],
                 "below_three_source_threshold",
             )
+        mobile_2025 = self.index[("china_mobile", 2025, "5g_base_stations")]
+        self.assertEqual(mobile_2025["distinct_source_document_count"], 3)
+        self.assertEqual(mobile_2025["triple_source_status"], "three_distinct_sources_verified")
         self.assertEqual(
             self.index[("china_mobile", 2019, "5g_base_stations")]["verification_sources"],
             ["china_mobile_20f_2019", "china_mobile_sd_2019"],
@@ -442,6 +445,53 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=68.8 percent", combined)
         self.assertIn("official_value=31.6 percent", combined)
         self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 2)
+
+    def test_china_mobile_fy2025_scale_and_value_metrics_use_exact_documents(self):
+        common_sources = {
+            "china_mobile_ar_2025",
+            "china_mobile_results_2025",
+            "china_mobile_press_2025",
+        }
+        expected = {
+            "mobile_subscribers": (1005, "million_subscribers"),
+            "5g_network_subscribers": (642, "million_subscribers"),
+            "5g_base_stations": (2.77, "million_base_stations"),
+            "mobile_broadband_integration_rate": (96.5, "percent"),
+            "government_enterprise_customers": (36.17, "million_customers"),
+            "households_gigabit_coverage": (530, "million_households"),
+            "intelligent_compute_capacity": (92.5, "EFLOPS_FP16"),
+        }
+        for metric_key, value_and_unit in expected.items():
+            row = self.index[("china_mobile", 2025, metric_key)]
+            self.assertEqual((row["value"], row["unit"]), value_and_unit)
+            self.assertEqual(set(row["verification_sources"]), common_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(self.index[("china_mobile", 2025, "5g_base_stations")]["comparator"], ">=")
+
+        arpu = self.index[("china_mobile", 2025, "mobile_arpu")]
+        self.assertEqual((arpu["value"], arpu["unit"]), (46.8, "RMB_per_user_month"))
+        self.assertEqual(
+            set(arpu["verification_sources"]),
+            {"china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"},
+        )
+        self.assertEqual(arpu["distinct_source_document_count"], 3)
+        self.assertEqual(arpu["triple_source_status"], "three_distinct_sources_verified")
+
+        for question, expected_text in (
+            ("中国移动2025年5G网络用户数", "official_value=642 million_subscribers"),
+            ("中国移动2025年移动ARPU", "official_value=46.8 RMB_per_user_month"),
+            ("中国移动2025年5G基站", "official_value=2.77 million_base_stations"),
+        ):
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    question,
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn(expected_text, combined)
+            self.assertIn("distinct_source_document_count=3", combined)
 
     def test_china_unicom_fy2025_conservative_connectivity_bounds_use_three_documents(self):
         expected = {

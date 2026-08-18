@@ -123,10 +123,51 @@
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
         },
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
         },
         "household_customer_blended_arpu": {
           "value": 44.5,
@@ -1806,10 +1847,51 @@
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_results_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
         },
         "household_customer_blended_arpu": {
           "value": 44.5,
@@ -2543,11 +2625,6 @@
           "value": 1482,
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
-        },
-        "household_customer_blended_arpu": {
-          "value": 44.5,
-          "unit": "RMB_per_user_month",
-          "locator": "FY2025 household customer blended ARPU disclosure"
         }
       }
     },
@@ -2575,6 +2652,16 @@
           "value": 1482,
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
+        },
+        "household_customer_blended_arpu": {
+          "value": 44.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 household customer blended ARPU disclosure"
         }
       }
     },
@@ -2624,10 +2711,46 @@
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_press_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
         }
       }
     },
