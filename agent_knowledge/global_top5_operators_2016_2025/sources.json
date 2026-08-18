@@ -1847,6 +1847,11 @@
           "value": 41.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       }
     },
@@ -3886,6 +3891,11 @@
           "value": 9.7,
           "unit": "GB_per_user_month",
           "locator": "FY2020 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
+        },
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       },
       "comparative_evidence": {
@@ -4775,6 +4785,23 @@
             "unit": "percent",
             "locator": "FY2019 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_transcript_2020",
+      "operator_id": "china_unicom",
+      "year": 2020,
+      "label": "China Unicom 2020 annual results analyst meeting transcript",
+      "url": "https://www.chinaunicom.com.hk/en/ir/transcript/transcript_20ar.pdf",
+      "source_type": "official_results_transcript",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_transcript_2020",
+      "evidence": {
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       }
     },

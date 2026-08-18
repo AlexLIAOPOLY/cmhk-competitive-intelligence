@@ -11500,20 +11500,28 @@
       "comparator": "=",
       "scope": "5G package subscribers; disclosure replaced by network-user measure in 2025",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_transcript_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_ar_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_unicom_ar_2020",
+        "china_unicom_results_2020",
+        "china_unicom_transcript_2020"
+      ],
       "candidate_sources": [
         "china_unicom_ar_2020",
-        "china_unicom_ops_2020",
-        "china_unicom_results_2020"
+        "china_unicom_results_2020",
+        "china_unicom_transcript_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted."
     },
     {
       "operator_id": "china_unicom",
@@ -11921,7 +11929,7 @@
         "china_unicom_ops_2021",
         "china_unicom_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted."
     },
     {
       "operator_id": "china_unicom",
@@ -12309,7 +12317,7 @@
         "china_unicom_ops_2022",
         "china_unicom_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted."
     },
     {
       "operator_id": "china_unicom",
@@ -12673,7 +12681,7 @@
         "china_unicom_ops_2023",
         "china_unicom_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted."
     },
     {
       "operator_id": "china_unicom",
@@ -13032,7 +13040,7 @@
         "china_unicom_ops_2024",
         "china_unicom_results_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted."
     },
     {
       "operator_id": "china_unicom",

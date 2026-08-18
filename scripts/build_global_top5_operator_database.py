@@ -262,6 +262,15 @@ SOURCES.update({
         "source_type": "official_sustainability_report",
         "publisher": "China Unicom (Hong Kong) Limited",
     },
+    "china_unicom_transcript_2020": {
+        "source_id": "china_unicom_transcript_2020",
+        "operator_id": "china_unicom",
+        "year": 2020,
+        "label": "China Unicom 2020 annual results analyst meeting transcript",
+        "url": "https://www.chinaunicom.com.hk/en/ir/transcript/transcript_20ar.pdf",
+        "source_type": "official_results_transcript",
+        "publisher": "China Unicom (Hong Kong) Limited",
+    },
     "china_unicom_dec_ops_2016": {
         "source_id": "china_unicom_dec_ops_2016",
         "operator_id": "china_unicom",
@@ -2400,6 +2409,9 @@ _CU_4G_POPULATION_COVERAGE_SOURCES = {
     ]
     for year in range(2018, 2022)
 }
+_CU_5G_PACKAGE_SUBSCRIBER_SOURCES = {
+    2020: ["china_unicom_ar_2020", "china_unicom_results_2020", "china_unicom_transcript_2020"],
+}
 
 
 def _bind_cu_historical_evidence(
@@ -2444,6 +2456,15 @@ for _metric_key, _values, _source_map, _unit in (
                     f"{METRICS[_metric_key][0]} at the disclosed precision"
                 ),
             )
+for _source_id in _CU_5G_PACKAGE_SUBSCRIBER_SOURCES[2020]:
+    _bind_cu_historical_evidence(
+        _source_id,
+        year=2020,
+        metric_key="5g_package_subscribers",
+        value=70.83,
+        unit="million_subscribers",
+        locator="FY2020 year-end 5G package subscribers; exact 70.83 million disclosure",
+    )
 for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_mobile_ar_summary_2025"):
     SOURCES[_source_id].setdefault("evidence", {}).update({
         "mobile_arpu": {
@@ -2910,7 +2931,7 @@ add_series("china_telecom", "intelligent_compute_capacity", {2025:46}, scope="se
 cu_years = YEARS
 add_series("china_unicom", "mobile_subscribers", {2016:263.822,2017:284.163,2018:315.036,2019:318.475,2020:305.811,2021:317.115,2022:322.70,2023:333.30,2024:343.98,2025:357.30}, scope="mobile billing subscribers", source_ids={**paired("china_unicom", cu_years), **_CU_MOBILE_SUBSCRIBER_SOURCES}, note="FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions.")
 add_series("china_unicom", "4g_subscribers", _CU_4G_SUBSCRIBERS, scope="4G subscribers / billing subscribers using 4G or 5G network", source_ids=_CU_4G_SUBSCRIBER_SOURCES, note="FY2016-FY2020 retain exact thousand-subscriber values from three separate official filings, reports or operating announcements per year.")
-add_series("china_unicom", "5g_package_subscribers", {2020:70.83,2021:154.93,2022:212.73,2023:259.64,2024:290.44}, scope="5G package subscribers; disclosure replaced by network-user measure in 2025", source_ids=paired("china_unicom", list(range(2020,2025))))
+add_series("china_unicom", "5g_package_subscribers", {2020:70.83,2021:154.93,2022:212.73,2023:259.64,2024:290.44}, scope="5G package subscribers; disclosure replaced by network-user measure in 2025", source_ids={**paired("china_unicom", list(range(2020,2025))), **_CU_5G_PACKAGE_SUBSCRIBER_SOURCES}, note="FY2020 uses the H-share annual report, annual-results presentation and separately published analyst-meeting transcript, each stating the exact 70.83 million year-end value. Later years remain below the strict gate until three documents carrying the same precision are bound; rounded narrative is not counted.")
 add_series("china_unicom", "5g_network_subscribers", {2025:232.18}, scope="customers that used the 5G network during the period; not comparable with prior 5G package subscribers", source_ids={2025:["china_unicom_ar_2025","china_unicom_ops_2025","china_unicom_q4_operating_announcement_2025"]})
 add_series("china_unicom", "fixed_broadband_subscribers", {2016:75.236,2017:76.539,2018:80.880,2019:83.478,2020:86.095,2021:95.046,2022:103.63,2023:113.42,2024:122.26,2025:129.87}, scope="fixed-line broadband billing subscribers", source_ids={**paired("china_unicom", cu_years), **_CU_FIXED_BROADBAND_SUBSCRIBER_SOURCES}, note="FY2016-FY2021 retain the exact thousand-subscriber precision repeated across three separate official documents. FY2022 remains at presentation precision below the strict three-document gate. FY2023-FY2025 are handled below as approximate official year-end-plus-net-addition reconstructions.")
 add_series("china_unicom", "mobile_arpu", {**_CU_MOBILE_ARPU,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids={**paired("china_unicom", ct_years), **_CU_MOBILE_ARPU_SOURCES}, note="FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. FY2022 has two exact presentations and remains below the strict three-document threshold. From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")

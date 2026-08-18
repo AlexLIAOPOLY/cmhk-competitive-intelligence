@@ -4203,6 +4203,11 @@
           "value": 41.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 exact China Unicom operating KPI; 宽带ARPU at the disclosed precision"
+        },
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       }
     },
@@ -4942,16 +4947,6 @@
       }
     },
     {
-      "source_id": "china_unicom_ops_2020",
-      "operator_id": "china_unicom",
-      "year": 2020,
-      "label": "China Unicom operating data / results presentation 2020",
-      "url": "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2020",
-      "source_type": "official_operating_statistics",
-      "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ops_2020"
-    },
-    {
       "source_id": "china_unicom_ops_2021",
       "operator_id": "china_unicom",
       "year": 2021,
@@ -5288,6 +5283,11 @@
           "value": 9.7,
           "unit": "GB_per_user_month",
           "locator": "FY2020 exact China Unicom operating KPI; 月户均移动数据流量DOU at the disclosed precision"
+        },
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       },
       "comparative_evidence": {
@@ -5485,6 +5485,23 @@
           "value": 300,
           "unit": "million_users",
           "locator": "FY2025 service update; Cloud-AI products served more than 300 million users"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_transcript_2020",
+      "operator_id": "china_unicom",
+      "year": 2020,
+      "label": "China Unicom 2020 annual results analyst meeting transcript",
+      "url": "https://www.chinaunicom.com.hk/en/ir/transcript/transcript_20ar.pdf",
+      "source_type": "official_results_transcript",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_transcript_2020",
+      "evidence": {
+        "5g_package_subscribers": {
+          "value": 70.83,
+          "unit": "million_subscribers",
+          "locator": "FY2020 year-end 5G package subscribers; exact 70.83 million disclosure"
         }
       }
     }

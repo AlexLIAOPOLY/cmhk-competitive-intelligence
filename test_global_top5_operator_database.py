@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 64,
                 "中国移动": 80,
-                "中国联通": 62,
+                "中国联通": 63,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -486,6 +486,16 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             self.index[("china_mobile", 2020, "5g_base_stations")]["verification_sources"],
             ["china_mobile_20f_2020", "china_mobile_sd_2020"],
+        )
+
+    def test_china_unicom_fy2020_5g_package_subscribers_has_three_documents(self):
+        row = self.index[("china_unicom", 2020, "5g_package_subscribers")]
+        self.assertEqual(row["value"], 70.83)
+        self.assertEqual(row["distinct_source_document_count"], 3)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(
+            row["verification_sources"],
+            ["china_unicom_ar_2020", "china_unicom_results_2020", "china_unicom_transcript_2020"],
         )
 
     def test_precommercial_and_derived_values_are_not_overstated(self):
