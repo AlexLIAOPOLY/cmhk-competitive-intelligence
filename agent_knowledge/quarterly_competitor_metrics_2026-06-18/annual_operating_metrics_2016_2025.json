@@ -3263,20 +3263,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2016",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2016",
-        "china_mobile_ops_2016",
-        "china_mobile_results_2016"
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -3504,20 +3512,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_20f_2017",
         "china_mobile_ar_2017",
-        "china_mobile_ops_2017",
         "china_mobile_results_2017"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_20f_2017",
+        "china_mobile_results_2017"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_20f_2017",
+        "china_mobile_results_2017"
+      ],
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -3742,20 +3758,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2018",
-        "china_mobile_ops_2018",
-        "china_mobile_results_2018"
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -4082,20 +4106,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2019",
-        "china_mobile_ops_2019",
-        "china_mobile_results_2019"
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -4425,20 +4457,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2020",
-        "china_mobile_ops_2020",
-        "china_mobile_results_2020"
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -4795,20 +4835,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2021",
-        "china_mobile_ops_2021",
-        "china_mobile_results_2021"
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -5130,20 +5178,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2022",
-        "china_mobile_ops_2022",
-        "china_mobile_results_2022"
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -5458,20 +5514,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2023",
-        "china_mobile_ops_2023",
+        "china_mobile_ar_a_2023",
         "china_mobile_results_2023"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -5718,20 +5782,28 @@
       "comparator": "=",
       "scope": "average handset data traffic per user per month; 2016-17 converted from MB to GB",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2024",
-        "china_mobile_ops_2024",
+        "china_mobile_ar_a_2024",
         "china_mobile_results_2024"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2024",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",
@@ -6289,7 +6361,7 @@
         "china_mobile_ar_a_2025",
         "china_mobile_ar_summary_2025"
       ],
-      "quality_note": "The H-share annual report, A-share annual report and separately filed A-share annual report summary each disclose the exact 17.3 GB value. The reviewed annual-results announcement does not disclose DOU."
+      "quality_note": "FY2016-FY2024 values are bound to three exact documents per year. FY2017 deliberately uses the annual report, Form 20-F and current-year results presentation because the following-year presentation rounds 1.399 GB to 1.4 GB. FY2025 uses the H-share annual report, A-share annual report and separately filed A-share annual report summary; the reviewed annual-results announcement does not disclose DOU."
     },
     {
       "operator_id": "china_mobile",

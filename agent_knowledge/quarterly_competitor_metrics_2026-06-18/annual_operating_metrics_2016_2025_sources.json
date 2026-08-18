@@ -378,6 +378,11 @@
           "value": 1.87,
           "unit": "million_base_stations",
           "locator": "Personal Mobile Market, year-end network scale"
+        },
+        "mobile_dou": {
+          "value": 1.399,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 Form 20-F selected historical operating table; 1,399 MB per user per month"
         }
       },
       "source_document_id": "china_mobile_20f_2017"
@@ -477,6 +482,11 @@
           "value": 77.62,
           "unit": "million_subscribers",
           "locator": "FY2016 annual report company profile; year-end wireline broadband customers"
+        },
+        "mobile_dou": {
+          "value": 0.697,
+          "unit": "GB_per_user_month",
+          "locator": "FY2016 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -494,6 +504,11 @@
           "value": 1.87,
           "unit": "million_base_stations",
           "locator": "FY2017 annual report operating review; year-end 4G base-station total"
+        },
+        "mobile_dou": {
+          "value": 1.399,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -516,6 +531,11 @@
           "value": 53.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual report key operating data; mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 3.6,
+          "unit": "GB_per_user_month",
+          "locator": "FY2018 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -538,6 +558,11 @@
           "value": 49.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual report key operating data; mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 6.7,
+          "unit": "GB_per_user_month",
+          "locator": "FY2019 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -560,6 +585,11 @@
           "value": 47.4,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual report key operating data; mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 9.4,
+          "unit": "GB_per_user_month",
+          "locator": "FY2020 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -577,6 +607,11 @@
           "value": 48.8,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual report key operating data; mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 12.6,
+          "unit": "GB_per_user_month",
+          "locator": "FY2021 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -594,6 +629,11 @@
           "value": 49.0,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual report key operating data; mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 14.1,
+          "unit": "GB_per_user_month",
+          "locator": "FY2022 annual report key operating data; handset data traffic DOU"
         }
       }
     },
@@ -611,6 +651,11 @@
           "value": 49.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 H-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2023 H-share annual report; handset data traffic DOU"
         },
         "5g_base_stations": {
           "value": 0.62,
@@ -633,6 +678,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 H-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2024 H-share annual report; handset data traffic DOU"
         }
       }
     },
@@ -748,6 +798,11 @@
           "value": 49.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 A-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2023 A-share annual report; handset data traffic DOU"
         }
       }
     },
@@ -765,6 +820,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 A-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2024 A-share annual report; handset data traffic DOU"
         }
       }
     },
@@ -1138,6 +1198,11 @@
           "value": 57.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2016 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 0.697,
+          "unit": "GB_per_user_month",
+          "locator": "FY2016 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       }
     },
@@ -1160,6 +1225,11 @@
           "value": 57.7,
           "unit": "RMB_per_user_month",
           "locator": "FY2017 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 1.399,
+          "unit": "GB_per_user_month",
+          "locator": "FY2017 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       },
       "comparative_evidence": {
@@ -1168,6 +1238,11 @@
             "value": 57.5,
             "unit": "RMB_per_user_month",
             "locator": "official operating table; FY2016 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 0.697,
+            "unit": "GB_per_user_month",
+            "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative handset DOU"
           }
         }
       }
@@ -1191,6 +1266,11 @@
           "value": 53.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 3.6,
+          "unit": "GB_per_user_month",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       },
       "comparative_evidence": {
@@ -1223,6 +1303,11 @@
             "value": 53.1,
             "unit": "RMB_per_user_month",
             "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 3.6,
+            "unit": "GB_per_user_month",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative handset DOU"
           }
         }
       },
@@ -1236,6 +1321,11 @@
           "value": 49.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 6.7,
+          "unit": "GB_per_user_month",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       }
     },
@@ -1259,6 +1349,11 @@
             "value": 49.1,
             "unit": "RMB_per_user_month",
             "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 6.7,
+            "unit": "GB_per_user_month",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative handset DOU"
           }
         }
       },
@@ -1272,6 +1367,11 @@
           "value": 47.4,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 9.4,
+          "unit": "GB_per_user_month",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       }
     },
@@ -1295,6 +1395,11 @@
             "value": 47.4,
             "unit": "RMB_per_user_month",
             "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 9.4,
+            "unit": "GB_per_user_month",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative handset DOU"
           }
         }
       },
@@ -1308,6 +1413,11 @@
           "value": 48.8,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 12.6,
+          "unit": "GB_per_user_month",
+          "locator": "FY2021 annual-results presentation operating-data appendix; current-year handset DOU"
         }
       }
     },
@@ -1331,6 +1441,11 @@
             "value": 48.8,
             "unit": "RMB_per_user_month",
             "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 12.6,
+            "unit": "GB_per_user_month",
+            "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative handset DOU"
           }
         }
       },
@@ -1344,6 +1459,11 @@
           "value": 49.0,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_dou": {
+          "value": 14.1,
+          "unit": "GB_per_user_month",
+          "locator": "FY2022 annual-results presentation operating-data appendix; current-year handset DOU"
         },
         "5g_base_stations": {
           "value": 0.48,
@@ -1372,6 +1492,11 @@
             "value": 49.0,
             "unit": "RMB_per_user_month",
             "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative mobile ARPU"
+          },
+          "mobile_dou": {
+            "value": 14.1,
+            "unit": "GB_per_user_month",
+            "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative handset DOU"
           }
         }
       },
@@ -1380,6 +1505,11 @@
           "value": 49.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 annual-results presentation; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2023 annual-results presentation; handset data traffic DOU"
         },
         "5g_base_stations": {
           "value": 0.62,
@@ -1402,6 +1532,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 annual-results presentation; mobile ARPU operating KPI"
+        },
+        "mobile_dou": {
+          "value": 15.9,
+          "unit": "GB_per_user_month",
+          "locator": "FY2024 annual-results presentation; handset data traffic DOU"
         }
       }
     },
