@@ -4377,6 +4377,29 @@
       "source_document_id": "jio_2021_q4_analyst_presentation"
     },
     {
+      "source_id": "jio_rjil_ar_2022",
+      "operator_id": "reliance_jio",
+      "year": 2022,
+      "label": "Reliance Jio Infocomm Limited FY2021-22 annual report",
+      "url": "https://www.ril.com/sites/default/files/2023-01/annual-report-of-fy-2021-22.pdf",
+      "source_type": "official_subsidiary_annual_report",
+      "publisher": "Reliance Jio Infocomm Limited",
+      "evidence": {
+        "connected_homes": {
+          "value": 5,
+          "unit": "million_premises",
+          "comparator": ">",
+          "locator": "operations highlights; over 5 million connected homes"
+        },
+        "total_data_traffic": {
+          "value": 91.4,
+          "unit": "billion_GB",
+          "locator": "operations highlights; 91.4 exabytes during FY2022"
+        }
+      },
+      "source_document_id": "jio_rjil_ar_2022"
+    },
+    {
       "source_id": "jio_2025_q4",
       "operator_id": "reliance_jio",
       "year": 2025,

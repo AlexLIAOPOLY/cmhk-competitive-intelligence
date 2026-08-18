@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 44,
+                "Reliance Jio": 45,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -512,8 +512,21 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
         homes = self.index[("reliance_jio", 2022, "connected_homes")]
         self.assertEqual(homes["value"], 5)
-        self.assertEqual(homes["distinct_source_document_count"], 2)
-        self.assertEqual(homes["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(
+            homes["verification_sources"],
+            ["reliance_jio_ar_2022", "jio_2022_q4", "jio_rjil_ar_2022"],
+        )
+        self.assertEqual(homes["distinct_source_document_count"], 3)
+        self.assertEqual(homes["triple_source_status"], "three_distinct_sources_verified")
+
+        home_chunks = rag_llm._global_operator_exact_metric_chunks(
+            "Reliance Jio FY2022已连接家庭是多少？说明三来源状态。",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        home_text = "\n".join(chunk["text"] for chunk in home_chunks)
+        self.assertIn("official_value=5 million_premises", home_text)
+        self.assertIn("comparator=>=", home_text)
+        self.assertIn("distinct_source_document_count=3", home_text)
 
     def test_airtel_fy2025_uses_three_exact_comparative_documents(self):
         four_sources = {
