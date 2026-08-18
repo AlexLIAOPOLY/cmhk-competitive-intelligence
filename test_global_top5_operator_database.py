@@ -38,6 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
+                "中国广电": 1,
                 "中国电信": 12,
                 "中国移动": 17,
                 "中国联通": 10,
@@ -48,12 +49,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
         self.assertIn("- Bharti Airtel: 98", audit_text)
 
-    def test_candidate_source_ids_without_exact_metric_evidence_do_not_count(self):
+    def test_china_broadnet_2024_5g_users_have_exact_metric_evidence(self):
         row = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertGreaterEqual(len(row["candidate_sources"]), 3)
-        self.assertEqual(row["verification_sources"], [])
-        self.assertEqual(row["distinct_source_document_count"], 0)
-        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(len(row["verification_sources"]), 4)
+        self.assertEqual(row["distinct_source_document_count"], 4)
+        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_jio_early_candidate_sources_without_exact_bindings_are_not_certified(self):
         legacy_candidate_rows = [
@@ -267,18 +268,19 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         financial_metrics = {"revenue", "ebitda", "ebit", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"}
         self.assertFalse(financial_metrics & {r["metric_key"] for r in sidecar["rows"]})
 
-    def test_china_broadnet_scope_gaps_and_unbound_candidate_sources(self):
+    def test_china_broadnet_scope_gaps_and_selectively_bound_sources(self):
         available = [
             row for row in self.rows
             if row["operator_id"] == "china_broadnet" and row["value"] is not None
         ]
         self.assertEqual(len(available), 24)
-        self.assertTrue(all(row["distinct_source_document_count"] < 3 for row in available))
+        certified = [row for row in available if row["distinct_source_document_count"] >= 3]
+        self.assertEqual([(row["year"], row["metric_key"]) for row in certified], [(2024, "5g_network_subscribers")])
         self.assertTrue(all(len(row["candidate_sources"]) >= len(row["verification_sources"]) for row in available))
         users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertEqual(users_2024["value"], 32.7546)
-        self.assertEqual(users_2024["triple_source_status"], "below_three_source_threshold")
-        self.assertEqual(users_2024["distinct_source_document_count"], 0)
+        self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(users_2024["distinct_source_document_count"], 4)
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])
@@ -311,8 +313,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("operator=中国广电", value_text)
         self.assertIn("official_value=32.7546 million_subscribers", value_text)
         self.assertIn("official_value=208 million_users", value_text)
-        self.assertIn("distinct_source_document_count=0", value_text)
-        self.assertIn("triple_source_status=below_three_source_threshold", value_text)
+        self.assertIn("distinct_source_document_count=4", value_text)
+        self.assertIn("triple_source_status=three_distinct_sources_verified", value_text)
         gap_chunks = rag_llm._global_operator_exact_metric_chunks(
             "中国广电2025年移动ARPU和固定宽带用户",
             dataset_ids={"global_top5_operators_2016_2025"},

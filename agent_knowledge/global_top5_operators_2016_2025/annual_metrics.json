@@ -7886,14 +7886,24 @@
       "comparator": "=",
       "scope": "China Broadnet 5G users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
+      "distinct_source_document_ids": [
+        "china_broadnet_crta_2024",
+        "china_broadnet_jiangsu_bond_2024",
+        "china_broadnet_nrta_statistical_bulletin_2024",
+        "china_broadnet_people_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_broadnet_nrta_2024",
+      "primary_source_url": "https://www.nrta.gov.cn/art/2025/5/9/art_113_70729.html",
+      "verification_sources": [
+        "china_broadnet_nrta_2024",
+        "china_broadnet_crta_2024",
+        "china_broadnet_jiangsu_bond_2024",
+        "china_broadnet_people_2024"
+      ],
       "candidate_sources": [
         "china_broadnet_nrta_2024",
         "china_broadnet_crta_2024",

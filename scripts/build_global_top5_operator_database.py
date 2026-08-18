@@ -1467,12 +1467,18 @@ SOURCES.update({
         "url": "https://www.nrta.gov.cn/art/2025/5/9/art_113_70729.html",
         "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
         "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024",
+        "evidence": {
+            "5g_network_subscribers": {"value": 32.7546, "unit": "million_subscribers", "locator": "第三部分；截至2024年底，广电5G用户3275.46万户"},
+        },
     },
     "china_broadnet_crta_2024": {
         "source_id": "china_broadnet_crta_2024", "operator_id": "china_broadnet", "year": 2024,
         "label": "中国广播电视设备工业协会 广电行业综合信息2025年第06期",
         "url": "https://www.crta.com.cn/upload/default/686f2e532b64a.pdf",
         "source_type": "industry_association_report", "publisher": "中国广播电视设备工业协会",
+        "evidence": {
+            "5g_network_subscribers": {"value": 32.7546, "unit": "million_subscribers", "locator": "广电行业综合信息2025年第06期；全国2024年统计"},
+        },
     },
     "china_broadnet_pingliang_gov_2024": {
         "source_id": "china_broadnet_pingliang_gov_2024", "operator_id": "china_broadnet", "year": 2024,
@@ -1486,12 +1492,18 @@ SOURCES.update({
         "label": "江苏有线2025年科技创新公司债券募集说明书（载2024年行业数据）",
         "url": "https://static.sse.com.cn/bond/bridge2/disclosure/announcement/c/202507/7d9670_20250715_AT3P.pdf",
         "source_type": "official_exchange_bond_prospectus", "publisher": "江苏省广电有线信息网络股份有限公司",
+        "evidence": {
+            "5g_network_subscribers": {"value": 32.7546, "unit": "million_subscribers", "locator": "募集说明书第68页；2024年广电5G用户"},
+        },
     },
     "china_broadnet_people_2024": {
         "source_id": "china_broadnet_people_2024", "operator_id": "china_broadnet", "year": 2024,
         "label": "人民网：广电总局发布2024年全国广播电视行业统计公报",
         "url": "https://ent-app.people.cn/n1/2025/0509/c1012-40476621.html",
         "source_type": "central_media_report", "publisher": "人民网",
+        "evidence": {
+            "5g_network_subscribers": {"value": 32.7546, "unit": "million_subscribers", "locator": "广电总局2024年行业统计公报报道"},
+        },
     },
     "china_broadnet_nrta_2025": {
         "source_id": "china_broadnet_nrta_2025", "operator_id": "china_broadnet", "year": 2025,

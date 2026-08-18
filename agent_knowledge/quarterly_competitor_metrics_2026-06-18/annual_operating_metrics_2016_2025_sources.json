@@ -59,6 +59,13 @@
       "url": "https://www.crta.com.cn/upload/default/686f2e532b64a.pdf",
       "source_type": "industry_association_report",
       "publisher": "中国广播电视设备工业协会",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 32.7546,
+          "unit": "million_subscribers",
+          "locator": "广电行业综合信息2025年第06期；全国2024年统计"
+        }
+      },
       "source_document_id": "china_broadnet_crta_2024"
     },
     {
@@ -119,6 +126,13 @@
       "url": "https://static.sse.com.cn/bond/bridge2/disclosure/announcement/c/202507/7d9670_20250715_AT3P.pdf",
       "source_type": "official_exchange_bond_prospectus",
       "publisher": "江苏省广电有线信息网络股份有限公司",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 32.7546,
+          "unit": "million_subscribers",
+          "locator": "募集说明书第68页；2024年广电5G用户"
+        }
+      },
       "source_document_id": "china_broadnet_jiangsu_bond_2024"
     },
     {
@@ -179,7 +193,14 @@
       "url": "https://www.nrta.gov.cn/art/2025/5/9/art_113_70729.html",
       "source_type": "official_regulator_statistical_bulletin",
       "publisher": "国家广播电视总局",
-      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024"
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2024",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 32.7546,
+          "unit": "million_subscribers",
+          "locator": "第三部分；截至2024年底，广电5G用户3275.46万户"
+        }
+      }
     },
     {
       "source_id": "china_broadnet_nrta_2025",
@@ -209,6 +230,13 @@
       "url": "https://ent-app.people.cn/n1/2025/0509/c1012-40476621.html",
       "source_type": "central_media_report",
       "publisher": "人民网",
+      "evidence": {
+        "5g_network_subscribers": {
+          "value": 32.7546,
+          "unit": "million_subscribers",
+          "locator": "广电总局2024年行业统计公报报道"
+        }
+      },
       "source_document_id": "china_broadnet_people_2024"
     },
     {
@@ -473,10 +501,51 @@
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
         },
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
         },
         "household_customer_blended_arpu": {
           "value": 44.5,
@@ -549,11 +618,6 @@
           "value": 1482,
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
-        },
-        "household_customer_blended_arpu": {
-          "value": 44.5,
-          "unit": "RMB_per_user_month",
-          "locator": "FY2025 household customer blended ARPU disclosure"
         }
       }
     },
@@ -617,6 +681,16 @@
           "value": 1482,
           "unit": "million_connections",
           "locator": "FY2025 IoT card connection KPI disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
+        },
+        "household_customer_blended_arpu": {
+          "value": 44.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 household customer blended ARPU disclosure"
         }
       }
     },
@@ -730,10 +804,46 @@
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_press_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
         }
       }
     },
@@ -904,10 +1014,51 @@
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_results_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 1005,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_network_subscribers": {
+          "value": 642,
+          "unit": "million_subscribers",
+          "locator": "FY2025 communications-services operating disclosure"
+        },
+        "5g_base_stations": {
+          "value": 2.77,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "FY2025 network infrastructure disclosure; more than 2.77 million stations"
+        },
         "integrated_broadband_network_customers": {
           "value": 329,
           "unit": "million_customers",
           "locator": "FY2025 integrated broadband network customer disclosure"
+        },
+        "mobile_broadband_integration_rate": {
+          "value": 96.5,
+          "unit": "percent",
+          "locator": "FY2025 mass and corporate customer integration disclosure"
+        },
+        "government_enterprise_customers": {
+          "value": 36.17,
+          "unit": "million_customers",
+          "locator": "FY2025 government and enterprise customer disclosure"
+        },
+        "households_gigabit_coverage": {
+          "value": 530,
+          "unit": "million_households",
+          "locator": "FY2025 gigabit network household coverage disclosure"
+        },
+        "intelligent_compute_capacity": {
+          "value": 92.5,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 total self-built and rented intelligent computing capacity disclosure"
+        },
+        "mobile_arpu": {
+          "value": 46.8,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 mobile ARPU operating KPI disclosure"
         },
         "household_customer_blended_arpu": {
           "value": 44.5,
@@ -1176,6 +1327,21 @@
           "value": 97,
           "unit": "percent",
           "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        },
+        "5g_network_penetration": {
+          "value": 68.8,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; 5G network subscriber penetration rate"
+        },
+        "gigabit_broadband_penetration": {
+          "value": 31.6,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
@@ -1292,10 +1458,30 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
         },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
+        },
         "5g_base_stations": {
           "value": 1.54,
           "unit": "million_base_stations",
           "locator": "FY2025 shared 5G mid/high-band network; more than 1.54 million base stations"
+        },
+        "5g_network_penetration": {
+          "value": 68.8,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; 5G network subscriber penetration rate"
+        },
+        "gigabit_broadband_penetration": {
+          "value": 31.6,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
@@ -1313,6 +1499,11 @@
           "value": 45.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
         }
       }
     },
@@ -1414,7 +1605,24 @@
       "url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025",
       "source_type": "official_operating_statistics",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_kpi_2025"
+      "source_document_id": "china_telecom_kpi_2025",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
+        }
+      }
     },
     {
       "source_id": "china_telecom_press_2025",
@@ -1426,6 +1634,21 @@
       "publisher": "China Telecom Corporation Limited",
       "source_document_id": "china_telecom_press_2025",
       "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
+        },
         "ten_g_pon_ports": {
           "value": 10,
           "unit": "million_ports",
@@ -1435,6 +1658,43 @@
           "value": 97,
           "unit": "percent",
           "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        },
+        "5g_network_penetration": {
+          "value": 68.8,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; 5G network subscriber penetration rate"
+        },
+        "gigabit_broadband_penetration": {
+          "value": 31.6,
+          "unit": "percent",
+          "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate"
+        }
+      }
+    },
+    {
+      "source_id": "china_telecom_q4_operating_announcement_2025",
+      "operator_id": "china_telecom",
+      "year": 2025,
+      "label": "China Telecom key operating statistics for the fourth quarter of 2025",
+      "url": "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf",
+      "source_type": "official_hkex_operating_announcement",
+      "publisher": "China Telecom Corporation Limited",
+      "source_document_id": "china_telecom_q4_operating_announcement_2025",
+      "evidence": {
+        "mobile_subscribers": {
+          "value": 438.65,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end mobile subscriber operating statistics"
+        },
+        "5g_network_subscribers": {
+          "value": 301.81,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end 5G network subscriber operating statistics"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 201.12,
+          "unit": "million_subscribers",
+          "locator": "FY2025 year-end wireline broadband subscriber operating statistics"
         }
       }
     },
@@ -1543,6 +1803,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
         },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
+        },
         "5g_base_stations": {
           "value": 1.54,
           "unit": "million_base_stations",
@@ -1557,6 +1822,11 @@
           "value": 97,
           "unit": "percent",
           "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
