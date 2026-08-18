@@ -31,7 +31,9 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("仅语音", SCRIPT)
 
     def test_admin_exposes_real_subscription_frequency_controls(self):
-        self.assertIn("data-subscriber-frequency", SCRIPT)
+        self.assertIn("data-subscriber-news-frequency", SCRIPT)
+        self.assertIn("双周报与业绩摘要固定每两周随发布推送，仅新闻频率可调", SCRIPT)
+        self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天 18:00", SCRIPT)
         self.assertIn("每周五 18:00", SCRIPT)
         self.assertIn("等待频率时点", SCRIPT)
@@ -39,7 +41,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_admin_exposes_report_audio_preference(self):
         self.assertIn("data-subscriber-report-mode", SCRIPT)
         self.assertIn("reportMode", SCRIPT)
-        self.assertIn("报告形式", SCRIPT)
+        self.assertIn("报告方式", SCRIPT)
 
     def test_admin_searches_feishu_people_with_avatar_and_invite_results(self):
         self.assertIn('action: "searchPeople"', SCRIPT)

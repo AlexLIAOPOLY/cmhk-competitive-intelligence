@@ -35,6 +35,7 @@ REPORT_MODE_LABELS = {
     "audio": "仅语音",
 }
 VALID_REPORT_MODES = frozenset(REPORT_MODE_LABELS)
+REPORT_CADENCE_LABEL = "每两周随报告发布"
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
@@ -89,14 +90,14 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "并选择接收方式和频率。感谢您的配合！"
+        "报告固定每两周随发布推送；如订阅战略新闻，可选择新闻接收频率。感谢您的配合！"
     )
     return {
         "schema": "2.0",
         "config": {
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "订阅战略情报 · 选择服务、接收方式与频率"},
+            "summary": {"content": "订阅战略情报 · 报告双周推送，新闻频率可选"},
         },
         "header": {
             "title": {"tag": "plain_text", "content": "订阅战略情报"},
@@ -145,7 +146,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
                             ],
                         },
-                        {"tag": "markdown", "content": "**接收方式**"},
+                        {"tag": "markdown", "content": "**报告接收方式**"},
                         {
                             "tag": "select_static",
                             "name": "report_mode",
@@ -158,13 +159,13 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "仅语音"}, "value": "audio"},
                             ],
                         },
-                        {"tag": "markdown", "content": "**接收频率**"},
+                        {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
-                            "name": "frequency",
+                            "name": "news_frequency",
                             "required": True,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "选择接收频率"},
+                            "placeholder": {"tag": "plain_text", "content": "选择战略新闻频率"},
                             "options": [
                                 {"text": {"tag": "plain_text", "content": "即时接收"}, "value": "immediate"},
                                 {"text": {"tag": "plain_text", "content": "每天 18:00"}, "value": "daily"},
@@ -173,7 +174,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>仅影响双周报和业绩摘要；战略新闻始终以文字消息发送。</font>",
+                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；上方频率仅适用于战略新闻，新闻始终以文字消息发送。</font>",
                             "text_size": "notation",
                         },
                         {
@@ -578,6 +579,10 @@ class SubscriptionService:
             "services": normalized,
             "frequency": frequency,
             "frequency_label": FREQUENCY_LABELS[frequency],
+            "news_frequency": frequency,
+            "news_frequency_label": FREQUENCY_LABELS[frequency],
+            "report_cadence": "biweekly_on_publish",
+            "report_cadence_label": REPORT_CADENCE_LABEL,
             "report_mode": report_mode,
             "report_mode_label": REPORT_MODE_LABELS[report_mode],
             "updated_at": now,
@@ -618,7 +623,7 @@ class SubscriptionService:
                     raise ValueError("请选择有效的接收方式与频率")
                 frequency, report_mode = plan_match.groups()
             else:
-                frequency = str(form.get("frequency") or "")
+                frequency = str(form.get("news_frequency") or form.get("frequency") or "")
                 report_mode = str(form.get("report_mode") or "pdf")
             if frequency not in VALID_FREQUENCIES:
                 raise ValueError("请选择有效的接收频率")
@@ -695,7 +700,7 @@ class SubscriptionService:
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
-            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n接收频率：**{saved['frequency_label']}**。以后重新提交订阅卡片即可覆盖选择。",
+            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**。以后重新提交订阅卡片即可覆盖选择。",
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,
         )
@@ -729,8 +734,12 @@ class SubscriptionService:
             subscribers.append({
                 **dict(row),
                 "services": services,
+                "news_frequency": str(row["frequency"]),
+                "news_frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
                 "frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
                 "report_mode_label": REPORT_MODE_LABELS.get(str(row["report_mode"]), str(row["report_mode"])),
+                "report_cadence": "biweekly_on_publish",
+                "report_cadence_label": REPORT_CADENCE_LABEL,
             })
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
@@ -1359,7 +1368,9 @@ class SubscriptionService:
         return [
             {
                 "open_id": str(row["open_id"]),
-                "frequency": str(row["frequency"] or "immediate"),
+                # Reports are event-driven: the approved biweekly artifact is sent
+                # when it is published. Only strategic news uses a selectable cadence.
+                "frequency": str(row["frequency"] or "immediate") if service == "news" else "immediate",
                 "report_mode": str(row["report_mode"] or "pdf"),
             }
             for row in rows

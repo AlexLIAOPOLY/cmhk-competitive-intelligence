@@ -97,20 +97,20 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "并选择接收方式和频率。感谢您的配合！",
+            "报告固定每两周随发布推送；如订阅战略新闻，可选择新闻接收频率。感谢您的配合！",
         )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**订阅内容**", "**接收方式**", "**接收频率**"],
+            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
         report_mode = next(item for item in form["elements"] if item.get("name") == "report_mode")
-        frequency = next(item for item in form["elements"] if item.get("name") == "frequency")
+        frequency = next(item for item in form["elements"] if item.get("name") == "news_frequency")
         self.assertEqual({item["value"] for item in report_mode["options"]}, {"pdf", "pdf_audio", "audio"})
         self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
-        self.assertNotIn("delivery_plan", {item.get("name") for item in form["elements"]})
+        self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
         self.assertEqual(button["text"]["content"], "确认订阅")
@@ -127,11 +127,13 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["weekly", "news"], "delivery_plan": "daily_pdf_audio"}),
+            "form_value": json.dumps({"services": ["weekly", "news"], "report_mode": "pdf_audio", "news_frequency": "daily"}),
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
         self.assertEqual(first["frequency"], "daily")
+        self.assertEqual(first["news_frequency"], "daily")
+        self.assertEqual(first["report_cadence"], "biweekly_on_publish")
         self.assertEqual(first["report_mode"], "pdf_audio")
         self.service.handle_card_event({
             "type": "card.action.trigger",
@@ -321,12 +323,15 @@ class SubscriptionServiceTests(unittest.TestCase):
         audio.parent.mkdir()
         audio.write_bytes(b"OggS")
         self.service.save_subscriptions(
-            "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf"
+            "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf", frequency="daily"
         )
         pdf_only = self.service.push(
             service="weekly", mode="pdf_audio", path=report.name, confirm_bulk=True
         )
         self.assertEqual(pdf_only["results"][0]["mode"], "pdf")
+        self.assertEqual(pdf_only["results"][0]["frequency"], "immediate")
+        self.assertEqual(pdf_only["verified_count"], 1)
+        self.assertEqual(pdf_only["queued_count"], 0)
         self.assertEqual(len(pdf_only["results"][0]["message_ids"]), 1)
         self.service.save_subscriptions(
             "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf_audio"

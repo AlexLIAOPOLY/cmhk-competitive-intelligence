@@ -49,7 +49,7 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
-from subscription_service import FREQUENCY_LABELS, REPORT_MODE_LABELS, SubscriptionService
+from subscription_service import FREQUENCY_LABELS, REPORT_CADENCE_LABEL, REPORT_MODE_LABELS, SubscriptionService
 
 
 ROOT = Path(__file__).resolve().parent
@@ -3702,6 +3702,11 @@ class AppHandler(BaseHTTPRequestHandler):
                         {"key": key, "label": FREQUENCY_LABELS[key]}
                         for key in ("immediate", "daily", "weekly")
                     ],
+                    "frequency_scope": "news",
+                    "report_cadence": {
+                        "key": "biweekly_on_publish",
+                        "label": REPORT_CADENCE_LABEL,
+                    },
                     "report_modes": [
                         {"key": key, "label": REPORT_MODE_LABELS[key]}
                         for key in ("pdf", "pdf_audio", "audio")
@@ -3964,7 +3969,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         str(payload.get("openId") or ""),
                         services=services,
                         status=str(payload.get("status") or "active"),
-                        frequency=str(payload.get("frequency") or "immediate"),
+                        frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "immediate"),
                         report_mode=str(payload.get("reportMode") or "pdf"),
                     )
                 elif action == "refreshDirectory":
