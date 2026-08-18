@@ -99,6 +99,38 @@
     },
     {
       "operator_id": "bharti_airtel",
+      "years": "2017",
+      "metric": "revenue",
+      "type": "restatement_or_scope_change",
+      "selected_basis": "later comparable INR 942,506 million",
+      "detail": "The FY2017 and FY2018 results packs reported INR 954,684 million. The FY2019 pack and later annual KPI tables restated/reclassified the comparable value to INR 942,506 million, which is retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2017",
+      "metric": "earnings_before_tax",
+      "type": "definition_conflict",
+      "selected_basis": "annual KPI earnings before tax INR 77,232 million",
+      "detail": "The results packs report INR 88,929 million as profit before tax before exceptional items. Three later annual KPI tables repeat INR 77,232 million after exceptional items, which is retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2017",
+      "metric": "network_towers",
+      "type": "scope_conflict",
+      "selected_basis": "group KPI 184,255",
+      "detail": "The India-mobile operating review reports 162,046 network towers. Three full-year performance-at-a-glance packs repeat the broader group KPI of 184,255, which is retained."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "years": "2017",
+      "metric": "total_data_traffic",
+      "type": "scope_break",
+      "selected_basis": "consolidated annual headline 0.903 billion GB",
+      "detail": "FY2017 is a consolidated traffic headline; FY2018-FY2020 are India-mobile traffic. The FY2017 row remains below the three-document threshold and must not be used as a continuous like-for-like series point."
+    },
+    {
+      "operator_id": "bharti_airtel",
       "years": "2021",
       "metric": "earnings_before_tax",
       "type": "restatement_or_scope_change",
