@@ -11,7 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=4', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=5', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=5', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -32,11 +33,12 @@ class SubscriptionAdminTests(unittest.TestCase):
 
     def test_admin_exposes_real_subscription_frequency_controls(self):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
-        self.assertIn("双周报与业绩摘要固定每两周随发布推送，仅新闻频率可调", SCRIPT)
+        self.assertIn("报告固定双周发布；战略新闻每天一次或两次，爬虫完成即推", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
-        self.assertIn("每天 18:00", SCRIPT)
-        self.assertIn("每周五 18:00", SCRIPT)
-        self.assertIn("等待频率时点", SCRIPT)
+        self.assertIn("每天一次", SCRIPT)
+        self.assertIn("每天两次", SCRIPT)
+        self.assertNotIn("每天 18:00", SCRIPT)
+        self.assertNotIn("每周五 18:00", SCRIPT)
 
     def test_admin_exposes_report_audio_preference(self):
         self.assertIn("data-subscriber-report-mode", SCRIPT)

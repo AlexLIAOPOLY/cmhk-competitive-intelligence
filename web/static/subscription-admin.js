@@ -23,11 +23,10 @@
       .map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
   }
 
-  function newsFrequencyOptions(selected = "immediate") {
+  function newsFrequencyOptions(selected = "once_daily") {
     const frequencies = state.data?.frequencies || [
-      { key: "immediate", label: "即时接收" },
-      { key: "daily", label: "每天 18:00" },
-      { key: "weekly", label: "每周五 18:00" },
+      { key: "twice_daily", label: "每天两次" },
+      { key: "once_daily", label: "每天一次" },
     ];
     return frequencies.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
   }
@@ -62,7 +61,7 @@
   function deliveryRows() {
     const rows = state.data?.deliveries || [];
     if (!rows.length) return '<tr><td colspan="6" class="empty">尚无推送记录</td></tr>';
-    return rows.slice(0, 40).map((item) => `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待频率时点" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`).join("");
+    return rows.slice(0, 40).map((item) => `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`).join("");
   }
 
   function searchResultRows() {
@@ -107,8 +106,8 @@
         <article class="panel invite-pane"><header class="panel-header"><div><h2>邀请</h2><span>${number((data.invite_candidates || []).length)} 人待处理</span></div><button class="button primary compact-action" type="button" data-send-invites>${icon("send")}<span>发送邀请</span></button></header><div class="candidate-list">${candidateRows()}</div><div class="section-label"><span>邀请结果</span><small>待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</small></div><div class="history-list">${invitationRows()}</div></article>
       </section>
       <section class="operations-grid">
-        <article class="panel"><header class="panel-header"><div><h2>内容推送</h2><span>报告每两周随发布推送；新闻按订阅频率派发</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
-        <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 双周报与业绩摘要固定每两周随发布推送，仅新闻频率可调</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
+        <article class="panel"><header class="panel-header"><div><h2>内容推送</h2><span>报告每两周随发布推送；新闻自动在战略爬虫完成后派发</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="仅用于人工补发经审核的战略新闻">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
+        <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 报告固定双周发布；战略新闻每天一次或两次，爬虫完成即推</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
       </section>
       <section class="panel"><header class="panel-header"><div><h2>推送台账</h2><span>发送与回读证据</span></div></header><div class="table-wrap"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div></section>
     </div>`;

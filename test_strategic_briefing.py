@@ -455,6 +455,7 @@ class StrategicBriefingTests(unittest.TestCase):
             [
                 "review",
                 "pipeline_persisted",
+                "pipeline_persisted",
                 "notify",
                 "final_persisted",
                 "registry_finalized",
@@ -1033,6 +1034,31 @@ class StrategicBriefingTests(unittest.TestCase):
     def test_reviewed_candidate_count_falls_back_for_legacy_results(self):
         self.assertEqual(briefing._reviewed_candidate_count({}, 3), 3)
         self.assertEqual(briefing._reviewed_candidate_count({"new_count": None}, 3), 0)
+
+    def test_completed_scan_dispatches_reviewed_news_to_subscription_service(self):
+        reviewed = [{"title": "已审核新闻", "summary": "摘要"}]
+        with mock.patch("subscription_service.SubscriptionService") as service_class:
+            service_class.return_value.dispatch_news_after_crawl.return_value = {
+                "recipient_count": 1,
+                "verified_count": 1,
+                "retrying_count": 0,
+                "skipped_count": 0,
+            }
+            result = briefing._dispatch_subscription_news_after_scan(
+                slot_key="2026-08-19@07:00",
+                slot_label="晨间扫描",
+                review_result={"new_items": reviewed},
+                candidates=[{"title": "未采用候选"}],
+                completed_at="2026-08-19T07:30:00+08:00",
+            )
+
+        self.assertEqual(result["status"], "completed")
+        service_class.return_value.dispatch_news_after_crawl.assert_called_once_with(
+            crawl_slot="2026-08-19@07:00",
+            slot_label="晨间扫描",
+            items=reviewed,
+            completed_at="2026-08-19T07:30:00+08:00",
+        )
 
     def test_replayed_notification_marks_archive_as_sent(self):
         slot_key = "2026-07-30@15:00"

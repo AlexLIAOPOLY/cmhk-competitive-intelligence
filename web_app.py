@@ -3700,7 +3700,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     "targets": service.available_targets(),
                     "frequencies": [
                         {"key": key, "label": FREQUENCY_LABELS[key]}
-                        for key in ("immediate", "daily", "weekly")
+                        for key in ("twice_daily", "once_daily")
                     ],
                     "frequency_scope": "news",
                     "report_cadence": {
@@ -3969,7 +3969,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         str(payload.get("openId") or ""),
                         services=services,
                         status=str(payload.get("status") or "active"),
-                        frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "immediate"),
+                        frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "once_daily"),
                         report_mode=str(payload.get("reportMode") or "pdf"),
                     )
                 elif action == "refreshDirectory":

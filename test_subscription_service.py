@@ -97,7 +97,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告固定每两周随发布推送；如订阅战略新闻，可选择新闻接收频率。感谢您的配合！",
+            "报告固定每两周随发布推送；战略新闻会在每天的战略爬虫完成后推送，您可以选择每天一次或每天两次。"
+            "感谢您的配合！",
         )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
@@ -109,7 +110,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         report_mode = next(item for item in form["elements"] if item.get("name") == "report_mode")
         frequency = next(item for item in form["elements"] if item.get("name") == "news_frequency")
         self.assertEqual({item["value"] for item in report_mode["options"]}, {"pdf", "pdf_audio", "audio"})
-        self.assertEqual({item["value"] for item in frequency["options"]}, {"immediate", "daily", "weekly"})
+        self.assertEqual({item["value"] for item in frequency["options"]}, {"once_daily", "twice_daily"})
         self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
@@ -131,8 +132,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
-        self.assertEqual(first["frequency"], "daily")
-        self.assertEqual(first["news_frequency"], "daily")
+        self.assertEqual(first["frequency"], "once_daily")
+        self.assertEqual(first["news_frequency"], "once_daily")
         self.assertEqual(first["report_cadence"], "biweekly_on_publish")
         self.assertEqual(first["report_mode"], "pdf_audio")
         self.service.handle_card_event({
@@ -147,7 +148,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         summary = self.service.list_summary()
         self.assertEqual(summary["active_subscriber_count"], 1)
         self.assertEqual(summary["subscribers"][0]["services"], ["performance"])
-        self.assertEqual(summary["subscribers"][0]["frequency"], "weekly")
+        self.assertEqual(summary["subscribers"][0]["frequency"], "once_daily")
         self.assertEqual(summary["subscribers"][0]["report_mode"], "pdf")
         counts = {item["key"]: item["subscriber_count"] for item in summary["services"]}
         self.assertEqual(counts["performance"], 1)
@@ -355,29 +356,39 @@ class SubscriptionServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "二次确认"):
             self.service.push(service="news", mode="text", title="新闻", body="正文")
 
-    def test_daily_frequency_queues_then_dispatches_when_due(self):
-        from datetime import datetime
-
+    def test_news_dispatches_after_crawler_completion_with_daily_limits(self):
         self.service.save_subscriptions(
             "ou_delivery123",
             "测试用户",
             ["news"],
-            frequency="daily",
+            frequency="once_daily",
         )
-        queued = self.service.push(
-            service="news",
-            mode="text",
-            title="延时新闻",
-            body="按订阅频率投递",
-            confirm_bulk=True,
+        item = {"title": "爬虫新闻", "summary": "已完成审核", "source_url": "https://example.test/news"}
+        morning = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@07:00",
+            slot_label="晨间扫描",
+            items=[item],
         )
-        self.assertEqual(queued["queued_count"], 1)
-        self.assertEqual(queued["verified_count"], 0)
-        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
-        dispatched = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
-        self.assertEqual(dispatched["verified_count"], 1)
-        self.assertTrue(any("+messages-send" in call for call in self.lark.calls))
-        self.assertEqual(self.service.list_summary()["deliveries"][0]["status"], "verified")
+        afternoon = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@15:00",
+            slot_label="午后扫描",
+            items=[item],
+        )
+        self.assertEqual(morning["verified_count"], 1)
+        self.assertEqual(afternoon["skipped_count"], 1)
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"], frequency="twice_daily"
+        )
+        next_morning = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-02@07:00", slot_label="晨间扫描", items=[item]
+        )
+        next_afternoon = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-02@15:00", slot_label="午后扫描", items=[item]
+        )
+        self.assertEqual(next_morning["verified_count"], 1)
+        self.assertEqual(next_afternoon["verified_count"], 1)
+        sends = [call for call in self.lark.calls if "+messages-send" in call]
+        self.assertEqual(len(sends), 3)
 
     def test_invalid_frequency_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "接收频率无效"):
@@ -387,23 +398,22 @@ class SubscriptionServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "报告接收形式无效"):
             self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], report_mode="voice_note")
 
-    def test_failed_scheduled_delivery_retries_without_a_fixed_attempt_cap(self):
+    def test_failed_crawler_delivery_retries_without_a_fixed_attempt_cap(self):
         from datetime import datetime
         import sqlite3
 
-        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="daily")
-        self.service.push(
-            service="news",
-            mode="text",
-            title="重试新闻",
-            body="网络恢复后继续发送",
-            confirm_bulk=True,
-        )
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="once_daily")
 
         def offline(argv, timeout=45):
             raise RuntimeError("temporary offline")
 
         self.service.command_runner = offline
+        queued = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@07:00",
+            slot_label="晨间扫描",
+            items=[{"title": "重试新闻"}],
+        )
+        self.assertEqual(queued["retrying_count"], 1)
         first = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
         second = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T20:00:00+08:00"))
         self.assertEqual(first["retrying_count"], 1)

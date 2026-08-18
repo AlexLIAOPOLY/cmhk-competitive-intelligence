@@ -24,11 +24,15 @@ SERVICE_LABELS = {
 VALID_SERVICES = frozenset(SERVICE_LABELS)
 VALID_DELIVERY_MODES = frozenset({"text", "audio", "both", "pdf", "pdf_audio"})
 FREQUENCY_LABELS = {
-    "immediate": "即时接收",
-    "daily": "每天 18:00",
-    "weekly": "每周五 18:00",
+    "twice_daily": "每天两次",
+    "once_daily": "每天一次",
 }
 VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
+LEGACY_FREQUENCY_MAP = {
+    "immediate": "twice_daily",
+    "daily": "once_daily",
+    "weekly": "once_daily",
+}
 REPORT_MODE_LABELS = {
     "pdf": "仅 PDF",
     "pdf_audio": "PDF + 单独语音",
@@ -41,26 +45,16 @@ CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
 IMAGE_KEY_RE = re.compile(r"^img_[A-Za-z0-9_-]+$")
 NEWS_DIGEST_PREFIX = "CMHK_NEWS_DIGEST_V1\n"
+NEWS_CRAWL_REF_PREFIX = "strategic-crawl:"
 
 
 def _now_hkt() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def _next_due_at(frequency: str, now: datetime | None = None) -> str:
-    current = (now or datetime.now().astimezone()).astimezone()
-    if frequency == "daily":
-        due = current.replace(hour=18, minute=0, second=0, microsecond=0)
-        if due <= current:
-            due += timedelta(days=1)
-    elif frequency == "weekly":
-        days = (4 - current.weekday()) % 7
-        due = (current + timedelta(days=days)).replace(hour=18, minute=0, second=0, microsecond=0)
-        if due <= current:
-            due += timedelta(days=7)
-    else:
-        due = current
-    return due.isoformat(timespec="seconds")
+def _normalize_news_frequency(value: str) -> str:
+    raw = str(value or "").strip()
+    return LEGACY_FREQUENCY_MAP.get(raw, raw)
 
 
 def _command_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -90,7 +84,8 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "报告固定每两周随发布推送；如订阅战略新闻，可选择新闻接收频率。感谢您的配合！"
+        "报告固定每两周随发布推送；战略新闻会在每天的战略爬虫完成后推送，您可以选择每天一次或每天两次。"
+        "感谢您的配合！"
     )
     return {
         "schema": "2.0",
@@ -167,14 +162,13 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "选择战略新闻频率"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": "即时接收"}, "value": "immediate"},
-                                {"text": {"tag": "plain_text", "content": "每天 18:00"}, "value": "daily"},
-                                {"text": {"tag": "plain_text", "content": "每周五 18:00"}, "value": "weekly"},
+                                {"text": {"tag": "plain_text", "content": "每天两次"}, "value": "twice_daily"},
+                                {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
                             ],
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；上方频率仅适用于战略新闻，新闻始终以文字消息发送。</font>",
+                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；战略新闻在爬虫完成后推送，每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
                             "text_size": "notation",
                         },
                         {
@@ -437,6 +431,22 @@ class SubscriptionService:
                 );
                 CREATE INDEX IF NOT EXISTS pending_subscription_due_idx
                     ON pending_subscription_deliveries(status, due_at);
+                CREATE TABLE IF NOT EXISTS news_crawl_dispatches (
+                    open_id TEXT NOT NULL,
+                    dispatch_key TEXT NOT NULL,
+                    crawl_slot TEXT NOT NULL,
+                    crawl_date TEXT NOT NULL,
+                    frequency TEXT NOT NULL,
+                    delivery_id INTEGER,
+                    status TEXT NOT NULL DEFAULT 'sending',
+                    message_ids TEXT NOT NULL DEFAULT '[]',
+                    last_error TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (open_id, dispatch_key)
+                );
+                CREATE INDEX IF NOT EXISTS news_crawl_dispatches_slot_idx
+                    ON news_crawl_dispatches(crawl_slot, status);
                 """
             )
             columns = {str(row[1]) for row in db.execute("PRAGMA table_info(subscribers)").fetchall()}
@@ -448,6 +458,32 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN frequency TEXT NOT NULL DEFAULT 'immediate'")
             if "report_mode" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN report_mode TEXT NOT NULL DEFAULT 'pdf'")
+            db.execute(
+                """UPDATE subscribers SET frequency=CASE frequency
+                       WHEN 'immediate' THEN 'twice_daily'
+                       WHEN 'daily' THEN 'once_daily'
+                       WHEN 'weekly' THEN 'once_daily'
+                       ELSE frequency END
+                   WHERE frequency IN ('immediate', 'daily', 'weekly')"""
+            )
+            db.execute(
+                "UPDATE subscribers SET frequency='once_daily' WHERE frequency NOT IN ('once_daily', 'twice_daily')"
+            )
+            legacy_pending_ids = [
+                int(row[0])
+                for row in db.execute(
+                    "SELECT delivery_id FROM pending_subscription_deliveries WHERE service='news' AND status='queued'"
+                ).fetchall()
+            ]
+            if legacy_pending_ids:
+                placeholders = ",".join("?" for _ in legacy_pending_ids)
+                db.execute(
+                    f"UPDATE deliveries SET status='superseded', error='已改为战略爬虫完成后推送' WHERE id IN ({placeholders})",
+                    legacy_pending_ids,
+                )
+                db.execute(
+                    "UPDATE pending_subscription_deliveries SET status='superseded', last_error='已改为战略爬虫完成后推送' WHERE service='news' AND status='queued'"
+                )
             pending_columns = {
                 str(row[1])
                 for row in db.execute("PRAGMA table_info(pending_subscription_deliveries)").fetchall()
@@ -546,12 +582,13 @@ class SubscriptionService:
         source_chat_id: str = "",
         callback_open_id: str = "",
         union_id: str = "",
-        frequency: str = "immediate",
+        frequency: str = "once_daily",
         report_mode: str = "pdf",
     ) -> dict[str, Any]:
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
             raise ValueError("至少选择一个订阅服务")
+        frequency = _normalize_news_frequency(frequency)
         if frequency not in VALID_FREQUENCIES:
             raise ValueError("接收频率无效")
         if report_mode not in VALID_REPORT_MODES:
@@ -601,7 +638,7 @@ class SubscriptionService:
         if not form_raw and not is_pause and action_name != "cmhk_subscription_save_v1":
             return None
         services: list[str] = []
-        frequency = "immediate"
+        frequency = "once_daily"
         report_mode = "pdf"
         if not is_pause:
             try:
@@ -618,12 +655,13 @@ class SubscriptionService:
             services = [str(item) for item in selected]
             delivery_plan = str(form.get("delivery_plan") or "")
             if delivery_plan:
-                plan_match = re.fullmatch(r"(immediate|daily|weekly)_(pdf_audio|pdf|audio)", delivery_plan)
+                plan_match = re.fullmatch(r"(immediate|daily|weekly|once_daily|twice_daily)_(pdf_audio|pdf|audio)", delivery_plan)
                 if not plan_match:
                     raise ValueError("请选择有效的接收方式与频率")
                 frequency, report_mode = plan_match.groups()
+                frequency = _normalize_news_frequency(frequency)
             else:
-                frequency = str(form.get("news_frequency") or form.get("frequency") or "")
+                frequency = _normalize_news_frequency(str(form.get("news_frequency") or form.get("frequency") or ""))
                 report_mode = str(form.get("report_mode") or "pdf")
             if frequency not in VALID_FREQUENCIES:
                 raise ValueError("请选择有效的接收频率")
@@ -1116,7 +1154,7 @@ class SubscriptionService:
         *,
         services: list[str],
         status: str = "active",
-        frequency: str = "immediate",
+        frequency: str = "once_daily",
         report_mode: str = "pdf",
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
@@ -1370,7 +1408,7 @@ class SubscriptionService:
                 "open_id": str(row["open_id"]),
                 # Reports are event-driven: the approved biweekly artifact is sent
                 # when it is published. Only strategic news uses a selectable cadence.
-                "frequency": str(row["frequency"] or "immediate") if service == "news" else "immediate",
+                "frequency": _normalize_news_frequency(str(row["frequency"] or "once_daily")) if service == "news" else "immediate",
                 "report_mode": str(row["report_mode"] or "pdf"),
             }
             for row in rows
@@ -1500,6 +1538,22 @@ class SubscriptionService:
                            WHERE id=?""",
                         (error, retry_at, int(row["id"])),
                     )
+                content_ref = str(row["content_ref"] or "")
+                if str(row["service"]) == "news" and content_ref.startswith(NEWS_CRAWL_REF_PREFIX):
+                    crawl_slot = content_ref.removeprefix(NEWS_CRAWL_REF_PREFIX)
+                    db.execute(
+                        """UPDATE news_crawl_dispatches
+                           SET status=?, message_ids=?, last_error=?, updated_at=?
+                           WHERE open_id=? AND crawl_slot=?""",
+                        (
+                            status,
+                            json.dumps(message_ids),
+                            error,
+                            _now_hkt(),
+                            str(row["open_id"]),
+                            crawl_slot,
+                        ),
+                    )
             results.append({
                 "pending_id": int(row["id"]),
                 "open_id": str(row["open_id"]),
@@ -1514,6 +1568,127 @@ class SubscriptionService:
             "retrying_count": sum(1 for item in results if item["status"] == "retrying"),
             "failed_count": 0,
             "remaining_due_count": self.due_count(now=now),
+            "results": results,
+        }
+
+    def dispatch_news_after_crawl(
+        self,
+        *,
+        crawl_slot: str,
+        slot_label: str,
+        items: list[dict[str, Any]],
+        completed_at: str = "",
+    ) -> dict[str, Any]:
+        """Push one crawler-completion digest using each subscriber's daily count."""
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}", str(crawl_slot or "")):
+            raise ValueError("战略爬虫轮次标识无效")
+        clean_items = [item for item in items if isinstance(item, dict)]
+        crawl_date = crawl_slot[:10]
+        content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
+        period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
+        title = f"{period_name}｜{len(clean_items)}条战略新闻" if clean_items else f"{period_name}｜本轮无新增"
+        body = encode_strategic_news_digest(clean_items)
+        with closing(self._connect()) as db:
+            rows = db.execute(
+                """SELECT s.open_id, s.frequency FROM subscribers s
+                   JOIN subscriptions x ON x.open_id=s.open_id
+                   WHERE s.status='active' AND x.service='news' AND x.active=1
+                   ORDER BY s.open_id"""
+            ).fetchall()
+        results: list[dict[str, Any]] = []
+        for row in rows:
+            open_id = str(row["open_id"])
+            frequency = _normalize_news_frequency(str(row["frequency"] or "once_daily"))
+            if frequency not in VALID_FREQUENCIES:
+                frequency = "once_daily"
+            dispatch_key = (
+                f"twice_daily:{crawl_slot}"
+                if frequency == "twice_daily"
+                else f"once_daily:{crawl_date}"
+            )
+            now = _now_hkt()
+            with closing(self._connect()) as db, db:
+                cursor = db.execute(
+                    """INSERT OR IGNORE INTO news_crawl_dispatches(
+                           open_id, dispatch_key, crawl_slot, crawl_date, frequency,
+                           status, created_at, updated_at
+                       ) VALUES(?, ?, ?, ?, ?, 'sending', ?, ?)""",
+                    (open_id, dispatch_key, crawl_slot, crawl_date, frequency, now, now),
+                )
+                claimed = cursor.rowcount == 1
+            if not claimed:
+                results.append({
+                    "open_id": open_id,
+                    "frequency": frequency,
+                    "status": "skipped",
+                    "reason": "daily_limit_reached",
+                    "message_ids": [],
+                })
+                continue
+            batch_id = hashlib.sha256(f"news-crawl:{crawl_slot}:{open_id}".encode()).hexdigest()[:24]
+            with closing(self._connect()) as db, db:
+                cursor = db.execute(
+                    """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
+                       VALUES(?, ?, 'news', 'text', ?, 'sending', '[]', '', ?)""",
+                    (batch_id, open_id, content_ref, now),
+                )
+                delivery_id = int(cursor.lastrowid)
+                db.execute(
+                    """UPDATE news_crawl_dispatches SET delivery_id=?, updated_at=?
+                       WHERE open_id=? AND dispatch_key=?""",
+                    (delivery_id, now, open_id, dispatch_key),
+                )
+            message_ids: list[str] = []
+            status = "verified"
+            error = ""
+            try:
+                message_ids = self._deliver_one(
+                    open_id=open_id,
+                    service="news",
+                    mode="text",
+                    content_ref=content_ref,
+                    title=title,
+                    body=body,
+                    batch_id=batch_id,
+                    profile=self.delivery_profile,
+                )
+            except Exception as exc:
+                status = "retrying"
+                error = str(exc)[:900]
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
+                    (status, json.dumps(message_ids), error, delivery_id),
+                )
+                db.execute(
+                    """UPDATE news_crawl_dispatches
+                       SET status=?, message_ids=?, last_error=?, updated_at=?
+                       WHERE open_id=? AND dispatch_key=?""",
+                    (status, json.dumps(message_ids), error, _now_hkt(), open_id, dispatch_key),
+                )
+                if status == "retrying":
+                    retry_at = (datetime.now().astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    db.execute(
+                        """INSERT INTO pending_subscription_deliveries(
+                               delivery_id, open_id, service, mode, content_ref, title, body,
+                               frequency, due_at, status, created_at
+                           ) VALUES(?, ?, 'news', 'text', ?, ?, ?, 'crawl_retry', ?, 'queued', ?)""",
+                        (delivery_id, open_id, content_ref, title, body, retry_at, _now_hkt()),
+                    )
+            results.append({
+                "open_id": open_id,
+                "frequency": frequency,
+                "status": status,
+                "message_ids": message_ids,
+                "error": error,
+            })
+        return {
+            "crawl_slot": crawl_slot,
+            "completed_at": completed_at or _now_hkt(),
+            "recipient_count": len(results),
+            "verified_count": sum(1 for item in results if item["status"] == "verified"),
+            "retrying_count": sum(1 for item in results if item["status"] == "retrying"),
+            "skipped_count": sum(1 for item in results if item["status"] == "skipped"),
             "results": results,
         }
 
@@ -1566,13 +1741,19 @@ class SubscriptionService:
         results = []
         for recipient in recipients:
             open_id = recipient["open_id"]
-            frequency = recipient["frequency"] if recipient["frequency"] in VALID_FREQUENCIES else "immediate"
+            frequency = (
+                _normalize_news_frequency(recipient["frequency"])
+                if service == "news"
+                else "immediate"
+            )
+            if service == "news" and frequency not in VALID_FREQUENCIES:
+                frequency = "once_daily"
             effective_mode = mode
             if service in {"weekly", "performance"} and mode == "pdf_audio":
                 preference = recipient.get("report_mode") if recipient.get("report_mode") in VALID_REPORT_MODES else "pdf"
                 effective_mode = preference
             message_ids: list[str] = []
-            status = "queued" if frequency != "immediate" else "sending"
+            status = "sending"
             error = ""
             with closing(self._connect()) as db, db:
                 cursor = db.execute(
@@ -1581,38 +1762,27 @@ class SubscriptionService:
                     (batch_id, open_id, service, effective_mode, content_ref, status, json.dumps(message_ids), error, _now_hkt()),
                 )
                 delivery_id = int(cursor.lastrowid)
-                if frequency != "immediate":
-                    due_at = _next_due_at(frequency)
-                    db.execute(
-                        """INSERT INTO pending_subscription_deliveries(
-                               delivery_id, open_id, service, mode, content_ref, title, body,
-                               frequency, due_at, status, created_at
-                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?)""",
-                        (delivery_id, open_id, service, effective_mode, content_ref, title, body, frequency, due_at, _now_hkt()),
-                    )
-                else:
-                    due_at = ""
-            if frequency == "immediate":
-                try:
-                    message_ids = self._deliver_one(
-                        open_id=open_id,
-                        service=service,
-                        mode=effective_mode,
-                        content_ref=content_ref,
-                        title=title,
-                        body=body,
-                        batch_id=batch_id,
-                        profile=send_profile,
-                    )
-                    status = "verified"
-                except Exception as exc:
-                    status = "failed"
-                    error = str(exc)[:900]
-                with closing(self._connect()) as db, db:
-                    db.execute(
-                        "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
-                        (status, json.dumps(message_ids), error, delivery_id),
-                    )
+                due_at = ""
+            try:
+                message_ids = self._deliver_one(
+                    open_id=open_id,
+                    service=service,
+                    mode=effective_mode,
+                    content_ref=content_ref,
+                    title=title,
+                    body=body,
+                    batch_id=batch_id,
+                    profile=send_profile,
+                )
+                status = "verified"
+            except Exception as exc:
+                status = "failed"
+                error = str(exc)[:900]
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
+                    (status, json.dumps(message_ids), error, delivery_id),
+                )
             results.append({
                 "open_id": open_id,
                 "frequency": frequency,

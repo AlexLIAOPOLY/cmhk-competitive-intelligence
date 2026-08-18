@@ -1925,6 +1925,44 @@ def _flush_pending_scan_notifications(
     return sent
 
 
+def _dispatch_subscription_news_after_scan(
+    *,
+    slot_key: str,
+    slot_label: str,
+    review_result: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    completed_at: str,
+) -> dict[str, Any]:
+    """Dispatch subscriber news only after a formal crawler round is complete."""
+    if os.environ.get("CMHK_DISABLE_SUBSCRIPTION_NEWS_DISPATCH", "0") == "1":
+        return {"status": "disabled", "crawl_slot": slot_key}
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}", slot_key):
+        return {"status": "skipped", "crawl_slot": slot_key, "reason": "non_formal_slot"}
+    new_items = review_result.get("new_items")
+    items = (
+        [item for item in new_items if isinstance(item, dict)]
+        if isinstance(new_items, list)
+        else [item for item in candidates if isinstance(item, dict)]
+    )
+    try:
+        from subscription_service import SubscriptionService
+
+        result = SubscriptionService(runtime_root=ROOT).dispatch_news_after_crawl(
+            crawl_slot=slot_key,
+            slot_label=slot_label,
+            items=items,
+            completed_at=completed_at,
+        )
+        return {"status": "completed", **result}
+    except Exception as exc:
+        logging.exception("战略新闻订阅派发失败，爬虫结果仍保持完成")
+        return {
+            "status": "failed",
+            "crawl_slot": slot_key,
+            "error": _clean_text(exc, 600),
+        }
+
+
 def _require_scan_downstream_success(
     discovery_result: dict[str, Any],
     review_result: dict[str, Any],
@@ -2501,11 +2539,41 @@ def _run_scan_impl(
             },
         }
     )
+    subscription_dispatch = _dispatch_subscription_news_after_scan(
+        slot_key=slot_key,
+        slot_label=slot_label,
+        review_result=review_result,
+        candidates=ranked,
+        completed_at=str(run_payload["completed_at"]),
+    )
+    run_payload["subscription_dispatch"] = subscription_dispatch
+    _atomic_write_json(_scan_run_path(slot_key), run_payload)
+    _append_event(
+        {
+            "type": "subscription_news_dispatched",
+            "slot": slot_key,
+            **{
+                key: subscription_dispatch.get(key)
+                for key in (
+                    "status",
+                    "recipient_count",
+                    "verified_count",
+                    "retrying_count",
+                    "skipped_count",
+                    "error",
+                )
+                if key in subscription_dispatch
+            },
+        }
+    )
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,
         "结果归档完成",
-        "候选、扫描状态和运行结果已全部落盘，准备发送群通知。",
+        (
+            "候选、扫描状态和运行结果已全部落盘；"
+            f"订阅推送状态 {subscription_dispatch.get('status') or 'unknown'}，准备处理群通知。"
+        ),
     )
     _strategic_task_progress(
         crawl_run_id,
