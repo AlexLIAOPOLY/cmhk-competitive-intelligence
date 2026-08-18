@@ -914,6 +914,23 @@
       "source_document_id": "china_mobile_ops_2025"
     },
     {
+      "source_id": "china_mobile_press_2017",
+      "operator_id": "china_mobile",
+      "year": 2017,
+      "label": "China Mobile 2017 annual results press release",
+      "url": "https://www.chinamobileltd.com/en/file/view.php?id=190673",
+      "source_type": "official_results_press_release",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 112.69,
+          "unit": "million_subscribers",
+          "locator": "Operating Performance table; FY2017 total wireline broadband customers"
+        }
+      },
+      "source_document_id": "china_mobile_press_2017"
+    },
+    {
       "source_id": "china_mobile_press_2025",
       "operator_id": "china_mobile",
       "year": 2025,
@@ -1058,7 +1075,14 @@
       "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre180322.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
-      "source_document_id": "china_mobile_results_2017"
+      "source_document_id": "china_mobile_results_2017",
+      "evidence": {
+        "fixed_broadband_subscribers": {
+          "value": 112.69,
+          "unit": "million_subscribers",
+          "locator": "FY2017 annual-results presentation operating-data appendix; total wireline broadband customers"
+        }
+      }
     },
     {
       "source_id": "china_mobile_results_2018",
@@ -1259,6 +1283,11 @@
           "value": 1.87,
           "unit": "million_base_stations",
           "locator": "Optimizing Connectivity Capabilities"
+        },
+        "fixed_broadband_subscribers": {
+          "value": 112.69,
+          "unit": "million_subscribers",
+          "locator": "FY2017 sustainability report economic-performance table; wireline broadband customers"
         }
       },
       "source_document_id": "china_mobile_sd_2017"

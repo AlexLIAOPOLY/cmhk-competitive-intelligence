@@ -3,9 +3,9 @@
   "status": "backlog_open",
   "row_count": 605,
   "available_value_rows": 396,
-  "three_distinct_source_certified_rows": 175,
-  "below_three_source_rows": 221,
-  "source_count": 217,
+  "three_distinct_source_certified_rows": 176,
+  "below_three_source_rows": 220,
+  "source_count": 218,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
@@ -13,8 +13,8 @@
     "not_applicable_precommercial": 27,
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
-    "official_single_source": 192,
-    "official_three_distinct_sources_verified": 175,
+    "official_single_source": 191,
+    "official_three_distinct_sources_verified": 176,
     "official_two_distinct_sources": 13,
     "source_gap_confirmed": 182
   },
@@ -31,7 +31,7 @@
     "Reliance Jio": 27,
     "中国广电": 6,
     "中国电信": 12,
-    "中国移动": 22,
+    "中国移动": 23,
     "中国联通": 10
   },
   "available_rows_by_metric": {
