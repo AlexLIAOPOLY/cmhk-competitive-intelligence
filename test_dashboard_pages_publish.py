@@ -125,26 +125,16 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=33"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=34"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
-                'href="./executive-responsive-hardening.css?v=6"',
+                'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=16"', html)
-            self.assertIn("store-context-v1.webp", style)
-            for asset in (
-                "store-context-v1.webp",
-                "network-context-v1.webp",
-                "business-context-v1.webp",
-                "mobile-context-v1.webp",
-                "finance-context-v1.webp",
-            ):
-                self.assertIn(asset, style)
-                self.assertTrue(
-                    (first / "assets" / "executive-dashboard" / asset).is_file()
-                )
+            self.assertIn('src="./executive-dashboard-demo.js?v=17"', html)
+            self.assertIn("--surface: #091725", style)
+            self.assertIn("metric-sparkline", script)
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)
             self.assertIn(
@@ -208,10 +198,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn("Sheet-filtered CMHK view", css)
             self.assertIn(".business-pair", css)
-            self.assertIn(".scene-network", css)
-            self.assertIn(".scene-business", css)
-            self.assertIn(".scene-reach", css)
-            self.assertIn(".scene-finance", css)
+            self.assertIn(".scene, .panel-glass { display: none; }", css)
             self.assertFalse((first / "executive-company-benchmarks.json").exists())
             self.assertTrue((first / "executive-responsive-hardening.css").exists())
             intelligence_html = (first / "intelligence" / "index.html").read_text(

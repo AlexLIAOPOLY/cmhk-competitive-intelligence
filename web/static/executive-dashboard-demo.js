@@ -30,6 +30,7 @@
       <span>${escapeHtml(label)}</span>
       <strong>${escapeHtml(value)}<small>${escapeHtml(unit)}</small></strong>
       ${trend ? `<em>${escapeHtml(trend)}</em>` : ""}
+      <svg class="metric-sparkline" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><path d="M1 29 L14 25 L26 27 L38 19 L49 22 L61 14 L72 17 L84 7 L99 11"/></svg>
     </div>`;
 
   function renderNetwork() {
