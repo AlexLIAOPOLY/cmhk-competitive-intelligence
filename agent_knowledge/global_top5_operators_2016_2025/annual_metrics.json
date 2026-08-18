@@ -9174,18 +9174,26 @@
       "comparator": "=",
       "scope": "group mobile business annual ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_press_2017",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_results_2016",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre170323.pdf",
+      "verification_sources": [
+        "china_mobile_results_2016",
+        "china_mobile_results_2017",
+        "china_mobile_press_2017"
+      ],
       "candidate_sources": [
-        "china_mobile_ar_2016",
-        "china_mobile_ops_2016",
-        "china_mobile_results_2016"
+        "china_mobile_results_2016",
+        "china_mobile_results_2017",
+        "china_mobile_press_2017"
       ],
       "quality_note": ""
     },
@@ -9407,18 +9415,26 @@
       "comparator": "=",
       "scope": "group mobile business annual ARPU",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_press_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_results_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre180322.pdf",
+      "verification_sources": [
+        "china_mobile_results_2017",
+        "china_mobile_press_2017",
+        "china_mobile_results_2018"
+      ],
       "candidate_sources": [
-        "china_mobile_ar_2017",
-        "china_mobile_ops_2017",
-        "china_mobile_results_2017"
+        "china_mobile_results_2017",
+        "china_mobile_press_2017",
+        "china_mobile_results_2018"
       ],
       "quality_note": ""
     },

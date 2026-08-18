@@ -1828,6 +1828,11 @@
           "value": 77.62,
           "unit": "million_subscribers",
           "locator": "FY2016 annual-results presentation household market; wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 57.5,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2016 annual-results presentation operating-data appendix; current-year mobile ARPU"
         }
       }
     },
@@ -1845,6 +1850,20 @@
           "value": 112.69,
           "unit": "million_subscribers",
           "locator": "FY2017 annual-results presentation operating-data appendix; total wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 57.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_arpu": {
+            "value": 57.5,
+            "unit": "RMB_per_user_month",
+            "locator": "official operating table; FY2016 comparative mobile ARPU"
+          }
         }
       }
     },
@@ -1862,6 +1881,15 @@
           "value": 156.69,
           "unit": "million_subscribers",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year wireline broadband customers"
+        }
+      },
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_arpu": {
+            "value": 57.7,
+            "unit": "RMB_per_user_month",
+            "locator": "official operating table; FY2017 comparative mobile ARPU"
+          }
         }
       }
     },
@@ -2363,9 +2391,23 @@
           "value": 112.69,
           "unit": "million_subscribers",
           "locator": "Operating Performance table; FY2017 total wireline broadband customers"
+        },
+        "mobile_arpu": {
+          "value": 57.7,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2017 annual-results press release operating-performance table; current-year mobile ARPU"
         }
       },
-      "source_document_id": "china_mobile_press_2017"
+      "source_document_id": "china_mobile_press_2017",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_arpu": {
+            "value": 57.5,
+            "unit": "RMB_per_user_month",
+            "locator": "official operating table; FY2016 comparative mobile ARPU"
+          }
+        }
+      }
     },
     {
       "source_id": "china_mobile_ar_a_2021",
