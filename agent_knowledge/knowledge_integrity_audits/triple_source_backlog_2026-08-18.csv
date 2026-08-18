@@ -5617,9 +5617,7 @@ cmhk_macro_policy_2026-06-19,Hong Kong telecommunications policy environment | 2
 cmhk_macro_policy_2026-06-19,Hong Kong telecommunications policy environment | 2024/25 | 5g_population_coverage_status,Hong Kong telecommunications policy environment,2024/25,5g_population_coverage_status,99,percent_plus,2,2,1,needs_additional_distinct_sources,"[""https://www.ofca.gov.hk/filemanager/ofca/en/content_92/majortasks_25-26_e.pdf"", ""https://www.ofca.gov.hk/trade_fund_report/2425/en-chapter3.html""]"
 cmhk_macro_policy_2026-06-19,Hong Kong telecommunications policy environment | 2025 | rural_remote_5g_coverage_subsidy,Hong Kong telecommunications policy environment,2025,rural_remote_5g_coverage_subsidy,policy_event,event,2,2,1,needs_additional_distinct_sources,"[""https://www.ofca.gov.hk/en/about_us/advisory_committees/TRAAC/papers/index.html"", ""https://www.ofca.gov.hk/filemanager/ofca/en/content_92/majortasks_25-26_e.pdf""]"
 global_top5_operators_2016_2025,Bharti Airtel | FY2016 | total_data_traffic,Bharti Airtel,FY2016,total_data_traffic,0.597,billion_GB,1,1,2,needs_additional_distinct_sources,"[""https://www.airtel.in/airtel-annual-report-2015-16/""]"
-global_top5_operators_2016_2025,Bharti Airtel | FY2017 | total_data_traffic,Bharti Airtel,FY2017,total_data_traffic,0.903,billion_GB,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,Bharti Airtel | FY2020 | mobile_broadband_base_stations,Bharti Airtel,FY2020,mobile_broadband_base_stations,503883,base_stations,1,1,2,needs_additional_distinct_sources,"[""https://assets.airtel.in/teams/simplycms/web/docs/Airtel-Integrated_Report_and_Annual_Financial_Statements_2021.pdf""]"
-global_top5_operators_2016_2025,Bharti Airtel | FY2020 | total_data_traffic,Bharti Airtel,FY2020,total_data_traffic,21.02,billion_GB,1,1,2,needs_additional_distinct_sources,"[""https://assets.airtel.in/teams/simplycms/web/docs/Airtel-Integrated_Report_and_Annual_Financial_Statements_2021.pdf""]"
+global_top5_operators_2016_2025,Bharti Airtel | FY2017 | total_data_traffic,Bharti Airtel,FY2017,total_data_traffic,0.903,billion_GB,1,1,2,needs_additional_distinct_sources,"[""https://www.airtel.in/airtel-annual-report-2016-17/""]"
 global_top5_operators_2016_2025,中国广电 | FY2022 | 5g_base_stations,中国广电,FY2022,5g_base_stations,0.48,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | 5g_network_subscribers,中国广电,FY2022,5g_network_subscribers,5.5,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | cable_network_industry_revenue,中国广电,FY2022,cable_network_industry_revenue,71955,RMB_million,0,0,3,needs_additional_distinct_sources,[]
@@ -5684,7 +5682,6 @@ global_top5_operators_2016_2025,中国移动 | FY2020 | handset_data_traffic,中
 global_top5_operators_2016_2025,中国移动 | FY2020 | mobile_arpu,中国移动,FY2020,mobile_arpu,47.4,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2020 | mobile_dou,中国移动,FY2020,mobile_dou,9.4,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2020 | mobile_subscribers,中国移动,FY2020,mobile_subscribers,942,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2020 | total_base_stations,中国移动,FY2020,total_base_stations,5.14,million_base_stations,2,2,1,needs_additional_distinct_sources,"[""https://www.chinamobileltd.com/en/file/view.php?id=244722"", ""https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf""]"
 global_top5_operators_2016_2025,中国移动 | FY2021 | 4g_subscribers,中国移动,FY2021,4g_subscribers,822,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2021 | 5g_base_stations,中国移动,FY2021,5g_base_stations,0.73,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2021 | 5g_network_subscribers,中国移动,FY2021,5g_network_subscribers,207,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
@@ -5723,17 +5720,12 @@ global_top5_operators_2016_2025,中国移动 | FY2024 | mobile_dou,中国移动,
 global_top5_operators_2016_2025,中国移动 | FY2024 | mobile_subscribers,中国移动,FY2024,mobile_subscribers,1004,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | 5g_base_stations,中国移动,FY2025,5g_base_stations,2.77,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | 5g_network_subscribers,中国移动,FY2025,5g_network_subscribers,642,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2025 | gigabit_broadband_customers,中国移动,FY2025,gigabit_broadband_customers,109,million_customers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | government_enterprise_customers,中国移动,FY2025,government_enterprise_customers,36.17,million_customers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | handset_data_traffic,中国移动,FY2025,handset_data_traffic,183.8,billion_GB,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国移动 | FY2025 | household_customer_blended_arpu,中国移动,FY2025,household_customer_blended_arpu,44.5,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | households_gigabit_coverage,中国移动,FY2025,households_gigabit_coverage,530,million_households,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2025 | integrated_broadband_network_customers,中国移动,FY2025,integrated_broadband_network_customers,329,million_customers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | intelligent_compute_capacity,中国移动,FY2025,intelligent_compute_capacity,92.5,EFLOPS_FP16,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2025 | iot_connections,中国移动,FY2025,iot_connections,1482,million_connections,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | mobile_arpu,中国移动,FY2025,mobile_arpu,46.8,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | mobile_broadband_integration_rate,中国移动,FY2025,mobile_broadband_integration_rate,96.5,percent,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国移动 | FY2025 | mobile_dou,中国移动,FY2025,mobile_dou,17.3,GB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国移动 | FY2025 | mobile_subscribers,中国移动,FY2025,mobile_subscribers,1005,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2016 | 4g_subscribers,中国电信,FY2016,4g_subscribers,121.87,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2016 | fixed_broadband_subscribers,中国电信,FY2016,fixed_broadband_subscribers,123.12,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
@@ -5788,7 +5780,6 @@ global_top5_operators_2016_2025,中国电信 | FY2025 | fixed_broadband_subscrib
 global_top5_operators_2016_2025,中国电信 | FY2025 | gigabit_broadband_penetration,中国电信,FY2025,gigabit_broadband_penetration,31.6,percent,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2025 | handset_data_traffic,中国电信,FY2025,handset_data_traffic,106.046,billion_GB,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2025 | intelligent_compute_capacity,中国电信,FY2025,intelligent_compute_capacity,46,EFLOPS_FP16,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国电信 | FY2025 | mobile_arpu,中国电信,FY2025,mobile_arpu,45.1,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2025 | mobile_subscribers,中国电信,FY2025,mobile_subscribers,438.65,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2025 | ten_g_pon_ports,中国电信,FY2025,ten_g_pon_ports,10,million_ports,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国电信 | FY2025 | urban_gigabit_coverage,中国电信,FY2025,urban_gigabit_coverage,97,percent,0,0,3,needs_additional_distinct_sources,[]
@@ -5839,17 +5830,9 @@ global_top5_operators_2016_2025,中国联通 | FY2024 | 5g_base_stations,中国�
 global_top5_operators_2016_2025,中国联通 | FY2024 | 5g_package_subscribers,中国联通,FY2024,5g_package_subscribers,290.44,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2024 | fixed_broadband_subscribers,中国联通,FY2024,fixed_broadband_subscribers,122.26,million_subscribers,0,0,3,derived_not_directly_disclosed,[]
 global_top5_operators_2016_2025,中国联通 | FY2024 | mobile_subscribers,中国联通,FY2024,mobile_subscribers,343.98,million_subscribers,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | 5g_a_deployment_cities,中国联通,FY2025,5g_a_deployment_cities,330,cities,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2025 | 5g_base_stations,中国联通,FY2025,5g_base_stations,1.54,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | 5g_network_subscribers,中国联通,FY2025,5g_network_subscribers,232.18,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | cloud_ai_product_users,中国联通,FY2025,cloud_ai_product_users,300,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2025 | fixed_broadband_subscribers,中国联通,FY2025,fixed_broadband_subscribers,129.87,million_subscribers,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | integrated_package_arpu,中国联通,FY2025,integrated_package_arpu,100,RMB_per_user_month,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | integrated_subscriber_penetration,中国联通,FY2025,integrated_subscriber_penetration,78,percent,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | iot_connections,中国联通,FY2025,iot_connections,700,million_connections,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | mobile_population_coverage,中国联通,FY2025,mobile_population_coverage,99,percent,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国联通 | FY2025 | mobile_subscribers,中国联通,FY2025,mobile_subscribers,357.3,million_subscribers,0,0,3,derived_not_directly_disclosed,[]
-global_top5_operators_2016_2025,中国联通 | FY2025 | total_connectivity_subscribers,中国联通,FY2025,total_connectivity_subscribers,1200,million_connections,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,Reliance Jio | FY2017 | total_customers,Reliance Jio,FY2017,total_customers,108.9,million_customers,1,1,2,needs_additional_distinct_sources,"[""https://www.ril.com/sites/default/files/2023-01/RIL-Media-Release-4Q-FY-1718%20%281%29.pdf""]"
 global_top5_operators_2016_2025,Reliance Jio | FY2018 | ebit,Reliance Jio,FY2018,ebit,3174,INR_crore,1,1,2,needs_additional_distinct_sources,"[""https://www.ril.com/sites/default/files/2023-01/RIL-Media-Release-4Q-FY-1718%20%281%29.pdf""]"
 global_top5_operators_2016_2025,Reliance Jio | FY2018 | total_customers,Reliance Jio,FY2018,total_customers,186.6,million_customers,1,1,2,needs_additional_distinct_sources,"[""https://www.ril.com/sites/default/files/2023-01/RIL-Media-Release-4Q-FY-1718%20%281%29.pdf""]"

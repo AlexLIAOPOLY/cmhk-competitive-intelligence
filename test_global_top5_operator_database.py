@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 27,
                 "中国电信": 2,
                 "中国移动": 9,
-                "中国联通": 3,
+                "中国联通": 9,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -385,6 +385,27 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             set(row["verification_sources"]),
             {"china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025", "china_mobile_q1_2026_comparatives"},
         )
+
+    def test_china_unicom_fy2025_conservative_connectivity_bounds_use_three_documents(self):
+        expected = {
+            "mobile_population_coverage": (99, "percent"),
+            "5g_a_deployment_cities": (330, "cities"),
+            "iot_connections": (700, "million_connections"),
+            "integrated_subscriber_penetration": (78, "percent"),
+            "integrated_package_arpu": (100, "RMB_per_user_month"),
+            "cloud_ai_product_users": (300, "million_users"),
+        }
+        expected_sources = {
+            "china_unicom_ar_2025",
+            "china_unicom_results_2025",
+            "china_unicom_press_2025",
+        }
+        for metric_key, (value, unit) in expected.items():
+            row = self.index[("china_unicom", 2025, metric_key)]
+            self.assertEqual((row["value"], row["unit"]), (value, unit))
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_2025_dou_has_three_separate_legal_disclosure_documents(self):
         row = self.index[("china_mobile", 2025, "mobile_dou")]

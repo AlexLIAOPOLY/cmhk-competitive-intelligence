@@ -1596,6 +1596,38 @@ for _source_id in ("china_unicom_ar_2025", "china_unicom_results_2025", "china_u
         "unit": "million_connections",
         "locator": "FY2025 total connectivity subscriber disclosure",
     }
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_population_coverage": {
+            "value": 99,
+            "unit": "percent",
+            "locator": "FY2025 connectivity update; mobile network population coverage exceeded 99%",
+        },
+        "5g_a_deployment_cities": {
+            "value": 330,
+            "unit": "cities",
+            "locator": "FY2025 connectivity update; 5G-A base stations deployed in more than 330 cities",
+        },
+        "iot_connections": {
+            "value": 700,
+            "unit": "million_connections",
+            "locator": "FY2025 connectivity update; IoT connections exceeded 700 million",
+        },
+        "integrated_subscriber_penetration": {
+            "value": 78,
+            "unit": "percent",
+            "locator": "FY2025 connectivity update; integrated subscriber penetration exceeded 78%",
+        },
+        "integrated_package_arpu": {
+            "value": 100,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2025 connectivity update; integrated package ARPU remained above RMB100",
+        },
+        "cloud_ai_product_users": {
+            "value": 300,
+            "unit": "million_users",
+            "locator": "FY2025 service update; Cloud-AI products served more than 300 million users",
+        },
+    })
 for _source_id, _source in SOURCES.items():
     _source.setdefault("source_document_id", _source_id)
 
