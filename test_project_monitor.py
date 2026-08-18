@@ -35,12 +35,21 @@ class FakeCommandRunner:
             "oc_22bf3c7febc4bab295fedfb0b8e6c176": "竞对AI项目需求沟通群",
             "oc_f86adbf0010f3e648400c377bf26179b": "揭榜-竞争对手与行业情报监测AI应用",
         }
+        self.service_pid = 4242
+        self.service_started = "Mon Aug 17 17:40:26 2026"
 
     def __call__(self, argv, *, cwd, env, timeout):
         args = list(argv)
         self.calls.append(args)
         if args[:2] == ["launchctl", "print"]:
-            return subprocess.CompletedProcess(args, 0, "state = running\n", "")
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                f"state = running\npid = {self.service_pid}\n",
+                "",
+            )
+        if args[:2] == ["ps", "-p"]:
+            return subprocess.CompletedProcess(args, 0, self.service_started + "\n", "")
         if args[:2] == ["lark-cli", "whoami"]:
             return subprocess.CompletedProcess(
                 args,
@@ -385,6 +394,7 @@ class ProjectMonitorTests(unittest.TestCase):
             "CMHK_ERROR_LEDGER_ENABLED": "1" if enable_ledger else "0",
             "CMHK_MONITOR_LOG_ROOT": str(self.log_root),
             "CMHK_MONITOR_SOURCE_ROOT": str(self.root),
+            "CMHK_MONITOR_REPLAY_EXISTING_LOGS": "1",
         }
         if alert_roles is not None:
             environ["CMHK_ALERT_TARGET_ROLES"] = alert_roles
@@ -589,6 +599,31 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(issue["severity"], "P1")
         self.assertIn("飞书同步", issue["error"])
 
+    def test_newer_success_supersedes_older_failed_crawl(self):
+        path = self.root / "agent_knowledge" / "crawl_run_logs" / "index.json"
+        path.write_text(
+            json.dumps(
+                [
+                    {
+                        "crawl_run_id": "failed-old",
+                        "task_kind": "crawl",
+                        "run_status": "failed",
+                        "completed_at_hkt": "2026-08-16T03:20:00+08:00",
+                    },
+                    {
+                        "crawl_run_id": "completed-new",
+                        "task_kind": "crawl",
+                        "run_status": "completed",
+                        "completed_at_hkt": "2026-08-16T04:20:00+08:00",
+                    },
+                ]
+            )
+        )
+
+        keys = {item["condition_key"] for item in self._monitor().collect_issues()}
+
+        self.assertNotIn("crawl-task-failed:failed-old", keys)
+
     def test_failed_report_and_stale_report_are_covered(self):
         path = self.root / "task_runs" / "index.json"
         path.write_text(
@@ -621,6 +656,33 @@ class ProjectMonitorTests(unittest.TestCase):
         keys = {item["condition_key"] for item in issues}
         self.assertIn("general-task-failed:task:failed", keys)
         self.assertIn("general-task-stuck:task:stale", keys)
+
+    def test_newer_success_supersedes_older_failed_general_task(self):
+        path = self.root / "task_runs" / "index.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "tasks": [
+                        {
+                            "task_id": "weekly-old",
+                            "kind": "weekly-report",
+                            "run_status": "failed",
+                            "completed_at_hkt": "2026-08-16T10:05:00+08:00",
+                        },
+                        {
+                            "task_id": "weekly-new",
+                            "kind": "weekly-report",
+                            "run_status": "completed",
+                            "completed_at_hkt": "2026-08-16T11:05:00+08:00",
+                        },
+                    ]
+                }
+            )
+        )
+
+        keys = {item["condition_key"] for item in self._monitor().collect_issues()}
+
+        self.assertNotIn("general-task-failed:weekly-old", keys)
 
     def test_missing_strategic_slot_is_p1_after_start_grace(self):
         self.now = datetime(2026, 8, 16, 15, 20, tzinfo=HKT)
@@ -720,6 +782,65 @@ class ProjectMonitorTests(unittest.TestCase):
             monitor.state["incidents"][legacy_id]["resolution_reason"],
             "superseded_by_stable_log_condition",
         )
+
+    def test_log_incident_before_current_service_start_is_retired(self):
+        monitor = self._monitor(enabled=True)
+        monitor._detect_launch_services()
+        incident_id = "pre-restart-incident"
+        monitor.state["conditions"] = {"web-background-error": incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": "web-background-error",
+                "component": "web-app",
+                "status": "open",
+                "terminal": True,
+                "occurred_at_hkt": "2026-08-17T09:00:00+08:00",
+                "first_seen_at_hkt": "2026-08-17T09:00:00+08:00",
+                "delivery": {},
+            }
+        }
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "service_restarted_after_error")
+
+    def test_legacy_terminal_quality_record_resolves_when_not_current(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "old-quality-incident"
+        old_key = "data-quality:old-run:4:98"
+        monitor.state["conditions"] = {old_key: incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": old_key,
+                "component": "crawl",
+                "status": "open",
+                "terminal": True,
+                "occurred_at_hkt": "2026-08-16T03:00:00+08:00",
+            }
+        }
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "condition_no_longer_current")
+
+    def test_first_log_observation_starts_at_eof_without_replay(self):
+        path = self.log_root / "web_app.stderr.log"
+        path.write_text("ERROR old failure before monitor start\n")
+        monitor = self._monitor(enabled=True)
+        monitor.environ.pop("CMHK_MONITOR_REPLAY_EXISTING_LOGS", None)
+
+        issues = monitor.collect_issues()
+
+        self.assertNotIn("web-background-error", {item["condition_key"] for item in issues})
+        self.assertEqual(monitor.state["log_offsets"][str(path)], path.stat().st_size)
 
     def test_notifications_disabled_never_calls_ai_or_send(self):
         monitor = self._monitor(enabled=False)

@@ -3,6 +3,7 @@
   "project": "CMHK竞争情报主项目",
   "timezone": "Asia/Hong_Kong",
   "poll_seconds": 30,
+  "ignore_existing_logs_on_first_observation": true,
   "lookback_hours": 48,
   "web_health_url": "http://127.0.0.1:8765/api/status",
   "services": [

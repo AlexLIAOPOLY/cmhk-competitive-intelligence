@@ -50,6 +50,21 @@ STABLE_LOG_CONDITION_KEYS = {
     "ai-timeout-burst",
     "web-background-error",
 }
+LOG_CONDITION_SERVICE_IDS = {
+    "scheduler-log-error": "frequency-scheduler",
+    "feishu-media-metrics-error": "feishu-media-metrics",
+    "project-monitor-log-error": "project-monitor",
+    "project-monitor-card-actions-log-error": "project-monitor-card-actions",
+    "web-log-fatal": "web-app",
+    "ai-http-400-burst": "web-app",
+    "ai-timeout-burst": "web-app",
+    "web-background-error": "web-app",
+}
+STATEFUL_CONDITION_PREFIXES = (
+    "data-quality:",
+    "crawl-task-failed:",
+    "general-task-failed:",
+)
 DEFAULT_CONFIG_PATH = ROOT / "config" / "project_monitor.json"
 SEVERITY_ORDER = {"P1": 0, "P2": 1, "P3": 2}
 SEVERITY_LABELS = {
@@ -107,6 +122,16 @@ def _parse_datetime(value: object) -> datetime | None:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=HKT)
     return parsed.astimezone(HKT)
+
+
+def _parse_process_start(value: object) -> datetime | None:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not text:
+        return None
+    try:
+        return datetime.strptime(text, "%a %b %d %H:%M:%S %Y").replace(tzinfo=HKT)
+    except ValueError:
+        return None
 
 
 def _read_json(path: Path, default: Any) -> Any:
@@ -278,6 +303,7 @@ class ProjectMonitor:
         self.state.setdefault("conditions", {})
         self.state.setdefault("counters", {})
         self.state.setdefault("log_offsets", {})
+        self.state.setdefault("service_instances", {})
         self.state.setdefault("cycles", 0)
         ledger_state = self.state.get("error_ledger")
         if not isinstance(ledger_state, dict):
@@ -419,6 +445,24 @@ class ProjectMonitor:
             state_match = re.search(r"(?m)^\s*state\s*=\s*([^\s]+)", output)
             state = state_match.group(1).strip() if state_match else "unknown"
             if proc.returncode == 0 and state == "running":
+                pid_match = re.search(r"(?m)^\s*pid\s*=\s*(\d+)", output)
+                pid = int(pid_match.group(1)) if pid_match else 0
+                if pid:
+                    instances = self.state.setdefault("service_instances", {})
+                    previous = instances.get(label) if isinstance(instances, dict) else None
+                    if not isinstance(previous, dict) or int(previous.get("pid") or 0) != pid:
+                        started_proc = self._run(["ps", "-p", str(pid), "-o", "lstart="], timeout=5)
+                        started = (
+                            _parse_process_start(started_proc.stdout)
+                            if started_proc.returncode == 0
+                            else None
+                        )
+                        instances[label] = {
+                            "service_id": str(service.get("id") or label),
+                            "pid": pid,
+                            "started_at_hkt": _iso(started or self.now()),
+                            "observed_at_hkt": _iso(self.now()),
+                        }
                 continue
             exit_match = re.search(r"(?m)^\s*last exit code\s*=\s*([^\n]+)", output)
             last_exit = exit_match.group(1).strip() if exit_match else "未读取"
@@ -495,7 +539,6 @@ class ProjectMonitor:
                     ],
                     occurred_at_hkt=completed_at,
                     evidence=["/api/status", f"quality.failed={failed}", f"crawl.successRate={success_rate}"],
-                    terminal=True,
                 )
             )
         return issues
@@ -570,6 +613,16 @@ class ProjectMonitor:
         payload = _read_json(path, [])
         runs = payload if isinstance(payload, list) else []
         cutoff = self._lookback_cutoff()
+        latest_success_by_kind: dict[str, datetime] = {}
+        for run in runs:
+            if not isinstance(run, dict) or str(run.get("run_status") or "") != "completed":
+                continue
+            kind = str(run.get("task_kind") or "crawl")
+            completed = _parse_datetime(run.get("completed_at_hkt")) or _parse_datetime(
+                run.get("heartbeat_at_hkt")
+            )
+            if completed and completed > latest_success_by_kind.get(kind, datetime.min.replace(tzinfo=HKT)):
+                latest_success_by_kind[kind] = completed
         issues: list[dict[str, Any]] = []
         for run in runs:
             if not isinstance(run, dict):
@@ -585,6 +638,8 @@ class ProjectMonitor:
             stage = str(run.get("failure_stage") or "")
             detail = str(run.get("progress_detail") or run.get("status_detail") or "")
             if status == "failed":
+                if timestamp and latest_success_by_kind.get(kind) and timestamp < latest_success_by_kind[kind]:
+                    continue
                 issues.append(
                     self._issue(
                         condition_key=f"crawl-task-failed:{run_id}",
@@ -604,7 +659,6 @@ class ProjectMonitor:
                             f"failure_stage={stage or '-'}",
                             str((run.get("local_files") or {}).get("stream_log") or ""),
                         ],
-                        terminal=True,
                     )
                 )
             elif status == "running":
@@ -636,6 +690,16 @@ class ProjectMonitor:
         tasks = payload.get("tasks") if isinstance(payload, dict) else payload
         tasks = tasks if isinstance(tasks, list) else []
         cutoff = self._lookback_cutoff()
+        latest_success_by_kind: dict[str, datetime] = {}
+        for task in tasks:
+            if not isinstance(task, dict) or str(task.get("run_status") or "") != "completed":
+                continue
+            kind = str(task.get("kind") or "background")
+            completed = _parse_datetime(task.get("completed_at_hkt")) or _parse_datetime(
+                task.get("heartbeat_at_hkt")
+            )
+            if completed and completed > latest_success_by_kind.get(kind, datetime.min.replace(tzinfo=HKT)):
+                latest_success_by_kind[kind] = completed
         issues: list[dict[str, Any]] = []
         for task in tasks:
             if not isinstance(task, dict):
@@ -650,6 +714,8 @@ class ProjectMonitor:
                 continue
             detail = str(task.get("status_detail") or task.get("progress_detail") or "")
             if status == "failed":
+                if timestamp and latest_success_by_kind.get(kind) and timestamp < latest_success_by_kind[kind]:
+                    continue
                 stage = "audio-generation" if "audio" in detail.lower() or kind == "audio-generation" else kind
                 issues.append(
                     self._issue(
@@ -667,7 +733,6 @@ class ProjectMonitor:
                         suggestions=self._failure_suggestions(kind, stage),
                         occurred_at_hkt=_iso(timestamp) if timestamp else "",
                         evidence=[f"task_id={task_id}", str(task.get("log_path") or "")],
-                        terminal=True,
                     )
                 )
             elif status == "running":
@@ -1059,6 +1124,11 @@ class ProjectMonitor:
             return ""
         previous = offsets.get(key)
         if previous is None:
+            if bool(self.config.get("ignore_existing_logs_on_first_observation", True)) and not _env_true(
+                self.environ.get("CMHK_MONITOR_REPLAY_EXISTING_LOGS")
+            ):
+                offsets[key] = size
+                return ""
             start = max(0, size - initial_tail_bytes)
         else:
             start = max(0, min(int(previous or 0), size))
@@ -1385,6 +1455,60 @@ class ProjectMonitor:
                         "incident_id": record.get("incident_id"),
                         "condition_key": key,
                         "reason": "superseded_by_stable_log_condition",
+                    },
+                )
+                continue
+            stable_log_key = next(
+                (
+                    stable_key
+                    for stable_key in STABLE_LOG_CONDITION_KEYS
+                    if key == stable_key or key.startswith(f"{stable_key}:")
+                ),
+                "",
+            )
+            if stable_log_key:
+                service_id = LOG_CONDITION_SERVICE_IDS.get(stable_log_key, "")
+                instances = self.state.get("service_instances") or {}
+                starts = [
+                    _parse_datetime(instance.get("started_at_hkt"))
+                    for instance in instances.values()
+                    if isinstance(instance, dict) and str(instance.get("service_id") or "") == service_id
+                ]
+                service_started = max((item for item in starts if item is not None), default=None)
+                occurred = _parse_datetime(record.get("occurred_at_hkt")) or _parse_datetime(
+                    record.get("first_seen_at_hkt")
+                )
+                if service_started and occurred and occurred < service_started:
+                    record["status"] = "resolved"
+                    record["resolved_at_hkt"] = now_text
+                    record["resolution_reason"] = "service_restarted_after_error"
+                    record["resolved_by_service_start_hkt"] = _iso(service_started)
+                    conditions.pop(key, None)
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "incident_resolved_local_only",
+                            "at_hkt": now_text,
+                            "incident_id": record.get("incident_id"),
+                            "condition_key": key,
+                            "reason": "service_restarted_after_error",
+                            "service_started_at_hkt": _iso(service_started),
+                        },
+                    )
+                    continue
+            if key.startswith(STATEFUL_CONDITION_PREFIXES):
+                record["status"] = "resolved"
+                record["resolved_at_hkt"] = now_text
+                record["resolution_reason"] = "condition_no_longer_current"
+                conditions.pop(key, None)
+                _append_jsonl(
+                    self.events_path,
+                    {
+                        "type": "incident_resolved_local_only",
+                        "at_hkt": now_text,
+                        "incident_id": record.get("incident_id"),
+                        "condition_key": key,
+                        "reason": "condition_no_longer_current",
                     },
                 )
                 continue
