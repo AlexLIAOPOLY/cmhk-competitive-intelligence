@@ -242,6 +242,23 @@
       "source_document_id": "china_broadnet_zhonghong_2025"
     },
     {
+      "source_id": "china_mobile_20f_2018",
+      "operator_id": "china_mobile",
+      "year": 2018,
+      "label": "China Mobile 2018 annual report on Form 20-F",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2018/2018_20f.pdf",
+      "source_type": "official_sec_annual_filing",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 2.41,
+          "unit": "million_base_stations",
+          "locator": "Personal Mobile Market, year-end network scale"
+        }
+      },
+      "source_document_id": "china_mobile_20f_2018"
+    },
+    {
       "source_id": "china_mobile_20f_2021",
       "operator_id": "china_mobile",
       "year": 2021,
@@ -522,6 +539,39 @@
       "source_document_id": "china_mobile_press_2025"
     },
     {
+      "source_id": "china_mobile_prospectus_2021",
+      "operator_id": "china_mobile",
+      "year": 2021,
+      "label": "China Mobile A-share prospectus with FY2018-FY2020 operating comparatives",
+      "url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf",
+      "source_type": "official_listing_prospectus",
+      "publisher": "China Mobile Limited",
+      "comparative_evidence": {
+        "FY2018": {
+          "4g_base_stations": {
+            "value": 2.41,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
+          }
+        },
+        "FY2019": {
+          "4g_base_stations": {
+            "value": 3.09,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
+          }
+        },
+        "FY2020": {
+          "4g_base_stations": {
+            "value": 3.28,
+            "unit": "million_base_stations",
+            "locator": "operating KPI table"
+          }
+        }
+      },
+      "source_document_id": "china_mobile_prospectus_2021"
+    },
+    {
       "source_id": "china_mobile_q1_2026_comparatives",
       "operator_id": "china_mobile",
       "year": 2025,
@@ -630,6 +680,156 @@
       "source_type": "official_results_presentation",
       "publisher": "China Mobile Limited",
       "source_document_id": "china_mobile_results_2025"
+    },
+    {
+      "source_id": "china_mobile_sd_2018",
+      "operator_id": "china_mobile",
+      "year": 2018,
+      "label": "China Mobile 2018 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2018/sd2018.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "4g_base_stations": {
+          "value": 2.41,
+          "unit": "million_base_stations",
+          "locator": "network scale at the end of 2018"
+        }
+      },
+      "source_document_id": "china_mobile_sd_2018"
+    },
+    {
+      "source_id": "china_mobile_sd_2021",
+      "source_document_id": "china_mobile_sd_2021",
+      "operator_id": "china_mobile",
+      "year": 2021,
+      "label": "China Mobile 2021 sustainability report performance chapter",
+      "url": "https://www.chinamobileltd.com/sc/esg/sd/2021_ashare/09.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "comparative_evidence": {
+        "FY2019": {
+          "4g_base_stations": {
+            "value": 3.09,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2020": {
+          "4g_base_stations": {
+            "value": 3.28,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2021": {
+          "4g_base_stations": {
+            "value": 3.32,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "china_mobile_sd_2022",
+      "operator_id": "china_mobile",
+      "year": 2022,
+      "label": "China Mobile 2022 sustainability report",
+      "url": "https://www.chinamobileltd.com/tc/ir/reports/ar2022/sd2022.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "comparative_evidence": {
+        "FY2020": {
+          "4g_base_stations": {
+            "value": 3.28,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2021": {
+          "4g_base_stations": {
+            "value": 3.32,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2022": {
+          "4g_base_stations": {
+            "value": 3.34,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        }
+      },
+      "source_document_id": "china_mobile_sd_2022"
+    },
+    {
+      "source_id": "china_mobile_sd_2023",
+      "operator_id": "china_mobile",
+      "year": 2023,
+      "label": "China Mobile 2023 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2023/sd2023.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "comparative_evidence": {
+        "FY2021": {
+          "4g_base_stations": {
+            "value": 3.32,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2022": {
+          "4g_base_stations": {
+            "value": 3.34,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2023": {
+          "4g_base_stations": {
+            "value": 3.37,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        }
+      },
+      "source_document_id": "china_mobile_sd_2023"
+    },
+    {
+      "source_id": "china_mobile_sd_2024",
+      "operator_id": "china_mobile",
+      "year": 2024,
+      "label": "China Mobile 2024 sustainability report",
+      "url": "https://www.chinamobileltd.com/tc/ir/reports/ar2024/sd2024.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "comparative_evidence": {
+        "FY2022": {
+          "4g_base_stations": {
+            "value": 3.34,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2023": {
+          "4g_base_stations": {
+            "value": 3.37,
+            "unit": "million_base_stations",
+            "locator": "network scale performance table"
+          }
+        },
+        "FY2024": {
+          "4g_base_stations": {
+            "value": 3.39,
+            "unit": "million_base_stations",
+            "comparator": ">",
+            "locator": "network scale performance table"
+          }
+        }
+      },
+      "source_document_id": "china_mobile_sd_2024"
     },
     {
       "source_id": "china_telecom_announcement_2025",

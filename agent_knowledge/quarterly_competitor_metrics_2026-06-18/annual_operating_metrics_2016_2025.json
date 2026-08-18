@@ -3035,7 +3035,7 @@
       "verification_sources": [
         "china_mobile_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3269,7 +3269,7 @@
       "verification_sources": [
         "china_mobile_ar_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3491,19 +3491,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2018"
+        "china_mobile_20f_2018",
+        "china_mobile_ar_2018",
+        "china_mobile_sd_2018"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2018",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
       "verification_sources": [
-        "china_mobile_ar_2018"
+        "china_mobile_ar_2018",
+        "china_mobile_20f_2018",
+        "china_mobile_sd_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -3755,19 +3759,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2019"
+        "china_mobile_ar_2019",
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2019",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
       "verification_sources": [
-        "china_mobile_ar_2019"
+        "china_mobile_ar_2019",
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4066,6 +4074,40 @@
         "china_mobile_ar_2019"
       ],
       "quality_note": "Annual reports use 'more than/over' for some years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.28,
+      "official_value": 3.28,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_prospectus_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf",
+      "verification_sources": [
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4381,19 +4423,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2021"
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "china_mobile_ar_2021",
-      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_sd_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/sc/esg/sd/2021_ashare/09.pdf",
       "verification_sources": [
-        "china_mobile_ar_2021"
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -4739,6 +4785,40 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.34,
+      "official_value": 3.34,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_sd_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/tc/ir/reports/ar2022/sd2022.pdf",
+      "verification_sources": [
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 1.285,
@@ -5032,6 +5112,40 @@
         "china_mobile_ar_2022"
       ],
       "quality_note": "Annual reports use 'more than/over' for some years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.37,
+      "official_value": 3.37,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2023",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",

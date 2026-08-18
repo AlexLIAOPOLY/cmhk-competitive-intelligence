@@ -8366,7 +8366,7 @@
       "verification_sources": [
         "china_mobile_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -8600,7 +8600,7 @@
       "verification_sources": [
         "china_mobile_ar_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -8822,19 +8822,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2018"
+        "china_mobile_20f_2018",
+        "china_mobile_ar_2018",
+        "china_mobile_sd_2018"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2018",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
       "verification_sources": [
-        "china_mobile_ar_2018"
+        "china_mobile_ar_2018",
+        "china_mobile_20f_2018",
+        "china_mobile_sd_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -9086,19 +9090,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2019"
+        "china_mobile_ar_2019",
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2019",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
       "verification_sources": [
-        "china_mobile_ar_2019"
+        "china_mobile_ar_2019",
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -9397,6 +9405,40 @@
         "china_mobile_ar_2019"
       ],
       "quality_note": "Annual reports use 'more than/over' for some years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.28,
+      "official_value": 3.28,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_prospectus_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/sc/ir/sse_filings/sca211221b.pdf",
+      "verification_sources": [
+        "china_mobile_prospectus_2021",
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -9712,19 +9754,23 @@
       "comparator": "=",
       "scope": "commissioned 4G base stations",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2021"
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "china_mobile_ar_2021",
-      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_sd_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/sc/esg/sd/2021_ashare/09.pdf",
       "verification_sources": [
-        "china_mobile_ar_2021"
+        "china_mobile_sd_2021",
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -10070,6 +10116,40 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.34,
+      "official_value": 3.34,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_sd_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/tc/ir/reports/ar2022/sd2022.pdf",
+      "verification_sources": [
+        "china_mobile_sd_2022",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
       "value": 1.285,
@@ -10363,6 +10443,40 @@
         "china_mobile_ar_2022"
       ],
       "quality_note": "Annual reports use 'more than/over' for some years."
+    },
+    {
+      "operator_id": "china_mobile",
+      "operator": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "4g_base_stations",
+      "metric_zh": "4G基站数",
+      "value": 3.37,
+      "official_value": 3.37,
+      "unit": "million_base_stations",
+      "comparator": "=",
+      "scope": "commissioned 4G base stations",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2023",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_sd_2023",
+        "china_mobile_sd_2024"
+      ],
+      "quality_note": "FY2018-FY2023 values are bound to exact year-end operating tables across annual, SEC, prospectus, and sustainability documents. Language variants or chapter PDFs of the same sustainability report count as one source document."
     },
     {
       "operator_id": "china_mobile",
@@ -16102,7 +16216,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -16186,7 +16300,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -16302,7 +16416,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -16394,7 +16508,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -16544,7 +16658,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -16641,7 +16755,7 @@
         "reliance_jio_ar_2019",
         "jio_2018_q4_media_release"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -16659,19 +16773,21 @@
       "comparator": "=",
       "scope": "Digital Services segment EBIT; EBITDA was not provided in the reviewed early-year summary",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2019_q4_media_release",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2019",
       "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "reliance_jio_ar_2020",
+        "jio_2019_q4_media_release"
       ],
       "quality_note": ""
     },
@@ -16721,10 +16837,11 @@
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
       "verification_status": "official_three_distinct_sources_verified",
-      "verification_count": 3,
-      "distinct_source_document_count": 3,
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
         "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
@@ -16734,7 +16851,8 @@
       "verification_sources": [
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020",
-        "jio_2019_q4_analyst_presentation"
+        "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release"
       ],
       "quality_note": ""
     },
@@ -16755,10 +16873,11 @@
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
       "verification_status": "official_three_distinct_sources_verified",
-      "verification_count": 3,
-      "distinct_source_document_count": 3,
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
         "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
@@ -16768,7 +16887,8 @@
       "verification_sources": [
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020",
-        "jio_2019_q4_analyst_presentation"
+        "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release"
       ],
       "quality_note": ""
     },
@@ -16799,7 +16919,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -16818,10 +16938,11 @@
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
       "verification_status": "official_three_distinct_sources_verified",
-      "verification_count": 3,
-      "distinct_source_document_count": 3,
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
         "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release",
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
@@ -16831,7 +16952,8 @@
       "verification_sources": [
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020",
-        "jio_2019_q4_analyst_presentation"
+        "jio_2019_q4_analyst_presentation",
+        "jio_2019_q4_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -16884,17 +17006,17 @@
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "jio_2019_q4_media_release",
+        "reliance_jio_ar_2019"
       ],
       "triple_source_status": "below_three_source_threshold",
       "primary_source_id": "reliance_jio_ar_2019",
       "primary_source_url": "https://www.ril.com/ar2018-19/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2019",
-        "reliance_jio_ar_2020"
+        "jio_2019_q4_media_release"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -17018,17 +17140,17 @@
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2020",
-      "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2021",
+      "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -17113,17 +17235,17 @@
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2020",
-      "primary_source_url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2021",
+      "primary_source_url": "https://www.ril.com/ar2020-21/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2020",
-        "reliance_jio_ar_2021"
+        "reliance_jio_ar_2021",
+        "reliance_jio_ar_2022"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -17286,7 +17408,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -17386,7 +17508,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -17552,7 +17674,7 @@
       "verification_sources": [
         "reliance_jio_ar_2023"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -17652,7 +17774,7 @@
       "verification_sources": [
         "reliance_jio_ar_2023"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -17879,7 +18001,7 @@
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -17979,7 +18101,7 @@
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -18207,7 +18329,7 @@
       "verification_sources": [
         "reliance_jio_ar_2025"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -18313,7 +18435,7 @@
         "jio_2025_media_release",
         "jio_2024_factsheet"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -18547,7 +18669,7 @@
       "verification_sources": [
         "reliance_jio_ar_2025"
       ],
-      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
+      "quality_note": "FY2020 uses the later exact INR59,407 crore comparative repeated in the FY2021 and FY2022 annual reports; the contemporaneous report used a different segment presentation. FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -18645,7 +18767,7 @@
         "jio_2025_media_release",
         "jio_q2_2026_integrated_filing"
       ],
-      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+      "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     }
   ]
 }
