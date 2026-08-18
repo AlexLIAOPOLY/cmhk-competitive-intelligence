@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/static/responsive-layout-hardening.css?v=5" />
   <link rel="stylesheet" href="/static/leadership-board.css?v=17" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
+  <link rel="stylesheet" href="/static/workspace-tabs.css?v=3" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -43,7 +44,18 @@
         </div>
       </header>
 
-      <section class="console-shell">
+      <nav class="workspace-tabs" aria-label="项目能力模块">
+        <div class="workspace-tabs-scroll" role="tablist" aria-label="项目能力模块">
+          <button class="workspace-tab is-active" id="workspace-tab-dashboard" type="button" role="tab" aria-selected="true" aria-controls="workspace-panel-dashboard" tabindex="0" data-workspace-tab="dashboard"><span>00</span>驾驶舱</button>
+          <button class="workspace-tab" id="workspace-tab-competitor" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-competitor" tabindex="-1" data-workspace-tab="competitor"><span>01</span>竞对数据分析</button>
+          <button class="workspace-tab" id="workspace-tab-news" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-news" tabindex="-1" data-workspace-tab="news"><span>02</span>新闻获取与推送</button>
+          <button class="workspace-tab" id="workspace-tab-weekly" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-weekly" tabindex="-1" data-workspace-tab="weekly"><span>03</span>战略周报</button>
+          <button class="workspace-tab" id="workspace-tab-performance" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-performance" tabindex="-1" data-workspace-tab="performance"><span>04</span>业绩摘要</button>
+          <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span>05</span>AI问数</button>
+        </div>
+      </nav>
+
+      <section class="console-shell" id="workspace-panel-dashboard" role="tabpanel" aria-labelledby="workspace-tab-dashboard" data-workspace-panel="dashboard">
         <section class="operations" aria-label="战略情报驾驶舱">
           <section class="insight-board" aria-label="战略情报态势看板">
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
@@ -195,6 +207,12 @@
           </section>
         </section>
       </section>
+
+      <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-news" role="tabpanel" aria-labelledby="workspace-tab-news" data-workspace-panel="news" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
 
       <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
         <aside class="chat-panel floating-chat" aria-label="AI 对话">
@@ -475,5 +493,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=282"></script>
     <script src="/static/news-review-sheet.js?v=1"></script>
+    <script src="/static/workspace-tabs.js?v=3"></script>
   </body>
 </html>
