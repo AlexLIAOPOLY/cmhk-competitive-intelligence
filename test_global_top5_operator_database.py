@@ -157,6 +157,150 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(row["distinct_source_document_count"], 3)
         self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
+    def test_jio_2025_metric_sources_match_the_disclosed_scope_and_value(self):
+        certified = {
+            "total_customers": 3,
+            "value_of_sales_and_services": 3,
+            "ebitda": 3,
+            "mobile_arpu": 3,
+            "mobile_dou": 4,
+            "5g_network_subscribers": 4,
+            "connected_homes": 3,
+        }
+        for metric_key, source_count in certified.items():
+            row = self.index[("reliance_jio", 2025, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], source_count)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        revenue = self.index[("reliance_jio", 2025, "revenue_from_operations")]
+        self.assertEqual(revenue["value"], 131336)
+        self.assertEqual(revenue["verification_sources"], ["reliance_jio_ar_2025"])
+        self.assertEqual(revenue["triple_source_status"], "below_three_source_threshold")
+        self.assertIn("128,218", revenue["quality_note"])
+
+        traffic = self.index[("reliance_jio", 2025, "total_data_traffic")]
+        self.assertEqual(traffic["value"], 184.5)
+        self.assertEqual(traffic["verification_sources"], ["jio_2025_media_release"])
+        self.assertEqual(traffic["triple_source_status"], "below_three_source_threshold")
+
+        cells = self.index[("reliance_jio", 2025, "5g_base_stations")]
+        self.assertEqual(cells["verification_sources"], ["jio_2025_factsheet"])
+        self.assertEqual(cells["triple_source_status"], "below_three_source_threshold")
+
+    def test_jio_2025_source_registry_carries_metric_level_evidence(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        self.assertEqual(sources["jio_2025_media_release"]["evidence"]["total_data_traffic"]["value"], 184.5)
+        self.assertEqual(sources["jio_2025_factsheet"]["evidence"]["connected_homes"]["value"], 18)
+        self.assertEqual(sources["jio_q2_2026_integrated_filing"]["evidence"]["ebitda"]["value"], 65001)
+
+    def test_jio_2024_uses_exact_comparatives_and_corrected_home_scope(self):
+        certified = {
+            "total_customers": 4,
+            "value_of_sales_and_services": 3,
+            "mobile_arpu": 3,
+            "total_data_traffic": 4,
+            "5g_network_subscribers": 3,
+            "5g_base_stations": 3,
+        }
+        for metric_key, source_count in certified.items():
+            row = self.index[("reliance_jio", 2024, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], source_count)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        homes = self.index[("reliance_jio", 2024, "connected_homes")]
+        self.assertEqual(homes["value"], 12)
+        self.assertEqual(homes["distinct_source_document_count"], 2)
+        self.assertEqual(homes["triple_source_status"], "below_three_source_threshold")
+        self.assertIn("earlier 11 million", homes["quality_note"])
+
+        revenue = self.index[("reliance_jio", 2024, "revenue_from_operations")]
+        self.assertEqual(revenue["verification_sources"], ["reliance_jio_ar_2025"])
+        self.assertEqual(revenue["triple_source_status"], "below_three_source_threshold")
+
+        ebitda = self.index[("reliance_jio", 2024, "ebitda")]
+        self.assertEqual(ebitda["value"], 56675)
+        self.assertEqual(ebitda["distinct_source_document_count"], 2)
+        self.assertEqual(ebitda["triple_source_status"], "below_three_source_threshold")
+
+    def test_jio_2023_q4_documents_are_bound_only_to_values_they_disclose(self):
+        certified = {
+            "total_customers": 3,
+            "ebitda": 4,
+            "mobile_arpu": 3,
+            "total_data_traffic": 3,
+            "5g_base_stations": 3,
+        }
+        for metric_key, source_count in certified.items():
+            row = self.index[("reliance_jio", 2023, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], source_count)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        gross = self.index[("reliance_jio", 2023, "value_of_sales_and_services")]
+        self.assertEqual(gross["value"], 119791)
+        self.assertNotIn("jio_2023_media_release", gross["verification_sources"])
+        self.assertEqual(gross["distinct_source_document_count"], 2)
+
+        revenue = self.index[("reliance_jio", 2023, "revenue_from_operations")]
+        self.assertEqual(revenue["value"], 101961)
+        self.assertNotIn("jio_2023_media_release", revenue["verification_sources"])
+
+        dou = self.index[("reliance_jio", 2023, "mobile_dou")]
+        self.assertEqual(dou["distinct_source_document_count"], 2)
+
+        homes = self.index[("reliance_jio", 2023, "connected_homes")]
+        self.assertEqual(homes["verification_sources"], ["reliance_jio_ar_2023"])
+
+    def test_jio_2022_exact_sources_respect_restated_financials(self):
+        certified = {
+            "total_customers": 4,
+            "ebitda": 3,
+            "mobile_arpu": 4,
+            "mobile_dou": 3,
+            "total_data_traffic": 3,
+        }
+        for metric_key, source_count in certified.items():
+            row = self.index[("reliance_jio", 2022, metric_key)]
+            self.assertEqual(row["distinct_source_document_count"], source_count)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        gross = self.index[("reliance_jio", 2022, "value_of_sales_and_services")]
+        self.assertEqual(gross["value"], 100166)
+        self.assertEqual(gross["verification_sources"], ["reliance_jio_ar_2023"])
+        self.assertEqual(gross["triple_source_status"], "below_three_source_threshold")
+        self.assertIn("100,161", gross["quality_note"])
+
+        revenue = self.index[("reliance_jio", 2022, "revenue_from_operations")]
+        self.assertEqual(revenue["value"], 85122)
+        self.assertEqual(revenue["verification_sources"], ["reliance_jio_ar_2023"])
+
+        homes = self.index[("reliance_jio", 2022, "connected_homes")]
+        self.assertEqual(homes["value"], 5)
+        self.assertEqual(homes["distinct_source_document_count"], 2)
+        self.assertEqual(homes["triple_source_status"], "below_three_source_threshold")
+
+    def test_xiaojing_understands_common_customer_and_traffic_shorthand(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Reliance Jio FY2022 的客户数、ARPU、DOU、数据流量、EBITDA分别是多少？逐项说明三来源状态。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected = {
+            "total_customers": "official_value=410.2 million_customers",
+            "mobile_arpu": "official_value=167.6 INR_per_user_month",
+            "mobile_dou": "official_value=19.7 GB_per_user_month",
+            "total_data_traffic": "official_value=91.4 billion_GB",
+            "ebitda": "official_value=40268 INR_crore",
+        }
+        for metric_key, value_text in expected.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(value_text, combined)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 5)
+
     def test_xiaojing_compound_query_inherits_single_operator_across_clauses(self):
         combined = "\n".join(
             chunk["text"]

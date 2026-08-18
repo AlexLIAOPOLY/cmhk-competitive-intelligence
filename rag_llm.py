@@ -588,7 +588,7 @@ def _global_operator_exact_metric_chunks(
     }
 
     metric_aliases = {
-        "total_customers": ["集团总客户", "总客户数", "总客户", "total customers", "total customer base"],
+        "total_customers": ["集团总客户", "总客户数", "总客户", "客户数", "total customers", "total customer base"],
         "mobile_subscribers": ["移动用户数", "移动用户", "移动客户数", "移动客户", "mobile subscribers", "mobile customers"],
         "4g_subscribers": ["4g用户", "4g subscribers"],
         "5g_package_subscribers": ["5g套餐用户", "5g package subscribers"],
@@ -602,7 +602,7 @@ def _global_operator_exact_metric_chunks(
         "household_customer_blended_arpu": ["家庭客户综合arpu", "家庭综合arpu", "household customer blended arpu"],
         "integrated_package_arpu": ["融合套餐arpu", "融合arpu", "integrated package arpu"],
         "mobile_dou": ["移动dou", "户均流量", "月户均流量", "data consumption per user", "dou"],
-        "total_data_traffic": ["总数据流量", "年度数据流量", "total data traffic"],
+        "total_data_traffic": ["总数据流量", "年度数据流量", "数据流量", "total data traffic"],
         "handset_data_traffic": ["手机上网流量", "handset data traffic"],
         "iot_connections": ["物联网连接", "物联网卡连接", "物联网卡客户", "iot connections", "iot connection"],
         "mobile_broadband_integration_rate": ["移动宽带融合率", "移宽融合率", "mobile broadband integration rate"],

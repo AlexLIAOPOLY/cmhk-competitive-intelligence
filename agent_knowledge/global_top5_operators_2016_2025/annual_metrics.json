@@ -10674,7 +10674,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "precommercial_not_applicable",
       "verification_status": "not_applicable_precommercial",
       "verification_count": 1,
@@ -10686,7 +10686,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -10758,7 +10758,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "precommercial_not_applicable",
       "verification_status": "not_applicable_precommercial",
       "verification_count": 1,
@@ -10770,7 +10770,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -10826,7 +10826,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -10842,7 +10842,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "precommercial_not_applicable",
       "verification_status": "not_applicable_precommercial",
       "verification_count": 1,
@@ -10854,7 +10854,7 @@
       "verification_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -10870,7 +10870,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -10883,7 +10883,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -10957,7 +10957,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -10970,7 +10970,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -11031,7 +11031,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -11047,7 +11047,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -11060,7 +11060,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -11108,7 +11108,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -11121,7 +11121,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -11195,7 +11195,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -11208,7 +11208,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -11269,7 +11269,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -11285,7 +11285,7 @@
       "official_value": 23916,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11301,7 +11301,7 @@
         "reliance_jio_ar_2018",
         "reliance_jio_ar_2019"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -11349,7 +11349,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -11362,7 +11362,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -11442,7 +11442,7 @@
       "official_value": null,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 2,
@@ -11455,7 +11455,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -11516,7 +11516,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -11532,7 +11532,7 @@
       "official_value": 46506,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11548,7 +11548,7 @@
         "reliance_jio_ar_2019",
         "reliance_jio_ar_2020"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -11564,7 +11564,7 @@
       "official_value": 23348,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11580,7 +11580,7 @@
         "reliance_jio_ar_2020",
         "reliance_jio_ar_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -11660,7 +11660,7 @@
       "official_value": 59407,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11676,7 +11676,7 @@
         "reliance_jio_ar_2020",
         "reliance_jio_ar_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -11737,7 +11737,7 @@
         "reliance_jio_ar_2020",
         "reliance_jio_ar_2021"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -11753,7 +11753,7 @@
       "official_value": 69605,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11769,7 +11769,7 @@
         "reliance_jio_ar_2020",
         "reliance_jio_ar_2021"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -11798,7 +11798,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis."
     },
     {
       "operator_id": "reliance_jio",
@@ -11814,7 +11814,7 @@
       "official_value": 34035,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11830,7 +11830,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -11910,7 +11910,7 @@
       "official_value": 76642,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -11926,7 +11926,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -11990,7 +11990,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -12006,7 +12006,7 @@
       "official_value": 90287,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -12022,7 +12022,7 @@
         "reliance_jio_ar_2021",
         "reliance_jio_ar_2022"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -12054,7 +12054,7 @@
         "reliance_jio_ar_2022",
         "jio_2022_q4"
       ],
-      "quality_note": ""
+      "quality_note": "FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis."
     },
     {
       "operator_id": "reliance_jio",
@@ -12070,23 +12070,25 @@
       "official_value": 40268,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "jio_2022_q4",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2022",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2022",
       "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "jio_2022_q4",
+        "reliance_jio_ar_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -12104,19 +12106,23 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
         "jio_2022_q4",
+        "jio_2023_media_release",
+        "jio_2023_q4",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2022",
       "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "jio_2022_q4",
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
       "quality_note": ""
     },
@@ -12136,19 +12142,21 @@
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "jio_2022_q4",
+        "jio_2023_q4",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2022",
       "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "jio_2022_q4",
+        "jio_2023_q4"
       ],
       "quality_note": ""
     },
@@ -12166,23 +12174,21 @@
       "official_value": 85122,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2022_q4",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2023"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2022",
-      "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2023",
+      "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "reliance_jio_ar_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12200,19 +12206,23 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
         "jio_2022_q4",
+        "jio_2023_media_release",
+        "jio_2023_q4",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2022",
       "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "jio_2022_q4",
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -12232,21 +12242,23 @@
       "comparator": "=",
       "scope": "annual Jio network data traffic",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "jio_2022_q4",
+        "jio_2023_media_release",
         "reliance_jio_ar_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2022",
       "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "jio_2022_q4",
+        "jio_2023_media_release"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -12262,23 +12274,21 @@
       "official_value": 100166,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2022_q4",
-        "reliance_jio_ar_2022"
+        "reliance_jio_ar_2023"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2022",
-      "primary_source_url": "https://www.ril.com/ar2021-22/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2023",
+      "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2022",
-        "jio_2022_q4"
+        "reliance_jio_ar_2023"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -12296,21 +12306,23 @@
       "comparator": ">=",
       "scope": "5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_media_release",
+        "jio_2023_q4",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
-      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; do not compute growth across FY2023/FY2024."
+      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12357,21 +12369,19 @@
       "comparator": ">=",
       "scope": "JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "reliance_jio_ar_2023"
       ],
       "triple_source_status": "below_three_source_threshold",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "reliance_jio_ar_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis."
     },
     {
       "operator_id": "reliance_jio",
@@ -12387,23 +12397,27 @@
       "official_value": 50286,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
+        "jio_2023_media_release",
+        "jio_2023_q4",
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "reliance_jio_ar_2024",
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -12421,19 +12435,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_media_release",
+        "jio_2023_q4",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
       "quality_note": ""
     },
@@ -12457,15 +12473,15 @@
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4",
+        "reliance_jio_ar_2023"
       ],
       "triple_source_status": "below_three_source_threshold",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4"
       ],
       "quality_note": ""
     },
@@ -12483,7 +12499,7 @@
       "official_value": 101961,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -12499,7 +12515,7 @@
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12517,19 +12533,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_media_release",
+        "jio_2023_q4",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -12549,21 +12567,23 @@
       "comparator": "=",
       "scope": "annual Jio network data traffic",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_media_release",
+        "jio_2023_q4",
+        "reliance_jio_ar_2023"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "jio_2023_q4",
+        "jio_2023_media_release"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -12579,7 +12599,7 @@
       "official_value": 119791,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
@@ -12595,7 +12615,7 @@
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -12613,21 +12633,23 @@
       "comparator": ">=",
       "scope": "5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "jio_2024_q4",
+        "jio_2024_factsheet",
+        "jio_q2_2024_media_release",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2024",
       "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_factsheet",
+        "jio_q2_2024_media_release"
       ],
-      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; do not compute growth across FY2023/FY2024."
+      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12645,19 +12667,21 @@
       "comparator": "=",
       "scope": "5G users on Jio True5G network",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2024_factsheet",
         "jio_2024_q4",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2024",
       "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_q4",
+        "jio_2024_factsheet"
       ],
       "quality_note": ""
     },
@@ -12671,8 +12695,8 @@
       "grain": "annual",
       "metric_key": "connected_homes",
       "metric_zh": "已连接家庭/场所",
-      "value": 11,
-      "official_value": 11,
+      "value": 12,
+      "official_value": 12,
       "unit": "million_premises",
       "comparator": ">=",
       "scope": "JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports",
@@ -12681,7 +12705,7 @@
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "jio_2024_q4",
+        "jio_2024_factsheet",
         "reliance_jio_ar_2024"
       ],
       "triple_source_status": "below_three_source_threshold",
@@ -12689,9 +12713,9 @@
       "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis."
     },
     {
       "operator_id": "reliance_jio",
@@ -12707,23 +12731,23 @@
       "official_value": 56675,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
       "verification_status": "official_two_distinct_sources",
       "verification_count": 2,
       "distinct_source_document_count": 2,
       "distinct_source_document_ids": [
-        "jio_2024_q4",
-        "reliance_jio_ar_2024"
+        "jio_2025_media_release",
+        "reliance_jio_ar_2025"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2024",
-      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2025",
+      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "reliance_jio_ar_2025",
+        "jio_2025_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -12741,19 +12765,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2024_factsheet",
         "jio_2024_q4",
-        "reliance_jio_ar_2024"
+        "jio_2025_media_release"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2024",
-      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "jio_2024_q4",
+      "primary_source_url": "https://www.ril.com/sites/default/files/2024-04/RIL-4Q-FY24-Analyst-Presentation-22Apr24-website.pdf",
       "verification_sources": [
-        "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_q4",
+        "jio_2025_media_release",
+        "jio_2024_factsheet"
       ],
       "quality_note": ""
     },
@@ -12803,23 +12829,21 @@
       "official_value": 113176,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2024_q4",
-        "reliance_jio_ar_2024"
+        "reliance_jio_ar_2025"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2024",
-      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "primary_source_id": "reliance_jio_ar_2025",
+      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "reliance_jio_ar_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12837,19 +12861,23 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
+        "jio_2024_factsheet",
         "jio_2024_q4",
+        "jio_2025_media_release",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2024",
       "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_q4",
+        "jio_2025_media_release",
+        "jio_2024_factsheet"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -12869,21 +12897,25 @@
       "comparator": "=",
       "scope": "annual Jio network data traffic",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
+        "jio_2024_factsheet",
         "jio_2024_q4",
+        "jio_2025_media_release",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2024",
       "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "jio_2024_q4",
+        "jio_2025_media_release",
+        "jio_2024_factsheet"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -12899,23 +12931,25 @@
       "official_value": 132938,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "jio_2024_q4",
-        "reliance_jio_ar_2024"
+        "jio_2024_factsheet",
+        "jio_2025_media_release",
+        "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2024",
-      "primary_source_url": "https://www.ril.com/ar2023-24/digital-services.html",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "reliance_jio_ar_2025",
+      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2024",
-        "jio_2024_q4"
+        "reliance_jio_ar_2025",
+        "jio_2025_media_release",
+        "jio_2024_factsheet"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
     {
       "operator_id": "reliance_jio",
@@ -12933,21 +12967,19 @@
       "comparator": ">=",
       "scope": "5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
-        "reliance_jio_ar_2025"
+        "jio_2025_factsheet"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2025",
-      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+      "primary_source_id": "jio_2025_factsheet",
+      "primary_source_url": "https://www.ril.com/sites/default/files/2025-09/Jio-Factsheet-2025.pdf",
       "verification_sources": [
-        "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_factsheet"
       ],
-      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; do not compute growth across FY2023/FY2024."
+      "quality_note": "Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count."
     },
     {
       "operator_id": "reliance_jio",
@@ -12965,19 +12997,23 @@
       "comparator": "=",
       "scope": "5G users on Jio True5G network",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
+        "jio_2025_factsheet",
+        "jio_2025_media_release",
         "jio_2025_q4",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_q4",
+        "jio_2025_media_release",
+        "jio_2025_factsheet"
       ],
       "quality_note": ""
     },
@@ -12997,21 +13033,23 @@
       "comparator": ">=",
       "scope": "JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2025_factsheet",
         "jio_2025_q4",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_q4",
+        "jio_2025_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis."
     },
     {
       "operator_id": "reliance_jio",
@@ -13027,23 +13065,25 @@
       "official_value": 65001,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services EBITDA",
+      "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
+        "jio_2025_media_release",
+        "jio_q2_2026_integrated_filing",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_media_release",
+        "jio_q2_2026_integrated_filing"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
     {
       "operator_id": "reliance_jio",
@@ -13061,19 +13101,21 @@
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
-        "reliance_jio_ar_2025"
-      ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2025",
-      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
-      "verification_sources": [
-        "reliance_jio_ar_2025",
+        "jio_2025_factsheet",
+        "jio_2025_media_release",
         "jio_2025_q4"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "jio_2025_q4",
+      "primary_source_url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
+      "verification_sources": [
+        "jio_2025_q4",
+        "jio_2025_media_release",
+        "jio_2025_factsheet"
       ],
       "quality_note": ""
     },
@@ -13093,19 +13135,23 @@
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 4,
+      "distinct_source_document_count": 4,
       "distinct_source_document_ids": [
+        "jio_2025_factsheet",
+        "jio_2025_media_release",
         "jio_2025_q4",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_q4",
+        "jio_2025_media_release",
+        "jio_2025_factsheet"
       ],
       "quality_note": ""
     },
@@ -13123,23 +13169,21 @@
       "official_value": 131336,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Jio Platforms / Digital Services revenue from operations",
+      "scope": "RIL Digital Services segment revenue from operations",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
         "reliance_jio_ar_2025"
       ],
       "triple_source_status": "below_three_source_threshold",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
-        "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "reliance_jio_ar_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count."
     },
     {
       "operator_id": "reliance_jio",
@@ -13157,19 +13201,21 @@
       "comparator": "=",
       "scope": "Jio total mobile/fixed customer base at fiscal year end",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2025_media_release",
         "jio_2025_q4",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_q4",
+        "jio_2025_media_release"
       ],
       "quality_note": "FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error."
     },
@@ -13183,27 +13229,25 @@
       "grain": "annual",
       "metric_key": "total_data_traffic",
       "metric_zh": "年度数据流量",
-      "value": 185.0,
-      "official_value": 185.0,
+      "value": 184.5,
+      "official_value": 184.5,
       "unit": "billion_GB",
       "comparator": "=",
       "scope": "annual Jio network data traffic",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
-        "reliance_jio_ar_2025"
+        "jio_2025_media_release"
       ],
       "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "reliance_jio_ar_2025",
-      "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+      "primary_source_id": "jio_2025_media_release",
+      "primary_source_url": "https://www.ril.com/sites/default/files/2025-04/SE_Media_release.pdf",
       "verification_sources": [
-        "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_media_release"
       ],
-      "quality_note": "No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted."
+      "quality_note": "FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration."
     },
     {
       "operator_id": "reliance_jio",
@@ -13219,23 +13263,25 @@
       "official_value": 154119,
       "unit": "INR_crore",
       "comparator": "=",
-      "scope": "Digital Services value of sales/services (gross revenue terminology in older reports)",
+      "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "jio_2025_q4",
+        "jio_2025_media_release",
+        "jio_q2_2026_integrated_filing",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_q4"
+        "jio_2025_media_release",
+        "jio_q2_2026_integrated_filing"
       ],
-      "quality_note": "FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes."
+      "quality_note": "FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     }
   ]
 }

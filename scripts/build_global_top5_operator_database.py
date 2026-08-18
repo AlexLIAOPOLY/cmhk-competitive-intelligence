@@ -276,6 +276,125 @@ SOURCES.update({
         "label": "RIL FY2024-25 Q4 analyst presentation",
         "url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
         "source_type": "official_results_presentation", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 488.2, "unit": "million_customers", "locator": "subscriber and usage KPI table"},
+            "mobile_arpu": {"value": 206.2, "unit": "INR_per_user_month", "locator": "subscriber and usage KPI table"},
+            "mobile_dou": {"value": 33.6, "unit": "GB_per_user_month", "locator": "subscriber and usage KPI table"},
+            "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "locator": "Jio platform highlights"},
+            "connected_homes": {"value": 18, "unit": "million_premises", "comparator": ">", "locator": "home subscribers update"},
+        },
+    },
+    "jio_2025_media_release": {
+        "source_id": "jio_2025_media_release", "operator_id": "reliance_jio", "year": 2025,
+        "label": "RIL FY2024-25 annual results media release",
+        "url": "https://www.ril.com/sites/default/files/2025-04/SE_Media_release.pdf",
+        "source_type": "official_results_media_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 488.2, "unit": "million_customers", "locator": "operational update table, page 6"},
+            "mobile_arpu": {"value": 206.2, "unit": "INR_per_user_month", "locator": "operational update table, page 6"},
+            "mobile_dou": {"value": 33.6, "unit": "GB_per_user_month", "locator": "operational update narrative, page 6"},
+            "total_data_traffic": {"value": 184.5, "unit": "billion_GB", "locator": "operational update table, page 6"},
+            "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": "~", "locator": "JPL highlights, page 5"},
+            "value_of_sales_and_services": {"value": 154119, "unit": "INR_crore", "locator": "consolidated segment information"},
+            "ebitda": {"value": 65001, "unit": "INR_crore", "locator": "consolidated segment information"},
+        },
+        "comparative_evidence": {
+            "FY2024": {
+                "total_customers": {"value": 481.8, "unit": "million_customers", "locator": "operational update table, page 6"},
+                "mobile_arpu": {"value": 181.7, "unit": "INR_per_user_month", "locator": "operational update table, page 6"},
+                "total_data_traffic": {"value": 148.5, "unit": "billion_GB", "locator": "operational update table, page 6"},
+                "value_of_sales_and_services": {"value": 132938, "unit": "INR_crore", "locator": "consolidated segment information"},
+                "ebitda": {"value": 56675, "unit": "INR_crore", "locator": "consolidated segment information"},
+            }
+        },
+    },
+    "jio_2025_factsheet": {
+        "source_id": "jio_2025_factsheet", "operator_id": "reliance_jio", "year": 2025,
+        "label": "Jio Platforms factsheet 2025",
+        "url": "https://www.ril.com/sites/default/files/2025-09/Jio-Factsheet-2025.pdf",
+        "source_type": "official_investor_factsheet", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "mobile_arpu": {"value": 206.2, "unit": "INR_per_user_month", "locator": "At a glance"},
+            "mobile_dou": {"value": 33.6, "unit": "GB_per_user_month", "locator": "Increasing connectivity"},
+            "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": ">=", "locator": "Leading 5G adoption"},
+            "connected_homes": {"value": 18, "unit": "million_premises", "locator": "Increasing connectivity"},
+            "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "Leading 5G adoption; disclosed as 5G cells"},
+        },
+    },
+    "jio_q2_2026_integrated_filing": {
+        "source_id": "jio_q2_2026_integrated_filing", "operator_id": "reliance_jio", "year": 2025,
+        "label": "RIL Q2 FY2025-26 integrated stock-exchange filing with FY2025 comparatives",
+        "url": "https://www.ril.com/sites/default/files/2025-10/SE_Integrated_Filing.pdf",
+        "source_type": "official_stock_exchange_filing", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "value_of_sales_and_services": {"value": 154119, "unit": "INR_crore", "locator": "FY2025 audited comparative in segment information"},
+            "ebitda": {"value": 65001, "unit": "INR_crore", "locator": "FY2025 audited comparative in segment information"},
+        },
+    },
+    "jio_2024_factsheet": {
+        "source_id": "jio_2024_factsheet", "operator_id": "reliance_jio", "year": 2024,
+        "label": "Jio Platforms factsheet 2024",
+        "url": "https://www.ril.com/sites/default/files/2024-08/Jio_Factsheet_2024_V2.pdf",
+        "source_type": "official_investor_factsheet", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 481.8, "unit": "million_customers", "locator": "At a glance"},
+            "value_of_sales_and_services": {"value": 132938, "unit": "INR_crore", "locator": "At a glance"},
+            "mobile_arpu": {"value": 181.7, "unit": "INR_per_user_month", "locator": "At a glance"},
+            "total_data_traffic": {"value": 148.5, "unit": "billion_GB", "locator": "At a glance"},
+            "5g_network_subscribers": {"value": 108, "unit": "million_subscribers", "comparator": ">=", "locator": "Leading 5G adoption"},
+            "connected_homes": {"value": 12, "unit": "million_premises", "comparator": ">", "locator": "Increasing connectivity"},
+            "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "Leading 5G adoption; disclosed as 5G cells"},
+        },
+    },
+    "jio_q2_2024_media_release": {
+        "source_id": "jio_q2_2024_media_release", "operator_id": "reliance_jio", "year": 2024,
+        "label": "RIL Q2 FY2023-24 results media release",
+        "url": "https://www.ril.com/sites/default/files/2023-11/27102023-Media-Release-RIL-Q2-FY2023-24-Financial-and-Operational-Performance.pdf",
+        "source_type": "official_results_media_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "strategic progress; disclosed as 5G cells"},
+        },
+    },
+    "jio_2023_q4": {
+        "source_id": "jio_2023_q4", "operator_id": "reliance_jio", "year": 2023,
+        "label": "RIL FY2022-23 Q4 analyst presentation",
+        "url": "https://www.ril.com/sites/default/files/2023-08/RIL-4Q-FY23-Analyst-Presentation-21Apr23_Final.pdf",
+        "source_type": "official_results_presentation", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 439.3, "unit": "million_customers", "locator": "RJIL key operating metrics"},
+            "mobile_arpu": {"value": 178.8, "unit": "INR_per_user_month", "locator": "RJIL key operating metrics"},
+            "mobile_dou": {"value": 23.1, "unit": "GB_per_user_month", "locator": "RJIL key operating metrics"},
+            "total_data_traffic": {"value": 113.3, "unit": "billion_GB", "locator": "Digital Services highlights"},
+            "ebitda": {"value": 50286, "unit": "INR_crore", "locator": "Digital Services highlights; RIL segment basis"},
+            "5g_base_stations": {"value": 0.060, "unit": "million_base_stations", "comparator": "~", "locator": "5G rollout update; disclosed as sites"},
+        },
+        "comparative_evidence": {
+            "FY2022": {
+                "total_customers": {"value": 410.2, "unit": "million_customers", "locator": "RJIL key operating metrics comparative column"},
+                "mobile_arpu": {"value": 167.6, "unit": "INR_per_user_month", "locator": "RJIL key operating metrics comparative column"},
+                "mobile_dou": {"value": 19.7, "unit": "GB_per_user_month", "locator": "RJIL key operating metrics comparative column"},
+            }
+        },
+    },
+    "jio_2023_media_release": {
+        "source_id": "jio_2023_media_release", "operator_id": "reliance_jio", "year": 2023,
+        "label": "RIL FY2022-23 annual results media release",
+        "url": "https://rilstaticasset.akamaized.net/sites/default/files/2023-05/Media-Release-RIL-Q4-FY23-21042023-1.pdf",
+        "source_type": "official_results_media_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 439.3, "unit": "million_customers", "locator": "operational update table"},
+            "mobile_arpu": {"value": 178.8, "unit": "INR_per_user_month", "locator": "operational update table"},
+            "total_data_traffic": {"value": 113.3, "unit": "billion_GB", "locator": "operational update table"},
+            "ebitda": {"value": 50286, "unit": "INR_crore", "locator": "audited consolidated segment information"},
+            "5g_base_stations": {"value": 0.060, "unit": "million_base_stations", "comparator": "~", "locator": "strategic progress; disclosed as sites"},
+        },
+        "comparative_evidence": {
+            "FY2022": {
+                "total_customers": {"value": 410.2, "unit": "million_customers", "locator": "operational update comparative column"},
+                "mobile_arpu": {"value": 167.6, "unit": "INR_per_user_month", "locator": "operational update comparative column"},
+                "total_data_traffic": {"value": 91.4, "unit": "billion_GB", "locator": "operational update comparative column"},
+            }
+        },
     },
     "jio_2024_q4": {
         "source_id": "jio_2024_q4", "operator_id": "reliance_jio", "year": 2024,
@@ -288,6 +407,14 @@ SOURCES.update({
         "label": "RIL FY2021-22 Q4 media release",
         "url": "https://www.ril.com/sites/default/files/2023-01/Media-Release-RIL-Q4FY2021-22-06052022_0.pdf",
         "source_type": "official_results_release", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "total_customers": {"value": 410.2, "unit": "million_customers", "locator": "annual performance and operational update"},
+            "mobile_arpu": {"value": 167.6, "unit": "INR_per_user_month", "locator": "operational update"},
+            "mobile_dou": {"value": 19.7, "unit": "GB_per_user_month", "locator": "operational update"},
+            "total_data_traffic": {"value": 91.4, "unit": "billion_GB", "locator": "annual performance"},
+            "ebitda": {"value": 40268, "unit": "INR_crore", "locator": "audited consolidated segment information"},
+            "connected_homes": {"value": 6, "unit": "million_premises", "comparator": ">", "locator": "operational update"},
+        },
     },
 })
 
@@ -296,6 +423,65 @@ SOURCES.update({
 # as one source document, not several.
 for _source_id, _source in SOURCES.items():
     _source.setdefault("source_document_id", _source_id)
+
+SOURCES["reliance_jio_ar_2025"]["evidence"] = {
+    "total_customers": {"value": 488.2, "unit": "million_customers", "locator": "Digital Services business performance"},
+    "value_of_sales_and_services": {"value": 154119, "unit": "INR_crore", "locator": "Digital Services financial performance"},
+    "revenue_from_operations": {"value": 131336, "unit": "INR_crore", "locator": "Digital Services financial performance"},
+    "ebitda": {"value": 65001, "unit": "INR_crore", "locator": "Digital Services financial performance"},
+    "mobile_dou": {"value": 33.6, "unit": "GB_per_user_month", "locator": "Digital Services customer engagement"},
+    "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": "~", "locator": "Digital Services network adoption"},
+    "connected_homes": {"value": 18, "unit": "million_premises", "comparator": "~", "locator": "Digital Services homes update"},
+}
+SOURCES["reliance_jio_ar_2025"]["comparative_evidence"] = {
+    "FY2024": {
+        "value_of_sales_and_services": {"value": 132938, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "revenue_from_operations": {"value": 113176, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "ebitda": {"value": 56675, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+    }
+}
+SOURCES["reliance_jio_ar_2024"]["evidence"] = {
+    "total_customers": {"value": 481.8, "unit": "million_customers", "locator": "Digital Services headline and business performance"},
+    "mobile_arpu": {"value": 181.7, "unit": "INR_per_user_month", "locator": "Digital Services KPI disclosure"},
+    "mobile_dou": {"value": 28.7, "unit": "GB_per_user_month", "locator": "Digital Services customer engagement"},
+    "total_data_traffic": {"value": 148.5, "unit": "billion_GB", "locator": "Digital Services headline"},
+    "5g_network_subscribers": {"value": 108, "unit": "million_subscribers", "comparator": ">", "locator": "Digital Services True5G update"},
+    "connected_homes": {"value": 12, "unit": "million_premises", "comparator": "~", "locator": "Digital Services fixed broadband update"},
+    "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "Manufactured Capital; disclosed as 5G cells"},
+}
+SOURCES["reliance_jio_ar_2024"]["comparative_evidence"] = {
+    "FY2023": {
+        "value_of_sales_and_services": {"value": 119791, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "revenue_from_operations": {"value": 101961, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "ebitda": {"value": 50286, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+    }
+}
+SOURCES["reliance_jio_ar_2023"]["evidence"] = {
+    "total_customers": {"value": 439.3, "unit": "million_customers", "locator": "Digital Services performance update"},
+    "value_of_sales_and_services": {"value": 119791, "unit": "INR_crore", "locator": "Digital Services business performance"},
+    "mobile_arpu": {"value": 178.8, "unit": "INR_per_user_month", "locator": "Digital Services performance update"},
+    "mobile_dou": {"value": 23.1, "unit": "GB_per_user_month", "locator": "Digital Services performance update"},
+    "total_data_traffic": {"value": 113.3, "unit": "billion_GB", "locator": "Digital Services network traffic"},
+    "ebitda": {"value": 50286, "unit": "INR_crore", "locator": "Digital Services performance update"},
+    "connected_homes": {"value": 9, "unit": "million_premises", "comparator": ">", "locator": "Digital Services wired broadband"},
+    "5g_base_stations": {"value": 0.060, "unit": "million_base_stations", "comparator": "~", "locator": "Digital Services 5G rollout; disclosed as sites"},
+}
+SOURCES["reliance_jio_ar_2023"]["comparative_evidence"] = {
+    "FY2022": {
+        "value_of_sales_and_services": {"value": 100166, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "revenue_from_operations": {"value": 85122, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+        "ebitda": {"value": 40268, "unit": "INR_crore", "locator": "Digital Services financial performance comparative column"},
+    }
+}
+SOURCES["reliance_jio_ar_2022"]["evidence"] = {
+    "total_customers": {"value": 410.2, "unit": "million_customers", "locator": "Digital Services KPI table"},
+    "value_of_sales_and_services": {"value": 100161, "unit": "INR_crore", "locator": "Digital Services financial performance; superseded precision"},
+    "mobile_arpu": {"value": 167.6, "unit": "INR_per_user_month", "locator": "Digital Services KPI table"},
+    "mobile_dou": {"value": 19.7, "unit": "GB_per_user_month", "locator": "Digital Services KPI table"},
+    "total_data_traffic": {"value": 91.4, "unit": "billion_GB", "locator": "Digital Services KPI table"},
+    "ebitda": {"value": 40268, "unit": "INR_crore", "locator": "Digital Services financial performance"},
+    "connected_homes": {"value": 5, "unit": "million_premises", "comparator": ">", "locator": "Chairman statement"},
+}
 
 
 ROWS: list[dict[str, Any]] = []
@@ -492,17 +678,23 @@ add_series("bharti_airtel", "total_data_traffic", {2017:0.903,2018:3.9018,2019:1
 # Reliance Jio: commercial service launched September 2016; FY2016 is not applicable.
 jio_years = list(range(2017,2026))
 jio_sources = {y:[f"reliance_jio_ar_{y}", "jio_2022_q4" if y == 2022 else "jio_2024_q4" if y == 2024 else "jio_2025_q4" if y == 2025 else f"reliance_jio_ar_{min(y+1,2025)}"] for y in jio_years}
-add_series("reliance_jio", "total_customers", {2016:None,2017:108.9,2018:186.6,2019:306.7,2020:387.5,2021:426.2,2022:410.2,2023:439.3,2024:481.8,2025:488.2}, scope="Jio total mobile/fixed customer base at fiscal year end", source_ids={2016:["reliance_jio_ar_2016"], **jio_sources}, note="FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error.")
-add_series("reliance_jio", "value_of_sales_and_services", {2016:None,2017:None,2018:23916,2019:46506,2020:69605,2021:90287,2022:100166,2023:119791,2024:132938,2025:154119}, unit="INR_crore", scope="Digital Services value of sales/services (gross revenue terminology in older reports)", source_ids={2016:["reliance_jio_ar_2016"],2017:["reliance_jio_ar_2017"], **jio_sources}, note="FY2020 older narrative also cited INR68,462 crore revenue under an earlier presentation basis; current three-year table value INR69,605 crore is preferred and conflict retained in notes.")
-add_series("reliance_jio", "revenue_from_operations", {2016:None,2017:None,2018:None,2019:None,2020:59407,2021:76642,2022:85122,2023:101961,2024:113176,2025:131336}, unit="INR_crore", scope="Jio Platforms / Digital Services revenue from operations", source_ids={y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS})
-add_series("reliance_jio", "ebitda", {2016:None,2017:None,2018:None,2019:None,2020:23348,2021:34035,2022:40268,2023:50286,2024:56675,2025:65001}, unit="INR_crore", scope="Digital Services EBITDA", source_ids={y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS})
+jio_2024_operating_sources = ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2025_media_release", "jio_2024_factsheet"]
+jio_2024_financial_sources = ["reliance_jio_ar_2025", "jio_2025_media_release"]
+jio_2022_operating_sources = ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q4", "jio_2023_media_release"]
+jio_2023_operating_three = ["reliance_jio_ar_2023", "jio_2023_q4", "jio_2023_media_release"]
+jio_2025_operating_three = ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release"]
+jio_2025_financial_three = ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_q2_2026_integrated_filing"]
+add_series("reliance_jio", "total_customers", {2016:None,2017:108.9,2018:186.6,2019:306.7,2020:387.5,2021:426.2,2022:410.2,2023:439.3,2024:481.8,2025:488.2}, scope="Jio total mobile/fixed customer base at fiscal year end", source_ids={2016:["reliance_jio_ar_2016"], **override_sources(override_sources(override_sources(override_sources(jio_sources, 2022, jio_2022_operating_sources), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, jio_2025_operating_three)}, note="FY2016 predates commercial launch and is not applicable; the FY2022 decline reflects active-base cleanup/churn, not a transcription error.")
+add_series("reliance_jio", "value_of_sales_and_services", {2016:None,2017:None,2018:23916,2019:46506,2020:69605,2021:90287,2022:100166,2023:119791,2024:132938,2025:154119}, unit="INR_crore", scope="RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)", source_ids={2016:["reliance_jio_ar_2016"],2017:["reliance_jio_ar_2017"], **override_sources(override_sources(override_sources(jio_sources, 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, jio_2025_financial_three)}, note="FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded.")
+add_series("reliance_jio", "revenue_from_operations", {2016:None,2017:None,2018:None,2019:None,2020:59407,2021:76642,2022:85122,2023:101961,2024:113176,2025:131336}, unit="INR_crore", scope="RIL Digital Services segment revenue from operations", source_ids=override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2025"]), 2025, ["reliance_jio_ar_2025"]), note="FY2022 uses the exact later comparative in the FY2023 annual report. The Q4 analyst presentations use consolidated JPL revenue (INR109,558 crore for FY2024 and INR128,218 crore for FY2025), not the RIL Digital Services segment values stored here; those documents are intentionally excluded from the exact-source count.")
+add_series("reliance_jio", "ebitda", {2016:None,2017:None,2018:None,2019:None,2020:23348,2021:34035,2022:40268,2023:50286,2024:56675,2025:65001}, unit="INR_crore", scope="RIL Digital Services segment EBITDA", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "reliance_jio_ar_2023"]), 2023, ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_2023_q4", "jio_2023_media_release"]), 2024, jio_2024_financial_sources), 2025, jio_2025_financial_three), note="FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value.")
 add_series("reliance_jio", "ebit", {2018:3174,2019:8784}, unit="INR_crore", scope="Digital Services segment EBIT; EBITDA was not provided in the reviewed early-year summary", source_ids=jio_sources)
-add_series("reliance_jio", "mobile_arpu", {2016:None,2017:None,2018:None,2019:126.2,2020:130.6,2021:138.2,2022:167.6,2023:178.8,2024:181.7,2025:206.2}, unit="INR_per_user_month", scope="exit-quarter ARPU, not full-year average", basis="exit_quarter", source_ids={y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS})
-add_series("reliance_jio", "mobile_dou", {2016:None,2017:None,2018:None,2019:10.9,2020:11.3,2021:13.3,2022:19.7,2023:23.1,2024:28.7,2025:33.6}, scope="exit-quarter average data consumption per user per month", basis="exit_quarter", source_ids={y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS})
-add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:62.5,2022:91.4,2023:113.3,2024:148.5,2025:185.0}, scope="annual Jio network data traffic", source_ids={y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, note="No interpolation. FY2019-20 remain gaps because reviewed disclosures did not support a full-year value; exit-quarter traffic is not substituted.")
-add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:191}, scope="5G users on Jio True5G network", source_ids=jio_sources)
-add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:11,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=jio_sources)
-add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=jio_sources, note="Metric kept for evidence discovery but scope_break=true in quality audit; do not compute growth across FY2023/FY2024.")
+add_series("reliance_jio", "mobile_arpu", {2016:None,2017:None,2018:None,2019:126.2,2020:130.6,2021:138.2,2022:167.6,2023:178.8,2024:181.7,2025:206.2}, unit="INR_per_user_month", scope="exit-quarter ARPU, not full-year average", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, jio_2022_operating_sources), 2023, jio_2023_operating_three), 2024, ["jio_2024_q4", "jio_2025_media_release", "jio_2024_factsheet"]), 2025, ["jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
+add_series("reliance_jio", "mobile_dou", {2016:None,2017:None,2018:None,2019:10.9,2020:11.3,2021:13.3,2022:19.7,2023:23.1,2024:28.7,2025:33.6}, scope="exit-quarter average data consumption per user per month", basis="exit_quarter", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q4"]), 2023, ["reliance_jio_ar_2023", "jio_2023_q4"]), 2024, ["reliance_jio_ar_2024", "jio_2024_q4"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
+add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:62.5,2022:91.4,2023:113.3,2024:148.5,2025:184.5}, scope="annual Jio network data traffic", source_ids=override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_media_release"]), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, ["jio_2025_media_release"]), note="FY2025 stores the exact 184.5 billion GB value from the annual-results operating table. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration.")
+add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:191}, scope="5G users on Jio True5G network", source_ids=override_sources(override_sources(jio_sources, 2024, ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]))
+add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:12,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_factsheet"]), note="FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis.")
+add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count.")
 
 
 def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
