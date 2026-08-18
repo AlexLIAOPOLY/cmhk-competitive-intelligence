@@ -595,6 +595,7 @@ def _global_operator_exact_metric_chunks(
         "5g_package_subscribers": ["5g套餐用户", "5g package subscribers"],
         "5g_network_subscribers": ["5g网络用户", "5g用户", "5g users", "5g network subscribers"],
         "fixed_broadband_subscribers": ["固定宽带用户", "固网宽带用户", "宽带用户", "fixed broadband"],
+        "fixed_broadband_access_ports": ["固网宽带接入端口", "固定网络宽带接入端口", "宽带接入端口", "broadband access ports"],
         "integrated_broadband_network_customers": ["融合宽带网络客户", "融合宽带客户", "integrated broadband network customers"],
         "gigabit_broadband_customers": ["千兆宽带客户", "千兆宽带用户", "gigabit broadband customers"],
         "connected_homes": ["连接家庭", "已连接家庭", "connected homes", "connected premises"],

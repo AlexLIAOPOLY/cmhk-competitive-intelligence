@@ -170,6 +170,10 @@
       "metric_zh": "千兆网络覆盖家庭",
       "default_unit": "million_households"
     },
+    "fixed_broadband_access_ports": {
+      "metric_zh": "固网宽带接入端口",
+      "default_unit": "million_ports"
+    },
     "iptv_subscribers": {
       "metric_zh": "IPTV用户",
       "default_unit": "million_subscribers"
@@ -15913,6 +15917,35 @@
       "period": "FY2016",
       "period_end": "2016-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": null,
+      "official_value": null,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2016"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 75.236,
@@ -16167,6 +16200,35 @@
         "china_unicom_results_2018"
       ],
       "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": null,
+      "official_value": null,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2017"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
     },
     {
       "operator_id": "china_unicom",
@@ -16449,6 +16511,45 @@
       "period": "FY2018",
       "period_end": "2018-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 215,
+      "official_value": 215,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2018",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2018.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2018",
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 80.88,
@@ -16693,6 +16794,45 @@
         "china_unicom_results_2020"
       ],
       "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 221,
+      "official_value": 221,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2019",
+      "primary_source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2020/0617/2020061700317.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2019",
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
     },
     {
       "operator_id": "china_unicom",
@@ -17037,6 +17177,45 @@
       "period": "FY2020",
       "period_end": "2020-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 225,
+      "official_value": 225,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2020",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2020.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2020",
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 86.095,
@@ -17330,6 +17509,45 @@
       "period": "FY2021",
       "period_end": "2021-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 239,
+      "official_value": 239,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2021",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2021.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2021",
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 95.046,
@@ -17613,6 +17831,45 @@
       "period": "FY2022",
       "period_end": "2022-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 250,
+      "official_value": 250,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2022",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2022.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2022",
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 103.63,
@@ -17862,6 +18119,45 @@
       "period": "FY2023",
       "period_end": "2023-12-31",
       "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": 266,
+      "official_value": 266,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024",
+        "china_unicom_csr_2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_unicom_csr_2023",
+      "primary_source_url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2023.pdf",
+      "verification_sources": [
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024",
+        "china_unicom_csr_2025"
+      ],
+      "candidate_sources": [
+        "china_unicom_csr_2023",
+        "china_unicom_csr_2024",
+        "china_unicom_csr_2025"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
       "metric_key": "fixed_broadband_subscribers",
       "metric_zh": "固网宽带用户数",
       "value": 113.42,
@@ -18097,6 +18393,35 @@
         "china_unicom_results_2024"
       ],
       "quality_note": "FY2016-FY2021 each use the annual report plus current-year and following-year annual-results presentations. The access-only series stops before the later blended/integrated broadband ARPU definition and is not spliced across that scope change."
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": null,
+      "official_value": null,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2024"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
     },
     {
       "operator_id": "china_unicom",
@@ -18435,6 +18760,35 @@
         "china_unicom_press_2025"
       ],
       "quality_note": ""
+    },
+    {
+      "operator_id": "china_unicom",
+      "operator": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "fixed_broadband_access_ports",
+      "metric_zh": "固网宽带接入端口",
+      "value": null,
+      "official_value": null,
+      "unit": "million_ports",
+      "comparator": "=",
+      "scope": "fixed-network broadband access ports; network capacity, not subscriber count",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "distinct_source_document_count": 0,
+      "distinct_source_document_ids": [],
+      "triple_source_status": "not_applicable_missing_value",
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "candidate_sources": [
+        "china_unicom_ar_2025"
+      ],
+      "quality_note": "FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule."
     },
     {
       "operator_id": "china_unicom",

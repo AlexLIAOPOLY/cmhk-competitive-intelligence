@@ -4432,6 +4432,11 @@
           "value": 0.987,
           "unit": "million_base_stations",
           "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        },
+        "fixed_broadband_access_ports": {
+          "value": 215,
+          "unit": "million_ports",
+          "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
         }
       }
     },
@@ -4459,6 +4464,11 @@
           "value": 253.766,
           "unit": "million_subscribers",
           "locator": "FY2019 exact China Unicom operating KPI; 4G用户数 at the disclosed precision"
+        },
+        "fixed_broadband_access_ports": {
+          "value": 221,
+          "unit": "million_ports",
+          "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -4474,6 +4484,11 @@
             "value": 0.987,
             "unit": "million_base_stations",
             "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 215,
+            "unit": "million_ports",
+            "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
           }
         }
       }
@@ -4493,6 +4508,18 @@
             "value": 0.987,
             "unit": "million_base_stations",
             "locator": "FY2018 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 215,
+            "unit": "million_ports",
+            "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        },
+        "FY2019": {
+          "fixed_broadband_access_ports": {
+            "value": 221,
+            "unit": "million_ports",
+            "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
           }
         }
       },
@@ -4501,6 +4528,11 @@
           "value": 1.503,
           "unit": "million_base_stations",
           "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        },
+        "fixed_broadband_access_ports": {
+          "value": 225,
+          "unit": "million_ports",
+          "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
         }
       }
     },
@@ -4528,6 +4560,11 @@
           "value": 1.56,
           "unit": "million_base_stations",
           "locator": "FY2021 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+        },
+        "fixed_broadband_access_ports": {
+          "value": 239,
+          "unit": "million_ports",
+          "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -4536,6 +4573,18 @@
             "value": 1.503,
             "unit": "million_base_stations",
             "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 225,
+            "unit": "million_ports",
+            "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        },
+        "FY2019": {
+          "fixed_broadband_access_ports": {
+            "value": 221,
+            "unit": "million_ports",
+            "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
           }
         }
       }
@@ -4555,6 +4604,11 @@
             "value": 1.503,
             "unit": "million_base_stations",
             "locator": "FY2020 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 225,
+            "unit": "million_ports",
+            "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
           }
         },
         "FY2021": {
@@ -4562,6 +4616,96 @@
             "value": 1.56,
             "unit": "million_base_stations",
             "locator": "FY2021 exact China Unicom operating KPI; 4G基站数 at the disclosed precision"
+          },
+          "fixed_broadband_access_ports": {
+            "value": 239,
+            "unit": "million_ports",
+            "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_access_ports": {
+          "value": 250,
+          "unit": "million_ports",
+          "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2023",
+      "operator_id": "china_unicom",
+      "year": 2023,
+      "label": "China Unicom Sustainability Report 2023",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2023.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2023",
+      "comparative_evidence": {
+        "FY2021": {
+          "fixed_broadband_access_ports": {
+            "value": 239,
+            "unit": "million_ports",
+            "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        },
+        "FY2022": {
+          "fixed_broadband_access_ports": {
+            "value": 250,
+            "unit": "million_ports",
+            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        }
+      },
+      "evidence": {
+        "fixed_broadband_access_ports": {
+          "value": 266,
+          "unit": "million_ports",
+          "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2024",
+      "operator_id": "china_unicom",
+      "year": 2024,
+      "label": "China Unicom Sustainability Report 2024",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2024.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2024",
+      "comparative_evidence": {
+        "FY2022": {
+          "fixed_broadband_access_ports": {
+            "value": 250,
+            "unit": "million_ports",
+            "locator": "FY2022 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        },
+        "FY2023": {
+          "fixed_broadband_access_ports": {
+            "value": 266,
+            "unit": "million_ports",
+            "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "china_unicom_csr_2025",
+      "operator_id": "china_unicom",
+      "year": 2025,
+      "label": "China Unicom Sustainability Report 2025",
+      "url": "https://www.chinaunicom.com.hk/en/esg/reports/csr2025.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Unicom (Hong Kong) Limited",
+      "source_document_id": "china_unicom_csr_2025",
+      "comparative_evidence": {
+        "FY2023": {
+          "fixed_broadband_access_ports": {
+            "value": 266,
+            "unit": "million_ports",
+            "locator": "FY2023 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
           }
         }
       }
