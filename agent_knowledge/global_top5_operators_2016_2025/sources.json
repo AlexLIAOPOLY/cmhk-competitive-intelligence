@@ -1901,9 +1901,68 @@
           "value": 4.48,
           "unit": "million_base_stations",
           "locator": "Base Stations, year-end network scale"
+        },
+        "5g_base_stations": {
+          "value": 0.05,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "Base Stations; over 50,000 put in use during 2019"
         }
       },
       "source_document_id": "china_mobile_20f_2019"
+    },
+    {
+      "source_id": "china_mobile_sd_2019",
+      "operator_id": "china_mobile",
+      "year": 2019,
+      "label": "China Mobile 2019 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2019/sd2019.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.05,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "5G is Here; deployed over 50,000 5G base stations"
+        }
+      },
+      "source_document_id": "china_mobile_sd_2019"
+    },
+    {
+      "source_id": "china_mobile_20f_2020",
+      "operator_id": "china_mobile",
+      "year": 2020,
+      "label": "China Mobile 2020 annual report on Form 20-F",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2020/2020_20f.pdf",
+      "source_type": "official_sec_annual_filing",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.39,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "Base Stations; over 390,000 built by year-end 2020"
+        }
+      },
+      "source_document_id": "china_mobile_20f_2020"
+    },
+    {
+      "source_id": "china_mobile_sd_2020",
+      "operator_id": "china_mobile",
+      "year": 2020,
+      "label": "China Mobile 2020 sustainability report",
+      "url": "https://www.chinamobileltd.com/en/ir/reports/ar2020/sd2020.pdf",
+      "source_type": "official_sustainability_report",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 0.39,
+          "unit": "million_base_stations",
+          "locator": "2016-2020 achievements; opened 390,000 5G base stations"
+        }
+      },
+      "source_document_id": "china_mobile_sd_2020"
     },
     {
       "source_id": "china_mobile_20f_2018",

@@ -9168,17 +9168,21 @@
       "comparator": ">=",
       "scope": "commissioned 5G base stations, including applicable 700MHz co-built sites",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2019"
+        "china_mobile_20f_2019",
+        "china_mobile_ar_2019",
+        "china_mobile_sd_2019"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2019",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
       "verification_sources": [
-        "china_mobile_ar_2019"
+        "china_mobile_ar_2019",
+        "china_mobile_20f_2019",
+        "china_mobile_sd_2019"
       ],
       "quality_note": ""
     },
@@ -9504,17 +9508,21 @@
       "comparator": ">=",
       "scope": "commissioned 5G base stations, including applicable 700MHz co-built sites",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_mobile_ar_2020"
+        "china_mobile_20f_2020",
+        "china_mobile_ar_2020",
+        "china_mobile_sd_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2020",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
       "verification_sources": [
-        "china_mobile_ar_2020"
+        "china_mobile_ar_2020",
+        "china_mobile_20f_2020",
+        "china_mobile_sd_2020"
       ],
       "quality_note": ""
     },

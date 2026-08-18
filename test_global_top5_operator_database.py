@@ -40,7 +40,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Reliance Jio": 42,
                 "中国广电": 24,
                 "中国电信": 58,
-                "中国移动": 78,
+                "中国移动": 80,
                 "中国联通": 53,
             },
         )
@@ -165,11 +165,19 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertEqual(row["comparator"], ">=")
             self.assertEqual(row["distinct_source_document_count"], 3)
             self.assertIn("previous 1.05 million precision was not retained", row["quality_note"])
-        for year in range(2021, 2026):
+        for year in range(2019, 2026):
             self.assertEqual(
                 self.index[("china_mobile", year, "5g_base_stations")]["triple_source_status"],
                 "three_distinct_sources_verified",
             )
+        self.assertEqual(
+            self.index[("china_mobile", 2019, "5g_base_stations")]["verification_sources"],
+            ["china_mobile_ar_2019", "china_mobile_20f_2019", "china_mobile_sd_2019"],
+        )
+        self.assertEqual(
+            self.index[("china_mobile", 2020, "5g_base_stations")]["verification_sources"],
+            ["china_mobile_ar_2020", "china_mobile_20f_2020", "china_mobile_sd_2020"],
+        )
 
     def test_precommercial_and_derived_values_are_not_overstated(self):
         jio = self.index[("reliance_jio", 2016, "total_customers")]
