@@ -11,7 +11,7 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=3', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=4', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -42,6 +42,16 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("avatar_url", SCRIPT)
         self.assertIn("邀请结果", SCRIPT)
         self.assertIn("confirmInvite", SCRIPT)
+
+    def test_people_and_invites_use_a_simple_two_pane_layout(self):
+        self.assertIn('class="people-invite-grid"', SCRIPT)
+        self.assertIn('<h2>人员</h2>', SCRIPT)
+        self.assertIn('<h2>邀请</h2>', SCRIPT)
+        self.assertIn('data-add-candidate=', SCRIPT)
+        self.assertIn('class="icon-button add"', SCRIPT)
+        self.assertNotIn('class="kpis"', SCRIPT)
+        self.assertNotIn('class="permission-panel"', SCRIPT)
+        self.assertNotIn('data-add-candidates', SCRIPT)
 
 
 if __name__ == "__main__":

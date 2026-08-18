@@ -55,7 +55,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=3', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=4', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
