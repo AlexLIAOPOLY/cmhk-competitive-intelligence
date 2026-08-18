@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 43,
+                "Reliance Jio": 44,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -448,7 +448,21 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         gross = self.index[("reliance_jio", 2023, "value_of_sales_and_services")]
         self.assertEqual(gross["value"], 119791)
         self.assertNotIn("jio_2023_media_release", gross["verification_sources"])
-        self.assertEqual(gross["distinct_source_document_count"], 2)
+        self.assertEqual(
+            gross["verification_sources"],
+            ["reliance_jio_ar_2023", "reliance_jio_ar_2024", "jio_q2_2024_media_release"],
+        )
+        self.assertEqual(gross["distinct_source_document_count"], 3)
+        self.assertEqual(gross["triple_source_status"], "three_distinct_sources_verified")
+
+        gross_chunks = rag_llm._global_operator_exact_metric_chunks(
+            "Reliance Jio FY2023销售及服务价值是多少？说明三来源状态。",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        gross_text = "\n".join(chunk["text"] for chunk in gross_chunks)
+        self.assertIn("official_value=119791 INR_crore", gross_text)
+        self.assertIn("distinct_source_document_count=3", gross_text)
+        self.assertIn("triple_source_status=three_distinct_sources_verified", gross_text)
 
         revenue = self.index[("reliance_jio", 2023, "revenue_from_operations")]
         self.assertEqual(revenue["value"], 101961)

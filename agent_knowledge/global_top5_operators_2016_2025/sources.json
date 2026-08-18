@@ -4651,6 +4651,15 @@
           "locator": "strategic progress; disclosed as 5G cells"
         }
       },
+      "comparative_evidence": {
+        "FY2023": {
+          "value_of_sales_and_services": {
+            "value": 119791,
+            "unit": "INR_crore",
+            "locator": "FY2023 audited comparative in consolidated segment information"
+          }
+        }
+      },
       "source_document_id": "jio_q2_2024_media_release"
     },
     {

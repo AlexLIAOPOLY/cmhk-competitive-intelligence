@@ -18137,19 +18137,21 @@
       "comparator": "=",
       "scope": "RIL Digital Services segment value of sales/services (gross revenue terminology in older reports)",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_q2_2024_media_release",
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2023",
       "primary_source_url": "https://www.ril.com/ar2022-23/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2023",
-        "reliance_jio_ar_2024"
+        "reliance_jio_ar_2024",
+        "jio_q2_2024_media_release"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
     },
