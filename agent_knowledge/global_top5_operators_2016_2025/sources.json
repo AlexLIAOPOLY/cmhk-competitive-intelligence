@@ -2151,6 +2151,23 @@
       "source_document_id": "china_mobile_prospectus_2021"
     },
     {
+      "source_id": "china_mobile_results_announcement_2020",
+      "operator_id": "china_mobile",
+      "year": 2020,
+      "label": "China Mobile 2020 annual results announcement",
+      "url": "https://www.chinamobileltd.com/en/file/view.php?id=244722",
+      "source_type": "official_annual_results_announcement",
+      "publisher": "China Mobile Limited",
+      "evidence": {
+        "total_base_stations": {
+          "value": 5.14,
+          "unit": "million_base_stations",
+          "locator": "chairman's statement; year-end network scale, page 8"
+        }
+      },
+      "source_document_id": "china_mobile_results_announcement_2020"
+    },
+    {
       "source_id": "china_mobile_sd_2021",
       "source_document_id": "china_mobile_sd_2021",
       "operator_id": "china_mobile",

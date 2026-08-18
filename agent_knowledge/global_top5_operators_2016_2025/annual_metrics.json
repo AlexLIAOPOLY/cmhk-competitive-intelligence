@@ -9094,7 +9094,7 @@
         "china_mobile_ar_2018",
         "china_mobile_prospectus_2021"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
@@ -9434,7 +9434,7 @@
         "china_mobile_20f_2019",
         "china_mobile_prospectus_2021"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
@@ -9758,21 +9758,23 @@
       "comparator": ">=",
       "scope": "all commissioned mobile base stations",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
         "china_mobile_ar_2020",
-        "china_mobile_prospectus_2021"
+        "china_mobile_prospectus_2021",
+        "china_mobile_results_announcement_2020"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_mobile_ar_2020",
       "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
       "verification_sources": [
         "china_mobile_ar_2020",
-        "china_mobile_prospectus_2021"
+        "china_mobile_prospectus_2021",
+        "china_mobile_results_announcement_2020"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
@@ -10146,7 +10148,7 @@
         "china_mobile_ar_a_2021",
         "china_mobile_20f_2021"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
@@ -10486,7 +10488,7 @@
         "china_mobile_ar_a_2022",
         "china_mobile_ar_summary_2022"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
@@ -10826,7 +10828,7 @@
         "china_mobile_ar_a_2023",
         "china_mobile_ar_summary_2023"
       ],
-      "quality_note": "Annual reports use 'more than/over' for some years. FY2019, FY2021, FY2022 and FY2023 have three exact independent legal documents. FY2018 and FY2020 remain at two exact documents; rounded or same-document mirrors are excluded."
+      "quality_note": "Annual reports use 'more than/over' for some years. FY2019-FY2023 have three exact independent legal documents except FY2018, which remains at two exact documents; rounded values and same-document mirrors are excluded."
     },
     {
       "operator_id": "china_mobile",
