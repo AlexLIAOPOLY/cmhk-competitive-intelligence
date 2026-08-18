@@ -1414,12 +1414,19 @@ CU_2025_THREE = ["china_unicom_ar_2025", "china_unicom_results_2025", "china_uni
 SHARED_5G_BASE_STATION_SOURCES = {
     2020: ["china_telecom_ar_2020", "china_unicom_ar_2020", "china_telecom_results_2020"],
     2021: ["china_telecom_ar_2021", "china_unicom_ar_2021", "china_telecom_results_2021"],
-    # The reviewed 2022 presentation only states over one million, so it does
-    # not corroborate the more precise 1.05 million value.
+    2022: ["china_telecom_ar_2022", "china_unicom_ar_2022", "china_unicom_results_2022"],
     2023: ["china_telecom_ar_2023", "china_unicom_ar_2023", "china_telecom_results_2023"],
     2024: ["china_telecom_ar_2024", "china_unicom_ar_2024", "china_telecom_results_2024"],
     2025: CT_2025_THREE,
 }
+
+for source_id in SHARED_5G_BASE_STATION_SOURCES[2022]:
+    SOURCES[source_id].setdefault("evidence", {})["5g_base_stations"] = {
+        "value": 1.0,
+        "unit": "million_base_stations",
+        "comparator": ">=",
+        "locator": "FY2022 5G co-build/co-share network scale",
+    }
 
 CHINA_MOBILE_5G_BASE_STATION_SOURCES = {
     2021: ["china_mobile_ar_2021", "china_mobile_ar_a_2021", "china_mobile_20f_2021"],
@@ -1488,7 +1495,7 @@ add_series("china_telecom", "fixed_broadband_subscribers", dict(zip(ct_years, [1
 add_series("china_telecom", "mobile_arpu", {2016:None,2017:None,2018:None,2019:None,2020:44.1,2021:45.0,2022:45.2,2023:45.4,2024:45.6,2025:45.1}, unit="RMB_per_user_month", scope="mobile service ARPU", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]), note="2016-2019 annual comparable value not asserted where the reviewed official sources did not provide a directly reusable figure.")
 add_series("china_telecom", "broadband_arpu", {2025:47.1}, unit="RMB_per_user_month", scope="wireline broadband blended ARPU", source_ids={2025:["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"]})
 add_series("china_telecom", "handset_data_traffic", {2016:1.277,2017:3.597,2018:14.073,2019:24.370,2020:34.690,2021:46.966,2022:60.193,2023:None,2024:89.979,2025:106.046}, scope="annual handset data traffic; converted from official kTB convention to billion GB at 1 kTB = 0.001 billion GB", source_ids=override_sources(paired("china_telecom", ct_years), 2025, ["china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_press_2025"]))
-add_series("china_telecom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million.")
+add_series("china_telecom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_telecom", "5g_network_penetration", {2025:68.8}, scope="5G network subscribers as a share of mobile subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
 add_series("china_telecom", "gigabit_broadband_penetration", {2025:31.6}, scope="gigabit broadband subscribers as a share of broadband subscribers", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
 add_series("china_telecom", "ten_g_pon_ports", {2025:10}, scope="10G PON ports in the gigabit fibre network", comparator=">=", source_ids={2025:[*CT_2025_THREE, "china_telecom_press_2025"]})
@@ -1505,7 +1512,7 @@ add_series("china_unicom", "fixed_broadband_subscribers", dict(zip(cu_years, [75
 add_series("china_unicom", "mobile_arpu", {2016:46.4,2017:48.0,2018:45.7,2019:40.4,2020:42.1,2021:43.9,2022:44.3,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="mobile billing subscriber ARPU", source_ids=paired("china_unicom", ct_years), note="From 2023 the company increasingly emphasised integrated-package ARPU; mobile-only ARPU is left as a documented gap.")
 add_series("china_unicom", "broadband_arpu", {2016:49.4,2017:46.3,2018:44.6,2019:41.6,2020:41.5,2021:41.3,2022:None,2023:None,2024:None,2025:None}, unit="RMB_per_user_month", scope="fixed-line broadband access ARPU", source_ids=paired("china_unicom", list(range(2016,2026))))
 add_series("china_unicom", "mobile_dou", {2016:None,2017:None,2018:None,2019:None,2020:9.7,2021:12.7,2022:None,2023:None,2024:None,2025:None}, scope="monthly average DOU per handset subscriber", source_ids=paired("china_unicom", cu_years))
-add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.05,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million.")
+add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_unicom", "total_connectivity_subscribers", {2025:1200}, scope="mobile billing, fixed broadband, fixed local access, IoT terminals and networking leased lines", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "mobile_population_coverage", {2025:99}, scope="mobile network population coverage", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "5g_a_deployment_cities", {2025:330}, scope="cities with 5G-A base-station deployment", comparator=">", source_ids={2025:CU_2025_THREE})

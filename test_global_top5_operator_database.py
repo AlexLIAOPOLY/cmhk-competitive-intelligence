@@ -39,9 +39,9 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "Bharti Airtel": 95,
                 "Reliance Jio": 40,
                 "中国广电": 24,
-                "中国电信": 57,
+                "中国电信": 58,
                 "中国移动": 78,
-                "中国联通": 52,
+                "中国联通": 53,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -153,17 +153,18 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             row = self.index[(operator_id, 2025, "5g_base_stations")]
             self.assertIn("Shared-network scope", row["quality_note"])
             self.assertEqual(row["distinct_source_document_count"], 3)
-        for year in (2020, 2021, 2023, 2024):
+        for year in (2020, 2021, 2022, 2023, 2024):
             for operator_id in ("china_telecom", "china_unicom"):
                 self.assertEqual(
                     self.index[(operator_id, year, "5g_base_stations")]["triple_source_status"],
                     "three_distinct_sources_verified",
                 )
         for operator_id in ("china_telecom", "china_unicom"):
-            self.assertEqual(
-                self.index[(operator_id, 2022, "5g_base_stations")]["triple_source_status"],
-                "below_three_source_threshold",
-            )
+            row = self.index[(operator_id, 2022, "5g_base_stations")]
+            self.assertEqual(row["value"], 1.0)
+            self.assertEqual(row["comparator"], ">=")
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertIn("previous 1.05 million precision was not retained", row["quality_note"])
         for year in range(2021, 2026):
             self.assertEqual(
                 self.index[("china_mobile", year, "5g_base_stations")]["triple_source_status"],

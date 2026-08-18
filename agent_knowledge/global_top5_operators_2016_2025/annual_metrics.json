@@ -12238,7 +12238,7 @@
         "china_unicom_ar_2020",
         "china_telecom_results_2020"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -12442,7 +12442,7 @@
         "china_unicom_ar_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -12624,25 +12624,29 @@
       "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
-      "value": 1.05,
-      "official_value": 1.05,
+      "value": 1.0,
+      "official_value": 1.0,
       "unit": "million_base_stations",
       "comparator": ">=",
       "scope": "5G mid-band co-built/shared base stations in service across China Telecom and China Unicom networks; not attributable one-for-one to either operator",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_telecom_ar_2022"
+        "china_telecom_ar_2022",
+        "china_unicom_ar_2022",
+        "china_unicom_results_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "china_telecom_ar_2022",
       "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
       "verification_sources": [
-        "china_telecom_ar_2022"
+        "china_telecom_ar_2022",
+        "china_unicom_ar_2022",
+        "china_unicom_results_2022"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -12846,7 +12850,7 @@
         "china_unicom_ar_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -13046,7 +13050,7 @@
         "china_unicom_ar_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -13284,7 +13288,7 @@
         "china_telecom_results_2025",
         "china_telecom_announcement_2025"
       ],
-      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Telecom and China Unicom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_telecom",
@@ -14544,7 +14548,7 @@
         "china_unicom_ar_2020",
         "china_telecom_results_2020"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",
@@ -14782,7 +14786,7 @@
         "china_unicom_ar_2021",
         "china_telecom_results_2021"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",
@@ -14998,25 +15002,29 @@
       "grain": "annual",
       "metric_key": "5g_base_stations",
       "metric_zh": "5G基站数",
-      "value": 1.05,
-      "official_value": 1.05,
+      "value": 1.0,
+      "official_value": 1.0,
       "unit": "million_base_stations",
       "comparator": ">=",
       "scope": "5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 1,
-      "distinct_source_document_count": 1,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
-        "china_unicom_ar_2022"
+        "china_telecom_ar_2022",
+        "china_unicom_ar_2022",
+        "china_unicom_results_2022"
       ],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "china_unicom_ar_2022",
-      "primary_source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2022.pdf",
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_telecom_ar_2022",
+      "primary_source_url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
       "verification_sources": [
-        "china_unicom_ar_2022"
+        "china_telecom_ar_2022",
+        "china_unicom_ar_2022",
+        "china_unicom_results_2022"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",
@@ -15246,7 +15254,7 @@
         "china_unicom_ar_2023",
         "china_telecom_results_2023"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",
@@ -15472,7 +15480,7 @@
         "china_unicom_ar_2024",
         "china_telecom_results_2024"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",
@@ -15732,7 +15740,7 @@
         "china_telecom_results_2025",
         "china_telecom_announcement_2025"
       ],
-      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. The 2022 value remains below the three-source threshold because broader official summaries only state over one million."
+      "quality_note": "Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million."
     },
     {
       "operator_id": "china_unicom",

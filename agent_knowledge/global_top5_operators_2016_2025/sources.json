@@ -1074,7 +1074,15 @@
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2022.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Telecom Corporation Limited",
-      "source_document_id": "china_telecom_ar_2022"
+      "source_document_id": "china_telecom_ar_2022",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1.0,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "FY2022 5G co-build/co-share network scale"
+        }
+      }
     },
     {
       "source_id": "china_telecom_ar_2023",
@@ -1174,7 +1182,15 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2022.pdf",
       "source_type": "official_annual_report",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_ar_2022"
+      "source_document_id": "china_unicom_ar_2022",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1.0,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "FY2022 5G co-build/co-share network scale"
+        }
+      }
     },
     {
       "source_id": "china_unicom_ar_2023",
@@ -1774,7 +1790,15 @@
       "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf",
       "source_type": "official_results_presentation",
       "publisher": "China Unicom (Hong Kong) Limited",
-      "source_document_id": "china_unicom_results_2022"
+      "source_document_id": "china_unicom_results_2022",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1.0,
+          "unit": "million_base_stations",
+          "comparator": ">=",
+          "locator": "FY2022 5G co-build/co-share network scale"
+        }
+      }
     },
     {
       "source_id": "china_unicom_results_2023",

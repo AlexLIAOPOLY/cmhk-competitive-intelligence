@@ -18,7 +18,7 @@
   "quality": {
     "status": "backlog_open",
     "available_value_rows": 235,
-    "three_distinct_source_certified_rows": 226,
-    "below_three_source_rows": 9
+    "three_distinct_source_certified_rows": 228,
+    "below_three_source_rows": 7
   }
 }
