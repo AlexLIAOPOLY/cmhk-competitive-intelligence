@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 45,
+                "Reliance Jio": 47,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -98,6 +98,21 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertEqual(set(row["verification_sources"]), expected_2020_sources)
             self.assertEqual(row["distinct_source_document_count"], 2)
             self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+
+        expected_2021_sources = {
+            "reliance_jio_ar_2021",
+            "reliance_jio_ar_2022",
+            "reliance_jio_ar_2023",
+        }
+        for metric_key, value in (
+            ("value_of_sales_and_services", 90287),
+            ("revenue_from_operations", 76642),
+        ):
+            row = self.index[("reliance_jio", 2021, metric_key)]
+            self.assertEqual(row["value"], value)
+            self.assertEqual(set(row["verification_sources"]), expected_2021_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_china_mobile_4g_base_station_history_uses_three_exact_documents(self):
         expected = {

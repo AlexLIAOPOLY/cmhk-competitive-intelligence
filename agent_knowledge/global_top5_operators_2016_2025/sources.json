@@ -862,6 +862,18 @@
         }
       },
       "comparative_evidence": {
+        "FY2021": {
+          "value_of_sales_and_services": {
+            "value": 90287,
+            "unit": "INR_crore",
+            "locator": "Digital Services three-year financial performance chart"
+          },
+          "revenue_from_operations": {
+            "value": 76642,
+            "unit": "INR_crore",
+            "locator": "Digital Services three-year financial performance chart"
+          }
+        },
         "FY2022": {
           "value_of_sales_and_services": {
             "value": 100166,
