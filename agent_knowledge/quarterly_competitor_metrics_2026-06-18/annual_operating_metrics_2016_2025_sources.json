@@ -4437,6 +4437,11 @@
           "value": 215,
           "unit": "million_ports",
           "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "4g_population_coverage": {
+          "value": 90,
+          "unit": "percent",
+          "locator": "FY2018 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
         }
       }
     },
@@ -4469,6 +4474,11 @@
           "value": 221,
           "unit": "million_ports",
           "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "4g_population_coverage": {
+          "value": 93,
+          "unit": "percent",
+          "locator": "FY2019 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -4489,6 +4499,11 @@
             "value": 215,
             "unit": "million_ports",
             "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 90,
+            "unit": "percent",
+            "locator": "FY2018 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         }
       }
@@ -4513,6 +4528,11 @@
             "value": 215,
             "unit": "million_ports",
             "locator": "FY2018 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 90,
+            "unit": "percent",
+            "locator": "FY2018 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         },
         "FY2019": {
@@ -4520,6 +4540,11 @@
             "value": 221,
             "unit": "million_ports",
             "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 93,
+            "unit": "percent",
+            "locator": "FY2019 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         }
       },
@@ -4533,6 +4558,11 @@
           "value": 225,
           "unit": "million_ports",
           "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "4g_population_coverage": {
+          "value": 94,
+          "unit": "percent",
+          "locator": "FY2020 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
         }
       }
     },
@@ -4565,6 +4595,11 @@
           "value": 239,
           "unit": "million_ports",
           "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+        },
+        "4g_population_coverage": {
+          "value": 95,
+          "unit": "percent",
+          "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
         }
       },
       "comparative_evidence": {
@@ -4578,6 +4613,11 @@
             "value": 225,
             "unit": "million_ports",
             "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 94,
+            "unit": "percent",
+            "locator": "FY2020 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         },
         "FY2019": {
@@ -4585,6 +4625,11 @@
             "value": 221,
             "unit": "million_ports",
             "locator": "FY2019 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 93,
+            "unit": "percent",
+            "locator": "FY2019 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         }
       }
@@ -4609,6 +4654,11 @@
             "value": 225,
             "unit": "million_ports",
             "locator": "FY2020 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 94,
+            "unit": "percent",
+            "locator": "FY2020 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         },
         "FY2021": {
@@ -4621,6 +4671,11 @@
             "value": 239,
             "unit": "million_ports",
             "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 95,
+            "unit": "percent",
+            "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         }
       },
@@ -4652,6 +4707,11 @@
             "value": 239,
             "unit": "million_ports",
             "locator": "FY2021 exact China Unicom operating KPI; 固网宽带接入端口 at the disclosed precision"
+          },
+          "4g_population_coverage": {
+            "value": 95,
+            "unit": "percent",
+            "locator": "FY2021 exact China Unicom operating KPI; 4G人口覆盖率 at the disclosed precision"
           }
         },
         "FY2022": {

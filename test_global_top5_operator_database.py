@@ -41,7 +41,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "中国广电": 6,
                 "中国电信": 60,
                 "中国移动": 80,
-                "中国联通": 54,
+                "中国联通": 58,
             },
         )
         audit_text = (GLOBAL / "quality_audit.md").read_text(encoding="utf-8")
@@ -535,6 +535,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 2021: 239, 2022: 250, 2023: 266,
             },
             "iot_connections": {2022: 385.540, 2023: 493.911},
+            "4g_population_coverage": {2018: 90, 2019: 93, 2020: 94, 2021: 95},
         }
         for metric_key, values in expected.items():
             for year, value in values.items():
@@ -631,6 +632,23 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
 
         self.assertIsNone(self.index[("china_unicom", 2024, "iot_connections")]["value"])
+
+    def test_xiaojing_retrieves_china_unicom_4g_population_coverage_history(self):
+        for year, value in {2018: 90, 2019: 93, 2020: 94, 2021: 95}.items():
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    f"中国联通{year}年4G人口覆盖率是多少？说明三来源。",
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn("metric_key=4g_population_coverage", combined)
+            self.assertIn(f"official_value={value} percent", combined)
+            self.assertIn("distinct_source_document_count=3", combined)
+            self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
+
+        for year in (2017, 2022):
+            self.assertIsNone(self.index[("china_unicom", year, "4g_population_coverage")]["value"])
 
     def test_china_sidecar_only_adds_operating_metrics(self):
         sidecar = json.loads((ORIGINAL / "annual_operating_metrics_2016_2025.json").read_text(encoding="utf-8"))

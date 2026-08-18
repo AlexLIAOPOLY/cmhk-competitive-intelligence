@@ -94,6 +94,7 @@ METRICS = {
     "integrated_subscriber_penetration": ("融合用户渗透率", "percent"),
     "integrated_package_arpu": ("融合套餐ARPU", "RMB_per_user_month"),
     "mobile_population_coverage": ("移动网络人口覆盖率", "percent"),
+    "4g_population_coverage": ("4G人口覆盖率", "percent"),
     "5g_a_deployment_cities": ("5G-A部署城市", "cities"),
     "cloud_ai_product_users": ("云AI产品用户", "million_users"),
     "intelligent_compute_capacity": ("智能算力", "EFLOPS_FP16"),
@@ -2317,6 +2318,9 @@ _CU_FIXED_BROADBAND_ACCESS_PORTS = {
 _CU_IOT_CONNECTIONS = {
     2022: 385.540, 2023: 493.911,
 }
+_CU_4G_POPULATION_COVERAGE = {
+    2018: 90, 2019: 93, 2020: 94, 2021: 95,
+}
 
 _CU_MOBILE_SUBSCRIBER_SOURCES = {
     2016: ["china_unicom_dec_ops_2016", "china_unicom_20f_2018", "china_unicom_csr_2018"],
@@ -2388,6 +2392,14 @@ _CU_IOT_CONNECTION_SOURCES = {
     2022: ["china_unicom_csr_2022", "china_unicom_csr_2023", "china_unicom_csr_2024"],
     2023: ["china_unicom_csr_2023", "china_unicom_csr_2024", "china_unicom_csr_2025"],
 }
+_CU_4G_POPULATION_COVERAGE_SOURCES = {
+    year: [
+        f"china_unicom_csr_{year}",
+        f"china_unicom_csr_{year + 1}",
+        f"china_unicom_csr_{year + 2}",
+    ]
+    for year in range(2018, 2022)
+}
 
 
 def _bind_cu_historical_evidence(
@@ -2417,6 +2429,7 @@ for _metric_key, _values, _source_map, _unit in (
     ("4g_base_stations", _CU_4G_BASE_STATIONS, _CU_4G_BASE_STATION_SOURCES, "million_base_stations"),
     ("fixed_broadband_access_ports", _CU_FIXED_BROADBAND_ACCESS_PORTS, _CU_FIXED_BROADBAND_ACCESS_PORT_SOURCES, "million_ports"),
     ("iot_connections", _CU_IOT_CONNECTIONS, _CU_IOT_CONNECTION_SOURCES, "million_connections"),
+    ("4g_population_coverage", _CU_4G_POPULATION_COVERAGE, _CU_4G_POPULATION_COVERAGE_SOURCES, "percent"),
 ):
     for _year, _value in _values.items():
         for _source_id in _source_map[_year]:
@@ -2900,6 +2913,7 @@ add_series("china_unicom", "4g_base_stations", {2016:0.740,2017:0.852,2018:0.987
 add_series("china_unicom", "fixed_broadband_access_ports", {2016:None,2017:None,2018:215,2019:221,2020:225,2021:239,2022:250,2023:266,2024:None,2025:None}, scope="fixed-network broadband access ports; network capacity, not subscriber count", source_ids=_CU_FIXED_BROADBAND_ACCESS_PORT_SOURCES, note="FY2018-FY2023 each use three consecutive official sustainability reports carrying the same value after deterministic billion-to-million conversion where applicable. FY2016-FY2017 stay blank because earlier reports preserve more precise 189.06/201.95 million figures while later tables round to 189/202 million. FY2024 has only two exact 279-million report bindings and FY2025 only one exact 286-million report binding, so neither is promoted under the strict three-document rule.")
 add_series("china_unicom", "5g_base_stations", {2020:0.38,2021:0.69,2022:1.0,2023:1.21,2024:1.375,2025:1.54}, scope="5G mid-band co-built/shared base stations in service across China Unicom and China Telecom networks; not attributable one-for-one", comparator=">=", source_ids=SHARED_5G_BASE_STATION_SOURCES, note="Shared-network scope; never sum China Unicom and China Telecom rows. FY2022 is stored as the officially supported lower bound of at least one million; the previous 1.05 million precision was not retained because the reviewed exact official documents state reached/over one million.")
 add_series("china_unicom", "iot_connections", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:None,2022:385.540,2023:493.911,2024:None}, scope="cumulative IoT terminal connections", source_ids=_CU_IOT_CONNECTION_SOURCES, note="FY2022 and FY2023 each use the exact thousand-connection KPI repeated in three consecutive official sustainability reports. FY2024 is not promoted because 624.781 million appears in only the FY2024 and FY2025 reports. Earlier years remain explicit gaps where three same-scope exact documents were not found.")
+add_series("china_unicom", "4g_population_coverage", {2016:None,2017:None,2018:90,2019:93,2020:94,2021:95,2022:None,2023:None,2024:None,2025:None}, scope="China Unicom 4G network population coverage", source_ids=_CU_4G_POPULATION_COVERAGE_SOURCES, note="FY2018-FY2021 each use the same exact percentage in three consecutive official sustainability reports. FY2017 has only the FY2017 narrative and FY2019 comparative table at the reviewed precision; FY2022 appears in only the FY2022 and FY2023 tables before the KPI was dropped. Those years and later years remain explicit gaps under the three-document rule.")
 add_series("china_unicom", "total_connectivity_subscribers", {2025:1200}, scope="mobile billing, fixed broadband, fixed local access, IoT terminals and networking leased lines", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "mobile_population_coverage", {2025:99}, scope="mobile network population coverage", comparator=">", source_ids={2025:CU_2025_THREE})
 add_series("china_unicom", "5g_a_deployment_cities", {2025:330}, scope="cities with 5G-A base-station deployment", comparator=">", source_ids={2025:CU_2025_THREE})

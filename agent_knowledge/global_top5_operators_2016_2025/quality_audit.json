@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "backlog_open",
-  "row_count": 656,
-  "available_value_rows": 436,
-  "three_distinct_source_certified_rows": 325,
+  "row_count": 666,
+  "available_value_rows": 440,
+  "three_distinct_source_certified_rows": 329,
   "below_three_source_rows": 111,
   "source_count": 247,
   "duplicate_key_count": 0,
@@ -14,9 +14,9 @@
     "official_derived_from_verified_quarters": 10,
     "official_derived_from_verified_rows": 6,
     "official_single_source": 74,
-    "official_three_distinct_sources_verified": 325,
+    "official_three_distinct_sources_verified": 329,
     "official_two_distinct_sources": 21,
-    "source_gap_confirmed": 193
+    "source_gap_confirmed": 199
   },
   "available_rows_by_operator": {
     "Bharti Airtel": 100,
@@ -24,7 +24,7 @@
     "中国广电": 24,
     "中国电信": 67,
     "中国移动": 110,
-    "中国联通": 74
+    "中国联通": 78
   },
   "three_source_certified_rows_by_operator": {
     "Bharti Airtel": 98,
@@ -32,10 +32,11 @@
     "中国广电": 6,
     "中国电信": 60,
     "中国移动": 80,
-    "中国联通": 54
+    "中国联通": 58
   },
   "available_rows_by_metric": {
     "4g_base_stations": 13,
+    "4g_population_coverage": 4,
     "4g_subscribers": 14,
     "5g_a_deployment_cities": 1,
     "5g_base_stations": 24,

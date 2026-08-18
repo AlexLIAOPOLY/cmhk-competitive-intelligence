@@ -27,19 +27,19 @@
     "conflicts_and_scope_breaks.json",
     "conflicts_and_scope_breaks.csv"
   ],
-  "row_count": 656,
+  "row_count": 666,
   "quality": {
     "status": "backlog_open",
     "source_count": 247,
-    "available_value_rows": 436,
-    "three_distinct_source_certified_rows": 325,
+    "available_value_rows": 440,
+    "three_distinct_source_certified_rows": 329,
     "three_source_certified_rows_by_operator": {
       "Bharti Airtel": 98,
       "Reliance Jio": 27,
       "中国广电": 6,
       "中国电信": 60,
       "中国移动": 80,
-      "中国联通": 54
+      "中国联通": 58
     },
     "below_three_source_rows": 111
   },

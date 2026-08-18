@@ -616,6 +616,7 @@ def _global_operator_exact_metric_chunks(
         "total_connectivity_subscribers": ["连接用户总规模", "总连接用户", "total connectivity subscribers"],
         "integrated_subscriber_penetration": ["融合用户渗透率", "integrated subscriber penetration"],
         "mobile_population_coverage": ["移动人口覆盖率", "mobile population coverage"],
+        "4g_population_coverage": ["4g人口覆盖率", "4g网络人口覆盖率", "4g population coverage"],
         "5g_a_deployment_cities": ["5g-a城市", "5g-a部署城市", "5g a cities"],
         "cloud_ai_product_users": ["云ai产品用户", "cloud-ai users", "cloud ai product users"],
         "intelligent_compute_capacity": ["智算规模", "智算能力", "intelligent compute capacity"],
