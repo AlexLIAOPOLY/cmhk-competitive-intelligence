@@ -95,7 +95,7 @@ class CardActionHandler:
         self.state.setdefault("processed_events", {})
         self.state.setdefault("handled_messages", {})
         self._stop_requested = False
-        self._event_process: subprocess.Popen[str] | None = None
+        self._event_processes: dict[str, subprocess.Popen[str]] = {}
 
     def now(self) -> datetime:
         value = self.now_fn()
@@ -450,44 +450,43 @@ class CardActionHandler:
 
     def _handle_signal(self, _signum: int, _frame: object) -> None:
         self._stop_requested = True
-        process = self._event_process
-        if process is not None and process.poll() is None:
-            process.terminate()
+        for process in self._event_processes.values():
+            if process.poll() is None:
+                process.terminate()
 
     def run_daemon(self) -> None:
         signal.signal(signal.SIGTERM, self._handle_signal)
         signal.signal(signal.SIGINT, self._handle_signal)
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
-        argv = [
-            "lark-cli",
-            "event",
-            "consume",
-            "card.action.trigger",
-            "--as",
-            "bot",
-            "--profile",
+        subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+        profiles = list(dict.fromkeys(filter(None, [
             profile,
-        ]
-        process = subprocess.Popen(
-            argv,
-            cwd=self.runtime_root,
-            env=_command_env(self.environ),
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
-        )
-        self._event_process = process
+            str(subscriptions.get("directory_profile") or ""),
+        ])))
         selector = selectors.DefaultSelector()
-        assert process.stdout is not None and process.stderr is not None
-        selector.register(process.stdout, selectors.EVENT_READ, "stdout")
-        selector.register(process.stderr, selectors.EVENT_READ, "stderr")
-        ready = False
+        ready: set[str] = set()
+        for event_profile in profiles:
+            process = subprocess.Popen(
+                [
+                    "lark-cli", "event", "consume", "card.action.trigger",
+                    "--as", "bot", "--profile", event_profile,
+                ],
+                cwd=self.runtime_root,
+                env=_command_env(self.environ),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+            )
+            self._event_processes[event_profile] = process
+            assert process.stdout is not None and process.stderr is not None
+            selector.register(process.stdout, selectors.EVENT_READ, ("stdout", event_profile))
+            selector.register(process.stderr, selectors.EVENT_READ, ("stderr", event_profile))
         try:
             while not self._stop_requested:
-                if process.poll() is not None and not selector.get_map():
+                if all(process.poll() is not None for process in self._event_processes.values()) and not selector.get_map():
                     break
                 for key, _ in selector.select(timeout=1):
                     line = key.fileobj.readline()
@@ -497,10 +496,13 @@ class CardActionHandler:
                         except KeyError:
                             pass
                         continue
-                    if key.data == "stderr":
-                        print(line.rstrip(), file=sys.stderr, flush=True)
+                    stream_name, event_profile = key.data
+                    if stream_name == "stderr":
+                        print(f"[{event_profile}] {line.rstrip()}", file=sys.stderr, flush=True)
                         if "[event] ready event_key=card.action.trigger" in line:
-                            ready = True
+                            ready.add(event_profile)
+                            listeners = self.state.setdefault("listener_profiles", {})
+                            listeners[event_profile] = {"ready_at_hkt": _iso(self.now())}
                             self.state["listener_ready_at_hkt"] = _iso(self.now())
                             _atomic_json(self.action_state_path, self.state)
                         continue
@@ -508,6 +510,7 @@ class CardActionHandler:
                         event = json.loads(line)
                         if not isinstance(event, dict):
                             raise ValueError("event line is not an object")
+                        event["source_profile"] = event_profile
                         result = self.handle_event(event)
                         print(json.dumps(result, ensure_ascii=False), flush=True)
                     except Exception as exc:
@@ -521,20 +524,29 @@ class CardActionHandler:
                                 "error": error,
                             },
                         )
-            return_code = process.wait(timeout=10)
-            if not self._stop_requested and (return_code != 0 or not ready):
+            return_codes = {
+                event_profile: process.wait(timeout=10)
+                for event_profile, process in self._event_processes.items()
+            }
+            unhealthy = {
+                event_profile: code
+                for event_profile, code in return_codes.items()
+                if code != 0 or event_profile not in ready
+            }
+            if not self._stop_requested and unhealthy:
                 raise RuntimeError(
-                    f"card action event consumer exited before a healthy ready state: code={return_code}"
+                    f"card action event consumer exited before a healthy ready state: {unhealthy}"
                 )
         finally:
             selector.close()
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    print("card action consumer did not exit after SIGTERM", file=sys.stderr, flush=True)
-            self._event_process = None
+            for event_profile, process in self._event_processes.items():
+                if process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        print(f"card action consumer {event_profile} did not exit after SIGTERM", file=sys.stderr, flush=True)
+            self._event_processes = {}
 
     def acquire_lock(self):
         self.state_dir.mkdir(parents=True, exist_ok=True)

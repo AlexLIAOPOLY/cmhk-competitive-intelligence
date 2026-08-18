@@ -13,14 +13,28 @@ class FakeLark:
 
     def __call__(self, argv, timeout=45):
         self.calls.append(list(argv))
-        if "+get-user" in argv:
+        if "api" in argv and "/open-apis/contact/v3/departments/0/children" in argv:
+            payload = {"ok": True, "data": {"has_more": False, "items": [{
+                "open_department_id": "od-test123", "name": "战略部", "member_count": 1,
+                "status": {"is_deleted": False},
+            }]}}
+        elif "api" in argv and "/open-apis/contact/v3/users/find_by_department" in argv:
+            payload = {"ok": True, "data": {"has_more": False, "items": [{
+                "open_id": "ou_delivery123", "union_id": "on_test123",
+                "name": "测试用户", "en_name": "Test User", "job_title": "经理",
+                "avatar": {"avatar_72": "https://example.test/avatar.png"},
+            }]}}
+        elif "+get-user" in argv:
             if "union_id" in argv:
                 payload = {"ok": True, "data": {"user": {
                     "open_id": "ou_delivery123", "union_id": "on_test123", "name": "测试用户",
+                    "avatar": {"avatar_72": "https://example.test/avatar.png"},
                 }}}
             else:
+                requested = argv[argv.index("--user-id") + 1]
                 payload = {"ok": True, "data": {"user": {
-                    "open_id": "ou_callback123", "union_id": "on_test123", "name": "测试用户",
+                    "open_id": requested, "union_id": "on_test123", "name": "测试用户",
+                    "avatar": {"avatar_72": "https://example.test/avatar.png"},
                 }}}
         elif "+messages-send" in argv:
             payload = {"ok": True, "data": {"message_id": "om_test123", "chat_id": "oc_test123"}}
@@ -40,6 +54,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             "bot": {"profile": "cli_test"},
             "subscriptions": {
                 "entry_profile": "cli_test",
+                "directory_profile": "org_test",
                 "delivery_profile": "org_test",
                 "primary_delivery_open_id": "ou_delivery123",
             },
@@ -132,6 +147,42 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertTrue(any("+messages-mget" in call for call in self.lark.calls))
         with self.assertRaises(ValueError):
             self.service.publish_entry_card(target_id="oc_incident123", target_type="chat")
+
+    def test_directory_search_returns_avatar_and_adds_controlled_candidate(self):
+        refreshed = self.service.refresh_people_directory()
+        self.assertEqual(refreshed["people_count"], 1)
+        results = self.service.search_people_directory("测试")
+        self.assertEqual(results[0]["avatar_url"], "https://example.test/avatar.png")
+        self.assertEqual(results[0]["department_names"], ["战略部"])
+        added = self.service.add_directory_candidates(["ou_delivery123"])
+        self.assertEqual(added["added_count"], 1)
+        self.assertEqual(added["candidates"][0]["display_name"], "测试用户")
+
+    def test_invite_is_selected_only_and_callback_updates_result(self):
+        self.service.refresh_people_directory()
+        self.service.add_directory_candidates(["ou_delivery123"])
+        with self.assertRaisesRegex(ValueError, "二次确认"):
+            self.service.invite_users(["ou_delivery123"])
+        sent = self.service.invite_users(["ou_delivery123"], confirm_invite=True)
+        self.assertEqual(sent["sent_count"], 1)
+        self.assertEqual(self.service.list_summary()["invitations"][0]["status"], "pending")
+        accepted = self.service.handle_card_event({
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "event_id": "event-invite-accept",
+            "operator_id": "ou_delivery123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+            "form_value": json.dumps({"services": ["news"], "frequency": "daily"}),
+        })
+        self.assertEqual(accepted["status"], "subscription_saved")
+        invitation = self.service.list_summary()["invitations"][0]
+        self.assertEqual(invitation["status"], "accepted")
+        self.assertTrue(invitation["responded_at"])
+
+    def test_invite_rejects_person_outside_controlled_candidates(self):
+        with self.assertRaisesRegex(ValueError, "受控名单"):
+            self.service.invite_users(["ou_unknown123"], confirm_invite=True)
 
     def test_news_test_push_is_logged_and_verified(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])

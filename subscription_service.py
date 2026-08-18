@@ -254,8 +254,55 @@ class SubscriptionService:
                     target_type TEXT NOT NULL,
                     target_id TEXT NOT NULL,
                     chat_id TEXT NOT NULL,
+                    source_profile TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS subscription_invite_candidates (
+                    callback_open_id TEXT PRIMARY KEY,
+                    delivery_open_id TEXT NOT NULL,
+                    union_id TEXT NOT NULL,
+                    display_name TEXT NOT NULL,
+                    source_profile TEXT NOT NULL DEFAULT '',
+                    avatar_url TEXT NOT NULL DEFAULT '',
+                    department_names TEXT NOT NULL DEFAULT '[]',
+                    job_title TEXT NOT NULL DEFAULT '',
+                    source TEXT NOT NULL DEFAULT 'admin_resolved',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS subscription_invitations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    callback_open_id TEXT NOT NULL,
+                    delivery_open_id TEXT NOT NULL,
+                    union_id TEXT NOT NULL,
+                    display_name TEXT NOT NULL,
+                    source_profile TEXT NOT NULL DEFAULT '',
+                    avatar_url TEXT NOT NULL DEFAULT '',
+                    message_id TEXT NOT NULL UNIQUE,
+                    chat_id TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    invited_by TEXT NOT NULL DEFAULT 'local_admin',
+                    sent_at TEXT NOT NULL,
+                    responded_at TEXT NOT NULL DEFAULT '',
+                    last_error TEXT NOT NULL DEFAULT '',
+                    updated_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS subscription_directory_people (
+                    directory_open_id TEXT PRIMARY KEY,
+                    union_id TEXT NOT NULL,
+                    display_name TEXT NOT NULL,
+                    en_name TEXT NOT NULL DEFAULT '',
+                    avatar_url TEXT NOT NULL DEFAULT '',
+                    job_title TEXT NOT NULL DEFAULT '',
+                    department_names TEXT NOT NULL DEFAULT '[]',
+                    source_profile TEXT NOT NULL,
+                    active INTEGER NOT NULL DEFAULT 1,
+                    synced_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS subscription_directory_people_name_idx
+                    ON subscription_directory_people(display_name);
+                CREATE INDEX IF NOT EXISTS subscription_invitations_target_idx
+                    ON subscription_invitations(callback_open_id, sent_at DESC);
                 CREATE TABLE IF NOT EXISTS pending_subscription_deliveries (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     delivery_id INTEGER NOT NULL REFERENCES deliveries(id) ON DELETE CASCADE,
@@ -292,6 +339,26 @@ class SubscriptionService:
                 db.execute("ALTER TABLE pending_subscription_deliveries ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0")
             if "last_error" not in pending_columns:
                 db.execute("ALTER TABLE pending_subscription_deliveries ADD COLUMN last_error TEXT NOT NULL DEFAULT ''")
+            migrations = {
+                "subscription_entry_cards": {
+                    "source_profile": "TEXT NOT NULL DEFAULT ''",
+                },
+                "subscription_invite_candidates": {
+                    "source_profile": "TEXT NOT NULL DEFAULT ''",
+                    "avatar_url": "TEXT NOT NULL DEFAULT ''",
+                    "department_names": "TEXT NOT NULL DEFAULT '[]'",
+                    "job_title": "TEXT NOT NULL DEFAULT ''",
+                },
+                "subscription_invitations": {
+                    "source_profile": "TEXT NOT NULL DEFAULT ''",
+                    "avatar_url": "TEXT NOT NULL DEFAULT ''",
+                },
+            }
+            for table, additions in migrations.items():
+                existing = {str(row[1]) for row in db.execute(f"PRAGMA table_info({table})").fetchall()}
+                for column, declaration in additions.items():
+                    if column not in existing:
+                        db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {declaration}")
 
     def _run(self, argv: list[str], *, timeout: float = 45) -> subprocess.CompletedProcess[str]:
         if self.command_runner is not None:
@@ -309,12 +376,18 @@ class SubscriptionService:
     def _lark(self, argv: list[str], *, timeout: float = 45) -> dict[str, Any]:
         return _json_payload(self._run(argv, timeout=timeout))
 
-    def resolve_user(self, open_id: str) -> dict[str, str]:
+    @property
+    def directory_profile(self) -> str:
+        subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+        return str(subscriptions.get("directory_profile") or self.delivery_profile)
+
+    def resolve_user(self, open_id: str, *, source_profile: str = "") -> dict[str, str]:
         if not OPEN_ID_RE.fullmatch(open_id):
             raise ValueError("无效的飞书 open_id")
+        callback_profile = source_profile or self.entry_profile
         payload = self._lark([
             "lark-cli", "contact", "+get-user", "--user-id", open_id,
-            "--user-id-type", "open_id", "--as", "bot", "--profile", self.entry_profile,
+            "--user-id-type", "open_id", "--as", "bot", "--profile", callback_profile,
             "--format", "json",
         ])
         data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
@@ -337,7 +410,16 @@ class SubscriptionService:
         delivery_open_id = str(delivery_user.get("open_id") or "")
         if not OPEN_ID_RE.fullmatch(delivery_open_id) or str(delivery_user.get("union_id") or "") != union_id:
             raise RuntimeError("组织推送应用无法解析该订阅者，请确认应用可用范围")
-        return {"display_name": name, "callback_open_id": open_id, "union_id": union_id, "open_id": delivery_open_id}
+        avatar = user.get("avatar") if isinstance(user.get("avatar"), dict) else {}
+        return {
+            "display_name": name,
+            "callback_open_id": open_id,
+            "union_id": union_id,
+            "open_id": delivery_open_id,
+            "source_profile": callback_profile,
+            "avatar_url": str(avatar.get("avatar_72") or avatar.get("avatar_240") or ""),
+            "job_title": str(user.get("job_title") or "")[:160],
+        }
 
     def save_subscriptions(
         self,
@@ -423,12 +505,15 @@ class SubscriptionService:
             raise ValueError("订阅回调缺少有效事件、用户或消息身份")
         with closing(self._connect()) as db, db:
             published = db.execute(
-                "SELECT 1 FROM subscription_entry_cards WHERE message_id=? AND chat_id=?",
+                "SELECT source_profile, target_type, target_id FROM subscription_entry_cards WHERE message_id=? AND chat_id=?",
                 (message_id, chat_id),
             ).fetchone()
         if published is None:
             raise ValueError("订阅回调并非来自后台已发布的受控卡片")
-        identity = self.resolve_user(open_id)
+        source_profile = str(published["source_profile"] or self.entry_profile)
+        if str(published["target_type"]) == "user" and str(published["target_id"]) != open_id:
+            raise ValueError("订阅回调用户与受邀人不一致")
+        identity = self.resolve_user(open_id, source_profile=source_profile)
         if is_pause:
             with closing(self._connect()) as db, db:
                 existing = db.execute(
@@ -441,13 +526,19 @@ class SubscriptionService:
                     "UPDATE subscribers SET status='paused', updated_at=? WHERE open_id=?",
                     (_now_hkt(), identity["open_id"]),
                 )
+                db.execute(
+                    """UPDATE subscription_invitations
+                       SET status='paused', responded_at=?, updated_at=?
+                       WHERE message_id=? AND callback_open_id=?""",
+                    (_now_hkt(), _now_hkt(), message_id, identity["callback_open_id"]),
+                )
             confirmation = self._send_markdown(
                 identity["callback_open_id"],
                 "#### 订阅已暂停\n\n你的全部战略情报推送已暂停。需要恢复时，重新提交订阅卡片即可。",
                 idempotency_key=f"subpause-{event_id}"[:50],
-                profile=self.entry_profile,
+                profile=source_profile,
             )
-            self._verify_message(confirmation, profile=self.entry_profile)
+            self._verify_message(confirmation, profile=source_profile)
             return {
                 "status": "subscription_paused",
                 "open_id": identity["open_id"],
@@ -461,14 +552,21 @@ class SubscriptionService:
             callback_open_id=identity["callback_open_id"], union_id=identity["union_id"],
             frequency=frequency,
         )
+        with closing(self._connect()) as db, db:
+            db.execute(
+                """UPDATE subscription_invitations
+                   SET status='accepted', responded_at=?, updated_at=?
+                   WHERE message_id=? AND callback_open_id=?""",
+                (_now_hkt(), _now_hkt(), message_id, identity["callback_open_id"]),
+            )
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
             f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n接收频率：**{saved['frequency_label']}**。以后重新提交订阅卡片即可覆盖选择。",
             idempotency_key=f"suback-{event_id}"[:50],
-            profile=self.entry_profile,
+            profile=source_profile,
         )
-        self._verify_message(confirmation, profile=self.entry_profile)
+        self._verify_message(confirmation, profile=source_profile)
         saved["confirmation_message_id"] = confirmation
         return {"status": "subscription_saved", **saved}
 
@@ -483,6 +581,9 @@ class SubscriptionService:
             ).fetchall()
             deliveries = db.execute(
                 "SELECT * FROM deliveries ORDER BY id DESC LIMIT ?", (max(1, min(delivery_limit, 300)),)
+            ).fetchall()
+            invitations = db.execute(
+                "SELECT * FROM subscription_invitations ORDER BY id DESC LIMIT 200"
             ).fetchall()
         subscribers = []
         counts = {key: 0 for key in VALID_SERVICES}
@@ -501,8 +602,349 @@ class SubscriptionService:
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
             "subscribers": subscribers,
             "deliveries": [dict(item) | {"message_ids": json.loads(item["message_ids"] or "[]")} for item in deliveries],
+            "invite_candidates": self.list_invite_candidates(),
+            "invitations": [dict(item) for item in invitations],
+            "invitation_counts": {
+                status: sum(1 for item in invitations if str(item["status"]) == status)
+                for status in ("pending", "accepted", "paused", "failed")
+            },
+            "invitation_permissions": self.invitation_permission_snapshot(),
             "active_subscriber_count": sum(1 for row in subscribers if row["status"] == "active"),
             "updated_at": _now_hkt(),
+        }
+
+    def invitation_permission_snapshot(self) -> dict[str, Any]:
+        app_id = str((self.config.get("bot") or {}).get("app_id") or self.entry_profile)
+        return {
+            "mode": "authorized_directory",
+            "status": "ready" if self.directory_profile else "limited",
+            "summary": "通过已授权的飞书通讯录应用搜索姓名并显示头像；只有授权范围内且可由推送应用解析的人员才能被邀请。",
+            "required_scopes": [
+                {"scope": "contact:user.base:readonly", "purpose": "回读姓名、open_id 与 union_id", "level": "required"},
+                {"scope": "im:message:send_as_bot", "purpose": "逐人发送订阅邀请卡片", "level": "required"},
+                {"scope": "contact:contact.base:readonly", "purpose": "从限定通讯录范围读取候选人", "level": "recommended"},
+            ],
+            "not_requested": ["contact:contact:access_as_app", "任何通讯录写权限"],
+            "availability_note": "应用可用范围与通讯录权限范围都必须包含受邀人；后台不会越过任一范围。",
+            "directory_profile": self.directory_profile,
+            "console_url": f"https://open.feishu.cn/app/{app_id}/permission" if app_id else "",
+            "updated_at": _now_hkt(),
+        }
+
+    def _directory_get(self, path: str, params: dict[str, Any]) -> dict[str, Any]:
+        return self._lark([
+            "lark-cli", "api", "GET", path,
+            "--params", json.dumps(params, ensure_ascii=False),
+            "--as", "bot", "--profile", self.directory_profile, "--format", "json",
+        ], timeout=60)
+
+    def refresh_people_directory(self) -> dict[str, Any]:
+        departments: dict[str, str] = {}
+        page_token = ""
+        for _ in range(20):
+            params: dict[str, Any] = {
+                "department_id_type": "open_department_id",
+                "fetch_child": True,
+                "page_size": 50,
+            }
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._directory_get("/open-apis/contact/v3/departments/0/children", params)
+            data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+            for item in data.get("items") or []:
+                if not isinstance(item, dict):
+                    continue
+                status = item.get("status") if isinstance(item.get("status"), dict) else {}
+                name = str(item.get("name") or "").strip()
+                department_id = str(item.get("open_department_id") or "")
+                if (
+                    department_id.startswith("od-")
+                    and name
+                    and int(item.get("member_count") or 0) > 0
+                    and not status.get("is_deleted")
+                    and "已撤销" not in name
+                ):
+                    departments[department_id] = name
+            if not data.get("has_more"):
+                break
+            page_token = str(data.get("page_token") or "")
+            if not page_token:
+                break
+
+        people: dict[str, dict[str, Any]] = {}
+        for department_id, department_name in departments.items():
+            page_token = ""
+            for _ in range(30):
+                params = {
+                    "department_id": department_id,
+                    "department_id_type": "open_department_id",
+                    "user_id_type": "open_id",
+                    "page_size": 50,
+                }
+                if page_token:
+                    params["page_token"] = page_token
+                payload = self._directory_get("/open-apis/contact/v3/users/find_by_department", params)
+                data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+                for user in data.get("items") or []:
+                    if not isinstance(user, dict):
+                        continue
+                    open_id = str(user.get("open_id") or "")
+                    union_id = str(user.get("union_id") or "")
+                    name = str(user.get("name") or user.get("en_name") or "").strip()[:120]
+                    if not OPEN_ID_RE.fullmatch(open_id) or not union_id.startswith("on_") or not name:
+                        continue
+                    avatar = user.get("avatar") if isinstance(user.get("avatar"), dict) else {}
+                    record = people.setdefault(open_id, {
+                        "directory_open_id": open_id,
+                        "union_id": union_id,
+                        "display_name": name,
+                        "en_name": str(user.get("en_name") or "")[:120],
+                        "avatar_url": str(avatar.get("avatar_72") or avatar.get("avatar_240") or ""),
+                        "job_title": str(user.get("job_title") or "")[:160],
+                        "department_names": set(),
+                    })
+                    record["department_names"].add(department_name)
+                if not data.get("has_more"):
+                    break
+                page_token = str(data.get("page_token") or "")
+                if not page_token:
+                    break
+
+        now = _now_hkt()
+        with closing(self._connect()) as db, db:
+            db.execute("UPDATE subscription_directory_people SET active=0")
+            for person in people.values():
+                department_names = sorted(person["department_names"])
+                db.execute(
+                    """INSERT INTO subscription_directory_people(
+                           directory_open_id, union_id, display_name, en_name, avatar_url,
+                           job_title, department_names, source_profile, active, synced_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                       ON CONFLICT(directory_open_id) DO UPDATE SET
+                           union_id=excluded.union_id, display_name=excluded.display_name,
+                           en_name=excluded.en_name, avatar_url=excluded.avatar_url,
+                           job_title=excluded.job_title, department_names=excluded.department_names,
+                           source_profile=excluded.source_profile, active=1, synced_at=excluded.synced_at""",
+                    (
+                        person["directory_open_id"], person["union_id"], person["display_name"],
+                        person["en_name"], person["avatar_url"], person["job_title"],
+                        json.dumps(department_names, ensure_ascii=False), self.directory_profile, now,
+                    ),
+                )
+        return {"people_count": len(people), "department_count": len(departments), "synced_at": now}
+
+    def search_people_directory(self, query: str, *, limit: int = 30) -> list[dict[str, Any]]:
+        needle = str(query or "").strip()
+        if not needle or len(needle) > 50:
+            raise ValueError("请输入 1 至 50 个字符的姓名关键字")
+        pattern = f"%{needle.replace('%', '').replace('_', '')}%"
+        with closing(self._connect()) as db:
+            rows = db.execute(
+                """SELECT directory_open_id, union_id, display_name, en_name, avatar_url,
+                          job_title, department_names, source_profile, synced_at
+                   FROM subscription_directory_people
+                   WHERE active=1 AND (display_name LIKE ? OR en_name LIKE ?)
+                   ORDER BY display_name LIMIT ?""",
+                (pattern, pattern, max(1, min(int(limit), 50))),
+            ).fetchall()
+        return [dict(row) | {"department_names": json.loads(row["department_names"] or "[]")} for row in rows]
+
+    def avatar_source_url(self, open_id: str) -> str:
+        if not OPEN_ID_RE.fullmatch(str(open_id)):
+            raise ValueError("飞书头像身份无效")
+        with closing(self._connect()) as db:
+            row = db.execute(
+                """SELECT avatar_url FROM subscription_directory_people
+                   WHERE directory_open_id=? AND active=1""",
+                (open_id,),
+            ).fetchone()
+            if row is None:
+                row = db.execute(
+                    "SELECT avatar_url FROM subscription_invite_candidates WHERE callback_open_id=?",
+                    (open_id,),
+                ).fetchone()
+        url = str(row["avatar_url"] or "") if row else ""
+        if not url.startswith("https://") or "feishucdn.com/" not in url:
+            raise ValueError("该人员没有可用的飞书头像")
+        return url
+
+    def add_directory_candidates(self, directory_open_ids: list[str]) -> dict[str, Any]:
+        normalized = list(dict.fromkeys(str(item) for item in directory_open_ids))
+        if not normalized or len(normalized) > 30:
+            raise ValueError("每次请选择 1 至 30 位候选人")
+        placeholders = ",".join("?" for _ in normalized)
+        with closing(self._connect()) as db:
+            rows = db.execute(
+                f"""SELECT * FROM subscription_directory_people
+                     WHERE active=1 AND directory_open_id IN ({placeholders})""",
+                normalized,
+            ).fetchall()
+        if len(rows) != len(normalized):
+            raise ValueError("候选人不在当前飞书通讯录授权范围，请刷新后重试")
+        now = _now_hkt()
+        with closing(self._connect()) as db, db:
+            for row in rows:
+                directory_open_id = str(row["directory_open_id"])
+                union_id = str(row["union_id"])
+                if self.directory_profile == self.delivery_profile:
+                    delivery_open_id = directory_open_id
+                else:
+                    payload = self._lark([
+                        "lark-cli", "contact", "+get-user", "--user-id", union_id,
+                        "--user-id-type", "union_id", "--as", "bot", "--profile", self.delivery_profile,
+                        "--format", "json",
+                    ])
+                    data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+                    user = data.get("user") if isinstance(data.get("user"), dict) else {}
+                    delivery_open_id = str(user.get("open_id") or "")
+                if not OPEN_ID_RE.fullmatch(delivery_open_id):
+                    raise RuntimeError(f"推送应用无法解析候选人：{row['display_name']}")
+                db.execute(
+                    """INSERT INTO subscription_invite_candidates(
+                           callback_open_id, delivery_open_id, union_id, display_name,
+                           source_profile, avatar_url, department_names, job_title, source, created_at, updated_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 'directory', ?, ?)
+                       ON CONFLICT(callback_open_id) DO UPDATE SET
+                           delivery_open_id=excluded.delivery_open_id, union_id=excluded.union_id,
+                           display_name=excluded.display_name, source_profile=excluded.source_profile,
+                           avatar_url=excluded.avatar_url, department_names=excluded.department_names,
+                           job_title=excluded.job_title, source='directory', updated_at=excluded.updated_at""",
+                    (
+                        directory_open_id, delivery_open_id, union_id, str(row["display_name"]),
+                        str(row["source_profile"]), str(row["avatar_url"]), str(row["department_names"]),
+                        str(row["job_title"]), now, now,
+                    ),
+                )
+        return {"added_count": len(rows), "candidates": self.list_invite_candidates()}
+
+    def list_invite_candidates(self) -> list[dict[str, Any]]:
+        with closing(self._connect()) as db:
+            rows = db.execute(
+                """SELECT callback_open_id, delivery_open_id, union_id, display_name, source_profile,
+                          avatar_url, department_names, job_title, source, created_at, updated_at
+                   FROM subscription_invite_candidates ORDER BY display_name, callback_open_id"""
+            ).fetchall()
+            subscribers = db.execute(
+                """SELECT callback_open_id, open_id AS delivery_open_id, union_id, display_name,
+                          created_at, updated_at
+                   FROM subscribers WHERE callback_open_id<>''"""
+            ).fetchall()
+        merged: dict[str, dict[str, Any]] = {
+            str(row["callback_open_id"]): dict(row) | {
+                "department_names": json.loads(row["department_names"] or "[]")
+            }
+            for row in rows
+        }
+        for row in subscribers:
+            key = str(row["callback_open_id"])
+            merged.setdefault(key, dict(row) | {
+                "source": "subscriber", "source_profile": self.entry_profile,
+                "avatar_url": "", "department_names": [], "job_title": "",
+            })
+        deduplicated: dict[str, dict[str, Any]] = {}
+        for candidate in merged.values():
+            identity_key = str(candidate.get("union_id") or candidate["callback_open_id"])
+            existing = deduplicated.get(identity_key)
+            if existing is None or (
+                candidate.get("source") == "directory" and existing.get("source") != "directory"
+            ):
+                deduplicated[identity_key] = candidate
+        merged = {str(item["callback_open_id"]): item for item in deduplicated.values()}
+        with closing(self._connect()) as db:
+            for candidate in merged.values():
+                latest = db.execute(
+                    """SELECT status, sent_at, responded_at, message_id FROM subscription_invitations
+                       WHERE callback_open_id=? ORDER BY id DESC LIMIT 1""",
+                    (candidate["callback_open_id"],),
+                ).fetchone()
+                candidate["latest_invitation"] = dict(latest) if latest else None
+        return sorted(merged.values(), key=lambda item: (str(item["display_name"]).casefold(), str(item["callback_open_id"])))
+
+    def register_invite_candidate(self, callback_open_id: str) -> dict[str, Any]:
+        identity = self.resolve_user(callback_open_id)
+        now = _now_hkt()
+        with closing(self._connect()) as db, db:
+            db.execute(
+                """INSERT INTO subscription_invite_candidates(
+                       callback_open_id, delivery_open_id, union_id, display_name,
+                       source_profile, avatar_url, source, created_at, updated_at
+                   ) VALUES(?, ?, ?, ?, ?, ?, 'admin_resolved', ?, ?)
+                   ON CONFLICT(callback_open_id) DO UPDATE SET
+                       delivery_open_id=excluded.delivery_open_id, union_id=excluded.union_id,
+                       display_name=excluded.display_name, source_profile=excluded.source_profile,
+                       avatar_url=excluded.avatar_url, updated_at=excluded.updated_at""",
+                (
+                    identity["callback_open_id"], identity["open_id"], identity["union_id"],
+                    identity["display_name"], identity["source_profile"], identity["avatar_url"], now, now,
+                ),
+            )
+        return dict(identity) | {"registered": True, "updated_at": now}
+
+    def invite_users(
+        self,
+        callback_open_ids: list[str],
+        *,
+        confirm_invite: bool = False,
+        invited_by: str = "local_admin",
+    ) -> dict[str, Any]:
+        if not confirm_invite:
+            raise ValueError("发送订阅邀请需要管理员二次确认")
+        normalized = list(dict.fromkeys(str(item) for item in callback_open_ids))
+        if not normalized or len(normalized) > 30:
+            raise ValueError("每次请选择 1 至 30 位受邀人")
+        candidates = {item["callback_open_id"]: item for item in self.list_invite_candidates()}
+        unknown = [item for item in normalized if item not in candidates]
+        if unknown:
+            raise ValueError("受邀人不在已解析的受控名单，请先读取并加入候选人")
+        results = []
+        for callback_open_id in normalized:
+            candidate = candidates[callback_open_id]
+            try:
+                source_profile = str(candidate.get("source_profile") or self.entry_profile)
+                sent = self._send_entry_card_to_user(
+                    callback_open_id, invitation=True, profile=source_profile
+                )
+                now = _now_hkt()
+                with closing(self._connect()) as db, db:
+                    db.execute(
+                        """INSERT INTO subscription_invitations(
+                               callback_open_id, delivery_open_id, union_id, display_name,
+                               source_profile, avatar_url, message_id, chat_id,
+                               status, invited_by, sent_at, updated_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)""",
+                        (
+                            callback_open_id, str(candidate["delivery_open_id"]), str(candidate["union_id"]),
+                            str(candidate["display_name"]), source_profile, str(candidate.get("avatar_url") or ""),
+                            sent["message_id"], sent["chat_id"],
+                            invited_by[:120], now, now,
+                        ),
+                    )
+                results.append(dict(sent) | {"callback_open_id": callback_open_id, "display_name": candidate["display_name"], "status": "pending"})
+            except Exception as exc:
+                now = _now_hkt()
+                error = str(exc)[:1200]
+                failed_id = "failed_" + hashlib.sha256(
+                    f"{callback_open_id}:{now}:{error}".encode()
+                ).hexdigest()[:24]
+                with closing(self._connect()) as db, db:
+                    db.execute(
+                        """INSERT INTO subscription_invitations(
+                               callback_open_id, delivery_open_id, union_id, display_name,
+                               source_profile, avatar_url, message_id, chat_id,
+                               status, invited_by, sent_at, last_error, updated_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, '', 'failed', ?, ?, ?, ?)""",
+                        (
+                            callback_open_id, str(candidate["delivery_open_id"]), str(candidate["union_id"]),
+                            str(candidate["display_name"]), str(candidate.get("source_profile") or self.entry_profile),
+                            str(candidate.get("avatar_url") or ""), failed_id, invited_by[:120], now, error, now,
+                        ),
+                    )
+                results.append({"callback_open_id": callback_open_id, "display_name": candidate["display_name"], "status": "failed", "error": error})
+        return {
+            "requested_count": len(normalized),
+            "sent_count": sum(1 for item in results if item["status"] == "pending"),
+            "failed_count": sum(1 for item in results if item["status"] == "failed"),
+            "results": results,
         }
 
     def update_subscriber(
@@ -559,33 +1001,71 @@ class SubscriptionService:
             target_args = ["--user-id", target_id]
         else:
             raise ValueError("目标类型无效")
+        return self._send_entry_card(target_id=target_id, target_type=target_type)
+
+    def _send_entry_card_to_user(
+        self,
+        callback_open_id: str,
+        *,
+        invitation: bool = False,
+        profile: str = "",
+    ) -> dict[str, Any]:
+        if not OPEN_ID_RE.fullmatch(callback_open_id):
+            raise ValueError("受邀人 open_id 无效")
+        return self._send_entry_card(
+            target_id=callback_open_id,
+            target_type="user",
+            key_context="invite" if invitation else "test",
+            profile=profile or self.entry_profile,
+        )
+
+    def _send_entry_card(
+        self,
+        *,
+        target_id: str,
+        target_type: str,
+        key_context: str = "publish",
+        profile: str = "",
+    ) -> dict[str, Any]:
+        source_profile = profile or self.entry_profile
+        if target_type == "chat":
+            if not CHAT_ID_RE.fullmatch(target_id):
+                raise ValueError("目标群ID无效")
+            target_args = ["--chat-id", target_id]
+        elif target_type == "user":
+            if not OPEN_ID_RE.fullmatch(target_id):
+                raise ValueError("目标用户 open_id 无效")
+            target_args = ["--user-id", target_id]
+        else:
+            raise ValueError("目标类型无效")
         card = subscription_entry_card()
         card_version = hashlib.sha256(
             json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()[:12]
         key = hashlib.sha256(
-            f"subscription-entry:{target_type}:{target_id}:{datetime.now().date()}:{card_version}".encode()
+            f"subscription-entry:{key_context}:{target_type}:{target_id}:{datetime.now().isoformat(timespec='microseconds')}:{card_version}".encode()
         ).hexdigest()[:32]
         payload = self._lark([
             "lark-cli", "im", "+messages-send", *target_args,
             "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),
-            "--idempotency-key", key, "--as", "bot", "--profile", self.entry_profile, "--format", "json",
+            "--idempotency-key", key, "--as", "bot", "--profile", source_profile, "--format", "json",
         ])
         message_id = self._message_id(payload)
-        self._verify_message(message_id, profile=self.entry_profile)
+        self._verify_message(message_id, profile=source_profile)
         data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
         chat_id = str(data.get("chat_id") or "")
         if not CHAT_ID_RE.fullmatch(chat_id):
             raise RuntimeError("订阅卡片发送成功但没有返回有效会话ID")
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscription_entry_cards(message_id, target_type, target_id, chat_id, created_at)
-                   VALUES(?, ?, ?, ?, ?)
+                """INSERT INTO subscription_entry_cards(message_id, target_type, target_id, chat_id, source_profile, created_at)
+                   VALUES(?, ?, ?, ?, ?, ?)
                    ON CONFLICT(message_id) DO UPDATE SET target_type=excluded.target_type,
-                   target_id=excluded.target_id, chat_id=excluded.chat_id, created_at=excluded.created_at""",
-                (message_id, target_type, target_id, chat_id, _now_hkt()),
+                   target_id=excluded.target_id, chat_id=excluded.chat_id,
+                   source_profile=excluded.source_profile, created_at=excluded.created_at""",
+                (message_id, target_type, target_id, chat_id, source_profile, _now_hkt()),
             )
-        return {"message_id": message_id, "target_id": target_id, "target_type": target_type, "verified": True}
+        return {"message_id": message_id, "chat_id": chat_id, "target_id": target_id, "target_type": target_type, "verified": True}
 
     def _message_id(self, payload: dict[str, Any]) -> str:
         data = payload.get("data") if isinstance(payload.get("data"), dict) else payload

@@ -11,7 +11,7 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=2', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=3', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -33,6 +33,15 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("每天 18:00", SCRIPT)
         self.assertIn("每周五 18:00", SCRIPT)
         self.assertIn("等待频率时点", SCRIPT)
+
+    def test_admin_searches_feishu_people_with_avatar_and_invite_results(self):
+        self.assertIn('action: "searchPeople"', SCRIPT)
+        self.assertIn('action: "refreshDirectory"', SCRIPT)
+        self.assertIn('action: "addCandidates"', SCRIPT)
+        self.assertIn('action: "invite"', SCRIPT)
+        self.assertIn("avatar_url", SCRIPT)
+        self.assertIn("邀请结果", SCRIPT)
+        self.assertIn("confirmInvite", SCRIPT)
 
 
 if __name__ == "__main__":

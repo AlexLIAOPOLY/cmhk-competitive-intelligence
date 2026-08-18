@@ -3650,6 +3650,31 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, status=500)
             return
+        if path == "/api/subscriptions/avatar":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
+                return
+            try:
+                open_id = (parse_qs(parsed.query).get("openId") or [""])[0]
+                source_url = subscription_service().avatar_source_url(open_id)
+                request = urllib.request.Request(source_url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(request, timeout=15) as response:
+                    body = response.read(2_000_000)
+                    content_type = str(response.headers.get_content_type() or "image/png")
+                if not content_type.startswith("image/") or not body:
+                    raise ValueError("飞书头像返回格式无效")
+                self.send_response(200)
+                self.send_header("Content-Type", content_type)
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "private, max-age=3600")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.end_headers()
+                self.wfile.write(body)
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=404)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": f"飞书头像读取失败：{exc}"}, status=502)
+            return
         if path == "/api/news-review-sheet":
             try:
                 from news_review_sheet import review_sheet_snapshot
@@ -3874,6 +3899,23 @@ class AppHandler(BaseHTTPRequestHandler):
                         services=services,
                         status=str(payload.get("status") or "active"),
                         frequency=str(payload.get("frequency") or "immediate"),
+                    )
+                elif action == "refreshDirectory":
+                    result = service.refresh_people_directory()
+                elif action == "searchPeople":
+                    result = {
+                        "query": str(payload.get("query") or ""),
+                        "people": service.search_people_directory(str(payload.get("query") or "")),
+                    }
+                elif action == "addCandidates":
+                    ids = payload.get("directoryOpenIds") if isinstance(payload.get("directoryOpenIds"), list) else []
+                    result = service.add_directory_candidates(ids)
+                elif action == "invite":
+                    ids = payload.get("callbackOpenIds") if isinstance(payload.get("callbackOpenIds"), list) else []
+                    result = service.invite_users(
+                        ids,
+                        confirm_invite=payload.get("confirmInvite") is True,
+                        invited_by="local_admin",
                     )
                 elif action == "push":
                     result = service.push(
