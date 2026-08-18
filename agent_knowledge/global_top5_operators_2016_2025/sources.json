@@ -1273,6 +1273,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
         },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
+        },
         "5g_base_stations": {
           "value": 1.54,
           "unit": "million_base_stations",
@@ -1287,6 +1292,11 @@
           "value": 31.6,
           "unit": "percent",
           "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
@@ -2005,6 +2015,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
         },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
+        },
         "5g_base_stations": {
           "value": 1.54,
           "unit": "million_base_stations",
@@ -2019,6 +2034,11 @@
           "value": 97,
           "unit": "percent",
           "locator": "FY2025 network infrastructure update; gigabit broadband covered over 97% of urban residential areas"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
@@ -2807,6 +2827,11 @@
           "value": 31.6,
           "unit": "percent",
           "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate"
+        },
+        "intelligent_compute_capacity": {
+          "value": 46,
+          "unit": "EFLOPS_FP16",
+          "locator": "FY2025 self-owned intelligent computing capacity disclosure"
         }
       }
     },
@@ -2856,6 +2881,11 @@
           "value": 45.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2025 mobile service ARPU disclosure"
+        },
+        "broadband_arpu": {
+          "value": 47.1,
+          "unit": "RMB_per_user_month",
+          "locator": "FY2025 wireline broadband blended ARPU disclosure"
         }
       }
     },

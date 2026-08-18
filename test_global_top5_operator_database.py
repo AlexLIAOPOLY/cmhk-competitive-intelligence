@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国电信": 7,
+                "中国电信": 9,
                 "中国移动": 17,
                 "中国联通": 10,
             },
@@ -482,6 +482,39 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             ("中国移动2025年5G网络用户数", "official_value=642 million_subscribers"),
             ("中国移动2025年移动ARPU", "official_value=46.8 RMB_per_user_month"),
             ("中国移动2025年5G基站", "official_value=2.77 million_base_stations"),
+        ):
+            combined = "\n".join(
+                chunk["text"]
+                for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    question,
+                    dataset_ids={"global_top5_operators_2016_2025"},
+                )
+            )
+            self.assertIn(expected_text, combined)
+            self.assertIn("distinct_source_document_count=3", combined)
+
+    def test_china_telecom_fy2025_broadband_arpu_and_compute_use_exact_documents(self):
+        broadband = self.index[("china_telecom", 2025, "broadband_arpu")]
+        self.assertEqual((broadband["value"], broadband["unit"]), (47.1, "RMB_per_user_month"))
+        self.assertEqual(
+            set(broadband["verification_sources"]),
+            {"china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"},
+        )
+        self.assertEqual(broadband["distinct_source_document_count"], 3)
+        self.assertEqual(broadband["triple_source_status"], "three_distinct_sources_verified")
+
+        compute = self.index[("china_telecom", 2025, "intelligent_compute_capacity")]
+        self.assertEqual((compute["value"], compute["unit"]), (46, "EFLOPS_FP16"))
+        self.assertEqual(
+            set(compute["verification_sources"]),
+            {"china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"},
+        )
+        self.assertEqual(compute["distinct_source_document_count"], 3)
+        self.assertEqual(compute["triple_source_status"], "three_distinct_sources_verified")
+
+        for question, expected_text in (
+            ("中国电信2025年宽带ARPU", "official_value=47.1 RMB_per_user_month"),
+            ("中国电信2025年智算规模", "official_value=46 EFLOPS_FP16"),
         ):
             combined = "\n".join(
                 chunk["text"]

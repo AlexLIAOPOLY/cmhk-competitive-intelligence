@@ -1624,11 +1624,18 @@ for _source_id in ("china_mobile_ar_2025", "china_mobile_results_2025", "china_m
         },
     })
 for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_factsheet_2025"):
-    SOURCES[_source_id].setdefault("evidence", {})["mobile_arpu"] = {
-        "value": 45.1,
-        "unit": "RMB_per_user_month",
-        "locator": "FY2025 mobile service ARPU disclosure",
-    }
+    SOURCES[_source_id].setdefault("evidence", {}).update({
+        "mobile_arpu": {
+            "value": 45.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2025 mobile service ARPU disclosure",
+        },
+        "broadband_arpu": {
+            "value": 47.1,
+            "unit": "RMB_per_user_month",
+            "locator": "FY2025 wireline broadband blended ARPU disclosure",
+        },
+    })
 for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"):
     SOURCES[_source_id].setdefault("evidence", {})["5g_base_stations"] = {
         "value": 1.54,
@@ -1661,6 +1668,12 @@ for _source_id in ("china_telecom_ar_2025", "china_telecom_announcement_2025", "
             "locator": "FY2025 fundamental-business review; gigabit broadband subscriber penetration rate",
         },
     })
+for _source_id in ("china_telecom_ar_2025", "china_telecom_results_2025", "china_telecom_announcement_2025"):
+    SOURCES[_source_id].setdefault("evidence", {})["intelligent_compute_capacity"] = {
+        "value": 46,
+        "unit": "EFLOPS_FP16",
+        "locator": "FY2025 self-owned intelligent computing capacity disclosure",
+    }
 for _source_id in ("china_unicom_ar_2025", "china_unicom_ops_2025", "china_unicom_q4_operating_announcement_2025"):
     SOURCES[_source_id].setdefault("evidence", {})["5g_network_subscribers"] = {
         "value": 232.18,
