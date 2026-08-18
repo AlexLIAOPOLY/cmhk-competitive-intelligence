@@ -74,12 +74,18 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_card_is_card_2_form_with_three_services(self):
-        card = subscription_entry_card()
+        card = subscription_entry_card(image_key="img_v3_subscription_poster")
         self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["header"]["title"]["content"], "订阅战略情报")
         self.assertNotIn("subtitle", card["header"])
         self.assertNotIn("icon", card["header"])
         self.assertNotIn("text_tag_list", card["header"])
+        poster = card["body"]["elements"][0]
+        self.assertEqual(poster["tag"], "img")
+        self.assertEqual(poster["img_key"], "img_v3_subscription_poster")
+        intro = card["body"]["elements"][1]
+        self.assertEqual(intro["tag"], "markdown")
+        self.assertIn("可订阅的战略情报", intro["content"])
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual([item["content"] for item in form["elements"] if item["tag"] == "markdown"], ["**订阅内容**", "**接收频率**"])
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")

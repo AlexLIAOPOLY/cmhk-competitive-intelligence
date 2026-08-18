@@ -32,6 +32,7 @@ VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
+IMAGE_KEY_RE = re.compile(r"^img_[A-Za-z0-9_-]+$")
 
 
 def _now_hkt() -> str:
@@ -75,7 +76,7 @@ def _json_payload(process: subprocess.CompletedProcess[str]) -> dict[str, Any]:
     return payload
 
 
-def subscription_entry_card() -> dict[str, Any]:
+def subscription_entry_card(*, image_key: str = "") -> dict[str, Any]:
     """Card 2.0 form used as the colleague-facing self-service entry point."""
     return {
         "schema": "2.0",
@@ -93,6 +94,25 @@ def subscription_entry_card() -> dict[str, Any]:
             "padding": "12px 12px 16px 12px",
             "vertical_spacing": "8px",
             "elements": [
+                *(
+                    [
+                        {
+                            "tag": "img",
+                            "img_key": image_key,
+                            "alt": {"tag": "plain_text", "content": "战略情报订阅"},
+                            "scale_type": "fit_horizontal",
+                            "corner_radius": "8px",
+                            "preview": False,
+                            "margin": "0px 0px 4px 0px",
+                        }
+                    ]
+                    if IMAGE_KEY_RE.fullmatch(image_key)
+                    else []
+                ),
+                {
+                    "tag": "markdown",
+                    "content": "我们把分散的竞对动态整理成可订阅的战略情报。按需选择双周报、业绩摘要或新闻，并决定接收频率。",
+                },
                 {
                     "tag": "form",
                     "name": "subscriptionForm",
@@ -1034,7 +1054,10 @@ class SubscriptionService:
             target_args = ["--user-id", target_id]
         else:
             raise ValueError("目标类型无效")
-        card = subscription_entry_card()
+        subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+        poster_keys = subscriptions.get("poster_image_keys") if isinstance(subscriptions.get("poster_image_keys"), dict) else {}
+        image_key = str(poster_keys.get(source_profile) or poster_keys.get("default") or "")
+        card = subscription_entry_card(image_key=image_key)
         card_version = hashlib.sha256(
             json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()[:12]

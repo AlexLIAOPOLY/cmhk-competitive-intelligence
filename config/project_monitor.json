@@ -141,7 +141,11 @@
     "delivery_profile": "cmhk-innovation-digital",
     "delivery_app_id": "cli_aac933f059a2dbfb",
     "delivery_app_name": "科创及数智化",
-    "primary_delivery_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    "primary_delivery_open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+    "poster_image_keys": {
+      "cli_a9575e70ae799cb2": "img_v3_0214m_2c3c529f-1921-4f3b-94c8-666d43104f2g",
+      "cmhk-innovation-digital": "img_v3_0214m_203116f8-b58b-4bbf-ab38-a8263f818b0g"
+    }
   },
   "error_ledger": {
     "enabled": true,
