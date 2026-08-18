@@ -293,11 +293,11 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         three_sources = {"capex", "shareholders_equity", "network_towers"}
         for metric_key in four_sources:
             row = self.index[("bharti_airtel", 2025, metric_key)]
-            self.assertEqual(row["distinct_source_document_count"], 4)
+            self.assertEqual(row["distinct_source_document_count"], 5)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
         for metric_key in three_sources:
             row = self.index[("bharti_airtel", 2025, metric_key)]
-            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["distinct_source_document_count"], 4)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
         equity = self.index[("bharti_airtel", 2025, "shareholders_equity")]
@@ -357,13 +357,14 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         expected_sources = {
             "airtel_q1_2026_ir_pack",
             "airtel_q2_2026_ir_pack",
+            "airtel_q3_2026_ir_pack",
             "airtel_2025_ir_pack",
         }
         for metric_key, expected_value in expected_values.items():
             row = self.index[("bharti_airtel", 2024, metric_key)]
             self.assertEqual(row["value"], expected_value)
             self.assertEqual(set(row["verification_sources"]), expected_sources)
-            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["distinct_source_document_count"], 4)
             self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
 
     def test_airtel_fy2024_comparative_registry_and_annual_report_identity(self):
@@ -371,7 +372,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             source["source_id"]: source
             for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
         }
-        for source_id in ("airtel_q1_2026_ir_pack", "airtel_q2_2026_ir_pack", "airtel_2025_ir_pack"):
+        for source_id in ("airtel_q1_2026_ir_pack", "airtel_q2_2026_ir_pack", "airtel_q3_2026_ir_pack", "airtel_2025_ir_pack"):
             evidence = sources[source_id]["comparative_evidence"]["FY2024"]
             self.assertEqual(evidence["total_customers"]["value"], 561.970)
             self.assertEqual(evidence["revenue"]["value"], 1643643)
@@ -380,6 +381,72 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             sources["bharti_airtel_ar_2024"]["source_document_id"],
             sources["airtel_2024_five_year"]["source_document_id"],
         )
+
+    def test_airtel_fy2023_uses_latest_recast_three_document_comparatives(self):
+        expected_values = {
+            "total_customers": 518.446,
+            "revenue": 1539257,
+            "ebitda": 768378,
+            "earnings_before_tax": 185701,
+            "net_profit": 82526,
+            "capex": 382145,
+            "net_debt": 2042234,
+            "shareholders_equity": 775629,
+            "network_towers": 309054,
+        }
+        expected_sources = {
+            "airtel_q1_2026_ir_pack",
+            "airtel_q2_2026_ir_pack",
+            "airtel_q3_2026_ir_pack",
+        }
+        for metric_key, expected_value in expected_values.items():
+            row = self.index[("bharti_airtel", 2023, metric_key)]
+            self.assertEqual(row["value"], expected_value)
+            self.assertEqual(set(row["verification_sources"]), expected_sources)
+            self.assertEqual(row["distinct_source_document_count"], 3)
+            self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertIn("1,391,448", self.index[("bharti_airtel", 2023, "revenue")]["quality_note"])
+        profit_note = self.index[("bharti_airtel", 2023, "net_profit")]["quality_note"]
+        self.assertIn("83,459", profit_note)
+        self.assertIn("Both are after-exceptional", profit_note)
+        self.assertIn("not a before-exceptional value", profit_note)
+        self.assertIn("82,390", profit_note)
+
+    def test_airtel_fy2023_registry_carries_recast_metric_evidence(self):
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        for source_id in ("airtel_q1_2026_ir_pack", "airtel_q2_2026_ir_pack", "airtel_q3_2026_ir_pack"):
+            evidence = sources[source_id]["comparative_evidence"]["FY2023"]
+            self.assertEqual(evidence["revenue"]["value"], 1539257)
+            self.assertEqual(evidence["net_profit"]["value"], 82526)
+            self.assertEqual(evidence["net_debt"]["value"], 2042234)
+
+    def test_xiaojing_retrieves_airtel_fy2023_recast_three_source_rows(self):
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Bharti Airtel FY2023总客户数、营业收入、EBITDA、净利润、资本开支、净债务、股东权益和网络铁塔是多少？逐项说明三来源和重列口径。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        expected_values = {
+            "total_customers": "518.446 million_customers",
+            "revenue": "1539257 INR_million",
+            "ebitda": "768378 INR_million",
+            "net_profit": "82526 INR_million",
+            "capex": "382145 INR_million",
+            "net_debt": "2042234 INR_million",
+            "shareholders_equity": "775629 INR_million",
+            "network_towers": "309054 sites",
+        }
+        for metric_key, value_text in expected_values.items():
+            self.assertIn(f"metric_key={metric_key}", combined)
+            self.assertIn(f"official_value={value_text}", combined)
+        self.assertIn("earlier INR1,391,448m basis", combined)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 8)
+        self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 8)
 
     def test_xiaojing_retrieves_airtel_fy2024_three_source_rows(self):
         combined = "\n".join(
@@ -402,7 +469,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         for metric_key, value_text in expected_values.items():
             self.assertIn(f"metric_key={metric_key}", combined)
             self.assertIn(f"official_value={value_text}", combined)
-        self.assertGreaterEqual(combined.count("distinct_source_document_count=3"), 8)
+        self.assertGreaterEqual(combined.count("distinct_source_document_count=4"), 8)
         self.assertGreaterEqual(combined.count("triple_source_status=three_distinct_sources_verified"), 8)
 
     def test_xiaojing_understands_common_customer_and_traffic_shorthand(self):

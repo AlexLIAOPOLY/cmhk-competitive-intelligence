@@ -3,11 +3,11 @@
   "items": [
     {
       "operator_id": "bharti_airtel",
-      "years": "2024-2025",
+      "years": "2023-2025",
       "metric": "financials",
       "type": "restatement_or_scope_change",
       "selected_basis": "latest official comparative basis",
-      "detail": "Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained."
+      "detail": "Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained and earlier values remain documented in row notes."
     },
     {
       "operator_id": "bharti_airtel",

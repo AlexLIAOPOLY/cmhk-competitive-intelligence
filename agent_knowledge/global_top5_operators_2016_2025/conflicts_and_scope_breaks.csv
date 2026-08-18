@@ -1,5 +1,5 @@
 ﻿operator_id,years,metric,type,selected_basis,detail
-bharti_airtel,2024-2025,financials,restatement_or_scope_change,latest official comparative basis,Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained.
+bharti_airtel,2023-2025,financials,restatement_or_scope_change,latest official comparative basis,Later investor packs changed comparative consolidated figures; latest like-for-like official comparatives are retained and earlier values remain documented in row notes.
 bharti_airtel,2020,network_towers,scope_conflict,"group KPI 219,546","The same reporting set also presents 194,409 under a narrower mobile-network scope."
 reliance_jio,2020,value_of_sales_and_services,presentation_basis_conflict,"INR 69,605 crore from later official three-year table","An older narrative cited INR 68,462 crore under an earlier presentation basis."
 reliance_jio,2023-2025,5g_base_stations,scope_break,retain disclosed figure with scope label,FY2023 reports sites; FY2024-25 report cells. No cross-break growth calculation is valid.

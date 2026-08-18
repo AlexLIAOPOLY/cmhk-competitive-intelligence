@@ -1725,6 +1725,53 @@
             "unit": "sites",
             "locator": "FY2024 comparative, performance at a glance, page 4"
           }
+        },
+        "FY2023": {
+          "total_customers": {
+            "value": 518.446,
+            "unit": "million_customers",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1539257,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 768378,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 185701,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 82526,
+            "unit": "INR_million",
+            "locator": "FY2023 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 382145,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 2042234,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 775629,
+            "unit": "INR_million",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 309054,
+            "unit": "sites",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          }
         }
       }
     },
@@ -1830,6 +1877,206 @@
             "value": 355150,
             "unit": "sites",
             "locator": "FY2024 comparative, performance at a glance, page 4"
+          }
+        },
+        "FY2023": {
+          "total_customers": {
+            "value": 518.446,
+            "unit": "million_customers",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1539257,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 768378,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 185701,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 82526,
+            "unit": "INR_million",
+            "locator": "FY2023 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 382145,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 2042234,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 775629,
+            "unit": "INR_million",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 309054,
+            "unit": "sites",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "airtel_q3_2026_ir_pack",
+      "operator_id": "bharti_airtel",
+      "year": 2025,
+      "label": "Bharti Airtel FY2025-26 Q3 investor relations pack with FY2023-FY2025 comparatives",
+      "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Bharti Airtel Limited",
+      "source_document_id": "airtel_q3_2026_ir_pack",
+      "evidence": {
+        "total_customers": {
+          "value": 590.514,
+          "unit": "million_customers",
+          "locator": "performance at a glance, page 4"
+        },
+        "revenue": {
+          "value": 1815110,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "ebitda": {
+          "value": 1049994,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "earnings_before_tax": {
+          "value": 369712,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_profit": {
+          "value": 337440,
+          "unit": "INR_million",
+          "locator": "net income after exceptional items, page 4"
+        },
+        "capex": {
+          "value": 422904,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "net_debt": {
+          "value": 2038384,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "shareholders_equity": {
+          "value": 1136718,
+          "unit": "INR_million",
+          "locator": "performance at a glance, page 4"
+        },
+        "network_towers": {
+          "value": 375146,
+          "unit": "sites",
+          "locator": "performance at a glance, page 4"
+        }
+      },
+      "comparative_evidence": {
+        "FY2024": {
+          "total_customers": {
+            "value": 561.97,
+            "unit": "million_customers",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1643643,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 889064,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 250532,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 77820,
+            "unit": "INR_million",
+            "locator": "FY2024 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 489268,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 1943799,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 820188,
+            "unit": "INR_million",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 355150,
+            "unit": "sites",
+            "locator": "FY2024 comparative, performance at a glance, page 4"
+          }
+        },
+        "FY2023": {
+          "total_customers": {
+            "value": 518.446,
+            "unit": "million_customers",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "revenue": {
+            "value": 1539257,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "ebitda": {
+            "value": 768378,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "earnings_before_tax": {
+            "value": 185701,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_profit": {
+            "value": 82526,
+            "unit": "INR_million",
+            "locator": "FY2023 net income after exceptional items, performance at a glance, page 4"
+          },
+          "capex": {
+            "value": 382145,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "net_debt": {
+            "value": 2042234,
+            "unit": "INR_million",
+            "locator": "FY2023 recast comparative, performance at a glance, page 4"
+          },
+          "shareholders_equity": {
+            "value": 775629,
+            "unit": "INR_million",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
+          },
+          "network_towers": {
+            "value": 309054,
+            "unit": "sites",
+            "locator": "FY2023 comparative, performance at a glance, page 4"
           }
         }
       }

@@ -33,11 +33,11 @@
       "row_count": 399,
       "available_value_rows": 354,
       "source_gap_or_blank_rows": 45,
-      "three_distinct_source_certified_rows": 218,
-      "below_three_source_rows": 136,
-      "three_source_coverage_pct": 61.58,
+      "three_distinct_source_certified_rows": 227,
+      "below_three_source_rows": 127,
+      "three_source_coverage_pct": 64.12,
       "legacy_count_ge3_but_distinct_lt3": 0,
-      "distinct_source_count_distribution": "{\"1\": 23, \"2\": 98, \"3\": 212, \"4\": 19, \"5\": 2}",
+      "distinct_source_count_distribution": "{\"1\": 23, \"2\": 89, \"3\": 209, \"4\": 25, \"5\": 8}",
       "quality_gate_status": "backlog_open",
       "primary_csv": "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
     },
@@ -68,7 +68,7 @@
       "primary_csv": "agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv"
     }
   ],
-  "backlog_rows": 7919,
+  "backlog_rows": 7910,
   "common_disclosures_checked": 102,
   "missing_common_disclosures": 26
 }
