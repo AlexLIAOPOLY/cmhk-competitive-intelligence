@@ -125,7 +125,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=39"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=40"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
