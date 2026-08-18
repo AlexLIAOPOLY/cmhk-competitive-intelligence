@@ -3051,6 +3051,29 @@ def _normalize_crawl_task(run: dict) -> dict:
     }
 
 
+def _annotate_strategic_task_retries(tasks: list[dict]) -> None:
+    """Number repeated attempts for the same durable strategic scan slot."""
+    attempts: dict[tuple[str, str, str], int] = {}
+    ordered = sorted(
+        tasks,
+        key=lambda item: str(
+            item.get("started_at_hkt") or item.get("completed_at_hkt") or ""
+        ),
+    )
+    for task in ordered:
+        if str(task.get("kind") or "") != "strategic-news":
+            task["retry_index"] = 0
+            continue
+        key = (
+            str(task.get("kind") or ""),
+            str(task.get("title") or ""),
+            str(task.get("scope") or ""),
+        )
+        retry_index = attempts.get(key, 0)
+        task["retry_index"] = retry_index
+        attempts[key] = retry_index + 1
+
+
 def load_unified_task_index(limit: int = 50) -> list[dict]:
     tasks = [_task_public_record(item) for item in _task_read_local_index()]
     tasks.extend(
@@ -3058,6 +3081,7 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
         for item in load_crawl_run_index()
         if isinstance(item, dict) and item.get("crawl_run_id")
     )
+    _annotate_strategic_task_retries(tasks)
     tasks.sort(
         key=lambda item: str(item.get("started_at_hkt") or item.get("completed_at_hkt") or ""),
         reverse=True,
@@ -3073,6 +3097,17 @@ def load_unified_task_log(task_id: str) -> dict:
         if result.get("ok"):
             run = result.get("run") if isinstance(result.get("run"), dict) else {}
             result["task"] = _normalize_crawl_task(run)
+            indexed = next(
+                (
+                    item
+                    for item in load_unified_task_index(limit=500)
+                    if str(item.get("task_id") or "") == task_id
+                ),
+                {},
+            )
+            result["task"]["retry_index"] = int(
+                indexed.get("retry_index") or 0
+            )
         return result
     if not task_id.startswith("task:"):
         return {"ok": False, "error": "无效的任务编号。"}

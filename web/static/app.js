@@ -3324,6 +3324,26 @@ function unifiedTaskKindLabel(task) {
   return "后台任务";
 }
 
+function unifiedTaskTitle(task) {
+  const title = String(task?.title || "后台任务");
+  const retryIndex = Math.max(0, Number(task?.retry_index || 0));
+  return retryIndex ? title + "（重试" + retryIndex + "）" : title;
+}
+
+function annotateClientStrategicRetries(tasks) {
+  const attempts = new Map();
+  tasks.slice().sort(function (left, right) {
+    return crawlRunTimeValue(left) - crawlRunTimeValue(right);
+  }).forEach(function (task) {
+    if (String(task?.kind || "") !== "strategic-news") return;
+    const key = [task.kind, task.title, task.scope].map(String).join("\u0000");
+    const fallbackIndex = attempts.get(key) || 0;
+    const apiIndex = Number(task.retry_index);
+    task.retry_index = Number.isFinite(apiIndex) ? Math.max(0, apiIndex) : fallbackIndex;
+    attempts.set(key, Math.max(fallbackIndex, task.retry_index) + 1);
+  });
+}
+
 function taskAnalysisStatusMarkup(task) {
   if (task.kind !== "executive-intelligence-refresh") return "";
   const model = String(task.analysis_model || "等待模型结果");
@@ -3364,7 +3384,7 @@ function renderUnifiedTaskArchive(data) {
   els.logBox.innerHTML =
     '<section class="crawl-audit-overview task-audit-overview">'
       + '<div class="crawl-audit-heading"><div><span class="run-status status-' + escapeHtml(task.run_status || "completed") + '">'
-      + escapeHtml(status) + '</span><strong>' + escapeHtml(task.title || "后台任务") + '</strong><span>'
+      + escapeHtml(status) + '</span><strong>' + escapeHtml(unifiedTaskTitle(task)) + '</strong><span>'
       + escapeHtml(task.scope || unifiedTaskKindLabel(task)) + '</span></div><time>'
       + escapeHtml(started || task.task_run_id || "") + (completed ? " 至 " + escapeHtml(completed) : "")
       + '</time></div>'
@@ -3491,7 +3511,7 @@ function renderCrawlRunList() {
     const scope = String(task.scope || "未记录任务范围");
     return '<button class="crawl-run-item ' + (id === state.activeCrawlRunId ? "is-active" : "")
       + '" type="button" data-run-id="' + escapeHtml(id) + '">'
-      + '<span><strong>' + escapeHtml(task.title || "后台任务") + '</strong><em class="status-'
+      + '<span><strong>' + escapeHtml(unifiedTaskTitle(task)) + '</strong><em class="status-'
       + escapeHtml(task.run_status || "completed") + '">' + escapeHtml(status) + '</em></span>'
       + '<time>' + escapeHtml(time || task.task_run_id || id) + '</time>'
       + '<small><i class="task-kind-label">' + escapeHtml(kind) + '</i>' + escapeHtml(scope)
@@ -3521,7 +3541,10 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
     const response = await fetch("/api/task-run-log?id=" + encodeURIComponent(taskId), { cache: "no-store" });
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务日志不可用");
-    const task = Object.assign({}, data.task || {}, {
+    const indexedTask = state.crawlRuns.find(function (item) {
+      return String(item.task_id || "") === taskId;
+    });
+    const task = Object.assign({}, indexedTask || {}, data.task || {}, {
       lines: Number(data.lines || (data.task || {}).lines || 0),
       bytes: Number(data.bytes || (data.task || {}).bytes || 0)
     });
@@ -3530,6 +3553,7 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
     });
     if (taskIndex >= 0) state.crawlRuns[taskIndex] = task;
     else state.crawlRuns.unshift(task);
+    annotateClientStrategicRetries(state.crawlRuns);
     renderCrawlRunList();
     const renderSignature = [
       taskId,
@@ -3554,7 +3578,7 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
     }
     if (els.logRunTitle) {
       const time = String(task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
-      els.logRunTitle.textContent = (task.title || "后台任务") + " · " + (time || task.task_run_id || taskId)
+      els.logRunTitle.textContent = unifiedTaskTitle(task) + " · " + (time || task.task_run_id || taskId)
         + " · " + Number(data.lines || 0) + " 行 · " + Number(data.bytes || 0) + " B";
     }
     if (task.run_status === "running") {
@@ -3583,6 +3607,7 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务记录加载失败");
     state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
+    annotateClientStrategicRetries(state.crawlRuns);
     syncCrawlRunFilterControls();
     state.hasRunningTasks = state.crawlRuns.some(function (task) {
       return String(task.run_status || "") === "running";

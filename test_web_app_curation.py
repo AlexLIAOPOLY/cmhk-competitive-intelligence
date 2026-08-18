@@ -212,7 +212,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=280"', html)
+        self.assertIn('src="/static/app.js?v=282"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -278,7 +278,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=280"', html)
+        self.assertIn('src="/static/app.js?v=282"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -507,6 +507,64 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(task["kind_label"], "新闻爬虫")
         self.assertEqual(task["title"], "战略新闻定时爬虫")
         self.assertEqual(task["lines"], 6)
+
+    def test_same_strategic_slot_is_numbered_as_retry_chain(self) -> None:
+        slot = "晨间扫描（2026-08-18@09:00）"
+        other_slot = "午后扫描（2026-08-18@15:00）"
+        runs = [
+            {
+                "crawl_run_id": "attempt-3",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": slot,
+                "started_at_hkt": "2026-08-18T12:00:00+08:00",
+            },
+            {
+                "crawl_run_id": "attempt-1",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": slot,
+                "started_at_hkt": "2026-08-18T09:00:00+08:00",
+            },
+            {
+                "crawl_run_id": "afternoon-1",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": other_slot,
+                "started_at_hkt": "2026-08-18T15:00:00+08:00",
+            },
+            {
+                "crawl_run_id": "attempt-2",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": slot,
+                "started_at_hkt": "2026-08-18T10:30:00+08:00",
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "_task_read_local_index", return_value=[]),
+            mock.patch.object(web_app, "load_crawl_run_index", return_value=runs),
+        ):
+            tasks = web_app.load_unified_task_index(limit=10)
+
+        retries = {
+            task["task_run_id"]: task["retry_index"] for task in tasks
+        }
+        self.assertEqual(retries["attempt-1"], 0)
+        self.assertEqual(retries["attempt-2"], 1)
+        self.assertEqual(retries["attempt-3"], 2)
+        self.assertEqual(retries["afternoon-1"], 0)
+
+    def test_task_sidebar_renders_retry_number_from_api(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn("function unifiedTaskTitle(task)", app)
+        self.assertIn("function annotateClientStrategicRetries(tasks)", app)
+        self.assertIn("annotateClientStrategicRetries(state.crawlRuns)", app)
+        self.assertIn("Object.assign({}, indexedTask || {}, data.task || {}", app)
+        self.assertIn("els.logRunTitle.textContent = unifiedTaskTitle(task)", app)
+        self.assertIn('title + "（重试" + retryIndex + "）"', app)
+        self.assertGreaterEqual(app.count("unifiedTaskTitle(task)"), 3)
 
     def test_homepage_uses_candidate_activity_when_no_confirmed_signals_exist(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
