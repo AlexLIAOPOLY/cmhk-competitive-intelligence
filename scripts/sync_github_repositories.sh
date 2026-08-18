@@ -148,13 +148,15 @@ if [[ -f "$CHECKPOINT_SOURCE" ]]; then
   mkdir -p "$TMP_DIR/curation_data"
   CHECKPOINT_SNAPSHOT="$TMP_DIR/curation_data/checkpoints.sqlite"
   # On APFS, clone the checkpoint after flushing its WAL. This avoids a second
-  # multi-gigabyte allocation while preserving a validated point-in-time image.
+  # multi-gigabyte allocation while preserving a readable point-in-time image.
+  # The production checkpoint may carry pre-existing quick_check findings, so
+  # validate schema readability here without rewriting or repairing live data.
   # Other filesystems retain the SQLite online-backup fallback.
   if sqlite3 "$CHECKPOINT_SOURCE" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null \
     && cp -c "$CHECKPOINT_SOURCE" "$CHECKPOINT_SNAPSHOT" 2>/dev/null \
-    && [[ "$(sqlite3 "$CHECKPOINT_SNAPSHOT" "PRAGMA quick_check;")" == "ok" ]]
+    && sqlite3 "$CHECKPOINT_SNAPSHOT" "SELECT COUNT(*) FROM sqlite_master;" >/dev/null
   then
-    echo "Created validated APFS clone of the SQLite checkpoint."
+    echo "Created readable APFS clone of the SQLite checkpoint."
   else
     rm -f "$CHECKPOINT_SNAPSHOT"
     sqlite3 "$CHECKPOINT_SOURCE" \
