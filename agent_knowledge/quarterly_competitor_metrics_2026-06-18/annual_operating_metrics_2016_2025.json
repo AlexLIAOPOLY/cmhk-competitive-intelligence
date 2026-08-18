@@ -1564,14 +1564,22 @@
       "comparator": ">",
       "scope": "China Broadnet 5G users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_broadnet_jiacreat_filing_2022",
+        "china_broadnet_lianhe_rating_2022",
+        "china_broadnet_nrta_statistical_bulletin_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_broadnet_nrta_2022",
+      "primary_source_url": "https://www.nrta.gov.cn/art/2023/4/27/art_113_64140.html",
+      "verification_sources": [
+        "china_broadnet_nrta_2022",
+        "china_broadnet_jiacreat_filing_2022",
+        "china_broadnet_lianhe_rating_2022"
+      ],
       "candidate_sources": [
         "china_broadnet_nrta_2022",
         "china_broadnet_jiacreat_filing_2022",
@@ -1912,14 +1920,22 @@
       "comparator": ">",
       "scope": "China Broadnet 5G users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_broadnet_crta_2023",
+        "china_broadnet_guangxi_ar_2023",
+        "china_broadnet_nrta_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_broadnet_nrta_2023",
+      "primary_source_url": "https://www.nrta.gov.cn/art/2024/5/8/art_113_67383.html",
+      "verification_sources": [
+        "china_broadnet_nrta_2023",
+        "china_broadnet_crta_2023",
+        "china_broadnet_guangxi_ar_2023"
+      ],
       "candidate_sources": [
         "china_broadnet_nrta_2023",
         "china_broadnet_crta_2023",

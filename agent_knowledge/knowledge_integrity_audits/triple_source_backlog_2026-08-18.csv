@@ -5619,13 +5619,11 @@ cmhk_macro_policy_2026-06-19,Hong Kong telecommunications policy environment | 2
 global_top5_operators_2016_2025,Bharti Airtel | FY2016 | total_data_traffic,Bharti Airtel,FY2016,total_data_traffic,0.597,billion_GB,1,1,2,needs_additional_distinct_sources,"[""https://www.airtel.in/airtel-annual-report-2015-16/""]"
 global_top5_operators_2016_2025,Bharti Airtel | FY2017 | total_data_traffic,Bharti Airtel,FY2017,total_data_traffic,0.903,billion_GB,1,1,2,needs_additional_distinct_sources,"[""https://www.airtel.in/airtel-annual-report-2016-17/""]"
 global_top5_operators_2016_2025,中国广电 | FY2022 | 5g_base_stations,中国广电,FY2022,5g_base_stations,0.48,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国广电 | FY2022 | 5g_network_subscribers,中国广电,FY2022,5g_network_subscribers,5.5,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | cable_network_industry_revenue,中国广电,FY2022,cable_network_industry_revenue,71955,RMB_million,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | cable_tv_actual_users,中国广电,FY2022,cable_tv_actual_users,200,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | hd_uhd_cable_tv_users,中国广电,FY2022,hd_uhd_cable_tv_users,110,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2022 | two_way_digital_cable_tv_users,中国广电,FY2022,two_way_digital_cable_tv_users,98.2,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2023 | 5g_base_stations,中国广电,FY2023,5g_base_stations,0.62,million_base_stations,0,0,3,needs_additional_distinct_sources,[]
-global_top5_operators_2016_2025,中国广电 | FY2023 | 5g_network_subscribers,中国广电,FY2023,5g_network_subscribers,23,million_subscribers,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2023 | cable_tv_actual_users,中国广电,FY2023,cable_tv_actual_users,202,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2023 | hd_uhd_cable_tv_users,中国广电,FY2023,hd_uhd_cable_tv_users,109,million_users,0,0,3,needs_additional_distinct_sources,[]
 global_top5_operators_2016_2025,中国广电 | FY2023 | shared_4g_5g_base_stations,中国广电,FY2023,shared_4g_5g_base_stations,4.0,million_base_stations,0,0,3,needs_additional_distinct_sources,[]

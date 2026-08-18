@@ -12,8 +12,8 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 198
-- `official_three_distinct_sources_verified`: 165
+- `official_single_source`: 196
+- `official_three_distinct_sources_verified`: 167
 - `official_two_distinct_sources`: 17
 - `source_gap_confirmed`: 182
 
@@ -21,7 +21,7 @@
 
 - Bharti Airtel: 98
 - Reliance Jio: 27
-- 中国广电: 1
+- 中国广电: 3
 - 中国电信: 12
 - 中国移动: 17
 - 中国联通: 10

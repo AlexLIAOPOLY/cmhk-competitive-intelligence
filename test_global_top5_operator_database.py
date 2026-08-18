@@ -38,7 +38,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             {
                 "Bharti Airtel": 98,
                 "Reliance Jio": 27,
-                "中国广电": 1,
+                "中国广电": 3,
                 "中国电信": 12,
                 "中国移动": 17,
                 "中国联通": 10,
@@ -275,12 +275,26 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         ]
         self.assertEqual(len(available), 24)
         certified = [row for row in available if row["distinct_source_document_count"] >= 3]
-        self.assertEqual([(row["year"], row["metric_key"]) for row in certified], [(2024, "5g_network_subscribers")])
+        self.assertEqual(
+            [(row["year"], row["metric_key"]) for row in certified],
+            [
+                (2022, "5g_network_subscribers"),
+                (2023, "5g_network_subscribers"),
+                (2024, "5g_network_subscribers"),
+            ],
+        )
         self.assertTrue(all(len(row["candidate_sources"]) >= len(row["verification_sources"]) for row in available))
         users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertEqual(users_2024["value"], 32.7546)
         self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")
         self.assertEqual(users_2024["distinct_source_document_count"], 4)
+        users_2023 = self.index[("china_broadnet", 2023, "5g_network_subscribers")]
+        self.assertEqual(users_2023["comparator"], ">")
+        self.assertEqual(users_2023["distinct_source_document_count"], 3)
+        self.assertEqual(users_2023["triple_source_status"], "three_distinct_sources_verified")
+        users_2022 = self.index[("china_broadnet", 2022, "5g_network_subscribers")]
+        self.assertEqual(users_2022["comparator"], ">")
+        self.assertEqual(users_2022["distinct_source_document_count"], 3)
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])

@@ -1381,6 +1381,9 @@ SOURCES.update({
         "url": "https://www.nrta.gov.cn/art/2023/4/27/art_113_64140.html",
         "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
         "source_document_id": "china_broadnet_nrta_statistical_bulletin_2022",
+        "evidence": {
+            "5g_network_subscribers": {"value": 5.5, "unit": "million_subscribers", "comparator": ">", "locator": "2022年全国广播电视行业统计公报；广电5G用户超过550万户"},
+        },
     },
     "china_broadnet_guangdong_2022": {
         "source_id": "china_broadnet_guangdong_2022", "operator_id": "china_broadnet", "year": 2022,
@@ -1400,12 +1403,18 @@ SOURCES.update({
         "label": "佳创视讯监管问询回复（引用2022年广电行业统计公报）",
         "url": "https://static.cninfo.com.cn/finalpage/2023-06-05/1216993014.PDF",
         "source_type": "official_exchange_filing", "publisher": "深圳市佳创视讯技术股份有限公司",
+        "evidence": {
+            "5g_network_subscribers": {"value": 5.5, "unit": "million_subscribers", "comparator": ">", "locator": "监管问询回复行业概况；广电5G用户超过550万户"},
+        },
     },
     "china_broadnet_lianhe_rating_2022": {
         "source_id": "china_broadnet_lianhe_rating_2022", "operator_id": "china_broadnet", "year": 2022,
         "label": "联合资信2023年跟踪评级报告（载2022年广电行业数据）",
         "url": "https://www.lhratings.com/reports/B007919-P49578-2020-GZ2023.pdf",
         "source_type": "credit_rating_report", "publisher": "联合资信评估股份有限公司",
+        "evidence": {
+            "5g_network_subscribers": {"value": 5.5, "unit": "million_subscribers", "comparator": ">", "locator": "2023年跟踪评级报告；截至2022年底广电5G用户超过550万户"},
+        },
     },
     "china_broadnet_lianhe_rating_revenue_2022": {
         "source_id": "china_broadnet_lianhe_rating_revenue_2022", "operator_id": "china_broadnet", "year": 2022,
@@ -1418,18 +1427,27 @@ SOURCES.update({
         "label": "国家广播电视总局 2023年全国广播电视行业统计公报",
         "url": "https://www.nrta.gov.cn/art/2024/5/8/art_113_67383.html",
         "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "evidence": {
+            "5g_network_subscribers": {"value": 23, "unit": "million_subscribers", "comparator": ">", "locator": "截至2023年底；广电5G用户超过2300万户"},
+        },
     },
     "china_broadnet_crta_2023": {
         "source_id": "china_broadnet_crta_2023", "operator_id": "china_broadnet", "year": 2023,
         "label": "中国广播电视设备工业协会 广电行业综合信息2024年第05期",
         "url": "https://www.crta.com.cn/upload/default/666a5f9f184a0.pdf",
         "source_type": "industry_association_report", "publisher": "中国广播电视设备工业协会",
+        "evidence": {
+            "5g_network_subscribers": {"value": 23, "unit": "million_subscribers", "comparator": ">", "locator": "广电行业综合信息2024年第05期；广电5G用户超过2300万户"},
+        },
     },
     "china_broadnet_guangxi_ar_2023": {
         "source_id": "china_broadnet_guangxi_ar_2023", "operator_id": "china_broadnet", "year": 2023,
         "label": "广西广电网络2023年年度报告",
         "url": "https://static.cninfo.com.cn/finalpage/2024-04-26/1219840147.PDF",
         "source_type": "official_exchange_annual_report", "publisher": "广西广播电视信息网络股份有限公司",
+        "evidence": {
+            "5g_network_subscribers": {"value": 23, "unit": "million_subscribers", "comparator": ">", "locator": "2023年年度报告行业情况；广电5G用户数量突破2300万"},
+        },
     },
     "china_broadnet_shaanxi_ar_2023": {
         "source_id": "china_broadnet_shaanxi_ar_2023", "operator_id": "china_broadnet", "year": 2023,
