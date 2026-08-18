@@ -142,6 +142,51 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(delivery["status"], "verified")
         self.assertEqual(delivery["service"], "news")
 
+    def test_report_test_push_sends_pdf_and_reads_it_back(self):
+        from report_pdf_preview import pdf_preview_path
+
+        report = self.root / "测试周报.docx"
+        report.write_bytes(b"docx placeholder")
+        pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+        pdf.parent.mkdir(parents=True)
+        pdf.write_bytes(b"%PDF-1.7\n")
+        result = self.service.push(
+            service="weekly",
+            mode="pdf",
+            path=report.name,
+            test_open_id="ou_test123",
+        )
+        self.assertEqual(result["verified_count"], 1)
+        self.assertTrue(any("--file" in call and str(pdf.relative_to(self.root)) in call for call in self.lark.calls))
+
+    def test_reports_reject_non_pdf_delivery_modes(self):
+        report = self.root / "测试周报.docx"
+        report.write_bytes(b"docx placeholder")
+        with self.assertRaisesRegex(ValueError, "只支持 PDF"):
+            self.service.push(service="weekly", mode="text", path=report.name, test_open_id="ou_test123")
+
+    def test_report_audio_is_a_separate_message_after_pdf(self):
+        from report_pdf_preview import pdf_preview_path
+
+        report = self.root / "语音周报.docx"
+        report.write_bytes(b"docx placeholder")
+        pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+        pdf.parent.mkdir(parents=True)
+        pdf.write_bytes(b"%PDF-1.7\n")
+        audio = self.root / "audio" / "语音周报.opus"
+        audio.parent.mkdir()
+        audio.write_bytes(b"OggS")
+        result = self.service.push(
+            service="weekly",
+            mode="pdf_audio",
+            path=report.name,
+            test_open_id="ou_test123",
+        )
+        self.assertEqual(len(result["results"][0]["message_ids"]), 2)
+        sends = [call for call in self.lark.calls if "+messages-send" in call]
+        self.assertIn("--file", sends[0])
+        self.assertIn("--audio", sends[1])
+
     def test_bulk_push_requires_explicit_confirmation(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
         with self.assertRaisesRegex(ValueError, "二次确认"):

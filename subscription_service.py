@@ -22,7 +22,7 @@ SERVICE_LABELS = {
     "news": "战略新闻",
 }
 VALID_SERVICES = frozenset(SERVICE_LABELS)
-VALID_DELIVERY_MODES = frozenset({"text", "audio", "both"})
+VALID_DELIVERY_MODES = frozenset({"text", "audio", "both", "pdf", "pdf_audio"})
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
@@ -93,7 +93,7 @@ def subscription_entry_card() -> dict[str, Any]:
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "请选择一个或多个订阅服务"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": "战略双周报（文字 / 语音）"}, "value": "weekly"},
+                                {"text": {"tag": "plain_text", "content": "战略双周报（PDF / 可选独立语音）"}, "value": "weekly"},
                                 {"text": {"tag": "plain_text", "content": "运营商业绩摘要"}, "value": "performance"},
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
                             ],
@@ -503,6 +503,14 @@ class SubscriptionService:
         ], timeout=120)
         return self._message_id(payload)
 
+    def _send_file(self, open_id: str, file_path: Path, *, idempotency_key: str, profile: str = "") -> str:
+        relative = file_path.relative_to(self.runtime_root)
+        payload = self._lark([
+            "lark-cli", "im", "+messages-send", "--user-id", open_id, "--file", str(relative),
+            "--idempotency-key", idempotency_key[:50], "--as", "bot", "--profile", profile or self.delivery_profile, "--format", "json",
+        ], timeout=180)
+        return self._message_id(payload)
+
     def _verify_message(self, message_id: str, *, profile: str = "") -> None:
         payload = self._lark([
             "lark-cli", "im", "+messages-mget", "--message-ids", message_id,
@@ -563,6 +571,17 @@ class SubscriptionService:
                 raise RuntimeError("报告语音转换为飞书 Opus 格式失败")
         return target
 
+    def _report_pdf(self, report_path: Path) -> Path:
+        from report_pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
+
+        preview_dir = self.runtime_root / "web" / "static" / "report-previews"
+        target = pdf_preview_path(report_path, preview_dir)
+        if not target.exists() or target.stat().st_mtime < report_path.stat().st_mtime:
+            target = convert_docx_to_pdf_preview(report_path, preview_dir=preview_dir)
+        if not target.exists() or target.suffix.lower() != ".pdf":
+            raise RuntimeError("报告 PDF 未生成")
+        return target
+
     def _subscribers_for(self, service: str) -> list[str]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
@@ -587,6 +606,8 @@ class SubscriptionService:
             raise ValueError("推送服务或交付方式无效")
         if service == "news" and mode != "text":
             raise ValueError("战略新闻目前只支持文字推送")
+        if service in {"weekly", "performance"} and mode not in {"pdf", "pdf_audio"}:
+            raise ValueError("周报和业绩摘要只支持 PDF，语音可作为独立消息附加")
         recipients = self._subscribers_for(service)
         send_profile = self.delivery_profile
         if test_open_id:
@@ -628,7 +649,10 @@ class SubscriptionService:
                     text = body if service == "news" else self._report_text(report_path)  # type: ignore[arg-type]
                     for index, chunk in enumerate(self._text_chunks(title, text), start=1):
                         message_ids.append(self._send_markdown(open_id, chunk, idempotency_key=f"{batch_id}-t{index}-{open_id[-6:]}", profile=send_profile))
-                if mode in {"audio", "both"}:
+                if mode in {"pdf", "pdf_audio"}:
+                    pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
+                    message_ids.append(self._send_file(open_id, pdf, idempotency_key=f"{batch_id}-p-{open_id[-6:]}", profile=send_profile))
+                if mode in {"audio", "both", "pdf_audio"}:
                     audio = self._find_audio(report_path)  # type: ignore[arg-type]
                     message_ids.append(self._send_audio(open_id, audio, idempotency_key=f"{batch_id}-a-{open_id[-6:]}", profile=send_profile))
                 for message_id in message_ids:

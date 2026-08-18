@@ -22,6 +22,12 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("推送台账", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
 
+    def test_report_delivery_is_pdf_only(self):
+        self.assertIn('value="pdf"', SCRIPT)
+        self.assertIn("PDF 文件", SCRIPT)
+        self.assertIn('value="pdf_audio"', SCRIPT)
+        self.assertIn("PDF + 单独语音", SCRIPT)
+
 
 if __name__ == "__main__":
     unittest.main()

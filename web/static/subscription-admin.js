@@ -6,7 +6,7 @@
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
-  const modeLabel = (value) => ({ text: "文字", audio: "语音", both: "文字 + 语音" }[value] || value);
+  const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
 
   function serviceOptions() {
     return [["weekly", "战略双周报"], ["performance", "运营商业绩摘要"], ["news", "战略新闻"]]
@@ -16,7 +16,7 @@
   function reportOptions() {
     const reports = state.data?.reports || [];
     if (!reports.length) return '<option value="">当前没有可推送报告</option>';
-    return reports.map((item) => `<option value="${esc(item.path)}" data-report-type="${esc(item.report_type)}">${esc(item.name)}${item.audio ? " · 有语音" : ""}</option>`).join("");
+    return reports.map((item) => `<option value="${esc(item.path)}" data-report-type="${esc(item.report_type)}">${esc(item.name)} · PDF</option>`).join("");
   }
 
   function subscriberRows() {
@@ -46,10 +46,10 @@
     root.innerHTML = `<div class="admin">
       <header class="topbar"><div><p class="eyebrow">FEISHU DELIVERY CONTROL</p><h1>订阅与推送管理</h1><p class="subtitle">同事通过飞书卡片自助选择；管理员控制正式内容和投递范围。</p></div><button class="button" type="button" data-refresh>刷新数据</button></header>
       <p class="notice ${esc(state.noticeKind)}" role="status">${esc(state.notice || `数据更新于 ${data.updated_at || "刚刚"}。默认测试模式只发给系统管理员。`)}</p>
-      <section class="kpis"><article class="kpi"><span>有效订阅者</span><strong>${number(data.active_subscriber_count)}</strong><small>服务器持久化</small></article><article class="kpi"><span>战略双周报</span><strong>${number(counts.weekly)}</strong><small>文字 / 语音</small></article><article class="kpi"><span>业绩摘要</span><strong>${number(counts.performance)}</strong><small>正式报告</small></article><article class="kpi"><span>战略新闻</span><strong>${number(counts.news)}</strong><small>即时文字</small></article></section>
+      <section class="kpis"><article class="kpi"><span>有效订阅者</span><strong>${number(data.active_subscriber_count)}</strong><small>服务器持久化</small></article><article class="kpi"><span>战略双周报</span><strong>${number(counts.weekly)}</strong><small>PDF 文件</small></article><article class="kpi"><span>业绩摘要</span><strong>${number(counts.performance)}</strong><small>PDF 文件</small></article><article class="kpi"><span>战略新闻</span><strong>${number(counts.news)}</strong><small>即时文字</small></article></section>
       <section class="controls">
         <article class="panel"><header class="panel-header"><div><h2>发布订阅入口</h2><span>自助多选卡片</span></div></header><div class="panel-body"><form class="publish-form" id="publishForm"><label>目标群<select name="targetId" required>${targets || '<option value="">暂无白名单群</option>'}</select></label><button class="button primary" type="submit">发布到群</button><button class="button" type="button" data-test-card>先发给我测试</button></form><p class="form-note">群发布只发送订阅入口，不会自动推送报告或新闻。</p></div></article>
-        <article class="panel"><header class="panel-header"><div><h2>执行内容推送</h2><span>逐条回读消息 ID</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="text">文字</option><option value="audio">语音</option><option value="both">文字 + 语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试；取消勾选后才可向全部有效订阅者推送</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
+        <article class="panel"><header class="panel-header"><div><h2>执行内容推送</h2><span>逐条回读消息 ID</span></div></header><div class="panel-body"><form id="pushForm"><div class="form-row"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option></select></label></div><label data-report>正式报告<select name="path">${reportOptions()}</select></label><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="填写经审核的战略新闻正文">${esc(newsBody)}</textarea></label><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试；取消勾选后才可向全部有效订阅者推送</span></label><button class="button primary" type="submit">执行推送</button></form></div></article>
       </section>
       <section class="panel"><header class="panel-header"><div><h2>订阅者</h2><span>${number((data.subscribers || []).length)} 人 · 可调整服务或暂停</span></div></header><div class="table-wrap"><table><thead><tr><th>姓名</th><th>飞书身份</th><th>周报</th><th>业绩</th><th>新闻</th><th>状态</th><th>操作</th></tr></thead><tbody>${subscriberRows()}</tbody></table></div></section>
       <section class="panel"><header class="panel-header"><div><h2>推送台账</h2><span>发送与回读证据</span></div></header><div class="table-wrap"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div></section>
@@ -63,8 +63,11 @@
     const news = form.elements.service.value === "news";
     form.querySelectorAll("[data-news]").forEach((element) => { element.hidden = !news; });
     form.querySelector("[data-report]").hidden = news;
-    form.elements.mode.disabled = news;
-    if (news) form.elements.mode.value = "text";
+    if (news) {
+      form.elements.mode.innerHTML = '<option value="text">飞书消息</option>';
+    } else {
+      form.elements.mode.innerHTML = '<option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option>';
+    }
     Array.from(form.elements.path.options).forEach((option) => {
       const type = form.elements.service.value === "weekly" ? "weekly" : "carrier-performance";
       option.hidden = !news && option.dataset.reportType !== type;
