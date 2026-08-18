@@ -3123,20 +3123,28 @@
       "comparator": "=",
       "scope": "group 4G customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2016",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2016",
-        "china_mobile_ops_2016",
-        "china_mobile_results_2016"
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -3374,26 +3382,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 650,
-      "official_value": 650,
+      "value": 649.51,
+      "official_value": 649.51,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group 4G customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2017",
-        "china_mobile_ops_2017",
-        "china_mobile_results_2017"
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -3631,26 +3647,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 713,
-      "official_value": 713,
+      "value": 712.65,
+      "official_value": 712.65,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group 4G customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2018",
-        "china_mobile_ops_2018",
-        "china_mobile_results_2018"
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -3919,26 +3943,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 758,
-      "official_value": 758,
+      "value": 758.01,
+      "official_value": 758.01,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group 4G customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2019",
-        "china_mobile_ops_2019",
-        "china_mobile_results_2019"
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -4278,26 +4310,34 @@
       "grain": "annual",
       "metric_key": "4g_subscribers",
       "metric_zh": "4G用户数",
-      "value": 775,
-      "official_value": 775,
+      "value": 775.31,
+      "official_value": 775.31,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group 4G customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2020",
-        "china_mobile_ops_2020",
-        "china_mobile_results_2020"
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -4658,7 +4698,7 @@
         "china_mobile_ops_2021",
         "china_mobile_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers."
     },
     {
       "operator_id": "china_mobile",

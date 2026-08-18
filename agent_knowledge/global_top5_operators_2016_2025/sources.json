@@ -26,6 +26,11 @@
           "unit": "million_subscribers",
           "locator": "FY2016 annual report key operating data; year-end mobile customers"
         },
+        "4g_subscribers": {
+          "value": 535.04,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual report key operating data; year-end 4G customers"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -52,6 +57,11 @@
           "value": 887.2,
           "unit": "million_subscribers",
           "locator": "FY2017 annual report key operating data; year-end mobile customers"
+        },
+        "4g_subscribers": {
+          "value": 649.51,
+          "unit": "million_subscribers",
+          "locator": "FY2017 annual report key operating data; year-end 4G customers"
         },
         "mobile_dou": {
           "value": 1.399,
@@ -85,6 +95,11 @@
           "unit": "million_subscribers",
           "locator": "FY2018 annual report key operating data; year-end mobile customers"
         },
+        "4g_subscribers": {
+          "value": 712.65,
+          "unit": "million_subscribers",
+          "locator": "FY2018 annual report key operating data; year-end 4G customers"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -117,6 +132,11 @@
           "unit": "million_subscribers",
           "locator": "FY2019 annual report key operating data; year-end mobile customers"
         },
+        "4g_subscribers": {
+          "value": 758.01,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual report key operating data; year-end 4G customers"
+        },
         "mobile_dou": {
           "value": 6.7,
           "unit": "GB_per_user_month",
@@ -148,6 +168,11 @@
           "value": 941.92,
           "unit": "million_subscribers",
           "locator": "FY2020 annual report key operating data; year-end mobile customers"
+        },
+        "4g_subscribers": {
+          "value": 775.31,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual report key operating data; year-end 4G customers"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -1970,6 +1995,11 @@
           "unit": "million_subscribers",
           "locator": "FY2016 annual-results presentation operating-data appendix; current-year mobile customers"
         },
+        "4g_subscribers": {
+          "value": 535.04,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual-results presentation operating-data appendix; current-year 4G customers"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -2002,6 +2032,11 @@
           "unit": "million_subscribers",
           "locator": "FY2017 annual-results presentation operating-data appendix; current-year mobile customers"
         },
+        "4g_subscribers": {
+          "value": 649.51,
+          "unit": "million_subscribers",
+          "locator": "FY2017 annual-results presentation operating-data appendix; current-year 4G customers"
+        },
         "mobile_dou": {
           "value": 1.399,
           "unit": "GB_per_user_month",
@@ -2019,6 +2054,11 @@
             "value": 848.9,
             "unit": "million_subscribers",
             "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative mobile customers"
+          },
+          "4g_subscribers": {
+            "value": 535.04,
+            "unit": "million_subscribers",
+            "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative 4G customers"
           },
           "mobile_dou": {
             "value": 0.697,
@@ -2053,6 +2093,11 @@
           "unit": "million_subscribers",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year mobile customers"
         },
+        "4g_subscribers": {
+          "value": 712.65,
+          "unit": "million_subscribers",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year 4G customers"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -2070,6 +2115,11 @@
             "value": 887.2,
             "unit": "million_subscribers",
             "locator": "FY2018 annual-results presentation operating-data appendix; FY2017 comparative mobile customers"
+          },
+          "4g_subscribers": {
+            "value": 649.51,
+            "unit": "million_subscribers",
+            "locator": "FY2018 annual-results presentation operating-data appendix; FY2017 comparative 4G customers"
           }
         }
       }
@@ -2100,6 +2150,11 @@
             "unit": "million_subscribers",
             "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative mobile customers"
           },
+          "4g_subscribers": {
+            "value": 712.65,
+            "unit": "million_subscribers",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative 4G customers"
+          },
           "mobile_dou": {
             "value": 3.6,
             "unit": "GB_per_user_month",
@@ -2122,6 +2177,11 @@
           "value": 950.28,
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results presentation operating-data appendix; current-year mobile customers"
+        },
+        "4g_subscribers": {
+          "value": 758.01,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year 4G customers"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -2156,6 +2216,11 @@
             "unit": "million_subscribers",
             "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative mobile customers"
           },
+          "4g_subscribers": {
+            "value": 758.01,
+            "unit": "million_subscribers",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative 4G customers"
+          },
           "mobile_dou": {
             "value": 6.7,
             "unit": "GB_per_user_month",
@@ -2178,6 +2243,11 @@
           "value": 941.92,
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results presentation operating-data appendix; current-year mobile customers"
+        },
+        "4g_subscribers": {
+          "value": 775.31,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year 4G customers"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -2211,6 +2281,11 @@
             "value": 941.92,
             "unit": "million_subscribers",
             "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative mobile customers"
+          },
+          "4g_subscribers": {
+            "value": 775.31,
+            "unit": "million_subscribers",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative 4G customers"
           },
           "mobile_dou": {
             "value": 9.4,
