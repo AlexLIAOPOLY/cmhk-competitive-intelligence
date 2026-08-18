@@ -12,11 +12,15 @@ from __future__ import annotations
 import csv
 import json
 import re
+import sys
 from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import urlsplit, urlunsplit
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from source_document_identity import canonical_source_document_identity, is_derived_value
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,10 +29,24 @@ OUT = KNOWLEDGE / "knowledge_integrity_audits"
 AUDIT_DATE = date.today().isoformat()
 
 
+def latest_quarterly_dataset_path() -> Path:
+    candidates = [
+        folder
+        for folder in KNOWLEDGE.glob("quarterly_competitor_metrics_*")
+        if folder.is_dir() and (folder / "quarterly_metrics.csv").exists()
+    ]
+    if not candidates:
+        return KNOWLEDGE / "quarterly_competitor_metrics_2026-06-18"
+    return max(candidates, key=lambda folder: folder.name)
+
+
+LATEST_QUARTERLY = latest_quarterly_dataset_path()
+
+
 DATASETS = [
     {
-        "id": "quarterly_competitor_metrics_2026-06-18",
-        "path": KNOWLEDGE / "quarterly_competitor_metrics_2026-06-18" / "quarterly_metrics.csv",
+        "id": LATEST_QUARTERLY.name,
+        "path": LATEST_QUARTERLY / "quarterly_metrics.csv",
         "kind": "embedded_urls",
         "value": "official_value",
         "metric": "metric_key",
@@ -80,7 +98,7 @@ DATASETS = [
 # regulators/statistics agencies, and telecom product pages.  It is an audit
 # vocabulary, not permission to estimate an undisclosed value.
 COMMON_DISCLOSURES = {
-    "quarterly_competitor_metrics_2026-06-18": [
+    LATEST_QUARTERLY.name: [
         ("revenue", "收入", "financial", "high"),
         ("service_revenue", "服务收入", "financial", "high"),
         ("operating_income", "经营利润", "financial", "high"),
@@ -273,25 +291,26 @@ def source_documents_for_row(
     }
     urls.update(primary_urls)
     if config["kind"] == "embedded_urls":
-        documents.update(primary_urls)
+        source_urls: set[str] = set()
         for item in parse_json_list(row.get("verification_sources")):
             if isinstance(item, dict):
                 url = normalized_url(item.get("url"))
-                document_id = str(item.get("source_document_id") or "").strip()
                 if url:
                     urls.add(url)
-                if document_id or url:
-                    documents.add(document_id or url)
+                    source_urls.add(url)
+                if identity := canonical_source_document_identity(item, fallback_url=url):
+                    documents.add(identity)
+        documents.update(f"url:{url}" for url in primary_urls - source_urls)
     elif config["kind"] == "source_ids":
         for source_id in parse_json_list(row.get("verification_sources")):
             item = registry.get(str(source_id), {})
             if url := normalized_url(item.get("url")):
                 urls.add(url)
-                documents.add(str(item.get("source_document_id") or url))
+                documents.add(canonical_source_document_identity(item, fallback_url=url))
         if not documents:
-            documents.update(primary_urls)
+            documents.update(f"url:{url}" for url in primary_urls)
     else:
-        documents.update(primary_urls)
+        documents.update(f"url:{url}" for url in primary_urls)
     # Archive snapshots are evidence preservation for the same page, not an
     # independent source, and are intentionally not counted here.
     return documents, urls
@@ -322,7 +341,7 @@ def audit_dataset(config: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str
             legacy = 0
         if legacy >= 3 and count < 3:
             legacy_inflation += 1
-        derived = "derived" in str(row.get("verification_status") or "").lower() or "推导" in str(row.get("核验状态") or "")
+        derived = is_derived_value(row)
         if count >= 3 and not derived:
             certified += 1
         else:

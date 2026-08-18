@@ -12,6 +12,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from source_document_identity import canonical_source_document_identity, is_derived_value
 
 
 ROOT = Path(__file__).resolve().parent
@@ -37,11 +38,12 @@ def _strict_source_document_count(
     source_registry_path: Path | None = None,
 ) -> int:
     """Count underlying documents, deduplicating mirrors when metadata permits."""
-    documents = {
+    primary_urls = {
         url
         for field in ["official_source_url", "primary_source_url", "来源URL"]
         if (url := _normalized_source_url(row.get(field)))
     }
+    documents: set[str] = set()
     try:
         sources = json.loads(str(row.get("verification_sources") or "[]"))
     except Exception:
@@ -60,16 +62,17 @@ def _strict_source_document_count(
             }
         except Exception:
             registry = {}
+    source_urls: set[str] = set()
     for source in sources:
         item = source if isinstance(source, dict) else registry.get(str(source), {})
         candidate = item.get("url") if isinstance(item, dict) else None
-        document_id = str(item.get("source_document_id") or "").strip() if isinstance(item, dict) else ""
-        if document_id:
-            if url := _normalized_source_url(candidate):
-                documents.discard(url)
-            documents.add(f"document:{document_id}")
-        elif url := _normalized_source_url(candidate):
-            documents.add(url)
+        if url := _normalized_source_url(candidate):
+            source_urls.add(url)
+        if isinstance(item, dict):
+            if identity := canonical_source_document_identity(item, fallback_url=str(candidate or "")):
+                documents.add(identity)
+    for url in primary_urls - source_urls:
+        documents.add(f"url:{url}")
     return len(documents)
 
 
@@ -80,12 +83,11 @@ def _strict_three_source_text(count: int) -> str:
 
 def _strict_three_source_row_text(row: dict[str, Any], count: int) -> str:
     """Describe evidence without certifying missing or derived values."""
-    status_text = str(row.get("verification_status") or row.get("核验状态") or "").lower()
     value_fields = [field for field in ("official_value", "standardized_value", "value") if field in row]
     has_value = any(str(row.get(field) or "").strip() for field in value_fields) if value_fields else True
     if not has_value:
         return "distinct_source_document_count=0; triple_source_status=not_applicable_missing_value"
-    if "derived" in status_text or "推导" in status_text:
+    if is_derived_value(row):
         return f"distinct_source_document_count={count}; triple_source_status=derived_not_directly_disclosed"
     return _strict_three_source_text(count)
 
@@ -819,7 +821,7 @@ def _local_hk_operator_exact_metric_chunks(
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
             f"metric_zh={row.get('metric_zh')}; official_value={value_text}; comparator={row.get('comparator')}; "
             f"scope={row.get('scope')}; basis={row.get('basis')}; verification_status={row.get('verification_status')}; "
-            f"verification_count={row.get('verification_count')}; {_strict_three_source_text(strict_sources)}; "
+            f"verification_count={row.get('verification_count')}; {_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; "
             f"quality_note={row.get('quality_note')}.如果狀態為source_gap_confirmed，只能回答未披露，不能當作0或推測。"
         )
@@ -1094,7 +1096,7 @@ def _product_tariff_exact_chunks(
             f"monthly_fee_HKD={price}; local_data_GB={compact_value(row, '本地数据_GB')}; "
             f"broadband_speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
             f"contract_months={compact_value(row, '合约月数')}; "
-            f"verification={compact_value(row, '核验状态')}; {_strict_three_source_text(strict_sources)}; "
+            f"verification={compact_value(row, '核验状态')}; {_strict_three_source_row_text(row, strict_sources)}; "
             f"source_id={compact_value(row, '来源ID')}."
         )
 
@@ -1266,6 +1268,25 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
         {
             re.sub(r"\s+", " ", match.group(1).upper().replace("FY", "FY "))
             for match in re.finditer(r"\b(FY\s*20\d{2})\b", normalized_question, re.IGNORECASE)
+        }
+    )
+    periods.update(
+        {
+            f"H1 {match.group(1)}"
+            for match in re.finditer(r"(20\d{2})\s*年?\s*(?:上半年|中期|半年报)", normalized_question)
+        }
+    )
+    periods.update(
+        {
+            f"H2 {match.group(1)}"
+            for match in re.finditer(r"(20\d{2})\s*年?\s*下半年", normalized_question)
+        }
+    )
+    chinese_quarters = {"一": "1", "二": "2", "三": "3", "四": "4", "1": "1", "2": "2", "3": "3", "4": "4"}
+    periods.update(
+        {
+            f"Q{chinese_quarters[match.group(2)]} {match.group(1)}"
+            for match in re.finditer(r"(20\d{2})\s*年?\s*第?([一二三四1234])季度", normalized_question)
         }
     )
     periods = {re.sub(r"\s+", " ", item) for item in periods}
@@ -1593,7 +1614,7 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             f"metric_key={row.get('metric_key')}; metric_zh={row.get('metric_zh')}; grain={row.get('grain')}; "
             f"standardized_value={standard_value} {row.get('unit')}; official_value={official_value} {official_unit}; "
             f"verification_status={status}; verification_count={verification_count}; "
-            f"{_strict_three_source_text(strict_sources)}; "
+            f"{_strict_three_source_row_text(row, strict_sources)}; "
             f"official_source_label={row.get('official_source_label')}; official_source_url={row.get('official_source_url')}; "
             f"official_evidence={evidence}; verification_note={note}. "
             "回答时：只有 distinct_source_document_count>=3 才能称为已通过三来源核验；"

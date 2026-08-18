@@ -3,17 +3,17 @@
   "strict_rule": "Each formal numeric value requires at least three distinct source document URLs. Multiple sections or snapshots of one URL count once.",
   "datasets": [
     {
-      "dataset_id": "quarterly_competitor_metrics_2026-06-18",
-      "row_count": 3015,
-      "available_value_rows": 2701,
-      "source_gap_or_blank_rows": 314,
-      "three_distinct_source_certified_rows": 1943,
-      "below_three_source_rows": 758,
-      "three_source_coverage_pct": 71.94,
-      "legacy_count_ge3_but_distinct_lt3": 191,
-      "distinct_source_count_distribution": "{\"1\": 32, \"2\": 726, \"3\": 1302, \"4\": 336, \"5\": 143, \"6\": 149, \"8\": 13}",
+      "dataset_id": "quarterly_competitor_metrics_2026-08-18",
+      "row_count": 2879,
+      "available_value_rows": 2704,
+      "source_gap_or_blank_rows": 175,
+      "three_distinct_source_certified_rows": 672,
+      "below_three_source_rows": 2032,
+      "three_source_coverage_pct": 24.85,
+      "legacy_count_ge3_but_distinct_lt3": 277,
+      "distinct_source_count_distribution": "{\"1\": 88, \"2\": 757, \"3\": 1334, \"4\": 297, \"5\": 79, \"6\": 136, \"8\": 13}",
       "quality_gate_status": "backlog_open",
-      "primary_csv": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv"
+      "primary_csv": "agent_knowledge/quarterly_competitor_metrics_2026-08-18/quarterly_metrics.csv"
     },
     {
       "dataset_id": "cmhk_macro_policy_2026-06-19",
@@ -68,7 +68,7 @@
       "primary_csv": "agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv"
     }
   ],
-  "backlog_rows": 6689,
+  "backlog_rows": 7963,
   "common_disclosures_checked": 102,
   "missing_common_disclosures": 26
 }

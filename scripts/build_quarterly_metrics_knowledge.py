@@ -3637,6 +3637,7 @@ HKT_2025_ANNUAL_RESULTS_URL = "https://www.hkt.com/api-service/assets/e-2026.02.
 HKT_2025_ANNUAL_RESULTS_HKEX_URL = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0209/2026020900404.pdf"
 HKT_2025_ANNUAL_REPORT_URL = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
 HKT_2025_INTERIM_REPORT_URL = "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+HKT_2025_INTERIM_RESULTS_URL = "https://www.hkt.com/api-service/assets/e02_HKT_2025_interim_results_announcement.pdf"
 HKT_2024_ANNUAL_RESULTS_URL = "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf"
 HKT_2024_ANNUAL_RESULTS_PCRD_URL = "https://www.pcrd.com/public/uploads/keys/20_2_2025_-_Announcement_relating_to_HKT_Limited_2024_Annual_Results.pdf"
 HKT_2024_ANNUAL_REPORT_URL = "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf"
@@ -3674,6 +3675,15 @@ HKT_2025_BALANCE_SOURCES = [
 HKT_2025_INTERIM_SOURCES = [
     {"label": "HKT 2025 Interim Report - HKEX", "url": HKT_2025_INTERIM_REPORT_URL, "evidence": "2025 H1损益表、资产负债表和现金流量表。"},
     {"label": "HKT 2025 Annual Results Announcement - HKEX", "url": HKT_2025_ANNUAL_RESULTS_HKEX_URL, "evidence": "2025年度业绩公告同表披露2025 H1/H2分部结果和AFF。"},
+]
+
+# These three are separate underlying disclosure documents, not issuer/exchange
+# mirrors.  Each directly prints the H1 performance table used by the selected
+# rows below.  Do not reuse this list for H2 or 30 June balance-sheet values.
+HKT_2025_H1_PERFORMANCE_SOURCES = [
+    {"label": "HKT 2025 Interim Report", "url": HKT_2025_INTERIM_REPORT_URL, "evidence": "2025 H1业绩概要及财务回顾直接披露收入、EBITDA、资本开支、AFF和税前利润。"},
+    {"label": "HKT 2025 Interim Results Announcement", "url": HKT_2025_INTERIM_RESULTS_URL, "evidence": "2025 H1业绩公告的Financial Review和AFF表直接披露同口径数值。"},
+    {"label": "HKT 2025 Annual Report", "url": HKT_2025_ANNUAL_REPORT_URL, "evidence": "2025年报Financial Review by Segment表重新直接列示2025 H1收入、EBITDA、资本开支、AFF和税前利润。"},
 ]
 
 HKT_2023_ANNUAL_REPORT_SOURCES = [
@@ -11033,7 +11043,7 @@ OFFICIAL_VERIFICATIONS: list[dict[str, Any]] = [
         "official_value": 17322, "unit": "millions HKD",
         "source_label": "HKT 2025 Annual Results Announcement", "source_url": HKT_2025_ANNUAL_RESULTS_URL,
         "evidence": "Financial Review by Segment披露2025 H1 Total revenue为17,322百万港元。",
-        "verification_method": "official_annual_segment_half_year_check", "verification_sources": HKT_2025_SEGMENT_SOURCES,
+        "verification_method": "official_three_document_direct_disclosure_check", "verification_sources": HKT_2025_H1_PERFORMANCE_SOURCES,
     },
     {
         "subject": "HKT / csl / 1O1O", "period": "H2 2025", "metric_key": "revenue",
@@ -11061,7 +11071,7 @@ OFFICIAL_VERIFICATIONS: list[dict[str, Any]] = [
         "official_value": 6380, "unit": "millions HKD",
         "source_label": "HKT 2025 Annual Results Announcement", "source_url": HKT_2025_ANNUAL_RESULTS_URL,
         "evidence": "Financial Review by Segment和Adjusted Funds Flow表均披露2025 H1 Total EBITDA为6,380百万港元。",
-        "verification_method": "official_annual_segment_and_aff_check", "verification_sources": HKT_2025_SEGMENT_SOURCES,
+        "verification_method": "official_three_document_direct_disclosure_check", "verification_sources": HKT_2025_H1_PERFORMANCE_SOURCES,
     },
     {
         "subject": "HKT / csl / 1O1O", "period": "H2 2025", "metric_key": "ebitda",
@@ -11075,7 +11085,7 @@ OFFICIAL_VERIFICATIONS: list[dict[str, Any]] = [
         "official_value": -1008, "unit": "millions HKD",
         "source_label": "HKT 2025 Annual Results Announcement", "source_url": HKT_2025_ANNUAL_RESULTS_URL,
         "evidence": "Adjusted Funds Flow表披露2025 H1 capital expenditures现金流出为1,008百万港元，记为负数。",
-        "verification_method": "official_adjusted_funds_flow_capex_check", "verification_sources": HKT_2025_SEGMENT_SOURCES,
+        "verification_method": "official_three_document_direct_disclosure_check", "verification_sources": HKT_2025_H1_PERFORMANCE_SOURCES,
     },
     {
         "subject": "HKT / csl / 1O1O", "period": "H2 2025", "metric_key": "capital_expenditures",
@@ -11089,7 +11099,7 @@ OFFICIAL_VERIFICATIONS: list[dict[str, Any]] = [
         "official_value": 2562, "unit": "millions HKD",
         "source_label": "HKT 2025 Annual Results Announcement", "source_url": HKT_2025_ANNUAL_RESULTS_URL,
         "evidence": "Adjusted Funds Flow表披露2025 H1 adjusted funds flow为2,562百万港元。该口径不是HKFRS经营现金流，也不能等同普通自由现金流。",
-        "verification_method": "official_adjusted_funds_flow_check", "verification_sources": HKT_2025_SEGMENT_SOURCES,
+        "verification_method": "official_three_document_direct_disclosure_check", "verification_sources": HKT_2025_H1_PERFORMANCE_SOURCES,
     },
     {
         "subject": "HKT / csl / 1O1O", "period": "H2 2025", "metric_key": "adjusted_funds_flow",
@@ -11103,7 +11113,7 @@ OFFICIAL_VERIFICATIONS: list[dict[str, Any]] = [
         "official_value": 2712, "unit": "millions HKD",
         "source_label": "HKT 2025 Annual Results Announcement", "source_url": HKT_2025_ANNUAL_RESULTS_URL,
         "evidence": "Financial Review by Segment披露2025 H1 Profit before income tax为2,712百万港元。",
-        "verification_method": "official_annual_segment_half_year_check", "verification_sources": HKT_2025_SEGMENT_SOURCES,
+        "verification_method": "official_three_document_direct_disclosure_check", "verification_sources": HKT_2025_H1_PERFORMANCE_SOURCES,
     },
     {
         "subject": "HKT / csl / 1O1O", "period": "H2 2025", "metric_key": "profit_before_tax",

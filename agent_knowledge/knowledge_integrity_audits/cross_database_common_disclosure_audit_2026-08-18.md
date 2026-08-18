@@ -10,7 +10,7 @@
 
 | 数据库 | 有值行 | 三源通过 | 待补证 | 覆盖率 | 旧计数虚高 | 状态 |
 |---|---:|---:|---:|---:|---:|---|
-| quarterly_competitor_metrics_2026-06-18 | 2701 | 1943 | 758 | 71.94% | 191 | backlog_open |
+| quarterly_competitor_metrics_2026-08-18 | 2704 | 672 | 2032 | 24.85% | 277 | backlog_open |
 | cmhk_macro_policy_2026-06-19 | 7577 | 3992 | 3585 | 52.69% | 0 | backlog_open |
 | global_top5_operators_2016_2025 | 354 | 174 | 180 | 49.15% | 0 | backlog_open |
 | local_hk_operator_operating_metrics_2016_2025 | 172 | 0 | 172 | 0.0% | 0 | backlog_open |
@@ -18,16 +18,16 @@
 
 ## 常见披露字段缺口
 
-- `quarterly_competitor_metrics_2026-06-18`：净负债 (`net_debt`)，优先级 medium。
-- `quarterly_competitor_metrics_2026-06-18`：每股股息 (`dividend_per_share`)，优先级 medium。
-- `quarterly_competitor_metrics_2026-06-18`：员工数 (`employees`)，优先级 low。
-- `quarterly_competitor_metrics_2026-06-18`：云经营利润 (`cloud_operating_income`)，优先级 high。
-- `quarterly_competitor_metrics_2026-06-18`：云经营利润率 (`cloud_operating_margin`)，优先级 high。
-- `quarterly_competitor_metrics_2026-06-18`：剩余履约义务/RPO (`remaining_performance_obligations`)，优先级 medium。
-- `quarterly_competitor_metrics_2026-06-18`：云订单积压 (`cloud_backlog`)，优先级 medium。
-- `quarterly_competitor_metrics_2026-06-18`：云区域数 (`cloud_regions`)，优先级 low。
-- `quarterly_competitor_metrics_2026-06-18`：可用区数 (`availability_zones`)，优先级 low。
-- `quarterly_competitor_metrics_2026-06-18`：数据中心数 (`data_centers`)，优先级 low。
+- `quarterly_competitor_metrics_2026-08-18`：净负债 (`net_debt`)，优先级 medium。
+- `quarterly_competitor_metrics_2026-08-18`：每股股息 (`dividend_per_share`)，优先级 medium。
+- `quarterly_competitor_metrics_2026-08-18`：员工数 (`employees`)，优先级 low。
+- `quarterly_competitor_metrics_2026-08-18`：云经营利润 (`cloud_operating_income`)，优先级 high。
+- `quarterly_competitor_metrics_2026-08-18`：云经营利润率 (`cloud_operating_margin`)，优先级 high。
+- `quarterly_competitor_metrics_2026-08-18`：剩余履约义务/RPO (`remaining_performance_obligations`)，优先级 medium。
+- `quarterly_competitor_metrics_2026-08-18`：云订单积压 (`cloud_backlog`)，优先级 medium。
+- `quarterly_competitor_metrics_2026-08-18`：云区域数 (`cloud_regions`)，优先级 low。
+- `quarterly_competitor_metrics_2026-08-18`：可用区数 (`availability_zones`)，优先级 low。
+- `quarterly_competitor_metrics_2026-08-18`：数据中心数 (`data_centers`)，优先级 low。
 - `global_top5_operators_2016_2025`：用户流失率 (`churn`)，优先级 medium。
 - `global_top5_operators_2016_2025`：5G人口覆盖率 (`5g_population_coverage`)，优先级 medium。
 - `global_top5_operators_2016_2025`：频谱持有量 (`spectrum_holdings`)，优先级 low。
