@@ -125,16 +125,16 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=34"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=35"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=17"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=18"', html)
             self.assertIn("--surface: #091725", style)
-            self.assertIn("metric-sparkline", script)
+            self.assertIn("real-line-chart", script)
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)
             self.assertIn(
@@ -146,7 +146,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)
             self.assertIn("客户与业务对标层", html)
-            self.assertIn("渠道与品牌触达层", html)
+            self.assertIn("政企与国际触达层", html)
             self.assertNotIn("数据为模拟展示，仅用于界面演示", html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
@@ -160,24 +160,27 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 self.assertNotIn(company, html)
                 self.assertNotIn(company, script)
             selected_metrics = (
-                "基站总数（4G）",
-                "基站总数（5G）",
-                "智算能力 PFLOPS",
-                "总移动用户数",
-                "移动综合ARPU",
-                "家庭宽带用户数",
-                "家庭户均收益（ARPU）",
-                "客户数（大中型企业/中小企业-参考政府公布的分类）",
-                "项目签约额",
-                "全港实体门市数量",
-                "官方手机应用程式 (如MyLink) 活跃用户数",
+                "已开通基站总数",
+                "骨干传送网带宽",
+                "5G基站建设总数",
+                "移动客户",
+                "5G网络客户",
+                "有线宽带客户",
+                "政企客户",
+                "物联网卡客户",
+                "4G国际漫游覆盖",
+                "5G国际漫游覆盖",
                 "营运收入",
-                "EBITDA率",
-                "净利润",
+                "EBITDA",
+                "股东应占利润",
             )
             for metric in selected_metrics:
                 self.assertIn(metric, script)
             for removed_metric in (
+                "6,880",
+                "342.8",
+                "96.8",
+                "2026E",
                 "5G网络平均下载速率",
                 "网络可用率",
                 "品牌认知度",
@@ -196,9 +199,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             css = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn("Sheet-filtered CMHK view", css)
-            self.assertIn(".business-pair", css)
-            self.assertIn(".scene, .panel-glass { display: none; }", css)
+            self.assertIn("Source-backed China Mobile public-data cockpit", css)
+            self.assertIn(".business-cards", css)
+            self.assertIn(".scene,.panel-glass { display:none; }", css)
             self.assertFalse((first / "executive-company-benchmarks.json").exists())
             self.assertTrue((first / "executive-responsive-hardening.css").exists())
             intelligence_html = (first / "intelligence" / "index.html").read_text(
