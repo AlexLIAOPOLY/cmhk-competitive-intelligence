@@ -3302,20 +3302,28 @@
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2016",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2016.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2016",
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2016",
-        "china_mobile_ops_2016",
-        "china_mobile_results_2016"
+        "china_mobile_results_2016",
+        "china_mobile_results_2017"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -3545,26 +3553,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 887,
-      "official_value": 887,
+      "value": 887.2,
+      "official_value": 887.2,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2017",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2017.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2017",
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2017",
-        "china_mobile_ops_2017",
-        "china_mobile_results_2017"
+        "china_mobile_results_2017",
+        "china_mobile_results_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -3791,26 +3807,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 925,
-      "official_value": 925,
+      "value": 925.07,
+      "official_value": 925.07,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2018",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2018.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2018",
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2018",
-        "china_mobile_ops_2018",
-        "china_mobile_results_2018"
+        "china_mobile_results_2018",
+        "china_mobile_results_2019"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -4139,26 +4163,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 950,
-      "official_value": 950,
+      "value": 950.28,
+      "official_value": 950.28,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2019.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2019",
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2019",
-        "china_mobile_ops_2019",
-        "china_mobile_results_2019"
+        "china_mobile_results_2019",
+        "china_mobile_results_2020"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -4490,26 +4522,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 942,
-      "official_value": 942,
+      "value": 941.92,
+      "official_value": 941.92,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2020",
-        "china_mobile_ops_2020",
-        "china_mobile_results_2020"
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -4868,26 +4908,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 957,
-      "official_value": 957,
+      "value": 956.89,
+      "official_value": 956.89,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2021",
-        "china_mobile_ops_2021",
-        "china_mobile_results_2021"
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5211,26 +5259,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 975,
-      "official_value": 975,
+      "value": 975.01,
+      "official_value": 975.01,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2022",
-        "china_mobile_ops_2022",
-        "china_mobile_results_2022"
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5547,26 +5603,34 @@
       "grain": "annual",
       "metric_key": "mobile_subscribers",
       "metric_zh": "移动用户数",
-      "value": 991,
-      "official_value": 991,
+      "value": 991.0,
+      "official_value": 991.0,
       "unit": "million_subscribers",
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2023",
-        "china_mobile_ops_2023",
+        "china_mobile_ar_a_2023",
         "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -5821,20 +5885,28 @@
       "comparator": "=",
       "scope": "group mobile customer base",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2024",
-        "china_mobile_ops_2024",
+        "china_mobile_ar_a_2024",
         "china_mobile_results_2024"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2024",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2024",
+        "china_mobile_ar_a_2024",
+        "china_mobile_results_2024"
+      ],
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_mobile",
@@ -6400,7 +6472,7 @@
         "china_mobile_results_2025",
         "china_mobile_press_2025"
       ],
-      "quality_note": ""
+      "quality_note": "FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release."
     },
     {
       "operator_id": "china_telecom",

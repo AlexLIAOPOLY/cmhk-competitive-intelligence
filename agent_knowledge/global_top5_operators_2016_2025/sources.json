@@ -21,6 +21,11 @@
           "unit": "million_subscribers",
           "locator": "FY2016 annual report company profile; year-end wireline broadband customers"
         },
+        "mobile_subscribers": {
+          "value": 848.9,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual report key operating data; year-end mobile customers"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -42,6 +47,11 @@
           "value": 1.87,
           "unit": "million_base_stations",
           "locator": "FY2017 annual report operating review; year-end 4G base-station total"
+        },
+        "mobile_subscribers": {
+          "value": 887.2,
+          "unit": "million_subscribers",
+          "locator": "FY2017 annual report key operating data; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 1.399,
@@ -70,6 +80,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual report key operating data; mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 925.07,
+          "unit": "million_subscribers",
+          "locator": "FY2018 annual report key operating data; year-end mobile customers"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -96,6 +111,11 @@
           "value": 49.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual report key operating data; mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 950.28,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual report key operating data; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -124,6 +144,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual report key operating data; mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 941.92,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual report key operating data; year-end mobile customers"
+        },
         "mobile_dou": {
           "value": 9.4,
           "unit": "GB_per_user_month",
@@ -145,6 +170,11 @@
           "value": 48.8,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual report key operating data; mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 956.89,
+          "unit": "million_subscribers",
+          "locator": "FY2021 annual report key operating data; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -168,6 +198,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual report key operating data; mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 975.01,
+          "unit": "million_subscribers",
+          "locator": "FY2022 annual report key operating data; year-end mobile customers"
+        },
         "mobile_dou": {
           "value": 14.1,
           "unit": "GB_per_user_month",
@@ -189,6 +224,11 @@
           "value": 49.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 H-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_subscribers": {
+          "value": 991.0,
+          "unit": "million_subscribers",
+          "locator": "FY2023 H-share annual report; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -216,6 +256,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 H-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_subscribers": {
+          "value": 1004,
+          "unit": "million_subscribers",
+          "locator": "FY2024 H-share annual report; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -1920,6 +1965,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2016 annual-results presentation operating-data appendix; current-year mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 848.9,
+          "unit": "million_subscribers",
+          "locator": "FY2016 annual-results presentation operating-data appendix; current-year mobile customers"
+        },
         "mobile_dou": {
           "value": 0.697,
           "unit": "GB_per_user_month",
@@ -1947,6 +1997,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2017 annual-results presentation operating-data appendix; current-year mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 887.2,
+          "unit": "million_subscribers",
+          "locator": "FY2017 annual-results presentation operating-data appendix; current-year mobile customers"
+        },
         "mobile_dou": {
           "value": 1.399,
           "unit": "GB_per_user_month",
@@ -1959,6 +2014,11 @@
             "value": 57.5,
             "unit": "RMB_per_user_month",
             "locator": "official operating table; FY2016 comparative mobile ARPU"
+          },
+          "mobile_subscribers": {
+            "value": 848.9,
+            "unit": "million_subscribers",
+            "locator": "FY2017 annual-results presentation operating-data appendix; FY2016 comparative mobile customers"
           },
           "mobile_dou": {
             "value": 0.697,
@@ -1988,6 +2048,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2018 annual-results presentation operating-data appendix; current-year mobile ARPU"
         },
+        "mobile_subscribers": {
+          "value": 925.07,
+          "unit": "million_subscribers",
+          "locator": "FY2018 annual-results presentation operating-data appendix; current-year mobile customers"
+        },
         "mobile_dou": {
           "value": 3.6,
           "unit": "GB_per_user_month",
@@ -2000,6 +2065,11 @@
             "value": 57.7,
             "unit": "RMB_per_user_month",
             "locator": "official operating table; FY2017 comparative mobile ARPU"
+          },
+          "mobile_subscribers": {
+            "value": 887.2,
+            "unit": "million_subscribers",
+            "locator": "FY2018 annual-results presentation operating-data appendix; FY2017 comparative mobile customers"
           }
         }
       }
@@ -2025,6 +2095,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative mobile ARPU"
           },
+          "mobile_subscribers": {
+            "value": 925.07,
+            "unit": "million_subscribers",
+            "locator": "FY2019 annual-results presentation operating-data appendix; FY2018 comparative mobile customers"
+          },
           "mobile_dou": {
             "value": 3.6,
             "unit": "GB_per_user_month",
@@ -2042,6 +2117,11 @@
           "value": 49.1,
           "unit": "RMB_per_user_month",
           "locator": "FY2019 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 950.28,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual-results presentation operating-data appendix; current-year mobile customers"
         },
         "mobile_dou": {
           "value": 6.7,
@@ -2071,6 +2151,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative mobile ARPU"
           },
+          "mobile_subscribers": {
+            "value": 950.28,
+            "unit": "million_subscribers",
+            "locator": "FY2020 annual-results presentation operating-data appendix; FY2019 comparative mobile customers"
+          },
           "mobile_dou": {
             "value": 6.7,
             "unit": "GB_per_user_month",
@@ -2088,6 +2173,11 @@
           "value": 47.4,
           "unit": "RMB_per_user_month",
           "locator": "FY2020 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 941.92,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual-results presentation operating-data appendix; current-year mobile customers"
         },
         "mobile_dou": {
           "value": 9.4,
@@ -2117,6 +2207,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative mobile ARPU"
           },
+          "mobile_subscribers": {
+            "value": 941.92,
+            "unit": "million_subscribers",
+            "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative mobile customers"
+          },
           "mobile_dou": {
             "value": 9.4,
             "unit": "GB_per_user_month",
@@ -2134,6 +2229,11 @@
           "value": 48.8,
           "unit": "RMB_per_user_month",
           "locator": "FY2021 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 956.89,
+          "unit": "million_subscribers",
+          "locator": "FY2021 annual-results presentation operating-data appendix; current-year mobile customers"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -2163,6 +2263,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative mobile ARPU"
           },
+          "mobile_subscribers": {
+            "value": 956.89,
+            "unit": "million_subscribers",
+            "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative mobile customers"
+          },
           "mobile_dou": {
             "value": 12.6,
             "unit": "GB_per_user_month",
@@ -2180,6 +2285,11 @@
           "value": 49.0,
           "unit": "RMB_per_user_month",
           "locator": "FY2022 annual-results presentation operating-data appendix; current-year mobile ARPU"
+        },
+        "mobile_subscribers": {
+          "value": 975.01,
+          "unit": "million_subscribers",
+          "locator": "FY2022 annual-results presentation operating-data appendix; current-year mobile customers"
         },
         "mobile_dou": {
           "value": 14.1,
@@ -2214,6 +2324,11 @@
             "unit": "RMB_per_user_month",
             "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative mobile ARPU"
           },
+          "mobile_subscribers": {
+            "value": 975.01,
+            "unit": "million_subscribers",
+            "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative mobile customers"
+          },
           "mobile_dou": {
             "value": 14.1,
             "unit": "GB_per_user_month",
@@ -2226,6 +2341,11 @@
           "value": 49.3,
           "unit": "RMB_per_user_month",
           "locator": "FY2023 annual-results presentation; mobile ARPU operating KPI"
+        },
+        "mobile_subscribers": {
+          "value": 991.0,
+          "unit": "million_subscribers",
+          "locator": "FY2023 annual-results presentation; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -2253,6 +2373,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 annual-results presentation; mobile ARPU operating KPI"
+        },
+        "mobile_subscribers": {
+          "value": 1004,
+          "unit": "million_subscribers",
+          "locator": "FY2024 annual-results presentation; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -2667,6 +2792,11 @@
           "unit": "RMB_per_user_month",
           "locator": "FY2023 A-share annual report; mobile ARPU operating KPI"
         },
+        "mobile_subscribers": {
+          "value": 991.0,
+          "unit": "million_subscribers",
+          "locator": "FY2023 A-share annual report; year-end mobile customers"
+        },
         "mobile_dou": {
           "value": 15.9,
           "unit": "GB_per_user_month",
@@ -2688,6 +2818,11 @@
           "value": 48.5,
           "unit": "RMB_per_user_month",
           "locator": "FY2024 A-share annual report; mobile ARPU operating KPI"
+        },
+        "mobile_subscribers": {
+          "value": 1004,
+          "unit": "million_subscribers",
+          "locator": "FY2024 A-share annual report; year-end mobile customers"
         },
         "mobile_dou": {
           "value": 15.9,

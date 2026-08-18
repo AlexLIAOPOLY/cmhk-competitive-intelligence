@@ -1682,6 +1682,41 @@ for _year, _value in ((2023, 49.3), (2024, 48.5)):
             "unit": "RMB_per_user_month",
             "locator": f"FY{_year} {_label}; mobile ARPU operating KPI",
         }
+for _year, _value in (
+    (2016, 848.90),
+    (2017, 887.20),
+    (2018, 925.07),
+    (2019, 950.28),
+    (2020, 941.92),
+    (2021, 956.89),
+    (2022, 975.01),
+):
+    SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["mobile_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year} annual report key operating data; year-end mobile customers",
+    }
+    SOURCES[f"china_mobile_results_{_year}"].setdefault("evidence", {})["mobile_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year} annual-results presentation operating-data appendix; current-year mobile customers",
+    }
+    SOURCES[f"china_mobile_results_{_year + 1}"].setdefault("comparative_evidence", {}).setdefault(f"FY{_year}", {})["mobile_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year + 1} annual-results presentation operating-data appendix; FY{_year} comparative mobile customers",
+    }
+for _year, _value in ((2023, 991.00), (2024, 1004)):
+    for _source_id, _label in (
+        (f"china_mobile_ar_{_year}", "H-share annual report"),
+        (f"china_mobile_ar_a_{_year}", "A-share annual report"),
+        (f"china_mobile_results_{_year}", "annual-results presentation"),
+    ):
+        SOURCES[_source_id].setdefault("evidence", {})["mobile_subscribers"] = {
+            "value": _value,
+            "unit": "million_subscribers",
+            "locator": f"FY{_year} {_label}; year-end mobile customers",
+        }
 for _year, _value in ((2016, 0.697), (2017, 1.399), (2018, 3.6), (2019, 6.7), (2020, 9.4), (2021, 12.6), (2022, 14.1)):
     SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["mobile_dou"] = {
         "value": _value,
@@ -2158,7 +2193,16 @@ CHINA_MOBILE_DOU_SOURCES = {
     2024: ["china_mobile_ar_2024", "china_mobile_ar_a_2024", "china_mobile_results_2024"],
     2025: ["china_mobile_ar_2025", "china_mobile_ar_a_2025", "china_mobile_ar_summary_2025"],
 }
-add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887, 925, 950, 942, 957, 975, 991, 1004, 1005])), scope="group mobile customer base", source_ids=override_sources(paired("china_mobile", cm_years), 2025, CM_2025_THREE))
+CHINA_MOBILE_SUBSCRIBER_SOURCES = {
+    **{
+        year: [f"china_mobile_ar_{year}", f"china_mobile_results_{year}", f"china_mobile_results_{year + 1}"]
+        for year in range(2016, 2023)
+    },
+    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"],
+    2024: ["china_mobile_ar_2024", "china_mobile_ar_a_2024", "china_mobile_results_2024"],
+    2025: CM_2025_THREE,
+}
+add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887.20, 925.07, 950.28, 941.92, 956.89, 975.01, 991.00, 1004, 1005])), scope="group mobile customer base", source_ids=CHINA_MOBILE_SUBSCRIBER_SOURCES, note="FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release.")
 add_series("china_mobile", "4g_subscribers", {2016:535.04, 2017:650, 2018:713, 2019:758, 2020:775, 2021:822}, scope="group 4G customer base", source_ids=paired("china_mobile", list(range(2016, 2022))))
 add_series("china_mobile", "5g_package_subscribers", {2019:2.55, 2020:165, 2021:387, 2022:614, 2023:795}, scope="contracted 5G package customers; not equivalent to active 5G network users", source_ids=paired("china_mobile", list(range(2019, 2024))))
 add_series("china_mobile", "5g_network_subscribers", {2021:207, 2022:327, 2023:465, 2024:552, 2025:642}, scope="customers that used the 5G network; definition differs from 5G package customers", source_ids=override_sources(paired("china_mobile", list(range(2021, 2026))), 2025, CM_2025_THREE))
