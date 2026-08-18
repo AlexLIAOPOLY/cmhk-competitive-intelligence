@@ -443,7 +443,16 @@
           "locator": "Base Stations; over 390,000 built by year-end 2020"
         }
       },
-      "source_document_id": "china_mobile_20f_2020"
+      "source_document_id": "china_mobile_20f_2020",
+      "comparative_evidence": {
+        "FY2019": {
+          "5g_package_subscribers": {
+            "value": 2.55,
+            "unit": "million_subscribers",
+            "locator": "FY2020 Form 20-F selected historical operating table; FY2019 comparative 5G package customer base"
+          }
+        }
+      }
     },
     {
       "source_id": "china_mobile_20f_2021",
@@ -636,10 +645,24 @@
           "unit": "million_subscribers",
           "locator": "FY2020 annual report key operating data; year-end 4G customers"
         },
+        "5g_package_subscribers": {
+          "value": 165,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual report key operating data; year-end 5G package customers"
+        },
         "mobile_dou": {
           "value": 9.4,
           "unit": "GB_per_user_month",
           "locator": "FY2020 annual report key operating data; handset data traffic DOU"
+        }
+      },
+      "comparative_evidence": {
+        "FY2019": {
+          "5g_package_subscribers": {
+            "value": 2.55,
+            "unit": "million_subscribers",
+            "locator": "FY2020 H-share annual report key operating data; FY2019 comparative 5G package customer base"
+          }
         }
       }
     },
@@ -667,6 +690,11 @@
           "value": 206.65,
           "unit": "million_subscribers",
           "locator": "FY2021 annual report key operating data; year-end 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 387,
+          "unit": "million_subscribers",
+          "locator": "FY2021 annual report key operating data; year-end 5G package customers"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -700,6 +728,11 @@
           "unit": "million_subscribers",
           "locator": "FY2022 annual report key operating data; year-end 5G network customers"
         },
+        "5g_package_subscribers": {
+          "value": 614,
+          "unit": "million_subscribers",
+          "locator": "FY2022 annual report key operating data; year-end 5G package customers"
+        },
         "mobile_dou": {
           "value": 14.1,
           "unit": "GB_per_user_month",
@@ -731,6 +764,11 @@
           "value": 464.81,
           "unit": "million_subscribers",
           "locator": "FY2023 H-share annual report; year-end 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 795,
+          "unit": "million_subscribers",
+          "locator": "FY2023 H-share annual report; year-end 5G package customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -898,6 +936,11 @@
           "value": 464.81,
           "unit": "million_subscribers",
           "locator": "FY2023 A-share annual report; year-end 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 795,
+          "unit": "million_subscribers",
+          "locator": "FY2023 A-share annual report; year-end 5G package customers"
         },
         "mobile_dou": {
           "value": 15.9,
@@ -1502,6 +1545,11 @@
           "unit": "million_subscribers",
           "locator": "FY2019 annual-results presentation operating-data appendix; current-year 4G customers"
         },
+        "5g_package_subscribers": {
+          "value": 2.55,
+          "unit": "million_subscribers",
+          "locator": "FY2019 annual-results presentation customer-market chart; December 2019 5G package customers"
+        },
         "mobile_dou": {
           "value": 6.7,
           "unit": "GB_per_user_month",
@@ -1568,6 +1616,11 @@
           "unit": "million_subscribers",
           "locator": "FY2020 annual-results presentation operating-data appendix; current-year 4G customers"
         },
+        "5g_package_subscribers": {
+          "value": 165,
+          "unit": "million_subscribers",
+          "locator": "FY2020 annual-results presentation customer-market chart; current-year 5G package customers"
+        },
         "mobile_dou": {
           "value": 9.4,
           "unit": "GB_per_user_month",
@@ -1606,6 +1659,11 @@
             "unit": "million_subscribers",
             "locator": "FY2021 annual-results presentation operating-data appendix; FY2020 comparative 4G customers"
           },
+          "5g_package_subscribers": {
+            "value": 165,
+            "unit": "million_subscribers",
+            "locator": "FY2021 annual-results presentation customer-market chart; FY2020 comparative 5G package customers"
+          },
           "mobile_dou": {
             "value": 9.4,
             "unit": "GB_per_user_month",
@@ -1633,6 +1691,11 @@
           "value": 206.65,
           "unit": "million_subscribers",
           "locator": "FY2021 annual-results presentation operating-data appendix; current-year 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 387,
+          "unit": "million_subscribers",
+          "locator": "FY2021 annual-results presentation customer-market chart; current-year 5G package customers"
         },
         "mobile_dou": {
           "value": 12.6,
@@ -1672,6 +1735,11 @@
             "unit": "million_subscribers",
             "locator": "FY2022 annual-results presentation operating-data appendix; FY2021 comparative 5G network customers"
           },
+          "5g_package_subscribers": {
+            "value": 387,
+            "unit": "million_subscribers",
+            "locator": "FY2022 annual-results presentation customer-market chart; FY2021 comparative 5G package customers"
+          },
           "mobile_dou": {
             "value": 12.6,
             "unit": "GB_per_user_month",
@@ -1699,6 +1767,11 @@
           "value": 327.16,
           "unit": "million_subscribers",
           "locator": "FY2022 annual-results presentation operating-data appendix; current-year 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 614,
+          "unit": "million_subscribers",
+          "locator": "FY2022 annual-results presentation customer-market chart; current-year 5G package customers"
         },
         "mobile_dou": {
           "value": 14.1,
@@ -1743,6 +1816,11 @@
             "unit": "million_subscribers",
             "locator": "FY2023 annual-results presentation operating-data appendix; FY2022 comparative 5G network customers"
           },
+          "5g_package_subscribers": {
+            "value": 614,
+            "unit": "million_subscribers",
+            "locator": "FY2023 annual-results presentation customer-market chart; FY2022 comparative 5G package customers"
+          },
           "mobile_dou": {
             "value": 14.1,
             "unit": "GB_per_user_month",
@@ -1765,6 +1843,11 @@
           "value": 464.81,
           "unit": "million_subscribers",
           "locator": "FY2023 annual-results presentation; year-end 5G network customers"
+        },
+        "5g_package_subscribers": {
+          "value": 795,
+          "unit": "million_subscribers",
+          "locator": "FY2023 annual-results presentation; year-end 5G package customers"
         },
         "mobile_dou": {
           "value": 15.9,

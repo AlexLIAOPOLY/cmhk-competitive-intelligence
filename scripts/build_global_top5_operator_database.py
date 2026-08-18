@@ -1766,6 +1766,46 @@ for _year, _value in ((2023, 464.81), (2024, 552)):
             "unit": "million_subscribers",
             "locator": f"FY{_year} {_label}; year-end 5G network customers",
         }
+SOURCES["china_mobile_results_2019"].setdefault("evidence", {})["5g_package_subscribers"] = {
+    "value": 2.55,
+    "unit": "million_subscribers",
+    "locator": "FY2019 annual-results presentation customer-market chart; December 2019 5G package customers",
+}
+for _source_id, _label in (
+    ("china_mobile_ar_2020", "FY2020 H-share annual report key operating data"),
+    ("china_mobile_20f_2020", "FY2020 Form 20-F selected historical operating table"),
+):
+    SOURCES[_source_id].setdefault("comparative_evidence", {}).setdefault("FY2019", {})["5g_package_subscribers"] = {
+        "value": 2.55,
+        "unit": "million_subscribers",
+        "locator": f"{_label}; FY2019 comparative 5G package customer base",
+    }
+for _year, _value in ((2020, 165), (2021, 387), (2022, 614)):
+    SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["5g_package_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year} annual report key operating data; year-end 5G package customers",
+    }
+    SOURCES[f"china_mobile_results_{_year}"].setdefault("evidence", {})["5g_package_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year} annual-results presentation customer-market chart; current-year 5G package customers",
+    }
+    SOURCES[f"china_mobile_results_{_year + 1}"].setdefault("comparative_evidence", {}).setdefault(f"FY{_year}", {})["5g_package_subscribers"] = {
+        "value": _value,
+        "unit": "million_subscribers",
+        "locator": f"FY{_year + 1} annual-results presentation customer-market chart; FY{_year} comparative 5G package customers",
+    }
+for _source_id, _label in (
+    ("china_mobile_ar_2023", "H-share annual report"),
+    ("china_mobile_ar_a_2023", "A-share annual report"),
+    ("china_mobile_results_2023", "annual-results presentation"),
+):
+    SOURCES[_source_id].setdefault("evidence", {})["5g_package_subscribers"] = {
+        "value": 795,
+        "unit": "million_subscribers",
+        "locator": f"FY2023 {_label}; year-end 5G package customers",
+    }
 for _year, _value in ((2016, 0.697), (2017, 1.399), (2018, 3.6), (2019, 6.7), (2020, 9.4), (2021, 12.6), (2022, 14.1)):
     SOURCES[f"china_mobile_ar_{_year}"].setdefault("evidence", {})["mobile_dou"] = {
         "value": _value,
@@ -2263,9 +2303,16 @@ CHINA_MOBILE_5G_NETWORK_SUBSCRIBER_SOURCES = {
     2024: ["china_mobile_ar_2024", "china_mobile_ar_a_2024", "china_mobile_results_2024"],
     2025: CM_2025_THREE,
 }
+CHINA_MOBILE_5G_PACKAGE_SUBSCRIBER_SOURCES = {
+    2019: ["china_mobile_results_2019", "china_mobile_ar_2020", "china_mobile_20f_2020"],
+    2020: ["china_mobile_ar_2020", "china_mobile_results_2020", "china_mobile_results_2021"],
+    2021: ["china_mobile_ar_2021", "china_mobile_results_2021", "china_mobile_results_2022"],
+    2022: ["china_mobile_ar_2022", "china_mobile_results_2022", "china_mobile_results_2023"],
+    2023: ["china_mobile_ar_2023", "china_mobile_ar_a_2023", "china_mobile_results_2023"],
+}
 add_series("china_mobile", "mobile_subscribers", dict(zip(cm_years, [848.90, 887.20, 925.07, 950.28, 941.92, 956.89, 975.01, 991.00, 1004, 1005])), scope="group mobile customer base", source_ids=CHINA_MOBILE_SUBSCRIBER_SOURCES, note="FY2016-FY2022 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2023-FY2024 use the H-share annual report, A-share annual report and current-year presentation. FY2025 uses the annual report, presentation and results press release.")
 add_series("china_mobile", "4g_subscribers", {2016:535.04, 2017:649.51, 2018:712.65, 2019:758.01, 2020:775.31, 2021:822}, scope="group 4G customer base", source_ids=CHINA_MOBILE_4G_SUBSCRIBER_SOURCES, note="FY2016-FY2020 retain the exact two-decimal values repeated in the annual report and consecutive annual-results presentations. FY2021 remains at its disclosed rounded precision and below the three-document threshold because the annual-results presentation switched its customer breakdown from 4G to 5G network customers.")
-add_series("china_mobile", "5g_package_subscribers", {2019:2.55, 2020:165, 2021:387, 2022:614, 2023:795}, scope="contracted 5G package customers; not equivalent to active 5G network users", source_ids=paired("china_mobile", list(range(2019, 2024))))
+add_series("china_mobile", "5g_package_subscribers", {2019:2.55, 2020:165, 2021:387, 2022:614, 2023:795}, scope="contracted 5G package customers; not equivalent to active 5G network users", source_ids=CHINA_MOBILE_5G_PACKAGE_SUBSCRIBER_SOURCES, note="Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers.")
 add_series("china_mobile", "5g_network_subscribers", {2021:206.65, 2022:327.16, 2023:464.81, 2024:552, 2025:642}, scope="customers that used the 5G network; definition differs from 5G package customers", source_ids=CHINA_MOBILE_5G_NETWORK_SUBSCRIBER_SOURCES, note="FY2021-FY2023 retain the precise operating-table values rather than rounded headline figures. Each FY2021-FY2024 row is bound to three exact official documents; FY2025 uses the annual report, presentation and results press release.")
 add_series("china_mobile", "fixed_broadband_subscribers", dict(zip(cm_years, [77.62,112.69,156.69,187.04,210.32,240.11,272.17,298,315,None])), scope="group wireline broadband customers", source_ids=CHINA_MOBILE_FIXED_BROADBAND_SOURCES, note="FY2016-FY2017 each use three exact official documents. FY2018-FY2022 retain the two-decimal values repeated in consecutive annual-results presentations and remain below the three-document threshold. FY2025 changed to integrated broadband network customers; the 329 million integrated-scope value is stored separately and is not substituted into this legacy series.")
 add_series("china_mobile", "mobile_arpu", dict(zip(cm_years, [57.5,57.7,53.1,49.1,47.4,48.8,49.0,49.3,48.5,46.8])), unit="RMB_per_user_month", scope="group mobile business annual ARPU", source_ids=CHINA_MOBILE_ARPU_SOURCES)

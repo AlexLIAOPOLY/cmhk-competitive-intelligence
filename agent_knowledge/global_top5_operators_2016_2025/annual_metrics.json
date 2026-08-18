@@ -9975,20 +9975,28 @@
       "comparator": "=",
       "scope": "contracted 5G package customers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "china_mobile_ar_2019",
-        "china_mobile_ops_2019",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_20f_2020",
+        "china_mobile_ar_2020",
         "china_mobile_results_2019"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_results_2019",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/webcasts/pre200319.pdf",
+      "verification_sources": [
+        "china_mobile_results_2019",
+        "china_mobile_ar_2020",
+        "china_mobile_20f_2020"
+      ],
+      "candidate_sources": [
+        "china_mobile_results_2019",
+        "china_mobile_ar_2020",
+        "china_mobile_20f_2020"
+      ],
+      "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -10342,20 +10350,28 @@
       "comparator": "=",
       "scope": "contracted 5G package customers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2020",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2020.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2020",
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2020",
-        "china_mobile_ops_2020",
-        "china_mobile_results_2020"
+        "china_mobile_results_2020",
+        "china_mobile_results_2021"
       ],
-      "quality_note": ""
+      "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -10736,20 +10752,28 @@
       "comparator": "=",
       "scope": "contracted 5G package customers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2021",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2021.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2021",
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2021",
-        "china_mobile_ops_2021",
-        "china_mobile_results_2021"
+        "china_mobile_results_2021",
+        "china_mobile_results_2022"
       ],
-      "quality_note": ""
+      "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -11095,20 +11119,28 @@
       "comparator": "=",
       "scope": "contracted 5G package customers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2022",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2022.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2022",
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
+      ],
       "candidate_sources": [
         "china_mobile_ar_2022",
-        "china_mobile_ops_2022",
-        "china_mobile_results_2022"
+        "china_mobile_results_2022",
+        "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
     },
     {
       "operator_id": "china_mobile",
@@ -11452,20 +11484,28 @@
       "comparator": "=",
       "scope": "contracted 5G package customers; not equivalent to active 5G network users",
       "basis": "year_end",
-      "verification_status": "official_single_source",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "below_three_source_threshold",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
         "china_mobile_ar_2023",
-        "china_mobile_ops_2023",
+        "china_mobile_ar_a_2023",
         "china_mobile_results_2023"
       ],
-      "quality_note": ""
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "china_mobile_ar_2023",
+      "primary_source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+      "verification_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "candidate_sources": [
+        "china_mobile_ar_2023",
+        "china_mobile_ar_a_2023",
+        "china_mobile_results_2023"
+      ],
+      "quality_note": "Each FY2019-FY2023 row is bound to three exact official documents. FY2019 uses the current-year presentation plus the FY2020 annual report and Form 20-F comparative tables. 5G package customers are kept separate from active 5G network customers."
     },
     {
       "operator_id": "china_mobile",
