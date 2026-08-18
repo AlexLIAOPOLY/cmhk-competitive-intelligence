@@ -37,7 +37,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             audit["three_source_certified_rows_by_operator"],
             {
                 "Bharti Airtel": 97,
-                "Reliance Jio": 42,
+                "Reliance Jio": 43,
                 "中国广电": 24,
                 "中国电信": 58,
                 "中国移动": 82,
@@ -407,8 +407,30 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
         ebitda = self.index[("reliance_jio", 2024, "ebitda")]
         self.assertEqual(ebitda["value"], 56675)
-        self.assertEqual(ebitda["distinct_source_document_count"], 2)
-        self.assertEqual(ebitda["triple_source_status"], "below_three_source_threshold")
+        self.assertEqual(
+            ebitda["verification_sources"],
+            ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2025_integrated_financials"],
+        )
+        self.assertEqual(ebitda["distinct_source_document_count"], 3)
+        self.assertEqual(ebitda["triple_source_status"], "three_distinct_sources_verified")
+
+        sources = {
+            source["source_id"]: source
+            for source in json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))["sources"]
+        }
+        filing = sources["jio_2025_integrated_financials"]["comparative_evidence"]["FY2024"]
+        self.assertEqual(filing["ebitda"]["value"], 56675)
+
+        combined = "\n".join(
+            chunk["text"]
+            for chunk in rag_llm._global_operator_exact_metric_chunks(
+                "Reliance Jio FY2024 EBITDA是多少？说明三来源状态。",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            )
+        )
+        self.assertIn("official_value=56675 INR_crore", combined)
+        self.assertIn("distinct_source_document_count=3", combined)
+        self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
 
     def test_jio_2023_q4_documents_are_bound_only_to_values_they_disclose(self):
         certified = {

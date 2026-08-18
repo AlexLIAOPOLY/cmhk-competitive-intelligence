@@ -4501,6 +4501,30 @@
       "source_document_id": "jio_2025_media_release"
     },
     {
+      "source_id": "jio_2025_integrated_financials",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "RIL FY2024-25 audited integrated financial filing with FY2024 comparatives",
+      "url": "https://www.ril.com/sites/default/files/2025-04/SE_Integrated%20Financials_0.pdf",
+      "source_type": "official_stock_exchange_filing",
+      "publisher": "Reliance Industries Limited",
+      "comparative_evidence": {
+        "FY2024": {
+          "value_of_sales_and_services": {
+            "value": 132938,
+            "unit": "INR_crore",
+            "locator": "FY2024 audited comparative in consolidated segment information, page 8"
+          },
+          "ebitda": {
+            "value": 56675,
+            "unit": "INR_crore",
+            "locator": "FY2024 audited comparative in consolidated segment information, page 8"
+          }
+        }
+      },
+      "source_document_id": "jio_2025_integrated_financials"
+    },
+    {
       "source_id": "jio_2025_factsheet",
       "operator_id": "reliance_jio",
       "year": 2025,

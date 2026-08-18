@@ -760,6 +760,18 @@ SOURCES.update({
             }
         },
     },
+    "jio_2025_integrated_financials": {
+        "source_id": "jio_2025_integrated_financials", "operator_id": "reliance_jio", "year": 2025,
+        "label": "RIL FY2024-25 audited integrated financial filing with FY2024 comparatives",
+        "url": "https://www.ril.com/sites/default/files/2025-04/SE_Integrated%20Financials_0.pdf",
+        "source_type": "official_stock_exchange_filing", "publisher": "Reliance Industries Limited",
+        "comparative_evidence": {
+            "FY2024": {
+                "value_of_sales_and_services": {"value": 132938, "unit": "INR_crore", "locator": "FY2024 audited comparative in consolidated segment information, page 8"},
+                "ebitda": {"value": 56675, "unit": "INR_crore", "locator": "FY2024 audited comparative in consolidated segment information, page 8"},
+            }
+        },
+    },
     "jio_2025_factsheet": {
         "source_id": "jio_2025_factsheet", "operator_id": "reliance_jio", "year": 2025,
         "label": "Jio Platforms factsheet 2025",
@@ -1638,7 +1650,7 @@ add_series("bharti_airtel", "total_data_traffic", {2016:0.597,2017:0.903,2018:3.
 jio_years = list(range(2017,2026))
 jio_sources = {y:[f"reliance_jio_ar_{y}", "jio_2022_q4" if y == 2022 else "jio_2024_q4" if y == 2024 else "jio_2025_q4" if y == 2025 else f"reliance_jio_ar_{min(y+1,2025)}"] for y in jio_years}
 jio_2024_operating_sources = ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2025_media_release", "jio_2024_factsheet"]
-jio_2024_financial_sources = ["reliance_jio_ar_2025", "jio_2025_media_release"]
+jio_2024_financial_sources = ["reliance_jio_ar_2025", "jio_2025_media_release", "jio_2025_integrated_financials"]
 jio_2022_operating_sources = ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_q4", "jio_2023_media_release"]
 jio_2023_operating_three = ["reliance_jio_ar_2023", "jio_2023_q4", "jio_2023_media_release"]
 jio_2025_operating_three = ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release"]

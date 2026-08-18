@@ -18269,19 +18269,21 @@
       "comparator": "=",
       "scope": "RIL Digital Services segment EBITDA",
       "basis": "year_end",
-      "verification_status": "official_two_distinct_sources",
-      "verification_count": 2,
-      "distinct_source_document_count": 2,
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
       "distinct_source_document_ids": [
+        "jio_2025_integrated_financials",
         "jio_2025_media_release",
         "reliance_jio_ar_2025"
       ],
-      "triple_source_status": "below_three_source_threshold",
+      "triple_source_status": "three_distinct_sources_verified",
       "primary_source_id": "reliance_jio_ar_2025",
       "primary_source_url": "https://www.ril.com/ar2024-25/digital-services.html",
       "verification_sources": [
         "reliance_jio_ar_2025",
-        "jio_2025_media_release"
+        "jio_2025_media_release",
+        "jio_2025_integrated_financials"
       ],
       "quality_note": "FY2020 stores the later comparable Digital Services EBITDA repeated in the FY2021 and FY2022 annual reports and FY2021 analyst presentation; the contemporaneous FY2020 annual report's earlier INR22,517 crore basis is excluded. FY2022-25 use the RIL Digital Services segment basis consistently; consolidated JPL EBITDA and presentation values on another scope are not counted unless the same document also states the exact segment value."
     },
