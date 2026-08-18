@@ -117,34 +117,85 @@
 
   const CHARTS = { line: lineChart, column: columnChart, lollipop: lollipopChart, horizontal: horizontalBarChart };
 
+  function trendCard(series, chartType, options = {}) {
+    const latest = options.total ?? series.values.at(-1);
+    const digits = options.digits ?? (Number.isInteger(latest) ? 0 : 1);
+    const context = options.context || `${series.labels[0]}–${series.labels.at(-1)}`;
+    return `<section class="trend-card" style="--group-accent:${series.color}">
+      <header><strong>${escapeHtml(series.title)}</strong><small>${escapeHtml(options.badge || "官方披露")}</small></header>
+      <div class="trend-card-kpi"><strong>${escapeHtml(series.prefix || "")}${formatNumber(latest, digits)}<small>${escapeHtml(series.unit)}</small></strong><em>${escapeHtml(options.note || context)}</em></div>
+      <div class="trend-card-chart">${CHARTS[chartType](series)}</div>
+      ${sourceLink(options.sourceLabel, options.sourceUrl, context)}
+    </section>`;
+  }
+
   function renderNetwork() {
-    const visual = document.querySelector("[data-network-visual]");
-    const metrics = document.querySelector("[data-network-metrics]");
-    const [primary, ...secondary] = DATA.infrastructure;
-    visual.innerHTML = `<div class="section-label"><span>CHINA MOBILE NETWORK</span><strong>基础设施真实年度趋势</strong></div><div class="network-primary-copy"><span>${escapeHtml(primary.title)}</span><strong>${escapeHtml(primary.prefix || "")}${formatNumber(primary.values.at(-1))}<small>${escapeHtml(primary.unit)}</small></strong><em>2022–2024 官方披露</em></div>${columnChart(primary)}${sourceLink("中国移动历年年报及可持续发展报告", OFFICIAL.sustainability, "2022–2024")}`;
-    const chartTypes = ["column", "line", "lollipop"];
-    metrics.innerHTML = secondary.map((series, index) => `<article class="infra-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${escapeHtml(series.prefix || "")}${formatNumber(series.values.at(-1), 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</article>`).join("");
+    const chartTypes = ["column", "column", "line", "lollipop"];
+    document.querySelector("#network-detail").innerHTML = `<div class="balanced-grid infrastructure-grid">${DATA.infrastructure.map((series, index) => trendCard(series, chartTypes[index], {
+      badge: "年度数据",
+      context: "2022–2024",
+      sourceLabel: "中国移动年报及可持续发展报告",
+      sourceUrl: OFFICIAL.sustainability,
+      digits: Number.isInteger(series.values.at(-1)) ? 0 : 1
+    })).join("")}</div>`;
   }
 
   function renderBusiness() {
-    const chartTypes = ["column", "line", "lollipop"];
-    document.querySelector("[data-business-cards]").innerHTML = DATA.customer.map((series, index) => {
+    const penetration = {
+      title: "5G客户渗透率",
+      color: "#a78bfa",
+      unit: "%",
+      labels: DATA.customer[0].labels,
+      values: DATA.customer[1].values.map((value, index) => Number(((value / DATA.customer[0].values[index]) * 100).toFixed(1)))
+    };
+    const businessSeries = [...DATA.customer, penetration];
+    const chartTypes = ["column", "line", "lollipop", "line"];
+    document.querySelector("[data-business-cards]").innerHTML = businessSeries.map((series, index) => {
       const latest = series.values.at(-1);
       const previous = series.values.at(-2);
       const delta = latest - previous;
-      return `<section class="business-card" style="--group-accent:${series.color}"><header><strong>${escapeHtml(series.title)}</strong><small>官方季度数据</small></header><div class="business-chart-copy"><strong>${formatNumber(latest, 0)}<small>${escapeHtml(series.unit)}</small></strong><em>25Q3 环比 ${delta >= 0 ? "+" : ""}${formatNumber(delta, 0)}</em></div>${CHARTS[chartTypes[index]](series, { compact: true })}${sourceLink("中国移动营运数据", OFFICIAL.quarterly, "2023Q4–2025Q3")}</section>`;
+      return trendCard(series, chartTypes[index], {
+        badge: index === 3 ? "官方数据计算" : "季度数据",
+        context: "2023Q4–2025Q3",
+        note: `25Q3 环比 ${delta >= 0 ? "+" : ""}${formatNumber(delta, index === 3 ? 1 : 0)}${index === 3 ? "pct" : ""}`,
+        sourceLabel: "中国移动营运数据",
+        sourceUrl: OFFICIAL.quarterly,
+        digits: index === 3 ? 1 : 0
+      });
     }).join("");
   }
 
   function renderReach() {
     const chartTypes = ["lollipop", "column", "horizontal", "column"];
-    document.querySelector("[data-reach-content]").innerHTML = `<div class="reach-trend-grid">${DATA.reach.map((series, index) => `<section class="reach-trend-card" style="--group-accent:${series.color}"><div><span>${escapeHtml(series.title)}</span><strong>${formatNumber(series.values.at(-1), series.values.at(-1) < 100 ? 2 : 0)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</section>`).join("")}</div>${sourceLink("中国移动2024年可持续发展报告", OFFICIAL.sustainability, "2022–2024 连续口径")}`;
+    document.querySelector("[data-reach-content]").innerHTML = `<div class="balanced-grid reach-trend-grid">${DATA.reach.map((series, index) => trendCard(series, chartTypes[index], {
+      badge: "年度数据",
+      context: "2022–2024",
+      sourceLabel: "中国移动可持续发展报告",
+      sourceUrl: OFFICIAL.sustainability,
+      digits: series.values.at(-1) < 100 ? 2 : 0
+    })).join("")}</div>`;
   }
 
   function renderFinance() {
-    const [revenue, ...secondary] = DATA.finance;
-    const chartTypes = ["line", "lollipop"];
-    document.querySelector("[data-finance-content]").innerHTML = `<section class="finance-revenue-hero"><div class="finance-revenue-copy"><span>2025年前三季度营运收入</span><strong>${formatNumber(revenue.total)}<small>${escapeHtml(revenue.unit)}</small></strong><em>三季度累计官方值</em></div>${columnChart(revenue)}${sourceLink("中国移动季度营运数据", OFFICIAL.quarterly, "单季值 · 2024Q1–2025Q3")}</section><div class="finance-trend-stack">${secondary.map((series, index) => `<section class="finance-trend-card" style="--group-accent:${series.color}"><div class="finance-mini-copy"><span>2025年前三季度${escapeHtml(series.title)}</span><strong>${formatNumber(series.total)}<small>${escapeHtml(series.unit)}</small></strong></div>${CHARTS[chartTypes[index]](series, { compact: true })}</section>`).join("")}</div>`;
+    const margin = {
+      title: "EBITDA率",
+      color: "#a78bfa",
+      unit: "%",
+      total: Number(((DATA.finance[1].total / DATA.finance[0].total) * 100).toFixed(1)),
+      labels: DATA.finance[0].labels,
+      values: DATA.finance[1].values.map((value, index) => Number(((value / DATA.finance[0].values[index]) * 100).toFixed(1)))
+    };
+    const financeSeries = [...DATA.finance, margin];
+    const chartTypes = ["column", "line", "lollipop", "line"];
+    document.querySelector("[data-finance-content]").innerHTML = `<div class="finance-card-grid">${financeSeries.map((series, index) => trendCard(series, chartTypes[index], {
+      badge: index === 3 ? "官方数据计算" : "季度数据",
+      total: series.total,
+      context: "2024Q1–2025Q3",
+      note: "2025年前三季度累计",
+      sourceLabel: "中国移动季度营运数据",
+      sourceUrl: OFFICIAL.quarterly,
+      digits: 1
+    })).join("")}</div>`;
   }
 
   function setupMotion() {

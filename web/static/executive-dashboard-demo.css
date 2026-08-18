@@ -75,3 +75,32 @@ h1 { margin:0; color:#f5fbfd; font-size:clamp(29px,2vw,76px); font-weight:650; l
 @media (max-width:900px) { body{overflow-y:auto}.cockpit{width:100%;height:auto;min-height:100vh;grid-template-rows:70px auto;padding:0 12px 12px}.dashboard-grid{grid-template-columns:1fr;grid-template-rows:none}.panel{min-height:560px}.panel-network{min-height:650px}.panel-business{min-height:980px}.monitor-content{height:calc(100% - 56px)}.panel-heading{height:56px}.panel-heading>span{font-size:30px}.panel-heading h2{font-size:18px}.brand img{width:118px}h1{font-size:25px}.cockpit-title>span{font-size:7px}.business-cards{grid-template-columns:1fr}.business-card{min-height:270px}.network-monitor{grid-template-columns:minmax(0,1.2fr) minmax(300px,1fr)} }
 @media (max-width:620px) { .topbar{justify-content:flex-end}.cockpit-title{justify-items:end}h1{font-size:21px}.cockpit-title>span{display:none}.brand img{width:106px}.panel-heading{padding-inline:12px}.panel-heading h2{font-size:16px;white-space:normal}.panel-network{min-height:1020px}.panel-business{min-height:940px}.panel-reach{min-height:900px}.panel-finance{min-height:860px}.network-monitor{grid-template-columns:1fr;grid-template-rows:minmax(340px,1fr) auto}.kpi-grid{grid-template-rows:repeat(3,minmax(145px,auto))}.infra-trend-card{grid-template-columns:minmax(115px,.8fr) minmax(0,1.2fr)}.reach-trend-grid{grid-template-columns:1fr;grid-template-rows:repeat(4,minmax(175px,auto))}.finance-content>div{grid-template-columns:1fr;grid-template-rows:minmax(360px,1.4fr) repeat(2,minmax(190px,.8fr))}.finance-trend-stack{display:contents}.source-row{font-size:8px} }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none!important;transition:none!important}.chart-line{stroke-dashoffset:0}.column-mark rect,.horizontal-mark rect{transform:none} }
+
+/* Balanced chart system: peers share the same card and plot dimensions. */
+.network-monitor { display:block; }
+.balanced-grid,.finance-card-grid { width:100%; height:100%; min-height:0; display:grid; gap:clamp(8px,.65vw,24px); }
+.infrastructure-grid,.reach-trend-grid,.business-cards,.finance-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); }
+.reach-content>div,.finance-content>div { display:block; }
+
+.trend-card { min-width:0; min-height:0; display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; padding:clamp(10px,.65vw,24px); overflow:hidden; border:1px solid var(--line); border-top-color:color-mix(in srgb,var(--group-accent) 52%,var(--line)); border-radius:2px; background:rgba(5,18,30,.68); box-shadow:inset 0 1px 0 rgba(255,255,255,.018); }
+.trend-card>header { display:flex; align-items:center; justify-content:space-between; gap:10px; padding-bottom:clamp(7px,.42vw,16px); border-bottom:1px solid color-mix(in srgb,var(--group-accent) 25%,transparent); }
+.trend-card>header strong { color:#e9f4f8; font-size:clamp(12px,.72vw,27px); font-weight:620; }
+.trend-card>header small { color:#86a5b3; font-size:clamp(8px,.43vw,16px); white-space:nowrap; }
+.trend-card-kpi { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; padding-top:clamp(7px,.45vw,17px); }
+.trend-card-kpi>strong { min-width:0; font-size:clamp(22px,1.35vw,50px); font-weight:660; letter-spacing:-.04em; line-height:1; white-space:nowrap; }
+.trend-card-kpi>strong small { margin-left:.42em; color:#91b3c2; font-size:.34em; font-weight:540; letter-spacing:0; }
+.trend-card-kpi>em { color:var(--group-accent); font-size:clamp(8px,.45vw,17px); font-style:normal; white-space:nowrap; }
+.trend-card-chart { min-width:0; min-height:0; display:grid; place-items:center; padding:clamp(5px,.35vw,13px) 0; overflow:hidden; }
+.trend-card .data-chart { width:100%; height:auto; min-height:0; max-height:100%; aspect-ratio:360/164; align-self:center; }
+.trend-card>.source-row { padding-top:clamp(5px,.32vw,12px); border-top:1px solid rgba(126,180,205,.1); }
+
+@media (max-width:900px) {
+  .business-cards,.finance-card-grid { grid-template-columns:1fr; grid-template-rows:repeat(4,minmax(250px,auto)); }
+  .panel-network,.panel-reach { min-height:720px; }
+  .panel-business,.panel-finance { min-height:920px; }
+}
+@media (max-width:620px) {
+  .infrastructure-grid,.reach-trend-grid { grid-template-columns:1fr; grid-template-rows:repeat(4,minmax(245px,auto)); }
+  .panel-network,.panel-reach { min-height:1120px; }
+  .trend-card-kpi { align-items:flex-start; flex-direction:column; gap:5px; }
+}
