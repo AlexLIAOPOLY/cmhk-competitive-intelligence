@@ -36,6 +36,11 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         self.assertFalse(
             [item for item in cells if item["source"] and not item["source"].startswith(("https://", "http://"))]
         )
+        self.assertFalse([item for item in cells if item["comparator"] not in {"=", ">", ">=", "<", "<=", "~", "approx", "≈"}])
+        self.assertFalse([item for item in cells if not item["period"] or not item["periodEnd"]])
+
+    def test_evidence_version_is_content_hash(self):
+        self.assertRegex(self.payload["evidenceVersion"], r"^[0-9a-f]{64}$")
 
     def test_hkt_smartone_churn_scenario_matches_expected_history(self):
         cells = {

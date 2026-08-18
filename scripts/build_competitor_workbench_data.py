@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -13,6 +15,17 @@ SOURCES = (
 )
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
 BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
+UNIT_LABELS = {
+    "percent": "%",
+    "million_subscribers": "百万户",
+    "million_customers": "百万户",
+    "million_base_stations": "百万座",
+    "base_stations": "座",
+    "HKD_per_user_month": "港元/户/月",
+    "CNY_per_user_month": "元/户/月",
+    "GB_per_user_month": "GB/户/月",
+    "million_households": "百万户",
+}
 
 
 def text(row: dict, key: str) -> str:
@@ -48,6 +61,7 @@ def main() -> None:
                     "key": metric,
                     "label": text(row, "metric_zh") or metric,
                     "unit": unit,
+                    "unitLabel": UNIT_LABELS.get(unit, unit),
                 })
                 availability[(company, metric)].add(year)
                 cells.append({
@@ -56,6 +70,11 @@ def main() -> None:
                     "year": year,
                     "value": value,
                     "unit": unit,
+                    "comparator": text(row, "comparator") or "=",
+                    "period": text(row, "period"),
+                    "periodEnd": text(row, "period_end"),
+                    "scope": text(row, "scope"),
+                    "basis": text(row, "basis"),
                     "status": status,
                     "source": text(row, "primary_source_url"),
                     "note": text(row, "quality_note"),
@@ -64,8 +83,14 @@ def main() -> None:
     cells = [cell for cell in cells if (cell["company"], cell["metric"]) in viable]
     active_companies = {cell["company"] for cell in cells}
     active_metrics = {cell["metric"] for cell in cells}
+    digest = hashlib.sha256()
+    for source in SOURCES:
+        digest.update(source.name.encode("utf-8"))
+        digest.update(source.read_bytes())
     payload = {
-        "generatedAt": max(source.stat().st_mtime for source in SOURCES),
+        "generatedAt": datetime.fromtimestamp(max(source.stat().st_mtime for source in SOURCES), tz=timezone.utc).isoformat(),
+        "evidenceVersion": digest.hexdigest(),
+        "sourceDatasets": [source.parent.name for source in SOURCES],
         "companies": [value for key, value in sorted(company_meta.items()) if key in active_companies],
         "metrics": [value for key, value in sorted(metric_meta.items(), key=lambda item: item[1]["label"]) if key in active_metrics],
         "cells": cells,

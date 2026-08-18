@@ -49,7 +49,7 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
-from subscription_service import SubscriptionService
+from subscription_service import FREQUENCY_LABELS, SubscriptionService
 
 
 ROOT = Path(__file__).resolve().parent
@@ -58,6 +58,7 @@ CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
 TASK_HEARTBEAT_INTERVAL_SECONDS = 10
 STATIC_DIR = ROOT / "web" / "static"
+COMPETITOR_WORKBENCH_DATA_PATH = STATIC_DIR / "competitor-workbench-data.json"
 RESULTS_DIR = ROOT / "results"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
 CURATION_CANDIDATE_FACTS_PATH = ROOT / "curation_data" / "candidate_facts.jsonl"
@@ -238,29 +239,51 @@ def generate_competitor_insight(payload: dict) -> dict:
     companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
     metric = payload.get("metric") if isinstance(payload.get("metric"), dict) else {}
     years = [int(value) for value in (payload.get("years") or [])]
-    rows = payload.get("cells") if isinstance(payload.get("cells"), list) else []
-    if not (2 <= len(companies) <= 6) or not (1 <= len(years) <= 10) or not rows:
+    if len(set(companies)) != len(companies) or len(set(years)) != len(years):
+        raise ValueError("竞对或年份包含重复选择")
+    if not (2 <= len(companies) <= 6) or not (2 <= len(years) <= 10):
         raise ValueError("竞对、年份或表格数据不完整")
-    if len(rows) > 80:
-        raise ValueError("当前比较表格超过 80 个数据点")
+    metric_key = str(metric.get("key") or "")[:120]
+    if not metric_key or not COMPETITOR_WORKBENCH_DATA_PATH.exists():
+        raise ValueError("竞对指标或权威数据集不可用")
+    canonical = json.loads(COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
+    evidence_version = str(payload.get("evidenceVersion") or "")
+    if evidence_version and evidence_version != str(canonical.get("evidenceVersion") or ""):
+        raise ValueError("竞对数据版本已更新，请刷新后重试")
     allowed = set(companies)
-    normalized = []
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
-        company = str(row.get("company") or "")[:80]
-        year = int(row.get("year") or 0)
-        if company not in allowed or year not in years:
-            raise ValueError("表格包含选择范围外的数据")
-        normalized.append({
-            "company": company,
-            "year": year,
+    normalized = [
+        {
+            "company": str(row.get("company") or "")[:80],
+            "year": int(row.get("year") or 0),
             "value": float(row.get("value")),
             "unit": str(row.get("unit") or "")[:80],
+            "comparator": str(row.get("comparator") or "=")[:8],
+            "period": str(row.get("period") or "")[:40],
+            "period_end": str(row.get("periodEnd") or "")[:20],
+            "scope": str(row.get("scope") or "")[:300],
+            "basis": str(row.get("basis") or "")[:120],
             "status": str(row.get("status") or "")[:80],
-        })
+            "source": str(row.get("source") or "")[:500],
+            "note": str(row.get("note") or "")[:500],
+        }
+        for row in (canonical.get("cells") or [])
+        if isinstance(row, dict)
+        and str(row.get("company") or "") in allowed
+        and str(row.get("metric") or "") == metric_key
+        and int(row.get("year") or 0) in years
+    ]
+    normalized.sort(key=lambda row: (row["year"], row["company"]))
+    if not normalized or len(normalized) > 80:
+        raise ValueError("当前比较范围没有可用的权威数据")
+    if len({row["unit"] for row in normalized}) != 1:
+        raise ValueError("所选数据单位不一致，不能直接比较")
+    per_company_years = {company: {row["year"] for row in normalized if row["company"] == company} for company in companies}
+    if any(len(company_years) < 2 for company_years in per_company_years.values()):
+        raise ValueError("每家竞对至少需要两个有效年度")
+    if len(set.intersection(*(set(value) for value in per_company_years.values()))) < 2:
+        raise ValueError("共同可比年度不足两个，暂不生成 AI 解析")
     table = "\n".join(
-        f"{row['company']}\t{row['year']}\t{row['value']}\t{row['unit']}\t{row['status']}"
+        "\t".join(str(row[key]) for key in ("company", "year", "comparator", "value", "unit", "period", "period_end", "scope", "basis", "status", "source", "note"))
         for row in normalized
     )
     config = load_ai_config(include_key=True)
@@ -272,8 +295,8 @@ def generate_competitor_insight(payload: dict) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的表格，输出一句不超过80字的中文洞察；不得补数、预测或引用外部知识；数据不足或单位不可比时必须明确说明。"},
-            {"role": "user", "content": f"指标：{str(metric.get('label') or metric.get('key') or '')[:120]}\n列：公司、年度、数值、单位、核验状态\n{table}"},
+            {"role": "system", "content": "你是电信行业竞对分析师。只能依据用户给出的权威数据表，输出一句不超过80字的中文洞察；必须保留大于、至少、约等比较符；财年结束日不同只能比较趋势，不得冒充同一自然年度排名；scope显示共建共享时不得把两家公司数值相加或解释为两套网络；不得补数、预测或引用外部知识；数据不足或口径不可比时必须明确说明。"},
+            {"role": "user", "content": f"指标：{str(metric.get('label') or metric_key)[:120]}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
         "temperature": 0.1,
         "max_tokens": 120,
@@ -3613,6 +3636,10 @@ class AppHandler(BaseHTTPRequestHandler):
                     "ok": True,
                     **summary,
                     "targets": service.available_targets(),
+                    "frequencies": [
+                        {"key": key, "label": FREQUENCY_LABELS[key]}
+                        for key in ("immediate", "daily", "weekly")
+                    ],
                     "reports": reports,
                     "test_target": {
                         "callback_open_id": str(card_actions.get("primary_handler_open_id") or ""),
@@ -3846,6 +3873,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         str(payload.get("openId") or ""),
                         services=services,
                         status=str(payload.get("status") or "active"),
+                        frequency=str(payload.get("frequency") or "immediate"),
                     )
                 elif action == "push":
                     result = service.push(

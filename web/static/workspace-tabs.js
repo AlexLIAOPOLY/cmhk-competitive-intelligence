@@ -106,7 +106,7 @@
       <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>按披露期读取真实多年数据；初始不自动生成</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span>${esc(group)}</span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
-        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metric.unit)}</option>`).join("")}</select></label></fieldset>
+        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metric.unitLabel || metric.unit)}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>回看最近披露年度</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>过去 ${years} 年</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
@@ -128,22 +128,89 @@
     state.competitorInsightController = null;
     const { companies, metric, years } = state.competitorSelection;
     if (companies.length < 2 || !metric) {
-      host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后生成对比表</strong><p>选择至少两家竞对、一个指标和回看年限；AI 洞察只分析当前表格。</p></div>`;
+      host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后生成对比图</strong><p>选择至少两家竞对、一个指标和回看年限；AI 只解析当前图表中的真实数据。</p></div>`;
       return;
     }
     const data = state.competitorData;
     const metricMeta = data.metrics.find((item) => item.key === metric) || { label: metric, unit: "" };
     const available = data.cells.filter((cell) => companies.includes(cell.company) && cell.metric === metric);
     const allYears = [...new Set(available.map((cell) => cell.year))].sort((a, b) => a - b);
-    const visibleYears = years === 99 ? allYears : allYears.slice(-years);
-    if (!visibleYears.length || new Set(available.map((cell) => cell.company)).size < 2) {
+    const companyYears = companies.map((company) => new Set(available.filter((cell) => cell.company === company).map((cell) => cell.year)));
+    const commonYears = allYears.filter((year) => companyYears.every((set) => set.has(year)));
+    const commonAnchor = commonYears.at(-1);
+    const visibleYears = years === 99
+      ? Array.from({ length: (allYears.at(-1) || 0) - (allYears[0] || 0) + 1 }, (_item, index) => allYears[0] + index)
+      : commonAnchor ? Array.from({ length: years }, (_item, index) => commonAnchor - years + 1 + index) : [];
+    const pointsPerCompany = companies.map((company) => visibleYears.filter((year) => companyYears[companies.indexOf(company)].has(year)).length);
+    const sharedVisibleYears = visibleYears.filter((year) => companyYears.every((set) => set.has(year)));
+    if (!visibleYears.length || pointsPerCompany.some((count) => count < 2) || sharedVisibleYears.length < 2) {
       host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>所选组合暂无可直接比较的数据</strong><p>请更换竞对或指标；系统不会用缺失值、不同口径或估算值补齐表格。</p></div>`;
       return;
     }
     const lookup = new Map(available.map((cell) => [`${cell.company}|${cell.year}`, cell]));
-    const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell?.note || "未披露")}">${cell ? `<strong>${esc(new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value))}</strong>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">来源</a>` : ""}` : '<span class="competitor-missing">—</span>'}</td>`; }).join("")}</tr>`).join("");
-    host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(metricMeta.unit)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header><div class="competitor-insight" id="competitorInsight" role="status" aria-live="polite"><i>AI</i><span>正在基于当前表格生成一句洞察…</span></div><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(company)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
-    requestCompetitorInsight({ companies, metric: metricMeta, years: visibleYears, cells: available.filter((cell) => visibleYears.includes(cell.year)) }, requestId);
+    const companyMeta = new Map(data.companies.map((item) => [item.id, item]));
+    const companyLabel = (company) => companyMeta.get(company)?.label || company;
+    const unitLabel = metricMeta.unitLabel || metricMeta.unit;
+    const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
+    const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
+    host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header>
+      <div class="competitor-insight" id="competitorInsight" role="status" aria-live="polite"><i>AI</i><div><b>AI 对比解析</b><span>正在读取当前对比图中的真实数据…</span></div></div>
+      ${chart}
+      <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
+    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
+  }
+
+  function competitorComparator(value) {
+    return ({ ">=": "≥", "<=": "≤", "~": "≈", "approx": "≈" })[String(value || "").toLowerCase()] || (value === "=" ? "" : String(value || ""));
+  }
+
+  function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
+    const palette = ["#55c7de", "#66d9ad", "#f3b74f", "#9aa8ff", "#ff8e78", "#b98ee8"];
+    const width = 960;
+    const height = 330;
+    const margin = { top: 26, right: 205, bottom: 42, left: 66 };
+    const values = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)?.value).filter((value) => Number.isFinite(value)));
+    let min = Math.min(...values);
+    let max = Math.max(...values);
+    if (min === max) { const offset = Math.abs(min || 1) * .12; min -= offset; max += offset; }
+    const pad = (max - min) * .12;
+    min -= pad;
+    max += pad;
+    const x = (year) => visibleYears.length === 1 ? (margin.left + width - margin.right) / 2 : margin.left + (visibleYears.indexOf(year) / (visibleYears.length - 1)) * (width - margin.left - margin.right);
+    const y = (value) => margin.top + ((max - value) / (max - min)) * (height - margin.top - margin.bottom);
+    const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
+    const ticks = Array.from({ length: 5 }, (_, index) => max - ((max - min) * index / 4));
+    const grid = ticks.map((value) => `<g class="competitor-chart-grid"><line x1="${margin.left}" x2="${width - margin.right}" y1="${y(value).toFixed(1)}" y2="${y(value).toFixed(1)}"></line><text x="${margin.left - 12}" y="${(y(value) + 4).toFixed(1)}">${esc(format(value))}</text></g>`).join("");
+    const years = visibleYears.map((year) => `<g class="competitor-chart-year"><line x1="${x(year).toFixed(1)}" x2="${x(year).toFixed(1)}" y1="${height - margin.bottom}" y2="${height - margin.bottom + 5}"></line><text x="${x(year).toFixed(1)}" y="${height - 18}">${esc(year)}</text></g>`).join("");
+    const lastPoints = companies.map((company) => {
+      const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
+      return { company, point: points.at(-1) };
+    }).filter((item) => item.point).sort((a, b) => y(a.point.cell.value) - y(b.point.cell.value));
+    const labelPositions = new Map();
+    lastPoints.forEach((item, index) => labelPositions.set(item.company, Math.max(y(item.point.cell.value), index ? labelPositions.get(lastPoints[index - 1].company) + 16 : margin.top + 4)));
+    const overflow = Math.max(0, (labelPositions.get(lastPoints.at(-1)?.company) || 0) - (height - margin.bottom - 4));
+    if (overflow) lastPoints.forEach((item) => labelPositions.set(item.company, labelPositions.get(item.company) - overflow));
+    const series = companies.map((company, index) => {
+      const color = palette[index % palette.length];
+      const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
+      const segments = [];
+      let active = [];
+      visibleYears.forEach((year) => {
+        const cell = lookup.get(`${company}|${year}`);
+        if (Number.isFinite(cell?.value)) active.push({ year, cell });
+        else if (active.length) { segments.push(active); active = []; }
+      });
+      if (active.length) segments.push(active);
+      const paths = segments.filter((segment) => segment.length > 1).map((segment) => `<path d="${segment.map((point, pointIndex) => `${pointIndex ? "L" : "M"}${x(point.year).toFixed(1)},${y(point.cell.value).toFixed(1)}`).join(" ")}" style="--series-color:${color};--series-dash:${["none", "7 4", "2 4", "10 4 2 4", "12 5", "5 3"][index]}"></path>`).join("");
+      const dots = points.map(({ year, cell }) => { const description = `${companyLabel(company)} · ${cell.period || `${year}年`} · ${competitorComparator(cell.comparator)}${format(cell.value)} ${unit} · ${cell.scope || "以官方披露为准"}`; return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}"><circle cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle><title>${esc(description)}</title></g>`; }).join("");
+      const last = points.at(-1);
+      const labelY = labelPositions.get(company);
+      const stopped = last && last.year < visibleYears.at(-1) ? `（止于${last.year}）` : "";
+      const endLabel = last ? `<g class="competitor-chart-end-label"><path d="M${x(last.year).toFixed(1)},${y(last.cell.value).toFixed(1)} L${(width - margin.right + 10).toFixed(1)},${labelY.toFixed(1)}" style="--series-color:${color}"></path><circle cx="${(width - margin.right + 10).toFixed(1)}" cy="${labelY.toFixed(1)}" r="3" style="--series-color:${color}"></circle><text x="${(width - margin.right + 20).toFixed(1)}" y="${(labelY + 4).toFixed(1)}">${esc(`${companyLabel(company)} ${competitorComparator(last.cell.comparator)}${format(last.cell.value)} ${unit}${stopped}`)}</text></g>` : "";
+      return `<g class="competitor-chart-series">${paths}${dots}${endLabel}</g>`;
+    }).join("");
+    const legend = companies.map((company, index) => `<span><i style="--series-color:${palette[index % palette.length]}"></i>${esc(companyLabel(company))}</span>`).join("");
+    return `<figure class="competitor-chart-card"><figcaption><div><strong>多年趋势对比</strong><span>缺失年度保持断点，不做估算或补齐</span></div><div class="competitor-chart-legend">${legend}</div></figcaption><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><p>注：按各公司披露年度展示；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
   }
 
   async function requestCompetitorInsight(payload, requestId) {
@@ -151,15 +218,15 @@
     state.competitorInsightController = controller;
     try {
       const response = await fetch("/api/competitor-insight", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
-      const result = await response.json();
-      if (!response.ok || !result.ok) throw new Error(result.error || "洞察生成失败");
+      const result = (response.headers.get("content-type") || "").includes("application/json") ? await response.json() : {};
+      if (!response.ok || !result.ok) throw new Error(response.status === 404 ? "HTTP 404" : (result.error || `HTTP ${response.status}`));
       if (requestId !== state.competitorInsightRequest) return;
-      const target = document.querySelector("#competitorInsight span");
+      const target = document.querySelector("#competitorInsight div span");
       if (target) target.textContent = result.insight;
     } catch (error) {
       if (error.name === "AbortError") return;
-      const target = document.querySelector("#competitorInsight span");
-      if (requestId === state.competitorInsightRequest && target) target.textContent = `AI 洞察暂不可用：${error.message}`;
+      const target = document.querySelector("#competitorInsight div span");
+      if (requestId === state.competitorInsightRequest && target) target.textContent = error.message.includes("404") ? "AI 解析服务正在等待安全加载，图表与真实数据可先正常查看。" : `AI 解析暂不可用：${error.message}`;
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;
     }
