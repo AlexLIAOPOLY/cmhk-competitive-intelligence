@@ -43,6 +43,8 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 PRIVATE_URL="$(git -C "$ROOT" remote get-url "$PRIVATE_REMOTE")"
 git -C "$TMP_DIR" init -q
+git -C "$TMP_DIR" config gc.auto 0
+git -C "$TMP_DIR" config maintenance.auto false
 git -C "$TMP_DIR" remote add origin "$PRIVATE_URL"
 git -C "$TMP_DIR" config user.name "AlexLIAOPOLY"
 git -C "$TMP_DIR" config user.email "AlexLIAOPOLY@users.noreply.github.com"
