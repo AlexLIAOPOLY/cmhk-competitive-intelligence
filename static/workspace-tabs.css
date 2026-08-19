@@ -356,9 +356,10 @@
 .competitor-insight-header,.competitor-insight-identity { display: flex; align-items: center; }
 .competitor-insight-header { justify-content: space-between; gap: 18px; padding-right: 8px; }
 .competitor-insight-identity { gap: 11px; }
-.competitor-insight-identity i { display: grid; width: 38px; height: 38px; place-items: center; flex: 0 0 38px; border: 1px solid #52b5c9; border-radius: 10px; color: #79d7e8; background: rgba(9,37,49,.7); box-shadow: 0 0 18px rgba(82,181,201,.12); font: 800 9px system-ui; font-style: normal; }
+.competitor-insight-identity i { display: grid; width: 38px; height: 38px; place-items: center; flex: 0 0 38px; border: 0; background: transparent; filter: drop-shadow(0 0 10px rgba(100,179,255,.35)); font-style: normal; }
+.competitor-insight-identity i img { display: block; width: 32px; height: 32px; object-fit: contain; }
 .competitor-insight-identity > div { display: grid; gap: 3px; }
-.competitor-insight b { color: #f0fafb; font-size: 14px; letter-spacing: .04em; }
+.competitor-insight b { color: #f0fafb; font-size: 16px; letter-spacing: .04em; }
 .competitor-insight small { color: #789ba7; font-size: 9px; }
 .competitor-insight-badge { padding: 5px 8px; border: 1px solid rgba(95,196,215,.35); border-radius: 999px; color: #75bdca; background: rgba(5,26,35,.42); font: 700 8px/1 system-ui; letter-spacing: .12em; }
 .competitor-insight-body { display: grid; min-height: 0; height: 100%; grid-template-columns: minmax(0,1fr); align-items: start; gap: 22px; padding-right: 8px; overflow-y: scroll; overscroll-behavior-y: contain; scrollbar-color: rgba(100,198,216,.72) rgba(4,24,33,.55); scrollbar-gutter: stable; scrollbar-width: thin; }
@@ -366,10 +367,10 @@
 .competitor-insight-body::-webkit-scrollbar-track { border-radius: 999px; background: rgba(4,24,33,.55); }
 .competitor-insight-body::-webkit-scrollbar-thumb { border: 2px solid rgba(4,24,33,.55); border-radius: 999px; background: linear-gradient(#57bfd3,#65d2ad); }
 .competitor-insight-body::-webkit-scrollbar-thumb:hover { background: linear-gradient(#78d7e8,#82e1c0); }
-.competitor-insight-list { display: grid; gap: 10px; max-width: 900px; margin: 0; padding: 0; list-style: none; }
-.competitor-insight-list li { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 9px; align-items: start; }
-.competitor-insight-list li b { padding-top: 3px; color: #71d1e2; font-size: 9px; letter-spacing: .08em; }
-.competitor-insight-list li span { color: #e7f3f5; font-size: 11px; font-weight: 620; line-height: 1.55; letter-spacing: .01em; }
+.competitor-insight-list { display: grid; gap: 15px; max-width: 900px; margin: 0; padding: 0; list-style: none; }
+.competitor-insight-list li { display: grid; grid-template-columns: 76px minmax(0,1fr); gap: 12px; align-items: start; }
+.competitor-insight-list li b { padding-top: 3px; color: #71d1e2; font-size: 11px; letter-spacing: .08em; }
+.competitor-insight-list li span { color: #e7f3f5; font-size: 14px; font-weight: 620; line-height: 1.7; letter-spacing: .01em; }
 .competitor-insight-loading { display: none; gap: 9px; }
 .competitor-insight-loading span { display: block; height: 13px; border-radius: 4px; background: linear-gradient(90deg,rgba(89,143,158,.12),rgba(109,196,214,.32),rgba(89,143,158,.12)); background-size: 220% 100%; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-insight-loading span:nth-child(1) { width: 78%; }
@@ -391,7 +392,7 @@
 .competitor-chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: #a9c1c9 !important; white-space: nowrap; }
 .competitor-chart-legend i { width: 15px; height: 2px; border-radius: 999px; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb,var(--series-color) 55%,transparent); }
 .competitor-chart-scroll { display: block; width: 100%; min-height: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; }
-.competitor-chart { display: block; width: min(100%,1040px); min-width: 680px; height: auto; margin-inline: auto; aspect-ratio: 960 / 330; }
+.competitor-chart { display: block; width: min(100%,1040px); min-width: 680px; height: auto; margin-inline: auto; aspect-ratio: 960 / 390; }
 .competitor-chart-grid line { stroke: rgba(103,151,167,.18); stroke-width: 1; shape-rendering: crispEdges; }
 .competitor-chart-grid text { fill: #6f909c; font-size: 10px; text-anchor: end; }
 .competitor-chart-year line { stroke: #527483; stroke-width: 1; }
@@ -1381,8 +1382,8 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
 
 @media (max-width: 1490px) {
   .competitor-result-overview { grid-template-columns: 1fr; }
-  .competitor-insight { min-height: 250px; }
-  .competitor-insight-body { max-height: 190px; }
+  .competitor-insight { min-height: 300px; }
+  .competitor-insight-body { max-height: 240px; }
 }
 
 @media (max-width: 900px) {
@@ -1432,8 +1433,8 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .competitor-chart-legend { justify-content: flex-start; }
   .competitor-chart-card { padding-inline: 12px; }
   .competitor-chart { width: 680px; }
-  .competitor-insight { min-height: 260px; padding: 16px; }
-  .competitor-insight-body { max-height: 220px; grid-template-columns: 1fr; gap: 15px; }
+  .competitor-insight { min-height: 300px; padding: 16px; }
+  .competitor-insight-body { max-height: 260px; grid-template-columns: 1fr; gap: 15px; }
   .competitor-data-details { width: calc(100% - 20px); }
   .news-process-toolbar { align-items: flex-start; flex-direction: column; }
   .news-run-controls { width: 100%; flex-wrap: wrap; }
@@ -1492,7 +1493,7 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-table-scroll-note { display: block; }
   .competitor-insight { margin-inline: 10px; }
   .competitor-insight-list li { grid-template-columns: 68px minmax(0,1fr); gap: 8px; }
-  .competitor-insight-list li span { font-size: 12px; line-height: 1.65; }
+  .competitor-insight-list li span { font-size: 14px; line-height: 1.7; }
   .workspace-inline-surface .floating-chat,
   #logModal.workspace-inline-surface .log-modal { height: calc(100vh - 100px) !important; min-height: 560px; }
   .fault-toolbar { gap: 14px; padding: 14px; }
