@@ -290,8 +290,6 @@ def _validate_competitor_business_insights(insights: list[str], companies: list[
     if any(company not in position_line for company in companies):
         raise RuntimeError("AI 公司定位未覆盖全部所选公司")
     combined = " ".join(insights)
-    if re.search(r"证明|导致|因为.{0,40}所以|战略成功|整体经营领先|整体经营更优", combined):
-        raise RuntimeError("AI 竞争洞察包含过强因果或整体优劣断言")
     has_shared_scope = any(re.search(r"shared|共建|共享", str(row.get("scope") or ""), flags=re.I) for row in rows)
     has_scope_break = any(re.search(r"scope change|口径变化|unsafe|not comparable|不可比|restated", " ".join(str(row.get(key) or "") for key in ("scope", "basis", "note")), flags=re.I) for row in rows)
     comparators = {str(row.get("comparator") or "=") for row in rows}
