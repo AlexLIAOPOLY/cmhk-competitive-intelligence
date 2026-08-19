@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=11', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=15', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=16', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -22,6 +22,17 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("confirmBulk", SCRIPT)
         self.assertIn("推送记录", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
+
+    def test_status_feedback_is_a_one_second_animated_top_right_toast(self):
+        self.assertIn('class="notice ${esc(state.noticeKind)}"', SCRIPT)
+        self.assertIn('scheduleNoticeDismissal()', SCRIPT)
+        self.assertIn('}, 1000);', SCRIPT)
+        self.assertIn('classList.add("is-leaving")', SCRIPT)
+        self.assertIn('.notice { position: fixed;', STYLE)
+        self.assertIn('top: 16px; right: 18px;', STYLE)
+        self.assertIn('@keyframes notice-enter', STYLE)
+        self.assertIn('@keyframes notice-exit', STYLE)
+        self.assertIn('.notice.is-leaving', STYLE)
 
     def test_report_delivery_exposes_supported_modes(self):
         self.assertIn('{ key: "pdf", label: "仅 PDF" }', SCRIPT)

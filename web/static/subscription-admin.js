@@ -6,6 +6,9 @@
     data: null, searchResults: [], chatSearchResults: [], searchQuery: "",
     notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
   };
+  let noticeTimer = 0;
+  let noticeExitTimer = 0;
+  let scheduledNoticeSignature = "";
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const highlight = (value, query = state.searchQuery) => {
     const text = String(value ?? "");
@@ -146,7 +149,7 @@
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "06:00 / 13:30", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
-      ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status">${esc(state.notice)}</p>` : ""}
+      ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
@@ -157,6 +160,32 @@
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
     </div>`;
+    scheduleNoticeDismissal();
+  }
+
+  function scheduleNoticeDismissal() {
+    const signature = state.notice ? `${state.noticeKind}\u0000${state.notice}` : "";
+    if (!signature) {
+      window.clearTimeout(noticeTimer);
+      window.clearTimeout(noticeExitTimer);
+      scheduledNoticeSignature = "";
+      return;
+    }
+    if (signature === scheduledNoticeSignature) return;
+    window.clearTimeout(noticeTimer);
+    window.clearTimeout(noticeExitTimer);
+    scheduledNoticeSignature = signature;
+    noticeTimer = window.setTimeout(() => {
+      if (scheduledNoticeSignature !== signature) return;
+      root.querySelector(".notice")?.classList.add("is-leaving");
+      noticeExitTimer = window.setTimeout(() => {
+        if (scheduledNoticeSignature !== signature) return;
+        state.notice = "";
+        state.noticeKind = "";
+        scheduledNoticeSignature = "";
+        render();
+      }, 180);
+    }, 1000);
   }
 
   async function loadData({ keepNotice = false } = {}) {
