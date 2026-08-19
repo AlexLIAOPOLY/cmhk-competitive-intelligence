@@ -332,11 +332,82 @@ class CardActionHandler:
         card["config"] = config
         return card
 
-    def _update_card(self, token: str, card: dict[str, Any]) -> None:
+    def _subscription_status_card(
+        self,
+        event: dict[str, Any],
+        result: dict[str, Any],
+    ) -> dict[str, Any] | None:
+        raw_content = str(event.get("card_content") or "").strip()
+        if not raw_content:
+            return None
+        try:
+            card = json.loads(raw_content)
+        except (TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeError("原订阅卡片内容不是有效JSON，不能安全更新") from exc
+        if not isinstance(card, dict) or str(card.get("schema") or "") != "2.0":
+            raise RuntimeError("只允许更新本系统生成的Card 2.0订阅卡")
+        body = card.get("body") if isinstance(card.get("body"), dict) else None
+        elements = body.get("elements") if isinstance(body, dict) and isinstance(body.get("elements"), list) else None
+        if not isinstance(elements, list):
+            raise RuntimeError("原订阅卡片缺少可更新的内容区")
+
+        paused = str(result.get("status") or "") == "subscription_paused"
+        title = "订阅已暂停" if paused else "订阅已生效"
+        if paused:
+            status_text = "**订阅已暂停**\n\n所有战略情报推送已暂停，重新选择并提交即可恢复。"
+        else:
+            labels = "、".join(
+                {
+                    "weekly": "战略双周报",
+                    "performance": "运营商业绩摘要",
+                    "news": "战略新闻",
+                }.get(str(item), str(item))
+                for item in result.get("services") or []
+            )
+            status_text = (
+                f"**订阅已生效**\n\n"
+                f"订阅内容：{labels}\n\n"
+                f"报告形式：{str(result.get('report_mode_label') or '')}\n\n"
+                f"战略新闻：{str(result.get('news_frequency_label') or result.get('frequency_label') or '')}"
+            )
+        elements[:] = [
+            item for item in elements
+            if not (isinstance(item, dict) and str(item.get("element_id") or "") == "subscriptionStatus")
+        ]
+        insert_at = 1 if elements and isinstance(elements[0], dict) and elements[0].get("tag") == "img" else 0
+        elements.insert(
+            insert_at,
+            {
+                "tag": "markdown",
+                "element_id": "subscriptionStatus",
+                "content": status_text,
+            },
+        )
+        save_button = self._find_element(card, "saveSubscriptions")
+        if not isinstance(save_button, dict):
+            for element in elements:
+                if isinstance(element, dict) and element.get("tag") == "form":
+                    for child in element.get("elements") or []:
+                        if isinstance(child, dict) and child.get("name") == "saveSubscriptions":
+                            save_button = child
+                            break
+        if isinstance(save_button, dict):
+            save_button["text"] = {"tag": "plain_text", "content": "恢复订阅" if paused else "更新订阅"}
+
+        header = card.get("header") if isinstance(card.get("header"), dict) else {}
+        header["title"] = {"tag": "plain_text", "content": title}
+        header["template"] = "grey" if paused else "green"
+        card["header"] = header
+        config = card.get("config") if isinstance(card.get("config"), dict) else {}
+        config["summary"] = {"content": title}
+        card["config"] = config
+        return card
+
+    def _update_card(self, token: str, card: dict[str, Any], *, profile: str = "") -> None:
         if not token:
             raise RuntimeError("卡片回调缺少延迟更新token")
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
-        profile = str(bot.get("profile") or "")
+        profile = profile or str(bot.get("profile") or "")
         body = json.dumps({"token": token, "card": card}, ensure_ascii=False)
         last_error: Exception | None = None
         for attempt in range(2):
@@ -374,8 +445,19 @@ class CardActionHandler:
             return dict(processed[event_id])
         subscription_result = self.subscription_service.handle_card_event(event)
         if subscription_result is not None:
+            source_profile = str(subscription_result.pop("source_profile", "") or "")
+            status_card = self._subscription_status_card(event, subscription_result)
+            card_status = "skipped_missing_card_content"
+            if status_card is not None:
+                self._update_card(
+                    str(event.get("token") or ""),
+                    status_card,
+                    profile=source_profile,
+                )
+                card_status = "updated"
             result = {
                 **subscription_result,
+                "card_status": card_status,
                 "event_id": event_id,
                 "message_id": str(event.get("message_id") or ""),
                 "chat_id": str(event.get("chat_id") or ""),

@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 import project_monitor
 from project_monitor_card_actions import CardActionHandler
+from subscription_service import subscription_entry_card
 from test_project_monitor import FakeCommandRunner
 
 
@@ -249,6 +250,42 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(self.runner.ledger_rows[0][12], "陈四")
         self.assertEqual(self.runner.ledger_rows[0][13], "已处理")
         self.assertEqual(self.runner.card_updates, [])
+
+    def test_subscription_success_card_shows_status_and_keeps_update_form(self):
+        event = {
+            "card_content": json.dumps(
+                subscription_entry_card(image_key="img_v3_subscription_poster"),
+                ensure_ascii=False,
+            )
+        }
+        card = self.handler._subscription_status_card(
+            event,
+            {
+                "status": "subscription_saved",
+                "services": ["news", "performance", "weekly"],
+                "report_mode_label": "PDF + 单独语音",
+                "news_frequency_label": "每天两次",
+            },
+        )
+        self.assertIsNotNone(card)
+        self.assertEqual(card["header"]["template"], "green")
+        self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
+        status = self._find_element(card, "subscriptionStatus")
+        self.assertIn("战略双周报", status["content"])
+        form = next(item for item in card["body"]["elements"] if item.get("tag") == "form")
+        button = next(item for item in form["elements"] if item.get("name") == "saveSubscriptions")
+        self.assertEqual(button["text"]["content"], "更新订阅")
+
+    def test_subscription_pause_card_shows_paused_state(self):
+        event = {"card_content": json.dumps(subscription_entry_card(), ensure_ascii=False)}
+        card = self.handler._subscription_status_card(
+            event,
+            {"status": "subscription_paused", "services": []},
+        )
+        self.assertEqual(card["header"]["template"], "grey")
+        self.assertEqual(card["header"]["title"]["content"], "订阅已暂停")
+        status = self._find_element(card, "subscriptionStatus")
+        self.assertIn("所有战略情报推送已暂停", status["content"])
 
 
 if __name__ == "__main__":

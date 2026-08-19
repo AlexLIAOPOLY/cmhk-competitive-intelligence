@@ -767,6 +767,7 @@ class SubscriptionService:
             self._verify_message(confirmation, profile=source_profile)
             return {
                 "status": "subscription_paused",
+                "source_profile": source_profile,
                 "open_id": identity["open_id"],
                 "display_name": identity["display_name"],
                 "services": [],
@@ -795,7 +796,7 @@ class SubscriptionService:
         )
         self._verify_message(confirmation, profile=source_profile)
         saved["confirmation_message_id"] = confirmation
-        return {"status": "subscription_saved", **saved}
+        return {"status": "subscription_saved", "source_profile": source_profile, **saved}
 
     def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
