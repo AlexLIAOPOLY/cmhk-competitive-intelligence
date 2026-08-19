@@ -616,14 +616,14 @@
     const tasks = state.tasks || [];
     const kinds = [...new Set(tasks.map((task) => task.kind).filter(Boolean))];
     panel.innerHTML = `<div class="workspace-module-inner fault-monitor"><section class="workspace-panel fault-workbench">
-      <header class="fault-toolbar"><div><strong>故障报警记录</strong><span id="faultResultCount"></span></div><div class="fault-filter-row">
-        <label>状态<select data-fault-filter="status"><option value="all">全部状态</option><option value="attention">故障与中断</option><option value="running">运行中</option><option value="completed">正常完成</option></select></label>
-        <label>任务<select data-fault-filter="kind"><option value="all">全部任务</option>${kinds.map((kind) => `<option value="${esc(kind)}">${esc(taskLabel(kind))}</option>`).join("")}</select></label>
-        <label class="fault-search"><span class="sr-only">搜索</span><input type="search" data-fault-filter="query" placeholder="搜索任务、阶段或详情"></label>
+      <header class="fault-toolbar"><div class="fault-total"><span>报警总数</span><strong id="faultResultCount">0</strong><em>条</em></div><div class="fault-filter-row">
+        <label>状态<select data-fault-filter="status"><option value="all">全部记录</option><option value="attention">需要处理</option><option value="running">运行中</option><option value="completed">已完成</option></select></label>
+        <label>任务类型<select data-fault-filter="kind"><option value="all">全部任务</option>${kinds.map((kind) => `<option value="${esc(kind)}">${esc(taskLabel(kind))}</option>`).join("")}</select></label>
+        <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
       </div></header>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>状态</th><th>任务</th><th>当前阶段</th><th>最近时间</th><th>操作</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
-      <footer class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite">只读监控，不会自动重启服务或触发生产任务。</footer>
+      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>状态</th><th>报警任务</th><th>原因摘要</th><th>发生时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <footer class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
     panel.querySelector('[data-fault-filter="kind"]').value = state.faultFilters.kind;
@@ -639,6 +639,23 @@
     return { key: "completed", label: "已完成", tone: "is-ok" };
   }
 
+  function faultCause(task) {
+    const status = faultStatus(task);
+    if (status.key === "running") return task.progress_detail || task.status_detail || `任务正在${task.phase || "运行"}，当前未记录故障。`;
+    if (status.key === "completed") return task.status_detail || task.progress_detail || "任务已正常完成，未记录故障原因。";
+    return task.error || task.warning || task.status_detail || task.progress_detail || task.detail || task.message || "任务归档未记录具体故障原因，请查看运行日志。";
+  }
+
+  function faultSolutions(task) {
+    const status = faultStatus(task);
+    const cause = faultCause(task);
+    if (status.key === "running") return ["继续观察任务心跳和当前阶段。", "只有心跳停止或超过任务正常时长后，才按异常任务处理。"];
+    if (status.key === "completed") return ["当前无需处理。", "如业务结果仍未出现，请核对输出归档、发布时间和后续页面刷新状态。"];
+    if (task.interrupted || /重启|进程已不存在|中断/.test(cause)) return ["确认中断时的最后阶段和最后心跳，判断是否已有部分结果归档。", "检查后续同类型调度是否已经成功接续，避免重复处理已完成部分。", "确需补跑时，通过原任务入口或安全调度机制执行，并在完成后核对归档状态。"];
+    if (task.kind === "strategic-news") return ["先查看运行证据中的首个错误和最后成功阶段。", "修复对应的数据源、模型审核或飞书回读问题后，通过原战略新闻调度入口重试。", "重试完成后核对审核、去重、飞书回读和归档是否全部通过。"];
+    return ["查看运行证据中的首个错误，确认失败发生的阶段。", "修复对应配置、数据源或依赖后，通过原任务入口重试。", "重试后确认任务状态、输出归档和下游页面均已恢复。"];
+  }
+
   function renderFaultRows() {
     const body = document.querySelector("#faultTableBody");
     if (!body) return;
@@ -648,26 +665,40 @@
       if (state.faultFilters.kind !== "all" && task.kind !== state.faultFilters.kind) return false;
       return !query || [task.title, task.scope, task.phase, task.detail, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
     });
-    document.querySelector("#faultResultCount").textContent = `显示 ${rows.length} / ${state.tasks.length} 条`;
-    body.innerHTML = rows.length ? rows.map(({ task, index, status }) => `<tr><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td>${esc(task.phase || "未记录阶段")}</td><td>${esc(taskTime(task))}</td><td><button class="fault-detail-button" type="button" data-fault-detail="${index}">查看详情</button></td></tr>`).join("") : '<tr><td colspan="5" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
+    document.querySelector("#faultResultCount").textContent = number(rows.length);
+    body.innerHTML = rows.length ? rows.map(({ task, index, status }) => `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`).join("") : '<tr><td colspan="5" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
   }
 
-  function openFaultDetail(index) {
+  async function openFaultDetail(index) {
     const task = state.tasks[index];
     const dialog = document.querySelector("#faultDetail");
     const body = document.querySelector("#faultDetailBody");
     if (!task || !dialog || !body) return;
     const status = faultStatus(task);
-    const details = [["状态", status.label], ["任务", task.title || taskLabel(task.kind)], ["任务类型", taskLabel(task.kind)], ["阶段", task.phase || "未记录"], ["时间", taskTime(task)], ["范围", task.scope || "未记录"], ["详情", task.detail || task.message || task.error || "未记录详细信息"]];
-    body.innerHTML = `<header><span class="fault-status ${status.tone}"><i></i>${status.label}</span><h2>${esc(task.title || taskLabel(task.kind))}</h2></header><dl>${details.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl><details><summary>原始任务记录</summary><pre>${esc(JSON.stringify(task, null, 2))}</pre></details>`;
+    const details = [["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["发生时间", taskTime(task)], ["影响范围", task.scope || "未记录"]];
+    body.innerHTML = `<header><div><span class="fault-status ${status.tone}"><i></i>${status.label}</span><h2>${esc(task.title || taskLabel(task.kind))}</h2></div><time>${esc(taskTime(task))}</time></header>
+      <section class="fault-detail-section fault-reason"><h3>原因</h3><p>${esc(faultCause(task))}</p></section>
+      <section class="fault-detail-section"><h3>解决方法</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
+      <dl>${details.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
+      <details class="fault-evidence"><summary>查看运行证据</summary><pre id="faultEvidenceLog">正在读取对应任务日志…</pre></details>`;
     dialog.showModal();
+    try {
+      const response = await fetch(`/api/task-run-log?id=${encodeURIComponent(task.task_id || task.task_run_id || "")}`, { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      const lines = String(payload.content || payload.raw || "").split("\n").filter(Boolean);
+      document.querySelector("#faultEvidenceLog").textContent = lines.slice(-80).join("\n") || "该任务没有可读取的日志内容。";
+    } catch (error) {
+      const evidence = document.querySelector("#faultEvidenceLog");
+      if (evidence) evidence.textContent = `运行日志读取失败：${error.message}`;
+    }
   }
 
   async function refreshFaultData() {
     const status = document.querySelector("#faultMonitorStatus");
     if (status) status.textContent = "正在刷新故障与心跳状态…";
     try {
-      const response = await fetch("/api/task-runs?limit=80", { cache: "no-store" });
+      const response = await fetch("/api/task-runs?limit=100", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
       state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
@@ -778,6 +809,12 @@
   });
 
   document.addEventListener("keydown", (event) => {
+    const faultRow = event.target.closest?.(".fault-row[data-fault-detail]");
+    if (faultRow && ["Enter", " "].includes(event.key)) {
+      event.preventDefault();
+      openFaultDetail(Number(faultRow.dataset.faultDetail));
+      return;
+    }
     if (event.key === "Escape") {
       const expanded = document.querySelector("[data-report-preview].is-maximized");
       if (expanded) {
@@ -855,7 +892,7 @@
       fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))),
       fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`))),
       fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`))),
-      fetch("/api/task-runs?limit=80").then((response) => response.ok ? response.json() : Promise.reject(new Error(`tasks ${response.status}`))),
+      fetch("/api/task-runs?limit=100").then((response) => response.ok ? response.json() : Promise.reject(new Error(`tasks ${response.status}`))),
       fetch("/api/crawl-runs?limit=50").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
       fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
       fetch("/static/competitor-workbench-data.json").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
