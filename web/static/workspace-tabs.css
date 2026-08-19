@@ -309,6 +309,8 @@
 .competitor-year-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
 .competitor-year-options span { width: 100%; padding: 0 5px; }
 .competitor-result { min-height: 0; overflow: auto; }
+.competitor-result-header > div:first-child { display: grid; gap: 5px; }
+.competitor-result-header .competitor-chart-legend { margin-left: auto; }
 .competitor-result-overview { display: grid; width: min(calc(100% - 28px),1600px); grid-template-columns: minmax(0,1fr) clamp(340px,25vw,410px); gap: 16px; align-items: stretch; margin: 0 auto 14px; }
 .competitor-empty { display: grid; min-height: 100%; place-content: center; justify-items: center; padding: 40px 20px; text-align: center; }
 .competitor-empty span { color: #4daec2; font: 700 10px/1 system-ui; letter-spacing: .24em; }
@@ -349,15 +351,11 @@
 @keyframes competitor-insight-pulse { 0%,100% { box-shadow: 0 0 0 rgba(82,181,201,0); } 50% { box-shadow: 0 0 0 7px rgba(82,181,201,.08),0 0 22px rgba(82,181,201,.22); } }
 @keyframes competitor-insight-dots { 0% { clip-path: inset(0 100% 0 0); } 100% { clip-path: inset(0 0 0 0); } }
 @keyframes competitor-option-appear { from { max-width: 0; opacity: 0; transform: scale(.78); } to { max-width: 220px; opacity: 1; transform: scale(1); } }
-.competitor-chart-card { display: flex; min-width: 0; margin: 0; padding: 15px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.competitor-chart-card figcaption { display: flex; min-height: 42px; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 0 2px 11px; border-bottom: 1px solid rgba(86,129,143,.2); }
-.competitor-chart-card figcaption > div:first-child { display: grid; gap: 4px; }
-.competitor-chart-card figcaption strong { color: #e9f6f8; font-size: 13px; }
-.competitor-chart-card figcaption span,.competitor-chart-card > p { color: #7598a5; font-size: 9px; }
+.competitor-chart-card { display: flex; min-width: 0; margin: 0; padding: 10px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .competitor-chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px 13px; }
 .competitor-chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: #a9c1c9 !important; white-space: nowrap; }
 .competitor-chart-legend i { width: 15px; height: 2px; border-radius: 999px; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb,var(--series-color) 55%,transparent); }
-.competitor-chart-scroll { display: block; width: 100%; min-height: 0; margin-top: 10px; overflow-x: auto; overflow-y: hidden; border-radius: 7px; background: linear-gradient(180deg,rgba(4,22,31,.34),rgba(8,31,42,0)); overscroll-behavior-inline: contain; }
+.competitor-chart-scroll { display: block; width: 100%; min-height: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; }
 .competitor-chart { display: block; width: min(100%,1040px); min-width: 680px; height: auto; margin-inline: auto; aspect-ratio: 960 / 330; }
 .competitor-chart-grid line { stroke: rgba(103,151,167,.18); stroke-width: 1; shape-rendering: crispEdges; }
 .competitor-chart-grid text { fill: #6f909c; font-size: 10px; text-anchor: end; }
@@ -371,7 +369,7 @@
 .competitor-chart-end-label path { fill: none; stroke: var(--series-color); stroke-width: 1; stroke-dasharray: 2 3; opacity: .65; vector-effect: non-scaling-stroke; }
 .competitor-chart-end-label circle { fill: var(--series-color); }
 .competitor-chart-end-label text { fill: #b9d0d6; font-size: 10px; font-weight: 700; }
-.competitor-chart-card > p { margin: 6px 2px 0; line-height: 1.5; }
+.competitor-chart-card > p { margin: 6px 2px 0; color: #7598a5; font-size: 9px; line-height: 1.5; }
 .competitor-data-details { width: min(calc(100% - 28px),1600px); margin: 0 auto 14px; border: 1px solid rgba(66,103,118,.5); border-radius: 9px; background: rgba(8,29,40,.7); overflow: hidden; }
 .competitor-data-details summary { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 13px; cursor: pointer; color: #b8d0d7; font-size: 10px; list-style: none; }
 .competitor-data-details summary::-webkit-details-marker { display: none; }
@@ -1153,7 +1151,6 @@ body.has-maximized-report-preview { overflow: hidden; }
   .competitor-insight { margin-inline: 0; }
   .competitor-steps { grid-template-columns: 1fr; }
   .competitor-steps fieldset { border-right: 0; border-bottom: 1px solid rgba(66,103,118,.45); }
-  .competitor-chart-card figcaption { flex-direction: column; }
   .competitor-chart-legend { justify-content: flex-start; }
   .competitor-chart-card { padding-inline: 12px; }
   .competitor-chart { width: 680px; }
