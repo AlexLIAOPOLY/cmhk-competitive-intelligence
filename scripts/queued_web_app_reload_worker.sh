@@ -129,7 +129,18 @@ while [[ -f "$REQUEST_FILE" ]]; do
     /bin/cp "$release_dir/$WEB_LABEL.plist" "$WEB_PLIST"
     /bin/chmod 600 "$WEB_PLIST"
     /bin/launchctl bootout "$DOMAIN/$WEB_LABEL" >> "$LOG_FILE" 2>&1 || true
-    /bin/launchctl bootstrap "$DOMAIN" "$WEB_PLIST" >> "$LOG_FILE" 2>&1
+    bootstrap_ok=0
+    for _bootstrap_attempt in {1..5}; do
+      if /bin/launchctl bootstrap "$DOMAIN" "$WEB_PLIST" >> "$LOG_FILE" 2>&1; then
+        bootstrap_ok=1
+        break
+      fi
+      sleep 1
+    done
+    if (( bootstrap_ok == 0 )); then
+      log "Unable to bootstrap $WEB_LABEL after five attempts; request remains queued."
+      exit 1
+    fi
   else
     /bin/launchctl kickstart -k "$DOMAIN/$WEB_LABEL"
   fi

@@ -45,6 +45,7 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn("WORKER_COPY", queue)
         self.assertNotIn("/Desktop/", worker)
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
+        self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
         self.assertIn('$RUNTIME/task_runs/index.json', worker)
         self.assertLess(
