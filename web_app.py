@@ -26,6 +26,7 @@ from crawl_run_registry import (
     latest_crawl_run_summary,
     load_crawl_run_log,
     load_index as load_crawl_run_index,
+    load_run_history as load_crawl_run_history,
     mark_crawl_run_interrupted,
     reconcile_interrupted_crawl_runs,
     register_crawl_run,
@@ -3873,10 +3874,21 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/api/crawl-runs":
             query = parse_qs(parsed.query)
             try:
-                limit = max(1, min(50, int(query.get("limit", ["20"])[0])))
+                limit = max(1, min(500, int(query.get("limit", ["20"])[0])))
             except Exception:
                 limit = 20
-            json_response(self, {"ok": True, "runs": load_crawl_run_index()[:limit]})
+            task_kind = str(query.get("taskKind", [""])[0] or "").strip()
+            runs = load_crawl_run_history(task_kind=task_kind)
+            json_response(
+                self,
+                {
+                    "ok": True,
+                    "runs": runs[:limit],
+                    "total": len(runs),
+                    "taskKind": task_kind,
+                    "truncated": len(runs) > limit,
+                },
+            )
             return
         if path == "/api/crawl-run-log":
             query = parse_qs(parsed.query)

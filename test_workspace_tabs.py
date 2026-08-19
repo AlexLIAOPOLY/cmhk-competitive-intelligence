@@ -52,7 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=32', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=36', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=30', INDEX)
         self.assertIn("backdrop-filter: blur(22px) saturate(138%)", STYLE)
         self.assertIn("border-radius: 18px", STYLE)
         self.assertIn(".workspace-tab.is-active::after", STYLE)
@@ -191,12 +192,16 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('workspace.classList.contains("workspace-inline-review")', review_script)
 
     def test_news_module_replays_the_full_ai_review_pipeline_by_date_and_run(self):
-        self.assertIn('fetch("/api/crawl-runs?limit=50")', SCRIPT)
+        self.assertIn('fetch("/api/crawl-runs?taskKind=strategic-news&limit=365")', SCRIPT)
         self.assertIn("/api/crawl-run-log?id=", SCRIPT)
         self.assertIn("data-news-date-option", SCRIPT)
         self.assertIn("data-news-run-option", SCRIPT)
         self.assertIn("newsSelectedRunIds", SCRIPT)
         self.assertIn("aggregateNewsStages", SCRIPT)
+        self.assertIn("openNewsStageDetail", SCRIPT)
+        self.assertIn("该阶段日志输出", SCRIPT)
+        self.assertIn("展开该批次完整原始日志", SCRIPT)
+        self.assertIn("完整运行归档", SCRIPT)
         self.assertIn("本轮真实新增新闻", SCRIPT)
         self.assertIn("AI纳入理由", SCRIPT)
         for stage in ("线索发现", "确定性门禁", "AI 语义审核", "历史语义去重", "飞书写入回读", "群组推送"):

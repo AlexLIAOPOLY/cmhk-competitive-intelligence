@@ -377,6 +377,21 @@
     return match ? Number(match[1] || 0) : Number(fallback || 0);
   }
 
+  const newsStageLogPatterns = {
+    search: /搜索准备|固定监控|Agentic Search|页面线索|新闻发现|线索合并|检索/,
+    gate: /确定性门禁|硬规则|时间窗|发布日期|规范化 URL|候选门禁/,
+    ai: /AI审核|AI 审核|逐条审核|语义审核|单条异常|审核队列/,
+    dedupe: /语义去重|历史事件|重复事件|去重/,
+    write: /飞书|写入|逐格回读|单元格|审核表/,
+    push: /群通知|群组推送|通知状态|结果归档|归档完成/,
+  };
+
+  function newsStageLogLines(content, stageKey) {
+    const pattern = newsStageLogPatterns[stageKey];
+    if (!pattern) return [];
+    return String(content || "").split("\n").filter((line) => pattern.test(line));
+  }
+
   function buildNewsProcess(run, detail) {
     const content = detail?.content || "";
     const summary = run?.operational_summary || {};
@@ -482,6 +497,35 @@
       }).join("") : '<div class="news-run-empty">正在读取所选批次的真实新闻归档…</div>'}</div></section>`;
   }
 
+  async function openNewsStageDetail(stageKey) {
+    state.newsSelectedStage = stageKey;
+    const selected = selectedNewsRuns();
+    const missing = selected.filter((run) => !state.newsRunDetails[run.crawl_run_id]);
+    if (missing.length) await loadNewsRuns(missing.map((run) => run.crawl_run_id));
+    renderNews();
+    const dialog = document.querySelector("#newsStageDialog");
+    const body = document.querySelector("#newsStageDialogBody");
+    const runs = selectedNewsRuns();
+    const stageSets = runs.map((run) => buildNewsProcess(run, state.newsRunDetails[run.crawl_run_id]));
+    const stageIndex = stageSets[0]?.findIndex((stage) => stage.key === stageKey) ?? -1;
+    const stage = stageIndex >= 0 ? stageSets[0][stageIndex] : null;
+    if (!dialog || !body || !stage) return;
+    body.innerHTML = `<header><div><span>阶段 ${String(stageIndex + 1).padStart(2, "0")}</span><h2>${esc(stage.label)} · 详细运行日志</h2><p>以下内容直接来自所选批次的不可变运行归档。</p></div><form method="dialog"><button type="submit" aria-label="关闭阶段日志">×</button></form></header>
+      <div class="news-stage-dialog-runs">${runs.map((run, index) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        const runStage = stageSets[index]?.[stageIndex] || stage;
+        const content = String(detail.content || "");
+        const matched = newsStageLogLines(content, stageKey);
+        const statusLabel = runStage.status === "done" ? "已完成" : runStage.status === "current" ? "执行中/中断于此" : "尚未到达";
+        return `<section class="news-stage-run-log"><header><div><strong>${esc(newsRunDate(run))} ${esc(newsRunTime(run))}</strong><span>${esc(run.scope || "战略新闻任务")}</span></div><em class="is-${esc(runStage.status)}">${esc(statusLabel)}</em></header>
+          <dl><div><dt>阶段输入</dt><dd>${esc(runStage.input)}</dd></div><div><dt>阶段结果</dt><dd>保留 ${number(runStage.value)} 条${runStage.lost ? `，淘汰 ${number(runStage.lost)} 条` : ""}</dd></div></dl>
+          <div class="news-stage-log-block"><h3>该阶段日志输出 <span>${number(matched.length)} 行</span></h3><pre>${esc(matched.join("\n") || runStage.evidence || "该批次尚未产生此阶段日志。")}</pre></div>
+          <details class="news-stage-full-log"><summary>展开该批次完整原始日志 · ${number(detail.lines || content.split("\n").filter(Boolean).length)} 行</summary><pre>${esc(content || detail.error || "该批次没有可读取的日志内容。")}</pre></details>
+        </section>`;
+      }).join("")}</div>`;
+    dialog.showModal();
+  }
+
   function renderNews() {
     const panel = document.querySelector('[data-workspace-panel="news"]');
     const runs = selectedNewsRuns();
@@ -496,13 +540,14 @@
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><div><h2>新闻获取与 AI 审核流程</h2><span>${runs.length ? `正在汇总 ${runs.length} 次真实新闻任务` : "暂无可回放的新闻采集批次"}</span></div>
-          <div class="news-run-controls"><details class="news-multi-select"><summary>日期 <b>${selectedDates.length}</b></summary><div>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
+          <div class="news-run-controls"><details class="news-multi-select"><summary>日期 <b>${selectedDates.length}</b></summary><div><p class="news-select-caption">完整运行归档 · 共 ${number(dates.length)} 天</p>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
         </header>
         ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<div class="news-process-meta"><span>已选择 ${runs.length} 次批次</span><span>${selectedDates.map(esc).join("、")}</span><span>${runs.every((item) => state.newsRunDetails[item.crawl_run_id]) ? "已载入全部运行证据" : "正在载入运行证据…"}</span></div>
-        <div class="news-flow" role="list" aria-label="新闻获取与审核流水线">${stages.map((stage, index) => `<button class="news-flow-stage is-${stage.status}${stage.key === selectedStage?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-stage="${esc(stage.key)}" aria-pressed="${stage.key === selectedStage?.key}"><span class="news-stage-step">${String(index + 1).padStart(2, "0")}</span><span class="news-stage-label">${esc(stage.label)}</span><strong>${number(stage.value)}</strong><small>保留</small>${stage.lost ? `<em>淘汰 ${number(stage.lost)}</em>` : ""}<i class="news-stage-retention" style="--retention:${Math.max(8, Math.min(100, stage.value / Math.max(1, stages[0]?.value || 1) * 100))}%"></i></button>${index < stages.length - 1 ? '<span class="news-flow-link" aria-hidden="true"><b></b><b></b><b></b></span>' : ""}`).join("")}</div>
+        <div class="news-flow" role="list" aria-label="新闻获取与审核流水线">${stages.map((stage, index) => `<button class="news-flow-stage is-${stage.status}${stage.key === selectedStage?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-stage="${esc(stage.key)}" aria-label="查看${esc(stage.label)}详细运行日志" aria-pressed="${stage.key === selectedStage?.key}"><span class="news-stage-step">${String(index + 1).padStart(2, "0")}</span><span class="news-stage-label">${esc(stage.label)}</span><strong>${number(stage.value)}</strong><small>保留</small>${stage.lost ? `<em>淘汰 ${number(stage.lost)}</em>` : ""}<i class="news-stage-retention" style="--retention:${Math.max(8, Math.min(100, stage.value / Math.max(1, stages[0]?.value || 1) * 100))}%"></i></button>${index < stages.length - 1 ? '<span class="news-flow-link" aria-hidden="true"><b></b><b></b><b></b></span>' : ""}`).join("")}</div>
         <div class="news-process-detail" aria-live="polite">${selectedStage ? `<div><span class="news-detail-kicker">当前查看</span><h3>${esc(selectedStage.label)}</h3><p>${esc(selectedStage.input)}</p></div><ul>${selectedStage.details.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><blockquote>${esc(selectedStage.evidence)}</blockquote>` : ""}</div>
         <div class="news-run-timeline"><header><strong>主批次执行时间轴</strong><span>${esc(newsRunDate(run))} ${esc(newsRunTime(run))} · 按真实运行日志还原</span></header><ol>${timeline.map((item) => `<li class="${item.done ? "is-done" : "is-pending"}" title="${esc(item.evidence || "尚未到达")}"><time>${esc(item.time)}</time><span>${esc(item.label)}</span></li>`).join("")}</ol></div>
-        ${renderNewsItems(runs)}`}
+        ${renderNewsItems(runs)}
+        <dialog class="news-stage-dialog" id="newsStageDialog"><div id="newsStageDialogBody"></div></dialog>`}
       </section>
     </div>`;
   }
@@ -793,8 +838,7 @@
     if (event.target.closest("[data-open-subscriptions]")) activateModule("subscriptions");
     const newsStage = event.target.closest("[data-news-stage]");
     if (newsStage) {
-      state.newsSelectedStage = newsStage.dataset.newsStage;
-      renderNews();
+      openNewsStageDetail(newsStage.dataset.newsStage);
     }
     const generate = event.target.closest("[data-generate-report]");
     if (generate) {
@@ -887,7 +931,7 @@
       fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`))),
       fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`))),
       fetch("/api/task-runs?limit=100").then((response) => response.ok ? response.json() : Promise.reject(new Error(`tasks ${response.status}`))),
-      fetch("/api/crawl-runs?limit=50").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
+      fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
       fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
       fetch("/static/competitor-workbench-data.json").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
     ]);

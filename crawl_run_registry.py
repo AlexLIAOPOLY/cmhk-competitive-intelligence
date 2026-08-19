@@ -233,6 +233,38 @@ def load_index() -> list[dict[str, Any]]:
     return resolved
 
 
+def load_run_history(task_kind: str = "") -> list[dict[str, Any]]:
+    """Load every retained per-run record, optionally filtered by task kind.
+
+    ``index.json`` is intentionally capped for the lightweight latest-runs view.
+    Historical UI filters must scan the authoritative per-run records instead,
+    otherwise busy task kinds push older dates out of the visible window.
+    """
+    records: dict[str, dict[str, Any]] = {}
+    for item in load_index():
+        crawl_run_id = str(item.get("crawl_run_id") or "")
+        if crawl_run_id:
+            records[crawl_run_id] = item
+    for path in RUNS_DIR.glob("*.json"):
+        item = _read_json(path, {})
+        if not isinstance(item, dict):
+            continue
+        crawl_run_id = str(item.get("crawl_run_id") or path.stem)
+        if crawl_run_id:
+            records[crawl_run_id] = item
+    runs = list(records.values())
+    if task_kind:
+        runs = [item for item in runs if str(item.get("task_kind") or "") == task_kind]
+    return sorted(
+        runs,
+        key=lambda item: (
+            str(item.get("started_at_hkt") or item.get("completed_at_hkt") or ""),
+            str(item.get("crawl_run_id") or ""),
+        ),
+        reverse=True,
+    )
+
+
 def _save_run_record(record: dict[str, Any]) -> dict[str, Any]:
     with _registry_write_lock():
         crawl_run_id = str(record.get("crawl_run_id") or "")
