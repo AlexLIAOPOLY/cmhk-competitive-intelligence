@@ -693,7 +693,7 @@
       nodes,
       edges,
       canvasSize: [1580, 620],
-      feedbackLabel: "历史记忆影响下一轮",
+      feedbackLabel: "历史记录用于下一轮去重",
       groups: [{ key: "databases", label: "四库更新", position: [610, 310], size: [380, 294] }],
     };
   }
