@@ -597,7 +597,10 @@
 .news-stage-log-block h3 { margin: 0 0 8px; color: #cfe4e9; font-size: 10px; }
 .news-stage-log-block h3 span { color: #6f929f; font-weight: 400; }
 .news-stage-run-log pre { max-height: 260px; margin: 0; padding: 11px 12px; overflow: auto; color: #a9c5cd; background: #061a23; font: 9px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
-.news-lineage-dialog-content { display: grid; min-height: 0; flex: 1 1 auto; gap: 12px; padding: 14px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.news-lineage-dialog-content { display: grid; min-height: 0; flex: 1 1 auto; gap: 12px; padding: 14px; overflow: auto; overscroll-behavior: contain; scrollbar-color: #4caec2 #061a23; scrollbar-gutter: stable; scrollbar-width: auto; align-content: start; grid-auto-rows: max-content; }
+.news-lineage-dialog-content::-webkit-scrollbar { width: 11px; }
+.news-lineage-dialog-content::-webkit-scrollbar-track { background: #061a23; }
+.news-lineage-dialog-content::-webkit-scrollbar-thumb { border: 2px solid #061a23; border-radius: 999px; background: #4caec2; }
 .news-lineage-dialog-summary { display: grid; grid-template-columns: minmax(220px,.72fr) minmax(360px,1.28fr); overflow: hidden; border: 1px solid #376174; border-radius: 9px; background: linear-gradient(145deg,rgba(16,54,69,.96),rgba(7,29,40,.96)); }
 .news-lineage-dialog-summary > div { padding: 18px; border-right: 1px solid rgba(61,101,117,.58); }
 .news-lineage-dialog-summary > div > span { color: #71bdcd; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
@@ -610,6 +613,10 @@
 .news-lineage-dialog-summary dt { color: #7196a2; font-size: 11px; }
 .news-lineage-dialog-summary dd { margin: 0; color: #d4e7ea; font-size: 12px; line-height: 1.55; }
 .news-lineage-dialog-section { display: flex; min-height: 0; overflow: hidden; border: 1px solid #315567; border-radius: 9px; background: rgba(8,31,42,.88); flex-direction: column; }
+.news-lineage-dialog-section.is-node-notes { min-height: min(34vh,320px); min-height: min(34dvh,320px); }
+.news-lineage-dialog-section.is-run-history { height: min(62vh,650px); height: min(62dvh,650px); min-height: min(48vh,460px); min-height: min(48dvh,460px); }
+.news-lineage-dialog-section.is-item-details { height: min(72vh,760px); height: min(72dvh,760px); min-height: 520px; }
+.news-lineage-dialog-section.is-node-evidence { min-height: min(48vh,420px); min-height: min(48dvh,420px); }
 .news-lineage-dialog-section > header { display: flex; min-height: 42px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 13px; border-bottom: 1px solid rgba(49,85,103,.62); background: rgba(14,45,58,.82); }
 .news-lineage-dialog-section > header h3 { margin: 0; color: #dcecef; font-size: 14px; }
 .news-lineage-dialog-section > header span { color: #7295a1; font-size: 11px; }
@@ -630,6 +637,7 @@
 .news-lineage-run-evidence > strong { display: block; padding: 9px 12px 0; color: #759aa6; font-size: 11px; }
 .news-lineage-run-evidence pre,.news-lineage-node-evidence { max-height: 50vh; max-height: 50dvh; margin: 0; padding: 12px 13px; overflow-y: scroll; color: #abc6cd; background: #061a23; font: 11px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 .news-lineage-detail-items { display: grid; max-height: 68vh; max-height: 68dvh; overflow-y: scroll; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.news-lineage-dialog-section.is-node-notes > ul,.news-lineage-dialog-section.is-run-history > .news-lineage-run-list,.news-lineage-dialog-section.is-item-details > .news-lineage-detail-items,.news-lineage-dialog-section.is-node-evidence > .news-lineage-node-evidence { min-height: 0; max-height: none; flex: 1 1 auto; }
 .news-lineage-dialog-section > ul,.news-lineage-run-list,.news-lineage-run-evidence pre,.news-lineage-node-evidence,.news-lineage-detail-items { overscroll-behavior: contain; scrollbar-color: #4caec2 #061a23; scrollbar-gutter: stable; scrollbar-width: auto; }
 .news-lineage-dialog-section > ul::-webkit-scrollbar,.news-lineage-run-list::-webkit-scrollbar,.news-lineage-run-evidence pre::-webkit-scrollbar,.news-lineage-node-evidence::-webkit-scrollbar,.news-lineage-detail-items::-webkit-scrollbar { width: 11px; }
 .news-lineage-dialog-section > ul::-webkit-scrollbar-track,.news-lineage-run-list::-webkit-scrollbar-track,.news-lineage-run-evidence pre::-webkit-scrollbar-track,.news-lineage-node-evidence::-webkit-scrollbar-track,.news-lineage-detail-items::-webkit-scrollbar-track { background: #061a23; }
