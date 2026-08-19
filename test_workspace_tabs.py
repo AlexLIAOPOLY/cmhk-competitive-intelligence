@@ -52,7 +52,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=28', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=29', INDEX)
         self.assertIn("backdrop-filter: blur(22px) saturate(138%)", STYLE)
         self.assertIn("border-radius: 18px", STYLE)
         self.assertIn(".workspace-tab.is-active::after", STYLE)
@@ -62,10 +62,17 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runningDot.hidden = !running", SCRIPT)
         self.assertIn("Unified floating workspace surfaces", STYLE)
         self.assertIn("--workspace-surface", STYLE)
+        for asset in (
+            "workspace-bg-intelligence-v1.png",
+            "workspace-bg-content-v1.png",
+            "workspace-bg-operations-v1.png",
+        ):
+            self.assertIn(asset, STYLE)
+            self.assertTrue((ROOT / "web" / "static" / "assets" / asset).exists())
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=6', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=7', INDEX)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
@@ -73,6 +80,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
         self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
         self.assertIn("border-radius: 15px", SUBSCRIPTION_STYLE)
+        self.assertIn("workspace-bg-content-v1.png", SUBSCRIPTION_STYLE)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
         self.assertNotIn('localStorage.setItem("cmhk-weekly-subscription"', SCRIPT)
 

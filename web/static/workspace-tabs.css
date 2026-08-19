@@ -722,7 +722,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 /* Unified floating workspace surfaces. The cockpit remains untouched; every
    functional module uses the same restrained glass language as the tab rail. */
 .dashboard-page:not(.workspace-dashboard-active) {
-  --workspace-surface: rgba(7, 29, 41, .88);
+  --workspace-surface: rgba(7, 29, 41, .78);
   --workspace-surface-strong: rgba(9, 35, 48, .96);
   --workspace-surface-soft: rgba(18, 55, 69, .54);
   --workspace-line: rgba(109, 181, 201, .26);
@@ -731,12 +731,37 @@ body.has-maximized-report-preview { overflow: hidden; }
   --workspace-shadow: 0 18px 46px rgba(0, 8, 14, .28), inset 0 1px rgba(220, 249, 255, .06);
 }
 
+#workspace-panel-monitoring,
+#workspace-panel-competitor,
+#workspace-panel-news {
+  --workspace-background-image: url("/static/assets/workspace-bg-intelligence-v1.png");
+  --workspace-background-position: center center;
+}
+
+#workspace-panel-weekly,
+#workspace-panel-performance,
+#workspace-panel-review,
+#workspace-panel-subscriptions {
+  --workspace-background-image: url("/static/assets/workspace-bg-content-v1.png");
+  --workspace-background-position: center center;
+}
+
+#workspace-panel-ai,
+#workspace-panel-log,
+#workspace-panel-fault {
+  --workspace-background-image: url("/static/assets/workspace-bg-operations-v1.png");
+  --workspace-background-position: center center;
+}
+
 .dashboard-page:not(.workspace-dashboard-active) .workspace-module-shell {
   padding: 14px 16px 16px 4px;
-  background:
-    radial-gradient(circle at 82% -8%, rgba(53, 152, 177, .15), transparent 31%),
-    radial-gradient(circle at 12% 106%, rgba(46, 113, 127, .09), transparent 34%),
-    linear-gradient(145deg, #061721, #071c27 55%, #061821);
+  background-color: #061821;
+  background-image:
+    linear-gradient(145deg, rgba(3, 16, 24, .42), rgba(6, 27, 38, .34) 55%, rgba(3, 18, 27, .52)),
+    var(--workspace-background-image);
+  background-position: center, var(--workspace-background-position, center);
+  background-size: cover, cover;
+  background-repeat: no-repeat;
 }
 
 .dashboard-page:not(.workspace-dashboard-active) .workspace-panel,
@@ -907,6 +932,17 @@ body.has-maximized-report-preview { overflow: hidden; }
 .dashboard-page:not(.workspace-dashboard-active) #newsReviewWorkspace.workspace-inline-review .news-review-formula-bar,
 .dashboard-page:not(.workspace-dashboard-active) #newsReviewWorkspace.workspace-inline-review .news-review-statusbar {
   background: rgba(11, 39, 51, .86);
+}
+
+.dashboard-page:not(.workspace-dashboard-active) #workspace-panel-ai .chat-panel,
+.dashboard-page:not(.workspace-dashboard-active) #workspace-panel-log .log-modal,
+.dashboard-page:not(.workspace-dashboard-active) #workspace-panel-review #newsReviewWorkspace {
+  background-color: rgba(5, 24, 34, .82) !important;
+  background-image:
+    linear-gradient(rgba(3, 18, 27, .7), rgba(4, 23, 33, .76)),
+    var(--workspace-background-image) !important;
+  background-position: center !important;
+  background-size: cover !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
