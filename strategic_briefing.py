@@ -2524,11 +2524,6 @@ def _run_scan_impl(
             "hong_kong_count": int(discovery_result.get("hong_kong_count") or 0),
             "query_error_count": len(discovery_result.get("query_errors") or []),
             "agentic_search": discovery_result.get("agentic_search") or {},
-            "items": [
-                dict(item)
-                for item in (discovery_result.get("items") or [])[:300]
-                if isinstance(item, dict)
-            ],
             "error": discovery_result.get("error") or "",
         },
         "status": "pipeline_completed",
@@ -3075,100 +3070,6 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
     return hashlib.sha256(
         json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
     ).hexdigest()
-
-
-def _ai_review_record(
-    source_item: dict[str, Any],
-    decision: dict[str, Any] | None,
-    *,
-    status: str,
-    reason_override: str = "",
-) -> dict[str, Any]:
-    """Return one durable, human-readable decision bound to its source item."""
-    decision = decision if isinstance(decision, dict) else {}
-    should_include = decision.get("should_include")
-    if not isinstance(should_include, bool):
-        should_include = None
-    reason = _clean_text(
-        reason_override
-        or decision.get("inclusion_reason")
-        or decision.get("exclusion_code")
-        or ("本轮未保存可核对的逐条理由。" if status == "unrecorded" else ""),
-        1000,
-    )
-    return {
-        "review_key": _candidate_editor_key(source_item),
-        "news_id": _clean_text(source_item.get("news_id"), 80),
-        "source_title": _clean_text(
-            source_item.get("source_title") or source_item.get("title"), 500
-        ),
-        "source_summary": _clean_text(
-            source_item.get("source_summary")
-            or source_item.get("snippet")
-            or source_item.get("summary")
-            or source_item.get("description"),
-            1800,
-        ),
-        "source": _clean_text(
-            source_item.get("source") or source_item.get("source_domain"), 160
-        ),
-        "url": _normalize_url(
-            source_item.get("source_url") or source_item.get("url") or ""
-        ),
-        "published_at": _clean_text(
-            source_item.get("published_at")
-            or source_item.get("source_date")
-            or source_item.get("search_date"),
-            80,
-        ),
-        "module": _clean_text(
-            source_item.get("module") or source_item.get("category"), 120
-        ),
-        "matched_keywords": _clean_text(source_item.get("keywords"), 800),
-        "status": status,
-        "should_include": should_include,
-        "ai_title": _clean_text(decision.get("title"), 500),
-        "ai_summary": _clean_text(decision.get("summary"), 1800),
-        "region": _clean_text(decision.get("region"), 80),
-        "category": _clean_text(decision.get("category"), 120),
-        "decision_path": _clean_text(decision.get("decision_path"), 120),
-        "signal_type": _clean_text(decision.get("signal_type"), 120),
-        "business_impact": _clean_text(decision.get("business_impact"), 120),
-        "exclusion_code": _clean_text(decision.get("exclusion_code"), 160),
-        "reason": reason,
-    }
-
-
-def reconstruct_ai_review_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Rebuild legacy per-item decisions only when the exact versioned cache exists."""
-    cache_payload = _read_json(AI_EDITOR_CACHE_PATH, {"items": {}})
-    cache = cache_payload.get("items") if isinstance(cache_payload, dict) else {}
-    if not isinstance(cache, dict):
-        cache = {}
-    records: list[dict[str, Any]] = []
-    for source_item in items:
-        if not isinstance(source_item, dict):
-            continue
-        cached = cache.get(_candidate_editor_key(source_item))
-        if not isinstance(cached, dict) or str(cached.get("editor_version") or "") != str(AI_EDITOR_VERSION):
-            records.append(
-                _ai_review_record(source_item, None, status="unrecorded")
-            )
-            continue
-        should_include = cached.get("should_include") is True
-        records.append(
-            _ai_review_record(
-                source_item,
-                cached,
-                status="included" if should_include else "excluded",
-            )
-        )
-    return records
-
-
-def load_latest_ai_review_audit() -> dict[str, Any]:
-    payload = _read_json(AI_EDITOR_AUDIT_PATH, {})
-    return payload if isinstance(payload, dict) else {}
 
 
 def _queue_datetime(value: Any) -> datetime | None:
@@ -4726,52 +4627,6 @@ def polish_candidates_before_review(
         str(item.get("ai_signal_type") or "未分类")
         for item in polished_items
     )
-    deferred_by_key = {
-        str(entry.get("key") or ""): entry
-        for entry in deferred_reviews
-        if isinstance(entry, dict) and entry.get("key")
-    }
-    mismatch_by_key = {
-        str(entry.get("key") or ""): entry
-        for entry in obvious_mismatch_exclusions
-        if isinstance(entry, dict) and entry.get("key")
-    }
-    review_items: list[dict[str, Any]] = []
-    for source_item in items:
-        item_key = _candidate_editor_key(source_item)
-        deferred_entry = deferred_by_key.get(item_key)
-        mismatch_entry = mismatch_by_key.get(item_key)
-        decision = excluded_decisions.get(item_key) or resolved.get(item_key)
-        if deferred_entry:
-            review_items.append(
-                _ai_review_record(
-                    source_item,
-                    decision,
-                    status="deferred",
-                    reason_override=str(deferred_entry.get("error") or "AI审核异常，已延期到下轮。"),
-                )
-            )
-        elif mismatch_entry:
-            review_items.append(
-                _ai_review_record(
-                    source_item,
-                    decision,
-                    status="excluded",
-                    reason_override=str(mismatch_entry.get("reason") or "高置信噪音或跨领域误命中。"),
-                )
-            )
-        elif isinstance(decision, dict):
-            review_items.append(
-                _ai_review_record(
-                    source_item,
-                    decision,
-                    status="included" if decision.get("should_include") is True else "excluded",
-                )
-            )
-        else:
-            review_items.append(
-                _ai_review_record(source_item, None, status="unrecorded")
-            )
     audit = {
         "version": 2,
         "generated_at": _now_iso(),
@@ -4803,7 +4658,6 @@ def polish_candidates_before_review(
         "obvious_mismatch_removed_count": len(obvious_mismatch_exclusions),
         "obvious_mismatch_exclusions": obvious_mismatch_exclusions,
         "critic": critic_audit,
-        "review_items": review_items,
         "policy": {
             "mode": "wide_verbose_review_then_compact_missing_review_then_30m_item_retry",
             "batch_blocking": False,

@@ -702,13 +702,6 @@
 .news-lineage-detail-items dl div { display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 8px; }
 .news-lineage-detail-items dt { color: #6d8f9a; font-size: 10px; }
 .news-lineage-detail-items dd { margin: 0; color: #bed1d6; font-size: 11px; line-height: 1.6; }
-.news-lineage-detail-items dd.is-preline { white-space: pre-line; }
-.news-lineage-detail-items > article.is-decision-excluded { box-shadow: inset 3px 0 0 rgba(238,135,102,.82); }
-.news-lineage-detail-items > article.is-decision-excluded > div span { color: #f0a080; }
-.news-lineage-detail-items > article.is-decision-included,.news-lineage-detail-items > article.is-decision-kept,.news-lineage-detail-items > article.is-decision-updated { box-shadow: inset 3px 0 0 rgba(83,201,168,.68); }
-.news-lineage-detail-items > article.is-decision-deferred,.news-lineage-detail-items > article.is-decision-unrecorded { box-shadow: inset 3px 0 0 rgba(222,173,76,.72); }
-.news-lineage-detail-items > article.is-decision-deferred > div span,.news-lineage-detail-items > article.is-decision-unrecorded > div span { color: #e4ba63; }
-.news-lineage-detail-coverage { margin: 0; padding: 12px 18px; border-bottom: 1px solid rgba(61,101,117,.58); color: #9eb8c2; font-size: 13px; line-height: 1.7; }
 .news-stage-full-log { border-top: 1px solid rgba(49,85,103,.52); }
 .news-stage-full-log summary { padding: 10px 13px; color: #7eb9c6; font-size: 9px; cursor: pointer; }
 .news-stage-full-log pre { max-height: 420px; border-top: 1px solid rgba(49,85,103,.52); }

@@ -18,50 +18,6 @@ class StrategicBriefingTests(unittest.TestCase):
         critic.start()
         self.addCleanup(critic.stop)
 
-    def test_ai_review_cache_reconstructs_each_source_item_and_exclusion_reason(self):
-        source = {
-            "news_id": "NEWS-DETAIL-1",
-            "title": "无关产品对比误命中竞对词",
-            "snippet": "内容没有实质讨论被监测运营商。",
-            "module": "竞争对手",
-            "keywords": "HKBN",
-            "source": "测试来源",
-            "url": "https://example.com/noise",
-            "published_at": "2026-08-19T13:00:00+08:00",
-        }
-        decision = {
-            "title": "无关产品对比",
-            "summary": "该内容与电讯竞对无实质关联。",
-            "should_include": False,
-            "region": "国际/行业",
-            "category": "市场/产品类",
-            "keywords": "HKBN",
-            "inclusion_reason": "HKBN仅在页面导航中偶然出现，不是新闻主体。",
-            "region_reason": "事件不属于香港电讯市场。",
-            "decision_path": "排除",
-            "signal_type": "噪音",
-            "business_impact": "无",
-            "exclusion_code": "关键词偶然出现",
-            "editor_version": briefing.AI_EDITOR_VERSION,
-        }
-        with tempfile.TemporaryDirectory() as tmp:
-            cache_path = Path(tmp) / "cache.json"
-            cache_path.write_text(
-                json.dumps(
-                    {"items": {briefing._candidate_editor_key(source): decision}},
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
-            with mock.patch.object(briefing, "AI_EDITOR_CACHE_PATH", cache_path):
-                records = briefing.reconstruct_ai_review_items([source])
-
-        self.assertEqual(records[0]["status"], "excluded")
-        self.assertFalse(records[0]["should_include"])
-        self.assertEqual(records[0]["exclusion_code"], "关键词偶然出现")
-        self.assertIn("不是新闻主体", records[0]["reason"])
-        self.assertEqual(records[0]["source_title"], source["title"])
-
     def test_obvious_mismatch_gate_rejects_only_fully_ungrounded_5g_match(self):
         reason = briefing._obvious_mismatch_exclusion_reason(
             {
