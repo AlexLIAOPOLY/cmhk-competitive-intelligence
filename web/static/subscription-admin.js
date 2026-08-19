@@ -102,8 +102,13 @@
 
   function deliveryRows() {
     const rows = state.data?.deliveries || [];
-    if (!rows.length) return '<tr><td colspan="6" class="empty">尚无推送记录</td></tr>';
-    return rows.slice(0, 40).map((item) => `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`).join("");
+    if (!rows.length) return '<tr><td colspan="7" class="empty">尚无推送记录</td></tr>';
+    return rows.slice(0, 40).map((item) => {
+      const openId = item.recipient_open_id || item.open_id || "";
+      const recipientName = item.recipient_name || openId || "接收人未记录";
+      const recipientIdentity = item.recipient_name && openId ? `${openId.slice(0, 10)}${openId.length > 10 ? "…" : ""}` : "";
+      return `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="delivery-recipient" title="${esc(openId)}"><strong>${esc(recipientName)}</strong>${recipientIdentity ? `<small>${esc(recipientIdentity)}</small>` : ""}</span></td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`;
+    }).join("");
   }
 
   function searchResultRows() {
@@ -139,9 +144,16 @@
   function drawerContent() {
     const data = state.data || {};
     if (state.drawerTab === "deliveries") {
-      return `<div class="table-wrap"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div>`;
+      return `<div class="table-wrap delivery-table"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>推送给</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div>`;
     }
     return `<p class="drawer-summary">待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</p><div class="table-wrap"><table><thead><tr><th>人员</th><th>发送时间</th><th>状态</th><th>消息 ID</th></tr></thead><tbody>${invitationRows()}</tbody></table></div>`;
+  }
+
+  function scheduleSummary(schedule) {
+    if (!schedule?.enabled) return "未启用；保存后由频率调度器按香港时间执行";
+    const next = schedule.next_run_at ? schedule.next_run_at.replace("T", " ").replace("+08:00", "") : "等待下一个有效日期";
+    const last = schedule.last_status === "verified" ? "上次已生成并推送" : schedule.last_status === "queued" ? "上次推送等待重试" : schedule.last_status === "failed" ? `上次失败：${schedule.last_error || "请查看日志"}` : "尚未执行";
+    return `下次 ${next} · ${last}`;
   }
 
   function render() {
@@ -151,6 +163,7 @@
     const newsTitle = latest.title || latest.headline || "战略新闻推送";
     const newsBody = latest.summary || latest.brief || latest.description || "";
     const inviteCount = (data.invite_candidates || []).length;
+    const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const newsSchedule = data.strategic_news_schedule || { times_text: "06:00 / 13:30", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
       <header class="topbar"><h1>订阅与推送管理</h1><button class="icon-button management-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button></header>
@@ -160,7 +173,7 @@
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
           <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 直接调整接收内容与方式</p></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
-        <section class="surface push-surface"><header class="surface-header"><div><h2>推送</h2><p>战略新闻每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}；正式内容发送前自动命名 PDF 与音频文件</p></div></header><div class="surface-body"><form id="pushForm"><div class="push-form-fields"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label><label data-report>正式报告<select name="path">${reportOptions()}</select><small data-outgoing-names></small></label></div><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="仅用于人工补发经审核的战略新闻">${esc(newsBody)}</textarea></label><div class="push-actions"><label class="test-toggle"><input name="testOnly" type="checkbox" checked><span>仅发给我测试</span></label><button class="button primary" type="submit">执行推送</button></div></form></div></section>
+        <section class="surface push-surface"><header class="surface-header"><div><h2>自动流程与推送</h2><p>统一查看战略新闻与周报排期</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报自动流程</h3><p>到期后自动生成最新周报，并按订阅者接收方式推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required><small>可填写多个日期，以逗号分隔</small></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存排期</button><p class="schedule-meta">${esc(scheduleSummary(schedule))}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>人工推送</h3><p>正式内容发送前自动命名 PDF 与音频文件</p></div><form id="pushForm"><div class="push-form-fields"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label><label data-report>正式报告<select name="path">${reportOptions()}</select><small data-outgoing-names></small></label></div><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="仅用于人工补发经审核的战略新闻">${esc(newsBody)}</textarea></label><div class="push-actions"><button class="button primary" type="submit">执行推送</button></div></form></div></section>
       </main>
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
@@ -214,7 +227,7 @@
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.error || `HTTP ${response.status}`);
     const evidence = result.result?.message_id || result.result?.batch_id || "已完成";
-    state.notice = `操作成功并完成飞书回读：${evidence}`;
+    state.notice = `操作成功：${evidence}`;
     state.noticeKind = "success";
     await loadData({ keepNotice: true });
   }
@@ -290,6 +303,17 @@
   });
 
   document.addEventListener("submit", async (event) => {
+    if (event.target.id === "reportScheduleForm") {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(event.target).entries());
+      try {
+        await post({ action: "updateReportSchedule", days: values.days, time: values.time, enabled: values.enabled === "true" }, "正在保存周报自动排期…");
+        state.notice = `周报排期已保存：每月 ${values.days} 日 ${values.time}（香港时间）${values.enabled === "true" ? "自动执行" : "，当前暂停"}`;
+        state.noticeKind = "success";
+        render();
+      } catch (error) { state.notice = `排期保存失败：${error.message}`; state.noticeKind = "error"; render(); }
+      return;
+    }
     if (event.target.id === "peopleSearchForm") {
       event.preventDefault();
       const values = Object.fromEntries(new FormData(event.target).entries());
@@ -310,12 +334,9 @@
       event.preventDefault();
       const values = Object.fromEntries(new FormData(event.target).entries());
       const payload = { action: "push", service: values.service, mode: values.mode, path: values.path || "", title: values.title || "", body: values.body || "" };
-      if (values.testOnly) payload.testOpenId = state.data?.test_target?.delivery_open_id || "";
-      else {
-        if (!window.confirm("确认向该服务的全部有效订阅者推送这份内容？发送后无法撤回。")) return;
-        payload.confirmBulk = true;
-      }
-      try { await post(payload, values.testOnly ? "正在只向你本人发送并回读…" : "正在向全部有效订阅者推送并逐条回读…"); }
+      if (!window.confirm("确认向该服务的全部有效订阅者推送这份内容？发送后无法撤回。")) return;
+      payload.confirmBulk = true;
+      try { await post(payload, "正在向全部有效订阅者推送并逐条回读…"); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });

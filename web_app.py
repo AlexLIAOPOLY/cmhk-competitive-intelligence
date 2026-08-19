@@ -4102,6 +4102,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "once_daily"),
                         report_mode=str(payload.get("reportMode") or "pdf"),
                     )
+                elif action == "updateReportSchedule":
+                    result = service.update_report_schedule(
+                        days=payload.get("days"),
+                        time_hm=payload.get("time"),
+                        enabled=payload.get("enabled") is True,
+                    )
                 elif action == "refreshDirectory":
                     result = service.refresh_people_directory()
                 elif action == "searchPeople":

@@ -8,15 +8,18 @@ import re
 import shutil
 import sqlite3
 import subprocess
+import sys
 import zipfile
 from contextlib import closing
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
 from xml.etree import ElementTree
+from zoneinfo import ZoneInfo
 
 
 HKT_OFFSET = "+08:00"
+HKT = ZoneInfo("Asia/Hong_Kong")
 SERVICE_LABELS = {
     "weekly": "战略双周报",
     "performance": "运营商业绩摘要",
@@ -40,7 +43,9 @@ REPORT_MODE_LABELS = {
     "audio": "仅语音",
 }
 VALID_REPORT_MODES = frozenset(REPORT_MODE_LABELS)
-REPORT_CADENCE_LABEL = "每两周随报告发布"
+REPORT_CADENCE_LABEL = "按后台月度排期自动生成并推送"
+REPORT_SCHEDULE_DEFAULT_DAYS = (15, 30)
+REPORT_SCHEDULE_DEFAULT_TIME = "09:00"
 STRATEGIC_SCAN_TIMES_DEFAULT = ("06:00", "13:30")
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
@@ -98,7 +103,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "报告固定每两周随发布推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
+        "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
         "完成审核后推送，您可以选择每天一次或每天两次。"
         "感谢您的配合！"
     )
@@ -183,7 +188,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；战略新闻每日香港时间 06:00、13:30 扫描，爬虫完成审核后推送。每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
+                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日香港时间 06:00、13:30 扫描，爬虫完成审核后推送。每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
                             "text_size": "notation",
                         },
                         {
@@ -462,7 +467,27 @@ class SubscriptionService:
                 );
                 CREATE INDEX IF NOT EXISTS news_crawl_dispatches_slot_idx
                     ON news_crawl_dispatches(crawl_slot, status);
+                CREATE TABLE IF NOT EXISTS report_automation_schedule (
+                    service TEXT PRIMARY KEY,
+                    enabled INTEGER NOT NULL DEFAULT 0,
+                    days_json TEXT NOT NULL DEFAULT '[15,30]',
+                    time_hm TEXT NOT NULL DEFAULT '09:00',
+                    timezone TEXT NOT NULL DEFAULT 'Asia/Hong_Kong',
+                    last_slot TEXT NOT NULL DEFAULT '',
+                    last_status TEXT NOT NULL DEFAULT 'never',
+                    last_report_path TEXT NOT NULL DEFAULT '',
+                    last_error TEXT NOT NULL DEFAULT '',
+                    last_started_at TEXT NOT NULL DEFAULT '',
+                    last_completed_at TEXT NOT NULL DEFAULT '',
+                    updated_at TEXT NOT NULL
+                );
                 """
+            )
+            db.execute(
+                """INSERT OR IGNORE INTO report_automation_schedule(
+                       service, enabled, days_json, time_hm, timezone, updated_at
+                   ) VALUES('weekly', 0, '[15,30]', '09:00', 'Asia/Hong_Kong', ?)""",
+                (_now_hkt(),),
             )
             columns = {str(row[1]) for row in db.execute("PRAGMA table_info(subscribers)").fetchall()}
             if "callback_open_id" not in columns:
@@ -771,7 +796,20 @@ class SubscriptionService:
                    GROUP BY s.open_id ORDER BY s.updated_at DESC"""
             ).fetchall()
             deliveries = db.execute(
-                "SELECT * FROM deliveries ORDER BY id DESC LIMIT ?", (max(1, min(delivery_limit, 300)),)
+                """SELECT d.*,
+                          COALESCE(
+                              NULLIF((SELECT s.display_name FROM subscribers s
+                                      WHERE s.open_id=d.open_id LIMIT 1), ''),
+                              NULLIF((SELECT c.display_name FROM subscription_invite_candidates c
+                                      WHERE c.delivery_open_id=d.open_id ORDER BY c.updated_at DESC LIMIT 1), ''),
+                              NULLIF((SELECT p.display_name FROM subscription_directory_people p
+                                      WHERE p.directory_open_id=d.open_id ORDER BY p.synced_at DESC LIMIT 1), ''),
+                              NULLIF((SELECT i.display_name FROM subscription_invitations i
+                                      WHERE i.delivery_open_id=d.open_id ORDER BY i.id DESC LIMIT 1), ''),
+                              ''
+                          ) AS recipient_name
+                   FROM deliveries d ORDER BY d.id DESC LIMIT ?""",
+                (max(1, min(delivery_limit, 300)),),
             ).fetchall()
             invitations = db.execute(
                 "SELECT * FROM subscription_invitations ORDER BY id DESC LIMIT 200"
@@ -794,10 +832,26 @@ class SubscriptionService:
                 "report_cadence": "biweekly_on_publish",
                 "report_cadence_label": REPORT_CADENCE_LABEL,
             })
+        card_actions = self.config.get("card_actions") if isinstance(self.config.get("card_actions"), dict) else {}
+        primary_name = str(card_actions.get("primary_handler_expected_name") or "").strip()
+        primary_open_ids = {
+            value for value in (
+                self.primary_delivery_open_id,
+                str(card_actions.get("primary_handler_open_id") or ""),
+            ) if value
+        }
+        delivery_items = []
+        for item in deliveries:
+            delivery = dict(item)
+            if not str(delivery.get("recipient_name") or "").strip() and primary_name and str(delivery.get("open_id") or "") in primary_open_ids:
+                delivery["recipient_name"] = primary_name
+            delivery["recipient_open_id"] = str(delivery.get("open_id") or "")
+            delivery["message_ids"] = json.loads(delivery.get("message_ids") or "[]")
+            delivery_items.append(delivery)
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
             "subscribers": subscribers,
-            "deliveries": [dict(item) | {"message_ids": json.loads(item["message_ids"] or "[]")} for item in deliveries],
+            "deliveries": delivery_items,
             "invite_candidates": self.list_invite_candidates(),
             "invitations": [dict(item) for item in invitations],
             "invitation_counts": {
@@ -806,6 +860,7 @@ class SubscriptionService:
             },
             "invitation_permissions": self.invitation_permission_snapshot(),
             "active_subscriber_count": sum(1 for row in subscribers if row["status"] == "active"),
+            "report_schedule": self.report_schedule_snapshot(),
             "strategic_news_schedule": self.strategic_news_schedule_snapshot(),
             "updated_at": _now_hkt(),
         }
@@ -822,6 +877,169 @@ class SubscriptionService:
             "timezone_label": "香港时间",
             "dispatch_rule": "爬虫完成审核后推送",
         }
+
+    @staticmethod
+    def _normalize_schedule_days(days: Any) -> list[int]:
+        values = days if isinstance(days, (list, tuple)) else re.split(r"[,，\s]+", str(days or ""))
+        normalized: list[int] = []
+        for value in values:
+            if value in {None, ""}:
+                continue
+            try:
+                day = int(value)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("执行日期请填写 1 至 31 的整数") from exc
+            if not 1 <= day <= 31:
+                raise ValueError("执行日期必须在 1 至 31 日之间")
+            if day not in normalized:
+                normalized.append(day)
+        if not normalized:
+            raise ValueError("请至少设置一个每月执行日期")
+        return sorted(normalized)
+
+    @staticmethod
+    def _normalize_schedule_time(value: Any) -> str:
+        raw = str(value or "").strip()
+        if not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw):
+            raise ValueError("执行时间必须使用 HH:MM 格式")
+        return raw
+
+    def report_schedule_snapshot(self, *, now: datetime | None = None) -> dict[str, Any]:
+        with closing(self._connect()) as db:
+            row = db.execute(
+                "SELECT * FROM report_automation_schedule WHERE service='weekly'"
+            ).fetchone()
+        data = dict(row) if row else {}
+        try:
+            days = self._normalize_schedule_days(json.loads(str(data.get("days_json") or "[]")))
+        except (ValueError, TypeError, json.JSONDecodeError):
+            days = list(REPORT_SCHEDULE_DEFAULT_DAYS)
+        time_hm = str(data.get("time_hm") or REPORT_SCHEDULE_DEFAULT_TIME)
+        current = (now or datetime.now(HKT)).astimezone(HKT)
+        next_run = ""
+        if bool(data.get("enabled")):
+            for offset in range(0, 70):
+                candidate_date = (current + timedelta(days=offset)).date()
+                if candidate_date.day not in days:
+                    continue
+                candidate = datetime.fromisoformat(f"{candidate_date.isoformat()}T{time_hm}:00+08:00")
+                candidate_slot = f"{candidate_date.isoformat()}@{time_hm}"
+                if candidate >= current and candidate_slot != str(data.get("last_slot") or ""):
+                    next_run = candidate.isoformat(timespec="minutes")
+                    break
+        return {
+            "service": "weekly",
+            "enabled": bool(data.get("enabled")),
+            "days": days,
+            "days_text": "、".join(str(day) for day in days) + " 日",
+            "time": time_hm,
+            "timezone": "Asia/Hong_Kong",
+            "next_run_at": next_run,
+            "last_slot": str(data.get("last_slot") or ""),
+            "last_status": str(data.get("last_status") or "never"),
+            "last_report_path": str(data.get("last_report_path") or ""),
+            "last_error": str(data.get("last_error") or ""),
+            "last_started_at": str(data.get("last_started_at") or ""),
+            "last_completed_at": str(data.get("last_completed_at") or ""),
+            "updated_at": str(data.get("updated_at") or ""),
+        }
+
+    def update_report_schedule(self, *, days: Any, time_hm: Any, enabled: bool) -> dict[str, Any]:
+        normalized_days = self._normalize_schedule_days(days)
+        normalized_time = self._normalize_schedule_time(time_hm)
+        with closing(self._connect()) as db, db:
+            db.execute(
+                """UPDATE report_automation_schedule
+                   SET enabled=?, days_json=?, time_hm=?, updated_at=?
+                   WHERE service='weekly'""",
+                (1 if enabled else 0, json.dumps(normalized_days), normalized_time, _now_hkt()),
+            )
+        return self.report_schedule_snapshot()
+
+    def report_schedule_due(self, *, now: datetime | None = None) -> dict[str, Any]:
+        current = (now or datetime.now(HKT)).astimezone(HKT)
+        schedule = self.report_schedule_snapshot(now=current)
+        slot = f"{current.date().isoformat()}@{schedule['time']}"
+        due = bool(
+            schedule["enabled"]
+            and current.day in schedule["days"]
+            and current.strftime("%H:%M") >= schedule["time"]
+            and schedule["last_slot"] != slot
+        )
+        return {**schedule, "due": due, "slot": slot if due else ""}
+
+    def run_due_weekly_report(self, *, now: datetime | None = None, dry_run: bool = False) -> dict[str, Any]:
+        current = (now or datetime.now(HKT)).astimezone(HKT)
+        due = self.report_schedule_due(now=current)
+        if dry_run or not due["due"]:
+            return {"ok": True, "dry_run": dry_run, **due}
+        slot = str(due["slot"])
+        started_at = _now_hkt()
+        with closing(self._connect()) as db, db:
+            cursor = db.execute(
+                """UPDATE report_automation_schedule
+                   SET last_slot=?, last_status='running', last_error='', last_started_at=?, updated_at=?
+                   WHERE service='weekly' AND last_slot<>?""",
+                (slot, started_at, started_at, slot),
+            )
+        if cursor.rowcount != 1:
+            return {"ok": True, "due": False, "skipped": "already_claimed", "slot": slot}
+        try:
+            process = self._run(
+                [sys.executable, str(self.runtime_root / "generate_weekly_report.py")],
+                timeout=1200,
+            )
+            if process.returncode != 0:
+                detail = (process.stderr or process.stdout or "周报生成失败").strip()[-1200:]
+                raise RuntimeError(detail)
+            candidates = [
+                path for path in self.runtime_root.glob("*.docx")
+                if "周报" in path.name
+                and "业绩摘要" not in path.name
+                and "template" not in path.name.lower()
+                and not path.name.startswith("~$")
+            ]
+            if not candidates:
+                raise RuntimeError("周报生成完成但未找到新的 Word 报告")
+            report_path = max(candidates, key=lambda item: item.stat().st_mtime_ns)
+            relative_path = report_path.relative_to(self.runtime_root).as_posix()
+            if any(item.get("report_mode") in {"audio", "pdf_audio"} for item in self._subscribers_for("weekly")):
+                try:
+                    from tts_service import synthesize_report_audio
+
+                    audio_result = synthesize_report_audio(report_path, force=True)
+                    if not audio_result.get("ok", True):
+                        raise RuntimeError(str(audio_result.get("error") or "周报语音生成失败"))
+                except Exception as exc:
+                    raise RuntimeError(f"周报已生成，但订阅语音生成失败：{exc}") from exc
+            delivery = self.push(
+                service="weekly",
+                mode="pdf_audio",
+                path=relative_path,
+                confirm_bulk=True,
+                queue_failures=True,
+                batch_key=f"weekly-schedule:{slot}",
+            )
+            final_status = "queued" if delivery["queued_count"] else "verified"
+            completed_at = _now_hkt()
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    """UPDATE report_automation_schedule
+                       SET last_status=?, last_report_path=?, last_error='', last_completed_at=?, updated_at=?
+                       WHERE service='weekly' AND last_slot=?""",
+                    (final_status, relative_path, completed_at, completed_at, slot),
+                )
+            return {"ok": True, "slot": slot, "status": final_status, "report_path": relative_path, "delivery": delivery}
+        except Exception as exc:
+            completed_at = _now_hkt()
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    """UPDATE report_automation_schedule
+                       SET last_status='failed', last_error=?, last_completed_at=?, updated_at=?
+                       WHERE service='weekly' AND last_slot=?""",
+                    (str(exc)[:1200], completed_at, completed_at, slot),
+                )
+            return {"ok": False, "slot": slot, "status": "failed", "error": str(exc)[:1200]}
 
     def invitation_permission_snapshot(self) -> dict[str, Any]:
         app_id = str((self.config.get("bot") or {}).get("app_id") or self.entry_profile)
@@ -1817,6 +2035,8 @@ class SubscriptionService:
         body: str = "",
         test_open_id: str = "",
         confirm_bulk: bool = False,
+        queue_failures: bool = False,
+        batch_key: str = "",
     ) -> dict[str, Any]:
         if service not in VALID_SERVICES or mode not in VALID_DELIVERY_MODES:
             raise ValueError("推送服务或交付方式无效")
@@ -1852,7 +2072,8 @@ class SubscriptionService:
             if not body:
                 raise ValueError("新闻推送正文不能为空")
             content_ref = title
-        batch_id = hashlib.sha256(f"{service}:{mode}:{content_ref}:{_now_hkt()}".encode()).hexdigest()[:24]
+        batch_source = batch_key or f"{service}:{mode}:{content_ref}:{_now_hkt()}"
+        batch_id = hashlib.sha256(batch_source.encode()).hexdigest()[:24]
         results = []
         for recipient in recipients:
             open_id = recipient["open_id"]
@@ -1891,13 +2112,22 @@ class SubscriptionService:
                 )
                 status = "verified"
             except Exception as exc:
-                status = "failed"
+                status = "retrying" if queue_failures else "failed"
                 error = str(exc)[:900]
             with closing(self._connect()) as db, db:
                 db.execute(
                     "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
                     (status, json.dumps(message_ids), error, delivery_id),
                 )
+                if status == "retrying":
+                    due_at = (datetime.now().astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    db.execute(
+                        """INSERT INTO pending_subscription_deliveries(
+                               delivery_id, open_id, service, mode, content_ref, title, body,
+                               frequency, due_at, status, created_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, 'schedule_retry', ?, 'queued', ?)""",
+                        (delivery_id, open_id, service, effective_mode, content_ref, title, body, due_at, _now_hkt()),
+                    )
             results.append({
                 "open_id": open_id,
                 "frequency": frequency,
@@ -1913,7 +2143,7 @@ class SubscriptionService:
             "mode": mode,
             "recipient_count": len(results),
             "verified_count": sum(1 for item in results if item["status"] == "verified"),
-            "queued_count": sum(1 for item in results if item["status"] == "queued"),
+            "queued_count": sum(1 for item in results if item["status"] in {"queued", "retrying"}),
             "failed_count": sum(1 for item in results if item["status"] == "failed"),
             "results": results,
         }

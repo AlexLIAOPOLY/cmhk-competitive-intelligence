@@ -53,9 +53,22 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
 .table-person-name { color: #edf5f7; font-size: 9px; }
 .table-person-id { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
+.delivery-table table { min-width: 880px; }
+.delivery-recipient { display: block; min-width: 116px; }
+.delivery-recipient strong, .delivery-recipient small { display: block; white-space: nowrap; }
+.delivery-recipient strong { color: #edf5f7; font-size: 9px; font-weight: 600; }
+.delivery-recipient small { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
 .service-group { display: flex; gap: 7px; white-space: nowrap; }
 .compact-save { min-height: 28px; padding: 0 9px; }
 .push-surface .surface-body { padding: 14px 16px 16px; }
+.schedule-form { grid-template-columns: minmax(230px,1.35fr) minmax(150px,.7fr) minmax(130px,.58fr) auto; align-items: end; }
+.schedule-form small { color: #6f909a; font-size: 8px; }
+.schedule-save { min-height: 36px; white-space: nowrap; }
+.schedule-meta { grid-column: 1 / -1; margin: -2px 0 0; color: #78a7b2; font-size: 8px; line-height: 1.5; }
+.push-divider { height: 1px; margin: 14px 0; background: rgba(92,158,178,.22); }
+.manual-push-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.manual-push-heading h3 { color: #dcebee; font-size: 11px; font-weight: 650; }
+.manual-push-heading p { color: #728d97; font-size: 8px; }
 .push-form-fields { display: grid; grid-template-columns: minmax(150px,.65fr) minmax(180px,.8fr) minmax(280px,1.55fr); gap: 10px; align-items: start; }
 .workflow-tabs { display: flex; min-height: 48px; align-items: end; gap: 22px; padding: 0 22px; border-bottom: 1px solid rgba(92,158,178,.22); background: rgba(14,46,58,.45); }
 .workflow-tabs button { position: relative; height: 48px; padding: 0 2px; border: 0; color: #78949e; background: transparent; font-size: 11px; font-weight: 600; }
@@ -100,7 +113,7 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .push-workbench { max-width: 780px; margin: 0 auto; }
 .push-workbench .workbench-heading { padding-right: 0; padding-left: 0; }
 .push-workbench form { padding: 22px 0; }
-.push-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 4px; }
+.push-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding-top: 4px; }
 .push-actions .button { min-width: 138px; }
 .drawer-backdrop { position: fixed; z-index: 50; inset: 0; display: flex; justify-content: flex-end; background: rgba(0,9,14,.62); backdrop-filter: blur(3px); }
 .management-drawer, .people-picker { display: grid; grid-template-rows: auto auto minmax(0,1fr); width: min(1080px, 92vw); height: 100%; border-left: 1px solid rgba(103,176,196,.34); background: #081d27; box-shadow: -24px 0 60px rgba(0,5,9,.42); }
@@ -144,6 +157,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .invite-surface, .subscriber-surface { min-height: 340px; }
   .invite-surface .invite-list-main, .subscriber-table { max-height: 280px; }
   .push-form-fields { grid-template-columns: 1fr 1fr; }
+  .schedule-form { grid-template-columns: 1fr 1fr; }
   .push-form-fields [data-report] { grid-column: 1 / -1; }
   .push-workbench { max-width: none; padding: 0 18px; }
 }
@@ -159,6 +173,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .surface-actions .button span { display: none; }
   .push-surface .surface-body { padding: 12px; }
   .push-form-fields { grid-template-columns: 1fr; }
+  .schedule-form { grid-template-columns: 1fr; }
+  .manual-push-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
   .push-form-fields [data-report] { grid-column: auto; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }

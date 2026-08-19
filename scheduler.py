@@ -1551,10 +1551,23 @@ def dispatch_subscription_queue(*, dry_run: bool = False) -> dict[str, object]:
         return {"ok": False, "error": str(exc)[:900]}
 
 
+def dispatch_scheduled_weekly_report(*, dry_run: bool = False, now: datetime | None = None) -> dict[str, object]:
+    """Generate and deliver the weekly report when the saved monthly slot is due."""
+    try:
+        from subscription_service import SubscriptionService
+
+        service = SubscriptionService(runtime_root=ROOT)
+        return service.run_due_weekly_report(now=now or datetime.now(HKT), dry_run=dry_run)
+    except Exception as exc:
+        logging.exception("定时周报生成与推送失败")
+        return {"ok": False, "error": str(exc)[:1200]}
+
+
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
     subscription_dispatch = dispatch_subscription_queue(dry_run=dry_run)
+    weekly_report_dispatch = dispatch_scheduled_weekly_report(dry_run=True, now=now)
     watchdog = (
         {"ok": True, "skipped": True, "reason": "dry_run"}
         if dry_run
@@ -1569,6 +1582,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             "timezone": "Asia/Hong_Kong",
             "executive_intelligence_watchdog": watchdog,
             "subscription_dispatch": subscription_dispatch,
+            "weekly_report_dispatch": weekly_report_dispatch,
             "pending_run_id": pending.get("crawl_run_id"),
             "pending_stage": pending.get("stage"),
         }
@@ -1601,12 +1615,21 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
         "timezone": "Asia/Hong_Kong",
         "executive_intelligence_watchdog": watchdog,
         "subscription_dispatch": subscription_dispatch,
+        "weekly_report_dispatch": weekly_report_dispatch,
         "due_rows": due,
         "rows": audit,
     }
     if dry_run:
         return result
     if not due:
+        if crawl_process_running() or agent_audit_process_running():
+            result["weekly_report_dispatch"] = {
+                **weekly_report_dispatch,
+                "skipped": "crawler_or_agent_audit_running",
+            }
+            logging.info("爬虫或 Agent 审核正在运行，本轮暂缓定时周报")
+            return result
+        result["weekly_report_dispatch"] = dispatch_scheduled_weekly_report(now=now)
         logging.info("本轮无到期行")
         return result
     if crawl_process_running():

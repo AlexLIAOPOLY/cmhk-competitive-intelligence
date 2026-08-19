@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from subscription_service import (
     SubscriptionService,
@@ -106,7 +107,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告固定每两周随发布推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
+            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
             "完成审核后推送，您可以选择每天一次或每天两次。"
             "感谢您的配合！",
         )
@@ -268,6 +269,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         delivery = self.service.list_summary()["deliveries"][0]
         self.assertEqual(delivery["status"], "verified")
         self.assertEqual(delivery["service"], "news")
+        self.assertEqual(delivery["recipient_name"], "测试用户")
+        self.assertEqual(delivery["recipient_open_id"], "ou_delivery123")
         send_call = next(call for call in self.lark.calls if "+messages-send" in call)
         self.assertEqual(send_call[send_call.index("--msg-type") + 1], "interactive")
         self.assertEqual(send_call[send_call.index("--profile") + 1], "org_test")
@@ -439,6 +442,68 @@ class SubscriptionServiceTests(unittest.TestCase):
     def test_invalid_report_mode_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "报告接收形式无效"):
             self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], report_mode="voice_note")
+
+    def test_report_schedule_persists_multiple_month_days_and_hong_kong_time(self):
+        from datetime import datetime
+
+        initial = self.service.report_schedule_snapshot(
+            now=datetime.fromisoformat("2026-08-19T08:00:00+08:00")
+        )
+        self.assertFalse(initial["enabled"])
+        self.assertEqual(initial["days"], [15, 30])
+        saved = self.service.update_report_schedule(days="30，15, 15", time_hm="09:30", enabled=True)
+        self.assertEqual(saved["days"], [15, 30])
+        self.assertEqual(saved["time"], "09:30")
+        self.assertTrue(saved["enabled"])
+        snapshot = self.service.report_schedule_snapshot(
+            now=datetime.fromisoformat("2026-08-19T08:00:00+08:00")
+        )
+        self.assertEqual(snapshot["next_run_at"], "2026-08-30T09:30+08:00")
+
+    def test_report_schedule_is_due_once_after_configured_time(self):
+        from datetime import datetime
+
+        self.service.update_report_schedule(days=[15, 30], time_hm="09:30", enabled=True)
+        before = self.service.report_schedule_due(
+            now=datetime.fromisoformat("2026-08-30T09:29:00+08:00")
+        )
+        due = self.service.report_schedule_due(
+            now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+        )
+        self.assertFalse(before["due"])
+        self.assertTrue(due["due"])
+        self.assertEqual(due["slot"], "2026-08-30@09:30")
+
+    def test_report_schedule_rejects_invalid_days_and_time(self):
+        with self.assertRaisesRegex(ValueError, "1 至 31"):
+            self.service.update_report_schedule(days="0, 15", time_hm="09:00", enabled=True)
+        with self.assertRaisesRegex(ValueError, "HH:MM"):
+            self.service.update_report_schedule(days="15, 30", time_hm="25:00", enabled=True)
+
+    def test_due_report_schedule_generates_and_delivers_only_once_per_slot(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["weekly"], report_mode="pdf"
+        )
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def run_with_generated_report(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                (self.root / "8月30日周报.docx").write_bytes(b"generated")
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = run_with_generated_report
+        now = datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+        with mock.patch.object(self.service, "_deliver_one", return_value=["om_scheduled123"]):
+            first = self.service.run_due_weekly_report(now=now)
+            second = self.service.run_due_weekly_report(now=now)
+        self.assertTrue(first["ok"])
+        self.assertEqual(first["status"], "verified")
+        self.assertEqual(first["report_path"], "8月30日周报.docx")
+        self.assertFalse(second["due"])
+        self.assertEqual(self.service.report_schedule_snapshot(now=now)["last_slot"], "2026-08-30@09:30")
 
     def test_failed_crawler_delivery_retries_without_a_fixed_attempt_cap(self):
         from datetime import datetime
