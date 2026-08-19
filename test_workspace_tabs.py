@@ -332,11 +332,15 @@ class WorkspaceTabsTests(unittest.TestCase):
             "情报进入业务入口",
         ):
             self.assertIn(label, SCRIPT)
-        self.assertIn("frequency_counts", SCRIPT)
-        self.assertIn("source_groups", SCRIPT)
+        self.assertIn('fetch("/api/crawl-runs?limit=500"', SCRIPT)
+        self.assertIn("const dateRuns = state.crawlRuns.filter", SCRIPT)
+        self.assertIn("actualEventsForNode", SCRIPT)
+        self.assertIn("AGENT_TRACE=", SCRIPT)
+        self.assertIn("当天实际处理轨迹", SCRIPT)
+        self.assertIn("不展示通用逻辑原则", SCRIPT)
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
-        self.assertIn("canvasSize: [1580, 492]", SCRIPT)
+        self.assertIn("canvasSize: [1580, 620]", SCRIPT)
         self.assertIn('feedbackLabel: "历史记忆影响下一轮"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)

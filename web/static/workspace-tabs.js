@@ -627,7 +627,6 @@
 
   function globalSchedulerLineageModel(runs, stages) {
     const overview = state.schedulerOverview || {};
-    const frequency = overview.frequency_counts || {};
     const latest = overview.latest || {};
     const selectedDate = state.newsSelectedDate || newsRunDate(runs[0]);
     const dateRuns = state.crawlRuns.filter((run) => newsRunDate(run) === selectedDate);
@@ -635,7 +634,7 @@
     const newsRun = runs[0] || latest.strategic_news || {};
     const intelligenceRun = dateRuns.find((run) => run.task_kind === "executive-intelligence-refresh") || {};
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
-    const domainNode = (key, fallbackLabel, position) => {
+    const domainNode = (key, fallbackLabel, position, variant) => {
       const domain = domains.get(key) || {};
       return {
         key: `database-${key}`,
@@ -644,52 +643,58 @@
         unit: "",
         note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未留下四库刷新归档",
         tone: "mint",
+        variant,
+        compact: true,
         position,
         details: intelligenceRun.crawl_run_id ? [`运行 ${intelligenceRun.crawl_run_id}`, `状态 ${intelligenceRun.run_status || "未记录"}`, `完成 ${runCompletionText(intelligenceRun)}`] : ["所选日期没有该数据库的刷新记录"],
         evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
       };
     };
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
-    const configured = Number(overview.configured_rows || 0);
-    const sources = (overview.source_groups || []).filter((item) => Number(item.count || 0) > 0);
-    const mainEvidence = [
-      `${configured || "—"} 条有效飞书频率配置`,
-      ...sources.map((item) => `${item.label} ${number(item.count)} 条`),
-      `最近完成 ${runCompletionText(mainRun)}`,
-    ];
+    const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
+    const mainValue = mainRowsProcessed ? number(mainRowsProcessed) : mainRun.run_status === "failed" ? "已中断" : mainRun.run_status === "running" ? "运行中" : "—";
+    const mainUnit = mainRowsProcessed ? "行实际处理" : "";
+    const mainDetails = mainRun.crawl_run_id ? [
+      `运行 ${mainRun.crawl_run_id}`,
+      `状态 ${mainRun.run_status || "未记录"}`,
+      `开始 ${String(mainRun.started_at_hkt || "未记录").replace("T", " ")}`,
+      `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
+      ...(mainRowsProcessed ? [`实际处理 ${number(mainRowsProcessed)} 行`, `URL成功 ${number(mainRun.run_log?.success_urls)} 个·失败 ${number(mainRun.run_log?.failed_urls)} 个`] : []),
+    ] : ["所选日期没有主爬虫运行记录"];
     const reviewResults = dailyNewsReviewResults(selectedDate);
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
     const nodes = [
-      { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", tone: "cyan", position: [18, 50], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, tone: "cyan", position: [365, 50], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, tone: "cyan", position: [712, 50], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, tone: "mint", position: [1059, 50], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, tone: "focus", position: [1215, 50], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
-      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", tone: "mint", position: [1406, 32], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
-      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", tone: "mint", position: [1406, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "main", label: "03:00 主爬虫", value: mainRun.final_audit?.rows_crawled ? number(mainRun.final_audit.rows_crawled) : (mainRun.crawl_run_id ? number(configured) : "—"), unit: mainRun.crawl_run_id ? "行实际处理" : "", note: mainRun.crawl_run_id ? `完成 ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", tone: "focus", position: [14, 318], details: mainRun.crawl_run_id ? mainEvidence : ["所选日期没有主爬虫运行记录"], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", tone: "cyan", position: [212, 318], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      domainNode("local", "本地运营商", [410, 318]),
-      domainNode("international", "内地电讯企业", [608, 318]),
-      domainNode("cloud", "全球云厂商", [806, 318]),
-      domainNode("macro", "香港电讯市场", [1004, 318]),
-      { key: "insights", label: "17项AI洞察", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", tone: "cyan", position: [1202, 318], details: intelligenceRun.crawl_run_id ? [`模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
-      { key: "consumers", label: "情报进入业务入口", value: intelligenceRun.operational_summary?.pages_publish?.ok ? "2" : "—", unit: intelligenceRun.operational_summary?.pages_publish?.ok ? "项已验证" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页" : "当天未留下发布记录", tone: "mint", position: [1400, 318], details: intelligenceRun.operational_summary?.pages_publish?.ok ? [`站点版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}`, `公开地址 ${intelligenceRun.operational_summary.pages_publish.public_url || "未记录"}`] : ["所选日期没有可核对的交付记录"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "当天未留下业务入口发布证据" },
+      { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", tone: "cyan", variant: "crawler", position: [18, 52], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
+      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, tone: "cyan", variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
+      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, tone: "cyan", variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
+      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, tone: "mint", variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
+      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, tone: "focus", variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
+      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", tone: "mint", variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
+      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", tone: "amber", variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
+      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", tone: "focus", variant: "crawler", position: [18, 430], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", tone: "cyan", variant: "audit", position: [230, 430], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "database-hub", label: "四库分流", value: "4", unit: "个库", note: "按业务域分别更新", tone: "cyan", variant: "database-hub", compact: true, position: [445, 430], details: ["同一批已审核证据按业务域分流", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下四库分流记录" },
+      domainNode("local", "本地运营商", [630, 342], "database-local"),
+      domainNode("international", "内地电讯企业", [812, 342], "database-international"),
+      domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
+      domainNode("macro", "香港电讯市场", [812, 480], "database-macro"),
+      { key: "insights", label: "17项AI洞察", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", tone: "cyan", variant: "insight", position: [1035, 430], details: intelligenceRun.crawl_run_id ? [`模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
+      { key: "consumers", label: "情报进入业务入口", value: intelligenceRun.operational_summary?.pages_publish?.ok ? "2" : "—", unit: intelligenceRun.operational_summary?.pages_publish?.ok ? "项已验证" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页" : "当天未留下发布记录", tone: "mint", variant: "delivery", position: [1280, 430], details: intelligenceRun.operational_summary?.pages_publish?.ok ? [`站点版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}`, `公开地址 ${intelligenceRun.operational_summary.pages_publish.public_url || "未记录"}`] : ["所选日期没有可核对的交付记录"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "当天未留下业务入口发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
-      ["main", "agent", "", "cyan"], ["main", "news-search", "", "amber"],
-      ["agent", "database-local", "", "cyan"], ["agent", "database-international", "", "cyan"], ["agent", "database-cloud", "", "cyan"], ["agent", "database-macro", "", "cyan"],
-      ["database-local", "insights", "", "cyan"], ["database-international", "insights", "", "cyan"], ["database-cloud", "insights", "", "cyan"], ["database-macro", "insights", "", "cyan"], ["insights", "consumers", "", "cyan"], ["news-output", "consumers", "", "cyan"],
+      ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["agent", "database-hub", "四库分流", "cyan"],
+      ["database-hub", "database-local", "", "cyan"], ["database-hub", "database-international", "", "cyan"], ["database-hub", "database-cloud", "", "cyan"], ["database-hub", "database-macro", "", "cyan"],
+      ["database-local", "insights", "", "cyan"], ["database-international", "insights", "", "cyan"], ["database-cloud", "insights", "", "cyan"], ["database-macro", "insights", "", "cyan"], ["insights", "consumers", "", "cyan"],
     ];
     return {
       nodes,
       edges,
-      canvasSize: [1580, 492],
+      canvasSize: [1580, 620],
       feedbackLabel: "历史记忆影响下一轮",
-      groups: [{ key: "databases", label: "四库更新", note: `最近完成 ${runCompletionText(intelligenceRun)}`, position: [394, 282], size: [794, 190] }],
+      groups: [{ key: "databases", label: "四库更新 · 2 × 2", note: `最近完成 ${runCompletionText(intelligenceRun)}`, position: [610, 310], size: [380, 294] }],
     };
   }
 
@@ -758,18 +763,40 @@
 
   function actualEventMeta(rawLine, index) {
     const line = String(rawLine || "").trim();
+    if (line.startsWith("{")) {
+      try {
+        const payload = JSON.parse(line);
+        return { time: payload.ts || payload.at || payload.timestamp || "未单独记录时间", title: payload.type || `运行事件 ${index + 1}`, content: payload.message || JSON.stringify(payload), raw: line };
+      } catch (_error) { /* keep the original line below */ }
+    }
     const timestamp = line.match(/^\[([^\]]*(?:\d{2}:\d{2}:\d{2})[^\]]*)\]\s*/);
     const withoutTime = timestamp ? line.slice(timestamp[0].length) : line;
-    const stage = withoutTime.match(/^\[([^\]]+)\]\s*/);
+    const nestedStage = withoutTime.match(/^\[([^\]]+)\]\[([^\]]+)\]\s*/);
+    const stage = nestedStage || withoutTime.match(/^\[([^\]]+)\]\s*/);
     const content = stage ? withoutTime.slice(stage[0].length) : withoutTime;
-    const title = stage?.[1] || content.split(/[:：]/, 1)[0].slice(0, 36) || `运行事件 ${index + 1}`;
+    const title = nestedStage?.[2] || stage?.[1] || content.split(/[:：]/, 1)[0].slice(0, 36) || `运行事件 ${index + 1}`;
     return { time: timestamp?.[1] || "未单独记录时间", title, content: content || line, raw: line };
   }
 
   function actualEventsForNode(nodeKey, run, detail) {
     const lines = String(detail?.content || "").split("\n").map((line) => line.trim()).filter(Boolean);
+    if (nodeKey === "agent") {
+      const structured = lines.flatMap((line) => {
+        if (!line.startsWith("AGENT_TRACE=")) return [];
+        try {
+          const event = JSON.parse(line.slice("AGENT_TRACE=".length));
+          const facts = [event.message];
+          if (event.input) facts.push(`实际输入：${JSON.stringify(event.input)}`);
+          if (event.output) facts.push(`实际输出：${JSON.stringify(event.output)}`);
+          if (event.result) facts.push(`工具结果：${JSON.stringify(event.result)}`);
+          if (event.decision) facts.push(`实际决策：${event.decision}`);
+          return [{ time: event.ts || "未单独记录时间", title: [event.node, event.phase].filter(Boolean).join(" · ") || "Agent 轨迹", content: facts.filter(Boolean).join("\n"), raw: line, run }];
+        } catch (_error) { return []; }
+      });
+      if (structured.length) return structured;
+    }
     const pattern = actualNodeLogPatterns[nodeKey];
-    let selected = pattern ? lines.filter((line) => pattern.test(line)) : [];
+    let selected = pattern ? lines.filter((line) => !/^AGENT_TRACE=|^CURATION_SUMMARY=/.test(line) && pattern.test(line)) : [];
     if (nodeKey === "main") {
       selected = lines.filter((line) => !/^AGENT_TRACE=|^CURATION_SUMMARY=/.test(line) && !/\[数据整理\]/.test(line));
     }
@@ -858,7 +885,7 @@
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, label, kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path>${label ? `<text dy="-8"><textPath href="#newsLineageEdge${index}" startOffset="50%">${esc(label)}</textPath></text>` : ""}</g>`).join("")}</svg>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong><span>${esc(group.note)}</span></div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-${esc(node.tone)}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-${esc(node.tone)}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
           </div>
         </section>
