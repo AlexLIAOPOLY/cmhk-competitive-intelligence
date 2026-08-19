@@ -50,7 +50,13 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
-from subscription_service import FREQUENCY_LABELS, REPORT_CADENCE_LABEL, REPORT_MODE_LABELS, SubscriptionService
+from subscription_service import (
+    FREQUENCY_LABELS,
+    REPORT_CADENCE_LABEL,
+    REPORT_MODE_LABELS,
+    SubscriptionService,
+    encode_strategic_news_digest,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -2382,6 +2388,83 @@ def latest_output_path(status: dict, report_type: str) -> Path:
     return ROOT / output["path_str"]
 
 
+def push_latest_subscription_content(
+    service: SubscriptionService,
+    *,
+    target_open_id: str = "",
+    confirm_bulk: bool = False,
+) -> dict:
+    """Send each active subscription's latest formal content without a second form."""
+    summary = service.list_summary()
+    active = [item for item in summary.get("subscribers", []) if item.get("status") == "active"]
+    if target_open_id:
+        active = [item for item in active if item.get("open_id") == target_open_id]
+        if not active:
+            raise ValueError("该订阅者未启用，无法人工推送")
+    elif not confirm_bulk:
+        raise ValueError("一键推送必须在后台完成二次确认")
+    if not active:
+        raise ValueError("当前没有有效订阅者")
+
+    selected_services = {
+        item
+        for subscriber in active
+        for item in (subscriber.get("services") or [])
+        if item in {"weekly", "performance", "news"}
+    }
+    if not selected_services:
+        raise ValueError("接收范围内没有已启用的订阅内容")
+
+    status = build_status()
+    content: dict[str, dict[str, str]] = {}
+    for service_key, report_type in (("weekly", "weekly"), ("performance", "carrier-performance")):
+        if service_key not in selected_services:
+            continue
+        try:
+            content[service_key] = {
+                "mode": "pdf_audio",
+                "path": str(latest_output_path(status, report_type).relative_to(ROOT)),
+            }
+        except (FileNotFoundError, ValueError):
+            continue
+    if "news" in selected_services:
+        from strategic_briefing import public_snapshot
+
+        news_items = list(public_snapshot().get("items") or [])[:10]
+        if news_items:
+            content["news"] = {
+                "mode": "text",
+                "title": f"CMHK战略新闻｜最新{len(news_items)}条",
+                "body": encode_strategic_news_digest(news_items),
+            }
+    if not content:
+        raise ValueError("当前没有可供人工推送的最新正式内容")
+
+    results = []
+    for service_key in ("weekly", "performance", "news"):
+        if service_key not in content:
+            continue
+        item = content[service_key]
+        results.append(service.push(
+            service=service_key,
+            mode=item["mode"],
+            path=item.get("path", ""),
+            title=item.get("title", ""),
+            body=item.get("body", ""),
+            target_open_id=target_open_id,
+            confirm_bulk=confirm_bulk,
+        ))
+    return {
+        "batch_id": f"manual-latest-{uuid.uuid4().hex[:12]}",
+        "target_open_id": target_open_id,
+        "service_count": len(results),
+        "recipient_count": sum(int(item.get("recipient_count") or 0) for item in results),
+        "verified_count": sum(int(item.get("verified_count") or 0) for item in results),
+        "failed_count": sum(int(item.get("failed_count") or 0) for item in results),
+        "results": results,
+    }
+
+
 def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> bool:
     body = json.dumps(payload, ensure_ascii=False)
     log_paths = [
@@ -4214,6 +4297,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         ids,
                         confirm_invite=payload.get("confirmInvite") is True,
                         invited_by="local_admin",
+                    )
+                elif action == "pushLatest":
+                    result = push_latest_subscription_content(
+                        service,
+                        target_open_id=str(payload.get("targetOpenId") or ""),
+                        confirm_bulk=payload.get("confirmBulk") is True,
                     )
                 elif action == "push":
                     result = service.push(
