@@ -223,7 +223,7 @@
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon><img src="/static/assets/ai-insight-sparkle.png" alt="" aria-hidden="true" /></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
           <span class="competitor-insight-badge" data-competitor-insight-badge>LOCAL DATA</span>
         </header>
         <div class="competitor-insight-body">
@@ -315,7 +315,7 @@
 
   function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
     const width = 960;
-    const height = 330;
+    const height = 390;
     const margin = { top: 26, right: 205, bottom: 42, left: 66 };
     const values = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)?.value).filter((value) => Number.isFinite(value)));
     let min = Math.min(...values);
@@ -367,9 +367,8 @@
     card.classList.remove("is-loading", "is-streaming");
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
-    card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
-    card.querySelector("[data-competitor-insight-status]").textContent = status || (isAi ? "内网 AI 已完成真实生成" : "当前显示本地数据总结");
+    setCompetitorInsightStatus(card, isAi ? "" : (status || "AI未生成；当前显示本地数据总结"));
     card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "LOCAL DATA";
     const list = card.querySelector("[data-competitor-insight-list]");
     list.replaceChildren(...items.map((item, index) => {
@@ -384,12 +383,19 @@
     }));
   }
 
+  function setCompetitorInsightStatus(card, message = "") {
+    const status = card?.querySelector("[data-competitor-insight-status]");
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
+  }
+
   function beginCompetitorInsightStream(card) {
     if (!card) return;
     card.classList.remove("is-ai", "is-streaming");
     card.classList.add("is-loading");
     card.setAttribute("aria-busy", "true");
-    card.querySelector("[data-competitor-insight-status]").textContent = "正在连接内网 AI";
+    setCompetitorInsightStatus(card, "正在连接内网 AI");
     card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
   }
 
@@ -398,7 +404,7 @@
     if (!card || !drafts.length) return;
     card.classList.remove("is-loading");
     card.classList.add("is-streaming");
-    card.querySelector("[data-competitor-insight-status]").textContent = `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`;
+    setCompetitorInsightStatus(card, `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
     const labels = ["竞争格局", "公司定位", "业务含义"];
     card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
@@ -415,7 +421,7 @@
   async function requestLegacyCompetitorInsight(payload, requestId, controller, card) {
     card.classList.add("is-loading");
     card.setAttribute("aria-busy", "true");
-    card.querySelector("[data-competitor-insight-status]").textContent = "兼容模式正在生成真实 AI 结果";
+    setCompetitorInsightStatus(card, "兼容模式正在生成真实 AI 结果");
     card.querySelector("[data-competitor-insight-badge]").textContent = "GENERATING";
     const response = await fetch("/api/competitor-insight", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
     const result = await response.json().catch(() => ({}));
@@ -453,7 +459,7 @@
           const event = JSON.parse(line.replace(/^data:\s*/, ""));
           if (requestId !== state.competitorInsightRequest) return;
           if (event.type === "status") {
-            card.querySelector("[data-competitor-insight-status]").textContent = event.message || "内网 AI 正在处理";
+            setCompetitorInsightStatus(card, event.message || "内网 AI 正在处理");
             card.querySelector("[data-competitor-insight-badge]").textContent = event.stage === "queue" ? "QUEUED" : "GENERATING";
           } else if (event.type === "delta") {
             generated += String(event.text || "");
