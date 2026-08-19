@@ -1,38 +1,62 @@
 {
   "ok": true,
-  "generated_at": "2026-08-19T17:49:33+08:00",
+  "generated_at": "2026-08-19T17:53:32+08:00",
   "items": [
+    {
+      "id": "NEWS-1A335E93057BCB",
+      "title": "中国移动2026年上半年营收5380亿，算力智能服务成新动能",
+      "summary": "中国移动2026年上半年营收5380.35亿元，净利润789.34亿元，5G客户达6.87亿户。算力与智能服务正成为增长新动能。",
+      "category": "竞对动态",
+      "source_url": "https://industry.cfi.cn/p20260816000030.html",
+      "published_at": "2026-08-16T09:46:00+08:00"
+    },
     {
       "id": "NEWS-B68F4E938DEEB7",
       "title": "河套深港科技创新合作区启航 谱写创科新篇",
       "summary": "评论文章指出河套深港科技创新合作区建设正当其时，将推动香港创科发展。",
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
-      "published_at": "2026-08-16"
+      "published_at": "2026-08-16T04:53:40+08:00"
     },
     {
-      "id": "NEWS-53C6DA08A6825E",
-      "title": "企业深化产业布局 算力网有望拉动4万亿元投资",
-      "summary": "多家企业正谋划算力领域大项目，中国移动等公司算力投资持续增长，机构测算算力网建设将新增直接投资4万亿元。",
+      "id": "NEWS-CBF52C95DBEB88",
+      "title": "数码港第五期办公室已租出一半，联想及BrainCo等入驻",
+      "summary": "数码港主席表示，第五期办公室已填满50%，联想和BrainCo等为租户，并正推动AI发展为支柱产业。",
       "category": "行业动态",
-      "source_url": "https://news.online.sh.cn/news/gb/content/2026-08/15/content_10478477.htm",
-      "published_at": "2026-08-15"
+      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3364133/cyberport-fills-50-phase-5-offices-lenovo-brainco-among-tenants-chairman",
+      "published_at": "2026-08-15T21:46:00+08:00"
     },
     {
-      "id": "NEWS-04F9F16E7A143B",
-      "title": "广州海珠区发布“Token贷”及“词元八条”",
-      "summary": "广州市海珠区率先搭建词元经济工具箱，发布“Token贷”和“词元八条”政策。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE54cjF2dnBLQmUyek13Q3B3eWFBOFp2VzNnQ2FlNXhTVDhTTTRlREN6QVpoS1pMZVE3bzhYMFpUeGhaWXdScXFQNGNpeXFnandkVlRGTTI1WHUzcWc3MEE?oc=5",
-      "published_at": "2026-08-15"
+      "id": "NEWS-78AFE66B7A48C1",
+      "title": "2026腾讯云粤港澳大湾区架构师峰会在前海举行",
+      "summary": "腾讯云在深圳前海举办粤港澳大湾区架构师峰会，聚焦云计算与AI技术应用。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE82QnRKMzVuT3Jvcl9RVTkxWEtQa3lTRjNfaS1TNlBfVUF5TGdqQUc3bjI4R19HN1FZOEU1aVNqaENRUHU0bXY5S1k4WTY0VVJjSlhDMlJ6RDVHdHdQdnREVmVibDQweHJMd2ZpSnBJOTByeEdiX3c?oc=5",
+      "published_at": "2026-08-15T21:25:06+08:00"
     },
     {
-      "id": "NEWS-313858988152EE",
-      "title": "粤车南下验车中心持续拓展覆盖湾区九市",
-      "summary": "粤车南下验车中心服务范围持续扩大，已覆盖粤港澳大湾区九个内地城市。",
-      "category": "市场/产品类",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE14MUZHSUR0UXhvRnRkY05lRVc2T3ozYWpKbnU1dXJ5cFllYkdwM3FCYV81bWEwZW5sZjR5STNJNUlnYlNVRnJJSEVFUnF0NEg3RWotNkV5ZS01Tnd4UHQyMDZDYVRDUFJtOGhRMkRiYzhicWR3WXo0?oc=5",
-      "published_at": "2026-08-15"
+      "id": "NEWS-09E57074586E12",
+      "title": "粤港澳大湾区首开至镇江快速货运班列",
+      "summary": "粤港澳大湾区首次开通至江苏镇江的快速货运班列，实现粤苏两大万亿级产业集群“厂到门”直连。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4yUlFEQ3Q1OTRYdXh1RDRqenhIcGVVV1VNQkFaRGM5bVd1RHBXVTJnX2ZmOUN0S3NjRTd1cklmUG1lMWZwR2h2WTVCVjZ4V3prSE54YVFVZ0RnVE1nQ3RRbVpnTE42aFZTX1lRa3lGV3dvVE5FTlRj?oc=5",
+      "published_at": "2026-08-15T20:23:31+08:00"
+    },
+    {
+      "id": "NEWS-D718CC4D9E7414",
+      "title": "香港理工大学研发AI虚拟病人系统预测癌症治疗效果",
+      "summary": "香港理工大学研发出AI虚拟病人模拟系统，可用于预测癌症治疗成效。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxORFMteTJIQU9ZcHlrS0JSUE4tVE5tdGZPbW0zQjVIenBtSV9KS2ZNSFhDaXRuWFFZWmdITnZFVGpjdTJqQTIxcjlsdUhlMGlLeFl3azBZZ2wtN01WVjg4NXhJcXA4THBrbFdZdTJDSHYwWDZzTXpERnFyRXJZTHJqTWhuVjlCSWZZY1hZ?oc=5",
+      "published_at": "2026-08-15T17:28:54+08:00"
+    },
+    {
+      "id": "NEWS-3071EA39702BFB",
+      "title": "香港2026年第二季经济表现及全年GDP与物价最新预测公布",
+      "summary": "香港特区政府公布2026年第二季经济表现及全年本地生产总值和物价最新预测。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1Mbmo5OElwUUk2Q1YxaTlWMlRORTBEdkJxTng4eVBxcDVveDNwd3Bya25ZdUg2dHNQVUl6bVlSVWdpZ0JmcXZVY09aZ2JZR2JVcTlwVy1fbTZkTC05dmE1bTc1TDBfWTZMWl8xbElUUGE4aFk3?oc=5",
+      "published_at": "2026-08-15T16:54:54+08:00"
     },
     {
       "id": "NEWS-F72A73AB64FB34",
@@ -40,31 +64,7 @@
       "summary": "香港中文大学研发名为“风乌”的AI气象预报系统，旨在提升极端天气预测的准确度和时效性。",
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9OY2VOel9RUUw2azhrX0xuRHVFMnc5RUhHUFpqTkh4aWl2VnNsME5TVFU3TzBZZDNRYTNMOElIakwyemNhMDB5Qi01Ung1eEFUem9IMFBHVEdUTHo2UHJ6SlNpdXFoYVlsZnlONEFOZzI2RFNNQXh3?oc=5",
-      "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-C9ADADDEFEBE7B",
-      "title": "数码港主席陈细明：扩建后写字楼半数租出，盼提供更多AI算力",
-      "summary": "数码港主席陈细明表示扩建后写字楼已有一半租出，并期望未来能提供更多AI算力。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMimwNBVV95cUxPQnNjS1pkUmsyejRvT2N0X0NZNmVVM0JHMjU2clVUc2Y1MkJfcmluRU5XLWdiSFlEUDBkQzJWRG14VVlTR1FKTlV3NE50N2NCcDVNMlBiR2I1aGRJOXlySUtKaWpHWkRHMEgtMWRwWUdIN3I5YzRmWEtsTnViLUZBU042TzJleU5UbkVZSWl6YUp6enFibmg5UFlPamFUYjZrN1VjVlVOV21yMk5MaWpfYjgwSE9RVll0ZDF1QlM0WV9mRFBkZWJIZGpjSFhHbjBSVDkxVGp5WnVNdmpGQ2Y5RGhoTVhXZi1kamhjY1djelZQSXFPN0ppTFNseXNTM3VkbUF5TTMtNXp6eDJCdHM2cGNkYzVvcjJUNWtiOWZHNk1uV19aT3VEWjdWV0ZUS0dUM21mYnFFWUFPSWZsS1VHSEp3Zm8yckVyWDl0Q0lVTzVXQVk1UXAtVmlydEJsaUlnVzhNNk54ZVBQSlhTcEJOOHRJWEtwVVM0MEpIajNYV01fVTN4V1pFNmpkNDFnVFUxMll6NUR0RXNfYkk?oc=5",
-      "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-4C3BCD22FAE55F",
-      "title": "暑期香港入境游热度高涨，深圳口岸客流再创历史新高",
-      "summary": "暑期香港入境游热度飙升，深圳口岸单日出入境旅客达112万人次，再创历史新高。",
-      "category": "市场/产品类",
-      "source_url": "https://hk.crntt.com/doc/7_0_107224178_1_0815145319.html",
-      "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-38426C9F897E27",
-      "title": "央行二季度货币政策报告：保持流动性充裕并适时调整工具",
-      "summary": "中国人民银行发布二季度货币政策执行报告，明确下一阶段政策取向，提出将及时谋划出台增量政策，加大逆周期调节力度以扩大内需。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.sohu.com/a/1062150161_116132",
-      "published_at": "2026-08-13"
+      "published_at": "2026-08-15T15:57:31+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "9dae42b3578a3304cbe220a36e45d03049d88fe2ccb965a4b0602edfacd84021"
+  "site_version": "af4a3259def780bd685ef102da56b0195909f746c356f634dae1abacd593fb5d"
 }

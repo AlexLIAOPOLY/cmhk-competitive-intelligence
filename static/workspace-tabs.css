@@ -359,7 +359,7 @@
 .competitor-insight-header { justify-content: space-between; gap: 18px; padding-right: 8px; }
 .competitor-insight-identity { gap: 11px; }
 .competitor-insight-identity i { display: grid; width: 38px; height: 38px; place-items: center; flex: 0 0 38px; border: 0; background: transparent; filter: drop-shadow(0 0 10px rgba(100,179,255,.35)); font-style: normal; }
-.competitor-insight-identity i svg { display: block; width: 32px; height: 32px; overflow: visible; fill: #70b7ff; filter: drop-shadow(0 0 4px rgba(97,177,255,.54)); }
+.competitor-insight-identity i img { display: block; width: 32px; height: 32px; object-fit: contain; }
 .competitor-insight-identity > div { display: grid; gap: 3px; }
 .competitor-insight b { color: #f0fafb; font-size: 16px; letter-spacing: .04em; }
 .competitor-insight small { color: #789ba7; font-size: 9px; }

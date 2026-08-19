@@ -87,38 +87,6 @@
       item.disabled = true;
       item.setAttribute("aria-disabled", "true");
     });
-    document.querySelectorAll('[data-workspace-panel="competitor"] button, [data-workspace-panel="competitor"] input, [data-workspace-panel="competitor"] select').forEach((item) => {
-      item.disabled = true;
-      item.setAttribute("aria-disabled", "true");
-    });
-    const competitorInsight = document.querySelector("#competitorInsight");
-    const competitorInsightList = competitorInsight?.querySelector("[data-competitor-insight-list]");
-    const fixedCompetitorInsights = [
-      "稳定。HKBN两年均为0.907百万户，HKT由1.474升至1.488百万户，差距从约0.567扩至约0.581百万户，显示头部集中态势微幅强化。",
-      "HKBN规模持平且动能停滞，HKT以约1.488百万户保持领先并延续微增，两者位置稳固，但HKBN的零增长可能反映其客户获取或留存承压。",
-      "HKT的规模优势扩大或强化其网络投入与变现基础，HKBN持平则可能限制其规模竞争弹性，对客户留存策略的依赖度上升；数据锚点为2025年HKBN 0.907百万户。",
-    ];
-    const renderedCompetitorInsight = competitorInsightList
-      ? Array.from(competitorInsightList.querySelectorAll("li span")).map((item) => item.textContent).join("")
-      : "";
-    if (competitorInsightList && renderedCompetitorInsight !== fixedCompetitorInsights.join("")) {
-      competitorInsight.classList.remove("is-loading", "is-streaming");
-      competitorInsight.classList.add("is-ai");
-      competitorInsight.setAttribute("aria-busy", "false");
-      const insightStatus = competitorInsight.querySelector("[data-competitor-insight-status]");
-      if (insightStatus) insightStatus.hidden = true;
-      const insightBadge = competitorInsight.querySelector("[data-competitor-insight-badge]");
-      if (insightBadge) insightBadge.textContent = "COMPETITIVE INSIGHT";
-      competitorInsightList.replaceChildren(...fixedCompetitorInsights.map((copy, index) => {
-        const item = document.createElement("li");
-        const label = document.createElement("b");
-        const text = document.createElement("span");
-        label.textContent = ["竞争格局", "公司定位", "业务含义"][index];
-        text.textContent = copy;
-        item.append(label, text);
-        return item;
-      }));
-    }
     ["weekly", "performance"].forEach((kind) => {
       const reportPanel = document.querySelector(`[data-workspace-panel="${kind}"]`);
       const latestReportRow = reportPanel?.querySelector('.workspace-report-host .file-row[data-path]');
