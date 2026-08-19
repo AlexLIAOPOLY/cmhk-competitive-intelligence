@@ -70,6 +70,7 @@ const state = {
   crawlLogPollBusy: false,
   hasRunningTasks: false,
   reportLibraryBaselineReady: false,
+  weeklyPreviewController: null,
 };
 
 const els = {
@@ -1810,7 +1811,7 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell"><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span>${file.name}</span></span></span>
+        <span class="file-name-cell">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1950,6 +1951,75 @@ function setReportLibraryNewDot(visible) {
   );
 }
 
+function ensureWeeklyGenerationPreview() {
+  let preview = document.querySelector("#weeklyGenerationPreview");
+  if (!preview) {
+    preview = document.createElement("span");
+    preview.id = "weeklyGenerationPreview";
+    preview.className = "weekly-generation-preview";
+    preview.setAttribute("role", "status");
+    preview.setAttribute("aria-live", "polite");
+  }
+  const actions = els.weeklyOutputBlock?.querySelector(".output-actions");
+  if (actions && preview.parentElement !== actions) actions.prepend(preview);
+  return preview;
+}
+
+function weeklyPreviewDate(value) {
+  const match = String(value || "").match(/^\d{4}-(\d{2})-(\d{2})$/);
+  if (!match) return "—";
+  return `${Number(match[1])}月${Number(match[2])}日`;
+}
+
+function renderWeeklyGenerationPreview(preview, data = {}, error = "") {
+  const actions = els.weeklyOutputBlock?.querySelector(".output-actions");
+  if (actions && els.generateButtonSecondary?.parentElement === actions) {
+    actions.insertBefore(preview, els.generateButtonSecondary);
+  }
+  preview.replaceChildren();
+  const loading = error.startsWith("正在");
+  const label = document.createElement("small");
+  label.textContent = "本次生成范围";
+  const range = document.createElement("strong");
+  range.textContent = error
+    ? (loading ? "读取中" : "读取失败")
+    : `${weeklyPreviewDate(data.windowStart)}—${weeklyPreviewDate(data.windowEnd)}`;
+  const count = document.createElement("em");
+  count.textContent = error
+    ? (loading ? "正在核对入报新闻" : "重新进入页面时刷新")
+    : `${Number(data.newsCount || 0)} 条入报新闻`;
+  preview.append(label, range, count);
+  preview.classList.toggle("has-error", Boolean(error) && !loading);
+  preview.title = error || `如果现在生成，将提取 ${data.windowStart} 至 ${data.windowEnd} 的 ${Number(data.newsCount || 0)} 条入报新闻`;
+}
+
+async function refreshWeeklyGenerationPreview() {
+  const preview = ensureWeeklyGenerationPreview();
+  state.weeklyPreviewController?.abort();
+  const controller = new AbortController();
+  state.weeklyPreviewController = controller;
+  renderWeeklyGenerationPreview(preview, {}, "正在读取当前入报范围");
+  preview.classList.add("is-loading");
+  try {
+    const response = await fetch("/api/weekly-report-preview", {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    if (state.weeklyPreviewController !== controller) return;
+    renderWeeklyGenerationPreview(preview, payload.preview || {});
+  } catch (error) {
+    if (error.name === "AbortError" || state.weeklyPreviewController !== controller) return;
+    renderWeeklyGenerationPreview(preview, {}, error.message || "当前范围读取失败");
+  } finally {
+    if (state.weeklyPreviewController === controller) {
+      preview.classList.remove("is-loading");
+      state.weeklyPreviewController = null;
+    }
+  }
+}
+
 function setWorkspaceReportTabNewState(reportType, visible) {
   const tabName = reportType === "performance" ? "performance" : "weekly";
   const label = tabName === "performance" ? "业绩摘要" : "战略周报";
@@ -2031,6 +2101,7 @@ window.addEventListener("workspace-tab-change", (event) => {
   if (reportType === "weekly" || reportType === "performance") {
     markReportCategoryViewed(reportType);
   }
+  if (reportType === "weekly") refreshWeeklyGenerationPreview();
 });
 
 function markReportConsumed(pathStr) {

@@ -700,7 +700,7 @@
       ],
       "news-ai": [
         newsStageStep(newsGate, "审核前确定性门禁", "检查时间窗口、发布日期、URL合法性与基础重复", "硬条件先于LLM执行，失败记录明确排除原因", "构造AI审核上下文"),
-        lineageProcessStep("构造单条审核上下文", lineageStageStatus(newsAi), `${number(newsAi.value || 0) + number(newsAi.lost || 0)} 条通过硬门禁的候选`, "整理标题、摘要、来源、日期、竞对实体和业务上下文", "每条候选独立审核，单条异常隔离，不阻断整批", "形成可追溯的逐条审核输入", "LLM战略相关性判断", newsAi.evidence),
+        lineageProcessStep("构造单条审核上下文", lineageStageStatus(newsAi), `${number(Number(newsAi.value || 0) + Number(newsAi.lost || 0))} 条通过硬门禁的候选`, "整理标题、摘要、来源、日期、竞对实体和业务上下文", "每条候选独立审核，单条异常隔离，不阻断整批", "形成可追溯的逐条审核输入", "LLM战略相关性判断", newsAi.evidence),
         newsStageStep(newsAi, "LLM战略相关性判断", "结合竞对、政策、市场、网络、云与战略影响逐条判定", "必须输出纳入/排除结果与理由，不以模型推断替代来源事实", "历史语义去重"),
         lineageProcessStep("保存审核理由与影响标签", lineageStageStatus(newsAi), `${number(newsAi.value || 0)} 条纳入、${number(newsAi.lost || 0)} 条排除`, "将每条的纳入理由、业务影响和审核状态写入运行归档", "排除候选保留审计轨迹，不进入正式输出", `审核保留 ${number(newsAi.value || 0)} 条`, "历史语义去重", newsAi.evidence),
       ],
