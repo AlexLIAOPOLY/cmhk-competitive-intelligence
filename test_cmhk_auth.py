@@ -92,6 +92,14 @@ class AuthServiceTest(unittest.TestCase):
         self.assertTrue(me.payload()["authenticated"])
         self.assertEqual(me.payload()["user"]["role"], "ADMIN")
 
+    def test_enabling_dev_login_seeds_an_existing_empty_user_store(self):
+        empty_root = Path(self.temp.name) / "existing-empty"
+        with patch.dict(os.environ, {"CMHK_AUTH_ALLOW_DEV_LOGIN": "0"}):
+            disabled = AuthService(empty_root)
+        self.assertEqual(disabled._users(), [])
+        enabled = AuthService(empty_root)
+        self.assertEqual(len(enabled._users()), 5)
+
     def test_admin_can_assign_leader_and_server_enforces_module(self):
         _, admin_session = self.dev_login()
         users = self.service._users()

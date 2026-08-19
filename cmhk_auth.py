@@ -159,9 +159,13 @@ class AuthService:
     def _ensure_state(self) -> None:
         with self.lock:
             self.state_dir.mkdir(parents=True, exist_ok=True)
-            if not self.users_path.exists():
+            users_exist = self.users_path.exists()
+            users = self._read(self.users_path, []) if users_exist else []
+            if not isinstance(users, list):
+                users = []
+            changed = not users_exist
+            if not users_exist:
                 configured = os.environ.get("CMHK_AUTH_USERS_JSON", "").strip()
-                users: list[dict[str, Any]] = []
                 if configured:
                     try:
                         raw_users = json.loads(configured)
@@ -185,14 +189,17 @@ class AuthService:
                             "credential_source": "configured",
                             "created_at": _now_iso(),
                         })
-                if self.allow_dev_login and not users:
-                    dev_users = (
-                        ("local-admin", "本地管理员", "战略部", "ADMIN"),
-                        ("local-leader", "领导测试", "管理层", "LEADER"),
-                        ("local-analyst", "情报分析测试", "战略部", "ANALYST"),
-                        ("local-content", "内容运营测试", "战略部", "CONTENT"),
-                        ("local-operations", "系统运维测试", "信息技术部", "OPERATIONS"),
-                    )
+            if self.allow_dev_login:
+                existing_accounts = {str(item.get("account") or "") for item in users if isinstance(item, dict)}
+                dev_users = (
+                    ("local-admin", "本地管理员", "战略部", "ADMIN"),
+                    ("local-leader", "领导测试", "管理层", "LEADER"),
+                    ("local-analyst", "情报分析测试", "战略部", "ANALYST"),
+                    ("local-content", "内容运营测试", "战略部", "CONTENT"),
+                    ("local-operations", "系统运维测试", "信息技术部", "OPERATIONS"),
+                )
+                missing_dev_users = [item for item in dev_users if item[0] not in existing_accounts]
+                if missing_dev_users:
                     users.extend({
                         "id": account,
                         "account": account,
@@ -204,7 +211,9 @@ class AuthService:
                         "module_overrides": {},
                         "credential_source": "development_seed",
                         "created_at": _now_iso(),
-                    } for account, name, department, role in dev_users)
+                    } for account, name, department, role in missing_dev_users)
+                    changed = True
+            if changed:
                 self._write(self.users_path, users)
             if not self.sessions_path.exists():
                 self._write(self.sessions_path, [])
