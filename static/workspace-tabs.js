@@ -212,7 +212,7 @@
       return;
     }
     if (!comparison.ok) {
-      host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>当前选择不再满足可比条件</strong><p>请重新选择竞对、指标或年限；选择区只会提供至少有 2 个共同披露年的组合。</p></div>`;
+      host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>所选组合暂无可直接比较的数据</strong><p>请重新选择竞对、指标或年限；选择区只会提供至少有 2 个共同披露年的组合。</p></div>`;
       return;
     }
     const visibleYears = comparison.visibleYears;
@@ -239,6 +239,7 @@
         </div>
       </section></div>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
+    bindCompetitorChartTooltip(host);
     requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
   }
 
@@ -323,7 +324,7 @@
   function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
     const width = 960;
     const height = 390;
-    const margin = { top: 26, right: 205, bottom: 42, left: 66 };
+    const margin = { top: 26, right: 24, bottom: 42, left: 66 };
     const values = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)?.value).filter((value) => Number.isFinite(value)));
     let min = Math.min(...values);
     let max = Math.max(...values);
@@ -337,14 +338,6 @@
     const ticks = Array.from({ length: 5 }, (_, index) => max - ((max - min) * index / 4));
     const grid = ticks.map((value) => `<g class="competitor-chart-grid"><line x1="${margin.left}" x2="${width - margin.right}" y1="${y(value).toFixed(1)}" y2="${y(value).toFixed(1)}"></line><text x="${margin.left - 12}" y="${(y(value) + 4).toFixed(1)}">${esc(format(value))}</text></g>`).join("");
     const years = visibleYears.map((year) => `<g class="competitor-chart-year"><line x1="${x(year).toFixed(1)}" x2="${x(year).toFixed(1)}" y1="${height - margin.bottom}" y2="${height - margin.bottom + 5}"></line><text x="${x(year).toFixed(1)}" y="${height - 18}">${esc(year)}</text></g>`).join("");
-    const lastPoints = companies.map((company) => {
-      const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
-      return { company, point: points.at(-1) };
-    }).filter((item) => item.point).sort((a, b) => y(a.point.cell.value) - y(b.point.cell.value));
-    const labelPositions = new Map();
-    lastPoints.forEach((item, index) => labelPositions.set(item.company, Math.max(y(item.point.cell.value), index ? labelPositions.get(lastPoints[index - 1].company) + 16 : margin.top + 4)));
-    const overflow = Math.max(0, (labelPositions.get(lastPoints.at(-1)?.company) || 0) - (height - margin.bottom - 4));
-    if (overflow) lastPoints.forEach((item) => labelPositions.set(item.company, labelPositions.get(item.company) - overflow));
     const series = companies.map((company, index) => {
       const color = COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length];
       const points = visibleYears.map((year) => ({ year, cell: lookup.get(`${company}|${year}`) })).filter((item) => Number.isFinite(item.cell?.value));
@@ -357,14 +350,51 @@
       });
       if (active.length) segments.push(active);
       const paths = segments.filter((segment) => segment.length > 1).map((segment) => `<path d="${segment.map((point, pointIndex) => `${pointIndex ? "L" : "M"}${x(point.year).toFixed(1)},${y(point.cell.value).toFixed(1)}`).join(" ")}" style="--series-color:${color};--series-dash:${["none", "7 4", "2 4", "10 4 2 4", "12 5", "5 3"][index]}"></path>`).join("");
-      const dots = points.map(({ year, cell }) => { const description = `${companyLabel(company)} · ${cell.period || `${year}年`} · ${competitorComparator(cell.comparator)}${format(cell.value)} ${unit} · ${cell.scope || "以官方披露为准"}`; return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}"><circle cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle><title>${esc(description)}</title></g>`; }).join("");
-      const last = points.at(-1);
-      const labelY = labelPositions.get(company);
-      const stopped = last && last.year < visibleYears.at(-1) ? `（止于${last.year}）` : "";
-      const endLabel = last ? `<g class="competitor-chart-end-label"><path d="M${x(last.year).toFixed(1)},${y(last.cell.value).toFixed(1)} L${(width - margin.right + 10).toFixed(1)},${labelY.toFixed(1)}" style="--series-color:${color}"></path><circle cx="${(width - margin.right + 10).toFixed(1)}" cy="${labelY.toFixed(1)}" r="3" style="--series-color:${color}"></circle><text x="${(width - margin.right + 20).toFixed(1)}" y="${(labelY + 4).toFixed(1)}">${esc(`${companyLabel(company)} ${competitorComparator(last.cell.comparator)}${format(last.cell.value)} ${unit}${stopped}`)}</text></g>` : "";
-      return `<g class="competitor-chart-series">${paths}${dots}${endLabel}</g>`;
+      const dots = points.map(({ year, cell }) => {
+        const period = cell.period || `${year}年`;
+        const value = `${competitorComparator(cell.comparator)}${format(cell.value)} ${unit}`;
+        const description = `${companyLabel(company)} · ${period} · ${value} · ${cell.scope || "以官方披露为准"}`;
+        return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}" data-chart-company="${esc(companyLabel(company))}" data-chart-period="${esc(period)}" data-chart-value="${esc(value)}"><circle class="competitor-chart-point-hit" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="13"></circle><circle class="competitor-chart-point-marker" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle></g>`;
+      }).join("");
+      return `<g class="competitor-chart-series">${paths}${dots}</g>`;
     }).join("");
-    return `<figure class="competitor-chart-card"><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><p>注：按各公司披露年度展示；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+    return `<figure class="competitor-chart-card"><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden><strong data-chart-tooltip-company></strong><span data-chart-tooltip-period></span><b data-chart-tooltip-value></b></div><p>注：将鼠标移到数据点可查看具体数值；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+  }
+
+  function bindCompetitorChartTooltip(scope) {
+    const card = scope.querySelector(".competitor-chart-card");
+    const tooltip = card?.querySelector(".competitor-chart-tooltip");
+    if (!card || !tooltip) return;
+    const company = tooltip.querySelector("[data-chart-tooltip-company]");
+    const period = tooltip.querySelector("[data-chart-tooltip-period]");
+    const value = tooltip.querySelector("[data-chart-tooltip-value]");
+    const position = (point, clientX = null) => {
+      const cardRect = card.getBoundingClientRect();
+      const pointRect = point.getBoundingClientRect();
+      const rawLeft = clientX == null ? pointRect.left + pointRect.width / 2 - cardRect.left : clientX - cardRect.left;
+      const halfWidth = Math.max(76, tooltip.offsetWidth / 2);
+      tooltip.style.left = `${Math.min(cardRect.width - halfWidth - 6, Math.max(halfWidth + 6, rawLeft))}px`;
+      tooltip.style.top = `${Math.max(8, pointRect.top - cardRect.top - 10)}px`;
+    };
+    const show = (point, event = null) => {
+      company.textContent = point.dataset.chartCompany || "";
+      period.textContent = point.dataset.chartPeriod || "";
+      value.textContent = point.dataset.chartValue || "";
+      tooltip.hidden = false;
+      position(point, event?.clientX ?? null);
+      point.classList.add("is-active");
+    };
+    const hide = (point) => {
+      tooltip.hidden = true;
+      point?.classList.remove("is-active");
+    };
+    card.querySelectorAll(".competitor-chart-point").forEach((point) => {
+      point.addEventListener("pointerenter", (event) => show(point, event));
+      point.addEventListener("pointermove", (event) => position(point, event.clientX));
+      point.addEventListener("pointerleave", () => hide(point));
+      point.addEventListener("focus", () => show(point));
+      point.addEventListener("blur", () => hide(point));
+    });
   }
 
   function settleCompetitorInsight(card, { mode, insights, status = "" }) {
@@ -1341,17 +1371,49 @@
     const layout = document.querySelector("#workspaceLayout");
     const button = document.querySelector("#workspaceNavCollapse");
     if (!layout || !button) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let motionTimer = 0;
     const apply = (collapsed) => {
       layout.classList.toggle("is-nav-collapsed", collapsed);
       button.setAttribute("aria-expanded", String(!collapsed));
       button.setAttribute("aria-label", collapsed ? "展开项目导航" : "收回项目导航");
       button.title = collapsed ? "展开项目导航" : "收回项目导航";
     };
+    const animateTo = (collapsed) => {
+      if (motionTimer) return;
+      const first = button.getBoundingClientRect();
+      apply(collapsed);
+      if (reducedMotion.matches) return;
+      const last = button.getBoundingClientRect();
+      const offsetX = first.left + first.width / 2 - (last.left + last.width / 2);
+      const offsetY = first.top + first.height / 2 - (last.top + last.height / 2);
+      if (Math.abs(offsetX) < 1 && Math.abs(offsetY) < 1) return;
+      layout.style.setProperty("--workspace-nav-motion-x", `${offsetX}px`);
+      layout.style.setProperty("--workspace-nav-motion-y", `${offsetY - 1}px`);
+      layout.style.setProperty("--workspace-nav-motion-scale", String(first.width / last.width));
+      layout.classList.add("is-nav-positioning");
+      button.setAttribute("aria-busy", "true");
+      button.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        layout.classList.add("is-nav-transitioning");
+        layout.classList.remove("is-nav-positioning");
+      });
+      motionTimer = window.setTimeout(() => {
+        layout.classList.remove("is-nav-transitioning");
+        button.removeAttribute("aria-busy");
+        layout.style.removeProperty("--workspace-nav-motion-x");
+        layout.style.removeProperty("--workspace-nav-motion-y");
+        layout.style.removeProperty("--workspace-nav-motion-scale");
+        motionTimer = 0;
+      }, 540);
+    };
     apply(localStorage.getItem("cmhk-workspace-nav-collapsed") === "1");
     button.addEventListener("click", () => {
       const collapsed = !layout.classList.contains("is-nav-collapsed");
-      apply(collapsed);
-      localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      animateTo(collapsed);
+      if (layout.classList.contains("is-nav-collapsed") === collapsed) {
+        localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      }
     });
   }
 

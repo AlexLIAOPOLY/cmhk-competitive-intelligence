@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const nativeFetch = window.fetch.bind(window);
-  const root = new URL("./", document.baseURI);
+  const root = new URL(document.baseURI.includes("/static/") ? "../" : "./", document.baseURI);
   const snapshotRoutes = new Map([
     ["/api/status", "static-data/status.json"],
     ["/api/company-metrics", "static-data/company-metrics.json"],
@@ -13,6 +13,7 @@
     ["/api/scheduler-overview", "static-data/scheduler-overview.json"],
     ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
     ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
+    ["/api/subscriptions", "static-data/subscriptions.json"],
   ]);
   const lookupRoutes = new Map([
     ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
@@ -82,6 +83,18 @@
       item.setAttribute("aria-hidden", "true");
     });
     document.querySelectorAll(".strategy-ticker-footer a").forEach((item) => item.hidden = true);
+    document.querySelectorAll("#subscriptionAdmin button, #subscriptionAdmin input, #subscriptionAdmin select").forEach((item) => {
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+    });
+    ["weekly", "performance"].forEach((kind) => {
+      const reportPanel = document.querySelector(`[data-workspace-panel="${kind}"]`);
+      const latestReportRow = reportPanel?.querySelector('.workspace-report-host .file-row[data-path]');
+      if (latestReportRow && reportPanel.querySelector('[data-report-preview].is-placeholder') && !reportPanel.dataset.publicAutoPreviewed) {
+        reportPanel.dataset.publicAutoPreviewed = "true";
+        latestReportRow.click();
+      }
+    });
   }
   document.addEventListener("DOMContentLoaded", lockPrivateControls);
   new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });

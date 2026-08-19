@@ -141,7 +141,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T15:15:00+08:00",
       "started_at_hkt": "2026-08-19T15:15:04+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:47:46+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -717,7 +717,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T09:15:00+08:00",
       "started_at_hkt": "2026-08-19T09:15:10+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:47:46+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1088,6 +1088,30 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "已恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-19 03:11:42",
+      "started_at_hkt": "2026-08-19T16:09:38+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:46:46+08:00",
+      "completed_at_hkt": "2026-08-19T17:47:16+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "64db2047f41bc4b249f031f9",
+      "task_id": "incident:64db2047f41bc4b249f031f9",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -1100,8 +1124,8 @@
         "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
       ],
       "occurred_at_hkt": "2026-08-19 03:11:42",
-      "started_at_hkt": "2026-08-19T16:09:38+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
+      "started_at_hkt": "2026-08-19T17:47:46+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:47:46+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -7277,5 +7301,5 @@
       "handled_at_hkt": ""
     }
   ],
-  "total": 303
+  "total": 304
 }
