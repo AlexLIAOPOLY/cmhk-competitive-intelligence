@@ -831,6 +831,96 @@
     return selected.map((line, index) => ({ ...actualEventMeta(line, index), run }));
   }
 
+  function executiveNodeRecords(nodeKey) {
+    const domainKey = nodeKey.replace(/^database-/, "");
+    const domains = state.executiveIntelligence?.domains || [];
+    if (nodeKey === "database-hub") {
+      return domains.flatMap((domain) => String(domain.data_time || "").includes(state.newsSelectedDate) ? [{
+        title: domain.title || domain.id || "未命名数据库",
+        summary: domain.context || domain.insight || "",
+        status: "updated",
+        resultLabel: "已分流更新",
+        reason: `${(domain.entities || []).length} 个对象·${(domain.sources || []).length} 个来源·${(domain.focuses || []).length} 组分析`,
+        extra: (domain.sources || []).map((item) => `${item.label || "来源"}：${item.url || "未记录地址"}`).join("\n"),
+        publishedAt: domain.data_time || "",
+      }] : []);
+    }
+    if (nodeKey.startsWith("database-")) {
+      const domain = domains.find((item) => item.id === domainKey);
+      if (!domain || !String(domain.data_time || "").includes(state.newsSelectedDate)) return [];
+      return (domain.entities || []).map((entity) => ({
+        title: entity.name || "未命名数据对象",
+        summary: entity.analysis || entity.detail || "",
+        source: entity.source_url || "",
+        status: "updated",
+        resultLabel: "已更新",
+        reason: entity.analysis || "已按当天数据库刷新结果入库。",
+        extra: (entity.components || []).map((item) => `${item.label || "明细"}：${item.value ?? "—"}${item.unit || ""}`).join("\n"),
+        publishedAt: domain.data_time || "",
+      }));
+    }
+    if (nodeKey === "insights") {
+      return domains.flatMap((domain) => {
+        if (!String(domain.ai_updated_at || "").startsWith(state.newsSelectedDate)) return [];
+        return (domain.ai_analysis || []).map((item) => ({
+          title: `${item.company || domain.title || "未分类"} · ${item.metric || "AI洞察"}`,
+          summary: item.analysis || "",
+          source: item.source_url || "",
+          status: "included",
+          resultLabel: "已通过",
+          reason: item.basis || item.analysis || "",
+          extra: [`证据层级：${item.source_tier || "未记录"}`, `质量分：${item.quality_score ?? "—"}`, `置信度：${item.confidence ?? "—"}`, `证据指纹：${item.evidence_hash || "未记录"}`].join("\n"),
+          publishedAt: domain.ai_updated_at || "",
+        }));
+      });
+    }
+    return [];
+  }
+
+  function detailedRecordsForNode(nodeKey, relatedRuns) {
+    const detailKey = ({ "news-search": "discoveryItems", "news-ai": "aiReviewItems", "news-dedupe": "dedupeItems", "news-output": "newsItems" })[nodeKey];
+    if (detailKey) {
+      return relatedRuns.flatMap((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return (Array.isArray(detail[detailKey]) ? detail[detailKey] : []).map((item) => ({ ...item, run }));
+      });
+    }
+    if (nodeKey === "database-hub" || nodeKey.startsWith("database-") || nodeKey === "insights") return executiveNodeRecords(nodeKey);
+    if (nodeKey === "consumers") {
+      return relatedRuns.flatMap((run) => {
+        const publish = run.operational_summary?.pages_publish;
+        if (!publish) return [];
+        return [{ title: "主页与公开页发布", summary: publish.status || "", source: publish.public_url || "", status: publish.ok ? "included" : "excluded", resultLabel: publish.ok ? "发布通过" : "发布失败", reason: publish.error || publish.status || "", publishedAt: run.completed_at_hkt || "", run }];
+      });
+    }
+    return [];
+  }
+
+  function detailedRecordStatus(record) {
+    const status = String(record.status || "").toLowerCase();
+    if (record.resultLabel) return record.resultLabel;
+    return ({ included: "AI纳入", excluded: "AI排除", deferred: "延期复审", unrecorded: "未留存决策", duplicate: "历史重复", kept: "去重保留", updated: "已更新" })[status] || "已处理";
+  }
+
+  function renderDetailedRecords(nodeKey, records, relatedRuns = []) {
+    if (!records.length) return "";
+    const included = records.filter((item) => ["included", "kept", "updated"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === true).length;
+    const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : `逐条记录 ${records.length} 条`;
+    const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
+    const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
+    const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
+    return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>当天处理对象明细</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
+      const status = String(record.status || "processed").toLowerCase();
+      const title = record.aiTitle || record.sourceTitle || record.title || "未命名处理对象";
+      const sourceUrl = record.url || (String(record.source || "").startsWith("http") ? record.source : "");
+      const sourceName = String(record.source || "").startsWith("http") ? "原始来源" : record.source || "未记录";
+      const reasonLabel = status === "excluded" ? "AI 排除原因" : status === "duplicate" ? "重复判定依据" : status === "deferred" ? "延期原因" : "处理依据";
+      const runLabel = record.run ? `${newsRunTime(record.run)} · ${record.run.crawl_run_id}` : "当天数据库刷新";
+      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
+    }).join("")}</div></section>`;
+  }
+
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
     const relatedRuns = lineageRunsForNode(nodeKey);
@@ -852,8 +942,9 @@
       content: `${node.label}｜APP ${row.rollingStatus || "未记录"}｜周报 ${row.weeklyStatus || "未记录"}｜同步 ${row.syncStatus || "未记录"}`,
       run: { crawl_run_id: "飞书审核表", scope: `第 ${row.rowNumber} 行` },
     })) : relatedRuns.flatMap((run) => actualEventsForNode(nodeKey, run, state.newsRunDetails[run.crawl_run_id] || {}));
+    const detailedRecords = detailedRecordsForNode(nodeKey, relatedRuns);
     const traceBody = events.length ? `<ol class="news-lineage-process-steps is-actual-trace">${events.map((event, index) => `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><h4>${esc(event.title)}</h4><em class="is-done">${esc(event.time)}</em></div></header><dl><div><dt>所属运行</dt><dd>${esc(event.run.crawl_run_id || "未记录运行ID")} · ${esc(event.run.scope || event.run.trigger || "未记录范围")}</dd></div><div><dt>当天原始处理记录</dt><dd>${esc(event.content)}</dd></div></dl></article></li>`).join("")}</ol>` : `<div class="news-lineage-trace-empty"><strong>${esc(state.newsSelectedDate)} 当天未留下该节点的逐步处理记录</strong><p>这不代表当天没有处理，只表示历史归档没有记到这个粒度。后续定时爬虫的运行日志会自动显示在这里。</p></div>`;
-    const relatedItems = node.result ? (node.reviewRows || []).map((item) => ({ run: relatedRuns[0] || {}, item: { ...item, inclusionReason: item.reason } })) : lineageStageKey(nodeKey) ? newsRuns.flatMap((run) => {
+    const relatedItems = node.result ? (node.reviewRows || []).map((item) => ({ run: relatedRuns[0] || {}, item: { ...item, inclusionReason: item.reason } })) : nodeKey === "news-output" ? newsRuns.flatMap((run) => {
       const detail = state.newsRunDetails[run.crawl_run_id] || {};
       return (Array.isArray(detail.newsItems) ? detail.newsItems : []).map((item) => ({ run, item }));
     }) : [];
@@ -862,6 +953,7 @@
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
+      ${renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
       ${itemDetails}
       ${reviewItemDetails}

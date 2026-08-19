@@ -413,6 +413,91 @@ class ReportFileNameTests(unittest.TestCase):
             [{"label": "收入与需求", "value": 2}, {"label": "网络与运营", "value": 1}],
         )
 
+    def test_strategic_news_items_are_sanitized_from_the_selected_run_archive(self) -> None:
+        run = {
+            "task_kind": "strategic-news",
+            "operational_summary": {"slot": "2026-08-17@15:00"},
+        }
+        with mock.patch.object(
+            web_app,
+            "load_strategic_news_run",
+            return_value={
+                "review_sheet": {
+                    "new_items": [
+                        {
+                            "news_id": "NEWS-1",
+                            "title": "真实新闻",
+                            "summary": "真实摘要",
+                            "category": "行业动态",
+                            "source": "官方来源",
+                            "published_at": "2026-08-17T15:00:00+08:00",
+                            "url": "https://example.com/news",
+                            "inclusion_reason": "影响行业竞争格局",
+                            "business_impact": "竞争格局",
+                        },
+                        {"news_id": "NEWS-2", "title": "危险链接", "url": "javascript:alert(1)"},
+                    ]
+                }
+            },
+        ):
+            items = web_app.strategic_news_items_for_crawl_run(run)
+
+        self.assertEqual(items[0]["title"], "真实新闻")
+        self.assertEqual(items[0]["inclusionReason"], "影响行业竞争格局")
+        self.assertEqual(items[0]["url"], "https://example.com/news")
+        self.assertEqual(items[1]["url"], "")
+
+    def test_strategic_news_process_items_expose_per_item_ai_and_dedupe_reasons(self) -> None:
+        run = {
+            "task_kind": "strategic-news",
+            "operational_summary": {"slot": "2026-08-19@13:30"},
+        }
+        with mock.patch.object(
+            web_app,
+            "load_strategic_news_run",
+            return_value={
+                "news_discovery": {
+                    "items": [
+                        {
+                            "news_id": "NEWS-1",
+                            "title": "原始候选",
+                            "source": "来源A",
+                            "url": "https://example.com/candidate",
+                            "keywords": "HKBN",
+                        }
+                    ]
+                },
+                "review_sheet": {
+                    "ai_review_items": [
+                        {
+                            "news_id": "NEWS-1",
+                            "source_title": "原始候选",
+                            "status": "excluded",
+                            "should_include": False,
+                            "exclusion_code": "关键词偶然出现",
+                            "reason": "HKBN仅在导航中出现。",
+                        }
+                    ],
+                    "semantic_review_items": [
+                        {
+                            "news_id": "NEWS-2",
+                            "title": "同一事件重复报道",
+                            "status": "duplicate",
+                            "duplicate_of": "NEWS-HISTORY",
+                            "reason": "主体、动作和关键数字相同。",
+                        }
+                    ],
+                },
+            },
+        ):
+            result = web_app.strategic_news_process_items_for_crawl_run(run)
+
+        self.assertEqual(result["discoveryItems"][0]["sourceTitle"], "原始候选")
+        self.assertEqual(result["aiReviewItems"][0]["status"], "excluded")
+        self.assertEqual(result["aiReviewItems"][0]["exclusionCode"], "关键词偶然出现")
+        self.assertIn("HKBN", result["aiReviewItems"][0]["reason"])
+        self.assertEqual(result["dedupeItems"][0]["duplicateOf"], "NEWS-HISTORY")
+
     def test_today_news_rounds_compare_morning_and_afternoon_archives(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             runs_dir = Path(tmp)
