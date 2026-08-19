@@ -52,7 +52,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=54', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=56', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=43', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
@@ -81,6 +81,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         ):
             self.assertIn(asset, STYLE)
             self.assertTrue((ROOT / "web" / "static" / "assets" / asset).exists())
+        self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
+        self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
+        self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
+        self.assertIn('/static/subscription-admin.css?v=16', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
