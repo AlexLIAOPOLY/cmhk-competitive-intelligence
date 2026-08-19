@@ -188,6 +188,25 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(paused["status"], "subscription_paused")
         self.assertEqual(self.service.list_summary()["active_subscriber_count"], 0)
 
+    def test_real_card_single_select_arrays_are_accepted(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        result = self.service.handle_card_event({
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "event_id": "event-card-array-values",
+            "operator_id": "ou_callback123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+            "form_value": json.dumps({
+                "services": ["weekly", "news"],
+                "report_mode": ["pdf_audio"],
+                "news_frequency": ["twice_daily"],
+            }),
+        })
+        self.assertEqual(result["status"], "subscription_saved")
+        self.assertEqual(result["frequency"], "twice_daily")
+        self.assertEqual(result["report_mode"], "pdf_audio")
+
     def test_unpublished_subscription_card_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "受控卡片"):
             self.service.handle_card_event({

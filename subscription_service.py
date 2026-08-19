@@ -64,6 +64,15 @@ def _normalize_news_frequency(value: str) -> str:
     return LEGACY_FREQUENCY_MAP.get(raw, raw)
 
 
+def _card_form_scalar(value: Any) -> str:
+    """Normalize Card 2.0 single-select values from real callback payloads."""
+    if isinstance(value, (list, tuple)):
+        return _card_form_scalar(value[0]) if len(value) == 1 else ""
+    if isinstance(value, dict):
+        return _card_form_scalar(value.get("value"))
+    return str(value or "").strip()
+
+
 def _normalize_strategic_scan_times(value: Any) -> list[str]:
     values = value if isinstance(value, (list, tuple)) else str(value or "").split(",")
     normalized: list[str] = []
@@ -693,7 +702,7 @@ class SubscriptionService:
             if not isinstance(selected, list):
                 raise ValueError("订阅服务选择格式无效")
             services = [str(item) for item in selected]
-            delivery_plan = str(form.get("delivery_plan") or "")
+            delivery_plan = _card_form_scalar(form.get("delivery_plan"))
             if delivery_plan:
                 plan_match = re.fullmatch(r"(immediate|daily|weekly|once_daily|twice_daily)_(pdf_audio|pdf|audio)", delivery_plan)
                 if not plan_match:
@@ -701,8 +710,10 @@ class SubscriptionService:
                 frequency, report_mode = plan_match.groups()
                 frequency = _normalize_news_frequency(frequency)
             else:
-                frequency = _normalize_news_frequency(str(form.get("news_frequency") or form.get("frequency") or ""))
-                report_mode = str(form.get("report_mode") or "pdf")
+                frequency = _normalize_news_frequency(
+                    _card_form_scalar(form.get("news_frequency") or form.get("frequency"))
+                )
+                report_mode = _card_form_scalar(form.get("report_mode")) or "pdf"
             if frequency not in VALID_FREQUENCIES:
                 raise ValueError("请选择有效的接收频率")
             if report_mode not in VALID_REPORT_MODES:
