@@ -47,6 +47,16 @@ class CompetitorChartShellTests(unittest.TestCase):
         self.assertNotIn("background:", declarations)
         self.assertNotIn("border-radius:", declarations)
 
+    def test_points_show_an_interactive_tooltip_and_end_labels_are_removed(self):
+        self.assertIn('class="competitor-chart-tooltip"', SCRIPT)
+        self.assertIn("bindCompetitorChartTooltip(host)", SCRIPT)
+        self.assertIn('point.addEventListener("pointerenter"', SCRIPT)
+        self.assertIn('point.addEventListener("focus"', SCRIPT)
+        self.assertIn('data-chart-value=', SCRIPT)
+        self.assertNotIn('class="competitor-chart-end-label"', SCRIPT)
+        self.assertIn("right: 24", SCRIPT)
+        self.assertIn(".competitor-chart-tooltip[hidden]", STYLE)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -389,7 +389,7 @@
 @keyframes competitor-insight-pulse { 0%,100% { box-shadow: 0 0 0 rgba(82,181,201,0); } 50% { box-shadow: 0 0 0 7px rgba(82,181,201,.08),0 0 22px rgba(82,181,201,.22); } }
 @keyframes competitor-insight-dots { 0% { clip-path: inset(0 100% 0 0); } 100% { clip-path: inset(0 0 0 0); } }
 @keyframes competitor-option-appear { from { max-width: 0; opacity: 0; transform: scale(.78); } to { max-width: 220px; opacity: 1; transform: scale(1); } }
-.competitor-chart-card { display: flex; min-width: 0; margin: 0; padding: 10px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.competitor-chart-card { position: relative; display: flex; min-width: 0; margin: 0; padding: 10px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .competitor-chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px 13px; }
 .competitor-chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: #a9c1c9 !important; white-space: nowrap; }
 .competitor-chart-legend i { width: 15px; height: 2px; border-radius: 999px; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb,var(--series-color) 55%,transparent); }
@@ -400,13 +400,17 @@
 .competitor-chart-year line { stroke: #527483; stroke-width: 1; }
 .competitor-chart-year text { fill: #7697a3; font-size: 10px; text-anchor: middle; }
 .competitor-chart-series > path { fill: none; stroke: var(--series-color); stroke-width: 2.4; stroke-dasharray: var(--series-dash); stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.competitor-chart-point circle { fill: #071d28; stroke: var(--series-color); stroke-width: 2.2; vector-effect: non-scaling-stroke; }
-.competitor-chart-point.is-bound circle { fill: color-mix(in srgb,var(--series-color) 30%,#071d28); stroke-dasharray: 2 1; }
+.competitor-chart-point { cursor: crosshair; }
+.competitor-chart-point-hit { fill: transparent; stroke: none; pointer-events: all; }
+.competitor-chart-point-marker { fill: #071d28; stroke: var(--series-color); stroke-width: 2.2; transform-box: fill-box; transform-origin: center; transition: fill .14s ease,stroke .14s ease,transform .14s ease; vector-effect: non-scaling-stroke; }
+.competitor-chart-point.is-bound .competitor-chart-point-marker { fill: color-mix(in srgb,var(--series-color) 30%,#071d28); stroke-dasharray: 2 1; }
 .competitor-chart-point:focus { outline: none; }
-.competitor-chart-point:focus circle { fill: var(--series-color); stroke: #eaf9fb; stroke-width: 3; }
-.competitor-chart-end-label path { fill: none; stroke: var(--series-color); stroke-width: 1; stroke-dasharray: 2 3; opacity: .65; vector-effect: non-scaling-stroke; }
-.competitor-chart-end-label circle { fill: var(--series-color); }
-.competitor-chart-end-label text { fill: #b9d0d6; font-size: 10px; font-weight: 700; }
+.competitor-chart-point:is(:hover,:focus,.is-active) .competitor-chart-point-marker { fill: var(--series-color); stroke: #eaf9fb; stroke-width: 3; transform: scale(1.35); }
+.competitor-chart-tooltip { position: absolute; z-index: 8; display: grid; min-width: 152px; padding: 10px 12px; gap: 3px; border: 1px solid rgba(110,213,223,.58); border-radius: 8px; color: #dff4f6; background: rgba(4,22,31,.96); box-shadow: 0 10px 28px rgba(0,8,14,.45),inset 0 1px rgba(222,255,255,.08); pointer-events: none; transform: translate(-50%,-100%); backdrop-filter: blur(10px); }
+.competitor-chart-tooltip[hidden] { display: none; }
+.competitor-chart-tooltip strong { color: #b8d0d7; font-size: 10px; font-weight: 650; }
+.competitor-chart-tooltip span { color: #789da8; font-size: 9px; }
+.competitor-chart-tooltip b { margin-top: 2px; color: #f0fbfc; font-size: 15px; line-height: 1.2; }
 .competitor-chart-card > p { margin: 6px 2px 0; color: #7598a5; font-size: 9px; line-height: 1.5; }
 .competitor-data-details { width: min(calc(100% - 28px),1600px); margin: 0 auto 14px; border: 1px solid rgba(66,103,118,.5); border-radius: 9px; background: rgba(8,29,40,.7); overflow: hidden; }
 .competitor-data-details summary { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 13px; cursor: pointer; color: #b8d0d7; font-size: 10px; list-style: none; }
