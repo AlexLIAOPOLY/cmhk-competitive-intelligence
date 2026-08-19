@@ -25,6 +25,13 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_static_javascript_paths_include_template_literals(self):
+        source = 'const pdf = `/static/report-previews/${key}.pdf`;'
+        self.assertEqual(
+            publisher._rewrite_root_javascript(source),
+            'const pdf = `./static/report-previews/${key}.pdf`;',
+        )
+
     def test_intelligence_snapshot_removes_runtime_source_metadata(self):
         source = INTELLIGENCE_BUILDER_PATH.read_text(encoding="utf-8")
         self.assertIn("delete value.intelligence_source_url", source)
@@ -409,7 +416,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('data-workspace-tab="dashboard"', html)
             self.assertIn('data-workspace-tab="monitoring"', html)
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
-            self.assertIn('src="./static/public-snapshot-bootstrap.js?v=2"', html)
+            self.assertIn('src="./static/public-snapshot-bootstrap.js?v=4"', html)
+            self.assertIn('src="./static/workspace-tabs.js?v=public-4"', html)
             self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
             self.assertIn("公开网页是只读快照", bootstrap)
             self.assertIn('"/api/scheduler-overview"', bootstrap)

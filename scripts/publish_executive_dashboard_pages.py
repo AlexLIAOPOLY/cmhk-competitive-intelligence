@@ -576,7 +576,11 @@ def _rewrite_static_css(source: str) -> str:
 
 
 def _rewrite_root_javascript(source: str) -> str:
-    return source.replace('"/static/', '"./static/').replace("'/static/", "'./static/")
+    return (
+        source.replace('"/static/', '"./static/')
+        .replace("'/static/", "'./static/")
+        .replace("`/static/", "`./static/")
+    )
 
 
 def _readonly_module_html() -> str:
@@ -602,13 +606,18 @@ def _build_site(
     html = html.replace('src="/executive-dashboard-demo.html', 'src="./executive-dashboard-demo.html')
     html = html.replace('class="brand-mark" href="/"', 'class="brand-mark" href="./"')
     html = re.sub(
+        r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
+        'src="./static/workspace-tabs.js?v=public-4"',
+        html,
+    )
+    html = re.sub(
         r'<a href="https://cmhk-try\.feishu\.cn/sheets/[^\"]+"[^>]*>\s*监测规则\s*</a>',
         '<span class="public-snapshot-label">公开快照</span>',
         html,
     )
     html = html.replace(
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-        '    <script src="./static/public-snapshot-bootstrap.js?v=2"></script>\n'
+        '    <script src="./static/public-snapshot-bootstrap.js?v=4"></script>\n'
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
     )
     html = html.replace(
@@ -652,7 +661,7 @@ def _build_site(
     )
     subscription_html = subscription_html.replace(
         '  <script src="./subscription-admin.js?v=16"></script>',
-        '  <script src="./public-snapshot-bootstrap.js?v=3"></script>\n'
+        '  <script src="./public-snapshot-bootstrap.js?v=4"></script>\n'
         '  <script src="./subscription-admin.js?v=16"></script>',
     )
     (static_destination / "subscription-admin.html").write_text(subscription_html, encoding="utf-8")
