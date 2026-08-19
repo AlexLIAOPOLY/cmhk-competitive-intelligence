@@ -53,7 +53,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
         self.assertIn('/static/workspace-tabs.css?v=69', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=60', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=61', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -355,7 +355,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(".news-lineage.is-global .news-lineage-node.is-compact", STYLE)
         for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-macro", "is-insight", "is-delivery"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.{variant}", STYLE)
-        self.assertIn('feedbackLabel: "历史记忆影响下一轮"', SCRIPT)
+        self.assertIn('feedbackLabel: "历史记录用于下一轮去重"', SCRIPT)
+        self.assertNotIn("历史记忆影响下一轮", SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)
         for key in ("strategic", "news-search", "news-ai", "news-dedupe", "news-output", "main", "agent", "insights", "consumers"):
