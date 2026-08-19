@@ -3991,6 +3991,13 @@ class AppHandler(BaseHTTPRequestHandler):
                         "query": str(payload.get("query") or ""),
                         "people": service.search_people_directory(str(payload.get("query") or "")),
                     }
+                elif action == "searchDirectory":
+                    query = str(payload.get("query") or "")
+                    result = {
+                        "query": query,
+                        "people": service.search_people_directory(query),
+                        "chats": service.search_chat_directory(query),
+                    }
                 elif action == "addCandidates":
                     ids = payload.get("directoryOpenIds") if isinstance(payload.get("directoryOpenIds"), list) else []
                     result = service.add_directory_candidates(ids)

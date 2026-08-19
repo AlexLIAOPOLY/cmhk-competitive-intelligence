@@ -29,6 +29,14 @@ class FakeLark:
                 "name": "测试用户", "en_name": "测试用户 Test User", "job_title": "经理",
                 "avatar": {"avatar_72": "https://example.test/avatar.png"},
             }]}}
+        elif "api" in argv and "/open-apis/im/v1/chats" in argv:
+            payload = {"ok": True, "data": {"has_more": False, "items": [{
+                "chat_id": "oc_strategy123", "name": "战略情报群", "description": "每日竞对资讯",
+                "chat_mode": "group", "chat_status": "normal", "external": False,
+            }, {
+                "chat_id": "oc_archived123", "name": "战略旧群", "description": "",
+                "chat_mode": "group", "chat_status": "stopped", "external": False,
+            }]}}
         elif "+get-user" in argv:
             if "union_id" in argv:
                 payload = {"ok": True, "data": {"user": {
@@ -196,6 +204,12 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(added["added_count"], 1)
         self.assertEqual(added["candidates"][0]["display_name"], "测试用户")
 
+    def test_chat_search_returns_only_visible_normal_group_matches(self):
+        results = self.service.search_chat_directory("战略")
+        self.assertEqual([item["name"] for item in results], ["战略情报群"])
+        self.assertEqual(results[0]["chat_id"], "oc_strategy123")
+        self.assertEqual(self.service.search_chat_directory("不存在"), [])
+
     def test_invite_is_selected_only_and_callback_updates_result(self):
         self.service.refresh_people_directory()
         self.service.add_directory_candidates(["ou_delivery123"])
@@ -282,7 +296,13 @@ class SubscriptionServiceTests(unittest.TestCase):
             test_open_id="ou_test123",
         )
         self.assertEqual(result["verified_count"], 1)
-        self.assertTrue(any("--file" in call and str(pdf.relative_to(self.root)) in call for call in self.lark.calls))
+        send_call = next(call for call in self.lark.calls if "--file" in call)
+        self.assertEqual(
+            send_call[send_call.index("--file") + 1],
+            "var/subscriptions/outbound/CMHK_战略双周报_测试周报.pdf",
+        )
+        named_pdf = self.root / "var" / "subscriptions" / "outbound" / "CMHK_战略双周报_测试周报.pdf"
+        self.assertEqual(named_pdf.read_bytes(), pdf.read_bytes())
 
     def test_reports_reject_non_pdf_delivery_modes(self):
         report = self.root / "测试周报.docx"
@@ -311,6 +331,14 @@ class SubscriptionServiceTests(unittest.TestCase):
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertIn("--file", sends[0])
         self.assertIn("--audio", sends[1])
+        self.assertEqual(
+            sends[0][sends[0].index("--file") + 1],
+            "var/subscriptions/outbound/CMHK_战略双周报_语音周报.pdf",
+        )
+        self.assertEqual(
+            sends[1][sends[1].index("--audio") + 1],
+            "var/subscriptions/outbound/CMHK_战略双周报_语音周报_音频.opus",
+        )
 
     def test_bulk_report_audio_respects_each_subscriber_preference(self):
         from report_pdf_preview import pdf_preview_path

@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import subprocess
 import zipfile
@@ -938,6 +939,57 @@ class SubscriptionService:
             ).fetchall()
         return [dict(row) | {"department_names": json.loads(row["department_names"] or "[]")} for row in rows]
 
+    def search_chat_directory(self, query: str, *, limit: int = 30) -> list[dict[str, Any]]:
+        """Search normal group chats visible to the delivery bot."""
+        needle = str(query or "").strip()
+        if not needle or len(needle) > 50:
+            raise ValueError("请输入 1 至 50 个字符的检索关键字")
+        needle_folded = needle.casefold()
+        matches: list[dict[str, Any]] = []
+        page_token = ""
+        for _ in range(20):
+            params: dict[str, Any] = {"page_size": 100}
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._lark([
+                "lark-cli", "api", "GET", "/open-apis/im/v1/chats",
+                "--params", json.dumps(params, ensure_ascii=False),
+                "--as", "bot", "--profile", self.delivery_profile, "--format", "json",
+            ], timeout=60)
+            data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+            for item in data.get("items") or []:
+                if not isinstance(item, dict):
+                    continue
+                chat_id = str(item.get("chat_id") or "")
+                name = str(item.get("name") or "").strip()[:160]
+                description = str(item.get("description") or "").strip()[:300]
+                if (
+                    not CHAT_ID_RE.fullmatch(chat_id)
+                    or str(item.get("chat_mode") or "") != "group"
+                    or str(item.get("chat_status") or "") != "normal"
+                    or not name
+                    or needle_folded not in f"{name}\n{description}".casefold()
+                ):
+                    continue
+                matches.append({
+                    "chat_id": chat_id,
+                    "name": name,
+                    "description": description,
+                    "external": bool(item.get("external")),
+                })
+            if len(matches) >= limit or not data.get("has_more"):
+                break
+            page_token = str(data.get("page_token") or "")
+            if not page_token:
+                break
+        return sorted(
+            matches,
+            key=lambda item: (
+                not str(item["name"]).casefold().startswith(needle_folded),
+                str(item["name"]).casefold(),
+            ),
+        )[:max(1, min(int(limit), 50))]
+
     def avatar_source_url(self, open_id: str) -> str:
         if not OPEN_ID_RE.fullmatch(str(open_id)):
             raise ValueError("飞书头像身份无效")
@@ -1325,6 +1377,39 @@ class SubscriptionService:
         ], timeout=180)
         return self._message_id(payload)
 
+    def _delivery_filename(self, report_path: Path, service: str, media_type: str) -> str:
+        """Return the human-readable filename recipients see in Feishu."""
+        service_label = SERVICE_LABELS.get(service, "战略情报")
+        report_stem = re.sub(r"[\\/:*?\"<>|\x00-\x1f]+", "_", report_path.stem).strip(" ._")
+        report_stem = report_stem or "正式报告"
+        prefix = f"CMHK_{service_label}_"
+        if report_stem.startswith((service_label, f"CMHK_{service_label}")):
+            prefix = "CMHK_" if not report_stem.startswith("CMHK_") else ""
+        suffix = ".pdf" if media_type == "pdf" else "_音频.opus"
+        max_stem_length = max(12, 120 - len(prefix) - len(suffix))
+        return f"{prefix}{report_stem[:max_stem_length]}{suffix}"
+
+    def _named_delivery_copy(
+        self,
+        source_path: Path,
+        report_path: Path,
+        service: str,
+        media_type: str,
+    ) -> Path:
+        """Stage a named copy without renaming the source report or cached media."""
+        outbound_dir = self.runtime_root / "var" / "subscriptions" / "outbound"
+        outbound_dir.mkdir(parents=True, exist_ok=True)
+        target = outbound_dir / self._delivery_filename(report_path, service, media_type)
+        if (
+            not target.exists()
+            or target.stat().st_size != source_path.stat().st_size
+            or target.stat().st_mtime_ns < source_path.stat().st_mtime_ns
+        ):
+            pending = target.with_name(f".{target.name}.tmp")
+            shutil.copy2(source_path, pending)
+            pending.replace(target)
+        return target
+
     def _verify_message(self, message_id: str, *, profile: str = "") -> None:
         payload = self._lark([
             "lark-cli", "im", "+messages-mget", "--message-ids", message_id,
@@ -1462,6 +1547,7 @@ class SubscriptionService:
                     ))
         if mode in {"pdf", "pdf_audio"}:
             pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
+            pdf = self._named_delivery_copy(pdf, report_path, service, "pdf")  # type: ignore[arg-type]
             message_ids.append(self._send_file(
                 open_id,
                 pdf,
@@ -1470,6 +1556,7 @@ class SubscriptionService:
             ))
         if mode in {"audio", "both", "pdf_audio"}:
             audio = self._find_audio(report_path)  # type: ignore[arg-type]
+            audio = self._named_delivery_copy(audio, report_path, service, "audio")  # type: ignore[arg-type]
             message_ids.append(self._send_audio(
                 open_id,
                 audio,
