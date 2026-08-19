@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=51', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=40', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=54', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=43', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -286,24 +286,28 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "全局调度",
+            "每日全景",
             "本轮线索",
-            "所有定期爬虫如何共同工作",
-            "03:00 主爬虫",
-            "Agent 证据审核",
-            "四库更新",
+            "每一天，情报这样产生",
+            "定时扫描",
+            "发现与审核",
+            "更新四库",
             "本地运营商",
             "内地电讯企业",
             "全球云厂商",
             "香港电讯市场",
-            "17项AI洞察",
+            "形成业务洞察",
             "主页 · 小竞AI · 公开页",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn("frequency_counts", SCRIPT)
         self.assertIn("source_groups", SCRIPT)
         self.assertIn("data-news-lineage-mode", SCRIPT)
-        self.assertIn("news-lineage-group", STYLE)
+        self.assertIn("news-lineage-node-rows", STYLE)
+        self.assertIn('feedbackLabel: "新线索影响下一轮扫描"', SCRIPT)
+        self.assertIn("newsLineageStageIcon", SCRIPT)
+        for key in ("scan", "review", "databases", "business"):
+            self.assertIn(f'key: "{key}"', SCRIPT)
 
 
 if __name__ == "__main__":
