@@ -721,7 +721,7 @@
       const sy = source.y + source.h / 2;
       const tx = target.x;
       const ty = target.y + target.h / 2;
-      const railX = target.x - 12;
+      const railX = target.x - 8;
       return `M ${sx} ${sy} H ${railX} V ${ty} H ${tx}`;
     }
     if (kind === "merge") {
@@ -729,7 +729,7 @@
       const sy = source.y + source.h / 2;
       const tx = target.x;
       const ty = target.y + target.h / 2;
-      const railX = source.x + source.w + (source.x < 800 ? 10 : 28);
+      const railX = source.x + source.w + 8;
       return `M ${sx} ${sy} H ${railX} V ${ty} H ${tx}`;
     }
     const forward = target.x >= source.x;
@@ -737,7 +737,8 @@
     const sy = source.y + source.h / 2;
     const tx = forward ? target.x : target.x + target.w;
     const ty = target.y + target.h / 2;
-    const bend = Math.max(48, Math.abs(tx - sx) * .44);
+    const gap = Math.abs(tx - sx);
+    const bend = Math.min(Math.max(20, gap * .44), gap / 2);
     return `M ${sx} ${sy} C ${sx + (forward ? bend : -bend)} ${sy}, ${tx - (forward ? bend : -bend)} ${ty}, ${tx} ${ty}`;
   }
 
