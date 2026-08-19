@@ -636,7 +636,7 @@
     "people_count": 2026,
     "synced_at": "2026-08-18T19:30:31+08:00",
     "console_url": "https://open.feishu.cn/app/cli_a9575e70ae799cb2/permission",
-    "updated_at": "2026-08-19T18:15:09+08:00"
+    "updated_at": "2026-08-19T18:22:34+08:00"
   },
   "active_subscriber_count": 2,
   "report_schedule": {
@@ -671,7 +671,7 @@
     "dispatch_rule": "爬虫完成审核后推送",
     "updated_at": "2026-08-19T14:32:24+08:00"
   },
-  "updated_at": "2026-08-19T18:15:09+08:00",
+  "updated_at": "2026-08-19T18:22:34+08:00",
   "targets": [
     {
       "chat_id": "oc_22bf3c7febc4bab295fedfb0b8e6c176",
