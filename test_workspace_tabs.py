@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=65', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=53', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=66', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=54', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -296,6 +296,12 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("is-item-details", SCRIPT)
         self.assertIn("is-run-history", SCRIPT)
         self.assertIn("grid-auto-rows: max-content", STYLE)
+        self.assertIn("完整处理流程", SCRIPT)
+        self.assertIn("规则／门禁", SCRIPT)
+        self.assertIn("当天证据／执行依据", SCRIPT)
+        self.assertIn("lineageProcessStep", SCRIPT)
+        self.assertIn("processSteps = processByNode", SCRIPT)
+        self.assertIn(".news-lineage-process-steps", STYLE)
 
     def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
