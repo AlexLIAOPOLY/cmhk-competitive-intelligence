@@ -53,6 +53,68 @@ class DashboardPagesPublishTests(unittest.TestCase):
             "https://example.github.io/project/strategic-briefs.json",
         )
 
+    def test_public_run_snapshots_keep_ui_evidence_without_internal_paths(self):
+        run = publisher._public_crawl_run(
+            {
+                "crawl_run_id": "run-1",
+                "task_kind": "strategic-news",
+                "run_status": "completed",
+                "progress_detail": "审核完成",
+                "local_files": ["/Users/example/private.log"],
+                "stream_log": "/Users/example/stream.log",
+                "backend_pid": 123,
+                "operational_summary": {"pages_publish": {"ok": True}},
+            }
+        )
+        self.assertEqual(run["crawl_run_id"], "run-1")
+        self.assertEqual(run["progress_detail"], "审核完成")
+        self.assertNotIn("local_files", run)
+        self.assertNotIn("stream_log", run)
+        self.assertNotIn("backend_pid", run)
+
+        detail = publisher._public_crawl_run_detail(
+            {
+                "ok": True,
+                "run": {"crawl_run_id": "run-1", "local_files": ["private"]},
+                "raw": "private raw log",
+                "content": "private content",
+                "newsItems": [{"title": "公开新闻", "source_url": "https://example.com/news"}],
+            }
+        )
+        self.assertNotIn("raw", detail)
+        self.assertNotIn("content", detail)
+        self.assertEqual(detail["newsItems"][0]["title"], "公开新闻")
+
+        output = publisher._public_report_output(
+            {
+                "name": "8月19日周报.docx",
+                "path_str": "/Users/example/private.docx",
+                "url": "/api/report-file?path=private",
+                "reportType": "weekly",
+                "size": 1024,
+            }
+        )
+        self.assertEqual(output["name"], "8月19日周报.docx")
+        self.assertEqual(output["url"], "")
+        self.assertNotIn("path_str", output)
+
+    def test_public_review_snapshot_is_read_only_and_drops_sheet_identity(self):
+        snapshot = publisher._public_news_review_sheet(
+            {
+                "sheetId": "secret-sheet",
+                "sheetUrl": "https://cmhk-try.feishu.cn/sheets/secret",
+                "sheetTitle": "滚动新闻候选池",
+                "headers": ["新闻标题（AI）", "原文链接"],
+                "editableColumns": [0, 1],
+                "rows": [{"rowNumber": 1, "values": ["标题", "https://example.com"]}],
+            }
+        )
+        self.assertTrue(snapshot["readOnly"])
+        self.assertEqual(snapshot["editableColumns"], [])
+        self.assertNotIn("sheetId", snapshot)
+        self.assertNotIn("sheetUrl", snapshot)
+        self.assertEqual(len(snapshot["rows"]), 1)
+
     def test_fresh_intelligence_snapshot_is_built_from_local_runtime(self):
         with tempfile.TemporaryDirectory() as temp:
             destination = Path(temp) / "intelligence"
@@ -346,9 +408,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('data-workspace-tab="dashboard"', html)
             self.assertIn('data-workspace-tab="monitoring"', html)
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
-            self.assertIn('src="./static/public-snapshot-bootstrap.js"', html)
+            self.assertIn('src="./static/public-snapshot-bootstrap.js?v=2"', html)
             self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
             self.assertIn("公开网页是只读快照", bootstrap)
+            self.assertIn('"/api/scheduler-overview"', bootstrap)
+            self.assertIn('"/api/news-review-sheet"', bootstrap)
+            self.assertIn('"/api/weekly-report-preview"', bootstrap)
+            self.assertIn('"/api/crawl-run-log"', bootstrap)
             self.assertTrue((destination / "static" / "app.js").is_file())
             self.assertTrue((destination / "static" / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertTrue((destination / "static-data" / "executive-intelligence.json").is_file())

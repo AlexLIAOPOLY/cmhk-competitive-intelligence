@@ -53,6 +53,13 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     ["/api/project-incidents", "static-data/project-incidents.json"],
     ["/api/crawl-runs", "static-data/crawl-runs.json"],
     ["/api/task-runs", "static-data/task-runs.json"],
+    ["/api/scheduler-overview", "static-data/scheduler-overview.json"],
+    ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
+    ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
+  ]);
+  const lookupRoutes = new Map([
+    ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
+    ["/api/task-run-log", ["static-data/task-run-details.json", "details"]],
   ]);
   const inlineRoutes = new Map([
     ["/api/agent-datasets", { ok: true, datasets: [] }],
@@ -63,14 +70,27 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     ["/api/ai-models", { ok: true, models: [] }],
     ["/api/chat-starters", { ok: true, starters: [] }],
     ["/api/chat-threads", { ok: true, threads: [] }],
-    ["/api/news-review-sheet", { ok: true, records: [], columns: [], feishu_url: "" }],
   ]);
+  const snapshotCache = new Map();
 
   function jsonResponse(payload, status = 200) {
     return new Response(JSON.stringify(payload), {
       status,
       headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
+  }
+
+  async function lookupSnapshot(route, requestUrl) {
+    const [relative, collectionKey] = lookupRoutes.get(route);
+    if (!snapshotCache.has(relative)) {
+      snapshotCache.set(relative, nativeFetch(new URL(relative, root), { cache: "no-store" }).then((response) => response.json()));
+    }
+    const payload = await snapshotCache.get(relative);
+    const id = requestUrl.searchParams.get("id") || "";
+    const item = payload?.[collectionKey]?.[id];
+    return item
+      ? jsonResponse(item)
+      : jsonResponse({ ok: false, error: "该历史记录未包含在公开快照中。" }, 404);
   }
 
   window.CMHK_PUBLIC_SNAPSHOT = Object.freeze({ readOnly: true });
@@ -86,6 +106,7 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     if (method === "GET" && snapshotRoutes.has(route)) {
       return nativeFetch(new URL(snapshotRoutes.get(route), root), { cache: "no-store" });
     }
+    if (method === "GET" && lookupRoutes.has(route)) return lookupSnapshot(route, requestUrl);
     if (inlineRoutes.has(route) && (method === "GET" || route === "/api/ai-models")) {
       return Promise.resolve(jsonResponse(inlineRoutes.get(route)));
     }
@@ -320,9 +341,61 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
             "settings": _scrub_public_value(live_status.get("settings") or {}),
             "tasks": {"runningCount": 0, "hasRunning": False},
             "latestOutputText": str(live_status.get("latestOutputText") or ""),
-            "outputs": [],
+            "outputs": [
+                _public_report_output(item)
+                for item in (live_status.get("outputs") or [])
+                if isinstance(item, dict)
+            ],
         },
     }
+    all_crawl_runs_payload = _fetch_local_json(source_url, "/api/crawl-runs?limit=500")
+    public_crawl_runs = [
+        _public_crawl_run(item)
+        for item in (all_crawl_runs_payload.get("runs") or [])
+        if isinstance(item, dict)
+    ]
+    strategic_runs = [item for item in public_crawl_runs if item.get("task_kind") == "strategic-news"]
+    detail_limit = max(1, min(int(os.environ.get("CMHK_PUBLIC_NEWS_RUN_DETAIL_LIMIT", "64")), 120))
+    crawl_run_details: dict[str, Any] = {}
+    news_run_items: dict[str, Any] = {}
+    for run in strategic_runs[:detail_limit]:
+        run_id = str(run.get("crawl_run_id") or "")
+        if not run_id:
+            continue
+        try:
+            detail = _fetch_local_json(source_url, f"/api/crawl-run-log?id={run_id}")
+        except Exception:
+            continue
+        public_detail = _public_crawl_run_detail(detail)
+        crawl_run_details[run_id] = public_detail
+        if public_detail.get("newsItems"):
+            news_run_items[run_id] = public_detail["newsItems"]
+
+    task_runs_payload = _fetch_local_json(source_url, "/api/task-runs?limit=80")
+    public_task_runs = [
+        _public_task_run(item)
+        for item in (task_runs_payload.get("tasks") or [])
+        if isinstance(item, dict)
+    ]
+    task_run_details = {
+        str(item.get("task_id") or item.get("task_run_id")): {
+            "ok": True,
+            "run": item,
+            "content": "公开快照仅保留任务摘要；内部运行日志未公开。",
+        }
+        for item in public_task_runs
+        if item.get("task_id") or item.get("task_run_id")
+    }
+    review_sheet = _public_news_review_sheet(
+        _fetch_local_json(source_url, "/api/news-review-sheet")
+    )
+    incidents_payload = _fetch_local_json(source_url, "/api/project-incidents?limit=500")
+    public_incidents = [
+        _public_incident(item)
+        for item in (incidents_payload.get("incidents") or [])
+        if isinstance(item, dict)
+    ]
+
     return {
         "status.json": public_status,
         "company-metrics.json": _scrub_public_value(
@@ -331,10 +404,89 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         "executive-intelligence.json": _scrub_public_value(
             _fetch_local_json(source_url, "/api/executive-intelligence")
         ),
-        "project-incidents.json": {"ok": True, "incidents": [], "total": 0},
-        "crawl-runs.json": {"ok": True, "runs": [], "total": 0, "truncated": False},
-        "task-runs.json": {"ok": True, "tasks": []},
+        "project-incidents.json": {"ok": True, "incidents": public_incidents, "total": len(public_incidents)},
+        "crawl-runs.json": {"ok": True, "runs": public_crawl_runs, "total": len(public_crawl_runs), "truncated": False},
+        "crawl-run-details.json": {"ok": True, "details": crawl_run_details},
+        "task-runs.json": {"ok": True, "tasks": public_task_runs},
+        "task-run-details.json": {"ok": True, "details": task_run_details},
+        "scheduler-overview.json": _scrub_public_value(
+            _fetch_local_json(source_url, "/api/scheduler-overview")
+        ),
+        "news-review-sheet.json": review_sheet,
+        "weekly-report-preview.json": _scrub_public_value(
+            _fetch_local_json(source_url, "/api/weekly-report-preview")
+        ),
+        "news-run-items.json": news_run_items,
         "strategic-briefs.json": public_briefs,
+    }
+
+
+def _public_crawl_run(item: dict[str, Any]) -> dict[str, Any]:
+    allowed = (
+        "crawl_run_id", "trigger", "scope", "task_kind", "run_status", "phase",
+        "progress_detail", "status_detail", "failure_stage", "heartbeat_at_hkt",
+        "started_at_hkt", "completed_at_hkt", "crawl_return_code", "duration_ms",
+        "final_audit", "curation", "operational_summary",
+    )
+    return _scrub_public_value({key: item.get(key) for key in allowed})
+
+
+def _public_report_output(item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "name": str(item.get("name") or "未命名报告"),
+        "note": str(item.get("note") or ""),
+        "reportType": str(item.get("reportType") or ""),
+        "size": int(item.get("size") or 0),
+        "mtime": item.get("mtime"),
+        "mtimeText": str(item.get("mtimeText") or ""),
+        "url": "",
+        "audio": None,
+    }
+
+
+def _public_crawl_run_detail(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ok": bool(payload.get("ok", True)),
+        "run": _public_crawl_run(payload.get("run") or {}),
+        "lines": int(payload.get("lines") or 0),
+        "newsItems": _scrub_public_value(payload.get("newsItems") or []),
+        "discoveryItems": _scrub_public_value(payload.get("discoveryItems") or []),
+        "aiReviewItems": _scrub_public_value(payload.get("aiReviewItems") or []),
+        "dedupeItems": _scrub_public_value(payload.get("dedupeItems") or []),
+    }
+
+
+def _public_task_run(item: dict[str, Any]) -> dict[str, Any]:
+    allowed = (
+        "task_id", "task_run_id", "title", "kind", "kind_label", "scope",
+        "run_status", "phase", "progress_detail", "status_detail", "started_at_hkt",
+        "heartbeat_at_hkt", "completed_at_hkt", "duration_ms", "retry_count",
+        "retry_index", "auto_recovered",
+    )
+    return _scrub_public_value({key: item.get(key) for key in allowed})
+
+
+def _public_incident(item: dict[str, Any]) -> dict[str, Any]:
+    allowed = (
+        "incident_id", "task_id", "title", "kind", "kind_label", "scope",
+        "incident_status", "run_status", "phase", "severity", "severity_label",
+        "summary", "impact", "suggestions", "occurred_at_hkt", "started_at_hkt",
+        "heartbeat_at_hkt", "completed_at_hkt", "handled_at_hkt",
+    )
+    return _scrub_public_value({key: item.get(key) for key in allowed})
+
+
+def _public_news_review_sheet(payload: dict[str, Any]) -> dict[str, Any]:
+    rows = payload.get("rows") or []
+    return {
+        "ok": True,
+        "sheetTitle": str(payload.get("sheetTitle") or "新闻人工筛选快照"),
+        "headers": [str(item) for item in (payload.get("headers") or [])],
+        "editableColumns": [],
+        "statusOptions": [str(item) for item in (payload.get("statusOptions") or [])],
+        "updatedAt": str(payload.get("updatedAt") or ""),
+        "rows": _scrub_public_value([item for item in rows[:500] if isinstance(item, dict)]),
+        "readOnly": True,
     }
 
 
@@ -381,7 +533,7 @@ def _build_site(
     )
     html = html.replace(
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-        '    <script src="./static/public-snapshot-bootstrap.js"></script>\n'
+        '    <script src="./static/public-snapshot-bootstrap.js?v=2"></script>\n'
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
     )
     html = html.replace(
@@ -414,7 +566,10 @@ def _build_site(
         STATIC_DIR / "competitor-workbench-data.json",
         static_destination / "competitor-workbench-data.json",
     )
-    (static_destination / "news-run-items.json").write_text("{}\n", encoding="utf-8")
+    (static_destination / "news-run-items.json").write_text(
+        json.dumps(snapshots.get("news-run-items.json") or {}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     monitoring_html = (STATIC_DIR / "executive-dashboard-demo.html").read_text(encoding="utf-8")
     monitoring_html = monitoring_html.replace('href="/static/', 'href="./static/')
@@ -434,7 +589,7 @@ def _build_site(
     data_destination = destination / "static-data"
     data_destination.mkdir()
     for name, payload in snapshots.items():
-        if name == "strategic-briefs.json":
+        if name in {"strategic-briefs.json", "news-run-items.json"}:
             continue
         (data_destination / name).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
