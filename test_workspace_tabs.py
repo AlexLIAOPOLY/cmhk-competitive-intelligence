@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=45', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=35', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=49', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=38', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -64,6 +64,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("@keyframes workspace-running-breathe", STYLE)
         self.assertIn("@keyframes workspace-collapse-chevron-float", STYLE)
         self.assertIn("clip-path: polygon", STYLE)
+        self.assertIn("Counter that", STYLE)
+        self.assertIn("calc(236px / var(--fit-scale))", STYLE)
+        self.assertIn("scale(calc(1 / var(--fit-scale)))", STYLE)
+        self.assertIn(".dashboard-page.workspace-ai-active .brand-bar { display: flex !important; }", STYLE)
+        self.assertIn(".dashboard-page.workspace-ai-active .workspace-layout { height: calc(100dvh - 60px); }", STYLE)
         self.assertIn(".workspace-nav-collapse span::before { animation: none !important; }", STYLE)
         self.assertIn("Boolean(state.status?.tasks?.hasRunning)", SCRIPT)
         self.assertIn("runningDot.hidden = !running", SCRIPT)
@@ -79,11 +84,14 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=8', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=9', INDEX)
         self.assertNotIn('class="subtitle"', SUBSCRIPTION_SCRIPT)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
+        self.assertIn("strategic_news_schedule", SUBSCRIPTION_SCRIPT)
+        self.assertIn("战略新闻定时推送", SUBSCRIPTION_SCRIPT)
+        self.assertIn("06:00 / 13:30", SUBSCRIPTION_SCRIPT)
         self.assertIn("推送台账", SUBSCRIPTION_SCRIPT)
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
         self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
@@ -129,14 +137,27 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_existing_feishu_review_sheet_is_reused_as_a_workspace_tab(self):
         self.assertIn('id="workspace-tab-review"', INDEX)
-        self.assertIn("飞书表格审核栏", INDEX)
+        self.assertIn("新闻过滤与审核", INDEX)
         self.assertIn('document.querySelector("#newsReviewWorkspace")', SCRIPT)
         self.assertIn('appendChild(review)', SCRIPT)
 
-    def test_fault_monitor_uses_real_task_archive_without_control_actions(self):
+    def test_navigation_groups_and_renames_business_modules(self):
+        intelligence = INDEX[INDEX.index('id="workspace-group-intelligence"'):INDEX.index('id="workspace-group-products"')]
+        products = INDEX[INDEX.index('id="workspace-group-products"'):INDEX.index('id="workspace-group-tools"')]
+        operations = INDEX[INDEX.index('id="workspace-group-tools"'):INDEX.index('id="workspace-panel-dashboard"')]
+        self.assertIn("新闻过滤与审核", intelligence)
+        self.assertNotIn("竞对数据分析", intelligence)
+        self.assertLess(products.index("竞对数据分析"), products.index("战略周报"))
+        self.assertIn("AI智能助手", products)
+        self.assertNotIn("AI问数", INDEX)
+        self.assertNotIn("AI智能助手", operations)
+
+    def test_fault_monitor_uses_real_incident_ledger_without_control_actions(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
         self.assertIn("故障报警监控系统", INDEX)
         self.assertIn('fetch("/api/project-incidents?limit=100"', SCRIPT)
+        self.assertIn("state.faultTotal", SCRIPT)
+        self.assertIn("filtersActive ? rows.length : state.faultTotal", SCRIPT)
         self.assertIn("renderFaultMonitor", SCRIPT)
         self.assertIn('data-fault-filter="status"', SCRIPT)
         self.assertIn('data-fault-filter="kind"', SCRIPT)
@@ -157,6 +178,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("fault-summary", SCRIPT)
         self.assertNotIn("data-restart", SCRIPT)
 
+    def test_news_and_competitor_results_keep_vertical_scrolling(self):
+        self.assertIn("#workspace-panel-news .news-process-panel", STYLE)
+        self.assertIn("#workspace-panel-competitor .competitor-result", STYLE)
+        self.assertIn("overflow-y: auto !important", STYLE)
+
     def test_competitor_workbench_starts_empty_and_uses_historical_data(self):
         self.assertIn("competitor-workbench-data.json", SCRIPT)
         self.assertIn("competitor-workbench-data.json?v=2", SCRIPT)
@@ -173,6 +199,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("查看数据明细与官方来源", SCRIPT)
         self.assertIn("AI 竞争洞察", SCRIPT)
         self.assertIn("buildCompetitorFallbackInsight", SCRIPT)
+        self.assertIn('card.classList.remove("is-loading", "is-streaming")', SCRIPT)
         self.assertNotIn("内网 AI 正在等待安全加载", SCRIPT)
         self.assertIn('"LOCAL DATA"', SCRIPT)
         self.assertIn('"AI STREAM"', SCRIPT)
@@ -233,6 +260,27 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("最新战略快讯", SCRIPT)
         self.assertIn("@keyframes news-signal", STYLE)
         self.assertIn("prefers-reduced-motion", STYLE)
+
+    def test_news_module_exposes_draggable_live_lineage_and_next_run_feedback(self):
+        for label in (
+            "每日情报如何形成",
+            "定时触发",
+            "固定来源与关键词",
+            "定时爬虫页面线索",
+            "Agentic 补缺搜索",
+            "本轮新增线索",
+            "影响下一轮",
+        ):
+            self.assertIn(label, SCRIPT)
+        self.assertIn("data-news-lineage-node", SCRIPT)
+        self.assertIn("setPointerCapture", SCRIPT)
+        self.assertIn("syncNewsLineageEdges", SCRIPT)
+        self.assertIn("localStorage.setItem(storageKey", SCRIPT)
+        self.assertIn("页面变化线索会生成关联查询与关键词", SCRIPT)
+        self.assertIn("30分钟到时转下轮", SCRIPT)
+        self.assertIn("news-lineage-pulse", STYLE)
+        self.assertIn("@keyframes news-lineage-flow", STYLE)
+        self.assertIn(".news-lineage-canvas.is-paused", STYLE)
 
 
 if __name__ == "__main__":
