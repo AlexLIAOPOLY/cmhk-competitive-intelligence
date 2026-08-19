@@ -7,9 +7,6 @@
 
   const nodes = {
     close: document.getElementById("closeNewsReviewSheetButton"),
-    refresh: document.getElementById("newsReviewRefreshButton"),
-    copy: document.getElementById("newsReviewCopyButton"),
-    export: document.getElementById("newsReviewExportButton"),
     feishu: document.getElementById("newsReviewFeishuLink"),
     search: document.getElementById("newsReviewSearchInput"),
     count: document.getElementById("newsReviewCountText"),
@@ -318,7 +315,6 @@
   async function loadSheet() {
     if (model.loading) return;
     model.loading = true;
-    nodes.refresh.disabled = true;
     const hasRows = model.rows.length > 0;
     nodes.grid.hidden = !hasRows;
     nodes.loading.hidden = hasRows;
@@ -353,7 +349,6 @@
     } finally {
       window.clearTimeout(timeoutId);
       model.loading = false;
-      nodes.refresh.disabled = false;
     }
   }
 
@@ -466,49 +461,6 @@
     };
   }
 
-  async function copySelection() {
-    const payload = clipboardPayload();
-    if (!payload) {
-      setSaveStatus("请先选择要复制的单元格", "error");
-      return;
-    }
-    try {
-      if (navigator.clipboard?.write && window.ClipboardItem) {
-        await navigator.clipboard.write([new ClipboardItem({
-          "text/plain": new Blob([payload.text], { type: "text/plain" }),
-          "text/html": new Blob([payload.html], { type: "text/html" }),
-        })]);
-      } else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(payload.text);
-      } else {
-        throw new Error("浏览器未开放剪贴板权限");
-      }
-      setSaveStatus("已复制所选区域，可直接粘贴到 Excel", "success");
-    } catch (error) {
-      setSaveStatus(`复制失败：${error.message || String(error)}`, "error");
-    }
-  }
-
-  function exportExcel() {
-    updateVisibleRows();
-    const matrix = model.visibleRows.map((row) => row.values);
-    if (!matrix.length) {
-      setSaveStatus("当前筛选结果为空，无法导出", "error");
-      return;
-    }
-    const html = excelHtml(matrix, 0, true);
-    const blob = new Blob(["\ufeff", html], { type: "application/vnd.ms-excel;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `滚动新闻审核表-${new Date().toISOString().slice(0, 10)}.xls`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-    setSaveStatus(`已按当前筛选导出 ${matrix.length} 行`, "success");
-  }
-
   function startCellEditor(cell) {
     if (!cell || model.activeEditor) return;
     if (model.saving) {
@@ -605,9 +557,6 @@
 
   openButton.addEventListener("click", openWorkspace);
   nodes.close.addEventListener("click", closeWorkspace);
-  nodes.refresh.addEventListener("click", loadSheet);
-  nodes.copy.addEventListener("click", copySelection);
-  nodes.export.addEventListener("click", exportExcel);
   nodes.search.addEventListener("input", () => {
     model.selectionAnchor = null;
     model.selectionFocus = null;
