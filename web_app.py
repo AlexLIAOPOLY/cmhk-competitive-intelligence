@@ -3371,6 +3371,80 @@ def _annotate_task_incidents(tasks: list[dict]) -> None:
             task.update(incident)
 
 
+def load_project_incident_index(limit: int = 100) -> list[dict]:
+    """Return the real project-monitor incident ledger for the alarm screen."""
+    try:
+        monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        monitor_state = {}
+    incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
+    incidents = incidents if isinstance(incidents, dict) else {}
+
+    try:
+        action_state = json.loads(PROJECT_MONITOR_ACTIONS_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        action_state = {}
+    handled_messages = action_state.get("handled_messages") if isinstance(action_state, dict) else {}
+    handled_messages = handled_messages if isinstance(handled_messages, dict) else {}
+    handlers: dict[str, dict] = {}
+    for handled in handled_messages.values():
+        if not isinstance(handled, dict):
+            continue
+        incident_id = str(handled.get("incident_id") or "")
+        previous = handlers.get(incident_id, {})
+        if incident_id and str(handled.get("handled_at_hkt") or "") >= str(previous.get("handled_at_hkt") or ""):
+            handlers[incident_id] = handled
+
+    severity_labels = {"P1": "紧急", "P2": "高", "P3": "中"}
+    records: list[dict] = []
+    for incident in incidents.values():
+        if not isinstance(incident, dict):
+            continue
+        incident_id = str(incident.get("incident_id") or "")
+        if not incident_id:
+            continue
+        diagnosis = incident.get("diagnosis") if isinstance(incident.get("diagnosis"), dict) else {}
+        severity = str(diagnosis.get("severity") or incident.get("severity") or "P2").upper()
+        if severity not in severity_labels:
+            severity = "P2"
+        handled = handlers.get(incident_id, {})
+        suggestions = diagnosis.get("solutions") or diagnosis.get("suggestions") or incident.get("suggestions") or []
+        if not isinstance(suggestions, list):
+            suggestions = [str(suggestions)] if suggestions else []
+        evidence = incident.get("evidence") if isinstance(incident.get("evidence"), list) else []
+        status = str(incident.get("status") or "open")
+        records.append({
+            "task_id": f"incident:{incident_id}",
+            "incident_id": incident_id,
+            "incident_status": status,
+            "kind": str(incident.get("component") or "project-monitor"),
+            "kind_label": str(incident.get("task_name") or "项目故障"),
+            "title": str(incident.get("task_name") or incident.get("summary") or "项目故障"),
+            "scope": str(incident.get("component") or incident.get("condition_key") or "项目监控"),
+            "run_status": "failed" if status == "open" else "completed",
+            "severity": severity,
+            "severity_label": severity_labels[severity],
+            "handler_name": str(handled.get("operator_name") or ""),
+            "handled_at_hkt": str(handled.get("handled_at_hkt") or ""),
+            "summary": str(incident.get("summary") or ""),
+            "error": str(diagnosis.get("fault_cause") or incident.get("error") or ""),
+            "impact": str(diagnosis.get("fault_impact") or incident.get("impact") or ""),
+            "suggestions": [str(item) for item in suggestions if str(item).strip()],
+            "evidence": [str(item) for item in evidence if str(item).strip()],
+            "phase": "待处理" if status == "open" else "已恢复",
+            "occurred_at_hkt": str(incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or ""),
+            "started_at_hkt": str(incident.get("first_seen_at_hkt") or incident.get("occurred_at_hkt") or ""),
+            "heartbeat_at_hkt": str(incident.get("last_seen_at_hkt") or ""),
+            "completed_at_hkt": str(incident.get("resolved_at_hkt") or ""),
+            "source": "project-monitor",
+        })
+    records.sort(
+        key=lambda item: str(item.get("occurred_at_hkt") or item.get("started_at_hkt") or ""),
+        reverse=True,
+    )
+    return records[: max(1, min(500, int(limit or 100)))]
+
+
 def load_unified_task_index(limit: int = 50) -> list[dict]:
     tasks = [_task_public_record(item) for item in _task_read_local_index()]
     tasks.extend(
@@ -3964,6 +4038,15 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception:
                 limit = 50
             json_response(self, {"ok": True, "tasks": load_unified_task_index(limit)})
+            return
+        if path == "/api/project-incidents":
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(500, int(query.get("limit", ["100"])[0])))
+            except Exception:
+                limit = 100
+            incidents = load_project_incident_index(limit)
+            json_response(self, {"ok": True, "incidents": incidents, "total": len(incidents)})
             return
         if path == "/api/task-run-log":
             query = parse_qs(parsed.query)

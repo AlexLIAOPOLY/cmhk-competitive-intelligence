@@ -764,7 +764,7 @@
   }
 
   function taskTime(task) {
-    return String(task.heartbeat_at_hkt || task.completed_at_hkt || task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "").slice(0, 19) || "暂无记录";
+    return String(task.occurred_at_hkt || task.started_at_hkt || task.heartbeat_at_hkt || task.completed_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "").slice(0, 19) || "暂无记录";
   }
 
   function taskLabel(kind) {
@@ -784,7 +784,7 @@
     const kinds = [...new Set(tasks.map((task) => task.kind).filter(Boolean))];
     panel.innerHTML = `<div class="workspace-module-inner fault-monitor"><section class="workspace-panel fault-workbench">
       <header class="fault-toolbar"><div class="fault-total"><span>报警总数</span><strong id="faultResultCount">0</strong><em>条</em></div><div class="fault-filter-row">
-        <label>状态<select data-fault-filter="status"><option value="all">全部记录</option><option value="attention">需要处理</option><option value="running">运行中</option><option value="completed">已完成</option></select></label>
+        <label>状态<select data-fault-filter="status"><option value="all">全部记录</option><option value="attention">需要处理</option><option value="completed">已恢复</option></select></label>
         <label>任务类型<select data-fault-filter="kind"><option value="all">全部任务</option>${kinds.map((kind) => `<option value="${esc(kind)}">${esc(taskLabel(kind))}</option>`).join("")}</select></label>
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
@@ -799,6 +799,8 @@
   }
 
   function faultStatus(task) {
+    if (task.incident_status === "open") return task.handler_name ? { key: "attention", label: "处理中", tone: "is-running" } : { key: "attention", label: "待处理", tone: "is-alert" };
+    if (task.incident_status === "resolved") return { key: "completed", label: "已恢复", tone: "is-ok" };
     if (task.interrupted) return { key: "attention", label: "中断", tone: "is-alert" };
     if (task.run_status === "failed") return { key: "attention", label: "失败", tone: "is-alert" };
     if (task.run_status === "running") return { key: "running", label: "运行中", tone: "is-running" };
@@ -808,6 +810,7 @@
 
   function faultCause(task) {
     const status = faultStatus(task);
+    if (task.source === "project-monitor") return task.error || task.summary || "监控账本未记录具体故障原因。";
     if (status.key === "running") return task.progress_detail || task.status_detail || `任务正在${task.phase || "运行"}，当前未记录故障。`;
     if (status.key === "completed") return task.status_detail || task.progress_detail || "任务已正常完成，未记录故障原因。";
     return task.error || task.warning || task.status_detail || task.progress_detail || task.detail || task.message || "任务归档未记录具体故障原因，请查看运行日志。";
@@ -828,10 +831,11 @@
     if (key === "severity") return faultSeverity(row.task).rank;
     if (key === "task") return row.task.title || taskLabel(row.task.kind);
     if (key === "handler") return faultHandler(row.task);
-    return row.task.heartbeat_at_hkt || row.task.completed_at_hkt || row.task.started_at_hkt || "";
+    return row.task.occurred_at_hkt || row.task.started_at_hkt || row.task.heartbeat_at_hkt || row.task.completed_at_hkt || "";
   }
 
   function faultSolutions(task) {
+    if (Array.isArray(task.suggestions) && task.suggestions.length) return task.suggestions;
     const status = faultStatus(task);
     const cause = faultCause(task);
     if (status.key === "running") return ["继续观察任务心跳和当前阶段。", "只有心跳停止或超过任务正常时长后，才按异常任务处理。"];
@@ -848,7 +852,7 @@
     const rows = state.tasks.map((task, index) => ({ task, index, status: faultStatus(task) })).filter(({ task, status }) => {
       if (state.faultFilters.status !== "all" && status.key !== state.faultFilters.status) return false;
       if (state.faultFilters.kind !== "all" && task.kind !== state.faultFilters.kind) return false;
-      return !query || [task.title, task.scope, task.phase, task.detail, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
+      return !query || [task.title, task.scope, task.phase, task.summary, task.error, task.impact, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
     });
     const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
     const direction = state.faultSort.direction === "asc" ? 1 : -1;
@@ -877,8 +881,9 @@
       <section class="fault-detail-section fault-reason"><h3>原因</h3><p>${esc(faultCause(task))}</p></section>
       <section class="fault-detail-section"><h3>解决方法</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
       <dl>${details.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
-      <details class="fault-evidence"><summary>查看运行证据</summary><pre id="faultEvidenceLog">正在读取对应任务日志…</pre></details>`;
+      <details class="fault-evidence"><summary>查看运行证据</summary><pre id="faultEvidenceLog">${esc(task.evidence?.join("\n") || task.error || "该报警没有更多证据记录。")}</pre></details>`;
     dialog.showModal();
+    if (task.source === "project-monitor") return;
     try {
       const response = await fetch(`/api/task-run-log?id=${encodeURIComponent(task.task_id || task.task_run_id || "")}`, { cache: "no-store" });
       const payload = await response.json();
@@ -895,10 +900,10 @@
     const status = document.querySelector("#faultMonitorStatus");
     if (status) status.textContent = "正在刷新故障与心跳状态…";
     try {
-      const response = await fetch("/api/task-runs?limit=100", { cache: "no-store" });
+      const response = await fetch("/api/project-incidents?limit=100", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
-      state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      state.tasks = Array.isArray(data.incidents) ? data.incidents : [];
       renderFaultMonitor();
       document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
     } catch (error) {
@@ -1089,7 +1094,7 @@
       fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))),
       fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`))),
       fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`))),
-      fetch("/api/task-runs?limit=100").then((response) => response.ok ? response.json() : Promise.reject(new Error(`tasks ${response.status}`))),
+      fetch("/api/project-incidents?limit=100").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`))),
       fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
       fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
       fetch("/static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
@@ -1098,7 +1103,7 @@
     if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};
     if (metricsResult.status === "fulfilled") state.metrics = metricsResult.value.data || {};
     if (briefsResult.status === "fulfilled") state.briefs = briefsResult.value.items || [];
-    if (tasksResult.status === "fulfilled") state.tasks = tasksResult.value.tasks || [];
+    if (tasksResult.status === "fulfilled") state.tasks = tasksResult.value.incidents || [];
     if (newsRunsResult.status === "fulfilled") {
       state.newsRuns = (newsRunsResult.value.runs || []).filter((run) => run.task_kind === "strategic-news");
     }

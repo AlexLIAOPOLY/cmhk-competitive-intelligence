@@ -133,7 +133,7 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_fault_monitor_uses_real_task_archive_without_control_actions(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
         self.assertIn("故障报警监控系统", INDEX)
-        self.assertIn('fetch("/api/task-runs?limit=100"', SCRIPT)
+        self.assertIn('fetch("/api/project-incidents?limit=100"', SCRIPT)
         self.assertIn("renderFaultMonitor", SCRIPT)
         self.assertIn('data-fault-filter="status"', SCRIPT)
         self.assertIn('data-fault-filter="kind"', SCRIPT)
@@ -148,7 +148,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("faultHandler", SCRIPT)
         self.assertIn("解决方法", SCRIPT)
         self.assertIn("faultSolutions", SCRIPT)
-        self.assertIn("/api/task-run-log?id=", SCRIPT)
+        self.assertIn('task.source === "project-monitor"', SCRIPT)
         self.assertIn('class="fault-row"', SCRIPT)
         self.assertIn(".fault-table .fault-row", STYLE)
         self.assertNotIn("fault-summary", SCRIPT)
