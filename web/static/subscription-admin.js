@@ -147,13 +147,12 @@
   function render() {
     const data = state.data;
     if (!data) return;
-    const permission = data.invitation_permissions || {};
     const latest = state.briefs[0] || {};
     const newsTitle = latest.title || latest.headline || "战略新闻推送";
     const newsBody = latest.summary || latest.brief || latest.description || "";
     const inviteCount = (data.invite_candidates || []).length;
     root.innerHTML = `<div class="admin">
-      <header class="topbar"><div><h1>订阅与推送管理</h1><p class="subtitle">飞书通讯录${permission.status === "ready" ? `已接通 ${number(permission.people_count)} 人` : "连接受限"} · 报告随发布推送，新闻随爬虫完成派发</p></div><button class="icon-button management-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button></header>
+      <header class="topbar"><h1>订阅与推送管理</h1><button class="icon-button management-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button></header>
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
         <div class="upper-grid">
