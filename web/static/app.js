@@ -221,6 +221,11 @@ function showTaskOperationNotice(message) {
   state.taskBusyNoticeTimer = setTimeout(() => notice.classList.remove("is-visible"), 3600);
 }
 
+function announceTaskCreated(title, detail) {
+  state.motionTaskAnnouncedAt = Date.now();
+  window.CMHKMotion?.announce({ kind: "task", target: "log", title, detail });
+}
+
 function ensureTaskBusyInteraction() {
   if (state.taskBusyInteractionReady) return;
   state.taskBusyInteractionReady = true;
@@ -2151,10 +2156,15 @@ function updateReportLibraryNewIndicator(files) {
 }
 
 function renderStatus(status) {
+  const hadRunningTasks = Boolean(state.hasRunningTasks);
   state.status = status;
   state.hasRunningTasks = Boolean(
     status.tasks?.hasRunning || Number(status.tasks?.runningCount || 0) > 0
   );
+  if (state.runningTaskBaselineReady && !hadRunningTasks && state.hasRunningTasks && Date.now() - Number(state.motionTaskAnnouncedAt || 0) > 5000) {
+    announceTaskCreated("后台任务已创建", "已进入运行队列，可在日志中查看进度");
+  }
+  state.runningTaskBaselineReady = true;
   renderLogButtonActivity();
   els.statusSummary.textContent = `数据 ${status.results.count} 个 · 范围 ${status.settings.enabledRows}/${status.settings.totalRows} 行 · 输出 ${status.latestOutputText}`;
   if (status.ai && els.aiConfigStatus) {
@@ -3952,6 +3962,7 @@ async function generateAudio(pathStr, button = null) {
     const submitMessage = data.alreadyRunning
       ? "该文件的音频任务已在运行，继续跟踪现有任务。"
       : "音频生成任务已启动，可在任务与审核记录中查看。";
+    if (!data.alreadyRunning) announceTaskCreated("音频摘要生成", "任务已创建，已收进任务日志");
     appendLog(`${submitMessage}\n`);
     showTaskOperationNotice(submitMessage);
     await loadCrawlRuns({ selectRunId: taskId });
@@ -4367,6 +4378,7 @@ async function runCrawl(source = "按钮") {
       const payload = await res.json().catch(() => ({}));
       throw new Error(payload.error || `请求失败（HTTP ${res.status}）`);
     }
+    announceTaskCreated("定期数据爬虫", "任务已创建，运行过程将持续写入日志");
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -4465,6 +4477,7 @@ async function generateReport(source = "按钮") {
   try {
     const res = await fetch("/api/generate-stream", { method: "POST" });
     if (!res.ok) throw new Error("网络请求失败");
+    announceTaskCreated("战略周报生成", "任务已创建，完成后可在报告与日志中查看");
     loadCrawlRuns();
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -4513,6 +4526,7 @@ async function generateCarrierPerformanceReport(source = "按钮") {
   try {
     const response = await fetch(`/api/generate-carrier-performance-stream`, { method: "POST" });
     if (!response.ok) throw new Error("网络请求失败");
+    announceTaskCreated("业绩摘要生成", "任务已创建，完成后可在报告与日志中查看");
     loadCrawlRuns();
     const reader = response.body.getReader();
     const decoder = new TextDecoder();

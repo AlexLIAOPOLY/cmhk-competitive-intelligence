@@ -198,6 +198,20 @@
     render();
   }
 
+  function announceDeliveredMessage(action, evidence) {
+    const messages = {
+      pushLatest: ["订阅消息已送达", "正式内容已发送并完成回读"],
+      invite: ["订阅邀请已送达", "邀请消息已发送并完成回读"],
+      publish: ["订阅卡片已送达", "卡片已发送并完成回读"],
+    };
+    const copy = messages[action];
+    if (!copy || window.parent === window) return;
+    window.parent.postMessage({
+      type: "cmhk-workspace-motion",
+      event: { kind: "subscription", target: "subscriptions", title: copy[0], detail: evidence ? `${copy[1]} · ${evidence}` : copy[1] },
+    }, location.origin);
+  }
+
   async function post(payload, pendingText) {
     state.notice = pendingText;
     state.noticeKind = "";
@@ -210,6 +224,7 @@
     state.notice = `操作成功：${evidence}`;
     state.noticeKind = "success";
     await loadData({ keepNotice: true });
+    announceDeliveredMessage(payload.action, evidence);
   }
 
   document.addEventListener("click", async (event) => {

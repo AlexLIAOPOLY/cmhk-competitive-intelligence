@@ -41,6 +41,14 @@ class WorkspaceLogIndicatorTests(unittest.TestCase):
         self.assertIn('reportType === "weekly" || reportType === "performance"', viewed_handler)
         self.assertIn("markReportCategoryViewed(reportType)", viewed_handler)
 
+    def test_real_task_acceptance_announces_motion_to_the_log_tab(self) -> None:
+        self.assertIn('function announceTaskCreated(title, detail)', APP)
+        self.assertIn('window.CMHKMotion?.announce({ kind: "task", target: "log", title, detail })', APP)
+        self.assertIn('announceTaskCreated("定期数据爬虫"', APP)
+        self.assertIn('announceTaskCreated("战略周报生成"', APP)
+        self.assertIn('announceTaskCreated("业绩摘要生成"', APP)
+        self.assertIn('announceTaskCreated("音频摘要生成"', APP)
+
 
 if __name__ == "__main__":
     unittest.main()

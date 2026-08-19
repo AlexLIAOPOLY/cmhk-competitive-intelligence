@@ -47,6 +47,149 @@
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
   const can = (module) => allowedModules.includes(module);
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
+  const MOTION_TYPES = {
+    task: { target: "log", kicker: "NEW TASK", icon: "↗", tone: "cyan" },
+    fault: { target: "fault", kicker: "ALERT", icon: "!", tone: "red" },
+    subscription: { target: "subscriptions", kicker: "DELIVERED", icon: "✓", tone: "mint" },
+  };
+
+  const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
+
+  function workspaceSignalDot(tab) {
+    let dot = tab?.querySelector("[data-workspace-signal]");
+    if (!dot && tab) {
+      dot = document.createElement("i");
+      dot.className = "workspace-signal-dot";
+      dot.dataset.workspaceSignal = "";
+      dot.hidden = true;
+      tab.appendChild(dot);
+    }
+    return dot;
+  }
+
+  function clearWorkspaceSignal(module) {
+    const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
+    const dot = tab?.querySelector("[data-workspace-signal]");
+    if (!tab || !dot) return;
+    dot.hidden = true;
+    tab.classList.remove("has-unread-signal");
+    delete tab.dataset.signalTone;
+  }
+
+  function markWorkspaceSignal(module, tone) {
+    const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
+    if (!tab || tab.classList.contains("is-active")) return;
+    const dot = workspaceSignalDot(tab);
+    dot.hidden = false;
+    tab.dataset.signalTone = tone;
+    tab.classList.add("has-unread-signal");
+  }
+
+  function ensureMotionStage() {
+    let stage = document.querySelector("#workspaceMotionStage");
+    if (stage) return stage;
+    stage = document.createElement("div");
+    stage.id = "workspaceMotionStage";
+    stage.className = "workspace-motion-stage";
+    stage.setAttribute("aria-live", "polite");
+    stage.setAttribute("aria-atomic", "true");
+    document.body.appendChild(stage);
+    return stage;
+  }
+
+  async function playWorkspaceMotion(event) {
+    const type = MOTION_TYPES[event.kind] || MOTION_TYPES.task;
+    const targetName = can(event.target || type.target) ? (event.target || type.target) : type.target;
+    const target = document.querySelector(`[data-workspace-tab="${targetName}"]`);
+    const stage = ensureMotionStage();
+    const card = document.createElement("div");
+    const tone = event.tone || type.tone;
+    card.className = "workspace-motion-card";
+    card.dataset.tone = tone;
+    card.setAttribute("role", event.kind === "fault" ? "alert" : "status");
+    card.innerHTML = `<span class="workspace-motion-icon" aria-hidden="true">${esc(type.icon)}</span><span class="workspace-motion-copy"><small>${esc(event.kicker || type.kicker)}</small><strong>${esc(event.title || "任务已创建")}</strong><em>${esc(event.detail || "已写入系统记录")}</em></span><span class="workspace-motion-tail" aria-hidden="true"></span>`;
+    stage.appendChild(card);
+    markWorkspaceSignal(targetName, tone);
+
+    if (motionPreference.matches || !card.animate) {
+      card.classList.add("is-static");
+      await wait(1100);
+      card.remove();
+      return;
+    }
+
+    await card.animate([
+      { opacity: 0, transform: "translate3d(18px,-18px,0) scale(.62)", offset: 0 },
+      { opacity: 1, transform: "translate3d(-2px,2px,0) scale(1.075)", offset: .42 },
+      { opacity: 1, transform: "translate3d(0,0,0) scale(.975)", offset: .7 },
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", offset: 1 },
+    ], { duration: 620, easing: "linear", fill: "forwards" }).finished;
+    await wait(event.kind === "fault" ? 1050 : 820);
+    card.classList.add("is-compacting");
+    await wait(210);
+
+    if (target && !motionPreference.matches) {
+      target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      await wait(260);
+    }
+    const cardRect = card.getBoundingClientRect();
+    const targetRect = target?.getBoundingClientRect();
+    const hasTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
+    const dx = hasTarget ? targetRect.left + targetRect.width / 2 - (cardRect.left + cardRect.width / 2) : 0;
+    const dy = hasTarget ? targetRect.top + targetRect.height / 2 - (cardRect.top + cardRect.height / 2) : -34;
+    await card.animate([
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", borderRadius: "22px", offset: 0 },
+      { opacity: 1, transform: `translate3d(${dx * .16}px,${dy * .08}px,0) scale(.88)`, borderRadius: "24px", offset: .2 },
+      { opacity: .88, transform: `translate3d(${dx * .78}px,${dy * .7}px,0) scale(.34)`, borderRadius: "50%", offset: .72 },
+      { opacity: 0, transform: `translate3d(${dx}px,${dy}px,0) scale(.12)`, borderRadius: "50%", offset: 1 },
+    ], { duration: 720, easing: "cubic-bezier(.32,.72,0,1)", fill: "forwards" }).finished;
+    card.remove();
+    if (target) {
+      target.classList.remove("is-signal-arrival");
+      target.getBoundingClientRect();
+      target.classList.add("is-signal-arrival");
+      window.setTimeout(() => target.classList.remove("is-signal-arrival"), 760);
+    }
+  }
+
+  function announceWorkspaceEvent(event = {}) {
+    motionState.queue = motionState.queue.catch(() => {}).then(() => playWorkspaceMotion(event)).catch((error) => console.warn("Workspace motion unavailable", error));
+    return motionState.queue;
+  }
+
+  function faultSignalKey(task) {
+    return String(task.incident_id || task.alert_id || task.task_id || task.task_run_id || `${task.kind || "task"}:${task.occurred_at_hkt || task.started_at_hkt || task.error || "unknown"}`);
+  }
+
+  function observeFaultSignals(tasks, { baseline = false } = {}) {
+    const next = Array.isArray(tasks) ? tasks : [];
+    if (baseline || !motionState.faultBaselineReady) {
+      motionState.knownFaults = new Set(next.map(faultSignalKey));
+      motionState.faultBaselineReady = true;
+      return;
+    }
+    const unseen = next.filter((task) => !motionState.knownFaults.has(faultSignalKey(task)) && faultStatus(task).key === "attention");
+    next.forEach((task) => motionState.knownFaults.add(faultSignalKey(task)));
+    unseen.slice(0, 3).forEach((task) => {
+      const severity = faultSeverity(task);
+      announceWorkspaceEvent({
+        kind: "fault",
+        target: "fault",
+        tone: severity.code === "P3" ? "amber" : "red",
+        kicker: severity.code ? `${severity.code} ${severity.label}` : "SYSTEM ALERT",
+        title: task.title || taskLabel(task.kind),
+        detail: faultCause(task),
+      });
+    });
+  }
+
+  window.CMHKMotion = { announce: announceWorkspaceEvent };
+  window.addEventListener("message", (event) => {
+    if (event.origin !== location.origin || event.data?.type !== "cmhk-workspace-motion") return;
+    announceWorkspaceEvent(event.data.event || {});
+  });
 
   function applyModulePermissions() {
     allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(module));
@@ -91,6 +234,7 @@
       tab.tabIndex = selected ? 0 : -1;
       if (selected && focus) tab.focus();
     });
+    clearWorkspaceSignal(target);
     panels.forEach((panel) => { panel.hidden = panel.dataset.workspacePanel !== target; });
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
@@ -1345,20 +1489,24 @@
     }
   }
 
-  async function refreshFaultData() {
+  async function refreshFaultData({ quiet = false } = {}) {
     const status = document.querySelector("#faultMonitorStatus");
-    if (status) status.textContent = "正在刷新故障与心跳状态…";
+    if (status && !quiet) status.textContent = "正在刷新故障与心跳状态…";
     try {
       const response = await fetch("/api/project-incidents?limit=500", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
-      state.tasks = Array.isArray(data.incidents) ? data.incidents : [];
+      const nextTasks = Array.isArray(data.incidents) ? data.incidents : [];
+      observeFaultSignals(nextTasks);
+      state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      state.faultPage = 1;
-      renderFaultMonitor();
-      document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+      if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
+        if (!quiet) state.faultPage = 1;
+        renderFaultMonitor();
+        document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+      }
     } catch (error) {
-      if (status) status.textContent = `状态刷新失败：${error.message}`;
+      if (status && !quiet) status.textContent = `状态刷新失败：${error.message}`;
     }
   }
 
@@ -1590,6 +1738,7 @@
     if (tasksResult.status === "fulfilled") {
       state.tasks = tasksResult.value.incidents || [];
       state.faultTotal = Number(tasksResult.value.total || state.tasks.length);
+      observeFaultSignals(state.tasks, { baseline: true });
     }
     if (newsRunsResult.status === "fulfilled") {
       state.newsRuns = (newsRunsResult.value.runs || []).filter((run) => run.task_kind === "strategic-news");
@@ -1611,6 +1760,11 @@
     if (runningDot) runningDot.hidden = !running;
     const initialNewsRuns = can("news") ? selectedNewsRuns() : [];
     if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
+    if (can("fault") && !motionState.pollingTimer) {
+      motionState.pollingTimer = window.setInterval(() => {
+        if (document.visibilityState === "visible") refreshFaultData({ quiet: true });
+      }, 30000);
+    }
     requests.filter((result) => result.status === "rejected").forEach((result) => console.warn("Workspace module data unavailable", result.reason));
   }
 
