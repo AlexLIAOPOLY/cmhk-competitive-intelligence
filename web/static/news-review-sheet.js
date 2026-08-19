@@ -46,6 +46,7 @@
     cancelEditor: null,
   };
   const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v1";
+  const SHEET_READ_TIMEOUT_MS = 30000;
 
   const escapeHtml = (value) => String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -324,24 +325,33 @@
     nodes.loading.classList.remove("is-error");
     nodes.loading.textContent = "正在读取飞书审核表…";
     nodes.syncText.textContent = "正在连接飞书审核表";
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), SHEET_READ_TIMEOUT_MS);
     try {
-      const response = await fetch("/api/news-review-sheet", { cache: "no-store" });
+      const response = await fetch("/api/news-review-sheet", {
+        cache: "no-store",
+        signal: controller.signal,
+      });
       const payload = await response.json();
       if (!response.ok || !payload.ok) throw new Error(payload.error || "审核表读取失败");
       applySnapshot(payload);
       try { localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(payload)); } catch (_error) { /* cache is optional */ }
       setSaveStatus("实时回写飞书 · 修改后自动保存并回读");
     } catch (error) {
+      const errorMessage = error?.name === "AbortError"
+        ? "实时刷新超过 30 秒，已停止等待"
+        : (error.message || String(error));
       if (!hasRows) {
         nodes.loading.hidden = false;
         nodes.loading.classList.add("is-error");
-        nodes.loading.textContent = `读取失败：${error.message || String(error)}`;
+        nodes.loading.textContent = `读取失败：${errorMessage}`;
         setSaveStatus("尚未读取到可编辑数据", "error");
       } else {
-        setSaveStatus("后台更新失败，当前显示上次成功读取的数据", "error");
+        setSaveStatus(`${errorMessage}；当前显示上次成功读取的数据`, "error");
       }
-      nodes.syncText.textContent = hasRows ? "显示缓存 · 飞书后台更新失败" : "飞书连接失败";
+      nodes.syncText.textContent = hasRows ? "显示缓存 · 实时刷新暂不可用" : "飞书连接失败";
     } finally {
+      window.clearTimeout(timeoutId);
       model.loading = false;
       nodes.refresh.disabled = false;
     }

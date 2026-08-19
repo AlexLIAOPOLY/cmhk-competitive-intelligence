@@ -41,6 +41,16 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         self.assertEqual(payload["rows"][0]["rowNumber"], 2)
         self.assertEqual(payload["rows"][0]["values"][6], "香港电讯推出自主研发 AI 平台")
 
+    def test_snapshot_fails_fast_when_background_sync_holds_lock(self) -> None:
+        lock = mock.Mock()
+        lock.acquire.return_value = False
+        with mock.patch.object(news_review_sheet, "_LOCK", lock):
+            with self.assertRaisesRegex(RuntimeError, "后台战略新闻任务正在更新"):
+                news_review_sheet.review_sheet_snapshot()
+
+        lock.acquire.assert_called_once_with(timeout=1.0)
+        lock.release.assert_not_called()
+
     def test_update_coalesces_adjacent_cells_and_requires_readback(self) -> None:
         before = sheet_row("待审核", "待审核", "未同步", "2026-08-03")
         after = sheet_row("接受", "接受", "已纳入", "2026-08-03")
@@ -100,6 +110,9 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn('id="newsReviewWorkspace"', html)
         self.assertIn('fetch("/api/news-review-sheet"', script)
         self.assertIn('fetch("/api/news-review-sheet/update"', script)
+        self.assertIn("SHEET_READ_TIMEOUT_MS = 30000", script)
+        self.assertIn('controller.abort()', script)
+        self.assertIn("显示缓存 · 实时刷新暂不可用", script)
         self.assertIn('"text/html": new Blob', script)
         self.assertEqual(script.count('"text/plain": new Blob'), 1)
         self.assertIn('value === "暂缓"', script)

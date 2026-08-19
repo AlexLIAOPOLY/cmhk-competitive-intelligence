@@ -747,6 +747,26 @@ body.has-maximized-report-preview { overflow: hidden; }
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(2),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(3),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(4) { background: #0d2935; }
+#newsReviewWorkspace.workspace-inline-review .news-review-grid .news-review-row-number {
+  color: #789aa6;
+  border-right-color: #365766;
+  background: #0b2733;
+}
+#newsReviewWorkspace.workspace-inline-review .news-review-status-select.status-pending,
+#newsReviewWorkspace.workspace-inline-review .news-review-sync-chip {
+  color: #b8ced5;
+  background: #183a47;
+  box-shadow: inset 0 0 0 1px rgba(104, 155, 172, .32);
+}
+#newsReviewWorkspace.workspace-inline-review .news-review-filter-button {
+  color: #8fc8d6;
+  background: #173846;
+  box-shadow: inset 0 0 0 1px rgba(111, 174, 191, .28);
+}
+#newsReviewWorkspace.workspace-inline-review .news-review-filter-button.is-active {
+  color: #06212c;
+  background: #68c7d9;
+}
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr:hover td { background: #123442 !important; }
 #newsReviewWorkspace.workspace-inline-review .news-review-grid td.is-selected { background: #174052 !important; box-shadow: inset 0 0 0 1px #58bdd2; }
 #newsReviewWorkspace.workspace-inline-review .news-review-cell-editor { color: #e6f2f4; border-color: #58bdd2; background: #0a2430; }

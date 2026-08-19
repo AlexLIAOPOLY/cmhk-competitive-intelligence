@@ -1734,7 +1734,10 @@ def _resolved_review_sheet_id(sheet_id: str | None = None) -> str:
 
 def review_sheet_snapshot(*, sheet_id: str | None = None) -> dict[str, Any]:
     """Return a live, browser-safe view of the Feishu review worksheet."""
-    with _LOCK:
+    lock_acquired = _LOCK.acquire(timeout=1.0)
+    if not lock_acquired:
+        raise RuntimeError("后台战略新闻任务正在更新飞书审核表，请稍后刷新")
+    try:
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
         rows = _read_rows(resolved_sheet_id)
         return {
@@ -1754,6 +1757,8 @@ def review_sheet_snapshot(*, sheet_id: str | None = None) -> dict[str, Any]:
                 if row and any(_text(value, 80) for value in row)
             ],
         }
+    finally:
+        _LOCK.release()
 
 
 def _column_name(index: int) -> str:
