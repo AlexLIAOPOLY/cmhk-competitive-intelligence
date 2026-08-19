@@ -63,6 +63,9 @@ ROOT = Path(__file__).resolve().parent
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
+SCHEDULER_OVERVIEW_LOCK = threading.Lock()
+SCHEDULER_OVERVIEW_CACHE: dict[str, object] = {}
+SCHEDULER_OVERVIEW_CACHE_SECONDS = 90
 TASK_HEARTBEAT_INTERVAL_SECONDS = 10
 STATIC_DIR = ROOT / "web" / "static"
 COMPETITOR_WORKBENCH_DATA_PATH = STATIC_DIR / "competitor-workbench-data.json"
@@ -300,6 +303,82 @@ def _validate_competitor_business_insights(insights: list[str], companies: list[
         raise RuntimeError("AI 竞争洞察遗漏边界披露限制")
 
 
+def _ensure_competitor_numeric_evidence(insights: list[str], companies: list[str], rows: list[dict]) -> list[str]:
+    """Attach a canonical table anchor when a generated line omits its required number."""
+    company_years = {
+        company: {int(row.get("year") or 0) for row in rows if str(row.get("company") or "") == company}
+        for company in companies
+    }
+    common_years = sorted(set.intersection(*(years for years in company_years.values()))) if company_years else []
+    if not common_years:
+        return insights
+    anchor_year = common_years[-1]
+    anchor_rows = {
+        company: next(
+            (
+                row
+                for row in rows
+                if str(row.get("company") or "") == company and int(row.get("year") or 0) == anchor_year
+            ),
+            None,
+        )
+        for company in companies
+    }
+    anchor = next((row for row in anchor_rows.values() if row), None)
+    if not anchor:
+        return insights
+    comparator = {">=": "≥", "<=": "≤", "~": "约", "approx": "约"}.get(
+        str(anchor.get("comparator") or "").lower(),
+        "",
+    )
+    value = f"{float(anchor.get('value')):g}"
+    unit = {
+        "percent": "%",
+        "million_base_stations": "百万座",
+        "base_stations": "座",
+        "million_subscribers": "百万户",
+        "million_customers": "百万户",
+    }.get(str(anchor.get("unit") or ""), str(anchor.get("unit") or ""))
+    evidence = f"{anchor_year}年{anchor.get('company')}{comparator}{value}{unit}"
+    repaired = [
+        line if re.search(r"\d", line) else f"{line.rstrip('。')}；数据锚点为{evidence}。"
+        for line in insights
+    ]
+    if len(repaired) >= 2:
+        missing_companies = [company for company in companies if company not in repaired[1]]
+        company_anchors = []
+        for company in missing_companies:
+            row = anchor_rows.get(company)
+            if not row:
+                continue
+            row_comparator = {">=": "≥", "<=": "≤", "~": "约", "approx": "约"}.get(
+                str(row.get("comparator") or "").lower(),
+                "",
+            )
+            row_value = f"{float(row.get('value')):g}"
+            row_unit = {
+                "percent": "%",
+                "million_base_stations": "百万座",
+                "base_stations": "座",
+                "million_subscribers": "百万户",
+                "million_customers": "百万户",
+            }.get(str(row.get("unit") or ""), str(row.get("unit") or ""))
+            company_anchors.append(f"{company}{anchor_year}年{row_comparator}{row_value}{row_unit}")
+        if company_anchors:
+            repaired[1] = f"{repaired[1].rstrip('。')}；公司证据补充：{'、'.join(company_anchors)}。"
+    combined = " ".join(repaired)
+    has_shared_scope = any(re.search(r"shared|共建|共享", str(row.get("scope") or ""), flags=re.I) for row in rows)
+    has_scope_break = any(re.search(r"scope change|口径变化|unsafe|not comparable|不可比|restated", " ".join(str(row.get(key) or "") for key in ("scope", "basis", "note")), flags=re.I) for row in rows)
+    has_bounds = any(str(row.get("comparator") or "=") != "=" for row in rows)
+    if has_shared_scope and not ("共享" in combined and "不可相加" in combined):
+        repaired[2] = f"{repaired[2].rstrip('。')}；共建共享数值不可相加。"
+    if has_scope_break and not ("口径" in combined and re.search(r"不可比|不作|不能", combined)):
+        repaired[2] = f"{repaired[2].rstrip('。')}；口径变化年度不可直接比较。"
+    if has_bounds and not re.search(r"下限|上限|约数|边界", combined):
+        repaired[2] = f"{repaired[2].rstrip('。')}；边界披露仅按下限、上限或约数解读。"
+    return repaired
+
+
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     request_id = str(payload.get("requestId") or "")[:80]
     companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
@@ -420,7 +499,11 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                 raw_content = message.get("content") or message.get("reasoning_content") or ""
     finally:
         reset_internal_ai_priority(priority_token)
-    insights = _parse_competitor_business_insights(raw_content)
+    insights = _ensure_competitor_numeric_evidence(
+        _parse_competitor_business_insights(raw_content),
+        companies,
+        comparison_rows,
+    )
     _validate_competitor_business_insights(insights, companies, comparison_rows)
     return {"requestId": request_id, "insight": "\n".join(insights), "insights": insights, "model": model}
 
@@ -1659,6 +1742,67 @@ def build_status() -> dict:
     }
 
 
+def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
+    """Return a read-only, cached view of every effective crawl schedule and its downstream jobs."""
+    now_monotonic = time.monotonic()
+    with SCHEDULER_OVERVIEW_LOCK:
+        cached_at = float(SCHEDULER_OVERVIEW_CACHE.get("cached_at_monotonic") or 0)
+        cached_payload = SCHEDULER_OVERVIEW_CACHE.get("payload")
+        if not force and isinstance(cached_payload, dict) and now_monotonic - cached_at < SCHEDULER_OVERVIEW_CACHE_SECONDS:
+            return dict(cached_payload)
+
+        import scheduler
+
+        now = datetime.now(scheduler.HKT)
+        state = scheduler.load_state()
+        _due, rows = scheduler.due_rows(now, state)
+        active_rows = [item for item in rows if item.get("status") != "disabled"]
+        frequency_counts = {"daily": 0, "weekly": 0, "monthly": 0, "other": 0}
+        for item in active_rows:
+            frequency = str(item.get("frequency") or "")
+            key = "daily" if frequency.startswith("每天") else "weekly" if frequency.startswith("每周") else "monthly" if frequency.startswith("每月") else "other"
+            frequency_counts[key] += 1
+
+        row_numbers = {int(item.get("row") or 0) for item in active_rows}
+        source_groups = [
+            {"id": "local", "label": "香港本地竞对", "count": len(row_numbers.intersection(range(2, 19)))},
+            {"id": "benchmark", "label": "全球标杆运营商", "count": len(row_numbers.intersection(range(19, 22)))},
+            {"id": "hong-kong-news", "label": "香港重点资讯", "count": len(row_numbers.intersection(range(22, 26)))},
+            {"id": "international", "label": "国际政策与行业", "count": len(row_numbers.intersection(range(26, 35)))},
+        ]
+
+        run_history = load_crawl_run_history(task_kind="")
+        latest_main = next((item for item in run_history if str(item.get("trigger") or "") == "定时爬虫"), {})
+        latest_news = next((item for item in run_history if str(item.get("task_kind") or "") == "strategic-news"), {})
+        latest_intelligence = next((item for item in run_history if str(item.get("task_kind") or "") == "executive-intelligence-refresh"), {})
+        next_runs = sorted(
+            {str(item.get("next_run_hkt") or "") for item in active_rows if item.get("next_run_hkt")}
+        )
+        payload: dict[str, object] = {
+            "ok": True,
+            "checked_at_hkt": now.isoformat(timespec="seconds"),
+            "timezone": "Asia/Hong_Kong",
+            "configured_rows": len(active_rows),
+            "frequency_counts": frequency_counts,
+            "source_groups": source_groups,
+            "next_runs": next_runs,
+            "latest": {
+                "main_crawl": latest_main,
+                "strategic_news": latest_news,
+                "four_database_refresh": latest_intelligence,
+            },
+            "pipeline": {
+                "main_crawl": ["页面抓取", "Agent证据审核", "飞书归档", "页面变化线索"],
+                "four_databases": ["local", "international", "cloud", "macro"],
+                "four_database_stages": ["数据库刷新", "质量门禁", "17项AI洞察", "主页与公开页发布"],
+                "strategic_news": ["线索补缺", "确定性门禁", "AI语义审核", "历史语义去重", "写入与推送"],
+            },
+        }
+        SCHEDULER_OVERVIEW_CACHE.clear()
+        SCHEDULER_OVERVIEW_CACHE.update({"cached_at_monotonic": now_monotonic, "payload": payload})
+        return dict(payload)
+
+
 def load_strategic_news_run(slot: str) -> dict:
     normalized_slot = str(slot or "").strip()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}(?:[-A-Za-z0-9_.]+)?", normalized_slot):
@@ -2030,7 +2174,7 @@ def start_scheduler_with_backend() -> None:
 
         # News discovery runs inside strategic_briefing._run_scan so discovery,
         # review-sheet synchronization and group reporting form one ordered task.
-        # A second 07:00/15:00 worker would race the Feishu write and report stale counts.
+        # A second 06:00/13:30 worker would race the Feishu write and report stale counts.
         print("Strategic briefing monitor started with APP backend", flush=True)
 
 
@@ -3540,6 +3684,22 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
     return records[: max(1, min(500, int(limit or 100)))]
 
 
+def count_project_incidents() -> int:
+    """Count every valid incident in the ledger independently of the page limit."""
+    try:
+        monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return 0
+    incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
+    if not isinstance(incidents, dict):
+        return 0
+    return sum(
+        1
+        for incident in incidents.values()
+        if isinstance(incident, dict) and str(incident.get("incident_id") or "")
+    )
+
+
 def load_unified_task_index(limit: int = 50) -> list[dict]:
     tasks = [_task_public_record(item) for item in _task_read_local_index()]
     tasks.extend(
@@ -4043,6 +4203,16 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/scheduler-overview":
+            try:
+                json_response(self, build_scheduler_overview())
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "configured_rows": 0, "source_groups": [], "next_runs": []},
+                    status=503,
+                )
+            return
         if path == "/api/executive-company-benchmarks":
             try:
                 json_response(self, build_company_benchmarks())
@@ -4141,7 +4311,7 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception:
                 limit = 100
             incidents = load_project_incident_index(limit)
-            json_response(self, {"ok": True, "incidents": incidents, "total": len(incidents)})
+            json_response(self, {"ok": True, "incidents": incidents, "total": count_project_incidents()})
             return
         if path == "/api/task-run-log":
             query = parse_qs(parsed.query)

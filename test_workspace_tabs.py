@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=49', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=38', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=51', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=40', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -281,6 +281,29 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("news-lineage-pulse", STYLE)
         self.assertIn("@keyframes news-lineage-flow", STYLE)
         self.assertIn(".news-lineage-canvas.is-paused", STYLE)
+
+    def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
+        self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
+        self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
+        for label in (
+            "全局调度",
+            "本轮线索",
+            "所有定期爬虫如何共同工作",
+            "03:00 主爬虫",
+            "Agent 证据审核",
+            "四库更新",
+            "本地运营商",
+            "内地电讯企业",
+            "全球云厂商",
+            "香港电讯市场",
+            "17项AI洞察",
+            "主页 · 小竞AI · 公开页",
+        ):
+            self.assertIn(label, SCRIPT)
+        self.assertIn("frequency_counts", SCRIPT)
+        self.assertIn("source_groups", SCRIPT)
+        self.assertIn("data-news-lineage-mode", SCRIPT)
+        self.assertIn("news-lineage-group", STYLE)
 
 
 if __name__ == "__main__":
