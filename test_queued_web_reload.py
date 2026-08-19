@@ -46,6 +46,7 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertNotIn("/Desktop/", worker)
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
+        self.assertIn('$RUNTIME/task_runs/index.json', worker)
         self.assertLess(
             worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
             worker.index('bootstrap "$DOMAIN" "$WEB_PLIST"'),

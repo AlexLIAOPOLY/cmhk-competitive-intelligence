@@ -21,7 +21,9 @@ log() {
 }
 
 running_strategic_tasks() {
-  /usr/bin/curl -fsS --max-time 3 "$TASKS_URL" | /usr/bin/python3 -c '
+  local payload
+  if payload="$(/usr/bin/curl -fsS --max-time 3 "$TASKS_URL" 2>/dev/null)"; then
+    printf '%s' "$payload" | /usr/bin/python3 -c '
 import json
 import sys
 
@@ -34,6 +36,24 @@ print(sum(
     and task.get("run_status") == "running"
 ))
 '
+    return
+  fi
+  # Once login is required, the local queue worker cannot anonymously call the
+  # task API. Read the same persistent task index instead of weakening API auth.
+  /usr/bin/python3 - "$RUNTIME/task_runs/index.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+payload = json.loads(path.read_text(encoding="utf-8"))
+print(sum(
+    1
+    for task in payload.get("tasks", [])
+    if task.get("kind") == "strategic-news"
+    and task.get("run_status") == "running"
+))
+PY
 }
 
 next_midnight_epoch() {
