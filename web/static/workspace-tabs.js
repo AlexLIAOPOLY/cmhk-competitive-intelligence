@@ -648,7 +648,7 @@
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2>
-          <div class="news-run-controls"><details class="news-multi-select"><summary>日期 <b>${selectedDates.length}</b></summary><div><p class="news-select-caption">完整运行归档 · 共 ${number(dates.length)} 天</p>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
+          <div class="news-run-controls"><details class="news-multi-select" name="news-archive-filter"><summary>日期 <b>${selectedDates.length}</b></summary><div><p class="news-select-caption">完整运行归档 · 共 ${number(dates.length)} 天</p>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select" name="news-archive-filter"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
         </header>
         ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<div class="news-process-meta"><span>已选择 ${runs.length} 次批次</span><span>${selectedDates.map(esc).join("、")}</span><span>${runs.every((item) => state.newsRunDetails[item.crawl_run_id]) ? "已载入全部运行证据" : "正在载入运行证据…"}</span></div>
         <div class="news-flow" role="list" aria-label="新闻获取与审核流水线">${stages.map((stage, index) => `<button class="news-flow-stage is-${stage.status}${stage.key === selectedStage?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-stage="${esc(stage.key)}" aria-label="查看${esc(stage.label)}详细运行日志" aria-pressed="${stage.key === selectedStage?.key}"><span class="news-stage-step">${String(index + 1).padStart(2, "0")}</span><span class="news-stage-label">${esc(stage.label)}</span><strong>${number(stage.value)}</strong><small>保留</small>${stage.lost ? `<em>淘汰 ${number(stage.lost)}</em>` : ""}<i class="news-stage-retention" style="--retention:${Math.max(8, Math.min(100, stage.value / Math.max(1, stages[0]?.value || 1) * 100))}%"></i></button>${index < stages.length - 1 ? '<span class="news-flow-link" aria-hidden="true"><b></b><b></b><b></b></span>' : ""}`).join("")}</div>
@@ -658,6 +658,11 @@
         <dialog class="news-stage-dialog" id="newsStageDialog"><div id="newsStageDialogBody"></div></dialog>`}
       </section>
     </div>`;
+    const archiveFilters = [...panel.querySelectorAll('.news-multi-select[name="news-archive-filter"]')];
+    archiveFilters.forEach((filter) => filter.addEventListener("toggle", () => {
+      if (!filter.open) return;
+      archiveFilters.forEach((other) => { if (other !== filter) other.open = false; });
+    }));
   }
 
   async function loadNewsRuns(runIds) {
