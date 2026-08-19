@@ -56,6 +56,7 @@
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
     syncEmbeddedVisibility(target);
+    document.body.classList.toggle("workspace-ai-active", target === "ai");
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
     window.dispatchEvent(new CustomEvent("workspace-tab-change", { detail: { tab: target } }));
