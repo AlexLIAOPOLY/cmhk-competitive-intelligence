@@ -402,6 +402,19 @@
     }));
   }
 
+  async function requestLegacyCompetitorInsight(payload, requestId, controller, card) {
+    card.classList.add("is-loading");
+    card.setAttribute("aria-busy", "true");
+    card.querySelector("[data-competitor-insight-status]").textContent = "兼容模式正在生成真实 AI 结果";
+    card.querySelector("[data-competitor-insight-badge]").textContent = "GENERATING";
+    const response = await fetch("/api/competitor-insight", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw new Error(result.error || `AI兼容接口 HTTP ${response.status}`);
+    if (requestId !== state.competitorInsightRequest) return false;
+    settleCompetitorInsight(card, { mode: "ai", insights: result.insights });
+    return true;
+  }
+
   async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
@@ -409,7 +422,11 @@
     beginCompetitorInsightStream(card);
     try {
       const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
-      if (!response.ok || !response.body) throw new Error(response.status === 404 ? "AI流式服务尚未加载" : `HTTP ${response.status}`);
+      if (response.status === 404) {
+        await requestLegacyCompetitorInsight(payload, requestId, controller, card);
+        return;
+      }
+      if (!response.ok || !response.body) throw new Error(`AI流式接口 HTTP ${response.status}`);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
