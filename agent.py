@@ -41,7 +41,7 @@ from agent_production import (
 )
 from crawl_run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from rag_llm import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, retrieve_context
+from rag_llm import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
 from chart_renderer import render_chart
 
 
@@ -2473,11 +2473,12 @@ def stream_agent(
     except Exception:
         captured_memory = None
     recalled_memory = "" if plain_conversation else memory_context(message, limit=5)
-    selected_dataset_set = {
+    requested_dataset_set = {
         re.sub(r"[^A-Za-z0-9_.\-\u4e00-\u9fff]", "", str(item or ""))
         for item in (selected_dataset_ids or [])
         if str(item or "").strip()
     }
+    selected_dataset_set = resolve_dataset_ids(requested_dataset_set) or set()
     selected_skill_set = {
         re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
         for item in (selected_skill_ids or [])

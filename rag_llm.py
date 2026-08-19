@@ -381,11 +381,42 @@ def default_background_dataset_ids() -> set[str]:
     return ids
 
 
+def resolve_dataset_ids(dataset_ids: set[str] | None) -> set[str] | None:
+    """Resolve stale selectable IDs to active packages without loading history."""
+    if dataset_ids is None:
+        return None
+    manifests: dict[str, dict[str, Any]] = {}
+    if AGENT_KNOWLEDGE_ROOT.exists():
+        for folder in sorted(AGENT_KNOWLEDGE_ROOT.iterdir()):
+            if not folder.is_dir() or folder.name.startswith("."):
+                continue
+            manifest = _knowledge_manifest(folder)
+            manifests[str(manifest.get("id") or folder.name)] = manifest
+            manifests.setdefault(folder.name, manifest)
+
+    resolved: set[str] = set()
+    for requested_id in dataset_ids:
+        current = manifests.get(str(requested_id))
+        visited: set[str] = set()
+        while current and current.get("visibility") == "superseded":
+            current_id = str(current.get("id") or "")
+            if current_id in visited:
+                current = None
+                break
+            visited.add(current_id)
+            successor_id = str(current.get("superseded_by") or "").strip()
+            current = manifests.get(successor_id) if successor_id else None
+        if not current or current.get("visibility") == "archived":
+            continue
+        resolved.add(str(current.get("id") or requested_id))
+    return resolved
+
+
 def effective_dataset_ids(dataset_ids: set[str] | None = None) -> set[str] | None:
     background_ids = default_background_dataset_ids()
     if dataset_ids is None:
         return None
-    return set(dataset_ids) | background_ids
+    return set(resolve_dataset_ids(dataset_ids) or set()) | background_ids
 
 
 def _chunk_text(source: str, text: str, max_chars: int = 1200) -> list[dict[str, Any]]:
