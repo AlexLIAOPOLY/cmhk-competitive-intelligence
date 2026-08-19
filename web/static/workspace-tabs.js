@@ -230,7 +230,7 @@
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon><img src="/static/assets/ai-insight-sparkle.png" alt="" aria-hidden="true" /></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
           <span class="competitor-insight-badge" data-competitor-insight-badge>LOCAL DATA</span>
         </header>
         <div class="competitor-insight-body">
