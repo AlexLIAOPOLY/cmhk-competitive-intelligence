@@ -13,6 +13,7 @@ class WorkspaceFloatingNavTests(unittest.TestCase):
         self.assertIn(".workspace-layout.is-nav-collapsed { grid-template-columns: minmax(0, 1fr);", STYLE)
         self.assertIn(".workspace-layout.is-nav-collapsed .workspace-content { grid-column: 1; }", STYLE)
         self.assertIn(".workspace-layout.is-nav-collapsed .workspace-tabs { position: absolute;", STYLE)
+        self.assertIn("position: absolute; top: 0; left: 10px;", STYLE)
         self.assertIn("pointer-events: none;", STYLE)
         self.assertIn("pointer-events: auto; }", STYLE)
 
