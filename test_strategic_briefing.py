@@ -320,7 +320,7 @@ class StrategicBriefingTests(unittest.TestCase):
             order.append("review")
             self.assertTrue(kwargs["force"])
             self.assertFalse(kwargs["schedule_dashboard_publish"])
-            self.assertEqual(kwargs["idempotency_key"], "2026-07-29@15:00-test")
+            self.assertEqual(kwargs["idempotency_key"], "2026-07-29@13:30-test")
             return review_result
 
         def record_notification(**_kwargs):
@@ -387,7 +387,7 @@ class StrategicBriefingTests(unittest.TestCase):
                     "hong_kong_count": 0,
                     "query_errors": [],
                     "window_start": "2026-07-29T08:00:00+08:00",
-                    "window_end": "2026-07-29T15:00:00+08:00",
+                    "window_end": "2026-07-29T13:30:00+08:00",
                     "agentic_search": {
                         "fixed_query_count": 53,
                         "fixed_result_count": 0,
@@ -443,8 +443,8 @@ class StrategicBriefingTests(unittest.TestCase):
             ),
         ):
             result = briefing._run_scan(
-                datetime(2026, 7, 29, 15, 0, tzinfo=briefing.HKT),
-                "2026-07-29@15:00-test",
+                datetime(2026, 7, 29, 13, 30, tzinfo=briefing.HKT),
+                "2026-07-29@13:30-test",
                 "午后扫描",
                 {},
                 ensure_group_notifications=True,
@@ -578,8 +578,8 @@ class StrategicBriefingTests(unittest.TestCase):
             ) as finalize_run,
         ):
             result = briefing._run_scan(
-                datetime(2026, 8, 19, 7, 0, tzinfo=briefing.HKT),
-                "2026-08-19@07:00",
+                datetime(2026, 8, 19, 6, 0, tzinfo=briefing.HKT),
+                "2026-08-19@06:00",
                 "晨间扫描",
                 {},
                 ensure_group_notifications=True,
@@ -597,10 +597,10 @@ class StrategicBriefingTests(unittest.TestCase):
     def test_both_daily_slots_share_next_midnight_deadline(self):
         self.assertEqual(
             [value.strftime("%H:%M") for value in briefing.SCAN_TIMES],
-            ["07:00", "15:00"],
+            ["06:00", "13:30"],
         )
-        for hour in (7, 15):
-            slot_at = datetime(2026, 8, 19, hour, 0, tzinfo=briefing.HKT)
+        for hour, minute in ((6, 0), (13, 30)):
+            slot_at = datetime(2026, 8, 19, hour, minute, tzinfo=briefing.HKT)
             self.assertEqual(
                 briefing._daily_cutoff_at(slot_at),
                 datetime(2026, 8, 20, 0, 0, tzinfo=briefing.HKT),
@@ -703,7 +703,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_recovers_completed_archive_from_stale_state(self):
         now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
-        slot_key = "2026-07-30@07:00"
+        slot_key = "2026-07-30@06:00"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -770,7 +770,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_restarts_interrupted_scan_after_normal_catchup_window(self):
         now = datetime(2026, 8, 18, 11, 6, tzinfo=briefing.HKT)
-        slot_key = "2026-08-18@07:00"
+        slot_key = "2026-08-18@06:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {
@@ -840,8 +840,8 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_runs_afternoon_slot_after_morning_crossed_its_start_time(self):
         now = datetime(2026, 8, 18, 17, 30, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@07:00"
-        afternoon_key = "2026-08-18@15:00"
+        morning_key = "2026-08-18@06:00"
+        afternoon_key = "2026-08-18@13:30"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {
@@ -929,8 +929,8 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
         now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@07:00"
-        afternoon_key = "2026-08-18@15:00"
+        morning_key = "2026-08-18@06:00"
+        afternoon_key = "2026-08-18@13:30"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {morning_key: {"status": "failed"}},
@@ -989,7 +989,7 @@ class StrategicBriefingTests(unittest.TestCase):
         )
 
     def test_paused_completed_archive_recovers_pending_notification(self):
-        slot_key = "2026-07-30@15:00"
+        slot_key = "2026-07-30@13:30"
         archived = {
             "slot": slot_key,
             "slot_label": "午后扫描",
@@ -997,7 +997,7 @@ class StrategicBriefingTests(unittest.TestCase):
             "notification_status": "queued_while_paused",
             "message_id": "",
             "candidate_count": 2,
-            "scanned_at": "2026-07-30T15:00:00+08:00",
+            "scanned_at": "2026-07-30T13:30:00+08:00",
             "spec": {"keyword_count": 135, "module_count": 6},
             "review_sheet": {"new_count": 2, "new_items": []},
         }
@@ -1010,7 +1010,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(pending["review_result"]["new_count"], 2)
 
     def test_archive_recovery_uses_reviewed_new_count_for_monitoring(self):
-        slot_key = "2026-07-30@15:00"
+        slot_key = "2026-07-30@13:30"
         archived = {
             "slot": slot_key,
             "status": "completed",
@@ -1045,7 +1045,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 "skipped_count": 0,
             }
             result = briefing._dispatch_subscription_news_after_scan(
-                slot_key="2026-08-19@07:00",
+                slot_key="2026-08-19@06:00",
                 slot_label="晨间扫描",
                 review_result={"new_items": reviewed},
                 candidates=[{"title": "未采用候选"}],
@@ -1054,21 +1054,21 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "completed")
         service_class.return_value.dispatch_news_after_crawl.assert_called_once_with(
-            crawl_slot="2026-08-19@07:00",
+            crawl_slot="2026-08-19@06:00",
             slot_label="晨间扫描",
             items=reviewed,
             completed_at="2026-08-19T07:30:00+08:00",
         )
 
     def test_replayed_notification_marks_archive_as_sent(self):
-        slot_key = "2026-07-30@15:00"
+        slot_key = "2026-07-30@13:30"
         archived = {
             "slot": slot_key,
             "slot_label": "午后扫描",
             "status": "completed",
             "notification_status": "queued_while_paused",
             "message_id": "",
-            "scanned_at": "2026-07-30T15:00:00+08:00",
+            "scanned_at": "2026-07-30T13:30:00+08:00",
             "spec": {"keyword_count": 135, "module_count": 6},
             "review_sheet": {"new_count": 2},
         }
@@ -1076,7 +1076,7 @@ class StrategicBriefingTests(unittest.TestCase):
             "scan_slots": {slot_key: {"status": "completed"}},
             "pending_scan_notifications": {
                 slot_key: {
-                    "now": "2026-07-30T15:00:00+08:00",
+                    "now": "2026-07-30T13:30:00+08:00",
                     "slot_label": "午后扫描",
                     "spec": archived["spec"],
                     "review_result": archived["review_sheet"],

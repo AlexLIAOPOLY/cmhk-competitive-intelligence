@@ -17,12 +17,21 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 class AgenticNewsSearchTests(unittest.TestCase):
     def test_morning_window_rechecks_previous_afternoon_for_late_indexing(self):
         start_at, end_at = digest._window(
-            datetime(2026, 8, 16, 9, 0, tzinfo=HKT),
+            datetime(2026, 8, 16, 6, 0, tzinfo=HKT),
             True,
         )
 
-        self.assertEqual(start_at, datetime(2026, 8, 15, 8, 0, tzinfo=HKT))
-        self.assertEqual(end_at, datetime(2026, 8, 16, 9, 0, tzinfo=HKT))
+        self.assertEqual(start_at, datetime(2026, 8, 15, 5, 0, tzinfo=HKT))
+        self.assertEqual(end_at, datetime(2026, 8, 16, 6, 0, tzinfo=HKT))
+
+    def test_afternoon_window_keeps_one_hour_overlap_with_morning_slot(self):
+        start_at, end_at = digest._window(
+            datetime(2026, 8, 16, 13, 30, tzinfo=HKT),
+            False,
+        )
+
+        self.assertEqual(start_at, datetime(2026, 8, 16, 5, 0, tzinfo=HKT))
+        self.assertEqual(end_at, datetime(2026, 8, 16, 13, 30, tzinfo=HKT))
 
     def test_late_index_retry_unions_results_until_reliable_minimum(self):
         def item(index):

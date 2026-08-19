@@ -41,6 +41,7 @@ REPORT_MODE_LABELS = {
 }
 VALID_REPORT_MODES = frozenset(REPORT_MODE_LABELS)
 REPORT_CADENCE_LABEL = "每两周随报告发布"
+STRATEGIC_SCAN_TIMES_DEFAULT = ("06:00", "13:30")
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
@@ -56,6 +57,18 @@ def _now_hkt() -> str:
 def _normalize_news_frequency(value: str) -> str:
     raw = str(value or "").strip()
     return LEGACY_FREQUENCY_MAP.get(raw, raw)
+
+
+def _normalize_strategic_scan_times(value: Any) -> list[str]:
+    values = value if isinstance(value, (list, tuple)) else str(value or "").split(",")
+    normalized: list[str] = []
+    for item in values:
+        raw = str(item or "").strip()
+        if not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw):
+            continue
+        if raw not in normalized:
+            normalized.append(raw)
+    return sorted(normalized) or list(STRATEGIC_SCAN_TIMES_DEFAULT)
 
 
 def _command_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -85,7 +98,8 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "报告固定每两周随发布推送；战略新闻会在每天的战略爬虫完成后推送，您可以选择每天一次或每天两次。"
+        "报告固定每两周随发布推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
+        "完成审核后推送，您可以选择每天一次或每天两次。"
         "感谢您的配合！"
     )
     return {
@@ -93,7 +107,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
         "config": {
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "订阅战略情报 · 报告双周推送，新闻频率可选"},
+            "summary": {"content": "订阅战略情报 · 新闻每日 06:00 / 13:30 扫描"},
         },
         "header": {
             "title": {"tag": "plain_text", "content": "订阅战略情报"},
@@ -169,7 +183,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；战略新闻在爬虫完成后推送，每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
+                            "content": "<font color='grey'>双周报和业绩摘要固定每两周随报告发布；战略新闻每日香港时间 06:00、13:30 扫描，爬虫完成审核后推送。每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
                             "text_size": "notation",
                         },
                         {
@@ -792,7 +806,21 @@ class SubscriptionService:
             },
             "invitation_permissions": self.invitation_permission_snapshot(),
             "active_subscriber_count": sum(1 for row in subscribers if row["status"] == "active"),
+            "strategic_news_schedule": self.strategic_news_schedule_snapshot(),
             "updated_at": _now_hkt(),
+        }
+
+    def strategic_news_schedule_snapshot(self) -> dict[str, Any]:
+        configured = self.environ.get("CMHK_STRATEGY_SCAN_TIMES")
+        if not configured:
+            configured = self.config.get("strategic_scan_times") or STRATEGIC_SCAN_TIMES_DEFAULT
+        times = _normalize_strategic_scan_times(configured)
+        return {
+            "times": times,
+            "times_text": " / ".join(times),
+            "timezone": "Asia/Hong_Kong",
+            "timezone_label": "香港时间",
+            "dispatch_rule": "爬虫完成审核后推送",
         }
 
     def invitation_permission_snapshot(self) -> dict[str, Any]:

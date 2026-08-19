@@ -64,6 +64,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         (self.root / "config").mkdir()
         (self.root / "config" / "project_monitor.json").write_text(json.dumps({
+            "strategic_scan_times": ["06:00", "13:30"],
             "bot": {"profile": "cli_test"},
             "subscriptions": {
                 "entry_profile": "cli_test",
@@ -105,7 +106,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告固定每两周随发布推送；战略新闻会在每天的战略爬虫完成后推送，您可以选择每天一次或每天两次。"
+            "报告固定每两周随发布推送；战略新闻爬虫每日香港时间 06:00 和 13:30 执行，"
+            "完成审核后推送，您可以选择每天一次或每天两次。"
             "感谢您的配合！",
         )
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
@@ -126,6 +128,18 @@ class SubscriptionServiceTests(unittest.TestCase):
         pause = next(item for item in card["body"]["elements"] if item.get("behaviors"))
         self.assertEqual(pause["type"], "text")
         self.assertEqual(pause["behaviors"][0]["value"]["action"], "cmhk_subscription_pause_all_v1")
+
+    def test_management_snapshot_exposes_strategic_news_schedule(self):
+        self.assertEqual(
+            self.service.strategic_news_schedule_snapshot(),
+            {
+                "times": ["06:00", "13:30"],
+                "times_text": "06:00 / 13:30",
+                "timezone": "Asia/Hong_Kong",
+                "timezone_label": "香港时间",
+                "dispatch_rule": "爬虫完成审核后推送",
+            },
+        )
 
     def test_form_callback_persists_identity_and_replaces_services(self):
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")

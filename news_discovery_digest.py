@@ -38,7 +38,7 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 SCAN_TIMES = tuple(
     clock_time(int(item.split(":", 1)[0]), int(item.split(":", 1)[1]))
-    for item in os.environ.get("CMHK_NEWS_DIGEST_SCAN_TIMES", "07:00,15:00").split(",")
+    for item in os.environ.get("CMHK_NEWS_DIGEST_SCAN_TIMES", "06:00,13:30").split(",")
     if re.fullmatch(r"\s*\d{1,2}:\d{2}\s*", item)
 )
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_NEWS_DIGEST_POLL_SECONDS", "60")))
@@ -1355,7 +1355,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         base_plans = strategic_briefing._query_plans(
             spec,
             strategic_briefing._load_state(),
-            # The 07:00/15:00 discovery crawl is the comprehensive layer:
+            # The 06:00/13:30 discovery crawl is the comprehensive layer:
             # every configured monitoring keyword is searched on every run.
             # The lightweight strategic monitor keeps its rotating limit.
             max_queries=None,
@@ -1590,14 +1590,16 @@ def _latest_timed_crawl() -> dict[str, Any]:
 
 def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    first_scan = min(SCAN_TIMES, default=clock_time(6, 0))
+    overlap_start = today.replace(hour=first_scan.hour, minute=first_scan.minute) - timedelta(hours=1)
     if not morning:
-        # Retain one hour of overlap for articles indexed shortly after the 09:00 run.
+        # Retain one hour of overlap for articles indexed shortly after the morning run.
         # Downstream URL/title deduplication prevents overlap from becoming new rows.
-        return today.replace(hour=8), now
-    # Keep the previous afternoon's full 08:00-15:00 publication window as a
-    # next-morning backstop. News indexes can expose an article hours after its
+        return overlap_start, now
+    # Keep the previous day's full publication window from one hour before the
+    # morning slot as a next-morning backstop. News indexes can expose an article hours after its
     # publication time; exact URL/ID dedupe downstream prevents re-insertion.
-    return (today - timedelta(days=1)).replace(hour=8), now
+    return overlap_start - timedelta(days=1), now
 
 
 def _send_card(card: dict[str, Any]) -> list[str]:

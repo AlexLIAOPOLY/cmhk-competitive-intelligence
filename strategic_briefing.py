@@ -392,10 +392,10 @@ def _parse_scan_times(raw: str) -> tuple[clock_time, ...]:
             parsed.append(clock_time(hour=int(hour_text), minute=int(minute_text)))
         except (TypeError, ValueError):
             logging.warning("忽略无效战略快讯扫描时间：%s", text)
-    return tuple(sorted(set(parsed))) or (clock_time(7, 0), clock_time(15, 0))
+    return tuple(sorted(set(parsed))) or (clock_time(6, 0), clock_time(13, 30))
 
 
-SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "07:00,15:00"))
+SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "06:00,13:30"))
 
 
 def _parse_clock(value: str, fallback: clock_time) -> clock_time:
