@@ -141,7 +141,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T15:15:00+08:00",
       "started_at_hkt": "2026-08-19T15:15:04+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:37:15+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -717,7 +717,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T09:15:00+08:00",
       "started_at_hkt": "2026-08-19T09:15:10+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:37:15+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1101,7 +1101,7 @@
       ],
       "occurred_at_hkt": "2026-08-19 03:11:42",
       "started_at_hkt": "2026-08-19T16:09:38+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:37:15+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:42:16+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
