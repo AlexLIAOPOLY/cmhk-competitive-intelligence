@@ -1363,6 +1363,50 @@ select {
   gap: 8px;
 }
 
+.workspace-report-host .output-actions .weekly-generation-preview {
+  display: inline-grid;
+  min-width: 190px;
+  order: -2;
+  padding: 6px 12px;
+  border: 1px solid rgba(76, 151, 171, 0.34);
+  border-radius: 8px;
+  background: rgba(8, 38, 50, 0.72);
+  grid-template-columns: auto auto;
+  column-gap: 9px;
+  row-gap: 2px;
+  white-space: nowrap;
+}
+
+.workspace-report-host .output-actions .weekly-generation-preview small {
+  grid-column: 1 / -1;
+  color: #6f98a5;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.workspace-report-host .output-actions .weekly-generation-preview strong {
+  color: #d9edf1;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.workspace-report-host .output-actions .weekly-generation-preview em {
+  color: #6fd2b2;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.workspace-report-host .output-actions .weekly-generation-preview.is-loading,
+.workspace-report-host .output-actions .weekly-generation-preview.has-error {
+  opacity: 0.72;
+}
+
+.workspace-report-host .output-actions #generateButtonSecondary {
+  order: -1;
+}
+
 #fileCountText {
   color: var(--muted);
   font-size: 12px;

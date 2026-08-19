@@ -2466,6 +2466,28 @@ def run_carrier_performance_sync() -> dict:
     }
 
 
+def build_weekly_report_generation_preview(now: datetime | None = None) -> dict[str, object]:
+    """Describe the exact input window and approved rows a new weekly run would use."""
+    from generate_weekly_report import resolve_weekly_period
+    from news_review_sheet import load_weekly_report_candidates
+
+    period = resolve_weekly_period(now)
+    effective_range = period.effective_range
+    rows, selection_audit = load_weekly_report_candidates(
+        effective_range["start"],
+        effective_range["end"],
+    )
+    return {
+        "windowStart": effective_range["start"],
+        "windowEnd": effective_range["end"],
+        "newsCount": len(rows),
+        "acceptedRows": int(selection_audit.get("acceptedRows") or 0),
+        "excludedRows": int(selection_audit.get("excludedRows") or 0),
+        "refreshedAt": period.as_of.isoformat(timespec="seconds"),
+        "selectionSource": str(selection_audit.get("selectionSource") or ""),
+    }
+
+
 def run_report_generation() -> dict:
     started = time.time()
     proc = subprocess.run(
@@ -4080,6 +4102,12 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
+            return
+        if path == "/api/weekly-report-preview":
+            try:
+                json_response(self, {"ok": True, "preview": build_weekly_report_generation_preview()})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=503)
             return
         if path == "/api/report-audio":
             path_str = (parse_qs(parsed.query).get("path") or [""])[0]
