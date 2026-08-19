@@ -263,7 +263,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('data-intelligence-disclosure', app)
         self.assertIn('overflow-y: auto;', styles)
         self.assertIn('overscroll-behavior: contain;', styles)
-        self.assertIn('href="/static/leadership-board.css?v=17"', html)
+        self.assertIn('href="/static/leadership-board.css?v=18"', html)
         self.assertIn('class="ai-insight-mark"', app)
         self.assertIn('数据战略解读', app)
         self.assertIn('focus.ai_summary?.origin !== "evidence_rule"', app)
@@ -627,6 +627,19 @@ class ReportFileNameTests(unittest.TestCase):
 
 class ChatThreadPersistenceTests(unittest.TestCase):
     def test_chat_thread_requests_bypass_stale_browser_cache(self) -> None:
+class HomepageTickerAndTabRegressionTests(unittest.TestCase):
+    def test_tabs_keep_readable_height_and_ticker_recovers_after_manual_input(self) -> None:
+        static_dir = Path(__file__).resolve().parent / "web" / "static"
+        app = (static_dir / "app.js").read_text(encoding="utf-8")
+        leadership_styles = (static_dir / "leadership-board.css").read_text(encoding="utf-8")
+
+        self.assertIn('.intelligence-focus-tabs { height: 44px; }', leadership_styles)
+        self.assertIn('min-height: 42px;', leadership_styles)
+        self.assertNotIn('list.addEventListener("pointerenter"', app)
+        self.assertIn('shiftScroll(event.deltaX || event.deltaY);\n    resumeScroll(700);', app)
+        self.assertIn('focusPaused = Boolean(event.target && event.target.matches(":focus-visible"));', app)
+
+
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 
         self.assertIn('fetch("/api/chat-threads", { cache: "no-store" })', app)

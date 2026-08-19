@@ -8801,7 +8801,6 @@ document.addEventListener("keydown", (event) => {
 
   let scrollAnimation = null;
   let resumeTimer = null;
-  let pointerPaused = false;
   let focusPaused = false;
   let touchStartX = 0;
   let touchStartTime = 0;
@@ -8885,7 +8884,7 @@ document.addEventListener("keydown", (event) => {
   function resumeScroll(delay) {
     if (resumeTimer) window.clearTimeout(resumeTimer);
     resumeTimer = window.setTimeout(function () {
-      if (!pointerPaused && !focusPaused && scrollAnimation) {
+      if (!focusPaused && scrollAnimation) {
         scrollAnimation.play();
       }
     }, delay || 0);
@@ -8976,18 +8975,11 @@ document.addEventListener("keydown", (event) => {
     }
   }
 
-  list.addEventListener("pointerenter", function () {
-    pointerPaused = true;
-    pauseScroll();
-  });
-  list.addEventListener("pointerleave", function () {
-    pointerPaused = false;
-    resumeScroll(350);
-  });
   list.addEventListener("wheel", function (event) {
     event.preventDefault();
     pauseScroll();
     shiftScroll(event.deltaX || event.deltaY);
+    resumeScroll(700);
   }, { passive: false });
   list.addEventListener("touchstart", function (event) {
     const touch = event.touches && event.touches[0];
@@ -9007,13 +8999,16 @@ document.addEventListener("keydown", (event) => {
   }, { passive: true });
   list.addEventListener("pointerdown", function () {
     pauseScroll();
+    resumeScroll(700);
   });
   list.addEventListener("keydown", function () {
-    pauseScroll();
-  });
-  list.addEventListener("focusin", function () {
     focusPaused = true;
     pauseScroll();
+  });
+  list.addEventListener("focusin", function (event) {
+    focusPaused = Boolean(event.target && event.target.matches(":focus-visible"));
+    if (focusPaused) pauseScroll();
+    else resumeScroll(350);
   });
   list.addEventListener("focusout", function () {
     focusPaused = false;
