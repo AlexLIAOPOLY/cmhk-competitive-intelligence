@@ -13,12 +13,12 @@
     competitorInsightRequest: 0,
     competitorInsightController: null,
     newsRuns: [],
+    newsSelectedDate: "",
     newsSelectedRunIds: [],
     newsRunDetails: {},
     newsItemFallback: {},
     newsRunRequest: 0,
     newsSelectedStage: "search",
-    newsLineageMode: "global",
     newsLineageZoom: 1,
     newsLineagePaused: false,
     schedulerOverview: null,
@@ -538,7 +538,7 @@
     const rawStages = [
       { key: "search", label: "线索发现", value: discovered, input: `${keywordCount || "—"} 个关键词 · ${pageCount || "—"} 个固定来源`, lost: 0, details: [`固定监控执行 ${fixedQueries || "—"} 条查询`, `Agentic Search 执行 ${agentQueries || "—"} 条补缺查询`, `合并 ${pageClues || "—"} 条页面变化线索`], evidence: lines.search },
       { key: "gate", label: "确定性门禁", value: gatePassed, input: `${gateInput || discovered} 条候选进入`, lost: Math.max(0, gateInput - gatePassed), details: ["校验时间窗、发布日期、规范化 URL 与基础重复", "不满足硬规则的线索不会消耗 AI 审核额度"], evidence: lines.gate },
-      { key: "ai", label: "AI 语义审核", value: aiRetained, input: `${aiInput || gatePassed} 条送审`, lost: aiRejected, details: ["结合竞对、政策、市场、网络与战略相关性逐条判定", `本轮排除 ${aiRejected} 条；单条异常隔离，不影响其余候选`], evidence: lines.ai },
+      { key: "ai", label: "AI 语义审核", value: aiRetained, input: `${aiInput || gatePassed} 条送审`, lost: aiRejected, details: ["结合竞对、政策、市场、网络与战略相关性逐条判定", `该次运行排除 ${aiRejected} 条；单条异常隔离，不影响其余候选`], evidence: lines.ai },
       { key: "dedupe", label: "历史语义去重", value: newCount, input: `${aiRetained} 条 AI 保留`, lost: duplicates, details: [`与 ${historical || "—"} 条当日历史事件进行语义比对`, `识别 ${duplicates} 条重复事件，保留 ${newCount} 条新增`], evidence: lines.dedupe },
       { key: "write", label: "飞书写入回读", value: newCount, input: `${newCount} 条新增写入`, lost: 0, details: [`逐格回读 ${readbackCells ? number(readbackCells) : "—"} 个单元格`, "只有写入值与回读值完全一致才视为交付成功"], evidence: lines.write },
       { key: "push", label: "群组推送", value: newCount, input: "归档与回读通过后", lost: 0, details: [notificationSent ? "正式群卡片已发送" : "尚未到达推送门禁", "推送发生在审核、去重、写入、回读和归档全部完成之后"], evidence: lines.push },
@@ -553,37 +553,22 @@
   }
 
   function selectedNewsRuns() {
-    const available = new Set(state.newsRuns.map((run) => run.crawl_run_id));
-    let selected = state.newsSelectedRunIds.filter((id) => available.has(id));
-    if (!selected.length) {
-      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
-      selected = String(params.get("newsRuns") || params.get("newsRun") || "").split(",").filter((id) => available.has(id));
+    const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
+    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+    let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
+    if (!dates.includes(selectedDate)) {
+      const legacyRunId = String(params.get("newsRuns") || params.get("newsRun") || "").split(",").find(Boolean);
+      selectedDate = newsRunDate(state.newsRuns.find((run) => run.crawl_run_id === legacyRunId));
     }
-    if (!selected.length && state.newsRuns[0]) selected = [state.newsRuns[0].crawl_run_id];
-    state.newsSelectedRunIds = selected.slice(0, 8);
-    return state.newsRuns.filter((run) => state.newsSelectedRunIds.includes(run.crawl_run_id));
+    if (!dates.includes(selectedDate)) selectedDate = dates[0] || "";
+    state.newsSelectedDate = selectedDate;
+    const selected = state.newsRuns.filter((run) => newsRunDate(run) === selectedDate);
+    state.newsSelectedRunIds = selected.map((run) => run.crawl_run_id);
+    return selected;
   }
 
-  function newsTimeline(content) {
-    const wanted = [
-      ["搜索准备", "准备关键词与固定来源"],
-      ["新闻发现完成", "汇总固定搜索与 Agentic 线索"],
-      ["候选确定性门禁", "执行硬规则门禁"],
-      ["AI审核完成", "完成逐条语义审核"],
-      ["语义去重完成", "完成历史事件比对"],
-      ["飞书逐格回读：第 1 次回读通过", "完成飞书写入校验"],
-      ["结果归档完成", "候选与结果落盘"],
-      ["群通知完成", "完成正式群组推送"],
-    ];
-    return wanted.map(([needle, label]) => {
-      const evidence = logLine(content, needle);
-      const time = evidence.match(/\[(?:\d{4}-\d{2}-\d{2}[T ])?(\d{2}:\d{2}:\d{2})/)?.[1] || "--:--:--";
-      return { label, time, evidence, done: Boolean(evidence) };
-    });
-  }
-
-  function updateNewsRunUrl(runIds) {
-    history.replaceState(null, "", `${location.pathname}${location.search}#workspace=news&newsRuns=${encodeURIComponent(runIds.join(","))}`);
+  function updateNewsDateUrl(date) {
+    history.replaceState(null, "", `${location.pathname}${location.search}#workspace=news&newsDate=${encodeURIComponent(date)}`);
   }
 
   function aggregateNewsStages(runs) {
@@ -595,7 +580,7 @@
         ...stage,
         value: variants.reduce((sum, item) => sum + item.value, 0),
         lost: variants.reduce((sum, item) => sum + item.lost, 0),
-        input: `${runs.length} 次批次汇总`,
+        input: `当天 ${runs.length} 次运行合计`,
         details: variants.map((item, itemIndex) => `${newsRunDate(runs[itemIndex])} ${newsRunTime(runs[itemIndex])}：保留 ${number(item.value)} 条${item.lost ? `，淘汰 ${number(item.lost)} 条` : ""}`),
         evidence: variants.map((item, itemIndex) => `${newsRunDate(runs[itemIndex])} ${newsRunTime(runs[itemIndex])}｜${item.evidence || "尚未到达此步骤"}`).join("\n"),
         status,
@@ -613,7 +598,7 @@
     const frequency = overview.frequency_counts || {};
     const latest = overview.latest || {};
     const mainRun = latest.main_crawl || {};
-    const newsRun = latest.strategic_news || runs[0] || {};
+    const newsRun = runs[0] || latest.strategic_news || {};
     const intelligenceRun = latest.four_database_refresh || {};
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const domainNode = (key, fallbackLabel, position) => {
@@ -641,10 +626,10 @@
     ];
     const nodes = [
       { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : "每日2轮", note: `最近完成 ${runCompletionText(newsRun)}`, tone: "cyan", position: [18, 50], details: ["固定时点独立扫描战略新闻", "接收主爬虫产生的页面变化线索"], evidence: newsRun.progress_detail || newsRun.status_detail || newsRun.scope || "战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: "固定来源 + Agentic + 页面变化", tone: "cyan", position: [365, 50], details: ["固定关键词和页面来源", "对页面变化生成关联查询", "Agentic Search补齐空白"], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "等待所选新闻批次证据" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: "逐条判断战略相关性", tone: "cyan", position: [712, 50], details: ["确定性门禁先筛时间、日期与URL", "AI逐条判断战略价值"], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "等待所选新闻批次证据" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `留下 ${number(strategicDedupe.value)} 条新增`, tone: "mint", position: [1059, 50], details: ["与历史事件语义比对", "新增事件进入后续历史记忆"], evidence: strategicDedupe.evidence || "等待所选新闻批次证据" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: "审核表 · 推送 · 历史记忆", tone: "focus", position: [1406, 50], details: ["正式写入并回读", "保留的新增事件影响下一轮去重与补缺"], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "等待所选新闻批次证据" },
+      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: "固定来源 + Agentic + 页面变化", tone: "cyan", position: [365, 50], details: ["固定关键词和页面来源", "对页面变化生成关联查询", "Agentic Search补齐空白"], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "等待所选日期的新闻证据" },
+      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: "逐条判断战略相关性", tone: "cyan", position: [712, 50], details: ["确定性门禁先筛时间、日期与URL", "AI逐条判断战略价值"], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "等待所选日期的新闻证据" },
+      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `留下 ${number(strategicDedupe.value)} 条新增`, tone: "mint", position: [1059, 50], details: ["与历史事件语义比对", "新增事件进入后续历史记忆"], evidence: strategicDedupe.evidence || "等待所选日期的新闻证据" },
+      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: "审核表 · 推送 · 历史记忆", tone: "focus", position: [1406, 50], details: ["正式写入并回读", "保留的新增事件影响下一轮去重与补缺"], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "等待所选日期的新闻证据" },
       { key: "main", label: "03:00 主爬虫", value: configured ? number(configured) : "—", unit: "条配置", note: `${number(frequency.daily)}每日 · ${number(frequency.weekly)}每周 · ${number(frequency.monthly)}每月`, tone: "focus", position: [14, 318], details: mainEvidence, evidence: mainRun.status_detail || mainRun.progress_detail || mainEvidence.join("\n") },
       { key: "agent", label: "Agent 证据审核", value: "10", unit: "节点", note: "分类 · 抽取 · 校验 · 仲裁", tone: "cyan", position: [212, 318], details: ["证据接收与来源分类", "事实抽取、主体校验与质量审计", "冲突仲裁、搜索验证与发布"], evidence: mainRun.curation?.summary || mainRun.status_detail || "主爬虫完成后执行统一 Agent 审核。" },
       domainNode("local", "本地运营商", [410, 318]),
@@ -667,56 +652,6 @@
       feedbackLabel: "历史记忆影响下一轮",
       groups: [{ key: "databases", label: "四库更新", note: `最近完成 ${runCompletionText(intelligenceRun)}`, position: [394, 282], size: [794, 190] }],
     };
-  }
-
-  function newsLineageModel(runs, stages) {
-    const run = runs[0] || {};
-    const detail = state.newsRunDetails[run.crawl_run_id] || {};
-    const content = String(detail.content || "");
-    const items = Array.isArray(detail.newsItems) ? detail.newsItems : [];
-    const first = stages[0] || { value: 0 };
-    const stage = (key) => stages.find((item) => item.key === key) || { key, value: 0, lost: 0, details: [], evidence: "" };
-    const search = stage("search");
-    const gate = stage("gate");
-    const ai = stage("ai");
-    const dedupe = stage("dedupe");
-    const write = stage("write");
-    const push = stage("push");
-    const keywordCount = logNumber(content, /搜索准备：已加载\s*\d+\s*个监控模块、\s*(\d+)\s*个关键词/, 0);
-    const pageCount = logNumber(content, /搜索准备：[^\n]*、\s*(\d+)\s*个固定页面来源/, 0);
-    const pageClues = logNumber(content, /定时页面线索合并：读取\s*(\d+)\s*条页面变化线索/, 0);
-    const pageClueResults = logNumber(content, /定时页面线索合并：[^\n]*返回\s*(\d+)\s*条/, 0);
-    const agentQueries = logNumber(content, /Agentic Search补缺：[^\n]*规划并执行\s*(\d+)\s*条补缺查询/, 0);
-    const agentResults = logNumber(content, /Agentic Search补缺：[^\n]*补回\s*(\d+)\s*条候选/, 0);
-    const deferred = logNumber(content, /AI审核完成：[^\n]*延期\s*(\d+)\s*条/, 0);
-    const timeBudgetDeferred = logNumber(content, /30分钟到时转下轮\s*(\d+)\s*条/, 0);
-    const nextTime = /晨间/.test(String(run.scope || "")) ? "13:30" : "次日 06:00";
-    const categoryCounts = items.reduce((map, item) => {
-      const key = String(item.category || "未分类");
-      map[key] = (map[key] || 0) + 1;
-      return map;
-    }, {});
-    const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    const positions = {
-      schedule: [28, 38], inputs: [28, 205], pageclues: [228, 246], search: [254, 94], gate: [455, 94], ai: [646, 94], dedupe: [837, 94], output: [1026, 78], next: [1052, 286],
-    };
-    const nodes = [
-      { key: "schedule", label: "定时触发", value: "06:00 / 13:30", note: "香港时间", tone: "neutral", position: positions.schedule, details: ["战略新闻固定扫描时点", `当前查看 ${newsRunDate(run)} ${newsRunTime(run)}`], evidence: run.scope || "定时扫描" },
-      { key: "inputs", label: "固定来源与关键词", value: keywordCount ? number(keywordCount) : "—", unit: "关键词", note: `${pageCount ? number(pageCount) : "—"} 个固定页面`, tone: "neutral", position: positions.inputs, details: [`${keywordCount || "—"} 个监控关键词`, `${pageCount || "—"} 个固定页面来源`], evidence: logLine(content, "搜索准备") },
-      { key: "pageclues", label: "定时爬虫页面线索", value: number(pageClues), unit: "条变化", note: `关联检索返回 ${number(pageClueResults)} 条`, tone: "amber", position: positions.pageclues, details: [`读取 ${number(pageClues)} 条页面变化线索`, `关联查询返回 ${number(pageClueResults)} 条`], evidence: logLine(content, "定时页面线索合并") },
-      { key: "search", label: "Agentic 补缺搜索", value: number(search.value || first.value), unit: "条发现", note: `${number(agentQueries)} 条补缺查询 · 补回 ${number(agentResults)} 条`, tone: "cyan", position: positions.search, details: search.details, evidence: search.evidence },
-      { key: "gate", label: "确定性门禁", value: number(gate.value), unit: "条通过", note: gate.lost ? `挡回 ${number(gate.lost)} 条` : "时间窗 · 日期 · URL", tone: "mint", position: positions.gate, details: gate.details, evidence: gate.evidence },
-      { key: "ai", label: "AI 语义审核", value: number(ai.value), unit: "条纳入", note: ai.lost ? `排除 ${number(ai.lost)} 条` : "逐条判断战略相关性", tone: "cyan", position: positions.ai, details: ai.details, evidence: ai.evidence },
-      { key: "dedupe", label: "历史语义去重", value: number(dedupe.lost), unit: "条重复", note: `留下 ${number(dedupe.value)} 条新增`, tone: "mint", position: positions.dedupe, details: dedupe.details, evidence: dedupe.evidence },
-      { key: "output", label: "本轮新增线索", value: number(dedupe.value), unit: "条", note: `${topCategories.map(([name, count]) => `${name} ${count}`).join(" · ") || "等待逐条归档"}`, tone: "focus", position: positions.output, details: [`写入回读 ${number(write.value)} 条`, `正式推送 ${number(push.value)} 条`, ...items.slice(0, 3).map((item) => item.title)], evidence: dedupe.evidence || push.evidence },
-      { key: "next", label: "影响下一轮", value: nextTime, note: `历史库 + 待重试 ${number(deferred + timeBudgetDeferred)} 条`, tone: "amber", position: positions.next, details: [`本轮 ${number(dedupe.value)} 条新增进入历史语义库`, `${number(deferred + timeBudgetDeferred)} 条延期或超时候选留待下轮`, "页面变化线索会生成关联查询与关键词"], evidence: [logLine(content, "定时页面线索合并"), logLine(content, "AI审核完成")].filter(Boolean).join("\n") },
-    ];
-    const edges = [
-      ["schedule", "search", "到点启动", "cyan"], ["inputs", "search", "固定监控", "cyan"], ["pageclues", "search", `${number(pageClues)} 条页面变化`, "amber"],
-      ["search", "gate", `${number(search.value)} 条候选`, "cyan"], ["gate", "ai", `${number(gate.value)} 条通过`, "cyan"], ["ai", "dedupe", `${number(ai.value)} 条保留`, "cyan"],
-      ["dedupe", "output", `${number(dedupe.value)} 条新增`, "cyan"], ["output", "next", "写入历史与延期队列", "amber"], ["next", "search", "下一轮补缺", "feedback"],
-    ];
-    return { nodes, edges, nextTime };
   }
 
   function newsLineageEdgePath(from, to, kind = "") {
@@ -752,119 +687,68 @@
     });
   }
 
+  function lineageStageKey(nodeKey) {
+    return ({ strategic: "search", "news-search": "search", "news-ai": "ai", "news-dedupe": "dedupe", "news-output": "push" })[nodeKey] || "";
+  }
+
+  async function openNewsLineageDetail(nodeKey) {
+    state.newsSelectedStage = nodeKey;
+    let runs = selectedNewsRuns();
+    const missing = runs.filter((run) => !state.newsRunDetails[run.crawl_run_id]);
+    if (missing.length) await loadNewsRuns(missing.map((run) => run.crawl_run_id));
+    runs = selectedNewsRuns();
+    const stages = runs.length ? aggregateNewsStages(runs) : [];
+    const lineage = globalSchedulerLineageModel(runs, stages);
+    const node = lineage.nodes.find((item) => item.key === nodeKey);
+    const dialog = document.querySelector("#newsLineageDialog");
+    const body = document.querySelector("#newsLineageDialogBody");
+    if (!node || !dialog || !body) return;
+    const nodesByKey = new Map(lineage.nodes.map((item) => [item.key, item]));
+    const incoming = lineage.edges.filter(([, to]) => to === nodeKey).map(([from, , label]) => `${nodesByKey.get(from)?.label || from}${label ? ` · ${label}` : ""}`);
+    const outgoing = lineage.edges.filter(([from]) => from === nodeKey).map(([, to, label]) => `${nodesByKey.get(to)?.label || to}${label ? ` · ${label}` : ""}`);
+    const stageKey = lineageStageKey(nodeKey);
+    const relatedItems = stageKey ? runs.flatMap((run) => {
+      const detail = state.newsRunDetails[run.crawl_run_id] || {};
+      return (Array.isArray(detail.newsItems) ? detail.newsItems : []).map((item) => ({ run, item }));
+    }) : [];
+    const runEvidence = stageKey ? runs.map((run) => {
+      const detail = state.newsRunDetails[run.crawl_run_id] || {};
+      const runStage = buildNewsProcess(run, detail).find((item) => item.key === stageKey);
+      const matched = newsStageLogLines(detail.content || "", stageKey);
+      const statusLabel = ({ completed: "已完成", running: "运行中", failed: "已中断" })[run.run_status] || run.run_status || "未知";
+      return `<article class="news-lineage-run-card"><header><div><strong>${esc(newsRunTime(run))} ${esc(run.scope || "战略新闻扫描")}</strong><span>${esc(runCompletionText(run))}</span></div><em>${esc(statusLabel)}</em></header><dl><div><dt>阶段输入</dt><dd>${esc(runStage?.input || "当天运行归档")}</dd></div><div><dt>阶段结果</dt><dd>${runStage ? `保留 ${number(runStage.value)} 条${runStage.lost ? `，排除 ${number(runStage.lost)} 条` : ""}` : "详见节点证据"}</dd></div></dl><div class="news-lineage-run-evidence"><strong>运行证据</strong><pre>${esc(matched.join("\n") || runStage?.evidence || run.progress_detail || run.status_detail || "该次运行尚未留下此节点的独立日志。")}</pre></div></article>`;
+    }).join("") : "";
+    const itemDetails = relatedItems.length ? `<section class="news-lineage-dialog-section"><header><h3>当天具体内容</h3><span>${number(relatedItems.length)} 条已归档新闻</span></header><div class="news-lineage-detail-items">${relatedItems.map(({ run, item }) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(newsRunTime(run))} · ${esc(String(item.publishedAt || "").replace("T", " ").slice(0, 16) || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</h4><p>${esc(item.summary || "运行归档未保存摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>AI 纳入理由</dt><dd>${esc(item.inclusionReason || "运行归档未记录纳入理由。")}</dd></div>${item.businessImpact ? `<div><dt>业务影响</dt><dd>${esc(item.businessImpact)}</dd></div>` : ""}</dl></article>`).join("")}</div></section>` : "";
+    body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate || newsRunDate(runs[0]))} · 每日全景</span><h2>${esc(node.label)}</h2><p>已将当天运行记录、节点作用和真实证据整理在一起。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
+      <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>上游来源</dt><dd>${esc(incoming.join("、") || "定时调度与固定配置")}</dd></div><div><dt>下游去向</dt><dd>${esc(outgoing.join("、") || "作为最终业务交付节点")}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate || newsRunDate(runs[0]) || "最新可用记录")}</dd></div></dl></section>
+      <section class="news-lineage-dialog-section"><header><h3>整理后的节点说明</h3><span>本页直接可核对</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>
+      ${runEvidence ? `<section class="news-lineage-dialog-section"><header><h3>当天运行记录</h3><span>${number(runs.length)} 次定时运行</span></header><div class="news-lineage-run-list">${runEvidence}</div></section>` : ""}
+      ${itemDetails}
+      <section class="news-lineage-dialog-section"><header><h3>节点证据摘录</h3><span>来自调度概览、四库结果或运行归档</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当前归档未保存可展示的证据。")}</pre></section>
+    </div>`;
+    dialog.showModal();
+  }
+
   function bindNewsLineageInteractions(panel) {
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!canvas) return;
-    const storageKey = `cmhk-news-lineage:${state.newsLineageMode}:${state.newsSelectedRunIds.join(",") || "latest"}`;
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch (_error) { saved = {}; }
-    canvas.querySelectorAll("[data-news-lineage-node]").forEach((node) => {
-      const key = node.dataset.newsLineageNode;
-      const position = saved[key];
-      if (Array.isArray(position) && position.length === 2) {
-        node.dataset.x = String(position[0]);
-        node.dataset.y = String(position[1]);
-        node.style.transform = `translate(${position[0]}px, ${position[1]}px)`;
-      }
-      node.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0) return;
-        const startX = event.clientX;
-        const startY = event.clientY;
-        const originX = Number(node.dataset.x || 0);
-        const originY = Number(node.dataset.y || 0);
-        let dragged = false;
-        node.setPointerCapture(event.pointerId);
-        const move = (moveEvent) => {
-          const dx = (moveEvent.clientX - startX) / state.newsLineageZoom;
-          const dy = (moveEvent.clientY - startY) / state.newsLineageZoom;
-          if (Math.abs(dx) + Math.abs(dy) > 4) dragged = true;
-          const x = Math.max(6, Math.min(canvas.offsetWidth - node.offsetWidth - 8, originX + dx));
-          const y = Math.max(8, Math.min(canvas.offsetHeight - node.offsetHeight - 8, originY + dy));
-          node.dataset.x = x.toFixed(1);
-          node.dataset.y = y.toFixed(1);
-          node.style.transform = `translate(${x}px, ${y}px)`;
-          syncNewsLineageEdges();
-        };
-        const up = () => {
-          node.removeEventListener("pointermove", move);
-          node.removeEventListener("pointerup", up);
-          if (dragged) {
-            const positions = {};
-            canvas.querySelectorAll("[data-news-lineage-node]").forEach((item) => { positions[item.dataset.newsLineageNode] = [Number(item.dataset.x), Number(item.dataset.y)]; });
-            localStorage.setItem(storageKey, JSON.stringify(positions));
-          }
-        };
-        node.addEventListener("pointermove", move);
-        node.addEventListener("pointerup", up);
-      });
-    });
     canvas.addEventListener("click", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
       if (!node) return;
-      state.newsSelectedStage = node.dataset.newsLineageNode;
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
-      panel.querySelectorAll("[data-news-lineage-detail]").forEach((item) => { item.hidden = item.dataset.newsLineageDetail !== state.newsSelectedStage; });
+      openNewsLineageDetail(node.dataset.newsLineageNode);
     });
-    panel.querySelectorAll("[data-news-lineage-action]").forEach((button) => button.addEventListener("click", () => {
-      const action = button.dataset.newsLineageAction;
-      if (action === "motion") state.newsLineagePaused = !state.newsLineagePaused;
-      if (action === "reset") {
-        localStorage.removeItem(storageKey);
-        renderNews();
-        return;
-      }
-      canvas.style.setProperty("--lineage-zoom", state.newsLineageZoom);
-      canvas.classList.toggle("is-paused", state.newsLineagePaused);
-      const motionButton = panel.querySelector('[data-news-lineage-action="motion"]');
-      if (motionButton) motionButton.textContent = state.newsLineagePaused ? "播放流动" : "暂停流动";
-    }));
-    panel.querySelectorAll("[data-news-lineage-mode]").forEach((button) => button.addEventListener("click", () => {
-      const mode = button.dataset.newsLineageMode;
-      if (!mode || mode === state.newsLineageMode) return;
-      state.newsLineageMode = mode;
-      state.newsSelectedStage = mode === "global" ? "main" : "search";
-      renderNews();
-    }));
     requestAnimationFrame(syncNewsLineageEdges);
   }
 
   function renderNewsItems(runs) {
     const groups = runs.map((run) => ({ run, detail: state.newsRunDetails[run.crawl_run_id] })).filter(({ detail }) => detail);
     const itemCount = groups.reduce((sum, group) => sum + (group.detail.newsItems || []).length, 0);
-    return `<section class="news-real-items"><header><div><strong>本轮真实新增新闻</strong><span>所选 ${runs.length} 次批次 · 共 ${number(itemCount)} 条</span></div><span>标题、摘要与AI纳入理由来自运行归档</span></header>
+    return `<section class="news-real-items"><header><div><strong>当天真实新增新闻</strong><span>${esc(state.newsSelectedDate)} · ${runs.length} 次定时运行 · 共 ${number(itemCount)} 条</span></div><span>标题、摘要与 AI 纳入理由来自运行归档</span></header>
       <div class="news-real-items-body">${groups.length ? groups.map(({ run, detail }) => {
         const items = Array.isArray(detail.newsItems) ? detail.newsItems : [];
-        return `<section class="news-run-group"><header><strong>${esc(newsRunDate(run))} ${esc(newsRunTime(run))}</strong><span>${esc(run.scope || "新闻扫描")} · ${items.length} 条新增</span></header>${items.length ? `<div class="news-item-list">${items.map((item) => `<article class="news-item"><div class="news-item-tags"><span>${esc(item.category || "未分类")}</span>${item.businessImpact ? `<em>${esc(item.businessImpact)}</em>` : ""}</div><h3>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</h3><p>${esc(item.summary || "暂无摘要")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")} · ${esc(String(item.publishedAt || "").replace("T", " ").slice(0, 16))}</dd></div><div><dt>AI纳入理由</dt><dd>${esc(item.inclusionReason || "运行归档未记录理由")}</dd></div></dl></article>`).join("")}</div>` : `<div class="news-run-empty">${run.run_status === "completed" ? "这一批次没有新增新闻，或历史归档未保存逐条明细。" : "该批次尚未完成，真实新增新闻将在归档后出现。"}</div>`}</section>`;
-      }).join("") : '<div class="news-run-empty">正在读取所选批次的真实新闻归档…</div>'}</div></section>`;
-  }
-
-  async function openNewsStageDetail(stageKey) {
-    state.newsSelectedStage = stageKey;
-    const selected = selectedNewsRuns();
-    const missing = selected.filter((run) => !state.newsRunDetails[run.crawl_run_id]);
-    if (missing.length) await loadNewsRuns(missing.map((run) => run.crawl_run_id));
-    renderNews();
-    const dialog = document.querySelector("#newsStageDialog");
-    const body = document.querySelector("#newsStageDialogBody");
-    const runs = selectedNewsRuns();
-    const stageSets = runs.map((run) => buildNewsProcess(run, state.newsRunDetails[run.crawl_run_id]));
-    const stageIndex = stageSets[0]?.findIndex((stage) => stage.key === stageKey) ?? -1;
-    const stage = stageIndex >= 0 ? stageSets[0][stageIndex] : null;
-    if (!dialog || !body || !stage) return;
-    body.innerHTML = `<header><div><span>阶段 ${String(stageIndex + 1).padStart(2, "0")}</span><h2>${esc(stage.label)} · 详细运行日志</h2><p>以下内容直接来自所选批次的不可变运行归档。</p></div><form method="dialog"><button type="submit" aria-label="关闭阶段日志">×</button></form></header>
-      <div class="news-stage-dialog-runs">${runs.map((run, index) => {
-        const detail = state.newsRunDetails[run.crawl_run_id] || {};
-        const runStage = stageSets[index]?.[stageIndex] || stage;
-        const content = String(detail.content || "");
-        const matched = newsStageLogLines(content, stageKey);
-        const statusLabel = runStage.status === "done" ? "已完成" : runStage.status === "current" ? "执行中/中断于此" : "尚未到达";
-        return `<section class="news-stage-run-log"><header><div><strong>${esc(newsRunDate(run))} ${esc(newsRunTime(run))}</strong><span>${esc(run.scope || "战略新闻任务")}</span></div><em class="is-${esc(runStage.status)}">${esc(statusLabel)}</em></header>
-          <dl><div><dt>阶段输入</dt><dd>${esc(runStage.input)}</dd></div><div><dt>阶段结果</dt><dd>保留 ${number(runStage.value)} 条${runStage.lost ? `，淘汰 ${number(runStage.lost)} 条` : ""}</dd></div></dl>
-          <div class="news-stage-log-block"><h3>该阶段日志输出 <span>${number(matched.length)} 行</span></h3><pre>${esc(matched.join("\n") || runStage.evidence || "该批次尚未产生此阶段日志。")}</pre></div>
-          <details class="news-stage-full-log"><summary>展开该批次完整原始日志 · ${number(detail.lines || content.split("\n").filter(Boolean).length)} 行</summary><pre>${esc(content || detail.error || "该批次没有可读取的日志内容。")}</pre></details>
-        </section>`;
-      }).join("")}</div>`;
-    dialog.showModal();
+        return `<section class="news-run-group"><header><strong>${esc(newsRunDate(run))} ${esc(newsRunTime(run))}</strong><span>${esc(run.scope || "新闻扫描")} · ${items.length} 条新增</span></header>${items.length ? `<div class="news-item-list">${items.map((item) => `<article class="news-item"><div class="news-item-tags"><span>${esc(item.category || "未分类")}</span>${item.businessImpact ? `<em>${esc(item.businessImpact)}</em>` : ""}</div><h3>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</h3><p>${esc(item.summary || "暂无摘要")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")} · ${esc(String(item.publishedAt || "").replace("T", " ").slice(0, 16))}</dd></div><div><dt>AI纳入理由</dt><dd>${esc(item.inclusionReason || "运行归档未记录理由")}</dd></div></dl></article>`).join("")}</div>` : `<div class="news-run-empty">${run.run_status === "completed" ? "该次运行没有新增新闻，或历史归档未保存逐条明细。" : "该次运行尚未完成，真实新增新闻将在归档后出现。"}</div>`}</section>`;
+      }).join("") : '<div class="news-run-empty">正在读取所选日期的真实新闻归档…</div>'}</div></section>`;
   }
 
   function renderNews() {
@@ -872,43 +756,29 @@
     const runs = selectedNewsRuns();
     const run = runs[0] || null;
     const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
-    const selectedDates = [...new Set(runs.map(newsRunDate))];
-    const candidateRuns = state.newsRuns.filter((item) => selectedDates.includes(newsRunDate(item)));
     const stages = runs.length ? aggregateNewsStages(runs) : [];
-    const lineage = state.newsLineageMode === "global" ? globalSchedulerLineageModel(runs, stages) : newsLineageModel(runs, stages);
-    const primaryDetail = run ? state.newsRunDetails[run.crawl_run_id] : null;
-    const timeline = newsTimeline(primaryDetail?.content || "");
-    const selectedStage = stages.find((stage) => stage.key === state.newsSelectedStage) || stages[0];
-    const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage) || lineage.nodes.find((node) => node.key === (state.newsLineageMode === "global" ? "main" : "search")) || lineage.nodes[0];
+    const lineage = globalSchedulerLineageModel(runs, stages);
+    const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2>
-          <div class="news-run-controls"><details class="news-multi-select" name="news-archive-filter"><summary>日期 <b>${selectedDates.length}</b></summary><div><p class="news-select-caption">完整运行归档 · 共 ${number(dates.length)} 天</p>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select" name="news-archive-filter"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
+          <div class="news-run-controls"><label><span>日期</span><select data-news-date-select aria-label="选择要查看的日期">${dates.map((date) => `<option value="${esc(date)}"${date === state.newsSelectedDate ? " selected" : ""}>${esc(date)}</option>`).join("")}</select></label><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
         </header>
-        ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<div class="news-process-meta"><span>已选择 ${runs.length} 次批次</span><span>${selectedDates.map(esc).join("、")}</span><span>${runs.every((item) => state.newsRunDetails[item.crawl_run_id]) ? "已载入全部运行证据" : "正在载入运行证据…"}</span></div>
-        <section class="news-lineage${state.newsLineageMode === "global" ? " is-global" : ""}" aria-labelledby="newsLineageTitle">
-          <header class="news-lineage-header"><div class="news-lineage-heading"><div class="news-lineage-mode-switch" role="tablist" aria-label="情报流程视角"><button type="button" role="tab" data-news-lineage-mode="global" aria-selected="${state.newsLineageMode === "global"}">每日全景</button><button type="button" role="tab" data-news-lineage-mode="run" aria-selected="${state.newsLineageMode === "run"}">本轮线索</button></div><h3 id="newsLineageTitle">${state.newsLineageMode === "global" ? "每天的信息从哪里来" : "本轮线索如何形成"}</h3><p>${state.newsLineageMode === "global" ? "上方是战略新闻链路，下方是主爬虫与四库链路；卡片可拖动，点击查看真实证据。" : "查看所选批次从发现、审核到去重和写入的真实数据。"}</p></div><div class="news-lineage-tools" aria-label="流程图控制"><button type="button" data-news-lineage-action="motion">${state.newsLineagePaused ? "播放流动" : "暂停流动"}</button><button type="button" data-news-lineage-action="reset">恢复排列</button></div></header>
+        ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" tabindex="0" aria-label="可横向滚动的情报生成流程图">
             <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas style="--lineage-zoom:${state.newsLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
-              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, label, kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path>${label ? `<text><textPath href="#newsLineageEdge${index}" startOffset="50%">${esc(label)}</textPath></text>` : ""}</g>`).join("")}</svg>
+              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, label, kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path>${label ? `<text dy="-8"><textPath href="#newsLineageEdge${index}" startOffset="50%">${esc(label)}</textPath></text>` : ""}</g>`).join("")}</svg>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong><span>${esc(group.note)}</span></div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-${esc(node.tone)}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，${esc(node.value)}${esc(node.unit || "")}，可拖动"><i class="news-lineage-drag" aria-hidden="true">⠿</i><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-${esc(node.tone)}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
           </div>
-          <div class="news-lineage-details" aria-live="polite">${lineage.nodes.map((node) => `<section data-news-lineage-detail="${esc(node.key)}"${node.key === selectedLineageNode?.key ? "" : " hidden"}><div><span>当前查看</span><h4>${esc(node.label)}</h4><strong>${esc(node.value)} ${esc(node.unit || "")}</strong></div><ul>${node.details.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><blockquote>${esc(node.evidence || "本轮归档暂未记录这一节点的原始日志。")}</blockquote>${["search", "gate", "ai", "dedupe", "output"].includes(node.key) ? `<button type="button" data-news-stage="${esc(node.key === "output" ? "push" : node.key)}">查看该阶段完整运行证据</button>` : ""}</section>`).join("")}</div>
         </section>
-        <div class="news-run-timeline"><header><strong>主批次执行时间轴</strong><span>${esc(newsRunDate(run))} ${esc(newsRunTime(run))} · 按真实运行日志还原</span></header><ol>${timeline.map((item) => `<li class="${item.done ? "is-done" : "is-pending"}" title="${esc(item.evidence || "尚未到达")}"><time>${esc(item.time)}</time><span>${esc(item.label)}</span></li>`).join("")}</ol></div>
         ${renderNewsItems(runs)}
-        <dialog class="news-stage-dialog" id="newsStageDialog"><div id="newsStageDialogBody"></div></dialog>`}
+        <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>`}
       </section>
     </div>`;
-    const archiveFilters = [...panel.querySelectorAll('.news-multi-select[name="news-archive-filter"]')];
-    archiveFilters.forEach((filter) => filter.addEventListener("toggle", () => {
-      if (!filter.open) return;
-      archiveFilters.forEach((other) => { if (other !== filter) other.open = false; });
-    }));
     bindNewsLineageInteractions(panel);
   }
 
@@ -1270,10 +1140,6 @@
     const news = event.target.closest("[data-open-news-review]");
     if (news) activateModule("review");
     if (event.target.closest("[data-open-subscriptions]")) activateModule("subscriptions");
-    const newsStage = event.target.closest("[data-news-stage]");
-    if (newsStage) {
-      openNewsStageDetail(newsStage.dataset.newsStage);
-    }
     const generate = event.target.closest("[data-generate-report]");
     if (generate) {
       document.querySelector(generate.dataset.generateReport === "weekly" ? "#generateButtonSecondary" : "#generatePerformanceButton")?.click();
@@ -1314,32 +1180,13 @@
   });
   reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {
-    const newsDate = event.target.closest("[data-news-date-option]");
+    const newsDate = event.target.closest("[data-news-date-select]");
     if (newsDate) {
-      if (newsDate.checked) {
-        const candidates = state.newsRuns.filter((item) => newsRunDate(item) === newsDate.value);
-        const preferred = candidates.find((item) => item.run_status === "completed") || candidates[0];
-        if (preferred) state.newsSelectedRunIds = [...new Set([...state.newsSelectedRunIds, preferred.crawl_run_id])].slice(0, 8);
-      } else {
-        const remaining = state.newsSelectedRunIds.filter((id) => newsRunDate(state.newsRuns.find((item) => item.crawl_run_id === id)) !== newsDate.value);
-        if (!remaining.length) { newsDate.checked = true; return; }
-        state.newsSelectedRunIds = remaining;
-      }
-      state.newsSelectedStage = "search";
-      updateNewsRunUrl(state.newsSelectedRunIds);
-      loadNewsRuns(state.newsSelectedRunIds);
-      return;
-    }
-    const newsRun = event.target.closest("[data-news-run-option]");
-    if (newsRun) {
-      if (newsRun.checked) state.newsSelectedRunIds = [...new Set([...state.newsSelectedRunIds, newsRun.value])].slice(0, 8);
-      else {
-        if (state.newsSelectedRunIds.length === 1) { newsRun.checked = true; return; }
-        state.newsSelectedRunIds = state.newsSelectedRunIds.filter((id) => id !== newsRun.value);
-      }
-      state.newsSelectedStage = "search";
-      updateNewsRunUrl(state.newsSelectedRunIds);
-      loadNewsRuns(state.newsSelectedRunIds);
+      state.newsSelectedDate = newsDate.value;
+      state.newsSelectedStage = "";
+      const selected = selectedNewsRuns();
+      updateNewsDateUrl(state.newsSelectedDate);
+      loadNewsRuns(selected.map((run) => run.crawl_run_id));
       return;
     }
     const filter = event.target.closest("[data-fault-filter]");
