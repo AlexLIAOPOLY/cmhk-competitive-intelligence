@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>中国移动｜战略监控体系</title>
   <script>if (new URLSearchParams(location.search).get("embedded") === "1") document.documentElement.classList.add("is-embedded");</script>
-  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=40">
+  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=41">
   <link rel="stylesheet" href="/static/executive-responsive-hardening.css?v=7">
   <style>
     html.is-embedded .topbar { display: none !important; }
@@ -20,9 +20,13 @@
         <img src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile">
       </a>
       <div class="cockpit-title"><h1>战略监控体系</h1><span>STRATEGIC MONITORING SYSTEM</span></div>
+      <nav class="monitor-view-tabs" role="tablist" aria-label="战略监控视图">
+        <button type="button" role="tab" aria-selected="true" data-monitor-view="overview">HKT经营全景</button>
+        <button type="button" role="tab" aria-selected="false" data-monitor-view="comparison">本地运营商对比</button>
+      </nav>
     </header>
 
-    <section class="dashboard-grid" aria-label="中国移动战略监控四层体系">
+    <section class="dashboard-grid" aria-label="HKT战略监控四层体系" data-overview-view>
       <article class="panel panel-network">
         <img class="scene scene-network" src="/static/assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
         <div class="panel-glass"></div>
@@ -65,7 +69,9 @@
       </article>
     </section>
 
+    <section class="dashboard-grid comparison-grid" aria-label="香港本地运营商同口径指标对比" data-comparison-view hidden></section>
+
   </main>
-  <script src="/static/executive-dashboard-demo.js?v=19"></script>
+  <script src="/static/executive-dashboard-demo.js?v=21"></script>
 </body>
 </html>
