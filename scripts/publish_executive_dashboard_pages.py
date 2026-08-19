@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import fcntl
 import hashlib
 import json
@@ -37,6 +38,8 @@ PUBLIC_STATIC_FILES = (
     "news-review-sheet.js",
     "responsive-layout-hardening.css",
     "styles.css",
+    "subscription-admin.css",
+    "subscription-admin.js",
     "workspace-tabs.css",
     "workspace-tabs.js",
 )
@@ -44,7 +47,7 @@ PUBLIC_STATIC_FILES = (
 PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
   "use strict";
   const nativeFetch = window.fetch.bind(window);
-  const root = new URL("./", document.baseURI);
+  const root = new URL(document.baseURI.includes("/static/") ? "../" : "./", document.baseURI);
   const snapshotRoutes = new Map([
     ["/api/status", "static-data/status.json"],
     ["/api/company-metrics", "static-data/company-metrics.json"],
@@ -56,6 +59,7 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     ["/api/scheduler-overview", "static-data/scheduler-overview.json"],
     ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
     ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
+    ["/api/subscriptions", "static-data/subscriptions.json"],
   ]);
   const lookupRoutes = new Map([
     ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
@@ -125,6 +129,50 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
       item.setAttribute("aria-hidden", "true");
     });
     document.querySelectorAll(".strategy-ticker-footer a").forEach((item) => item.hidden = true);
+    document.querySelectorAll("#subscriptionAdmin button, #subscriptionAdmin input, #subscriptionAdmin select").forEach((item) => {
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+    });
+    document.querySelectorAll('[data-workspace-panel="competitor"] button, [data-workspace-panel="competitor"] input, [data-workspace-panel="competitor"] select').forEach((item) => {
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+    });
+    const competitorInsight = document.querySelector("#competitorInsight");
+    const competitorInsightList = competitorInsight?.querySelector("[data-competitor-insight-list]");
+    const fixedCompetitorInsights = [
+      "稳定。HKBN两年均为0.907百万户，HKT由1.474升至1.488百万户，差距从约0.567扩至约0.581百万户，显示头部集中态势微幅强化。",
+      "HKBN规模持平且动能停滞，HKT以约1.488百万户保持领先并延续微增，两者位置稳固，但HKBN的零增长可能反映其客户获取或留存承压。",
+      "HKT的规模优势扩大或强化其网络投入与变现基础，HKBN持平则可能限制其规模竞争弹性，对客户留存策略的依赖度上升；数据锚点为2025年HKBN 0.907百万户。",
+    ];
+    const renderedCompetitorInsight = competitorInsightList
+      ? Array.from(competitorInsightList.querySelectorAll("li span")).map((item) => item.textContent).join("")
+      : "";
+    if (competitorInsightList && renderedCompetitorInsight !== fixedCompetitorInsights.join("")) {
+      competitorInsight.classList.remove("is-loading", "is-streaming");
+      competitorInsight.classList.add("is-ai");
+      competitorInsight.setAttribute("aria-busy", "false");
+      const insightStatus = competitorInsight.querySelector("[data-competitor-insight-status]");
+      if (insightStatus) insightStatus.hidden = true;
+      const insightBadge = competitorInsight.querySelector("[data-competitor-insight-badge]");
+      if (insightBadge) insightBadge.textContent = "COMPETITIVE INSIGHT";
+      competitorInsightList.replaceChildren(...fixedCompetitorInsights.map((copy, index) => {
+        const item = document.createElement("li");
+        const label = document.createElement("b");
+        const text = document.createElement("span");
+        label.textContent = ["竞争格局", "公司定位", "业务含义"][index];
+        text.textContent = copy;
+        item.append(label, text);
+        return item;
+      }));
+    }
+    ["weekly", "performance"].forEach((kind) => {
+      const reportPanel = document.querySelector(`[data-workspace-panel="${kind}"]`);
+      const latestReportRow = reportPanel?.querySelector('.workspace-report-host .file-row[data-path]');
+      if (latestReportRow && reportPanel.querySelector('[data-report-preview].is-placeholder') && !reportPanel.dataset.publicAutoPreviewed) {
+        reportPanel.dataset.publicAutoPreviewed = "true";
+        latestReportRow.click();
+      }
+    });
   }
   document.addEventListener("DOMContentLoaded", lockPrivateControls);
   new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
@@ -389,6 +437,9 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
     review_sheet = _public_news_review_sheet(
         _fetch_local_json(source_url, "/api/news-review-sheet")
     )
+    subscriptions = _public_subscriptions(
+        _fetch_local_json(source_url, "/api/subscriptions")
+    )
     incidents_payload = _fetch_local_json(source_url, "/api/project-incidents?limit=500")
     public_incidents = [
         _public_incident(item)
@@ -416,6 +467,7 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         "weekly-report-preview.json": _scrub_public_value(
             _fetch_local_json(source_url, "/api/weekly-report-preview")
         ),
+        "subscriptions.json": subscriptions,
         "news-run-items.json": news_run_items,
         "strategic-briefs.json": public_briefs,
     }
@@ -434,6 +486,7 @@ def _public_crawl_run(item: dict[str, Any]) -> dict[str, Any]:
 def _public_report_output(item: dict[str, Any]) -> dict[str, Any]:
     return {
         "name": str(item.get("name") or "未命名报告"),
+        "path_str": str(item.get("name") or "未命名报告"),
         "note": str(item.get("note") or ""),
         "reportType": str(item.get("reportType") or ""),
         "size": int(item.get("size") or 0),
@@ -490,6 +543,32 @@ def _public_news_review_sheet(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _public_subscriptions(payload: dict[str, Any]) -> dict[str, Any]:
+    blocked_fragments = ("api_key", "apikey", "authorization", "cookie", "password", "secret", "token")
+
+    def clean(value: Any, *, key: str = "") -> Any:
+        if any(fragment in key.lower() for fragment in blocked_fragments):
+            return None
+        if isinstance(value, dict):
+            return {
+                str(child_key): cleaned
+                for child_key, child_value in value.items()
+                if (cleaned := clean(child_value, key=str(child_key))) is not None
+            }
+        if isinstance(value, list):
+            return [cleaned for item in value if (cleaned := clean(item, key=key)) is not None]
+        if isinstance(value, str) and any(marker in value.lower() for marker in ("/users/", "127.0.0.1", "localhost")):
+            return ""
+        return value
+
+    result = clean(payload)
+    if not isinstance(result, dict):
+        result = {}
+    result["ok"] = True
+    result["readOnly"] = True
+    return result
+
+
 def _rewrite_static_css(source: str) -> str:
     return source.replace('url("/static/assets/', 'url("./assets/').replace(
         "url('/static/assets/", "url('./assets/"
@@ -522,10 +601,6 @@ def _build_site(
     html = html.replace('href="/executive-dashboard-demo.html', 'href="./executive-dashboard-demo.html')
     html = html.replace('src="/executive-dashboard-demo.html', 'src="./executive-dashboard-demo.html')
     html = html.replace('class="brand-mark" href="/"', 'class="brand-mark" href="./"')
-    html = html.replace(
-        'src="./static/subscription-admin.html?v=11"',
-        'src="./static/public-readonly.html?module=subscriptions"',
-    )
     html = re.sub(
         r'<a href="https://cmhk-try\.feishu\.cn/sheets/[^\"]+"[^>]*>\s*监测规则\s*</a>',
         '<span class="public-snapshot-label">公开快照</span>',
@@ -553,6 +628,12 @@ def _build_site(
             content = _rewrite_static_css(content)
         elif source_path.suffix == ".js":
             content = _rewrite_root_javascript(content)
+        if name == "workspace-tabs.js":
+            content = content.replace(
+                'competitorSelection: { companies: [], metric: "", years: 5 }',
+                'competitorSelection: { companies: ["HKBN", "HKT"], metric: "consumer_broadband_customers", years: 5 }',
+                1,
+            )
         (static_destination / name).write_text(content, encoding="utf-8")
     (static_destination / "public-snapshot-bootstrap.js").write_text(
         PUBLIC_SNAPSHOT_BOOTSTRAP,
@@ -562,6 +643,41 @@ def _build_site(
         _readonly_module_html(),
         encoding="utf-8",
     )
+    subscription_html = (STATIC_DIR / "subscription-admin.html").read_text(encoding="utf-8")
+    subscription_html = subscription_html.replace('href="/static/', 'href="./').replace('src="/static/', 'src="./')
+    subscription_html = subscription_html.replace(
+        '  <main id="subscriptionAdmin" aria-live="polite">',
+        '  <aside style="margin:12px 18px 0;padding:10px 14px;border:1px solid rgba(82,194,215,.35);color:#9bdcea;background:rgba(7,38,50,.72);font:600 13px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">公开只读快照：保留当前订阅、邀请与推送记录；邀请、保存和推送操作已禁用。</aside>\n'
+        '  <main id="subscriptionAdmin" aria-live="polite">',
+    )
+    subscription_html = subscription_html.replace(
+        '  <script src="./subscription-admin.js?v=16"></script>',
+        '  <script src="./public-snapshot-bootstrap.js?v=3"></script>\n'
+        '  <script src="./subscription-admin.js?v=16"></script>',
+    )
+    (static_destination / "subscription-admin.html").write_text(subscription_html, encoding="utf-8")
+
+    report_outputs = ((snapshots.get("status.json") or {}).get("status") or {}).get("outputs", [])
+    latest_reports = [
+        next(
+            (
+                item for item in report_outputs
+                if isinstance(item, dict) and item.get("reportType") == report_type
+            ),
+            None,
+        )
+        for report_type in ("weekly", "carrier-performance")
+    ]
+    for latest_report in (item for item in latest_reports if item):
+        report_base = re.sub(r"\.docx$", "", str(latest_report.get("name") or ""), flags=re.I)
+        preview_key = base64.urlsafe_b64encode(report_base.encode("utf-8")).decode("ascii").rstrip("=")
+        preview_destination = static_destination / "report-previews"
+        preview_destination.mkdir(exist_ok=True)
+        _run([
+            "curl", "--fail", "--silent", "--show-error", "--max-time", "60",
+            "--output", str(preview_destination / f"{preview_key}.pdf"),
+            source_url.rstrip("/") + f"/static/report-previews/{preview_key}.pdf",
+        ])
     shutil.copy2(
         STATIC_DIR / "competitor-workbench-data.json",
         static_destination / "competitor-workbench-data.json",

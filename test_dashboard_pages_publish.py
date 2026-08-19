@@ -96,7 +96,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         )
         self.assertEqual(output["name"], "8月19日周报.docx")
         self.assertEqual(output["url"], "")
-        self.assertNotIn("path_str", output)
+        self.assertEqual(output["path_str"], "8月19日周报.docx")
+        self.assertNotIn("/Users/", output["path_str"])
 
     def test_public_review_snapshot_is_read_only_and_drops_sheet_identity(self):
         snapshot = publisher._public_news_review_sheet(
