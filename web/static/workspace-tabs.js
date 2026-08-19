@@ -1,7 +1,8 @@
 (() => {
   "use strict";
 
-  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault"];
+  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization"];
+  let allowedModules = [];
   const state = {
     status: null,
     metrics: null,
@@ -45,15 +46,42 @@
 
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
+  const can = (module) => allowedModules.includes(module);
+
+  function applyModulePermissions() {
+    allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(module));
+    tabs.forEach((tab) => {
+      const allowed = can(tab.dataset.workspaceTab);
+      tab.hidden = !allowed;
+      tab.disabled = !allowed;
+      tab.setAttribute("aria-hidden", String(!allowed));
+    });
+    panels.forEach((panel) => {
+      const allowed = can(panel.dataset.workspacePanel);
+      panel.hidden = true;
+      panel.toggleAttribute("inert", !allowed);
+    });
+    document.querySelectorAll(".workspace-nav-group").forEach((group) => {
+      group.hidden = !group.querySelector("[data-workspace-tab]:not([hidden])");
+    });
+  }
+
+  function hydrateAuthorizedFrame(module) {
+    const frame = document.querySelector(`[data-workspace-panel="${module}"] iframe[data-src]`);
+    if (frame && can(module)) {
+      frame.src = frame.dataset.src;
+      frame.removeAttribute("data-src");
+    }
+  }
 
   function moduleFromLocation() {
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     const requested = params.get("workspace");
-    return MODULES.includes(requested) ? requested : "dashboard";
+    return allowedModules.includes(requested) ? requested : (allowedModules[0] || "dashboard");
   }
 
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
-    const target = MODULES.includes(name) ? name : "dashboard";
+    const target = allowedModules.includes(name) ? name : (allowedModules[0] || "dashboard");
     state.previewRequest.weekly += 1;
     state.previewRequest.performance += 1;
     tabs.forEach((tab) => {
@@ -68,6 +96,7 @@
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
     document.body.classList.toggle("workspace-ai-active", target === "ai");
+    hydrateAuthorizedFrame(target);
     syncEmbeddedVisibility(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
@@ -75,17 +104,20 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  tabs.forEach((tab, index) => {
+  tabs.forEach((tab) => {
     tab.addEventListener("click", () => activateModule(tab.dataset.workspaceTab));
     tab.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
+      const availableTabs = tabs.filter((item) => !item.hidden);
+      const index = availableTabs.indexOf(tab);
+      if (index < 0 || !availableTabs.length) return;
       let next = index;
-      if (["ArrowRight", "ArrowDown"].includes(event.key)) next = (index + 1) % tabs.length;
-      if (["ArrowLeft", "ArrowUp"].includes(event.key)) next = (index - 1 + tabs.length) % tabs.length;
+      if (["ArrowRight", "ArrowDown"].includes(event.key)) next = (index + 1) % availableTabs.length;
+      if (["ArrowLeft", "ArrowUp"].includes(event.key)) next = (index - 1 + availableTabs.length) % availableTabs.length;
       if (event.key === "Home") next = 0;
-      if (event.key === "End") next = tabs.length - 1;
-      activateModule(tabs[next].dataset.workspaceTab, { focus: true });
+      if (event.key === "End") next = availableTabs.length - 1;
+      activateModule(availableTabs[next].dataset.workspaceTab, { focus: true });
     });
   });
   window.addEventListener("hashchange", () => activateModule(moduleFromLocation(), { updateUrl: false }));
@@ -1524,20 +1556,34 @@
   }
 
   async function loadWorkspaceData() {
-    const requests = await Promise.allSettled([
-      fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))),
-      fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`))),
-      fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`))),
-      fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`))),
-      fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
-      fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`))),
-      fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`))),
-      fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`))),
-      fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`))),
-      fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
-      fetch("/static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
-    ]);
-    const [statusResult, metricsResult, briefsResult, tasksResult, newsRunsResult, crawlRunsResult, schedulerOverviewResult, executiveIntelligenceResult, newsReviewSheetResult, newsFallbackResult, workbenchResult] = requests;
+    const definitions = [
+      ["status", "dashboard", () => fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`)))],
+      ["metrics", "competitor", () => fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`)))],
+      ["briefs", "dashboard", () => fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`)))],
+      ["tasks", "fault", () => fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`)))],
+      ["newsRuns", "news", () => fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`)))],
+      ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
+      ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
+      ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
+      ["reviewSheet", "review", () => fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`)))],
+      ["newsFallback", "news", () => fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {})],
+      ["workbench", "competitor", () => fetch("/static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
+    ];
+    const activeDefinitions = definitions.filter(([, module]) => can(module));
+    const requests = await Promise.allSettled(activeDefinitions.map(([, , request]) => request()));
+    const results = Object.fromEntries(activeDefinitions.map(([key], index) => [key, requests[index]]));
+    const unavailable = { status: "skipped" };
+    const statusResult = results.status || unavailable;
+    const metricsResult = results.metrics || unavailable;
+    const briefsResult = results.briefs || unavailable;
+    const tasksResult = results.tasks || unavailable;
+    const newsRunsResult = results.newsRuns || unavailable;
+    const crawlRunsResult = results.crawlRuns || unavailable;
+    const schedulerOverviewResult = results.scheduler || unavailable;
+    const executiveIntelligenceResult = results.intelligence || unavailable;
+    const newsReviewSheetResult = results.reviewSheet || unavailable;
+    const newsFallbackResult = results.newsFallback || unavailable;
+    const workbenchResult = results.workbench || unavailable;
     if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};
     if (metricsResult.status === "fulfilled") state.metrics = metricsResult.value.data || {};
     if (briefsResult.status === "fulfilled") state.briefs = briefsResult.value.items || [];
@@ -1555,23 +1601,35 @@
     if (newsFallbackResult.status === "fulfilled") state.newsItemFallback = newsFallbackResult.value || {};
     if (workbenchResult.status === "fulfilled") state.competitorData = workbenchResult.value;
 
-    state.competitorData ? renderCompetitor() : renderLoadError("competitor", "竞对");
-    (state.status || newsRunsResult.status === "fulfilled") ? renderNews() : renderLoadError("news", "新闻");
-    if (state.status) { renderReports("weekly"); renderReports("performance"); }
-    else { renderLoadError("weekly", "周报"); renderLoadError("performance", "业绩摘要"); }
-    tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
+    if (can("competitor")) state.competitorData ? renderCompetitor() : renderLoadError("competitor", "竞对");
+    if (can("news")) (state.status || newsRunsResult.status === "fulfilled") ? renderNews() : renderLoadError("news", "新闻");
+    if (can("weekly")) state.status ? renderReports("weekly") : renderLoadError("weekly", "周报");
+    if (can("performance")) state.status ? renderReports("performance") : renderLoadError("performance", "业绩摘要");
+    if (can("fault")) tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
     const running = Boolean(state.status?.tasks?.hasRunning);
     const runningDot = document.querySelector("[data-workspace-running]");
     if (runningDot) runningDot.hidden = !running;
-    const initialNewsRuns = selectedNewsRuns();
+    const initialNewsRuns = can("news") ? selectedNewsRuns() : [];
     if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
     requests.filter((result) => result.status === "rejected").forEach((result) => console.warn("Workspace module data unavailable", result.reason));
   }
 
-  renderAi();
-  renderEmbeddedShells();
-  setupEmbeddedSurfaces();
-  setupNavCollapse();
-  activateModule(moduleFromLocation(), { updateUrl: false });
-  loadWorkspaceData();
+  async function initializeWorkspace() {
+    try {
+      await window.CMHKAuth?.ready;
+    } catch (_error) {
+      return;
+    }
+    applyModulePermissions();
+    if (can("ai")) renderAi();
+    if (can("log") || can("review") || can("ai")) {
+      renderEmbeddedShells();
+      setupEmbeddedSurfaces();
+    }
+    setupNavCollapse();
+    activateModule(moduleFromLocation(), { updateUrl: false });
+    loadWorkspaceData();
+  }
+
+  initializeWorkspace();
 })();

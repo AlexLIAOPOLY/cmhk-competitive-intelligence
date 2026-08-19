@@ -57,9 +57,11 @@ from subscription_service import (
     SubscriptionService,
     encode_strategic_news_digest,
 )
+from cmhk_auth import AuthService
 
 
 ROOT = Path(__file__).resolve().parent
+AUTH = AuthService(ROOT)
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
@@ -4116,6 +4118,12 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path in {"/", "/company-data", "/company-data.html", "/executive-dashboard-demo", "/executive-dashboard-demo.html", "/static/index.html"}:
+            if not AUTH.authorize_page(self, parsed.path):
+                return
+        if parsed.path.startswith(("/static/", "/outputs/", "/audio/", "/generated-charts/", "/references/", "/references-raw/")):
+            if not AUTH.authorize_resource(self, parsed.path):
+                return
         if parsed.path == "/":
             self.serve_head(STATIC_DIR / "index.html")
             return
@@ -4163,6 +4171,16 @@ class AppHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
+        if AUTH.handle(self, "GET", parsed):
+            return
+        if path in {"/", "/company-data", "/company-data.html", "/executive-dashboard-demo", "/executive-dashboard-demo.html", "/static/index.html"}:
+            if not AUTH.authorize_page(self, path):
+                return
+        if path.startswith(("/static/", "/outputs/", "/audio/", "/generated-charts/", "/references/", "/references-raw/")):
+            if not AUTH.authorize_resource(self, path):
+                return
+        if path.startswith("/api/") and not AUTH.authorize_api(self, path, "GET"):
+            return
         if path == "/":
             self.serve_file(STATIC_DIR / "index.html")
             return
@@ -4502,6 +4520,10 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if AUTH.handle(self, "POST", parsed):
+            return
+        if parsed.path.startswith("/api/") and not AUTH.authorize_api(self, parsed.path, "POST"):
+            return
         if parsed.path == "/api/competitor-insight-stream":
             try:
                 payload = read_request_json(self)

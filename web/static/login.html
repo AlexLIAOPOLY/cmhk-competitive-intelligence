@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登录 · CMHK市场竞争全景</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+      * { box-sizing: border-box; }
+      body { min-height:100dvh; margin:0; color:#e9f7fb; background:
+        radial-gradient(circle at 18% 18%, rgba(31,171,205,.2), transparent 34%),
+        radial-gradient(circle at 82% 74%, rgba(47,210,172,.12), transparent 30%),
+        linear-gradient(145deg,#04131d 0%,#082535 54%,#061b28 100%); }
+      body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.28; background-image:linear-gradient(rgba(95,201,224,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(95,201,224,.06) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(to bottom,black,transparent 78%); }
+      .login-page { min-height:100dvh; display:grid; grid-template-columns:minmax(0,1.1fr) minmax(380px,520px); align-items:center; gap:clamp(40px,8vw,120px); width:min(1180px,calc(100% - 48px)); margin:auto; padding:48px 0; }
+      .brand img { width:148px; height:auto; filter:drop-shadow(0 10px 24px rgba(27,166,202,.18)); }
+      .eyebrow { display:block; margin-top:44px; color:#6ed9eb; font:600 12px/1.4 ui-monospace,SFMono-Regular,monospace; letter-spacing:.18em; }
+      h1 { max-width:660px; margin:12px 0 20px; font-size:clamp(38px,5vw,66px); line-height:1.08; letter-spacing:-.04em; }
+      .intro { max-width:620px; margin:0; color:#9abac5; font-size:16px; line-height:1.8; }
+      .signals { display:flex; flex-wrap:wrap; gap:10px; margin-top:32px; padding:0; list-style:none; }
+      .signals li { border:1px solid rgba(103,208,225,.18); border-radius:999px; padding:8px 12px; color:#bcd5dc; background:rgba(6,35,49,.56); font-size:12px; }
+      .login-card { position:relative; border:1px solid rgba(107,218,232,.23); border-radius:22px; padding:34px; background:rgba(7,31,43,.82); box-shadow:0 28px 80px rgba(0,8,14,.38); backdrop-filter:blur(22px) saturate(130%); }
+      .login-card::before { content:""; position:absolute; inset:0 26px auto; height:1px; background:linear-gradient(90deg,transparent,#6ed9eb,transparent); }
+      .login-card h2 { margin:0 0 8px; font-size:24px; }
+      .login-card > p { margin:0 0 26px; color:#8eaeba; font-size:14px; line-height:1.6; }
+      button,select { width:100%; min-height:46px; border-radius:10px; font:inherit; }
+      button { border:1px solid transparent; cursor:pointer; font-weight:650; }
+      button:disabled { cursor:not-allowed; opacity:.52; }
+      .feishu { color:#03202b; background:linear-gradient(135deg,#76dff0,#49cbaa 88%); box-shadow:0 10px 28px rgba(70,204,205,.2); }
+      .feishu:hover:not(:disabled) { filter:brightness(1.06); }
+      .divider { display:flex; align-items:center; gap:12px; margin:24px 0 18px; color:#6e919e; font-size:11px; }
+      .divider::before,.divider::after { content:""; height:1px; flex:1; background:rgba(119,183,198,.16); }
+      .dev-login label { display:block; margin-bottom:8px; color:#bcd5dc; font-size:12px; }
+      select { border:1px solid rgba(108,190,207,.24); padding:0 12px; color:#e9f7fb; background:#092b3a; }
+      .dev-submit { margin-top:10px; border-color:rgba(100,208,222,.26); color:#c9f2f5; background:rgba(19,79,96,.5); }
+      .status { min-height:22px; margin:16px 0 0; color:#8db2bd; font-size:12px; line-height:1.55; }
+      .status.is-error { color:#ffad9e; }
+      .trust { display:flex; align-items:center; gap:8px; margin-top:24px; padding-top:20px; border-top:1px solid rgba(111,185,201,.12); color:#7397a2; font-size:11px; }
+      .trust i { width:7px; height:7px; border-radius:50%; background:#52d5ad; box-shadow:0 0 12px rgba(82,213,173,.7); }
+      [hidden] { display:none !important; }
+      @media (max-width:820px) { .login-page { grid-template-columns:1fr; width:min(560px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:40px}.intro{font-size:14px}.signals{margin-top:22px}.login-card{padding:26px} }
+      @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
+    </style>
+  </head>
+  <body>
+    <main class="login-page">
+      <section class="brand" aria-labelledby="loginTitle">
+        <img src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+        <span class="eyebrow">CMHK COMPETITIVE LANDSCAPE</span>
+        <h1 id="loginTitle">CMHK市场竞争全景</h1>
+        <p class="intro">统一接入战略竞对看板、新闻生产、内容产品与运维系统。登录后将按你的岗位权限展示对应工作页签。</p>
+        <ul class="signals" aria-label="平台能力"><li>经营驾驶舱</li><li>战略情报生产</li><li>分角色权限</li><li>飞书统一身份</li></ul>
+      </section>
+      <section class="login-card" aria-labelledby="signInTitle">
+        <h2 id="signInTitle">登录工作台</h2>
+        <p>使用 CMHK 飞书账号完成身份验证。</p>
+        <button class="feishu" id="feishuLogin" type="button" disabled>正在检查飞书登录…</button>
+        <section class="dev-login" id="devLogin" hidden>
+          <div class="divider">仅限本机开发验证</div>
+          <label for="devAccount">选择测试身份</label>
+          <select id="devAccount"></select>
+          <button class="dev-submit" id="devSubmit" type="button">以测试身份登录</button>
+        </section>
+        <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
+        <div class="trust"><i aria-hidden="true"></i><span>身份由服务端校验，页面权限随组织配置实时生效</span></div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        "use strict";
+        const params = new URLSearchParams(location.search);
+        const rawNext = params.get("next") || "/";
+        const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
+        const status = document.getElementById("loginStatus");
+        const feishuButton = document.getElementById("feishuLogin");
+        const devHost = document.getElementById("devLogin");
+        const devSelect = document.getElementById("devAccount");
+        const devSubmit = document.getElementById("devSubmit");
+        const errorLabels = {
+          authorization_cancelled:"你已取消飞书授权，请重试。",
+          invalid_state:"登录请求已过期，请重新发起登录。",
+          wrong_tenant:"当前飞书账号不属于获准组织。",
+          exchange_failed:"飞书身份验证失败，请稍后重试。",
+        };
+        const oauthError = params.get("feishu_error");
+        if (oauthError) { status.textContent = errorLabels[oauthError] || "飞书登录未完成，请重试。"; status.classList.add("is-error"); }
+        const setBusy = (busy, text) => { feishuButton.disabled = busy; devSubmit.disabled = busy; if (text) status.textContent = text; };
+        const fail = (error) => { status.textContent = error.message || "登录服务暂时不可用。"; status.classList.add("is-error"); setBusy(false); };
+        if (params.get("switch") !== "1") {
+          fetch("/api/auth/me", { cache:"no-store", credentials:"same-origin" }).then((response) => response.json()).then((payload) => {
+            if (payload.authenticated) location.replace(next);
+          }).catch(() => {});
+        }
+        fetch("/api/auth/config", { cache:"no-store", credentials:"same-origin" }).then(async (response) => {
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok || payload.ok === false) throw new Error(payload.message || "无法读取登录配置");
+          if (payload.feishu?.configured) { feishuButton.disabled = false; feishuButton.textContent = "使用飞书账号登录"; }
+          else { feishuButton.textContent = "飞书登录尚未配置"; }
+          const accounts = Array.isArray(payload.devAccounts) ? payload.devAccounts : [];
+          if (accounts.length) {
+            devSelect.innerHTML = accounts.map((user) => `<option value="${String(user.account).replace(/[&<>\"']/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[char]))}">${String(user.name || user.account).replace(/[&<>\"']/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[char]))} · ${String(user.roleLabel || "待分配").replace(/[&<>\"']/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[char]))}</option>`).join("");
+            devHost.hidden = false;
+          }
+        }).catch(fail);
+        feishuButton.addEventListener("click", () => { setBusy(true,"正在前往飞书完成身份验证…"); location.assign(`/api/auth/feishu/start?next=${encodeURIComponent(next)}`); });
+        devSubmit.addEventListener("click", async () => {
+          status.classList.remove("is-error"); setBusy(true,"正在切换测试身份…");
+          try {
+            const response = await fetch("/api/auth/dev-login", { method:"POST", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:JSON.stringify({account:devSelect.value}) });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok || payload.ok === false) throw new Error(payload.message || "测试登录失败");
+            location.replace(next);
+          } catch (error) { fail(error); }
+        });
+      })();
+    </script>
+  </body>
+</html>

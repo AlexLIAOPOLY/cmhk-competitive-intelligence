@@ -2,6 +2,7 @@
 set -euo pipefail
 
 WEB_LABEL="com.liaowang.cmhk-web-app"
+QUEUE_LABEL="com.liaowang.cmhk-queued-web-reload"
 DOMAIN="gui/$(id -u)"
 TASKS_URL="${CMHK_TASK_RUNS_URL:-http://127.0.0.1:8765/api/task-runs?limit=100}"
 CHECK_INTERVAL_SECONDS="${CMHK_RELOAD_CHECK_INTERVAL_SECONDS:-5}"
@@ -10,6 +11,7 @@ REQUEST_FILE="$STATE_DIR/web-reload-requested"
 INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
 RUNTIME="/Users/liaowang/cmhk_public_crawl_app"
+WEB_PLIST="$HOME/Library/LaunchAgents/$WEB_LABEL.plist"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
 
 mkdir -p "$STATE_DIR" "$(dirname "$LOG_FILE")"
@@ -102,7 +104,15 @@ while [[ -f "$REQUEST_FILE" ]]; do
 
   log "Activating coalesced request $requested_token."
   /usr/bin/rsync -a "$release_dir/" "$RUNTIME/" >> "$LOG_FILE" 2>&1
-  /bin/launchctl kickstart -k "$DOMAIN/$WEB_LABEL"
+  if [[ -f "$release_dir/$WEB_LABEL.plist" ]]; then
+    /usr/bin/plutil -lint "$release_dir/$WEB_LABEL.plist" >> "$LOG_FILE" 2>&1
+    /bin/cp "$release_dir/$WEB_LABEL.plist" "$WEB_PLIST"
+    /bin/chmod 600 "$WEB_PLIST"
+    /bin/launchctl bootout "$DOMAIN/$WEB_LABEL" >> "$LOG_FILE" 2>&1 || true
+    /bin/launchctl bootstrap "$DOMAIN" "$WEB_PLIST" >> "$LOG_FILE" 2>&1
+  else
+    /bin/launchctl kickstart -k "$DOMAIN/$WEB_LABEL"
+  fi
 
   for _attempt in {1..30}; do
     if /usr/bin/curl -fsS --max-time 3 http://127.0.0.1:8765/api/status >/dev/null 2>&1; then
@@ -125,3 +135,7 @@ while [[ -f "$REQUEST_FILE" ]]; do
 done
 
 log "Queued Web reload worker exiting."
+# `launchctl submit` jobs otherwise remain scheduled after a clean exit and
+# relaunch every ThrottleInterval. Removing this one-shot worker keeps the
+# queue dormant until a caller records the next request.
+/bin/launchctl remove "$QUEUE_LABEL" >/dev/null 2>&1 || true

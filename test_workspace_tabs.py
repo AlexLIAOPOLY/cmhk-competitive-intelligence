@@ -8,6 +8,8 @@ SCRIPT = (ROOT / "web" / "static" / "workspace-tabs.js").read_text(encoding="utf
 STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf-8")
 SUBSCRIPTION_SCRIPT = (ROOT / "web" / "static" / "subscription-admin.js").read_text(encoding="utf-8")
 SUBSCRIPTION_STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding="utf-8")
+AUTH_SCRIPT = (ROOT / "web" / "static" / "auth-client.js").read_text(encoding="utf-8")
+ORGANIZATION_SCRIPT = (ROOT / "web" / "static" / "organization-admin.js").read_text(encoding="utf-8")
 
 
 class WorkspaceTabsTests(unittest.TestCase):
@@ -24,6 +26,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "ai",
             "log",
             "fault",
+            "organization",
         )
         for module in modules:
             self.assertIn(f'id="workspace-tab-{module}"', INDEX)
@@ -32,6 +35,22 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertIn(f'data-workspace-panel="{module}"', INDEX)
         self.assertEqual(INDEX.count('role="tab"'), len(modules))
         self.assertEqual(INDEX.count('role="tabpanel"'), len(modules))
+
+    def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
+        self.assertIn('/static/auth-client.js?v=1', INDEX)
+        self.assertIn('/static/organization-admin.js?v=1', INDEX)
+        self.assertIn('/static/organization-admin.css?v=1', INDEX)
+        self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
+        self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
+        self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
+        self.assertIn('iframe[data-src]', SCRIPT)
+        self.assertIn('fetch("/api/auth/me"', AUTH_SCRIPT)
+        self.assertIn('fetch("/api/auth/logout"', AUTH_SCRIPT)
+        self.assertIn('request("/api/auth/admin/users")', ORGANIZATION_SCRIPT)
+        self.assertIn('/api/auth/admin/users/${encodeURIComponent(row.dataset.userId)}', ORGANIZATION_SCRIPT)
+        self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)
+        self.assertIn('request("/api/auth/admin/users/import"', ORGANIZATION_SCRIPT)
+        self.assertIn('query.length < 2', ORGANIZATION_SCRIPT)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
         for endpoint in (
@@ -367,6 +386,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1580, 620]", SCRIPT)
         self.assertIn('label: "四库分流"', SCRIPT)
+        self.assertIn('["agent", "database-hub", "", "cyan"]', SCRIPT)
+        self.assertNotIn('["agent", "database-hub", "四库分流", "cyan"]', SCRIPT)
         self.assertIn('label: "四库更新"', SCRIPT)
         self.assertNotIn('四库更新 · 2 × 2', SCRIPT)
         self.assertIn('group.note ? `<span>${esc(group.note)}</span>` : ""', SCRIPT)

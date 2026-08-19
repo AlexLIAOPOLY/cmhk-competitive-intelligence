@@ -7313,7 +7313,9 @@ if (els.webSearchToggle) {
 
 if (els.skillToggle) {
   renderSkillToggle();
-  loadAgentSkills();
+  window.CMHKAuth?.ready.then(() => {
+    if (window.CMHKAuth.hasModule("ai")) loadAgentSkills();
+  });
   els.skillToggle.addEventListener("click", () => {
     if (!els.skillMenu) return;
     const willOpen = els.skillMenu.hidden;
@@ -7334,7 +7336,9 @@ if (els.skillToggle) {
 
 if (els.databaseToggle) {
   renderDatabaseToggle();
-  loadAgentDatasets();
+  window.CMHKAuth?.ready.then(() => {
+    if (window.CMHKAuth.hasModule("ai")) loadAgentDatasets();
+  });
   els.databaseToggle.addEventListener("click", () => {
     if (!els.databaseMenu) return;
     const willOpen = els.databaseMenu.hidden;
@@ -7436,9 +7440,12 @@ if (els.chatModelSelect) {
       els.chatModelSelect.disabled = false;
     }
   });
-  loadChatModelOptions().catch((error) => {
-    console.warn(error);
-    renderChatModelControls();
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("ai")) return;
+    loadChatModelOptions().catch((error) => {
+      console.warn(error);
+      renderChatModelControls();
+    });
   });
 }
 
@@ -7650,12 +7657,16 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
-loadChatStarters({ render: true });
-loadChatThreads();
-fetchStatus().catch((error) => {
-  setLog(`初始化失败：${error.message}`);
+window.CMHKAuth?.ready.then(() => {
+  if (window.CMHKAuth.hasModule("ai")) {
+    loadChatStarters({ render: true });
+    loadChatThreads();
+  }
+  if (window.CMHKAuth.hasModule("dashboard")) {
+    fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
+    setInterval(() => fetchStatus().catch(console.error), 10000);
+  }
 });
-setInterval(() => fetchStatus().catch(console.error), 10000);
 
 // Citation Popover Logic
 let citationPopover = document.createElement("div");
@@ -8908,8 +8919,11 @@ document.addEventListener("keydown", (event) => {
       });
   }
 
-  refreshIntelligencePayload(true);
-  window.setInterval(() => refreshIntelligencePayload(false), 60000);
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("dashboard")) return;
+    refreshIntelligencePayload(true);
+    window.setInterval(() => refreshIntelligencePayload(false), 60000);
+  });
 })();
 
 /* Strategic briefing ticker: only group-approved items are rendered. */
@@ -9143,6 +9157,9 @@ document.addEventListener("keydown", (event) => {
       window.requestAnimationFrame(restartScroll);
     });
   });
-  fetchStrategicBriefs();
-  window.setInterval(fetchStrategicBriefs, 60000);
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("dashboard")) return;
+    fetchStrategicBriefs();
+    window.setInterval(fetchStrategicBriefs, 60000);
+  });
 })();

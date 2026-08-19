@@ -75,6 +75,7 @@ rsync -a --delete --link-dest="$ROOT" \
   --exclude '/ai_config.json' \
   --exclude '/.env' \
   --exclude '/.env.*' \
+  --exclude '/var/auth/' \
   --exclude '/curation_data/backups/' \
   --exclude '/curation_data/cache_backups/' \
   --exclude '/curation_data/checkpoints.sqlite' \
