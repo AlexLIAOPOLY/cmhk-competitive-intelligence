@@ -1140,7 +1140,7 @@
     let binary = "";
     bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
     const key = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    return `/static/report-previews/${key}.pdf`;
+    return `./static/report-previews/${key}.pdf`;
   }
 
   async function showReportPreview(path) {
