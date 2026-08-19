@@ -44,6 +44,7 @@
   };
   const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v1";
   const SHEET_READ_TIMEOUT_MS = 30000;
+  const SHEET_AUTO_REFRESH_MS = 15000;
 
   const escapeHtml = (value) => String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -337,13 +338,16 @@
       const errorMessage = error?.name === "AbortError"
         ? "实时刷新超过 30 秒，已停止等待"
         : (error.message || String(error));
+      const backgroundBusy = errorMessage.includes("后台战略新闻任务正在更新");
       if (!hasRows) {
         nodes.loading.hidden = false;
         nodes.loading.classList.add("is-error");
         nodes.loading.textContent = `读取失败：${errorMessage}`;
         setSaveStatus("尚未读取到可编辑数据", "error");
       } else {
-        setSaveStatus(`${errorMessage}；当前显示上次成功读取的数据`, "error");
+        setSaveStatus(backgroundBusy
+          ? "后台正在更新飞书审核表；系统每 15 秒自动重试，当前显示上次成功读取的数据"
+          : `${errorMessage}；系统将自动重试，当前显示上次成功读取的数据`, "error");
       }
       nodes.syncText.textContent = hasRows ? "显示缓存 · 实时刷新暂不可用" : "飞书连接失败";
     } finally {
@@ -593,6 +597,13 @@
   });
 
   document.addEventListener("pointerup", () => { model.dragging = false; });
+  window.setInterval(() => {
+    if (workspace.hidden || document.visibilityState !== "visible" || model.saving) return;
+    loadSheet();
+  }, SHEET_AUTO_REFRESH_MS);
+  document.addEventListener("visibilitychange", () => {
+    if (!workspace.hidden && document.visibilityState === "visible") loadSheet();
+  });
   document.addEventListener("click", (event) => {
     if (!event.target.closest("#newsReviewFilterMenu, .news-review-filter-button")) nodes.filterMenu.hidden = true;
   });

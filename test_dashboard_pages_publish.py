@@ -84,6 +84,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertTrue((destination / "index.html").is_file())
             self.assertTrue((destination / "intelligence.js").is_file())
 
+    @unittest.skip("legacy two-page publisher contract replaced by unified homepage")
     def test_build_site_is_static_sanitized_and_stable(self):
         payload = {
             "ok": True,
@@ -256,6 +257,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertTrue((first / ".nojekyll").exists())
 
+    @unittest.skip("standalone intelligence page is no longer published")
     def test_build_site_preserves_static_intelligence_snapshot(self):
         with tempfile.TemporaryDirectory() as temp:
             snapshot = Path(temp) / "snapshot"
@@ -304,6 +306,56 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertNotIn("增长动量", script)
         self.assertNotIn("投入强度", script)
         self.assertNotRegex(script, r"127\.0\.0\.1|localhost|10\.0\.|192\.168\.")
+
+    def test_build_site_publishes_unified_read_only_homepage(self):
+        snapshots = {
+            "status.json": {"ok": True, "status": {"outputs": []}},
+            "company-metrics.json": {"ok": True, "data": {}},
+            "executive-intelligence.json": {
+                "ok": True,
+                "domains": [{"id": "local-operators", "title": "本地运营商"}],
+                "relations": [],
+            },
+            "project-incidents.json": {"ok": True, "incidents": [], "total": 0},
+            "crawl-runs.json": {"ok": True, "runs": [], "total": 0},
+            "task-runs.json": {"ok": True, "tasks": []},
+            "strategic-briefs.json": {
+                "ok": True,
+                "items": [{"id": "NEWS-1", "title": "公开新闻"}],
+                "monitor": {"status": "snapshot", "scan_times": ["06:00", "13:30"]},
+            },
+        }
+        with tempfile.TemporaryDirectory() as temp, mock.patch.object(
+            publisher,
+            "_build_public_runtime_snapshots",
+            return_value=snapshots,
+        ), mock.patch.object(
+            publisher,
+            "_local_source_url",
+            return_value="http://127.0.0.1:8765/",
+        ):
+            destination = Path(temp) / "site"
+            version, payload = publisher._build_site(destination)
+
+            html = (destination / "index.html").read_text(encoding="utf-8")
+            bootstrap = (destination / "static" / "public-snapshot-bootstrap.js").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn("CMHK市场竞争全景", html)
+            self.assertIn("CMHK战略竞对中心", html)
+            self.assertIn('data-workspace-tab="dashboard"', html)
+            self.assertIn('data-workspace-tab="monitoring"', html)
+            self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
+            self.assertIn('src="./static/public-snapshot-bootstrap.js"', html)
+            self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
+            self.assertIn("公开网页是只读快照", bootstrap)
+            self.assertTrue((destination / "static" / "app.js").is_file())
+            self.assertTrue((destination / "static" / "assets" / "china-mobile-blue-logo.png").is_file())
+            self.assertTrue((destination / "static-data" / "executive-intelligence.json").is_file())
+            self.assertTrue((destination / "executive-dashboard-demo.html").is_file())
+            self.assertFalse((destination / "intelligence").exists())
+            self.assertRegex(version, r"^[0-9a-f]{64}$")
+            self.assertEqual(payload["site_version"], version)
 
 
 if __name__ == "__main__":
