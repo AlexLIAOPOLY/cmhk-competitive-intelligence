@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=66', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=54', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=68', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=56', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -255,8 +255,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("newsSelectedDate", SCRIPT)
         self.assertIn("newsSelectedRunIds", SCRIPT)
         self.assertIn("aggregateNewsStages", SCRIPT)
-        self.assertIn("openNewsLineageDetail", SCRIPT)
-        self.assertIn("当天运行记录", SCRIPT)
+        self.assertIn("openActualNewsLineageDetail", SCRIPT)
+        self.assertIn("当天实际处理轨迹", SCRIPT)
         self.assertIn("当天真实新增新闻", SCRIPT)
         self.assertIn("AI 纳入理由", SCRIPT)
         self.assertIn('params.get("newsDate")', SCRIPT)
@@ -274,6 +274,8 @@ class WorkspaceTabsTests(unittest.TestCase):
             "AI审核",
             "历史去重",
             "新增新闻",
+            "纳入 APP",
+            "纳入周报",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn("data-news-lineage-node", SCRIPT)
@@ -281,10 +283,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("syncNewsLineageEdges", SCRIPT)
         self.assertNotIn("setPointerCapture", SCRIPT)
         self.assertNotIn("localStorage.setItem(storageKey", SCRIPT)
-        self.assertIn("整理后的节点说明", SCRIPT)
-        self.assertIn("上游来源", SCRIPT)
-        self.assertIn("下游去向", SCRIPT)
-        self.assertIn("节点证据摘录", SCRIPT)
+        self.assertIn("当天结果摘要", SCRIPT)
+        self.assertIn("上下游", SCRIPT)
+        self.assertIn("当天归档摘要", SCRIPT)
         self.assertIn("当天具体内容", SCRIPT)
         self.assertIn("news-lineage-pulse", STYLE)
         self.assertIn("@keyframes news-lineage-flow", STYLE)
@@ -294,14 +295,23 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(".news-lineage-detail-items::-webkit-scrollbar", STYLE)
         self.assertIn("overflow-y: scroll", STYLE)
         self.assertIn("is-item-details", SCRIPT)
-        self.assertIn("is-run-history", SCRIPT)
         self.assertIn("grid-auto-rows: max-content", STYLE)
-        self.assertIn("完整处理流程", SCRIPT)
-        self.assertIn("规则／门禁", SCRIPT)
-        self.assertIn("当天证据／执行依据", SCRIPT)
-        self.assertIn("lineageProcessStep", SCRIPT)
-        self.assertIn("processSteps = processByNode", SCRIPT)
+        self.assertIn("actualEventsForNode", SCRIPT)
+        self.assertIn("当天原始处理记录", SCRIPT)
+        self.assertIn("lineageRunsForNode", SCRIPT)
+        self.assertIn('fetch("/api/crawl-runs?limit=500"', SCRIPT)
+        self.assertIn("当天未留下该节点的逐步处理记录", SCRIPT)
+        self.assertNotIn("完整处理流程", SCRIPT)
+        self.assertNotIn("规则／门禁", SCRIPT)
+        self.assertNotIn("lineageProcessStep", SCRIPT)
+        self.assertNotIn("processSteps = processByNode", SCRIPT)
         self.assertIn(".news-lineage-process-steps", STYLE)
+        self.assertIn('fetch("/api/news-review-sheet"', SCRIPT)
+        self.assertIn('valueAt(row, "检索日期")', SCRIPT)
+        self.assertIn('row.rollingStatus === "接受"', SCRIPT)
+        self.assertIn('row.weeklyStatus === "接受"', SCRIPT)
+        self.assertIn("当天选用明细", SCRIPT)
+        self.assertIn(".news-lineage.is-global .news-lineage-node.is-result", STYLE)
 
     def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
@@ -320,7 +330,6 @@ class WorkspaceTabsTests(unittest.TestCase):
             "香港电讯市场",
             "17项AI洞察",
             "情报进入业务入口",
-            "主页 · 小竞AI · 公开页",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn("frequency_counts", SCRIPT)

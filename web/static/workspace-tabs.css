@@ -514,6 +514,10 @@
 .news-lineage.is-global .news-lineage-node { width: 168px; height: 146px; gap: 7px; padding: 16px 15px 13px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 12px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 14px 28px rgba(0,8,14,.3),inset 0 1px rgba(221,249,253,.07); }
 .news-lineage.is-global .news-lineage-node.is-focus { width: 168px; height: 146px; min-height: 146px; place-content: start; border-radius: 12px; text-align: left; }
 .news-lineage.is-global .news-lineage-node.is-mint { border-color: rgba(82,187,163,.82); }
+.news-lineage.is-global .news-lineage-node.is-result { height: 116px; min-height: 116px; padding-top: 12px; padding-bottom: 10px; }
+.news-lineage.is-global .news-lineage-node.is-result > span { min-height: 26px; }
+.news-lineage.is-global .news-lineage-node.is-result > strong { font-size: 27px; }
+.news-lineage.is-global .news-lineage-node.is-result > em { font-size: 9.5px; }
 .news-lineage.is-global .news-lineage-node > span { min-height: 35px; padding-right: 16px; color: #e9f6f8; font-size: 13px; font-weight: 750; line-height: 1.35; }
 .news-lineage.is-global .news-lineage-node > strong { font-size: 30px; line-height: 1.05; }
 .news-lineage.is-global .news-lineage-node > strong small { margin-left: 5px; font-size: 10.5px; }
@@ -639,6 +643,10 @@
 .news-lineage-process-steps dl > div:nth-child(2n) { border-right: 0; }
 .news-lineage-process-steps dt { margin-bottom: 5px; color: #6f98a4; font-size: 10px; font-weight: 700; letter-spacing: .08em; }
 .news-lineage-process-steps dd { margin: 0; color: #c7dce1; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.news-lineage-process-steps.is-actual-trace dd { white-space: pre-wrap; }
+.news-lineage-trace-empty { display: grid; min-height: 240px; place-content: center; gap: 10px; padding: 28px; text-align: center; }
+.news-lineage-trace-empty strong { color: #dcecef; font-size: 16px; }
+.news-lineage-trace-empty p { max-width: 720px; margin: 0; color: #8eabb3; font-size: 13px; line-height: 1.7; }
 .news-lineage-step-evidence { padding: 11px 14px 14px; }
 .news-lineage-step-evidence > strong { display: block; margin-bottom: 7px; color: #74a4af; font-size: 10px; letter-spacing: .06em; }
 .news-lineage-step-evidence pre { max-height: 180px; margin: 0; padding: 10px 12px; overflow: auto; border-left: 2px solid #4caec2; color: #a9c5cd; background: #061a23; font: 10.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
