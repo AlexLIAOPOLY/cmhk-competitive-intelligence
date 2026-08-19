@@ -1,6 +1,6 @@
 .workspace-legacy-tools { display: none !important; }
 .dashboard-page:not(.workspace-dashboard-active) .brand-bar { display: flex !important; }
-.dashboard-page:not(.workspace-dashboard-active) .brand-mark { visibility: hidden; }
+.dashboard-page:not(.workspace-dashboard-active) .brand-mark { visibility: visible !important; }
 .dashboard-page:not(.workspace-dashboard-active) { height: 100dvh; overflow: hidden; }
 .dashboard-page:not(.workspace-dashboard-active) .app-shell {
   --fit-scale: 1;
