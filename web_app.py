@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import csv
 import ipaddress
 import json
 import mimetypes
@@ -1594,8 +1595,31 @@ def delete_report_files(paths: list[str]) -> dict:
     return {"deleted": deleted, "status": build_status()}
 
 
+def current_crawl_result_files() -> list[Path]:
+    """Return only result files listed by the latest crawl coverage report."""
+    coverage_path = ROOT / "coverage_report.tsv"
+    if coverage_path.exists():
+        try:
+            with coverage_path.open(encoding="utf-8", newline="") as fh:
+                rows = list(csv.DictReader(fh, delimiter="\t"))
+            current: list[Path] = []
+            results_root = RESULTS_DIR.resolve()
+            for row in rows:
+                raw_path = str(row.get("result_file") or "").strip()
+                if not raw_path:
+                    continue
+                candidate = (ROOT / raw_path).resolve()
+                if candidate.parent == results_root and candidate.name.startswith("row_") and candidate.exists():
+                    current.append(candidate)
+            if current:
+                return current
+        except (OSError, csv.Error):
+            pass
+    return sorted(RESULTS_DIR.glob("row_*.json"), key=lambda p: int(p.stem.split("_")[1]))
+
+
 def build_status() -> dict:
-    result_files = sorted(RESULTS_DIR.glob("row_*.json"), key=lambda p: int(p.stem.split("_")[1]))
+    result_files = current_crawl_result_files()
     running_tasks = [
         task
         for task in load_unified_task_index(limit=1000)

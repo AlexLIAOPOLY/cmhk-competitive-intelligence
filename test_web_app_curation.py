@@ -31,6 +31,25 @@ class IntelligenceErrorSanitizationTests(unittest.TestCase):
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_status_ignores_stale_result_files_not_in_latest_coverage_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            results = root / "results"
+            results.mkdir()
+            (results / "row_2.json").write_text('{"status":"ok"}', encoding="utf-8")
+            (results / "row_52.json").write_text('{"status":"no_extraction"}', encoding="utf-8")
+            (root / "coverage_report.tsv").write_text(
+                "row\tstatus\tresult_file\n2\tok\tresults/row_2.json\n",
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(web_app, "ROOT", root),
+                mock.patch.object(web_app, "RESULTS_DIR", results),
+            ):
+                files = web_app.current_crawl_result_files()
+
+        self.assertEqual([path.name for path in files], ["row_2.json"])
+
     def test_report_audio_metadata_does_not_read_transcript_sidecars(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             audio = Path(tmp) / "report.wav"
