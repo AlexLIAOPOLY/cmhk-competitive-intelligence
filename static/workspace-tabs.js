@@ -1372,7 +1372,7 @@
     const button = document.querySelector("#workspaceNavCollapse");
     if (!layout || !button) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let buttonMotion = null;
+    let motionTimer = 0;
     const apply = (collapsed) => {
       layout.classList.toggle("is-nav-collapsed", collapsed);
       button.setAttribute("aria-expanded", String(!collapsed));
@@ -1380,39 +1380,40 @@
       button.title = collapsed ? "展开项目导航" : "收回项目导航";
     };
     const animateTo = (collapsed) => {
-      buttonMotion?.cancel();
+      if (motionTimer) return;
       const first = button.getBoundingClientRect();
       apply(collapsed);
-      if (reducedMotion.matches || typeof button.animate !== "function") return;
+      if (reducedMotion.matches) return;
       const last = button.getBoundingClientRect();
       const offsetX = first.left + first.width / 2 - (last.left + last.width / 2);
       const offsetY = first.top + first.height / 2 - (last.top + last.height / 2);
       if (Math.abs(offsetX) < 1 && Math.abs(offsetY) < 1) return;
-      layout.classList.add("is-nav-transitioning");
+      layout.style.setProperty("--workspace-nav-motion-x", `${offsetX}px`);
+      layout.style.setProperty("--workspace-nav-motion-y", `${offsetY - 1}px`);
+      layout.style.setProperty("--workspace-nav-motion-scale", String(first.width / last.width));
+      layout.classList.add("is-nav-positioning");
       button.setAttribute("aria-busy", "true");
-      buttonMotion = button.animate([
-        { transform: `translate3d(${offsetX}px, ${offsetY - 1}px, 0) scale(${first.width / last.width})` },
-        { transform: "translate3d(0, -1px, 0) scale(1)" },
-      ], {
-        duration: 520,
-        easing: "cubic-bezier(.22,1,.36,1)",
-        fill: "both",
+      button.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        layout.classList.add("is-nav-transitioning");
+        layout.classList.remove("is-nav-positioning");
       });
-      buttonMotion.addEventListener("finish", () => {
+      motionTimer = window.setTimeout(() => {
         layout.classList.remove("is-nav-transitioning");
         button.removeAttribute("aria-busy");
-        buttonMotion = null;
-      }, { once: true });
-      buttonMotion.addEventListener("cancel", () => {
-        layout.classList.remove("is-nav-transitioning");
-        button.removeAttribute("aria-busy");
-      }, { once: true });
+        layout.style.removeProperty("--workspace-nav-motion-x");
+        layout.style.removeProperty("--workspace-nav-motion-y");
+        layout.style.removeProperty("--workspace-nav-motion-scale");
+        motionTimer = 0;
+      }, 540);
     };
     apply(localStorage.getItem("cmhk-workspace-nav-collapsed") === "1");
     button.addEventListener("click", () => {
       const collapsed = !layout.classList.contains("is-nav-collapsed");
       animateTo(collapsed);
-      localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      if (layout.classList.contains("is-nav-collapsed") === collapsed) {
+        localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      }
     });
   }
 

@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "5b0cafbf8898c2b7f3f943e8",
+      "task_id": "incident:5b0cafbf8898c2b7f3f943e8",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-19T17:48:46+08:00",
+      "started_at_hkt": "2026-08-19T17:48:46+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:48:46+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "3251d51f3d23e6b15ff221b9",
       "task_id": "incident:3251d51f3d23e6b15ff221b9",
       "title": "主项目后台任务",
@@ -141,7 +165,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T15:15:00+08:00",
       "started_at_hkt": "2026-08-19T15:15:04+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:48:16+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:50:47+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -717,7 +741,7 @@
       ],
       "occurred_at_hkt": "2026-08-19T09:15:00+08:00",
       "started_at_hkt": "2026-08-19T09:15:10+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:48:16+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:50:47+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1125,7 +1149,7 @@
       ],
       "occurred_at_hkt": "2026-08-19 03:11:42",
       "started_at_hkt": "2026-08-19T17:47:46+08:00",
-      "heartbeat_at_hkt": "2026-08-19T17:48:16+08:00",
+      "heartbeat_at_hkt": "2026-08-19T17:50:47+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -7301,5 +7325,5 @@
       "handled_at_hkt": ""
     }
   ],
-  "total": 304
+  "total": 305
 }
