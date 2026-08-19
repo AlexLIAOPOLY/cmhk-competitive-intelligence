@@ -24,13 +24,21 @@ class CompetitorChartShellTests(unittest.TestCase):
 
     def test_metric_title_and_legend_share_the_only_chart_header(self):
         self.assertIn('class="workspace-panel-header competitor-result-header"', SCRIPT)
-        header = re.search(r'<header class="workspace-panel-header competitor-result-header">(.*?)</header>', SCRIPT)
+        header = re.search(
+            r'<header class="workspace-panel-header competitor-result-header">(.*?)</header>',
+            SCRIPT,
+        )
         self.assertIsNotNone(header)
         self.assertIn("metricMeta.label", header.group(1))
         self.assertIn('class="competitor-chart-legend"', header.group(1))
         self.assertNotIn("家竞对", header.group(1))
         self.assertNotIn("多年趋势对比", SCRIPT)
         self.assertNotIn("<figcaption>", SCRIPT)
+
+        rule = re.search(r"\.competitor-result-header\s*\{([^}]*)\}", STYLE)
+        self.assertIsNotNone(rule)
+        self.assertIn("min-height: 72px", rule.group(1))
+        self.assertIn("padding-block: 12px", rule.group(1))
 
     def test_plot_has_no_inner_background_layer(self):
         rule = re.search(r"\.competitor-chart-scroll\s*\{([^}]*)\}", STYLE)

@@ -309,6 +309,7 @@
 .competitor-year-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
 .competitor-year-options span { width: 100%; padding: 0 5px; }
 .competitor-result { min-height: 0; overflow: auto; }
+.competitor-result-header { min-height: 72px; padding-block: 12px; }
 .competitor-result-header > div:first-child { display: grid; gap: 5px; }
 .competitor-result-header .competitor-chart-legend { margin-left: auto; }
 .competitor-result-overview { display: grid; width: min(calc(100% - 28px),1600px); grid-template-columns: minmax(0,1fr) clamp(340px,25vw,410px); gap: 16px; align-items: stretch; margin: 0 auto 14px; }
