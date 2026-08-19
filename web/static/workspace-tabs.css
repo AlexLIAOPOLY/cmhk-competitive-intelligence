@@ -481,9 +481,6 @@
 #newsLineageArrowAmber path { fill: #dda148; }
 .news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; }
 .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-feedback .news-lineage-pulse { stroke: #e3a64f; filter: drop-shadow(0 0 4px rgba(227,166,79,.6)); animation-duration: 3.2s; }
-.news-lineage-edge text { fill: #6f9ba7; font: 600 8px/1 system-ui,sans-serif; text-anchor: middle; paint-order: stroke; stroke: #061821; stroke-width: 5px; stroke-linejoin: round; }
-.news-lineage-edge textPath { dominant-baseline: auto; }
-.news-lineage-edge.is-amber text,.news-lineage-edge.is-feedback text { fill: #c99650; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
 .news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; }
 .news-lineage.is-global .news-lineage-edge text { font-size: 11px; font-weight: 720; stroke-width: 7px; }
@@ -778,6 +775,11 @@
   background: transparent !important;
   backdrop-filter: none !important;
 }
+
+/* HTML edge labels avoid clipped Chinese glyphs in SVG textPath rendering. */
+.news-lineage-edge-labels { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.news-lineage-edge-label { position: absolute; display: block; padding: 2px 7px 3px; border: 1px solid rgba(78,132,148,.34); border-radius: 999px; color: #8eb4be; background: rgba(5,24,33,.96); box-shadow: 0 0 12px rgba(3,18,26,.92); font: 700 11px/1.35 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; white-space: nowrap; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
+.news-lineage-edge-label.is-amber,.news-lineage-edge-label.is-feedback { border-color: rgba(211,151,67,.35); color: #d4a057; background: rgba(35,28,18,.96); }
 
 .workspace-inline-surface.modal-backdrop[hidden] { display: none !important; }
 .workspace-inline-surface .floating-chat {

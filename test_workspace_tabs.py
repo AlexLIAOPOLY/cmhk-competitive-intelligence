@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=69', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=61', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=72', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=63', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -142,7 +142,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_existing_feishu_review_sheet_is_reused_as_a_workspace_tab(self):
         self.assertIn('id="workspace-tab-review"', INDEX)
-        self.assertIn("新闻过滤与审核", INDEX)
+        self.assertIn("新闻人工筛选", INDEX)
         self.assertIn('document.querySelector("#newsReviewWorkspace")', SCRIPT)
         self.assertIn('appendChild(review)', SCRIPT)
 
@@ -150,7 +150,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         intelligence = INDEX[INDEX.index('id="workspace-group-intelligence"'):INDEX.index('id="workspace-group-products"')]
         products = INDEX[INDEX.index('id="workspace-group-products"'):INDEX.index('id="workspace-group-tools"')]
         operations = INDEX[INDEX.index('id="workspace-group-tools"'):INDEX.index('id="workspace-panel-dashboard"')]
-        self.assertIn("新闻过滤与审核", intelligence)
+        self.assertIn("新闻生产", intelligence)
+        self.assertIn("新闻检索系统", intelligence)
+        self.assertIn("新闻人工筛选", intelligence)
+        self.assertNotIn("新闻获取与推送", intelligence)
+        self.assertNotIn("新闻过滤与审核", intelligence)
         self.assertNotIn("竞对数据分析", intelligence)
         self.assertLess(products.index("竞对数据分析"), products.index("战略周报"))
         self.assertIn("AI智能助手", products)
@@ -352,6 +356,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('const bend = Math.min(Math.max(20, gap * .44), gap / 2)', SCRIPT)
         self.assertIn('requestAnimationFrame(() => requestAnimationFrame(syncNewsLineageEdges))', SCRIPT)
         self.assertIn('new ResizeObserver(scheduleNewsLineageEdgeSync)', SCRIPT)
+        self.assertIn('data-news-lineage-label', SCRIPT)
+        self.assertIn('getPointAtLength(length / 2)', SCRIPT)
+        self.assertNotIn("<textPath", SCRIPT)
+        self.assertIn(".news-lineage-edge-label", STYLE)
         self.assertIn(".news-lineage.is-global .news-lineage-node.is-compact", STYLE)
         for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-macro", "is-insight", "is-delivery"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.{variant}", STYLE)
