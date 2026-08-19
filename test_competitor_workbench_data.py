@@ -1,10 +1,17 @@
+import csv
 import json
 import unittest
+from collections import defaultdict
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
 DATA_PATH = ROOT / "web/static/competitor-workbench-data.json"
+SOURCES = (
+    ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv",
+    ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
+)
+BLOCKED = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
 
 
 class CompetitorWorkbenchDataTests(unittest.TestCase):
@@ -18,9 +25,9 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         cells = self.payload["cells"]
         keys = [(item["company"], item["metric"], item["year"]) for item in cells]
 
-        self.assertGreaterEqual(len(companies), 9)
-        self.assertGreaterEqual(len(metrics), 30)
-        self.assertGreaterEqual(len(cells), 350)
+        self.assertGreaterEqual(len(companies), 11)
+        self.assertGreaterEqual(len(metrics), 50)
+        self.assertGreaterEqual(len(cells), 580)
         self.assertEqual(len(keys), len(set(keys)))
         self.assertLessEqual(min(item["year"] for item in cells), 2016)
         self.assertGreaterEqual(max(item["year"] for item in cells), 2025)
@@ -41,6 +48,32 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
 
     def test_evidence_version_is_content_hash(self):
         self.assertRegex(self.payload["evidenceVersion"], r"^[0-9a-f]{64}$")
+
+    def test_page_contains_every_multi_year_official_database_cell(self):
+        source_rows = []
+        availability = defaultdict(set)
+        for source in SOURCES:
+            with source.open(encoding="utf-8-sig", newline="") as handle:
+                for row in csv.DictReader(handle):
+                    if row.get("verification_status") in BLOCKED or not (row.get("official_value") or "").strip():
+                        continue
+                    key = (row["operator"], row["metric_key"])
+                    availability[key].add(int(row["year"]))
+                    source_rows.append((row["operator"], row["metric_key"], int(row["year"])))
+        expected = {row for row in source_rows if len(availability[row[:2]]) >= 2}
+        actual = {(row["company"], row["metric"], row["year"]) for row in self.payload["cells"]}
+        self.assertEqual(actual, expected)
+        self.assertEqual(
+            self.payload["sourceDatasets"],
+            ["global_top5_operators_2016_2025", "local_hk_operator_operating_metrics_2016_2025"],
+        )
+
+    def test_recent_global_operator_additions_are_visible(self):
+        companies = {item["id"]: item for item in self.payload["companies"]}
+        metrics = {item["key"] for item in self.payload["metrics"]}
+        self.assertEqual(companies["Bharti Airtel"]["group"], "印度运营商")
+        self.assertEqual(companies["Reliance Jio"]["group"], "印度运营商")
+        self.assertTrue({"revenue", "ebitda", "net_profit", "network_towers", "total_data_traffic"} <= metrics)
 
     def test_hkt_smartone_churn_scenario_matches_expected_history(self):
         cells = {

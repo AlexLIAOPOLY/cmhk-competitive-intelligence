@@ -9,12 +9,26 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+GLOBAL_OPERATOR_SOURCE = (
+    ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
+)
+LOCAL_HK_SOURCE = (
+    ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv"
+)
 SOURCES = (
-    ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/annual_operating_metrics_2016_2025.csv",
-    ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
+    GLOBAL_OPERATOR_SOURCE,
+    LOCAL_HK_SOURCE,
 )
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
 BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
+COMPANY_GROUPS = {
+    "中国移动": "内地运营商",
+    "中国电信": "内地运营商",
+    "中国联通": "内地运营商",
+    "中国广电": "内地运营商",
+    "Bharti Airtel": "印度运营商",
+    "Reliance Jio": "印度运营商",
+}
 UNIT_LABELS = {
     "percent": "%",
     "million_subscribers": "百万户",
@@ -25,6 +39,10 @@ UNIT_LABELS = {
     "CNY_per_user_month": "元/户/月",
     "GB_per_user_month": "GB/户/月",
     "million_households": "百万户",
+    "INR_per_user_month": "印度卢比/户/月",
+    "INR_million": "百万印度卢比",
+    "INR_crore": "千万印度卢比",
+    "billion_GB": "十亿GB",
 }
 
 
@@ -41,7 +59,7 @@ def main() -> None:
         with source.open(encoding="utf-8-sig", newline="") as handle:
             for row in csv.DictReader(handle):
                 status = text(row, "verification_status")
-                raw = text(row, "official_value") or text(row, "value")
+                raw = text(row, "official_value")
                 company = text(row, "operator")
                 metric = text(row, "metric_key")
                 try:
@@ -55,14 +73,19 @@ def main() -> None:
                 company_meta.setdefault(company, {
                     "id": company,
                     "label": company,
-                    "group": "香港运营商" if source == SOURCES[1] else "内地运营商",
+                    "group": "香港运营商" if source == LOCAL_HK_SOURCE else COMPANY_GROUPS.get(company, "国际运营商"),
                 })
-                metric_meta.setdefault(metric, {
+                meta = metric_meta.setdefault(metric, {
                     "key": metric,
                     "label": text(row, "metric_zh") or metric,
                     "unit": unit,
                     "unitLabel": UNIT_LABELS.get(unit, unit),
+                    "units": [],
+                    "unitLabels": {},
                 })
+                if unit not in meta["units"]:
+                    meta["units"].append(unit)
+                meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 availability[(company, metric)].add(year)
                 cells.append({
                     "company": company,

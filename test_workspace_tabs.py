@@ -173,8 +173,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("competitor-chart-series", STYLE)
         self.assertIn("competitorInsightController?.abort()", SCRIPT)
         self.assertIn('error.name === "AbortError"', SCRIPT)
-        self.assertIn("仅展示所选竞对可比指标", SCRIPT)
         self.assertIn("所选组合暂无可直接比较的数据", SCRIPT)
+        self.assertIn("仅展示所选竞对同单位可比指标", SCRIPT)
+        self.assertIn("所选组合的计量单位不一致", SCRIPT)
 
     def test_review_sheet_uses_cached_snapshot_and_inline_escape_is_safe(self):
         review_script = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")

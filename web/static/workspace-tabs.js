@@ -97,16 +97,23 @@
       (map[company.group] ||= []).push(company);
       return map;
     }, {});
+    const metricUnit = (metric) => {
+      const selectedCells = data.cells.filter((cell) => (!selection.companies.length || selection.companies.includes(cell.company)) && cell.metric === metric.key);
+      const units = [...new Set(selectedCells.map((cell) => cell.unit).filter(Boolean))];
+      return units.length === 1 ? (metric.unitLabels?.[units[0]] || units[0]) : "按所选竞对确定单位";
+    };
     const comparableMetrics = selection.companies.length < 2 ? data.metrics : data.metrics.filter((metric) => {
-      const coveredCompanies = new Set(data.cells.filter((cell) => selection.companies.includes(cell.company) && cell.metric === metric.key).map((cell) => cell.company));
-      return coveredCompanies.size >= 2;
+      const selectedCells = data.cells.filter((cell) => selection.companies.includes(cell.company) && cell.metric === metric.key);
+      const coveredCompanies = new Set(selectedCells.map((cell) => cell.company));
+      const units = new Set(selectedCells.map((cell) => cell.unit));
+      return coveredCompanies.size === selection.companies.length && units.size === 1;
     });
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>按披露期读取真实多年数据；初始不自动生成</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span>${esc(group)}</span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
-        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metric.unitLabel || metric.unit)}</option>`).join("")}</select></label></fieldset>
+        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>截至最后共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
@@ -134,6 +141,11 @@
     const data = state.competitorData;
     const metricMeta = data.metrics.find((item) => item.key === metric) || { label: metric, unit: "" };
     const available = data.cells.filter((cell) => companies.includes(cell.company) && cell.metric === metric);
+    const availableUnits = [...new Set(available.map((cell) => cell.unit).filter(Boolean))];
+    if (availableUnits.length !== 1) {
+      host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>所选组合的计量单位不一致</strong><p>请更换竞对或指标；系统不会把不同币种或单位的数据画在同一张对比图中。</p></div>`;
+      return;
+    }
     const allYears = [...new Set(available.map((cell) => cell.year))].sort((a, b) => a - b);
     const companyYears = companies.map((company) => new Set(available.filter((cell) => cell.company === company).map((cell) => cell.year)));
     const commonYears = allYears.filter((year) => companyYears.every((set) => set.has(year)));
@@ -150,7 +162,7 @@
     const lookup = new Map(available.map((cell) => [`${cell.company}|${cell.year}`, cell]));
     const companyMeta = new Map(data.companies.map((item) => [item.id, item]));
     const companyLabel = (company) => companyMeta.get(company)?.label || company;
-    const unitLabel = metricMeta.unitLabel || metricMeta.unit;
+    const unitLabel = metricMeta.unitLabels?.[availableUnits[0]] || availableUnits[0];
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
