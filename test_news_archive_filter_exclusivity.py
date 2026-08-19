@@ -7,11 +7,13 @@ SCRIPT = (ROOT / "web" / "static" / "workspace-tabs.js").read_text(encoding="utf
 
 
 class NewsArchiveFilterExclusivityTests(unittest.TestCase):
-    def test_date_and_run_filters_share_one_exclusive_group(self):
-        self.assertEqual(SCRIPT.count('name="news-archive-filter"'), 3)
-        self.assertIn('querySelectorAll(\'.news-multi-select[name="news-archive-filter"]\')', SCRIPT)
-        self.assertIn("if (!filter.open) return", SCRIPT)
-        self.assertIn("if (other !== filter) other.open = false", SCRIPT)
+    def test_news_archive_uses_one_single_date_selector(self):
+        self.assertEqual(SCRIPT.count("data-news-date-select"), 2)
+        self.assertNotIn('name="news-archive-filter"', SCRIPT)
+        self.assertNotIn("data-news-run-option", SCRIPT)
+        self.assertNotIn("data-news-date-option", SCRIPT)
+        self.assertIn('params.get("newsDate")', SCRIPT)
+        self.assertIn("state.newsSelectedDate = newsDate.value", SCRIPT)
 
 
 if __name__ == "__main__":

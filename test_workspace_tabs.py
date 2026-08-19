@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=59', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=47', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=62', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=49', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -84,22 +84,22 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=16', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=17', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=9', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=11', INDEX)
         self.assertNotIn('class="subtitle"', SUBSCRIPTION_SCRIPT)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)
-        self.assertIn('action: "push"', SUBSCRIPTION_SCRIPT)
+        self.assertIn('action: "pushLatest"', SUBSCRIPTION_SCRIPT)
         self.assertIn("strategic_news_schedule", SUBSCRIPTION_SCRIPT)
         self.assertIn("战略新闻定时推送", SUBSCRIPTION_SCRIPT)
         self.assertIn("06:00 / 13:30", SUBSCRIPTION_SCRIPT)
-        self.assertIn("推送台账", SUBSCRIPTION_SCRIPT)
+        self.assertIn("推送记录", SUBSCRIPTION_SCRIPT)
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
         self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
-        self.assertIn("border-radius: 15px", SUBSCRIPTION_STYLE)
+        self.assertIn("border-radius: 14px", SUBSCRIPTION_STYLE)
         self.assertIn("workspace-bg-content-v1.png", SUBSCRIPTION_STYLE)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
         self.assertNotIn('localStorage.setItem("cmhk-weekly-subscription"', SCRIPT)
@@ -126,17 +126,18 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_report_modules_open_pdf_previews_and_keep_word_downloads_without_top_kpi_strip(self):
         self.assertNotIn("docx-preview", INDEX)
         self.assertIn("reportPreviewPdfUrl", SCRIPT)
-        self.assertIn("PDF 版式预览 · 下载保留原始 Word", SCRIPT)
+        self.assertIn("正在读取 PDF 版式预览", SCRIPT)
         self.assertIn("data-report-preview-expand", SCRIPT)
         self.assertIn("workspaceReportSide-${kind}", SCRIPT)
         self.assertIn("showReportPreview(row.dataset.path)", SCRIPT)
-        render_reports = SCRIPT[SCRIPT.index("function renderReports"):SCRIPT.index("function subscriptionPanel")]
+        render_reports = SCRIPT[SCRIPT.index("function renderReports"):SCRIPT.index("function reportPreviewPlaceholder")]
         self.assertNotIn("workspace-kpi-strip", render_reports)
         self.assertIn(".report-preview.is-maximized", STYLE)
         self.assertIn("height: 100dvh", STYLE)
         self.assertIn(".workspace-content { height: 100%;", STYLE)
         self.assertIn("transform: none !important", STYLE)
-        self.assertGreaterEqual(SCRIPT.count("state.previewRequest += 1"), 2)
+        self.assertIn("state.previewRequest.weekly += 1", SCRIPT)
+        self.assertIn("state.previewRequest.performance += 1", SCRIPT)
         self.assertIn("border-radius: 10px", STYLE)
 
     def test_existing_feishu_review_sheet_is_reused_as_a_workspace_tab(self):
@@ -245,54 +246,54 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("cmhk-news-review-snapshot-v1", review_script)
         self.assertIn('workspace.classList.contains("workspace-inline-review")', review_script)
 
-    def test_news_module_replays_the_full_ai_review_pipeline_by_date_and_run(self):
+    def test_news_module_replays_the_full_ai_review_pipeline_by_single_date(self):
         self.assertIn('fetch("/api/crawl-runs?taskKind=strategic-news&limit=365")', SCRIPT)
         self.assertIn("/api/crawl-run-log?id=", SCRIPT)
-        self.assertIn("data-news-date-option", SCRIPT)
-        self.assertIn("data-news-run-option", SCRIPT)
+        self.assertIn("data-news-date-select", SCRIPT)
+        self.assertNotIn("data-news-run-option", SCRIPT)
+        self.assertNotIn("data-news-date-option", SCRIPT)
+        self.assertIn("newsSelectedDate", SCRIPT)
         self.assertIn("newsSelectedRunIds", SCRIPT)
         self.assertIn("aggregateNewsStages", SCRIPT)
-        self.assertIn("openNewsStageDetail", SCRIPT)
-        self.assertIn("该阶段日志输出", SCRIPT)
-        self.assertIn("展开该批次完整原始日志", SCRIPT)
-        self.assertIn("完整运行归档", SCRIPT)
-        self.assertIn("本轮真实新增新闻", SCRIPT)
-        self.assertIn("AI纳入理由", SCRIPT)
+        self.assertIn("openNewsLineageDetail", SCRIPT)
+        self.assertIn("当天运行记录", SCRIPT)
+        self.assertIn("当天真实新增新闻", SCRIPT)
+        self.assertIn("AI 纳入理由", SCRIPT)
+        self.assertIn('params.get("newsDate")', SCRIPT)
+        self.assertNotIn('name="news-archive-filter"', SCRIPT)
         for stage in ("线索发现", "确定性门禁", "AI 语义审核", "历史语义去重", "飞书写入回读", "群组推送"):
             self.assertIn(stage, SCRIPT)
-        self.assertIn("newsRuns", SCRIPT)
         self.assertNotIn("最新战略快讯", SCRIPT)
         self.assertIn("@keyframes news-signal", STYLE)
         self.assertIn("prefers-reduced-motion", STYLE)
 
-    def test_news_module_exposes_draggable_live_lineage_and_next_run_feedback(self):
+    def test_news_module_exposes_clickable_live_lineage_with_detailed_dialog(self):
         for label in (
-            "每天的信息从哪里来",
-            "定时触发",
-            "固定来源与关键词",
-            "定时爬虫页面线索",
-            "Agentic 补缺搜索",
-            "本轮新增线索",
-            "影响下一轮",
+            "06:00 / 13:30 战略新闻",
+            "线索补缺",
+            "AI审核",
+            "历史去重",
+            "新增新闻",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn("data-news-lineage-node", SCRIPT)
-        self.assertIn("setPointerCapture", SCRIPT)
+        self.assertIn("点击查看整理详情", SCRIPT)
         self.assertIn("syncNewsLineageEdges", SCRIPT)
-        self.assertIn("localStorage.setItem(storageKey", SCRIPT)
-        self.assertIn("页面变化线索会生成关联查询与关键词", SCRIPT)
-        self.assertIn("30分钟到时转下轮", SCRIPT)
+        self.assertNotIn("setPointerCapture", SCRIPT)
+        self.assertNotIn("localStorage.setItem(storageKey", SCRIPT)
+        self.assertIn("整理后的节点说明", SCRIPT)
+        self.assertIn("上游来源", SCRIPT)
+        self.assertIn("下游去向", SCRIPT)
+        self.assertIn("节点证据摘录", SCRIPT)
+        self.assertIn("当天具体内容", SCRIPT)
         self.assertIn("news-lineage-pulse", STYLE)
         self.assertIn("@keyframes news-lineage-flow", STYLE)
-        self.assertIn(".news-lineage-canvas.is-paused", STYLE)
+        self.assertIn(".news-lineage-dialog-summary", STYLE)
 
     def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "每日全景",
-            "本轮线索",
-            "每天的信息从哪里来",
             "06:00 / 13:30 战略新闻",
             "线索补缺",
             "AI审核",
@@ -311,7 +312,8 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertIn(label, SCRIPT)
         self.assertIn("frequency_counts", SCRIPT)
         self.assertIn("source_groups", SCRIPT)
-        self.assertIn("data-news-lineage-mode", SCRIPT)
+        self.assertNotIn("data-news-lineage-mode", SCRIPT)
+        self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1580, 492]", SCRIPT)
         self.assertIn('feedbackLabel: "历史记忆影响下一轮"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
