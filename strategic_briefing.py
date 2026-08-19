@@ -73,9 +73,13 @@ SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
     min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "4"))),
 )
-SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE = max(
-    40,
-    min(300, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE", "180"))),
+SEMANTIC_DEDUPE_MAX_LLM_CALLS = max(
+    1,
+    min(10, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_MAX_LLM_CALLS", "10"))),
+)
+SEMANTIC_DEDUPE_REFERENCE_LIMIT = max(
+    1,
+    min(12, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_REFERENCE_LIMIT", "4"))),
 )
 _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "分类必须结合monitoring_module、upstream_category_hint、新闻主体和事件实质综合判断。"
@@ -5002,16 +5006,14 @@ def agent_semantic_deduplicate_candidates(
         for entry in (_semantic_dedupe_history(item) for item in history_items)
         if entry["id"] and entry["title"]
     ]
-    chunks = [
-        history[offset : offset + SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE]
-        for offset in range(0, len(history), SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE)
-    ] or [[]]
+    history_shards = 1 if history else 0
     _emit_progress(
         progress_callback,
         "语义去重准备",
         (
-            f"待核对 {len(candidates)} 条，历史 {len(history)} 条，"
-            f"分为 {len(chunks)} 个分片（每片最多 {SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE} 条）。"
+            f"待核对 {len(candidates)} 条，历史 {len(history)} 条；"
+            f"先做程序确定性去重，再用最多 {SEMANTIC_DEDUPE_MAX_LLM_CALLS} 轮"
+            "对相似历史召回结果做宽松语义去重。"
         ),
     )
     priority_by_id = {
@@ -5023,7 +5025,7 @@ def agent_semantic_deduplicate_candidates(
             "id": candidate["id"],
             "is_duplicate": False,
             "duplicate_of": "",
-            "reason": "Agent 已核对全部历史分片，未发现同一事件。",
+            "reason": "在有限语义去重预算内未发现同一事件，默认保留。",
             "assessed_shards": 0,
             "errors": [],
         }
@@ -5078,7 +5080,7 @@ def agent_semantic_deduplicate_candidates(
                     "is_duplicate": True,
                     "duplicate_of": exact_match["id"],
                     "reason": reason,
-                    "assessed_shards": len(chunks),
+                    "assessed_shards": history_shards,
                 }
             )
             continue
@@ -5095,75 +5097,81 @@ def agent_semantic_deduplicate_candidates(
         "确定性去重",
         f"ID、规范化URL和高置信事件签名先行命中 {deterministic_count} 条。",
     )
-    for offset in range(0, len(candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
-        batch = candidates[offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE]
-        batch_number = offset // SEMANTIC_DEDUPE_BATCH_SIZE + 1
-        batch_total = (
-            len(candidates) + SEMANTIC_DEDUPE_BATCH_SIZE - 1
-        ) // SEMANTIC_DEDUPE_BATCH_SIZE
-        earlier = candidates[:offset]
-        for shard_index, history_chunk in enumerate(chunks, start=1):
-            active = [
-                candidate
+    active_candidates = [
+        candidate
+        for candidate in candidates
+        if not aggregate[candidate["id"]]["is_duplicate"]
+    ]
+    llm_batch_size = max(
+        SEMANTIC_DEDUPE_BATCH_SIZE,
+        (len(active_candidates) + SEMANTIC_DEDUPE_MAX_LLM_CALLS - 1)
+        // SEMANTIC_DEDUPE_MAX_LLM_CALLS,
+    )
+    llm_call_count = 0
+    processed_candidates: list[dict[str, Any]] = []
+    batch_total = (
+        (len(active_candidates) + llm_batch_size - 1) // llm_batch_size
+        if active_candidates
+        else 0
+    )
+    for offset in range(0, len(active_candidates), llm_batch_size):
+        batch = active_candidates[offset : offset + llm_batch_size]
+        llm_call_count += 1
+        batch_number = offset // llm_batch_size + 1
+        priority_history = list(
+            {
+                entry["id"]: entry
                 for candidate in batch
-                if not aggregate[candidate["id"]]["is_duplicate"]
-            ]
-            if not active:
-                break
-            _emit_progress(
-                progress_callback,
-                "语义去重分片",
-                (
-                    f"开始批次 {batch_number}/{batch_total}、历史分片 "
-                    f"{shard_index}/{len(chunks)}；本次核对 {len(active)} 条候选"
-                    f"与 {len(history_chunk)} 条历史。"
-                ),
+                for entry in priority_by_id[candidate["id"]][
+                    :SEMANTIC_DEDUPE_REFERENCE_LIMIT
+                ]
+            }.values()
+        )
+        earlier_candidates = list(
+            {
+                entry["id"]: entry
+                for candidate in batch
+                for entry in _semantic_priority_history(
+                    candidate,
+                    processed_candidates,
+                    limit=SEMANTIC_DEDUPE_REFERENCE_LIMIT,
+                )
+            }.values()
+        )
+        _emit_progress(
+            progress_callback,
+            "语义去重限额批次",
+            (
+                f"开始第 {batch_number}/{batch_total} 轮（硬上限 "
+                f"{SEMANTIC_DEDUPE_MAX_LLM_CALLS} 轮）；核对 {len(batch)} 条候选，"
+                f"召回 {len(priority_history)} 条历史和 {len(earlier_candidates)} 条更早候选。"
+            ),
+        )
+        try:
+            decisions = _call_semantic_dedupe_agent(
+                batch,
+                history=[],
+                priority_history=priority_history,
+                earlier_candidates=earlier_candidates,
             )
-            try:
-                priority_history = list(
-                    {
-                        entry["id"]: entry
-                        for candidate in active
-                        for entry in priority_by_id[candidate["id"]]
-                    }.values()
+        except Exception as exc:
+            error = _clean_text(exc, 240)
+            logging.error(
+                "语义去重第 %s/%s 轮失败；为控制问询次数，本批默认保留且不重试：%s",
+                batch_number,
+                batch_total,
+                error,
+            )
+            decisions = {}
+            for candidate in batch:
+                aggregate[candidate["id"]]["errors"].append(
+                    f"bounded batch {batch_number}: {error}"
                 )
-                decisions = _call_semantic_dedupe_agent(
-                    active,
-                    history=history_chunk,
-                    priority_history=priority_history,
-                    earlier_candidates=earlier,
-                )
-            except Exception as batch_exc:
-                logging.error(
-                    "语义去重 Agent 批量判断失败，本批 %s 条逐条重试：%s",
-                    len(active),
-                    _clean_text(batch_exc, 240),
-                )
-                decisions = {}
-                for candidate in active:
-                    try:
-                        decisions.update(
-                            _call_semantic_dedupe_agent(
-                                [candidate],
-                                history=history_chunk,
-                                priority_history=priority_by_id[candidate["id"]],
-                                earlier_candidates=[
-                                    prior
-                                    for prior in candidates
-                                    if prior["order"] < candidate["order"]
-                                ],
-                            )
-                        )
-                    except Exception as exc:
-                        aggregate[candidate["id"]]["errors"].append(
-                            f"shard {shard_index}: {_clean_text(exc, 240)}"
-                        )
-            for candidate in active:
-                decision = decisions.get(candidate["id"])
-                if not decision:
-                    continue
-                record = aggregate[candidate["id"]]
-                record["assessed_shards"] += 1
+        for candidate in batch:
+            record = aggregate[candidate["id"]]
+            decision = decisions.get(candidate["id"])
+            if decision:
+                record["assessed_shards"] = history_shards
                 if decision["is_duplicate"]:
                     record.update(
                         {
@@ -5172,90 +5180,16 @@ def agent_semantic_deduplicate_candidates(
                             "reason": decision["reason"],
                         }
                     )
-            _emit_progress(
-                progress_callback,
-                "语义去重分片",
-                (
-                    f"完成批次 {batch_number}/{batch_total}、分片 "
-                    f"{shard_index}/{len(chunks)}；累计判定重复 "
-                    f"{sum(1 for record in aggregate.values() if record['is_duplicate'])} 条，"
-                    f"累计错误 {sum(len(record['errors']) for record in aggregate.values())} 个。"
-                ),
-            )
-
-    independently_confirmed: list[dict[str, Any]] = []
-    confirmation_candidates = [
-        candidate
-        for candidate in candidates
-        if not aggregate[candidate["id"]]["is_duplicate"]
-        and not aggregate[candidate["id"]]["errors"]
-        and aggregate[candidate["id"]]["assessed_shards"] == len(chunks)
-    ]
-    for offset in range(0, len(confirmation_candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
-        confirmation_batch = confirmation_candidates[
-            offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE
-        ]
+            processed_candidates.append(candidate)
         _emit_progress(
             progress_callback,
-            "去重独立复核",
+            "语义去重限额批次",
             (
-                f"正在批量复核 {offset + 1}-"
-                f"{offset + len(confirmation_batch)}/{len(confirmation_candidates)} 条候选。"
+                f"完成第 {batch_number}/{batch_total} 轮；累计判定重复 "
+                f"{sum(1 for record in aggregate.values() if record['is_duplicate'])} 条，"
+                f"失败默认保留 {sum(1 for record in aggregate.values() if record['errors'])} 条。"
             ),
         )
-        try:
-            decisions = _call_semantic_dedupe_agent(
-                confirmation_batch,
-                history=[],
-                priority_history=list(
-                    {
-                        entry["id"]: entry
-                        for candidate in confirmation_batch
-                        for entry in priority_by_id[candidate["id"]]
-                    }.values()
-                ),
-                earlier_candidates=independently_confirmed,
-            )
-        except Exception as batch_exc:
-            logging.error(
-                "语义去重独立批量复核失败，本批 %s 条当轮全部逐条复审：%s",
-                len(confirmation_batch),
-                _clean_text(batch_exc, 240),
-            )
-            decisions = {}
-            for candidate in confirmation_batch:
-                try:
-                    decisions.update(
-                        _call_semantic_dedupe_agent(
-                            [candidate],
-                            history=[],
-                            priority_history=priority_by_id[candidate["id"]],
-                            earlier_candidates=independently_confirmed,
-                        )
-                    )
-                except Exception as exc:
-                    aggregate[candidate["id"]]["errors"].append(
-                        f"independent confirmation: {_clean_text(exc, 240)}"
-                    )
-                    continue
-                decision = decisions[candidate["id"]]
-                if not decision["is_duplicate"]:
-                    independently_confirmed.append(candidate)
-        for candidate in confirmation_batch:
-            record = aggregate[candidate["id"]]
-            decision = decisions.get(candidate["id"])
-            if not decision:
-                continue
-            if decision["is_duplicate"]:
-                record.update(
-                    {
-                        "is_duplicate": True,
-                        "duplicate_of": decision["duplicate_of"],
-                        "reason": decision["reason"],
-                    }
-                )
-            elif candidate not in independently_confirmed:
-                independently_confirmed.append(candidate)
 
     kept: list[dict[str, Any]] = []
     duplicates: list[dict[str, Any]] = []
@@ -5271,23 +5205,19 @@ def agent_semantic_deduplicate_candidates(
                     "reason": decision["reason"],
                 }
             )
-        elif decision["errors"] or decision["assessed_shards"] != len(chunks):
-            deferred.append(
-                {
-                    "item": source_item,
-                    "errors": decision["errors"]
-                    or [
-                        f"Agent 只完成 {decision['assessed_shards']}/{len(chunks)} 个历史分片"
-                    ],
-                }
-            )
         else:
             kept.append(source_item)
     audit = {
-        "version": 1,
+        "version": 2,
         "generated_at": _now_iso(),
         "history_count": len(history),
-        "history_shards": len(chunks),
+        "history_shards": history_shards,
+        "llm_call_limit": SEMANTIC_DEDUPE_MAX_LLM_CALLS,
+        "llm_call_count": llm_call_count,
+        "llm_batch_size": llm_batch_size,
+        "failed_open_count": sum(
+            1 for record in aggregate.values() if record["errors"]
+        ),
         "candidate_count": len(items),
         "kept_count": len(kept),
         "duplicate_count": len(duplicates),
@@ -5299,9 +5229,10 @@ def agent_semantic_deduplicate_candidates(
         progress_callback,
         "语义去重完成",
         (
-            f"候选 {len(items)} 条，历史 {len(history)} 条/{len(chunks)} 分片；"
-            f"重复 {len(duplicates)} 条，延期 {len(deferred)} 条，"
-            f"保留 {len(kept)} 条。"
+            f"候选 {len(items)} 条、历史 {len(history)} 条；LLM 问询 "
+            f"{llm_call_count}/{SEMANTIC_DEDUPE_MAX_LLM_CALLS} 轮，"
+            f"重复 {len(duplicates)} 条，失败默认保留 "
+            f"{audit['failed_open_count']} 条，总保留 {len(kept)} 条。"
         ),
     )
     return {
@@ -5310,7 +5241,9 @@ def agent_semantic_deduplicate_candidates(
         "deferred": deferred,
         "decisions": audit["decisions"],
         "history_count": len(history),
-        "history_shards": len(chunks),
+        "history_shards": history_shards,
+        "llm_call_count": llm_call_count,
+        "llm_call_limit": SEMANTIC_DEDUPE_MAX_LLM_CALLS,
     }
 
 

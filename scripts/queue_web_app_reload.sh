@@ -6,12 +6,24 @@ LABEL="com.liaowang.cmhk-queued-web-reload"
 DOMAIN="gui/$(id -u)"
 STATE_DIR="$HOME/Library/Application Support/CMHK"
 REQUEST_FILE="$STATE_DIR/web-reload-requested"
+INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
 WORKER_COPY="$STATE_DIR/queued_web_app_reload_worker.sh"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
 
 mkdir -p "$STATE_DIR" "$STAGE_ROOT" "$(dirname "$LOG_FILE")"
 chmod 700 "$STATE_DIR" "$STAGE_ROOT"
+
+interrupt_strategic=0
+if [[ "${1:-}" == "--interrupt-strategic" ]]; then
+  interrupt_strategic=1
+  shift
+fi
+if (( $# > 0 )); then
+  echo "Usage: $0 [--interrupt-strategic]" >&2
+  exit 2
+fi
+
 request_token="$(date '+%Y%m%dT%H%M%S')-$$-${RANDOM}"
 release_dir="$STAGE_ROOT/$request_token"
 mkdir -p "$release_dir"
@@ -63,6 +75,11 @@ xattr -c "$WORKER_COPY" 2>/dev/null || true
 temporary_request="$REQUEST_FILE.tmp.$$"
 printf '%s\n' "$request_token" > "$temporary_request"
 mv -f "$temporary_request" "$REQUEST_FILE"
+if (( interrupt_strategic == 1 )); then
+  temporary_interrupt="$INTERRUPT_FILE.tmp.$$"
+  printf '%s\n' "$request_token" > "$temporary_interrupt"
+  mv -f "$temporary_interrupt" "$INTERRUPT_FILE"
+fi
 
 if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
   echo "Web reload request coalesced into the active background worker: $request_token"

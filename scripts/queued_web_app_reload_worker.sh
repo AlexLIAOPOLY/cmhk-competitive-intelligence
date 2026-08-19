@@ -7,6 +7,7 @@ TASKS_URL="${CMHK_TASK_RUNS_URL:-http://127.0.0.1:8765/api/task-runs?limit=100}"
 CHECK_INTERVAL_SECONDS="${CMHK_RELOAD_CHECK_INTERVAL_SECONDS:-5}"
 STATE_DIR="$HOME/Library/Application Support/CMHK"
 REQUEST_FILE="$STATE_DIR/web-reload-requested"
+INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
 RUNTIME="/Users/liaowang/cmhk_public_crawl_app"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
@@ -45,10 +46,19 @@ print(int(deadline.timestamp()))
 '
 }
 
+interrupt_requested() {
+  local requested_token="$1"
+  [[ -f "$INTERRUPT_FILE" ]] && [[ "$(cat "$INTERRUPT_FILE" 2>/dev/null || true)" == "$requested_token" ]]
+}
+
 wait_until_idle_or_midnight() {
-  local deadline_epoch first_count second_count
+  local requested_token="$1" deadline_epoch first_count second_count
   deadline_epoch="$(next_midnight_epoch)"
   while true; do
+    if interrupt_requested "$requested_token"; then
+      log "Explicit strategic-task restart requested for $requested_token; activating the queued release now."
+      return 0
+    fi
     if (( $(date +%s) >= deadline_epoch )); then
       log "Daily midnight cutoff reached; queued release may interrupt the remaining strategic task."
       return 0
@@ -74,7 +84,9 @@ wait_until_idle_or_midnight() {
 
 log "Queued Web reload worker started."
 while [[ -f "$REQUEST_FILE" ]]; do
-  wait_until_idle_or_midnight
+  requested_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
+  [[ -n "$requested_token" ]] || break
+  wait_until_idle_or_midnight "$requested_token"
   requested_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
   [[ -n "$requested_token" ]] || break
   if [[ ! "$requested_token" =~ ^[0-9]{8}T[0-9]{6}-[0-9]+-[0-9]+$ ]]; then
@@ -102,6 +114,9 @@ while [[ -f "$REQUEST_FILE" ]]; do
   current_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
   if [[ "$current_token" == "$requested_token" ]]; then
     rm -f "$REQUEST_FILE"
+    if interrupt_requested "$requested_token"; then
+      rm -f "$INTERRUPT_FILE"
+    fi
     rm -rf "$release_dir"
     log "Request $requested_token activated; queue is empty."
   else

@@ -1317,6 +1317,69 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["history_count"], 1)
         self.assertEqual(result["history_shards"], 0)
 
+    def test_semantic_dedupe_never_exceeds_configured_llm_call_budget(self):
+        items = [
+            {
+                "news_id": f"candidate-{index}",
+                "ai_title": f"不同事件 {index}",
+                "ai_summary": f"第 {index} 条候选描述独立的现实事件。",
+                "source_date": "2026-08-19",
+                "url": f"https://example.com/news/{index}",
+            }
+            for index in range(41)
+        ]
+
+        def keep_batch(candidates, **_kwargs):
+            return {
+                candidate["id"]: {
+                    "id": candidate["id"],
+                    "is_duplicate": False,
+                    "duplicate_of": "",
+                    "reason": "未发现同一现实事件，按宽松策略保留。",
+                }
+                for candidate in candidates
+            }
+
+        with (
+            mock.patch.object(briefing, "SEMANTIC_DEDUPE_MAX_LLM_CALLS", 3),
+            mock.patch.object(
+                briefing,
+                "_call_semantic_dedupe_agent",
+                side_effect=keep_batch,
+            ) as agent_call,
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates(items, [])
+
+        self.assertEqual(agent_call.call_count, 3)
+        self.assertEqual(result["llm_call_count"], 3)
+        self.assertEqual(result["llm_call_limit"], 3)
+        self.assertEqual(result["kept"], items)
+        self.assertEqual(result["deferred"], [])
+
+    def test_semantic_dedupe_batch_failure_keeps_candidates_without_retry(self):
+        item = {
+            "news_id": "candidate-fail-open",
+            "ai_title": "一条需要语义判断的新闻",
+            "ai_summary": "模型暂时不可用时也应继续保留该候选。",
+            "source_date": "2026-08-19",
+            "url": "https://example.com/fail-open",
+        }
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_semantic_dedupe_agent",
+                side_effect=RuntimeError("temporary failure"),
+            ) as agent_call,
+            mock.patch.object(briefing, "_atomic_write_json") as write_audit,
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], [])
+
+        agent_call.assert_called_once()
+        self.assertEqual(result["kept"], [item])
+        self.assertEqual(result["deferred"], [])
+        self.assertEqual(write_audit.call_args.args[1]["failed_open_count"], 1)
+
     def test_strategic_news_review_defaults_to_deepseek_v4_pro(self):
         self.assertEqual(briefing.DEFAULT_STRATEGY_AI_MODEL, "DeepSeek-V4-Pro")
 
@@ -3324,7 +3387,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["kept"], [item])
         self.assertEqual(result["duplicates"], [])
 
-    def test_semantic_agent_failure_defers_candidate_instead_of_bypassing(self):
+    def test_semantic_agent_failure_keeps_candidate_without_retry(self):
         item = {
             "news_id": "candidate-3",
             "ai_title": "香港宽频推出企业服务",
@@ -3343,9 +3406,9 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
-        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["kept"], [item])
         self.assertEqual(result["duplicates"], [])
-        self.assertEqual(len(result["deferred"]), 1)
+        self.assertEqual(result["deferred"], [])
 
     def test_semantic_agent_cannot_deny_same_id_or_url_identity_match(self):
         item = {
