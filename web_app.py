@@ -33,7 +33,7 @@ from crawl_run_registry import (
     start_crawl_run,
 )
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
-from ai_rate_limit import wait_for_internal_ai_slot
+from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from company_metrics import build_company_metrics_payload
 from executive_company_benchmarks import build_company_benchmarks
 from extractors import row_fields
@@ -294,7 +294,7 @@ def _validate_competitor_business_insights(insights: list[str], companies: list[
         raise RuntimeError("AI 竞争洞察遗漏边界披露限制")
 
 
-def generate_competitor_insight(payload: dict) -> dict:
+def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     request_id = str(payload.get("requestId") or "")[:80]
     companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
     metric = payload.get("metric") if isinstance(payload.get("metric"), dict) else {}
@@ -359,12 +359,13 @@ def generate_competitor_insight(payload: dict) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是把多家公司在同一指标上的共同数据转化为公司层面的竞争洞察。必须恰好输出三行，依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头：第一行判断竞争格局是收敛、分化、追赶、反转还是稳定；第二行比较每家公司的位置、动能和稳定性，所选公司都必须被覆盖；第三行解释这种结构对客户留存、变现、采用进程、规模竞争或网络投入意味着什么。每行都要包含至少一个当前表格中的数字证据，但数字只作证据，不能成为整行主体。最终三行不要出现‘共同可比年度’‘共同首尾锚点’‘数据口径’等方法说明，也不要以年份区间开头；这些边界仅用于保证内部计算正确。只能基于表格和给出的指标解释边界进行审慎推断；不能声称已证明公司的主观战略、具体原因或因果关系，必要时使用‘显示’‘可能反映’。不要提供行动建议。趋势、差距和最新比较只能使用所有公司共同首尾年度。不得逐家公司机械罗列起止值。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。必须保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
+            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是生成公司层面的竞争洞察。只输出三行简体中文纯文本，每行控制在45—75个汉字，禁止前言、编号和结语。三行必须依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头，且每行至少引用一个表格数字。第一行判断收敛、分化、追赶、反转或稳定；第二行覆盖所有所选公司，比较位置、动能和稳定性；第三行解释对客户留存、变现、采用进程、规模竞争或网络投入的含义。数字只能作证据，不得逐家公司机械罗列起止值。不要出现‘共同可比年度’‘共同首尾锚点’‘数据口径’，不要给行动建议。只能基于表格和指标解释边界审慎推断，不得声称已证明主观战略、原因或因果关系，必要时用‘显示’‘可能反映’。趋势、差距和最新比较只能使用所有公司共同首尾年度。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
             {"role": "user", "content": f"指标：{metric_label}\n指标解释边界：{business_lens}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
         "temperature": 0.1,
-        "max_tokens": 420,
-        "stream": False,
+        "max_tokens": 900,
+        "chat_template_kwargs": {"enable_thinking": False},
+        "stream": stream_callback is not None,
     }
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
@@ -372,11 +373,48 @@ def generate_competitor_insight(payload: dict) -> dict:
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
-    wait_for_internal_ai_slot("competitor-insight")
-    with urllib.request.urlopen(request, timeout=45) as response:
-        result = json.loads(response.read().decode("utf-8"))
-    message = ((result.get("choices") or [{}])[0].get("message") or {})
-    insights = _parse_competitor_business_insights(message.get("content") or message.get("reasoning_content") or "")
+    priority_token = set_internal_ai_priority("interactive")
+    try:
+        if stream_callback:
+            stream_callback({"type": "status", "stage": "queue", "message": "请求已进入内网 AI 前台队列"})
+        wait_for_internal_ai_slot(
+            "competitor-insight",
+            deadline_monotonic=time.monotonic() + 15 if stream_callback else None,
+        )
+        if stream_callback:
+            stream_callback({"type": "status", "stage": "generating", "message": "内网 AI 已连接，正在生成真实结果"})
+        with urllib.request.urlopen(request, timeout=55 if stream_callback else 45) as response:
+            if stream_callback:
+                content_parts = []
+                reasoning_started = False
+                for raw_line in response:
+                    line = raw_line.decode("utf-8", errors="replace").strip()
+                    if not line.startswith("data:"):
+                        continue
+                    payload_text = line.removeprefix("data:").strip()
+                    if not payload_text or payload_text == "[DONE]":
+                        continue
+                    try:
+                        event = json.loads(payload_text)
+                    except json.JSONDecodeError:
+                        continue
+                    delta = ((event.get("choices") or [{}])[0].get("delta") or {})
+                    reasoning_delta = delta.get("reasoning_content")
+                    if reasoning_delta and not reasoning_started:
+                        reasoning_started = True
+                        stream_callback({"type": "status", "stage": "reasoning", "message": "内网 AI 正在分析所选数据"})
+                    content_delta = delta.get("content")
+                    if isinstance(content_delta, str) and content_delta:
+                        content_parts.append(content_delta)
+                        stream_callback({"type": "delta", "text": content_delta})
+                raw_content = "".join(content_parts)
+            else:
+                result = json.loads(response.read().decode("utf-8"))
+                message = ((result.get("choices") or [{}])[0].get("message") or {})
+                raw_content = message.get("content") or message.get("reasoning_content") or ""
+    finally:
+        reset_internal_ai_priority(priority_token)
+    insights = _parse_competitor_business_insights(raw_content)
     _validate_competitor_business_insights(insights, companies, comparison_rows)
     return {"requestId": request_id, "insight": "\n".join(insights), "insights": insights, "model": model}
 
@@ -2742,6 +2780,8 @@ def load_curation_quality_records(run_id: str) -> dict:
 TASK_RUNS_DIR = ROOT / "task_runs"
 TASK_RUNS_LOG_DIR = TASK_RUNS_DIR / "logs"
 TASK_RUNS_INDEX_PATH = TASK_RUNS_DIR / "index.json"
+PROJECT_MONITOR_STATE_PATH = ROOT / "var" / "project_monitor" / "state.json"
+PROJECT_MONITOR_ACTIONS_PATH = ROOT / "var" / "project_monitor" / "card_actions.json"
 TASK_RUNS_LOCK = threading.Lock()
 GENERAL_TASK_MAX_AUTO_RETRIES = max(1, int(os.environ.get("CMHK_TASK_AUTO_RETRY_MAX", "3")))
 GENERAL_TASK_RETRY_DELAY_SECONDS = max(
@@ -3272,6 +3312,65 @@ def _annotate_strategic_task_retries(tasks: list[dict]) -> None:
         attempts[key] = retry_index + 1
 
 
+def _task_incident_metadata() -> dict[str, dict]:
+    try:
+        monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        monitor_state = {}
+    incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
+    incidents = incidents if isinstance(incidents, dict) else {}
+
+    try:
+        action_state = json.loads(PROJECT_MONITOR_ACTIONS_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        action_state = {}
+    handled_messages = action_state.get("handled_messages") if isinstance(action_state, dict) else {}
+    handled_messages = handled_messages if isinstance(handled_messages, dict) else {}
+    handlers: dict[str, dict] = {}
+    for handled in handled_messages.values():
+        if not isinstance(handled, dict):
+            continue
+        incident_id = str(handled.get("incident_id") or "")
+        if not incident_id:
+            continue
+        previous = handlers.get(incident_id, {})
+        if str(handled.get("handled_at_hkt") or "") >= str(previous.get("handled_at_hkt") or ""):
+            handlers[incident_id] = handled
+
+    severity_labels = {"P1": "紧急", "P2": "高", "P3": "中"}
+    metadata: dict[str, dict] = {}
+    for incident in incidents.values():
+        if not isinstance(incident, dict):
+            continue
+        condition_key = str(incident.get("condition_key") or "")
+        if not condition_key:
+            continue
+        incident_id = str(incident.get("incident_id") or "")
+        handled = handlers.get(incident_id, {})
+        severity = str(incident.get("severity") or "")
+        metadata[condition_key] = {
+            "incident_id": incident_id,
+            "incident_status": str(incident.get("status") or ""),
+            "severity": severity,
+            "severity_label": severity_labels.get(severity, ""),
+            "handler_name": str(handled.get("operator_name") or ""),
+            "handled_at_hkt": str(handled.get("handled_at_hkt") or ""),
+        }
+    return metadata
+
+
+def _annotate_task_incidents(tasks: list[dict]) -> None:
+    metadata = _task_incident_metadata()
+    for task in tasks:
+        task_id = str(task.get("task_id") or task.get("task_run_id") or "")
+        run_id = str(task.get("task_run_id") or task_id.removeprefix("crawl:"))
+        prefixes = ("crawl-task-failed", "crawl-task-stuck") if task_id.startswith("crawl:") else ("general-task-failed", "general-task-stuck")
+        keys = [f"{prefix}:{run_id if prefix.startswith('crawl-') else task_id}" for prefix in prefixes]
+        incident = next((metadata[key] for key in keys if key in metadata), None)
+        if incident:
+            task.update(incident)
+
+
 def load_unified_task_index(limit: int = 50) -> list[dict]:
     tasks = [_task_public_record(item) for item in _task_read_local_index()]
     tasks.extend(
@@ -3280,6 +3379,7 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
         if isinstance(item, dict) and item.get("crawl_run_id")
     )
     _annotate_strategic_task_retries(tasks)
+    _annotate_task_incidents(tasks)
     tasks.sort(
         key=lambda item: str(item.get("started_at_hkt") or item.get("completed_at_hkt") or ""),
         reverse=True,
@@ -3953,6 +4053,24 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/competitor-insight-stream":
+            try:
+                payload = read_request_json(self)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            try:
+                result = generate_competitor_insight(payload, stream_callback=lambda event: write_sse(self, event))
+                write_sse(self, {"type": "done", "ok": True, **result})
+            except Exception as exc:
+                write_sse(self, {"type": "error", "ok": False, "error": str(exc)})
+            self.close_connection = True
+            return
         if parsed.path == "/api/competitor-insight":
             try:
                 result = generate_competitor_insight(read_request_json(self))

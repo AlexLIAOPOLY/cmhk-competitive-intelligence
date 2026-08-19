@@ -56,10 +56,39 @@ UNIT_LABELS = {
     "INR_crore": "千万印度卢比",
     "billion_GB": "十亿GB",
 }
+SIMPLIFIED_TITLE_REPLACEMENTS = (
+    ("寬頻", "宽带"),
+    ("客戶", "客户"),
+    ("業務", "业务"),
+    ("網絡", "网络"),
+    ("固網", "固网"),
+    ("電視", "电视"),
+    ("電話", "电话"),
+    ("樓宇", "楼宇"),
+    ("覆蓋", "覆盖"),
+    ("連接", "连接"),
+    ("免費", "免费"),
+    ("收費", "收费"),
+    ("企業", "企业"),
+    ("商業", "商业"),
+    ("增長", "增长"),
+    ("滲透", "渗透"),
+    ("擴展", "扩展"),
+    ("移動", "移动"),
+    ("後付", "后付"),
+    ("預付", "预付"),
+    ("淨", "净"),
+)
 
 
 def text(row: dict, key: str) -> str:
     return str(row.get(key) or row.get("\ufeff" + key) or "").strip()
+
+
+def simplified_title(value: str) -> str:
+    for traditional, simplified in SIMPLIFIED_TITLE_REPLACEMENTS:
+        value = value.replace(traditional, simplified)
+    return value
 
 
 def main() -> None:
@@ -89,7 +118,7 @@ def main() -> None:
                 })
                 meta = metric_meta.setdefault(metric, {
                     "key": metric,
-                    "label": text(row, "metric_zh") or metric,
+                    "label": simplified_title(text(row, "metric_zh") or metric),
                     "unit": unit,
                     "unitLabel": UNIT_LABELS.get(unit, unit),
                     "units": [],

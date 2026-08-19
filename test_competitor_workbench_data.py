@@ -79,6 +79,14 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         self.assertEqual(companies["Reliance Jio"]["group"], "印度运营商")
         self.assertTrue({"revenue", "ebitda", "net_profit", "network_towers", "total_data_traffic"} <= metrics)
 
+    def test_metric_titles_are_simplified_chinese(self):
+        forbidden = set("寬頻戶業務網絡電視樓蓋連費長滲擴動後預淨營總")
+        labels = [item["label"] for item in self.payload["metrics"]]
+        self.assertFalse([(label, sorted(set(label) & forbidden)) for label in labels if set(label) & forbidden])
+        self.assertIn("移动后付客户", labels)
+        self.assertIn("移动后付月流失率", labels)
+        self.assertIn("住宅宽带客户", labels)
+
     def test_hkt_smartone_churn_scenario_matches_expected_history(self):
         cells = {
             (item["company"], item["year"]): item

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/static/responsive-layout-hardening.css?v=6" />
   <link rel="stylesheet" href="/static/leadership-board.css?v=17" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
-  <link rel="stylesheet" href="/static/workspace-tabs.css?v=38" />
+  <link rel="stylesheet" href="/static/workspace-tabs.css?v=40" />
   </head>
   <body class="dashboard-page">
     <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
@@ -99,7 +99,7 @@
                 </div>
               </div>
               <footer class="strategy-ticker-footer">
-                <span id="strategyScheduleText">每日 09:00 / 15:00 扫描</span>
+                <span id="strategyScheduleText">每日 06:00 / 13:30 扫描</span>
                 <a href="https://cmhk-try.feishu.cn/sheets/NB6Gsi9tChARfGtBDpFc6QfOnmb?sheet=n1fzSN" target="_blank" rel="noreferrer">监测规则</a>
               </footer>
             </aside>
@@ -192,13 +192,10 @@
                 <img src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
                 <div>
                   <strong id="newsReviewTitle">滚动新闻审核表</strong>
-                  <span id="newsReviewSyncText" role="status">连接飞书审核表</span>
+                  <span id="newsReviewSyncText" role="status" hidden>连接飞书审核表</span>
                 </div>
               </div>
               <div class="news-review-actions">
-                <button type="button" id="newsReviewRefreshButton">刷新</button>
-                <button type="button" id="newsReviewCopyButton">复制所选</button>
-                <button type="button" id="newsReviewExportButton">导出 Excel</button>
                 <a id="newsReviewFeishuLink" href="#" target="_blank" rel="noreferrer" hidden>在飞书打开</a>
                 <button class="news-review-close" type="button" id="closeNewsReviewSheetButton" aria-label="关闭新闻审核表">&times;</button>
               </div>
@@ -241,7 +238,7 @@
       <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-review" role="tabpanel" aria-labelledby="workspace-tab-review" data-workspace-panel="review" hidden></section>
-      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe src="/static/subscription-admin.html?v=7" title="订阅与推送管理" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
+      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe src="/static/subscription-admin.html?v=9" title="订阅与推送管理" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
       <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-log" role="tabpanel" aria-labelledby="workspace-tab-log" data-workspace-panel="log" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-fault" role="tabpanel" aria-labelledby="workspace-tab-fault" data-workspace-panel="fault" hidden></section>
@@ -526,7 +523,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=282"></script>
-    <script src="/static/news-review-sheet.js?v=3"></script>
-    <script src="/static/workspace-tabs.js?v=30"></script>
+    <script src="/static/news-review-sheet.js?v=4"></script>
+    <script src="/static/workspace-tabs.js?v=33"></script>
   </body>
 </html>

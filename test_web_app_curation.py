@@ -555,6 +555,50 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(retries["attempt-3"], 2)
         self.assertEqual(retries["afternoon-1"], 0)
 
+    def test_task_archive_adds_real_monitor_severity_and_handler(self) -> None:
+        incidents = {
+            "incidents": {
+                "incident-1": {
+                    "incident_id": "incident-1",
+                    "condition_key": "crawl-task-failed:run-1",
+                    "status": "open",
+                    "severity": "P1",
+                }
+            }
+        }
+        actions = {
+            "handled_messages": {
+                "message-1": {
+                    "incident_id": "incident-1",
+                    "operator_name": "Alex Liao",
+                    "handled_at_hkt": "2026-08-19T09:30:00+08:00",
+                }
+            }
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state_path = root / "state.json"
+            actions_path = root / "actions.json"
+            state_path.write_text(json.dumps(incidents, ensure_ascii=False), encoding="utf-8")
+            actions_path.write_text(json.dumps(actions, ensure_ascii=False), encoding="utf-8")
+            with (
+                mock.patch.object(web_app, "PROJECT_MONITOR_STATE_PATH", state_path),
+                mock.patch.object(web_app, "PROJECT_MONITOR_ACTIONS_PATH", actions_path),
+                mock.patch.object(web_app, "_task_read_local_index", return_value=[]),
+                mock.patch.object(web_app, "load_crawl_run_index", return_value=[{
+                    "crawl_run_id": "run-1",
+                    "task_kind": "crawl",
+                    "run_status": "failed",
+                    "started_at_hkt": "2026-08-19T09:00:00+08:00",
+                }]),
+            ):
+                task = web_app.load_unified_task_index(limit=1)[0]
+
+        self.assertEqual(task["severity"], "P1")
+        self.assertEqual(task["severity_label"], "紧急")
+        self.assertEqual(task["handler_name"], "Alex Liao")
+        self.assertEqual(task["incident_status"], "open")
+
     def test_task_sidebar_renders_retry_number_from_api(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 

@@ -19,6 +19,7 @@
     newsSelectedStage: "search",
     previewRequest: { weekly: 0, performance: 0 },
     faultFilters: { status: "all", kind: "all", query: "" },
+    faultSort: { key: "time", direction: "desc" },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
@@ -55,8 +56,8 @@
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
-    syncEmbeddedVisibility(target);
     document.body.classList.toggle("workspace-ai-active", target === "ai");
+    syncEmbeddedVisibility(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
     window.dispatchEvent(new CustomEvent("workspace-tab-change", { detail: { tab: target } }));
@@ -91,17 +92,32 @@
     return `<div class="workspace-table-scroll-note">表格可左右滑动查看完整内容</div><div class="workspace-table-wrap"><table class="workspace-table"><thead><tr><th style="width:48%">文件</th><th style="width:24%">生成时间</th><th style="width:14%">音频摘要</th><th style="width:14%">操作</th></tr></thead><tbody>${items.slice(0, 10).map((item) => `<tr><td class="workspace-cell-title" title="${esc(item.name)}">${esc(item.name)}</td><td class="workspace-cell-muted">${esc(item.mtimeText)}</td><td>${item.audio?.exists ? "已生成" : "—"}</td><td><a href="${esc(safeUrl(item.url, { allowOutput: true }))}">下载</a></td></tr>`).join("")}</tbody></table></div>`;
   }
 
-  function renderCompetitor() {
+  function competitorHasCommonMetric(data, companyIds) {
+    if (companyIds.length < 2) return true;
+    return data.metrics.some((metric) => {
+      const cells = data.cells.filter((cell) => companyIds.includes(cell.company) && cell.metric === metric.key);
+      return new Set(cells.map((cell) => cell.company)).size === companyIds.length
+        && new Set(cells.map((cell) => cell.unit)).size === 1;
+    });
+  }
+
+  function visibleCompetitorIds(data, selectedCompanies) {
+    if (!selectedCompanies.length) return new Set(data.companies.map((company) => company.id));
+    return new Set(data.companies
+      .filter((company) => selectedCompanies.includes(company.id) || competitorHasCommonMetric(data, [...selectedCompanies, company.id]))
+      .map((company) => company.id));
+  }
+
+  function renderCompetitor({ revealedCompanies = [] } = {}) {
     const panel = document.querySelector('[data-workspace-panel="competitor"]');
     const data = state.competitorData || { companies: [], metrics: [], cells: [] };
     const selection = state.competitorSelection;
-    const knowledgeBases = Array.isArray(data.knowledgeBases) ? data.knowledgeBases : [];
-    const knowledgeBaseSummary = knowledgeBases.map((base) => `${base.label} ${number(base.companyCount)}主体`).join(" · ");
     const groupKnowledgeLabel = (group) => group === "香港运营商" ? "本地运营商知识库" : "全球重点运营商知识库";
     const groups = data.companies.reduce((map, company) => {
       (map[company.group] ||= []).push(company);
       return map;
     }, {});
+    const visibleCompanies = visibleCompetitorIds(data, selection.companies);
     const metricUnit = (metric) => {
       const selectedCells = data.cells.filter((cell) => (!selection.companies.length || selection.companies.includes(cell.company)) && cell.metric === metric.key);
       const units = [...new Set(selectedCells.map((cell) => cell.unit).filter(Boolean))];
@@ -115,20 +131,38 @@
     });
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
-      <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>${esc(knowledgeBaseSummary)} · 依次选择竞对、同单位指标和共同披露年</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
+      <header class="competitor-builder-head"><strong>竞对数据工作台</strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
-        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
+        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>截至最后共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
+      const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
       const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
       state.competitorSelection.companies = selected;
-      renderCompetitor();
+      const nextVisible = visibleCompetitorIds(data, selected);
+      const disappearing = [...panel.querySelectorAll("[data-competitor-option]")].filter((item) => !nextVisible.has(item.dataset.competitorOption));
+      const revealed = [...nextVisible].filter((company) => !previouslyVisible.has(company));
+      if (!disappearing.length) {
+        renderCompetitor({ revealedCompanies: revealed });
+        return;
+      }
+      panel.querySelectorAll("[data-competitor-company]").forEach((item) => { item.disabled = true; });
+      disappearing.forEach((item) => item.classList.add("is-disappearing"));
+      panel.querySelectorAll(".competitor-option-group").forEach((group) => {
+        const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
+        if (!remaining) group.classList.add("is-disappearing");
+      });
+      window.setTimeout(() => renderCompetitor(), 220);
     }));
     panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => { state.competitorSelection.metric = event.target.value; renderCompetitorResult(); });
     panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitorResult(); }));
-    panel.querySelector("[data-competitor-clear]")?.addEventListener("click", () => { state.competitorSelection = { companies: [], metric: "", years: 5 }; renderCompetitor(); });
+    panel.querySelector("[data-competitor-clear]")?.addEventListener("click", () => {
+      const currentlyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
+      state.competitorSelection = { companies: [], metric: "", years: 5 };
+      renderCompetitor({ revealedCompanies: data.companies.map((company) => company.id).filter((company) => !currentlyVisible.has(company)) });
+    });
     renderCompetitorResult();
   }
 
@@ -175,12 +209,13 @@
     host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header>
       <div class="competitor-result-overview">
       ${chart}
-      <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="true">
+      <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>本地数据总结已生成，内网 AI 可用时自动增强</small></div></div>
-          <span class="competitor-insight-badge" data-competitor-insight-badge>DATA SUMMARY</span>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
+          <span class="competitor-insight-badge" data-competitor-insight-badge>LOCAL DATA</span>
         </header>
         <div class="competitor-insight-body">
+          <div class="competitor-insight-loading" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
           <ol class="competitor-insight-list" data-competitor-insight-list>${fallbackItems}</ol>
         </div>
       </section></div>
@@ -315,7 +350,7 @@
     return `<figure class="competitor-chart-card"><figcaption><div><strong>多年趋势对比</strong><span>缺失年度保持断点，不做估算或补齐</span></div><div class="competitor-chart-legend">${legend}</div></figcaption><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><p>注：按各公司披露年度展示；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
   }
 
-  function settleCompetitorInsight(card, { mode, insights }) {
+  function settleCompetitorInsight(card, { mode, insights, status = "" }) {
     if (!card) return;
     const isAi = mode === "ai";
     const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
@@ -324,8 +359,8 @@
     card.setAttribute("aria-busy", "false");
     card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
-    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "已完成竞争格局与公司定位分析" : "本地数据总结可用，内网 AI 正在等待安全加载";
-    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "DATA SUMMARY";
+    card.querySelector("[data-competitor-insight-status]").textContent = status || (isAi ? "内网 AI 已完成真实生成" : "当前显示本地数据总结");
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "LOCAL DATA";
     const list = card.querySelector("[data-competitor-insight-list]");
     list.replaceChildren(...items.map((item, index) => {
       const labels = ["竞争格局", "公司定位", "业务含义"];
@@ -339,22 +374,77 @@
     }));
   }
 
+  function beginCompetitorInsightStream(card) {
+    if (!card) return;
+    card.classList.remove("is-ai", "is-streaming");
+    card.classList.add("is-loading");
+    card.setAttribute("aria-busy", "true");
+    card.querySelector("[data-competitor-insight-status]").textContent = "正在连接内网 AI";
+    card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
+  }
+
+  function renderCompetitorInsightDraft(card, text) {
+    const drafts = String(text || "").split(/\n+/).map((item) => item.trim()).filter(Boolean).slice(0, 3);
+    if (!card || !drafts.length) return;
+    card.classList.remove("is-loading");
+    card.classList.add("is-streaming");
+    card.querySelector("[data-competitor-insight-status]").textContent = `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`;
+    card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
+    const labels = ["竞争格局", "公司定位", "业务含义"];
+    card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
+      const li = document.createElement("li");
+      const label = document.createElement("b");
+      const copy = document.createElement("span");
+      label.textContent = labels[index];
+      copy.textContent = item.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "");
+      li.append(label, copy);
+      return li;
+    }));
+  }
+
   async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
+    const card = document.querySelector("#competitorInsight");
+    beginCompetitorInsightStream(card);
     try {
-      const response = await fetch("/api/competitor-insight", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
-      const result = (response.headers.get("content-type") || "").includes("application/json") ? await response.json() : {};
-      if (!response.ok || !result.ok) throw new Error(response.status === 404 ? "HTTP 404" : (result.error || `HTTP ${response.status}`));
-      if (requestId !== state.competitorInsightRequest) return;
-      const card = document.querySelector("#competitorInsight");
-      const insights = Array.isArray(result.insights) && result.insights.length ? result.insights : String(result.insight || "").split(/\n+/);
-      settleCompetitorInsight(card, { mode: "ai", insights });
+      const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
+      if (!response.ok || !response.body) throw new Error(response.status === 404 ? "AI流式服务尚未加载" : `HTTP ${response.status}`);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let generated = "";
+      let completed = false;
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+        const blocks = buffer.split("\n\n");
+        buffer = blocks.pop() || "";
+        for (const block of blocks) {
+          const line = block.split("\n").find((item) => item.startsWith("data:"));
+          if (!line) continue;
+          const event = JSON.parse(line.replace(/^data:\s*/, ""));
+          if (requestId !== state.competitorInsightRequest) return;
+          if (event.type === "status") {
+            card.querySelector("[data-competitor-insight-status]").textContent = event.message || "内网 AI 正在处理";
+            card.querySelector("[data-competitor-insight-badge]").textContent = event.stage === "queue" ? "QUEUED" : "GENERATING";
+          } else if (event.type === "delta") {
+            generated += String(event.text || "");
+            renderCompetitorInsightDraft(card, generated);
+          } else if (event.type === "done" && event.ok) {
+            completed = true;
+            settleCompetitorInsight(card, { mode: "ai", insights: event.insights });
+          } else if (event.type === "error") {
+            throw new Error(event.error || "AI生成失败");
+          }
+        }
+        if (done) break;
+      }
+      if (!completed) throw new Error("AI流式响应未正常完成");
     } catch (error) {
       if (error.name === "AbortError") return;
-      const card = document.querySelector("#competitorInsight");
       if (requestId === state.competitorInsightRequest && card) {
-        settleCompetitorInsight(card, { mode: "data", insights: fallbackInsight.insights });
+        settleCompetitorInsight(card, { mode: "data", insights: fallbackInsight.insights, status: `AI未生成：${error.message || "服务不可用"}；当前显示本地数据总结` });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;
@@ -540,7 +630,7 @@
     const selectedStage = stages.find((stage) => stage.key === state.newsSelectedStage) || stages[0];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><div><h2>新闻获取与 AI 审核流程</h2><span>${runs.length ? `正在汇总 ${runs.length} 次真实新闻任务` : "暂无可回放的新闻采集批次"}</span></div>
+        <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2>
           <div class="news-run-controls"><details class="news-multi-select"><summary>日期 <b>${selectedDates.length}</b></summary><div><p class="news-select-caption">完整运行归档 · 共 ${number(dates.length)} 天</p>${dates.map((date) => `<label><input type="checkbox" data-news-date-option value="${esc(date)}"${selectedDates.includes(date) ? " checked" : ""}><span>${esc(date)}</span></label>`).join("")}</div></details><details class="news-multi-select"><summary>批次 <b>${runs.length}</b></summary><div>${candidateRuns.map((item) => `<label><input type="checkbox" data-news-run-option value="${esc(item.crawl_run_id)}"${state.newsSelectedRunIds.includes(item.crawl_run_id) ? " checked" : ""}><span>${esc(newsRunDate(item))} ${esc(newsRunTime(item))} · ${esc(({ completed: "完成", running: "运行中", failed: "中断" })[item.run_status] || item.run_status)}</span></label>`).join("")}</div></details><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
         </header>
         ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<div class="news-process-meta"><span>已选择 ${runs.length} 次批次</span><span>${selectedDates.map(esc).join("、")}</span><span>${runs.every((item) => state.newsRunDetails[item.crawl_run_id]) ? "已载入全部运行证据" : "正在载入运行证据…"}</span></div>
@@ -664,6 +754,13 @@
     return ({ crawl: "定期数据爬虫", "strategic-news": "战略新闻监测", "weekly-report": "战略周报生成", "carrier-performance": "业绩摘要生成", "executive-intelligence-refresh": "四域数据刷新", "audio-generation": "音频摘要生成" })[kind] || kind || "后台任务";
   }
 
+  function faultSortableHeader(key, label) {
+    const active = state.faultSort.key === key;
+    const direction = active ? state.faultSort.direction : "none";
+    const ariaSort = active ? (direction === "asc" ? "ascending" : "descending") : "none";
+    return `<th aria-sort="${ariaSort}"><button class="fault-sort-button ${active ? "is-active" : ""}" type="button" data-fault-sort="${key}" aria-label="${esc(label)}，当前${active ? (direction === "asc" ? "升序" : "降序") : "未排序"}">${esc(label)}<i aria-hidden="true"></i></button></th>`;
+  }
+
   function renderFaultMonitor() {
     const panel = document.querySelector('[data-workspace-panel="fault"]');
     const tasks = state.tasks || [];
@@ -675,7 +772,7 @@
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
       </div></header>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>状态</th><th>报警任务</th><th>原因摘要</th><th>发生时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
@@ -699,6 +796,24 @@
     return task.error || task.warning || task.status_detail || task.progress_detail || task.detail || task.message || "任务归档未记录具体故障原因，请查看运行日志。";
   }
 
+  function faultSeverity(task) {
+    const code = String(task.severity || "").toUpperCase();
+    const label = task.severity_label || ({ P1: "紧急", P2: "高", P3: "中" })[code] || "";
+    return { code, label, rank: ({ P1: 1, P2: 2, P3: 3 })[code] || 9 };
+  }
+
+  function faultHandler(task) {
+    return task.handler_name || (task.incident_status === "open" ? "待认领" : "—");
+  }
+
+  function faultSortValue(row, key) {
+    if (key === "status") return ({ attention: 1, running: 2, completed: 3 })[row.status.key] || 9;
+    if (key === "severity") return faultSeverity(row.task).rank;
+    if (key === "task") return row.task.title || taskLabel(row.task.kind);
+    if (key === "handler") return faultHandler(row.task);
+    return row.task.heartbeat_at_hkt || row.task.completed_at_hkt || row.task.started_at_hkt || "";
+  }
+
   function faultSolutions(task) {
     const status = faultStatus(task);
     const cause = faultCause(task);
@@ -718,8 +833,19 @@
       if (state.faultFilters.kind !== "all" && task.kind !== state.faultFilters.kind) return false;
       return !query || [task.title, task.scope, task.phase, task.detail, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
     });
+    const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
+    const direction = state.faultSort.direction === "asc" ? 1 : -1;
+    rows.sort((left, right) => {
+      const a = faultSortValue(left, state.faultSort.key);
+      const b = faultSortValue(right, state.faultSort.key);
+      const compared = typeof a === "number" && typeof b === "number" ? a - b : collator.compare(String(a), String(b));
+      return compared ? compared * direction : left.index - right.index;
+    });
     document.querySelector("#faultResultCount").textContent = number(rows.length);
-    body.innerHTML = rows.length ? rows.map(({ task, index, status }) => `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`).join("") : '<tr><td colspan="5" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
+    body.innerHTML = rows.length ? rows.map(({ task, index, status }) => {
+      const severity = faultSeverity(task);
+      return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${esc(faultHandler(task))}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
+    }).join("") : '<tr><td colspan="7" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
   }
 
   async function openFaultDetail(index) {
@@ -728,7 +854,8 @@
     const body = document.querySelector("#faultDetailBody");
     if (!task || !dialog || !body) return;
     const status = faultStatus(task);
-    const details = [["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["发生时间", taskTime(task)], ["影响范围", task.scope || "未记录"]];
+    const severity = faultSeverity(task);
+    const details = [["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理人员", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["发生时间", taskTime(task)], ["影响范围", task.scope || "未记录"]];
     body.innerHTML = `<header><div><span class="fault-status ${status.tone}"><i></i>${status.label}</span><h2>${esc(task.title || taskLabel(task.kind))}</h2></div><time>${esc(taskTime(task))}</time></header>
       <section class="fault-detail-section fault-reason"><h3>原因</h3><p>${esc(faultCause(task))}</p></section>
       <section class="fault-detail-section"><h3>解决方法</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
@@ -837,6 +964,12 @@
       expandPreview.title = expanded ? "还原预览" : "放大预览";
     }
     if (event.target.closest("[data-refresh-fault]")) refreshFaultData();
+    const faultSort = event.target.closest("[data-fault-sort]");
+    if (faultSort) {
+      const key = faultSort.dataset.faultSort;
+      state.faultSort = { key, direction: state.faultSort.key === key && state.faultSort.direction === "asc" ? "desc" : "asc" };
+      renderFaultMonitor();
+    }
     const faultDetail = event.target.closest("[data-fault-detail]");
     if (faultDetail) openFaultDetail(Number(faultDetail.dataset.faultDetail));
     if (event.target.closest("[data-open-task-log]")) activateModule("log");
@@ -942,7 +1075,7 @@
       fetch("/api/task-runs?limit=100").then((response) => response.ok ? response.json() : Promise.reject(new Error(`tasks ${response.status}`))),
       fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
       fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
-      fetch("/static/competitor-workbench-data.json").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
+      fetch("/static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
     ]);
     const [statusResult, metricsResult, briefsResult, tasksResult, newsRunsResult, newsFallbackResult, workbenchResult] = requests;
     if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};

@@ -21,6 +21,22 @@ class _Response:
         return json.dumps({"choices": [{"message": {"content": content}}]}).encode()
 
 
+class _StreamingResponse(_Response):
+    def __iter__(self):
+        content = (
+            "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
+            "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
+            "业务含义｜较低流失率可能反映后付客户稳定性增强，但0.1个百分点差距不足以代表整体经营优劣。"
+        )
+        events = [
+            {"choices": [{"delta": {"reasoning_content": "分析中"}}]},
+            *({"choices": [{"delta": {"content": chunk}}]} for chunk in (content[:48], content[48:106], content[106:])),
+        ]
+        for event in events:
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode()
+        yield b"data: [DONE]\n\n"
+
+
 class CompetitorInsightTests(unittest.TestCase):
     def payload(self):
         data = json.loads(web_app.COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
@@ -55,7 +71,9 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("竞争格局", result["insights"][0])
         self.assertIn("不是复述数据", captured["body"]["messages"][0]["content"])
         self.assertIn("公司层面的竞争洞察", captured["body"]["messages"][0]["content"])
-        self.assertIn("所选公司都必须被覆盖", captured["body"]["messages"][0]["content"])
+        self.assertIn("覆盖所有所选公司", captured["body"]["messages"][0]["content"])
+        self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertEqual(captured["body"]["max_tokens"], 900)
         self.assertIn("指标解释边界", captured["body"]["messages"][1]["content"])
         self.assertIn("客户留存压力", captured["body"]["messages"][1]["content"])
 
@@ -76,6 +94,27 @@ class CompetitorInsightTests(unittest.TestCase):
         prompt = captured["body"]["messages"][1]["content"]
         self.assertNotIn("999999", prompt)
         self.assertNotIn("fake", prompt)
+
+    def test_streaming_mode_emits_real_status_and_content_deltas(self):
+        captured = {}
+        events = []
+
+        def open_request(request, timeout):
+            captured["body"] = json.loads(request.data.decode())
+            captured["timeout"] = timeout
+            return _StreamingResponse()
+
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", side_effect=open_request
+        ):
+            result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
+
+        self.assertTrue(captured["body"]["stream"])
+        self.assertEqual(captured["timeout"], 55)
+        self.assertEqual([event["stage"] for event in events if event["type"] == "status"], ["queue", "generating", "reasoning"])
+        self.assertGreaterEqual(len([event for event in events if event["type"] == "delta"]), 3)
+        self.assertEqual(len(result["insights"]), 3)
 
     def test_model_receives_only_common_comparison_years(self):
         captured = {}
