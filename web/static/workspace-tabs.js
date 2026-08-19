@@ -588,12 +588,20 @@
       const generateButton = document.querySelector(weekly ? "#generateButtonSecondary" : "#generatePerformanceButton");
       if (generateButton) outputBlock.querySelector(".output-actions")?.prepend(generateButton);
     }
-    const latest = (state.status?.outputs || []).find((item) => item.reportType === (weekly ? "weekly" : "carrier-performance"));
-    if (latest) showReportPreview(latest.path_str);
   }
 
-  function reportPreviewPlaceholder(message = "当前没有可预览的 PDF 报告") {
-    return `<section class="workspace-panel report-preview is-placeholder" data-report-preview><div class="report-preview-empty" role="status">${esc(message)}</div></section>`;
+  function reportPreviewPlaceholder() {
+    return `<section class="workspace-panel report-preview is-placeholder" data-report-preview aria-label="PDF 预览区">
+      <div class="report-preview-guide" role="status">
+        <div class="report-preview-guide-icons" aria-hidden="true">
+          <span><svg viewBox="0 0 48 48"><path d="M13 5h15l8 8v30H13z"/><path d="M28 5v9h8M19 23h12M19 29h12M19 35h8"/></svg></span>
+          <i><svg viewBox="0 0 24 24"><path d="m5 12 14 0M14 7l5 5-5 5"/></svg></i>
+          <span><svg viewBox="0 0 48 48"><rect x="7" y="8" width="34" height="32" rx="3"/><path d="M7 17h34M13 13h.01M18 13h.01M23 13h.01M15 24h18M15 30h14"/></svg></span>
+        </div>
+        <strong>选择一份报告预览</strong>
+        <p>点击左侧报告行，在这里查看对应的 PDF 文件</p>
+      </div>
+    </section>`;
   }
 
   function reportKindForPath(path) {

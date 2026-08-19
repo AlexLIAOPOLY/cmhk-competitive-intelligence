@@ -640,7 +640,16 @@
 .workspace-report-host .file-action.primary:hover { color: #effafb; background: rgba(65,153,177,.24); }
 
 .report-preview { display: flex; height: 100%; min-height: 0; flex-direction: column; overflow: hidden; }
-.report-preview.is-placeholder { align-items: center; justify-content: center; }
+.report-preview.is-placeholder { align-items: center; justify-content: center; border-style: dashed; border-color: rgba(101,184,205,.54); background: rgba(7,29,40,.46); box-shadow: inset 0 0 40px rgba(38,126,149,.045); }
+.report-preview-guide { display: grid; max-width: 310px; justify-items: center; padding: 30px 24px; text-align: center; }
+.report-preview-guide-icons { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 19px; color: #72c6d8; }
+.report-preview-guide-icons span { display: grid; width: 62px; height: 62px; place-items: center; border: 1px solid rgba(103,194,214,.34); border-radius: 16px; background: linear-gradient(145deg,rgba(34,99,117,.38),rgba(7,31,42,.5)); box-shadow: inset 0 1px rgba(225,251,255,.07),0 8px 24px rgba(0,12,18,.18); }
+.report-preview-guide-icons span svg { width: 36px; height: 36px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+.report-preview-guide-icons i { color: #577f8c; }
+.report-preview-guide-icons i svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.report-preview-guide strong { color: #dcecef; font-size: 15px; font-weight: 680; }
+.report-preview-guide p { margin: 9px 0 0; color: #7f9da8; font-size: 11px; line-height: 1.7; }
+.dashboard-page:not(.workspace-dashboard-active) .workspace-report-side > .report-preview.is-placeholder { border-style: dashed !important; border-color: rgba(101,184,205,.54) !important; background: rgba(7,29,40,.46) !important; box-shadow: inset 0 0 40px rgba(38,126,149,.045) !important; }
 .report-preview-header { display: flex; min-height: 55px; align-items: center; justify-content: space-between; padding: 0 13px 0 16px; border-bottom: 1px solid #315567; gap: 12px; }
 .report-preview-header > div:first-child { min-width: 0; }
 .report-preview-header strong { display: block; overflow: hidden; color: #e9f4f6; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }

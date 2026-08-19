@@ -6,10 +6,12 @@ ROOT = Path(__file__).resolve().parent
 
 
 class WorkspaceReportPreviewTests(unittest.TestCase):
-    def test_report_pages_open_with_pdf_preview_instead_of_info_cards(self):
+    def test_report_pages_open_with_guidance_before_a_report_is_selected(self):
         script = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 
-        self.assertIn('if (latest) showReportPreview(latest.path_str);', script)
+        self.assertIn('选择一份报告预览', script)
+        self.assertIn('点击左侧报告行，在这里查看对应的 PDF 文件', script)
+        self.assertNotIn('if (latest) showReportPreview(latest.path_str);', script)
         self.assertIn('previewRequest: { weekly: 0, performance: 0 }', script)
         self.assertNotIn('function subscriptionPanel()', script)
         self.assertNotIn('function performancePanel()', script)
