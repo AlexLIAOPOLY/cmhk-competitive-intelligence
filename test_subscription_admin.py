@@ -11,36 +11,41 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=7', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=7', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=11', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=13', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
     def test_admin_supports_controlled_delivery_and_mobile_layout(self):
         self.assertIn('action: "publish"', SCRIPT)
-        self.assertIn('action: "push"', SCRIPT)
+        self.assertIn('action: "pushLatest"', SCRIPT)
         self.assertIn("confirmBulk", SCRIPT)
         self.assertIn("推送记录", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
 
-    def test_report_delivery_is_pdf_only(self):
-        self.assertIn('value="pdf"', SCRIPT)
+    def test_report_delivery_exposes_supported_modes(self):
+        self.assertIn('{ key: "pdf", label: "仅 PDF" }', SCRIPT)
         self.assertIn("PDF 文件", SCRIPT)
-        self.assertIn('value="pdf_audio"', SCRIPT)
+        self.assertIn('{ key: "pdf_audio", label: "PDF + 单独语音" }', SCRIPT)
         self.assertIn("PDF + 单独语音", SCRIPT)
-        self.assertIn('value="audio"', SCRIPT)
+        self.assertIn('{ key: "audio", label: "仅语音" }', SCRIPT)
         self.assertIn("仅语音", SCRIPT)
-        self.assertIn("发送前自动命名", SCRIPT)
-        self.assertIn("data-outgoing-names", SCRIPT)
+        self.assertIn("报告方式", SCRIPT)
 
     def test_admin_exposes_real_subscription_frequency_controls(self):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
-        self.assertIn("报告随发布推送，新闻随爬虫完成派发", SCRIPT)
+        self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
         self.assertIn("每天两次", SCRIPT)
         self.assertNotIn("每天 18:00", SCRIPT)
         self.assertNotIn("每周五 18:00", SCRIPT)
+
+    def test_automatic_delivery_requires_subscription_and_saved_schedule(self):
+        self.assertIn('id="newsScheduleForm"', SCRIPT)
+        self.assertIn('action: "updateNewsSchedule"', SCRIPT)
+        self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
+        self.assertIn("执行日先生成当天最新周报", SCRIPT)
 
     def test_admin_exposes_report_audio_preference(self):
         self.assertIn("data-subscriber-report-mode", SCRIPT)

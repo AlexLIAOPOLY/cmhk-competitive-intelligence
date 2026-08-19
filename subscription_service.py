@@ -498,6 +498,12 @@ class SubscriptionService:
                    ) VALUES('weekly', 0, '[15,30]', '09:00', 'Asia/Hong_Kong', ?)""",
                 (_now_hkt(),),
             )
+            db.execute(
+                """INSERT OR IGNORE INTO report_automation_schedule(
+                       service, enabled, days_json, time_hm, timezone, updated_at
+                   ) VALUES('news', 0, '[]', '00:00', 'Asia/Hong_Kong', ?)""",
+                (_now_hkt(),),
+            )
             columns = {str(row[1]) for row in db.execute("PRAGMA table_info(subscribers)").fetchall()}
             if "callback_open_id" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN callback_open_id TEXT NOT NULL DEFAULT ''")
@@ -896,13 +902,38 @@ class SubscriptionService:
         if not configured:
             configured = self.config.get("strategic_scan_times") or STRATEGIC_SCAN_TIMES_DEFAULT
         times = _normalize_strategic_scan_times(configured)
+        with closing(self._connect()) as db:
+            row = db.execute(
+                "SELECT enabled, updated_at FROM report_automation_schedule WHERE service='news'"
+            ).fetchone()
         return {
+            "service": "news",
+            "enabled": bool(row["enabled"]) if row else False,
             "times": times,
             "times_text": " / ".join(times),
             "timezone": "Asia/Hong_Kong",
             "timezone_label": "香港时间",
             "dispatch_rule": "爬虫完成审核后推送",
+            "updated_at": str(row["updated_at"] or "") if row else "",
         }
+
+    def update_news_schedule(self, *, enabled: bool) -> dict[str, Any]:
+        with closing(self._connect()) as db, db:
+            db.execute(
+                "UPDATE report_automation_schedule SET enabled=?, updated_at=? WHERE service='news'",
+                (1 if enabled else 0, _now_hkt()),
+            )
+        return self.strategic_news_schedule_snapshot()
+
+    def automatic_delivery_enabled(self, service: str) -> bool:
+        if service not in {"news", "weekly"}:
+            return False
+        with closing(self._connect()) as db:
+            row = db.execute(
+                "SELECT enabled FROM report_automation_schedule WHERE service=?",
+                (service,),
+            ).fetchone()
+        return bool(row["enabled"]) if row else False
 
     @staticmethod
     def _normalize_schedule_days(days: Any) -> list[int]:
@@ -999,6 +1030,15 @@ class SubscriptionService:
         due = self.report_schedule_due(now=current)
         if dry_run or not due["due"]:
             return {"ok": True, "dry_run": dry_run, **due}
+        subscribers = self._subscribers_for("weekly")
+        if not subscribers:
+            return {
+                "ok": True,
+                "due": False,
+                "skipped": "no_active_subscribers",
+                "schedule_enabled": True,
+                "slot": str(due["slot"]),
+            }
         slot = str(due["slot"])
         started_at = _now_hkt()
         with closing(self._connect()) as db, db:
@@ -1011,6 +1051,14 @@ class SubscriptionService:
         if cursor.rowcount != 1:
             return {"ok": True, "due": False, "skipped": "already_claimed", "slot": slot}
         try:
+            existing_reports = {
+                path.resolve(): path.stat().st_mtime_ns
+                for path in self.runtime_root.glob("*.docx")
+                if "周报" in path.name
+                and "业绩摘要" not in path.name
+                and "template" not in path.name.lower()
+                and not path.name.startswith("~$")
+            }
             process = self._run(
                 [sys.executable, str(self.runtime_root / "generate_weekly_report.py")],
                 timeout=1200,
@@ -1024,12 +1072,16 @@ class SubscriptionService:
                 and "业绩摘要" not in path.name
                 and "template" not in path.name.lower()
                 and not path.name.startswith("~$")
+                and (
+                    path.resolve() not in existing_reports
+                    or path.stat().st_mtime_ns > existing_reports[path.resolve()]
+                )
             ]
             if not candidates:
-                raise RuntimeError("周报生成完成但未找到新的 Word 报告")
+                raise RuntimeError("周报生成完成但未找到本轮新生成的当天 Word 周报，已停止推送")
             report_path = max(candidates, key=lambda item: item.stat().st_mtime_ns)
             relative_path = report_path.relative_to(self.runtime_root).as_posix()
-            if any(item.get("report_mode") in {"audio", "pdf_audio"} for item in self._subscribers_for("weekly")):
+            if any(item.get("report_mode") in {"audio", "pdf_audio"} for item in subscribers):
                 try:
                     from tts_service import synthesize_report_audio
 
@@ -1863,6 +1915,44 @@ class SubscriptionService:
             message_ids: list[str] = []
             status = "verified"
             error = ""
+            service = str(row["service"])
+            open_id = str(row["open_id"])
+            active_open_ids = {item["open_id"] for item in self._subscribers_for(service)}
+            gate_open = self.automatic_delivery_enabled(service) and open_id in active_open_ids
+            if not gate_open:
+                status = "cancelled"
+                error = "自动推送已暂停或接收人已取消该项订阅"
+                with closing(self._connect()) as db, db:
+                    db.execute(
+                        "UPDATE deliveries SET status='cancelled', message_ids='[]', error=? WHERE id=?",
+                        (error, int(row["delivery_id"])),
+                    )
+                    db.execute(
+                        """UPDATE pending_subscription_deliveries
+                           SET status='cancelled', dispatched_at=?, last_error=? WHERE id=?""",
+                        (_now_hkt(), error, int(row["id"])),
+                    )
+                    content_ref = str(row["content_ref"] or "")
+                    if service == "news" and content_ref.startswith(NEWS_CRAWL_REF_PREFIX):
+                        db.execute(
+                            """UPDATE news_crawl_dispatches
+                               SET status='cancelled', message_ids='[]', last_error=?, updated_at=?
+                               WHERE open_id=? AND crawl_slot=?""",
+                            (
+                                error,
+                                _now_hkt(),
+                                open_id,
+                                content_ref.removeprefix(NEWS_CRAWL_REF_PREFIX),
+                            ),
+                        )
+                results.append({
+                    "pending_id": int(row["id"]),
+                    "open_id": open_id,
+                    "status": status,
+                    "message_ids": [],
+                    "error": error,
+                })
+                continue
             try:
                 message_ids = self._deliver_one(
                     open_id=str(row["open_id"]),
@@ -1941,6 +2031,18 @@ class SubscriptionService:
         """Push one crawler-completion digest using each subscriber's daily count."""
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}", str(crawl_slot or "")):
             raise ValueError("战略爬虫轮次标识无效")
+        if not self.automatic_delivery_enabled("news"):
+            return {
+                "crawl_slot": crawl_slot,
+                "completed_at": completed_at or _now_hkt(),
+                "schedule_enabled": False,
+                "skipped": "schedule_disabled",
+                "recipient_count": 0,
+                "verified_count": 0,
+                "retrying_count": 0,
+                "skipped_count": 0,
+                "results": [],
+            }
         clean_items = [item for item in items if isinstance(item, dict)]
         crawl_date = crawl_slot[:10]
         content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
@@ -2044,6 +2146,7 @@ class SubscriptionService:
         return {
             "crawl_slot": crawl_slot,
             "completed_at": completed_at or _now_hkt(),
+            "schedule_enabled": True,
             "recipient_count": len(results),
             "verified_count": sum(1 for item in results if item["status"] == "verified"),
             "retrying_count": sum(1 for item in results if item["status"] == "retrying"),

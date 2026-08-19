@@ -4274,6 +4274,10 @@ class AppHandler(BaseHTTPRequestHandler):
                         time_hm=payload.get("time"),
                         enabled=payload.get("enabled") is True,
                     )
+                elif action == "updateNewsSchedule":
+                    result = service.update_news_schedule(
+                        enabled=payload.get("enabled") is True,
+                    )
                 elif action == "refreshDirectory":
                     result = service.refresh_people_directory()
                 elif action == "searchPeople":

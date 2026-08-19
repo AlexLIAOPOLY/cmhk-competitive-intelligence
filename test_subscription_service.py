@@ -134,13 +134,21 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(
             self.service.strategic_news_schedule_snapshot(),
             {
+                "service": "news",
+                "enabled": False,
                 "times": ["06:00", "13:30"],
                 "times_text": "06:00 / 13:30",
                 "timezone": "Asia/Hong_Kong",
                 "timezone_label": "香港时间",
                 "dispatch_rule": "爬虫完成审核后推送",
+                "updated_at": self.service.strategic_news_schedule_snapshot()["updated_at"],
             },
         )
+
+    def test_news_schedule_is_paused_by_default_and_can_be_enabled(self):
+        self.assertFalse(self.service.strategic_news_schedule_snapshot()["enabled"])
+        saved = self.service.update_news_schedule(enabled=True)
+        self.assertTrue(saved["enabled"])
 
     def test_form_callback_persists_identity_and_replaces_services(self):
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
@@ -451,6 +459,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             ["news"],
             frequency="once_daily",
         )
+        self.service.update_news_schedule(enabled=True)
         item = {"title": "爬虫新闻", "summary": "已完成审核", "source_url": "https://example.test/news"}
         morning = self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-01@07:00",
@@ -548,11 +557,58 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertFalse(second["due"])
         self.assertEqual(self.service.report_schedule_snapshot(now=now)["last_slot"], "2026-08-30@09:30")
 
+    def test_due_report_does_not_generate_without_an_active_weekly_subscriber(self):
+        from datetime import datetime
+
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+        now = datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+        result = self.service.run_due_weekly_report(now=now)
+        self.assertEqual(result["skipped"], "no_active_subscribers")
+        self.assertFalse(any("generate_weekly_report.py" in item for call in self.lark.calls for item in call))
+
+    def test_due_report_never_falls_back_to_an_old_report(self):
+        from datetime import datetime
+
+        (self.root / "旧周报.docx").write_bytes(b"old")
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["weekly"], report_mode="pdf")
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def successful_but_no_output(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = successful_but_no_output
+        result = self.service.run_due_weekly_report(
+            now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+        )
+        self.assertFalse(result["ok"])
+        self.assertIn("本轮新生成", result["error"])
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+
+    def test_news_dispatch_requires_both_schedule_and_active_subscription(self):
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="once_daily")
+        paused = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@07:00", slot_label="晨间扫描", items=[{"title": "不会发送"}]
+        )
+        self.assertEqual(paused["skipped"], "schedule_disabled")
+        self.assertEqual(paused["recipient_count"], 0)
+        self.service.update_news_schedule(enabled=True)
+        self.service.update_subscriber(
+            "ou_delivery123", services=["news"], status="paused", frequency="once_daily", report_mode="pdf"
+        )
+        unsubscribed = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@15:00", slot_label="午后扫描", items=[{"title": "仍不发送"}]
+        )
+        self.assertTrue(unsubscribed["schedule_enabled"])
+        self.assertEqual(unsubscribed["recipient_count"], 0)
+
     def test_failed_crawler_delivery_retries_without_a_fixed_attempt_cap(self):
         from datetime import datetime
         import sqlite3
 
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="once_daily")
+        self.service.update_news_schedule(enabled=True)
 
         def offline(argv, timeout=45):
             raise RuntimeError("temporary offline")
