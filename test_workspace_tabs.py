@@ -53,7 +53,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
         self.assertIn('/static/workspace-tabs.css?v=62', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=49', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=50', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)

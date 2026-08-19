@@ -763,7 +763,7 @@
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2>
-          <div class="news-run-controls"><label><span>日期</span><select data-news-date-select aria-label="选择要查看的日期">${dates.map((date) => `<option value="${esc(date)}"${date === state.newsSelectedDate ? " selected" : ""}>${esc(date)}</option>`).join("")}</select></label><button class="workspace-button" type="button" data-open-news-review>进入人工审核表</button></div>
+          <div class="news-run-controls"><label><span>日期</span><select data-news-date-select aria-label="选择要查看的日期">${dates.map((date) => `<option value="${esc(date)}"${date === state.newsSelectedDate ? " selected" : ""}>${esc(date)}</option>`).join("")}</select></label></div>
         </header>
         ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" tabindex="0" aria-label="可横向滚动的情报生成流程图">
@@ -1137,8 +1137,6 @@
     if (event.target.closest("[data-open-task-log]")) activateModule("log");
     const jump = event.target.closest("[data-jump-dashboard]");
     if (jump) activateModule("dashboard");
-    const news = event.target.closest("[data-open-news-review]");
-    if (news) activateModule("review");
     if (event.target.closest("[data-open-subscriptions]")) activateModule("subscriptions");
     const generate = event.target.closest("[data-generate-report]");
     if (generate) {
