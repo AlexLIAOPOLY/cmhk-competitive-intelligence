@@ -12,6 +12,7 @@
     ["/api/task-runs", "static-data/task-runs.json"],
     ["/api/scheduler-overview", "static-data/scheduler-overview.json"],
     ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
+    ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
   ]);
   const lookupRoutes = new Map([
     ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
