@@ -19,7 +19,7 @@ button { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .5; }
 [hidden] { display: none !important; }
 .loading { display: grid; min-height: 100vh; place-items: center; color: #78929c; font-size: 13px; }
-.admin { display: grid; grid-template-rows: none; gap: 12px; min-height: 100vh; padding: 18px; background: radial-gradient(circle at 88% -5%, rgba(52,148,173,.08), transparent 31%); }
+.admin { display: grid; grid-auto-rows: max-content; align-content: start; gap: 12px; min-height: 100vh; padding: 18px; background: radial-gradient(circle at 88% -5%, rgba(52,148,173,.08), transparent 31%); }
 .topbar { display: flex; min-height: 64px; align-items: center; justify-content: space-between; gap: 16px; padding: 0 4px 10px; border-bottom: 1px solid rgba(92,158,178,.24); }
 h1, h2, p { margin: 0; }
 h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
