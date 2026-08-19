@@ -616,6 +616,7 @@
 .workspace-report-host .file-action.primary:hover { color: #effafb; background: rgba(65,153,177,.24); }
 
 .report-preview { display: flex; height: 100%; min-height: 0; flex-direction: column; overflow: hidden; }
+.report-preview.is-placeholder { align-items: center; justify-content: center; }
 .report-preview-header { display: flex; min-height: 55px; align-items: center; justify-content: space-between; padding: 0 13px 0 16px; border-bottom: 1px solid #315567; gap: 12px; }
 .report-preview-header > div:first-child { min-width: 0; }
 .report-preview-header strong { display: block; overflow: hidden; color: #e9f4f6; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
@@ -637,7 +638,7 @@
 .report-preview-table-wrap { max-width: 100%; margin: 14px 0 20px; overflow-x: auto; }
 .report-preview-table { width: 100%; border-collapse: collapse; font: 400 11px/1.5 system-ui, sans-serif; }
 .report-preview-table td { padding: 7px 9px; border: 1px solid #afbdc3; vertical-align: top; white-space: pre-wrap; }
-.report-preview-loading,.report-preview-empty { padding: 48px 18px; color: #5e7078; font-size: 12px; line-height: 1.8; text-align: center; }
+.report-preview-loading,.report-preview-empty { padding: 48px 18px; color: #91abb5; font-size: 12px; line-height: 1.8; text-align: center; }
 .report-preview-empty a { color: #167b93; }
 .report-preview footer { padding: 8px 12px; border-top: 1px solid #315567; color: #7796a2; background: #0c2633; font-size: 9px; text-align: center; }
 .report-preview.is-maximized { position: fixed; inset: 14px; z-index: 10000; height: auto; min-height: 0; box-shadow: 0 0 0 100vmax rgba(1,13,19,.84), 0 22px 80px rgba(0,0,0,.7); }

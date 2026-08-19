@@ -17,7 +17,7 @@
     newsItemFallback: {},
     newsRunRequest: 0,
     newsSelectedStage: "search",
-    previewRequest: 0,
+    previewRequest: { weekly: 0, performance: 0 },
     faultFilters: { status: "all", kind: "all", query: "" },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -42,7 +42,8 @@
 
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
     const target = MODULES.includes(name) ? name : "dashboard";
-    state.previewRequest += 1;
+    state.previewRequest.weekly += 1;
+    state.previewRequest.performance += 1;
     tabs.forEach((tab) => {
       const selected = tab.dataset.workspaceTab === target;
       tab.classList.toggle("is-active", selected);
@@ -532,7 +533,7 @@
     const panel = document.querySelector(`[data-workspace-panel="${kind}"]`);
     panel.innerHTML = `<div class="workspace-module-inner">
       <div class="workspace-grid"><div class="workspace-report-host" id="workspaceReportHost-${kind}"></div>
-      <aside class="workspace-report-side" id="workspaceReportSide-${kind}">${weekly ? subscriptionPanel() : performancePanel()}</aside></div></div>`;
+      <aside class="workspace-report-side" id="workspaceReportSide-${kind}">${reportPreviewPlaceholder()}</aside></div></div>`;
     const outputBlock = document.querySelector(weekly ? "#weeklyOutputBlock" : "#performanceOutputBlock");
     if (outputBlock) {
       outputBlock.hidden = false;
@@ -542,19 +543,12 @@
       const generateButton = document.querySelector(weekly ? "#generateButtonSecondary" : "#generatePerformanceButton");
       if (generateButton) outputBlock.querySelector(".output-actions")?.prepend(generateButton);
     }
-    if (weekly) bindSubscriptionForm(panel);
+    const latest = (state.status?.outputs || []).find((item) => item.reportType === (weekly ? "weekly" : "carrier-performance"));
+    if (latest) showReportPreview(latest.path_str);
   }
 
-  function subscriptionPanel() {
-    return `<section class="workspace-panel"><header class="workspace-panel-header"><h2>飞书订阅服务</h2><span>服务器已接入</span></header><div class="workspace-panel-body"><button class="workspace-button is-primary" type="button" data-open-subscriptions>打开订阅与推送管理</button><p class="workspace-form-note">订阅选择保存在服务器，并由飞书机器人按订阅者单聊推送。</p></div></section>`;
-  }
-
-  function performancePanel() {
-    return `<section class="workspace-panel"><header class="workspace-panel-header"><h2>摘要能力</h2><span>标准化提炼</span></header><div class="workspace-panel-body"><ul class="workspace-status-list"><li><span>财务与运营指标抽取</span><strong>已接入</strong></li><li><span>披露期与数值绑定</span><strong>已校验</strong></li><li><span>原始来源追溯</span><strong>已覆盖</strong></li><li><span>批量历史归档</span><strong>已覆盖</strong></li></ul></div></section>`;
-  }
-
-  function bindSubscriptionForm(panel) {
-    panel.querySelector("[data-open-subscriptions]")?.addEventListener("click", () => activateModule("subscriptions"));
+  function reportPreviewPlaceholder(message = "当前没有可预览的 PDF 报告") {
+    return `<section class="workspace-panel report-preview is-placeholder" data-report-preview><div class="report-preview-empty" role="status">${esc(message)}</div></section>`;
   }
 
   function reportKindForPath(path) {
@@ -567,11 +561,9 @@
 
   function previewShell(item, body, { error = false } = {}) {
     return `<section class="workspace-panel report-preview${error ? " has-error" : ""}" data-report-preview>
-      <header class="report-preview-header"><div><strong title="${esc(item.name)}">${esc(item.name)}</strong><span>PDF 版式预览 · 下载保留原始 Word</span></div><div class="report-preview-actions">
-        <button type="button" data-report-preview-close aria-label="关闭预览" title="关闭预览">返回</button>
+      <header class="report-preview-header"><div><strong title="${esc(item.name)}">${esc(item.name)}</strong><span>PDF 预览</span></div><div class="report-preview-actions">
         <button type="button" data-report-preview-expand aria-label="放大预览" title="放大预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
-      </div></header><div class="report-preview-viewport">${body}</div>
-      <footer>预览使用生成后同步转换的 PDF；下载按钮仍提供原始 Word 文件</footer></section>`;
+      </div></header><div class="report-preview-viewport">${body}</div></section>`;
   }
 
   function reportPreviewPdfUrl(item) {
@@ -583,23 +575,13 @@
     return `/static/report-previews/${key}.pdf`;
   }
 
-  function restoreReportSide(kind) {
-    state.previewRequest += 1;
-    const side = document.querySelector(`#workspaceReportSide-${kind}`);
-    if (!side) return;
-    side.innerHTML = kind === "weekly" ? subscriptionPanel() : performancePanel();
-    document.body.classList.remove("has-maximized-report-preview");
-    document.querySelectorAll(`#workspaceReportHost-${kind} .file-row.is-previewing`).forEach((row) => row.classList.remove("is-previewing"));
-    if (kind === "weekly") bindSubscriptionForm(side);
-  }
-
   async function showReportPreview(path) {
     const resolved = reportKindForPath(path);
     if (!resolved) return;
     const { item, kind } = resolved;
     const side = document.querySelector(`#workspaceReportSide-${kind}`);
     if (!side) return;
-    const requestId = ++state.previewRequest;
+    const requestId = ++state.previewRequest[kind];
     document.querySelectorAll(`#workspaceReportHost-${kind} .file-row.is-previewing`).forEach((row) => row.classList.remove("is-previewing"));
     document.querySelector(`#workspaceReportHost-${kind} .file-row[data-path="${CSS.escape(path)}"]`)?.classList.add("is-previewing");
     side.innerHTML = previewShell(item, '<div class="report-preview-loading" role="status">正在读取 PDF 版式预览…</div>');
@@ -607,11 +589,11 @@
       const pdfUrl = reportPreviewPdfUrl(item);
       const response = await fetch(pdfUrl, { method: "HEAD", cache: "no-store" });
       if (!response.ok) throw new Error("这份历史报告尚未生成 PDF 预览");
-      if (requestId !== state.previewRequest) return;
+      if (requestId !== state.previewRequest[kind]) return;
       const viewport = side.querySelector(".report-preview-viewport");
       viewport.innerHTML = `<iframe class="report-preview-pdf" src="${esc(pdfUrl)}#toolbar=0&navpanes=0&view=FitH" title="${esc(item.name)} PDF 预览"></iframe>`;
     } catch (error) {
-      if (requestId === state.previewRequest) side.innerHTML = previewShell(item, `<div class="report-preview-empty" role="status">${esc(error.message || "报告暂时无法预览")}<br><a href="${esc(safeUrl(item.url, { allowOutput: true }))}">下载原始 Word</a></div>`, { error: true });
+      if (requestId === state.previewRequest[kind]) side.innerHTML = previewShell(item, `<div class="report-preview-empty" role="status">${esc(error.message || "报告暂时无法预览")}<br><a href="${esc(safeUrl(item.url, { allowOutput: true }))}">下载原始 Word</a></div>`, { error: true });
     }
   }
 
@@ -792,11 +774,6 @@
   document.addEventListener("click", (event) => {
     const row = event.target.closest(".workspace-report-host .file-row[data-path]");
     if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input, .file-name-editable")) showReportPreview(row.dataset.path);
-    const closePreview = event.target.closest("[data-report-preview-close]");
-    if (closePreview) {
-      const side = closePreview.closest(".workspace-report-side");
-      restoreReportSide(side?.id.endsWith("weekly") ? "weekly" : "performance");
-    }
     const expandPreview = event.target.closest("[data-report-preview-expand]");
     if (expandPreview) {
       const preview = expandPreview.closest("[data-report-preview]");
