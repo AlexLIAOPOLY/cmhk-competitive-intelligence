@@ -482,10 +482,11 @@
 .news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; }
 .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-feedback .news-lineage-pulse { stroke: #e3a64f; filter: drop-shadow(0 0 4px rgba(227,166,79,.6)); animation-duration: 3.2s; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
-.news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; }
+.news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; animation-name: news-lineage-flow-global; }
 .news-lineage.is-global .news-lineage-edge text { font-size: 11px; font-weight: 720; stroke-width: 7px; }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
+@keyframes news-lineage-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -104; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
 .news-lineage-group > strong { color: #bcd9df; font-size: 11px; letter-spacing: .06em; }
 .news-lineage-group > span { color: #638b97; font-size: 8px; }

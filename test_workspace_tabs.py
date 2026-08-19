@@ -52,7 +52,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=72', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=73', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=63', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
@@ -361,6 +361,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("<textPath", SCRIPT)
         self.assertIn(".news-lineage-edge-label", STYLE)
         self.assertIn(".news-lineage.is-global .news-lineage-node.is-compact", STYLE)
+        self.assertIn("animation-name: news-lineage-flow-global", STYLE)
+        self.assertIn("to { stroke-dashoffset: -104; }", STYLE)
         for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-macro", "is-insight", "is-delivery"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.{variant}", STYLE)
         self.assertIn('feedbackLabel: "历史记录用于下一轮去重"', SCRIPT)
