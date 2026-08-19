@@ -640,31 +640,32 @@
       `最近完成 ${runCompletionText(mainRun)}`,
     ];
     const nodes = [
-      { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : "每日2轮", note: `最近完成 ${runCompletionText(newsRun)}`, tone: "cyan", position: [30, 58], details: ["固定时点独立扫描战略新闻", "接收主爬虫产生的页面变化线索"], evidence: newsRun.progress_detail || newsRun.status_detail || newsRun.scope || "战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: "固定来源 + Agentic + 页面变化", tone: "cyan", position: [390, 58], details: ["固定关键词和页面来源", "对页面变化生成关联查询", "Agentic Search补齐空白"], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "等待所选新闻批次证据" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: "逐条判断战略相关性", tone: "cyan", position: [750, 58], details: ["确定性门禁先筛时间、日期与URL", "AI逐条判断战略价值"], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "等待所选新闻批次证据" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `留下 ${number(strategicDedupe.value)} 条新增`, tone: "mint", position: [1110, 58], details: ["与历史事件语义比对", "新增事件进入后续历史记忆"], evidence: strategicDedupe.evidence || "等待所选新闻批次证据" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: "审核表 · 推送 · 历史记忆", tone: "focus", position: [1470, 58], details: ["正式写入并回读", "保留的新增事件影响下一轮去重与补缺"], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "等待所选新闻批次证据" },
-      { key: "main", label: "03:00 主爬虫", value: configured ? number(configured) : "—", unit: "条配置", note: `${number(frequency.daily)}每日 · ${number(frequency.weekly)}每周 · ${number(frequency.monthly)}每月`, tone: "focus", position: [24, 356], details: mainEvidence, evidence: mainRun.status_detail || mainRun.progress_detail || mainEvidence.join("\n") },
-      { key: "agent", label: "Agent 证据审核", value: "10", unit: "节点", note: "分类 · 抽取 · 校验 · 仲裁", tone: "cyan", position: [232, 356], details: ["证据接收与来源分类", "事实抽取、主体校验与质量审计", "冲突仲裁、搜索验证与发布"], evidence: mainRun.curation?.summary || mainRun.status_detail || "主爬虫完成后执行统一 Agent 审核。" },
-      domainNode("local", "本地运营商", [440, 356]),
-      domainNode("international", "内地电讯企业", [648, 356]),
-      domainNode("cloud", "全球云厂商", [856, 356]),
-      domainNode("macro", "香港电讯市场", [1064, 356]),
-      { key: "insights", label: "17项AI洞察", value: number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 17), unit: "项通过", note: "四库统一证据链", tone: "cyan", position: [1272, 356], details: ["四库事实通过质量门禁后统一分析", "指标、期间、口径或来源变化会整批失效重算", `最近完成 ${runCompletionText(intelligenceRun)}`], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || state.executiveIntelligence?.method || "四库刷新运行归档" },
-      { key: "consumers", label: "情报进入业务入口", value: "3", unit: "个入口", note: "主页 · 小竞AI · 公开页", tone: "mint", position: [1480, 356], details: ["主页展示最新通过事实", "小竞AI检索四库与历史证据", "公开页发布已验证快照"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "主页与公开页发布证据" },
+      { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : "每日2轮", note: `最近完成 ${runCompletionText(newsRun)}`, tone: "cyan", position: [18, 50], details: ["固定时点独立扫描战略新闻", "接收主爬虫产生的页面变化线索"], evidence: newsRun.progress_detail || newsRun.status_detail || newsRun.scope || "战略新闻运行归档" },
+      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: "固定来源 + Agentic + 页面变化", tone: "cyan", position: [365, 50], details: ["固定关键词和页面来源", "对页面变化生成关联查询", "Agentic Search补齐空白"], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "等待所选新闻批次证据" },
+      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: "逐条判断战略相关性", tone: "cyan", position: [712, 50], details: ["确定性门禁先筛时间、日期与URL", "AI逐条判断战略价值"], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "等待所选新闻批次证据" },
+      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `留下 ${number(strategicDedupe.value)} 条新增`, tone: "mint", position: [1059, 50], details: ["与历史事件语义比对", "新增事件进入后续历史记忆"], evidence: strategicDedupe.evidence || "等待所选新闻批次证据" },
+      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: "审核表 · 推送 · 历史记忆", tone: "focus", position: [1406, 50], details: ["正式写入并回读", "保留的新增事件影响下一轮去重与补缺"], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "等待所选新闻批次证据" },
+      { key: "main", label: "03:00 主爬虫", value: configured ? number(configured) : "—", unit: "条配置", note: `${number(frequency.daily)}每日 · ${number(frequency.weekly)}每周 · ${number(frequency.monthly)}每月`, tone: "focus", position: [14, 318], details: mainEvidence, evidence: mainRun.status_detail || mainRun.progress_detail || mainEvidence.join("\n") },
+      { key: "agent", label: "Agent 证据审核", value: "10", unit: "节点", note: "分类 · 抽取 · 校验 · 仲裁", tone: "cyan", position: [212, 318], details: ["证据接收与来源分类", "事实抽取、主体校验与质量审计", "冲突仲裁、搜索验证与发布"], evidence: mainRun.curation?.summary || mainRun.status_detail || "主爬虫完成后执行统一 Agent 审核。" },
+      domainNode("local", "本地运营商", [410, 318]),
+      domainNode("international", "内地电讯企业", [608, 318]),
+      domainNode("cloud", "全球云厂商", [806, 318]),
+      domainNode("macro", "香港电讯市场", [1004, 318]),
+      { key: "insights", label: "17项AI洞察", value: number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 17), unit: "项通过", note: "四库统一证据链", tone: "cyan", position: [1202, 318], details: ["四库事实通过质量门禁后统一分析", "指标、期间、口径或来源变化会整批失效重算", `最近完成 ${runCompletionText(intelligenceRun)}`], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || state.executiveIntelligence?.method || "四库刷新运行归档" },
+      { key: "consumers", label: "情报进入业务入口", value: "3", unit: "个入口", note: "主页 · 小竞AI · 公开页", tone: "mint", position: [1400, 318], details: ["主页展示最新通过事实", "小竞AI检索四库与历史证据", "公开页发布已验证快照"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "主页与公开页发布证据" },
     ];
     const edges = [
-      ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "候选进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增事件", "cyan"], ["news-output", "strategic", "历史记忆影响下一轮", "feedback"],
-      ["main", "agent", "页面与字段证据", "cyan"], ["main", "news-search", "页面变化线索", "amber"],
+      ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "strategic", "", "feedback"],
+      ["main", "agent", "", "cyan"], ["main", "news-search", "", "amber"],
       ["agent", "database-local", "", "cyan"], ["agent", "database-international", "", "cyan"], ["agent", "database-cloud", "", "cyan"], ["agent", "database-macro", "", "cyan"],
-      ["database-local", "insights", "", "cyan"], ["database-international", "insights", "", "cyan"], ["database-cloud", "insights", "", "cyan"], ["database-macro", "insights", "", "cyan"], ["insights", "consumers", "发布通过结论", "cyan"], ["news-output", "consumers", "新增新闻", "cyan"],
+      ["database-local", "insights", "", "cyan"], ["database-international", "insights", "", "cyan"], ["database-cloud", "insights", "", "cyan"], ["database-macro", "insights", "", "cyan"], ["insights", "consumers", "", "cyan"], ["news-output", "consumers", "", "cyan"],
     ];
     return {
       nodes,
       edges,
-      canvasSize: [1690, 560],
-      groups: [{ key: "databases", label: "四库更新", note: `最近完成 ${runCompletionText(intelligenceRun)}`, position: [420, 314], size: [836, 216] }],
+      canvasSize: [1580, 492],
+      feedbackLabel: "历史记忆影响下一轮",
+      groups: [{ key: "databases", label: "四库更新", note: `最近完成 ${runCompletionText(intelligenceRun)}`, position: [394, 282], size: [794, 190] }],
     };
   }
 
