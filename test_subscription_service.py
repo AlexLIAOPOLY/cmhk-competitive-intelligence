@@ -401,6 +401,26 @@ class SubscriptionServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "二次确认"):
             self.service.push(service="news", mode="text", title="新闻", body="正文")
 
+    def test_manual_push_can_target_one_active_subscriber_without_bulk_confirmation(self):
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
+        result = self.service.push(
+            service="news",
+            mode="text",
+            title="手动推送",
+            body="只发送给指定订阅者",
+            target_open_id="ou_delivery123",
+        )
+        self.assertEqual(result["recipient_count"], 1)
+        self.assertEqual(result["results"][0]["open_id"], "ou_delivery123")
+        self.assertEqual(result["verified_count"], 1)
+        with self.assertRaisesRegex(ValueError, "未启用此项服务"):
+            self.service.push(
+                service="weekly",
+                mode="pdf",
+                path="missing.docx",
+                target_open_id="ou_delivery123",
+            )
+
     def test_news_dispatches_after_crawler_completion_with_daily_limits(self):
         self.service.save_subscriptions(
             "ou_delivery123",

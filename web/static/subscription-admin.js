@@ -5,6 +5,7 @@
   const state = {
     data: null, briefs: [], searchResults: [], chatSearchResults: [], searchQuery: "",
     notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
+    manualTargetOpenId: "", manualTargetName: "",
   };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const highlight = (value, query = state.searchQuery) => {
@@ -97,7 +98,7 @@
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
-      <td><button class="button compact-save" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
+      <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}">${icon("send")}</button><button class="button compact-save" type="button" data-save-subscriber>保存</button></div></td></tr>`).join("");
   }
 
   function deliveryRows() {
@@ -166,14 +167,11 @@
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const newsSchedule = data.strategic_news_schedule || { times_text: "06:00 / 13:30", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
-      <header class="topbar"><h1>订阅与推送管理</h1><button class="icon-button management-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button></header>
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
-        <div class="upper-grid">
-          <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 直接调整接收内容与方式</p></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
-        </div>
-        <section class="surface push-surface"><header class="surface-header"><div><h2>自动流程与推送</h2><p>统一查看战略新闻与周报排期</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报自动流程</h3><p>到期后自动生成最新周报，并按订阅者接收方式推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required><small>可填写多个日期，以逗号分隔</small></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存排期</button><p class="schedule-meta">${esc(scheduleSummary(schedule))}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>人工推送</h3><p>正式内容发送前自动命名 PDF 与音频文件</p></div><form id="pushForm"><div class="push-form-fields"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label><label data-report>正式报告<select name="path">${reportOptions()}</select><small data-outgoing-names></small></label></div><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="仅用于人工补发经审核的战略新闻">${esc(newsBody)}</textarea></label><div class="push-actions"><button class="button primary" type="submit">执行推送</button></div></form></div></section>
+        <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
+        <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 直接调整接收内容与方式</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键手动推送给全部有效订阅者" title="一键手动推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div><section class="manual-push-inline" aria-labelledby="manualPushTitle"><div class="inline-section-heading"><div><h3 id="manualPushTitle">人工推送</h3><p>${state.manualTargetOpenId ? `接收人：${esc(state.manualTargetName)}` : "接收范围：全部有效订阅者"}</p></div><span class="manual-target-badge">${state.manualTargetOpenId ? "单人" : "一键推送"}</span></div><form id="pushForm" class="manual-push-form"><div class="push-form-fields"><label>服务<select name="service">${serviceOptions()}</select></label><label>交付方式<select name="mode"><option value="pdf">仅 PDF</option><option value="pdf_audio">PDF + 单独语音</option><option value="audio">仅语音</option></select></label><label data-report>正式报告<select name="path">${reportOptions()}</select><small data-outgoing-names></small></label></div><label data-news hidden>新闻标题<input name="title" value="${esc(newsTitle)}" maxlength="120"></label><label data-news hidden>新闻正文<textarea name="body" placeholder="仅用于人工补发经审核的战略新闻">${esc(newsBody)}</textarea></label><div class="push-actions"><button class="button primary" type="submit">${icon("send")}<span>${state.manualTargetOpenId ? "推送给此人" : "一键推送"}</span></button></div></form></section></section>
+        <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>统一管理战略新闻与周报的自动排期</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报定时推送</h3><p>到期后自动生成最新周报，并按订阅者接收方式推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required><small>可填写多个日期，以逗号分隔</small></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存排期</button><p class="schedule-meta">${esc(scheduleSummary(schedule))}</p></form></div></section>
       </main>
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
@@ -241,6 +239,22 @@
     if (event.target.closest("[data-close-people]") || event.target.matches("[data-people-backdrop]")) {
       state.peopleOpen = false;
       render();
+      return;
+    }
+    if (event.target.closest("[data-manual-push-all]")) {
+      state.manualTargetOpenId = "";
+      state.manualTargetName = "";
+      render();
+      document.querySelector('#pushForm [name="service"]')?.focus();
+      return;
+    }
+    const manualPerson = event.target.closest("[data-manual-push-person]");
+    if (manualPerson) {
+      const row = manualPerson.closest("[data-subscriber-row]");
+      state.manualTargetOpenId = row?.dataset.subscriberRow || "";
+      state.manualTargetName = row?.querySelector(".table-person-name")?.textContent?.trim() || "当前订阅者";
+      render();
+      document.querySelector('#pushForm [name="service"]')?.focus();
       return;
     }
     if (event.target.closest("[data-open-management]")) {
@@ -334,9 +348,15 @@
       event.preventDefault();
       const values = Object.fromEntries(new FormData(event.target).entries());
       const payload = { action: "push", service: values.service, mode: values.mode, path: values.path || "", title: values.title || "", body: values.body || "" };
-      if (!window.confirm("确认向该服务的全部有效订阅者推送这份内容？发送后无法撤回。")) return;
-      payload.confirmBulk = true;
-      try { await post(payload, "正在向全部有效订阅者推送并逐条回读…"); }
+      const targetName = state.manualTargetName;
+      if (state.manualTargetOpenId) {
+        if (!window.confirm(`确认手动推送给 ${targetName}？发送后无法撤回。`)) return;
+        payload.targetOpenId = state.manualTargetOpenId;
+      } else {
+        if (!window.confirm("确认一键推送给该服务的全部有效订阅者？发送后无法撤回。")) return;
+        payload.confirmBulk = true;
+      }
+      try { await post(payload, state.manualTargetOpenId ? `正在推送给 ${targetName} 并回读…` : "正在向全部有效订阅者推送并逐条回读…"); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });

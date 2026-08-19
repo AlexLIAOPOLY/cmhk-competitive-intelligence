@@ -4223,6 +4223,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         title=str(payload.get("title") or ""),
                         body=str(payload.get("body") or ""),
                         test_open_id=str(payload.get("testOpenId") or ""),
+                        target_open_id=str(payload.get("targetOpenId") or ""),
                         confirm_bulk=payload.get("confirmBulk") is True,
                     )
                 else:

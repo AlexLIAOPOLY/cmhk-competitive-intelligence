@@ -2034,6 +2034,7 @@ class SubscriptionService:
         title: str = "",
         body: str = "",
         test_open_id: str = "",
+        target_open_id: str = "",
         confirm_bulk: bool = False,
         queue_failures: bool = False,
         batch_key: str = "",
@@ -2046,7 +2047,13 @@ class SubscriptionService:
             raise ValueError("周报和业绩摘要只支持 PDF、PDF 加独立语音或仅语音")
         recipients = self._subscribers_for(service)
         send_profile = self.delivery_profile
-        if test_open_id:
+        if target_open_id:
+            if not OPEN_ID_RE.fullmatch(target_open_id):
+                raise ValueError("手动推送接收人格式无效")
+            recipients = [item for item in recipients if item["open_id"] == target_open_id]
+            if not recipients:
+                raise ValueError("该订阅者未启用此项服务，无法手动推送")
+        elif test_open_id:
             card_actions = self.config.get("card_actions") if isinstance(self.config.get("card_actions"), dict) else {}
             primary_test_open_id = str(card_actions.get("primary_handler_open_id") or "")
             subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
