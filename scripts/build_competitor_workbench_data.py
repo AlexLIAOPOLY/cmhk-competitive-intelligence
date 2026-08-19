@@ -19,6 +19,18 @@ SOURCES = (
     GLOBAL_OPERATOR_SOURCE,
     LOCAL_HK_SOURCE,
 )
+KNOWLEDGE_BASE_META = {
+    GLOBAL_OPERATOR_SOURCE: {
+        "label": "全球重点运营商年度知识库",
+        "type": "财务 + 运营指标",
+        "scope": "内地四家 + 印度两家 · 2016–2025",
+    },
+    LOCAL_HK_SOURCE: {
+        "label": "香港本地运营商年度知识库",
+        "type": "客户 + 网络 + 运营指标",
+        "scope": "香港本地运营商 · 2016–2025",
+    },
+}
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
 BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
 COMPANY_GROUPS = {
@@ -88,6 +100,7 @@ def main() -> None:
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 availability[(company, metric)].add(year)
                 cells.append({
+                    "dataset": source.parent.name,
                     "company": company,
                     "metric": metric,
                     "year": year,
@@ -106,6 +119,17 @@ def main() -> None:
     cells = [cell for cell in cells if (cell["company"], cell["metric"]) in viable]
     active_companies = {cell["company"] for cell in cells}
     active_metrics = {cell["metric"] for cell in cells}
+    knowledge_bases = []
+    for source in SOURCES:
+        dataset_id = source.parent.name
+        dataset_cells = [cell for cell in cells if cell["dataset"] == dataset_id]
+        knowledge_bases.append({
+            "id": dataset_id,
+            **KNOWLEDGE_BASE_META[source],
+            "companyCount": len({cell["company"] for cell in dataset_cells}),
+            "metricCount": len({cell["metric"] for cell in dataset_cells}),
+            "cellCount": len(dataset_cells),
+        })
     digest = hashlib.sha256()
     for source in SOURCES:
         digest.update(source.name.encode("utf-8"))
@@ -114,6 +138,7 @@ def main() -> None:
         "generatedAt": datetime.fromtimestamp(max(source.stat().st_mtime for source in SOURCES), tz=timezone.utc).isoformat(),
         "evidenceVersion": digest.hexdigest(),
         "sourceDatasets": [source.parent.name for source in SOURCES],
+        "knowledgeBases": knowledge_bases,
         "companies": [value for key, value in sorted(company_meta.items()) if key in active_companies],
         "metrics": [value for key, value in sorted(metric_meta.items(), key=lambda item: item[1]["label"]) if key in active_metrics],
         "cells": cells,

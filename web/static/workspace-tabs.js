@@ -93,6 +93,7 @@
     const panel = document.querySelector('[data-workspace-panel="competitor"]');
     const data = state.competitorData || { companies: [], metrics: [], cells: [] };
     const selection = state.competitorSelection;
+    const knowledgeBases = Array.isArray(data.knowledgeBases) ? data.knowledgeBases : [];
     const groups = data.companies.reduce((map, company) => {
       (map[company.group] ||= []).push(company);
       return map;
@@ -110,7 +111,11 @@
     });
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
-      <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>按披露期读取真实多年数据；初始不自动生成</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
+      <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>知识库 → 竞对 → 同单位指标 → 共同披露年 → 趋势与来源</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
+      <section class="competitor-knowledge-layer" aria-label="知识库类型与数据逻辑">
+        <div class="competitor-logic-path"><b>数据逻辑</b><span>先确认知识库范围，再生成可比趋势；缺失值、不同单位和不同币种均不补齐。</span></div>
+        <div class="competitor-knowledge-list">${knowledgeBases.map((base) => `<article><span>${esc(base.type)}</span><strong>${esc(base.label)}</strong><small>${esc(base.scope)}</small><em>${number(base.companyCount)} 个主体 · ${number(base.metricCount)} 项指标 · ${number(base.cellCount)} 个年度单元</em></article>`).join("")}</div>
+      </section>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span>${esc(group)}</span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>

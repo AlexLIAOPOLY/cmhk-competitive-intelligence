@@ -67,6 +67,10 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             self.payload["sourceDatasets"],
             ["global_top5_operators_2016_2025", "local_hk_operator_operating_metrics_2016_2025"],
         )
+        bases = {item["id"]: item for item in self.payload["knowledgeBases"]}
+        self.assertEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 418)
+        self.assertEqual(bases["local_hk_operator_operating_metrics_2016_2025"]["cellCount"], 167)
+        self.assertEqual(sum(item["cellCount"] for item in bases.values()), len(actual))
 
     def test_recent_global_operator_additions_are_visible(self):
         companies = {item["id"]: item for item in self.payload["companies"]}
