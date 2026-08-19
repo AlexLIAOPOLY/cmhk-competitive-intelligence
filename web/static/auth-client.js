@@ -26,9 +26,30 @@
     const name = String(user.name || user.account || "当前用户");
     const department = String(user.department || "").trim();
     const role = String(user.roleLabel || "待分配");
+    const account = String(user.email || user.account || "").trim();
     document.getElementById("authUserName").textContent = name;
     document.getElementById("authUserRole").textContent = department ? `${department} · ${role}` : role;
-    document.getElementById("authUserAvatar").textContent = name.trim().slice(0, 1) || "用";
+    document.getElementById("authUserMenuButton").setAttribute("aria-label", `${name}，打开账户菜单`);
+    document.getElementById("authUserAvatarInitial").textContent = name.trim().slice(0, 1) || "用";
+    document.getElementById("authMenuUserName").textContent = name;
+    document.getElementById("authMenuUserAccount").textContent = account || "飞书统一身份";
+    document.getElementById("authMenuDepartment").textContent = department || "未设置";
+    document.getElementById("authMenuRole").textContent = role;
+    const avatarImage = document.getElementById("authUserAvatarImage");
+    const avatarInitial = document.getElementById("authUserAvatarInitial");
+    try {
+      const rawAvatar = String(user.avatarUrl || "").trim();
+      if (!rawAvatar) throw new Error("missing avatar URL");
+      const avatarUrl = new URL(rawAvatar, location.origin);
+      if (!["http:", "https:"].includes(avatarUrl.protocol)) throw new Error("unsupported avatar URL");
+      avatarImage.src = avatarUrl.href;
+      avatarImage.hidden = false;
+      avatarInitial.hidden = true;
+    } catch (_) {
+      avatarImage.removeAttribute("src");
+      avatarImage.hidden = true;
+      avatarInitial.hidden = false;
+    }
     const modules = user.permissions?.modules || {};
     if (!modules.ai) {
       document.getElementById("chatFab")?.setAttribute("hidden", "");
@@ -77,6 +98,15 @@
     }
   }
 
+  function setMenu(open) {
+    const button = document.getElementById("authUserMenuButton");
+    const menu = document.getElementById("authUserMenu");
+    if (!button || !menu) return;
+    menu.hidden = !open;
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) menu.querySelector('[role="menuitem"]')?.focus();
+  }
+
   const api = {
     state,
     ready: null,
@@ -90,4 +120,18 @@
   api.ready.catch((error) => console.error("Unable to initialize CMHK identity", error));
 
   document.getElementById("authLogoutButton")?.addEventListener("click", logout);
+  document.getElementById("authUserMenuButton")?.addEventListener("click", () => {
+    const menu = document.getElementById("authUserMenu");
+    setMenu(Boolean(menu?.hidden));
+  });
+  document.addEventListener("pointerdown", (event) => {
+    const host = document.getElementById("authUser");
+    if (host && !host.contains(event.target)) setMenu(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setMenu(false);
+      document.getElementById("authUserMenuButton")?.focus();
+    }
+  });
 })();

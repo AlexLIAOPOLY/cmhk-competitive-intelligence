@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
   <link rel="stylesheet" href="/static/workspace-tabs.css?v=80" />
-  <link rel="stylesheet" href="/static/organization-admin.css?v=1" />
+  <link rel="stylesheet" href="/static/organization-admin.css?v=2" />
   </head>
   <body class="dashboard-page">
     <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
@@ -45,12 +45,29 @@
           <span id="statusSummary">数据源 - · 范围 - · 最近输出 -</span>
         </div>
         <div class="auth-user" id="authUser" hidden>
-          <span class="auth-user-avatar" id="authUserAvatar" aria-hidden="true">用</span>
-          <span class="auth-user-copy">
-            <strong id="authUserName">当前用户</strong>
-            <small id="authUserRole">—</small>
-          </span>
-          <button class="auth-logout" id="authLogoutButton" type="button">退出</button>
+          <button class="auth-user-trigger" id="authUserMenuButton" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="authUserMenu">
+            <span class="auth-user-avatar" aria-hidden="true">
+              <img id="authUserAvatarImage" alt="" hidden />
+              <span id="authUserAvatarInitial">用</span>
+            </span>
+            <span class="auth-user-copy">
+              <strong id="authUserName">当前用户</strong>
+              <small id="authUserRole">—</small>
+            </span>
+            <span class="auth-user-chevron" aria-hidden="true"></span>
+          </button>
+          <div class="auth-user-menu" id="authUserMenu" role="menu" hidden>
+            <div class="auth-user-menu-profile">
+              <strong id="authMenuUserName">当前用户</strong>
+              <span id="authMenuUserAccount">—</span>
+            </div>
+            <dl>
+              <div><dt>部门</dt><dd id="authMenuDepartment">—</dd></div>
+              <div><dt>角色</dt><dd id="authMenuRole">—</dd></div>
+            </dl>
+            <a id="authSwitchAccount" role="menuitem" href="/static/login.html?switch=1&amp;next=%2F">切换登录身份</a>
+            <button class="auth-logout" id="authLogoutButton" role="menuitem" type="button">退出登录</button>
+          </div>
         </div>
       </header>
 
@@ -540,7 +557,7 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/auth-client.js?v=1"></script>
+    <script src="/static/auth-client.js?v=2"></script>
     <script src="/static/app.js?v=287"></script>
     <script src="/static/news-review-sheet.js?v=5"></script>
     <script src="/static/organization-admin.js?v=1"></script>
