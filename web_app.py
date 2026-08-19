@@ -5070,6 +5070,10 @@ class AppHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
+        if path.suffix.lower() == ".html":
+            self.send_header("Cache-Control", "no-store")
+        elif path.suffix.lower() in {".css", ".js"}:
+            self.send_header("Cache-Control", "no-cache, must-revalidate")
         if download:
             self.send_header("Content-Disposition", self.download_disposition(path))
         self.end_headers()
@@ -5137,6 +5141,10 @@ class AppHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(path.stat().st_size))
+        if path.suffix.lower() == ".html":
+            self.send_header("Cache-Control", "no-store")
+        elif path.suffix.lower() in {".css", ".js"}:
+            self.send_header("Cache-Control", "no-cache, must-revalidate")
         if download:
             self.send_header("Content-Disposition", self.download_disposition(path))
         self.end_headers()

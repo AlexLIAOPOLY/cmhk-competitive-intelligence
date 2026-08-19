@@ -165,7 +165,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('class="intelligence-board-header"', html)
         self.assertIn('aria-label="CMHK市场竞争全景"', html)
         self.assertIn('CMHK COMPETITIVE LANDSCAPE', html)
-        identity_markup = html[html.index('<div class="intelligence-page-identity"'):html.index('<div class="header-tools">')]
+        identity_markup = html[html.index('<div class="intelligence-page-identity"'):html.index('<div class="header-tools workspace-legacy-tools"')]
         self.assertLess(identity_markup.index('<strong>CMHK市场竞争全景</strong>'), identity_markup.index('<span>CMHK COMPETITIVE LANDSCAPE</span>'))
         self.assertIn('background: linear-gradient(180deg, #f2fcff 4%, #ccebf4 54%, #89c7db 100%);', leadership_styles)
         self.assertIn('.intelligence-page-identity strong::after {', leadership_styles)
@@ -174,7 +174,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('id="intelligenceDomainGrid"', html)
         self.assertIn('id="intelligenceRelationRail"', html)
         self.assertIn('id="intelligenceDrawer"', html)
-        header_tools = html[html.index('<div class="header-tools">'):html.index('<div class="header-runtime-status">')]
+        header_tools = html[html.index('<div class="header-tools workspace-legacy-tools"'):html.index('<div class="header-runtime-status">')]
         self.assertIn('id="chatFab"', header_tools)
         self.assertIn('<button class="icon-button chat-fab" id="chatFab"', html)
         self.assertEqual(html.count('id="chatFab"'), 1)
@@ -212,7 +212,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=282"', html)
+        self.assertIn('src="/static/app.js?v=284"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -263,7 +263,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('data-intelligence-disclosure', app)
         self.assertIn('overflow-y: auto;', styles)
         self.assertIn('overscroll-behavior: contain;', styles)
-        self.assertIn('href="/static/leadership-board.css?v=18"', html)
+        self.assertIn('href="/static/leadership-board.css?v=19"', html)
         self.assertIn('class="ai-insight-mark"', app)
         self.assertIn('数据战略解读', app)
         self.assertIn('focus.ai_summary?.origin !== "evidence_rule"', app)
@@ -278,7 +278,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=282"', html)
+        self.assertIn('src="/static/app.js?v=284"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -625,8 +625,6 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报.docx"))
 
 
-class ChatThreadPersistenceTests(unittest.TestCase):
-    def test_chat_thread_requests_bypass_stale_browser_cache(self) -> None:
 class HomepageTickerAndTabRegressionTests(unittest.TestCase):
     def test_tabs_keep_readable_height_and_ticker_recovers_after_manual_input(self) -> None:
         static_dir = Path(__file__).resolve().parent / "web" / "static"
@@ -639,7 +637,22 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         self.assertIn('shiftScroll(event.deltaX || event.deltaY);\n    resumeScroll(700);', app)
         self.assertIn('focusPaused = Boolean(event.target && event.target.matches(":focus-visible"));', app)
 
+    def test_all_homepage_delivery_paths_revalidate_changed_ui_assets(self) -> None:
+        root = Path(__file__).resolve().parent
+        html = (root / "web/static/index.html").read_text(encoding="utf-8")
+        server = (root / "web_app.py").read_text(encoding="utf-8")
+        snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
+        self.assertIn('href="/static/leadership-board.css?v=19"', html)
+        self.assertIn('src="/static/app.js?v=284"', html)
+        self.assertIn('self.send_header("Cache-Control", "no-store")', server)
+        self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
+        self.assertNotIn('["pointerenter", "focusin", "touchstart"]', snapshot_builder)
+        self.assertIn('.update(tickerScript)', snapshot_builder)
+
+
+class ChatThreadPersistenceTests(unittest.TestCase):
+    def test_chat_thread_requests_bypass_stale_browser_cache(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 
         self.assertIn('fetch("/api/chat-threads", { cache: "no-store" })', app)
@@ -1581,7 +1594,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn("function setClock()", app)
         self.assertNotIn('<section class="command-strip">', markup)
         self.assertIn('class="command-btn btn-library topbar-command" id="reportLibraryButton"', markup)
-        topbar = markup[markup.index('<div class="header-tools">'):markup.index('<div class="header-runtime-status">')]
+        topbar = markup[markup.index('<div class="header-tools workspace-legacy-tools"'):markup.index('<div class="header-runtime-status">')]
         self.assertNotIn('id="crawlButtonSecondary"', topbar)
         self.assertIn('class="icon-button nav-link cockpit-link" href="/executive-dashboard-demo.html" title="战略监控体系"', topbar)
         self.assertNotIn('href="/company-data.html"', topbar)

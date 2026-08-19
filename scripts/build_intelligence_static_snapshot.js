@@ -209,11 +209,19 @@ async function main() {
   const track = list?.querySelector(".strategy-ticker-track");
   if (!list || !track) return;
   let paused = false;
+  let focusPaused = false;
+  let resumeTimer = null;
   let offset = 0;
   let last = performance.now();
   const speed = 42;
   const firstSet = Array.from(track.children).filter((item) => !item.classList.contains("strategy-ticker-clone"));
   const loopWidth = () => firstSet.reduce((total, item) => total + item.getBoundingClientRect().width, 0);
+  const resumeAfter = (delay) => {
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      if (!focusPaused) paused = false;
+    }, delay);
+  };
   const tick = (now) => {
     const elapsed = Math.min(48, now - last);
     last = now;
@@ -225,8 +233,27 @@ async function main() {
     }
     requestAnimationFrame(tick);
   };
-  ["pointerenter", "focusin", "touchstart"].forEach((eventName) => list.addEventListener(eventName, () => { paused = true; }));
-  ["pointerleave", "focusout", "touchend"].forEach((eventName) => list.addEventListener(eventName, () => { paused = false; }));
+  list.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    paused = true;
+    offset -= event.deltaX || event.deltaY;
+    resumeAfter(700);
+  }, { passive: false });
+  list.addEventListener("pointerdown", () => {
+    paused = true;
+    resumeAfter(700);
+  });
+  list.addEventListener("touchstart", () => { paused = true; }, { passive: true });
+  list.addEventListener("touchend", () => { resumeAfter(700); }, { passive: true });
+  list.addEventListener("focusin", (event) => {
+    focusPaused = Boolean(event.target && event.target.matches(":focus-visible"));
+    paused = focusPaused;
+    if (!focusPaused) resumeAfter(350);
+  });
+  list.addEventListener("focusout", () => {
+    focusPaused = false;
+    resumeAfter(500);
+  });
   requestAnimationFrame(tick);
 })();
 `;
@@ -257,6 +284,8 @@ async function main() {
       .update(css)
       .update(leadershipCss)
       .update(boardScript)
+      .update(tickerScript)
+      .update(staticOverrides())
       .digest("hex")
       .slice(0, 12);
     const content = `<!doctype html>
