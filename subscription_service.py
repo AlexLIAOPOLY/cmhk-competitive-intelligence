@@ -731,7 +731,7 @@ class SubscriptionService:
             raise ValueError("订阅回调缺少有效事件、用户或消息身份")
         with closing(self._connect()) as db, db:
             published = db.execute(
-                "SELECT source_profile, target_type, target_id FROM subscription_entry_cards WHERE message_id=? AND chat_id=?",
+                "SELECT source_profile, target_type, target_id, created_at FROM subscription_entry_cards WHERE message_id=? AND chat_id=?",
                 (message_id, chat_id),
             ).fetchone()
         if published is None:
@@ -740,6 +740,31 @@ class SubscriptionService:
         if str(published["target_type"]) == "user" and str(published["target_id"]) != open_id:
             raise ValueError("订阅回调用户与受邀人不一致")
         identity = self.resolve_user(open_id, source_profile=source_profile)
+
+        def record_invitation_response(status: str) -> None:
+            now = _now_hkt()
+            with closing(self._connect()) as db, db:
+                updated = db.execute(
+                    """UPDATE subscription_invitations
+                       SET status=?, responded_at=?, updated_at=?
+                       WHERE message_id=? AND callback_open_id=?""",
+                    (status, now, now, message_id, identity["callback_open_id"]),
+                )
+                if updated.rowcount or str(published["target_type"] or "") != "user":
+                    return
+                db.execute(
+                    """INSERT INTO subscription_invitations(
+                           callback_open_id, delivery_open_id, union_id, display_name,
+                           source_profile, avatar_url, message_id, chat_id,
+                           status, invited_by, sent_at, responded_at, updated_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'card_callback', ?, ?, ?)""",
+                    (
+                        identity["callback_open_id"], identity["open_id"], identity["union_id"],
+                        identity["display_name"], source_profile, identity.get("avatar_url", ""),
+                        message_id, chat_id, status, str(published["created_at"] or now), now, now,
+                    ),
+                )
+
         if is_pause:
             with closing(self._connect()) as db, db:
                 existing = db.execute(
@@ -752,12 +777,7 @@ class SubscriptionService:
                     "UPDATE subscribers SET status='paused', updated_at=? WHERE open_id=?",
                     (_now_hkt(), identity["open_id"]),
                 )
-                db.execute(
-                    """UPDATE subscription_invitations
-                       SET status='paused', responded_at=?, updated_at=?
-                       WHERE message_id=? AND callback_open_id=?""",
-                    (_now_hkt(), _now_hkt(), message_id, identity["callback_open_id"]),
-                )
+            record_invitation_response("paused")
             confirmation = self._send_markdown(
                 identity["callback_open_id"],
                 "#### 订阅已暂停\n\n你的全部战略情报推送已暂停。需要恢复时，重新提交订阅卡片即可。",
@@ -780,13 +800,7 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
         )
-        with closing(self._connect()) as db, db:
-            db.execute(
-                """UPDATE subscription_invitations
-                   SET status='accepted', responded_at=?, updated_at=?
-                   WHERE message_id=? AND callback_open_id=?""",
-                (_now_hkt(), _now_hkt(), message_id, identity["callback_open_id"]),
-            )
+        record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
