@@ -246,13 +246,27 @@ function setTaskButtonState(button, { active, reason, idleLabel, activeLabel, pr
 }
 
 function renderLogButtonActivity() {
-  if (!els.logButton) return;
   const localBusy = Object.values(state.busyActions || {}).some(Boolean);
   const active = Boolean(state.hasRunningTasks || localBusy);
-  els.logButton.classList.toggle("log-glowing", active);
-  els.logButton.setAttribute("aria-busy", active ? "true" : "false");
-  els.logButton.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
-  els.logButton.title = active ? "有任务正在运行，点击查看日志" : "日志";
+  if (els.logButton) {
+    els.logButton.classList.toggle("log-glowing", active);
+    els.logButton.setAttribute("aria-busy", active ? "true" : "false");
+    els.logButton.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
+    els.logButton.title = active ? "有任务正在运行，点击查看日志" : "日志";
+  }
+
+  // The unified workspace navigation is rendered independently from the
+  // legacy log launcher. Keep its live task indicator on the same state path
+  // so a task that starts after page load is visible immediately.
+  const workspaceRunningDot = document.querySelector("[data-workspace-running]");
+  if (workspaceRunningDot) workspaceRunningDot.hidden = !active;
+  const workspaceLogTab = document.querySelector('[data-workspace-tab="log"]');
+  if (workspaceLogTab) {
+    workspaceLogTab.classList.toggle("has-running-task", active);
+    workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false");
+    workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
+    workspaceLogTab.title = active ? "有任务正在运行，点击查看日志" : "日志";
+  }
 }
 
 function setBusy(value, label = "运行中", action = "all") {
@@ -1936,6 +1950,27 @@ function setReportLibraryNewDot(visible) {
   );
 }
 
+function setWorkspaceReportTabNewState(reportType, visible) {
+  const tabName = reportType === "performance" ? "performance" : "weekly";
+  const label = tabName === "performance" ? "业绩摘要" : "战略周报";
+  const tab = document.querySelector(`[data-workspace-tab="${tabName}"]`);
+  if (!tab) return;
+
+  tab.classList.toggle("has-new-report", visible);
+  tab.setAttribute("aria-label", visible ? `${label}，有未读新报告` : label);
+  tab.title = visible ? "有未读新报告，点击查看" : label;
+
+  let dot = tab.querySelector("[data-workspace-report-unread]");
+  if (!dot) {
+    dot = document.createElement("i");
+    dot.className = "workspace-running-dot";
+    dot.dataset.workspaceReportUnread = "";
+    dot.setAttribute("aria-hidden", "true");
+    tab.appendChild(dot);
+  }
+  dot.hidden = !visible;
+}
+
 function setReportCategoryNewDots(unreadByType) {
   els.outputTabs.forEach((button) => {
     const reportType = button.dataset.scrollReport;
@@ -1944,6 +1979,8 @@ function setReportCategoryNewDots(unreadByType) {
     button.classList.toggle("has-new-report", visible);
     button.setAttribute("aria-label", visible ? `${label}，有新报告` : label);
   });
+  setWorkspaceReportTabNewState("weekly", Boolean(unreadByType && unreadByType.weekly));
+  setWorkspaceReportTabNewState("performance", Boolean(unreadByType && unreadByType.performance));
 }
 
 function setReportLibraryNewIndicators(files) {
@@ -1988,6 +2025,13 @@ function markReportCategoryViewed(reportType) {
   }
   renderFileList();
 }
+
+window.addEventListener("workspace-tab-change", (event) => {
+  const reportType = event.detail?.tab;
+  if (reportType === "weekly" || reportType === "performance") {
+    markReportCategoryViewed(reportType);
+  }
+});
 
 function markReportConsumed(pathStr) {
   const file = state.outputs.find((item) => item.path_str === pathStr);
