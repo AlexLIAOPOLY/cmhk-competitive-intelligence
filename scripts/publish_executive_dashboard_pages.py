@@ -209,7 +209,7 @@ def _build_site(
             if "responsive-layout-hardening.css" not in intelligence_html:
                 intelligence_html = intelligence_html.replace(
                     "</head>",
-                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=5">\n</head>',
+                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=6">\n</head>',
                 )
                 intelligence_index.write_text(intelligence_html, encoding="utf-8")
         shutil.copy2(

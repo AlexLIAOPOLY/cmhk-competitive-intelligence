@@ -71,9 +71,14 @@
 
   body.dashboard-page .intelligence-command-board {
     display: grid;
-    grid-template-rows: 62px minmax(0, 1fr);
+    grid-template-rows: 94px minmax(0, 1fr);
     height: calc((100vh - 8px) / var(--fit-scale) - 164px);
     min-height: 0;
+  }
+
+  body.dashboard-page .intelligence-relation-rail,
+  body.dashboard-page .intelligence-relation {
+    min-height: 94px;
   }
 
   body.dashboard-page .intelligence-domain-grid {

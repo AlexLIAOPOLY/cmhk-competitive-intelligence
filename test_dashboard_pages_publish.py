@@ -240,7 +240,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(
-                'href="./responsive-layout-hardening.css?v=5"',
+                'href="./responsive-layout-hardening.css?v=6"',
                 intelligence_html,
             )
             self.assertTrue(
