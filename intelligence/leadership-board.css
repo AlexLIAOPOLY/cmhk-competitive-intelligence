@@ -665,9 +665,9 @@
 .intelligence-domain-metric > strong { font-size: clamp(42px, 3.1vw, 56px); }
 .intelligence-domain-metric > strong i { font-size: 15px; }
 
-.intelligence-focus-tabs { height: 38px; }
+.intelligence-focus-tabs { height: 44px; }
 .intelligence-focus-tabs button {
-  min-height: 36px;
+  min-height: 42px;
   padding-inline: 8px;
   font-size: 14px;
   line-height: 1;
@@ -682,7 +682,7 @@
 @media (min-width: 561px) {
   .intelligence-domain,
   .intelligence-domain-local {
-    grid-template-rows: auto 38px minmax(0, 1fr);
+    grid-template-rows: auto 44px minmax(0, 1fr);
   }
   .intelligence-focus-tabs {
     grid-column: 1 / 5;
