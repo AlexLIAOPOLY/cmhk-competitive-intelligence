@@ -875,6 +875,52 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(record["status"], "resolved")
         self.assertEqual(record["resolution_reason"], "condition_no_longer_current")
 
+    def test_recovered_scheduler_log_incident_closes_without_service_restart(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "scheduler-network-timeout"
+        monitor.state["conditions"] = {"scheduler-log-error": incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": "scheduler-log-error",
+                "component": "frequency-scheduler",
+                "status": "open",
+                "terminal": True,
+                "occurred_at_hkt": "2026-08-16T13:55:00+08:00",
+            }
+        }
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "log_condition_cleared")
+
+    def test_strategic_slot_accepts_same_day_migrated_morning_archive(self):
+        expected = self.root / "strategy_briefing" / "runs" / "2026-08-16@06-00.json"
+        expected.unlink()
+        migrated = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-00.json"
+        migrated.write_text(
+            json.dumps(
+                {
+                    "slot": "2026-08-16@07:00",
+                    "slot_label": "晨间扫描",
+                    "status": "completed",
+                    "notification_status": "sent",
+                    "scanned_at": "2026-08-16T07:00:00+08:00",
+                    "completed_at": "2026-08-16T07:20:00+08:00",
+                }
+            )
+        )
+
+        issues = self._monitor()._detect_strategic_slots()
+
+        self.assertNotIn(
+            "strategic-slot-not-started:2026-08-16@06-00",
+            {item["condition_key"] for item in issues},
+        )
+
     def test_first_log_observation_starts_at_eof_without_replay(self):
         path = self.log_root / "web_app.stderr.log"
         path.write_text("ERROR old failure before monitor start\n")

@@ -50,6 +50,13 @@ STABLE_LOG_CONDITION_KEYS = {
     "ai-timeout-burst",
     "web-background-error",
 }
+AUTO_RECOVERING_LOG_CONDITION_KEYS = {
+    "scheduler-log-error",
+    "project-monitor-card-actions-log-error",
+    "ai-http-400-burst",
+    "ai-timeout-burst",
+    "web-background-error",
+}
 LOG_CONDITION_SERVICE_IDS = {
     "scheduler-log-error": "frequency-scheduler",
     "feishu-media-metrics-error": "feishu-media-metrics",
@@ -908,8 +915,7 @@ class ProjectMonitor:
             if now < slot + timedelta(minutes=start_grace):
                 continue
             slot_key = slot.strftime("%Y-%m-%d@%H-%M")
-            path = self.runtime_root / "strategy_briefing" / "runs" / f"{slot_key}.json"
-            archive = _read_json(path, {})
+            path, archive = self._strategic_archive_for_slot(slot, slot_index)
             if not isinstance(archive, dict) or not archive:
                 task_started = self._strategic_task_started(slot)
                 if not task_started:
@@ -973,12 +979,43 @@ class ProjectMonitor:
                 )
         return issues
 
+    def _strategic_archive_for_slot(
+        self, slot: datetime, slot_index: int
+    ) -> tuple[Path, dict[str, Any]]:
+        runs_dir = self.runtime_root / "strategy_briefing" / "runs"
+        slot_key = slot.strftime("%Y-%m-%d@%H-%M")
+        exact_path = runs_dir / f"{slot_key}.json"
+        exact = _read_json(exact_path, {})
+        if isinstance(exact, dict) and exact:
+            return exact_path, exact
+
+        expected_label = "晨间扫描" if slot_index == 0 else "午后扫描"
+        for candidate in sorted(runs_dir.glob(f"{slot.date().isoformat()}@*.json")):
+            archive = _read_json(candidate, {})
+            if not isinstance(archive, dict) or not archive:
+                continue
+            if str(archive.get("slot_label") or "") != expected_label:
+                continue
+            match = re.search(r"@(\d{2})-(\d{2})$", candidate.stem)
+            candidate_time = (
+                datetime.combine(
+                    slot.date(),
+                    clock_time(int(match.group(1)), int(match.group(2))),
+                    HKT,
+                )
+                if match
+                else _parse_datetime(archive.get("scanned_at") or archive.get("completed_at"))
+            )
+            if candidate_time and abs((candidate_time - slot).total_seconds()) <= 2 * 3600:
+                return candidate, archive
+        return exact_path, {}
+
     def _latest_strategic_archive(self) -> tuple[str, dict[str, Any]]:
         """Return the most recent completed scan archive for the current day."""
         now = self.now()
         newest_key = ""
         newest: dict[str, Any] = {}
-        for raw in self.config.get("strategic_scan_times") or []:
+        for slot_index, raw in enumerate(self.config.get("strategic_scan_times") or []):
             try:
                 hour, minute = [int(value) for value in str(raw).split(":", 1)]
                 slot = datetime.combine(now.date(), clock_time(hour, minute), HKT)
@@ -986,13 +1023,9 @@ class ProjectMonitor:
                 continue
             if now < slot:
                 continue
-            slot_key = slot.strftime("%Y-%m-%d@%H-%M")
-            archive = _read_json(
-                self.runtime_root / "strategy_briefing" / "runs" / f"{slot_key}.json",
-                {},
-            )
+            path, archive = self._strategic_archive_for_slot(slot, slot_index)
             if isinstance(archive, dict) and archive:
-                newest_key, newest = slot_key, archive
+                newest_key, newest = path.stem, archive
         return newest_key, newest
 
     def _detect_strategic_content_quality(self) -> list[dict[str, Any]]:
@@ -1521,6 +1554,22 @@ class ProjectMonitor:
                             "condition_key": key,
                             "reason": "service_restarted_after_error",
                             "service_started_at_hkt": _iso(service_started),
+                        },
+                    )
+                    continue
+                if stable_log_key in AUTO_RECOVERING_LOG_CONDITION_KEYS:
+                    record["status"] = "resolved"
+                    record["resolved_at_hkt"] = now_text
+                    record["resolution_reason"] = "log_condition_cleared"
+                    conditions.pop(key, None)
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "incident_resolved_local_only",
+                            "at_hkt": now_text,
+                            "incident_id": record.get("incident_id"),
+                            "condition_key": key,
+                            "reason": "log_condition_cleared",
                         },
                     )
                     continue

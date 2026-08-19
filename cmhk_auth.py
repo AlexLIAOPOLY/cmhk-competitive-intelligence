@@ -756,6 +756,8 @@ class AuthService:
         return ""
 
     def authorize_api(self, handler, path: str, method: str = "GET") -> bool:
+        if path == "/api/health" and method == "GET" and self._loopback(handler):
+            return True
         if not self.require_login:
             return True
         user = self.current_user(handler)

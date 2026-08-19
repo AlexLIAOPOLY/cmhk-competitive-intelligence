@@ -4193,6 +4193,9 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
             return
+        if path == "/api/health":
+            json_response(self, {"ok": True, "status": build_status()})
+            return
         if path == "/api/weekly-report-preview":
             try:
                 json_response(self, {"ok": True, "preview": build_weekly_report_generation_preview()})

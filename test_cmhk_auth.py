@@ -82,6 +82,17 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(page.status, 302)
         self.assertIn("/static/login.html", page.header("Location"))
 
+    def test_loopback_health_is_available_without_exposing_other_apis(self):
+        local = FakeHandler(origin="")
+        self.assertTrue(self.service.authorize_api(local, "/api/health"))
+        remote = FakeHandler(origin="", client="192.0.2.10")
+        self.assertFalse(self.service.authorize_api(remote, "/api/health"))
+        self.assertEqual(remote.status, 401)
+        proxied = FakeHandler(origin="")
+        proxied.headers["X-Forwarded-For"] = "192.0.2.10"
+        self.assertFalse(self.service.authorize_api(proxied, "/api/health"))
+        self.assertEqual(proxied.status, 401)
+
     def test_dev_login_is_loopback_only_and_creates_session(self):
         denied = FakeHandler(body={"account": "local-admin"}, client="192.0.2.10")
         self.service.handle(denied, "POST", urlparse("/api/auth/dev-login"))
