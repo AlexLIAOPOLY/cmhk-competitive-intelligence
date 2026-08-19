@@ -7,6 +7,7 @@
     metrics: null,
     briefs: [],
     tasks: [],
+    faultTotal: 0,
     competitorData: null,
     competitorSelection: { companies: [], metric: "", years: 5 },
     competitorInsightRequest: 0,
@@ -354,7 +355,7 @@
     if (!card) return;
     const isAi = mode === "ai";
     const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
-    card.classList.remove("is-loading");
+    card.classList.remove("is-loading", "is-streaming");
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
     card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
@@ -867,7 +868,8 @@
       const compared = typeof a === "number" && typeof b === "number" ? a - b : collator.compare(String(a), String(b));
       return compared ? compared * direction : left.index - right.index;
     });
-    document.querySelector("#faultResultCount").textContent = number(rows.length);
+    const filtersActive = state.faultFilters.status !== "all" || state.faultFilters.kind !== "all" || Boolean(query);
+    document.querySelector("#faultResultCount").textContent = number(filtersActive ? rows.length : state.faultTotal || rows.length);
     body.innerHTML = rows.length ? rows.map(({ task, index, status }) => {
       const severity = faultSeverity(task);
       return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${esc(faultHandler(task))}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
@@ -909,8 +911,9 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
       state.tasks = Array.isArray(data.incidents) ? data.incidents : [];
+      state.faultTotal = Number(data.total || state.tasks.length);
       renderFaultMonitor();
-      document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+      document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · 当前显示最新 ${number(state.tasks.length)} 条，账本共 ${number(state.faultTotal)} 条 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
     } catch (error) {
       if (status) status.textContent = `状态刷新失败：${error.message}`;
     }
@@ -1108,7 +1111,10 @@
     if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};
     if (metricsResult.status === "fulfilled") state.metrics = metricsResult.value.data || {};
     if (briefsResult.status === "fulfilled") state.briefs = briefsResult.value.items || [];
-    if (tasksResult.status === "fulfilled") state.tasks = tasksResult.value.incidents || [];
+    if (tasksResult.status === "fulfilled") {
+      state.tasks = tasksResult.value.incidents || [];
+      state.faultTotal = Number(tasksResult.value.total || state.tasks.length);
+    }
     if (newsRunsResult.status === "fulfilled") {
       state.newsRuns = (newsRunsResult.value.runs || []).filter((run) => run.task_kind === "strategic-news");
     }
