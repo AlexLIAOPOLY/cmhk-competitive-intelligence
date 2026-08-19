@@ -593,6 +593,18 @@
       .replace("T", " ").replace(/\+\d{2}:\d{2}$/, "").slice(0, 16) || "暂无完成记录";
   }
 
+  function lineageRunStatus(run) {
+    return ({ completed: "已完成", running: "进行中", failed: "已中断" })[run?.run_status] || (run?.run_status ? String(run.run_status) : "配置态");
+  }
+
+  function lineageStageStatus(stage) {
+    return ({ done: "已完成", current: "进行中", pending: "待执行" })[stage?.status] || "待归档";
+  }
+
+  function lineageProcessStep(title, status, input, action, rule, output, next, evidence) {
+    return { title, status, input, action, rule, output, next, evidence };
+  }
+
   function globalSchedulerLineageModel(runs, stages) {
     const overview = state.schedulerOverview || {};
     const frequency = overview.frequency_counts || {};
@@ -639,6 +651,102 @@
       { key: "insights", label: "17项AI洞察", value: number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 17), unit: "项通过", note: "四库统一证据链", tone: "cyan", position: [1202, 318], details: ["四库事实通过质量门禁后统一分析", "指标、期间、口径或来源变化会整批失效重算", `最近完成 ${runCompletionText(intelligenceRun)}`], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || state.executiveIntelligence?.method || "四库刷新运行归档" },
       { key: "consumers", label: "情报进入业务入口", value: "3", unit: "个入口", note: "主页 · 小竞AI · 公开页", tone: "mint", position: [1400, 318], details: ["主页展示最新通过事实", "小竞AI检索四库与历史证据", "公开页发布已验证快照"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "主页与公开页发布证据" },
     ];
+    const stageByKey = new Map(stages.map((stage) => [stage.key, stage]));
+    const newsSearch = stageByKey.get("search") || {};
+    const newsGate = stageByKey.get("gate") || {};
+    const newsAi = stageByKey.get("ai") || {};
+    const newsDedupe = stageByKey.get("dedupe") || {};
+    const newsWrite = stageByKey.get("write") || {};
+    const newsPush = stageByKey.get("push") || {};
+    const runListEvidence = runs.map((run) => `${newsRunDate(run)} ${newsRunTime(run)} · ${lineageRunStatus(run)} · ${runCompletionText(run)}`).join("\n") || newsRun.progress_detail || "当天运行尚未归档";
+    const sourceEvidence = sources.map((item) => `${item.label} ${number(item.count)} 条`).join("、") || "待读取有效来源分组";
+    const intelligenceSummary = intelligenceRun.operational_summary || {};
+    const modelAnalysis = intelligenceSummary.model_analysis || {};
+    const pagesPublish = intelligenceSummary.pages_publish || {};
+    const newsStageStep = (stage, title, action, rule, next) => lineageProcessStep(
+      title,
+      lineageStageStatus(stage),
+      stage.input || "等待当天运行归档",
+      action,
+      rule,
+      stage.value === undefined ? "暂无可用结果" : `保留 ${number(stage.value)} 条${stage.lost ? `，排除 ${number(stage.lost)} 条` : ""}`,
+      next,
+      stage.evidence || "该步骤尚未留下独立日志。",
+    );
+    const domainProcess = (key, fallbackLabel) => {
+      const domain = domains.get(key) || {};
+      const metric = domain.metric || {};
+      const label = domain.title || fallbackLabel;
+      const domainEvidence = domain.context || state.executiveIntelligence?.method || intelligenceRun.progress_detail || "四库运行证据暂不可用";
+      const metricText = metric.value === undefined || metric.value === null || metric.value === "" ? "暂无通过门禁的数值" : `${metric.label || "当前指标"}：${metric.value}${metric.unit || ""}`;
+      return [
+        lineageProcessStep("接收 Agent 审核证据", lineageRunStatus(intelligenceRun), "主爬虫抽取的候选事实、来源链接和原文快照", `只接收与「${label}」数据域匹配的候选记录`, "来源、主体、期间或指标不完整时不进入正式库", "形成待规范化的数据域候选集", "主体与指标标准化", domainEvidence),
+        lineageProcessStep("主体、指标与期间标准化", "处理规则", "原文中的公司别名、指标名、单位、年份或季度", "映射到统一主体、指标ID、时间粒度和单位", "不将不同单位、不同期间或不同口径强行合并", "生成可比对、可去重的结构化主键", "来源独立性与证据门禁", domainEvidence),
+        lineageProcessStep("来源独立性与证据门禁", "质量门禁", "结构化候选值与其来源文档", "核对来源数、原文定义、单位和计算过程", "冲突、定义变化或证据不足时保留空值与待补清单，不用近似值填补", "通过记录和明确的 backlog 分开保存", "写入数据域与质量审计", domainEvidence),
+        lineageProcessStep("写入数据域与质量审计", lineageRunStatus(intelligenceRun), "通过门禁的结构化事实和未通过的待补记录", `更新${label}数据库、覆盖率、冲突账本和来源索引`, "事实值、来源、口径和质量状态必须同步更新", metricText, "17项AI洞察统一取数", `${domainEvidence}\n四库刷新：${runCompletionText(intelligenceRun)}`),
+      ];
+    };
+    const processByNode = {
+      strategic: [
+        lineageProcessStep("计算当天调度时点", lineageRunStatus(newsRun), "Asia/Hong_Kong 时区、06:00/13:30 定时槽与已执行状态", "调度器为每个时点创建独立运行归档", "同一时点不重复执行；失败重试保留原归档证据", `当天读取 ${number(runs.length)} 次战略新闻运行`, "加载搜索配置与历史记忆", runListEvidence),
+        lineageProcessStep("加载搜索配置与历史记忆", lineageStageStatus(newsSearch), "固定关键词、页面来源、主爬虫页面变化线索和历史事件", "将固定扫描与上一轮留下的线索组合为本轮输入", "不直接将页面变化当作新闻，必须重新搜索与审核", newsSearch.input || "已准备当天搜索输入", "线索发现与补缺", newsSearch.evidence || runListEvidence),
+        newsStageStep(newsSearch, "执行线索发现", "合并固定检索、Agentic Search 和页面变化关联查询", "每条候选保留来源URL、发布时间和原始文本", "确定性门禁"),
+      ],
+      "news-search": [
+        lineageProcessStep("固定监控扫描", lineageStageStatus(newsSearch), newsSearch.input || "关键词与固定来源", "按已批准关键词和页面清单抓取候选", "保留原始来源与时间信息", `当天共发现 ${number(newsSearch.value || 0)} 条候选`, "Agentic Search补缺", newsSearch.evidence),
+        lineageProcessStep("Agentic Search 补缺", lineageStageStatus(newsSearch), "固定扫描结果和未覆盖的竞对/政策/网络主题", "根据缺口规划补充查询，扩展同义实体和关联事件", "补充查询仍需通过后续时间、URL和AI门禁", "形成补缺候选集", "合并主爬虫页面变化线索", newsSearch.evidence),
+        lineageProcessStep("合并页面变化线索", lineageStageStatus(newsSearch), "03:00主爬虫发现的标题、链接、数值或页面差异", "将变化点转为可检索的事件查询并与新闻候选合并", "变化线索只扩大搜索范围，不跳过审核", `统一候选集：${number(newsSearch.value || 0)} 条`, "确定性门禁", newsSearch.evidence),
+        newsStageStep(newsGate, "确定性门禁", "规范化URL，检查发布时间、日期窗口与基础重复", "硬规则不通过的候选不消耗AI审核额度", "AI语义审核"),
+      ],
+      "news-ai": [
+        newsStageStep(newsGate, "审核前确定性门禁", "检查时间窗口、发布日期、URL合法性与基础重复", "硬条件先于LLM执行，失败记录明确排除原因", "构造AI审核上下文"),
+        lineageProcessStep("构造单条审核上下文", lineageStageStatus(newsAi), `${number(newsAi.value || 0) + number(newsAi.lost || 0)} 条通过硬门禁的候选`, "整理标题、摘要、来源、日期、竞对实体和业务上下文", "每条候选独立审核，单条异常隔离，不阻断整批", "形成可追溯的逐条审核输入", "LLM战略相关性判断", newsAi.evidence),
+        newsStageStep(newsAi, "LLM战略相关性判断", "结合竞对、政策、市场、网络、云与战略影响逐条判定", "必须输出纳入/排除结果与理由，不以模型推断替代来源事实", "历史语义去重"),
+        lineageProcessStep("保存审核理由与影响标签", lineageStageStatus(newsAi), `${number(newsAi.value || 0)} 条纳入、${number(newsAi.lost || 0)} 条排除`, "将每条的纳入理由、业务影响和审核状态写入运行归档", "排除候选保留审计轨迹，不进入正式输出", `审核保留 ${number(newsAi.value || 0)} 条`, "历史语义去重", newsAi.evidence),
+      ],
+      "news-dedupe": [
+        lineageProcessStep("准备历史事件索引", lineageStageStatus(newsDedupe), `${number(newsAi.value || 0)} 条AI保留候选与历史新闻事件`, "规范化标题、来源URL、实体、时间和事件摘要", "先做确定性链接/标题比对，再做语义事件比对", "生成待匹配的候选与历史索引", "语义重复识别", newsDedupe.evidence),
+        newsStageStep(newsDedupe, "语义重复识别", "比较同一事件的不同来源、改写标题和后续进展", "相同事件的转载/改写归为历史重复；有实质新进展时保留", "新增新闻写入与回读"),
+        lineageProcessStep("回写历史记忆", lineageStageStatus(newsDedupe), `${number(newsDedupe.value || 0)} 条新增与 ${number(newsDedupe.lost || 0)} 条重复判定`, "保存新事件及重复关系，为下一轮提供去重和补缺上下文", "历史记忆只使用已审核的新增事件", `保留 ${number(newsDedupe.value || 0)} 条新增新闻`, "飞书写入、回读与业务入口", newsDedupe.evidence),
+      ],
+      "news-output": [
+        newsStageStep(newsWrite, "写入飞书审核表", "将新增新闻的标题、摘要、来源、理由和业务影响写入正式表", "只写入通过AI审核和历史去重的新闻", "逐格回读校验"),
+        lineageProcessStep("逐格回读校验", lineageStageStatus(newsWrite), `${number(newsWrite.value || newsDedupe.value || 0)} 条写入结果`, "重新读取已写单元格，逐一比较标题、来源、分类与摘要", "写入值与回读值必须完全一致；不一致时不得宣告交付成功", "形成可审计的正式新闻归档", "生成群卡片与订阅内容", newsWrite.evidence),
+        newsStageStep(newsPush, "生成并发送业务内容", "根据正式归档生成审核表、订阅文本和群组卡片", "审核、去重、写入、回读和归档全部通过后才能推送", "主页、订阅者与历史记忆"),
+        lineageProcessStep("影响下一轮", lineageStageStatus(newsPush), "已归档新闻、重复关系和本轮缺口", "更新历史去重索引与关联补缺线索", "只使用已完成的运行归档，不将中间态当作历史事实", "下一轮能识别旧事件并针对缺口搜索", "06:00 / 13:30 下一次运行", newsPush.evidence || newsDedupe.evidence),
+      ],
+      main: [
+        lineageProcessStep("读取有效频率配置", lineageRunStatus(mainRun), "飞书频率表、禁用状态与上次执行状态", "排除禁用行，按每日/每周/每月和下次运行时间计算到期任务", "每行配置独立保留频率和执行状态，不将未到期行强制执行", `${configured || 0} 条有效配置：${number(frequency.daily)}每日、${number(frequency.weekly)}每周、${number(frequency.monthly)}每月`, "分组并抓取到期来源", sourceEvidence),
+        lineageProcessStep("分组并抓取到期来源", lineageRunStatus(mainRun), `${configured || 0} 条有效配置`, "按香港本地竞对、全球标杆运营商、香港重点资讯和国际政策行业分组采集", "每个来源保留原文链接、抓取时间和页面结果；单源失败不覆盖其他结果", sourceEvidence, "页面差异与事实候选抽取", mainRun.progress_detail || mainRun.status_detail || sourceEvidence),
+        lineageProcessStep("页面差异与事实候选抽取", lineageRunStatus(mainRun), "当前页面、上次快照和抓取返回的结构化内容", "对标题、链接、表格、数值和文本变化做差异检测，同时抽取候选事实", "页面变化是线索而不是已验证事实，必须进入Agent审核", "事实候选集与战略新闻关联线索", "Agent 证据审核", mainRun.status_detail || mainRun.progress_detail || "主爬虫运行归档"),
+        lineageProcessStep("保存运行归档与下次状态", lineageRunStatus(mainRun), "抓取结果、失败行、页面变化和候选事实", "写入日志、运行状态、快照和下次执行时间", "中断或失败必须保留独立状态，不标记为成功", `最近完成 ${runCompletionText(mainRun)}`, "Agent审核和战略新闻补缺", mainRun.progress_detail || mainRun.status_detail || mainEvidence.join("\n")),
+      ],
+      agent: [
+        lineageProcessStep("证据接收与来源分类", lineageRunStatus(mainRun), "主爬虫候选事实、原文、URL和页面快照", "识别官方披露、监管文件、公司页面、媒体与二手来源", "来源类型和原文定位不清时不进入正式事实", "带来源等级的证据候选", "事实和主体抽取", mainRun.curation?.summary || mainRun.status_detail || "Agent审核归档"),
+        lineageProcessStep("事实、主体、指标与期间抽取", lineageRunStatus(mainRun), "已分类的证据候选", "抽取公司/市场主体、指标、值、单位、期间、口径和原文片段", "每个数值必须与原文片段及来源链接绑定", "生成可审核的结构化事实", "主体、单位与口径校验", mainRun.curation?.summary || mainRun.status_detail),
+        lineageProcessStep("主体、单位与口径校验", lineageRunStatus(mainRun), "结构化事实与原文定义", "统一别名，校验期间、币种、百分比、用户数和网络单位", "单位或口径不同时不强行合并或计算", "得到可比的标准化候选", "来源独立性和质量门禁", mainRun.curation?.summary || "实体与口径校验规则"),
+        lineageProcessStep("来源独立性与质量门禁", lineageRunStatus(mainRun), "标准化候选与全部证据链", "检查来源数、官方性、相互独立性、数值一致性和原文可达性", "冲突、定义变化、精度不一致或来源不足时进入backlog而非正式值", "划分通过记录、冲突记录和待补记录", "冲突仲裁与搜索验证", mainRun.curation?.summary || "质量审计规则"),
+        lineageProcessStep("冲突仲裁与搜索验证", lineageRunStatus(mainRun), "冲突、缺口和高价值待补记录", "回到官方原文、补充搜索并比较连续期间披露", "不能确定唯一正确口径时保持空值并记录待办", "产生最终事实、来源证据包和审计结果", "分发到四个业务数据库", mainRun.curation?.summary || mainRun.status_detail),
+        lineageProcessStep("发布审计包并分发四库", lineageRunStatus(mainRun), "通过的事实、来源、口径、冲突与backlog", "保存完整审计记录，按业务域分流到本地运营商、内地电讯企业、全球云厂商与香港电讯市场", "只分发通过质量门禁的正式事实，backlog保持可追踪但不作为已知数值", "四库刷新输入和可检索证据链", "四库更新", mainRun.curation?.summary || mainRun.status_detail),
+      ],
+      "database-local": domainProcess("local", "本地运营商"),
+      "database-international": domainProcess("international", "内地电讯企业"),
+      "database-cloud": domainProcess("cloud", "全球云厂商"),
+      "database-macro": domainProcess("macro", "香港电讯市场"),
+      insights: [
+        lineageProcessStep("聚合四库通过事实", lineageRunStatus(intelligenceRun), "本地运营商、内地电讯企业、全球云厂商和香港电讯市场四库", "只加载通过质量门禁并具有来源链的正式事实", "指标、期间、单位和口径必须可比；缺口保持缺口", "形成统一证据输入包", "计算证据指纹与失效检查", state.executiveIntelligence?.method || intelligenceRun.progress_detail || "四库刷新归档"),
+        lineageProcessStep("计算证据指纹与失效检查", lineageRunStatus(intelligenceRun), "四库事实、来源、期间、口径与上次证据指纹", "对全部输入计算证据哈希并比对变化", "任一指标、期间、口径或来源变化都使相关总结失效，不局部沿用旧结论", modelAnalysis.evidence_hash ? `证据指纹 ${modelAnalysis.evidence_hash}` : "生成当次分析证据指纹", "执行17项洞察", modelAnalysis.evidence_hash || intelligenceRun.progress_detail || "证据指纹待归档"),
+        lineageProcessStep("执行17项AI洞察", lineageRunStatus(intelligenceRun), "统一证据输入包和洞察主题清单", "逐项生成竞对、运营、云与市场分析，并将结论绑定到具体证据", "禁止超越数据期间做因果外推；模型失败或证据不足时显式标记", `${number(modelAnalysis.focuses_passed || 17)} 项洞察通过`, "洞察质量门禁与发布包", modelAnalysis.model ? `模型：${modelAnalysis.model}\n回退：${modelAnalysis.fallback_used ? "是" : "否"}` : intelligenceRun.progress_detail || "模型运行归档"),
+        lineageProcessStep("洞察质量门禁与发布包", lineageRunStatus(intelligenceRun), "17项洞察、证据引用、模型状态和证据指纹", "检查每项洞察是否有足够证据、无口径冲突并可以重现", "未通过门禁的洞察不进入主页或公开页", "形成主页、小竞AI与公开页的统一发布包", "情报进入业务入口", intelligenceRun.progress_detail || intelligenceRun.status_detail || state.executiveIntelligence?.method),
+      ],
+      consumers: [
+        lineageProcessStep("组装业务交付包", lineageRunStatus(intelligenceRun), "通过的17项洞察、四库事实、新增新闻与全部证据链", "按主页、小竞AI检索和公开页所需结构组装同一批已审核内容", "三个入口共用同一证据边界，不在前端另行编造结论", "生成三类可发布产物", "主页展示、RAG索引和公开页发布", intelligenceRun.progress_detail || intelligenceRun.status_detail || "业务交付归档"),
+        lineageProcessStep("更新主页展示", lineageRunStatus(intelligenceRun), "最新通过门禁的指标、洞察和新闻", "替换驾驶舱与相关业务页的当前快照", "显示值必须保留数据日期、口径和来源状态", "主页可见最新情报", "小竞AI知识索引", intelligenceRun.progress_detail || "主页刷新归档"),
+        lineageProcessStep("更新小竞AI知识索引", lineageRunStatus(intelligenceRun), "四库结构化事实、新闻归档、洞察与证据片段", "分块、绑定来源和业务别名后加入检索范围", "检索结果必须返回来源证据；缺口和冲突不作为确定事实", "小竞AI可按中文别名查询已审核情报", "公开页生成与发布", state.executiveIntelligence?.method || intelligenceRun.progress_detail),
+        lineageProcessStep("生成并发布公开页", pagesPublish.ok ? "已发布" : pagesPublish.status || "待发布", "经过脱敏和门禁的主页快照、四库概览与洞察", "生成静态站点快照，发布后回读站点状态与版本", "只发布可公开内容；发布失败保留错误且不伪装为成功", pagesPublish.ok ? `已发布版本 ${pagesPublish.site_version || "未记录"}` : `发布状态：${pagesPublish.status || "待归档"}`, "业务用户访问与下一轮更新", pagesPublish.public_url || pagesPublish.error || intelligenceRun.progress_detail || "公开页发布证据"),
+      ],
+    };
+    nodes.forEach((node) => { node.processSteps = processByNode[node.key] || []; });
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "strategic", "", "feedback"],
       ["main", "agent", "", "cyan"], ["main", "news-search", "", "amber"],
@@ -718,9 +826,14 @@
       const statusLabel = ({ completed: "已完成", running: "运行中", failed: "已中断" })[run.run_status] || run.run_status || "未知";
       return `<article class="news-lineage-run-card"><header><div><strong>${esc(newsRunTime(run))} ${esc(run.scope || "战略新闻扫描")}</strong><span>${esc(runCompletionText(run))}</span></div><em>${esc(statusLabel)}</em></header><dl><div><dt>阶段输入</dt><dd>${esc(runStage?.input || "当天运行归档")}</dd></div><div><dt>阶段结果</dt><dd>${runStage ? `保留 ${number(runStage.value)} 条${runStage.lost ? `，排除 ${number(runStage.lost)} 条` : ""}` : "详见节点证据"}</dd></div></dl><div class="news-lineage-run-evidence"><strong>运行证据</strong><pre>${esc(matched.join("\n") || runStage?.evidence || run.progress_detail || run.status_detail || "该次运行尚未留下此节点的独立日志。")}</pre></div></article>`;
     }).join("") : "";
+    const processFlow = `<section class="news-lineage-dialog-section is-process-flow"><header><h3>完整处理流程</h3><span>${number((node.processSteps || []).length)} 个可核对步骤</span></header><ol class="news-lineage-process-steps">${(node.processSteps || []).map((step, index) => {
+      const statusClass = /(已完成|已发布)/.test(step.status || "") ? "is-done" : /进行中/.test(step.status || "") ? "is-running" : "is-config";
+      return `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><h4>${esc(step.title || `步骤 ${index + 1}`)}</h4><em class="${statusClass}">${esc(step.status || "待归档")}</em></div></header><dl><div><dt>输入</dt><dd>${esc(step.input || "未记录")}</dd></div><div><dt>处理动作</dt><dd>${esc(step.action || "未记录")}</dd></div><div><dt>规则／门禁</dt><dd>${esc(step.rule || "未记录")}</dd></div><div><dt>本步产出</dt><dd>${esc(step.output || "未记录")}</dd></div><div><dt>进入下一步</dt><dd>${esc(step.next || "流程结束")}</dd></div></dl><div class="news-lineage-step-evidence"><strong>当天证据／执行依据</strong><pre>${esc(step.evidence || "该步骤尚未留下独立证据。")}</pre></div></article></li>`;
+    }).join("")}</ol></section>`;
     const itemDetails = relatedItems.length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天具体内容</h3><span>${number(relatedItems.length)} 条已归档新闻</span></header><div class="news-lineage-detail-items">${relatedItems.map(({ run, item }) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(newsRunTime(run))} · ${esc(String(item.publishedAt || "").replace("T", " ").slice(0, 16) || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</h4><p>${esc(item.summary || "运行归档未保存摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>AI 纳入理由</dt><dd>${esc(item.inclusionReason || "运行归档未记录纳入理由。")}</dd></div>${item.businessImpact ? `<div><dt>业务影响</dt><dd>${esc(item.businessImpact)}</dd></div>` : ""}</dl></article>`).join("")}</div></section>` : "";
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate || newsRunDate(runs[0]))} · 每日全景</span><h2>${esc(node.label)}</h2><p>已将当天运行记录、节点作用和真实证据整理在一起。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>上游来源</dt><dd>${esc(incoming.join("、") || "定时调度与固定配置")}</dd></div><div><dt>下游去向</dt><dd>${esc(outgoing.join("、") || "作为最终业务交付节点")}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate || newsRunDate(runs[0]) || "最新可用记录")}</dd></div></dl></section>
+      ${processFlow}
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>整理后的节点说明</h3><span>本页直接可核对</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>
       ${runEvidence ? `<section class="news-lineage-dialog-section is-run-history"><header><h3>当天运行记录</h3><span>${number(runs.length)} 次定时运行</span></header><div class="news-lineage-run-list">${runEvidence}</div></section>` : ""}
       ${itemDetails}

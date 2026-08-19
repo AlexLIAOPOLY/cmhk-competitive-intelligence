@@ -1533,6 +1533,10 @@ select {
 }
 
 .file-name-editable {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 7px;
   cursor: pointer;
   border-radius: 5px;
   padding: 1px 4px;
