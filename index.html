@@ -1,71 +1,531 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <title>中国移动｜战略监控体系</title>
-  <script>if (new URLSearchParams(location.search).get("embedded") === "1") document.documentElement.classList.add("is-embedded");</script>
-  <link rel="stylesheet" href="./executive-dashboard-demo.css?v=40">
-  <link rel="stylesheet" href="./executive-responsive-hardening.css?v=7">
-  <style>
-    html.is-embedded .topbar { display: none !important; }
-    html.is-embedded .cockpit { grid-template-rows: minmax(0, 1fr) !important; gap: 0 !important; padding: var(--page-pad) !important; }
-  </style>
-</head>
-<body>
-  <main class="cockpit">
-    <header class="topbar">
-      <a class="brand" href="./" aria-label="返回主页" title="返回主页">
-        <img src="./assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile">
-      </a>
-      <div class="cockpit-title"><h1>战略监控体系</h1><span>STRATEGIC MONITORING SYSTEM</span></div>
-    </header>
-
-    <section class="dashboard-grid" aria-label="中国移动战略监控四层体系">
-      <article class="panel panel-network">
-        <img class="scene scene-network" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>01</span><h2>资源与基础设施层</h2>
-        </header>
-        <div class="monitor-content network-monitor" id="network-detail">
-          <div class="visual-stage" data-network-visual></div>
-          <div class="kpi-grid" data-network-metrics></div>
+  <head>
+    <meta name="cmhk-public-mode" content="read-only-snapshot" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CMHK市场竞争全景</title>
+    <link rel="stylesheet" href="./static/styles.css?v=272" />
+  <link rel="stylesheet" href="./static/responsive-layout-hardening.css?v=6" />
+  <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
+  <link rel="stylesheet" href="./static/news-review-sheet.css?v=1" />
+  <link rel="stylesheet" href="./static/workspace-tabs.css?v=45" />
+  </head>
+  <body class="dashboard-page">
+    <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
+    <main class="app-shell">
+      <header class="brand-bar">
+        <a class="brand-mark" href="./" aria-label="返回主页面">
+          <img class="cm-logo-image" src="./static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+        </a>
+        <div class="intelligence-page-identity" aria-label="CMHK市场竞争全景">
+          <strong>CMHK市场竞争全景</strong>
+          <span>CMHK COMPETITIVE LANDSCAPE</span>
         </div>
-      </article>
-
-      <article class="panel panel-business">
-        <img class="scene scene-business" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>02</span><h2>客户与业务对标层</h2>
-        </header>
-        <div class="monitor-content business-content" id="business-detail">
-          <div class="business-cards" data-business-cards></div>
+        <div class="header-tools workspace-legacy-tools" aria-hidden="true">
+          <button class="command-btn btn-library topbar-command" id="reportLibraryButton" type="button" aria-haspopup="dialog" aria-controls="outputArea">
+            报告库
+            <span class="report-library-count" id="reportLibraryCount">--</span>
+            <span class="report-library-new-dot" id="reportLibraryNewDot" aria-label="有新报告" hidden></span>
+          </button>
+          <a class="icon-button nav-link cockpit-link" href="./executive-dashboard-demo.html" title="战略监控体系" aria-label="战略监控体系">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3.5" y="4.5" width="17" height="15" rx="2"></rect>
+              <path d="M7 15l3-3 2.5 2 4.5-5"></path>
+              <path d="M16 9h1v1"></path>
+            </svg>
+          </a>
+          <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
+          <button class="icon-button chat-fab" id="chatFab" type="button" title="打开小竞AI" aria-label="打开小竞AI">
+            <img src="./static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" aria-hidden="true" />
+          </button>
         </div>
-      </article>
+        <div class="header-runtime-status">
+          <strong id="runState" role="status">准备就绪</strong>
+          <span id="statusSummary">数据源 - · 范围 - · 最近输出 -</span>
+        </div>
+      </header>
 
-      <article class="panel panel-reach">
-        <img class="scene scene-reach" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>03</span><h2>渠道与品牌触达层</h2>
-        </header>
-        <div class="monitor-content reach-content" id="reach-detail"><div data-reach-content></div></div>
-      </article>
+      <div class="workspace-layout" id="workspaceLayout">
+        <nav class="workspace-tabs" aria-label="项目能力模块">
+          <div class="workspace-nav-topline">
+            <strong class="workspace-nav-title">CMHK战略竞对中心</strong>
+            <button class="workspace-nav-collapse" id="workspaceNavCollapse" type="button" aria-label="收回项目导航" aria-expanded="true" aria-controls="workspaceTabList"><span aria-hidden="true"></span></button>
+          </div>
+          <div class="workspace-tabs-scroll" id="workspaceTabList" role="tablist" aria-label="项目能力模块">
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-overview">
+              <h2 id="workspace-group-overview">总览</h2>
+              <button class="workspace-tab is-active" id="workspace-tab-dashboard" type="button" role="tab" aria-selected="true" aria-controls="workspace-panel-dashboard" tabindex="0" data-workspace-tab="dashboard"><span class="workspace-tab-index">00</span><span class="workspace-tab-label">驾驶舱</span></button>
+              <button class="workspace-tab" id="workspace-tab-monitoring" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-monitoring" tabindex="-1" data-workspace-tab="monitoring"><span class="workspace-tab-index">↗</span><span class="workspace-tab-label">战略监控体系</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-intelligence">
+              <h2 id="workspace-group-intelligence">情报生产</h2>
+              <button class="workspace-tab" id="workspace-tab-news" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-news" tabindex="-1" data-workspace-tab="news"><span class="workspace-tab-index">01</span><span class="workspace-tab-label">新闻获取与推送</span></button>
+              <button class="workspace-tab" id="workspace-tab-review" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-review" tabindex="-1" data-workspace-tab="review"><span class="workspace-tab-index">02</span><span class="workspace-tab-label">新闻过滤与审核</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-products">
+              <h2 id="workspace-group-products">内容产品</h2>
+              <button class="workspace-tab" id="workspace-tab-competitor" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-competitor" tabindex="-1" data-workspace-tab="competitor"><span class="workspace-tab-index">03</span><span class="workspace-tab-label">竞对数据分析</span></button>
+              <button class="workspace-tab" id="workspace-tab-weekly" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-weekly" tabindex="-1" data-workspace-tab="weekly"><span class="workspace-tab-index">04</span><span class="workspace-tab-label">战略周报</span></button>
+              <button class="workspace-tab" id="workspace-tab-performance" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-performance" tabindex="-1" data-workspace-tab="performance"><span class="workspace-tab-index">05</span><span class="workspace-tab-label">业绩摘要</span></button>
+              <button class="workspace-tab" id="workspace-tab-subscriptions" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-subscriptions" tabindex="-1" data-workspace-tab="subscriptions"><span class="workspace-tab-index">06</span><span class="workspace-tab-label">订阅与推送管理</span></button>
+              <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span class="workspace-tab-index">07</span><span class="workspace-tab-label">AI智能助手</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-tools">
+              <h2 id="workspace-group-tools">运维系统</h2>
+              <button class="workspace-tab" id="workspace-tab-log" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-log" tabindex="-1" data-workspace-tab="log"><span class="workspace-tab-index">08</span><span class="workspace-tab-label">日志</span><i class="workspace-running-dot" data-workspace-running hidden></i></button>
+              <button class="workspace-tab" id="workspace-tab-fault" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-fault" tabindex="-1" data-workspace-tab="fault"><span class="workspace-tab-index">09</span><span class="workspace-tab-label">故障报警监控系统</span></button>
+            </section>
+          </div>
+        </nav>
 
-      <article class="panel panel-finance">
-        <img class="scene scene-finance" src="./assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
-        <div class="panel-glass"></div>
-        <header class="panel-heading">
-          <span>04</span><h2>财务成果</h2>
-        </header>
-        <div class="monitor-content finance-content" id="finance-detail"><div data-finance-content></div></div>
-      </article>
-    </section>
+        <div class="workspace-content">
 
-  </main>
-  <script src="./executive-dashboard-demo.js?v=19"></script>
-</body>
+      <section class="console-shell" id="workspace-panel-dashboard" role="tabpanel" aria-labelledby="workspace-tab-dashboard" data-workspace-panel="dashboard">
+        <section class="operations" aria-label="战略情报驾驶舱">
+          <section class="insight-board" aria-label="战略情报态势看板">
+            <aside class="strategy-ticker" aria-label="滚动战略快讯">
+              <header class="strategy-ticker-header">
+                <div>
+                  <span class="strategy-eyebrow">LIVE SIGNALS</span>
+                  <strong>战略快讯</strong>
+                  <small>人工确认 · 点击查看原文</small>
+                </div>
+                <span id="strategySyncStatus"><i aria-hidden="true"></i>实时轮播</span>
+              </header>
+              <div class="strategy-ticker-list" id="strategyTickerList" aria-live="polite">
+                <div class="strategy-ticker-empty">
+                  <b>等待首条确认快讯</b>
+                  <span>候选新闻经战略部人工筛选后展示</span>
+                </div>
+              </div>
+              <footer class="strategy-ticker-footer">
+                <span id="strategyScheduleText">每日 06:00 / 13:30 扫描</span>
+                <span class="public-snapshot-label">公开快照</span>
+              </footer>
+            </aside>
+
+            <section class="intelligence-command-board" id="intelligenceBoard" aria-label="CMHK市场竞争全景">
+              <span id="intelligenceMethod" hidden>正在加载数据</span>
+              <div class="intelligence-relation-rail" id="intelligenceRelationRail" aria-label="不同数据的口径说明"></div>
+              <div class="intelligence-domain-grid" id="intelligenceDomainGrid" aria-live="polite">
+                <div class="intelligence-loading">正在加载四类数据</div>
+              </div>
+            </section>
+          </section>
+
+          <div class="intelligence-drawer-backdrop" id="intelligenceDrawerBackdrop" hidden>
+            <aside class="intelligence-drawer" id="intelligenceDrawer" role="dialog" aria-modal="true" aria-labelledby="intelligenceDrawerTitle" tabindex="-1">
+              <header>
+                <div>
+                  <span id="intelligenceDrawerKicker">详细数据</span>
+                  <h2 id="intelligenceDrawerTitle">数据详情</h2>
+                </div>
+                <button type="button" id="intelligenceDrawerClose" aria-label="关闭详情">×</button>
+              </header>
+              <div class="intelligence-drawer-body" id="intelligenceDrawerBody"></div>
+            </aside>
+          </div>
+
+          <section class="reports-layout report-library-drawer" id="outputArea" role="dialog" aria-modal="true" aria-labelledby="reportLibraryTitle" hidden>
+            <header class="report-library-header">
+              <div class="report-library-heading">
+                <span>REPORT LIBRARY</span>
+                <h2 id="reportLibraryTitle">报告库</h2>
+                <p>集中查看、播放、下载和管理已生成报告</p>
+              </div>
+              <div class="report-library-header-actions">
+                <button class="command-btn btn-fetch" id="crawlButtonSecondary" type="button">重新爬取</button>
+                <button class="command-btn btn-review-sheet" id="openNewsReviewSheetButton" type="button">新闻审核表</button>
+                <button class="command-btn btn-summary" id="generatePerformanceButton" type="button">生成业绩摘要</button>
+                <button class="command-btn btn-report" id="generateButtonSecondary" type="button">生成周报</button>
+                <button class="report-library-close" id="closeReportLibraryButton" type="button" aria-label="关闭报告库">&times;</button>
+              </div>
+            </header>
+            <section class="section-block output-card weekly-output-card" id="weeklyOutputBlock" aria-label="战略部每周周报">
+              <div class="output-toolbar">
+                <div class="output-heading">
+                  <strong>战略部每周周报</strong>
+                  <div class="output-tabs" aria-label="输出分类">
+                    <button class="output-tab is-active" type="button" data-scroll-report="weekly">周报</button>
+                    <button class="output-tab" type="button" data-scroll-report="performance">业绩摘要</button>
+                  </div>
+                </div>
+                <div class="output-actions">
+                  <span id="weeklyFileCountText">-</span>
+                  <button class="table-icon-button multi-select-trigger" id="multiSelectButton" type="button" title="选择文件" aria-label="选择文件">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </button>
+                  <button class="table-icon-button danger delete-selected-trigger" id="deleteSelectedButton" type="button" title="删除选中" aria-label="删除选中" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="output-table weekly-table" id="weeklyFileList"></div>
+            </section>
+
+            <section class="section-block output-card performance-output-card" id="performanceOutputBlock" aria-label="运营商业绩摘要" hidden>
+              <div class="output-toolbar">
+                <div class="output-heading">
+                  <strong>运营商业绩摘要</strong>
+                  <div class="output-tabs" aria-label="输出分类">
+                    <button class="output-tab" type="button" data-scroll-report="weekly">周报</button>
+                    <button class="output-tab is-active" type="button" data-scroll-report="performance">业绩摘要</button>
+                  </div>
+                </div>
+                <div class="output-actions">
+                  <span id="performanceFileCountText">-</span>
+                  <button class="table-icon-button multi-select-trigger" type="button" title="选择文件" aria-label="选择文件">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </button>
+                  <button class="table-icon-button danger delete-selected-trigger" type="button" title="删除选中" aria-label="删除选中" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="output-table performance-table" id="performanceFileList"></div>
+            </section>
+          </section>
+
+          <section class="news-review-workspace" id="newsReviewWorkspace" role="dialog" aria-modal="true" aria-labelledby="newsReviewTitle" hidden>
+            <header class="news-review-topbar">
+              <div class="news-review-brand">
+                <img src="./static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+                <div>
+                  <strong id="newsReviewTitle">滚动新闻审核表</strong>
+                  <span id="newsReviewSyncText" role="status" hidden>连接飞书审核表</span>
+                </div>
+              </div>
+              <div class="news-review-actions">
+                <a id="newsReviewFeishuLink" href="#" target="_blank" rel="noreferrer" hidden>在飞书打开</a>
+                <button class="news-review-close" type="button" id="closeNewsReviewSheetButton" aria-label="关闭新闻审核表">&times;</button>
+              </div>
+            </header>
+            <div class="news-review-toolbar">
+              <label class="news-review-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input id="newsReviewSearchInput" type="search" placeholder="搜索标题、摘要、媒体或关键词" autocomplete="off" />
+              </label>
+              <span id="newsReviewCountText">-- 条记录</span>
+              <span class="news-review-selection-text" id="newsReviewSelectionText">选择单元格后可复制</span>
+              <button class="news-review-clear-filters" id="newsReviewClearFilters" type="button" hidden>清除筛选</button>
+            </div>
+            <div class="news-review-formula-bar" aria-label="当前单元格">
+              <strong id="newsReviewCellName">—</strong>
+              <span id="newsReviewCellValue">请选择单元格</span>
+            </div>
+            <div class="news-review-grid-shell" id="newsReviewGridShell">
+              <div class="news-review-loading" id="newsReviewLoading">正在读取飞书审核表…</div>
+              <table class="news-review-grid" id="newsReviewGrid" aria-label="滚动新闻审核表" hidden>
+                <colgroup id="newsReviewColgroup"></colgroup>
+                <thead id="newsReviewHead"></thead>
+                <tbody id="newsReviewBody"></tbody>
+              </table>
+            </div>
+            <footer class="news-review-statusbar">
+              <span id="newsReviewSaveStatus">实时回写飞书 · 修改后自动保存并回读</span>
+              <span>双击编辑 · ⌘/Ctrl+C 复制 · ⌘/Ctrl+V 粘贴</span>
+            </footer>
+            <div class="news-review-filter-menu" id="newsReviewFilterMenu" hidden></div>
+          </section>
+        </section>
+      </section>
+
+      <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
+      <section class="workspace-module-shell workspace-monitoring-shell" id="workspace-panel-monitoring" role="tabpanel" aria-labelledby="workspace-tab-monitoring" data-workspace-panel="monitoring" hidden>
+        <iframe class="workspace-monitoring-frame" src="./executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
+      </section>
+      <section class="workspace-module-shell" id="workspace-panel-news" role="tabpanel" aria-labelledby="workspace-tab-news" data-workspace-panel="news" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-review" role="tabpanel" aria-labelledby="workspace-tab-review" data-workspace-panel="review" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe src="./static/public-readonly.html?module=subscriptions" title="订阅与推送管理" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
+      <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-log" role="tabpanel" aria-labelledby="workspace-tab-log" data-workspace-panel="log" hidden></section>
+      <section class="workspace-module-shell" id="workspace-panel-fault" role="tabpanel" aria-labelledby="workspace-tab-fault" data-workspace-panel="fault" hidden></section>
+        </div>
+      </div>
+
+      <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
+        <aside class="chat-panel floating-chat" aria-label="AI 对话">
+          <div class="chat-header">
+            <div class="chat-nav-controls" aria-label="对话导航">
+              <button class="chat-sidebar-rail-button" id="toggleChatThreadsButton" type="button" title="展开历史对话" aria-label="展开历史对话">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                  <path d="M9 5v14"></path>
+                </svg>
+              </button>
+              <button class="chat-new-thread-button" id="newChatThreadButton" type="button" title="新对话" aria-label="新对话">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+              </button>
+            </div>
+            <button class="chat-header-icon-button" id="aiSettingsButton" type="button" title="设置" aria-label="设置">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"></path>
+              </svg>
+            </button>
+            <button class="close-btn" id="closeChatButton" type="button" aria-label="关闭">&times;</button>
+          </div>
+          <div class="chat-workspace is-sidebar-collapsed" id="chatWorkspace">
+            <aside class="chat-thread-sidebar" id="chatThreadSidebar" aria-label="历史对话">
+              <div class="chat-thread-header">
+                <strong>历史对话</strong>
+                <button class="chat-thread-icon-button chat-thread-search-toggle" id="chatThreadSearchToggle" type="button" title="搜索对话" aria-label="搜索对话" aria-expanded="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M20 20l-3.5-3.5"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="chat-thread-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M20 20l-3.5-3.5"></path>
+                </svg>
+                <input id="chatThreadSearchInput" type="search" autocomplete="off" placeholder="搜索对话" />
+              </div>
+              <div class="chat-thread-list" id="chatThreadList"></div>
+            </aside>
+            <div class="chat-session">
+          <div class="messages" id="messages">
+            <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
+              <span class="chat-empty-mark" aria-hidden="true">
+                <img src="./static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" />
+              </span>
+              <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
+              <p>选择一个方向，或直接在下方输入你的问题</p>
+              <div class="chat-starter-grid" aria-live="polite"></div>
+            </section>
+          </div>
+          <div class="queued-message-list" id="chatQueueList" hidden></div>
+          <section class="chat-approval-bar" id="chatApprovalBar" aria-live="polite" hidden></section>
+          <form class="chat-form" id="chatForm">
+            <div class="chat-composer">
+              <textarea id="chatInput" rows="1" autocomplete="off" placeholder="随心输入" title="可直接粘贴图片"></textarea>
+              <div class="chat-composer-meta" id="chatAttachmentPreview" hidden></div>
+              <div class="chat-composer-toolbar">
+                <div class="composer-plus-picker">
+                  <button class="composer-plus-button" id="composerPlusButton" type="button" aria-expanded="false" title="添加能力、数据或附件" aria-label="添加能力、数据或附件">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                  </button>
+                  <div class="composer-plus-menu" id="composerPlusMenu" hidden>
+                    <button class="composer-menu-action" id="composerUploadFileButton" type="button">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg><span>上传文件</span>
+                    </button>
+                    <button class="composer-menu-action" id="composerUploadImageButton" type="button" disabled>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg><span>上传图片</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="skill-picker">
+                  <button class="skill-toggle" id="skillToggle" type="button" aria-expanded="false" title="选择 Agent Skill">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg><span>能力</span>
+                  </button>
+                  <div class="skill-menu" id="skillMenu" hidden></div>
+                </div>
+                <div class="database-picker">
+                  <button class="database-toggle" id="databaseToggle" type="button" aria-expanded="false" title="选择发送给 AI 的数据库">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg><span>数据库</span>
+                  </button>
+                  <div class="database-menu" id="databaseMenu" hidden></div>
+                </div>
+                <button class="web-search-toggle" id="webSearchToggle" type="button" aria-pressed="true" title="本轮使用网页来源">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 0 20"></path><path d="M12 2a15.3 15.3 0 0 0 0 20"></path></svg><span>联网搜索</span>
+                </button>
+                <div class="chat-model-picker" id="chatModelPicker">
+                  <button class="chat-model-button" id="chatModelButton" type="button" aria-expanded="false" aria-label="选择语言模型"><span id="chatModelButtonLabel">正在读取模型...</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
+                  <div class="chat-model-menu" id="chatModelMenu" hidden>
+                    <div class="chat-model-options" id="chatModelOptions" role="listbox"></div>
+                  </div>
+                  <select class="sr-only" id="chatModelSelect" aria-label="选择模型"><option>正在读取模型...</option></select>
+                </div>
+                <div class="voice-input-control">
+                  <span class="voice-input-status" id="voiceInputStatus" aria-live="polite" hidden></span>
+                  <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
+                  </button>
+                </div>
+                <button id="chatSubmitButton" type="submit" aria-label="发送" title="发送" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M12 19V5"></path><path d="m6.5 10.5 5.5-5.5 5.5 5.5"></path></svg>
+                  <span class="sr-only">发送</span>
+                </button>
+              </div>
+              <input
+                class="sr-only"
+                id="knowledgeUploadInput"
+                type="file"
+                accept=".txt,.md,.csv,.tsv,.json,.docx,.pdf,text/plain,text/markdown,text/csv,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              />
+              <input class="sr-only" id="chatImageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+            </div>
+          </form>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="modal-backdrop" id="logModal" hidden>
+        <div class="log-modal">
+          <header>
+            <div>
+              <h2>任务与审核记录</h2>
+              <span id="logRunTitle">选择一条任务，查看执行状态、审核过程、结果与日志</span>
+            </div>
+            <div>
+              <button class="quiet-button small" id="refreshCrawlRunsButton" type="button">刷新任务</button>
+              <button class="quiet-button small" id="clearLogButton" type="button">清空显示</button>
+              <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
+            </div>
+          </header>
+          <div class="log-history-layout">
+            <aside class="crawl-run-sidebar" aria-label="任务记录">
+              <div class="crawl-run-sidebar-heading">
+                <strong>任务记录</strong>
+                <details class="crawl-run-filter" id="crawlRunFilter">
+                  <summary>筛选<span id="crawlRunFilterCount" hidden></span></summary>
+                  <div class="crawl-run-filter-menu" aria-label="筛选任务记录">
+                    <label>状态
+                      <select id="crawlRunStatusFilter">
+                        <option value="all">全部状态</option>
+                        <option value="running">运行中</option>
+                        <option value="completed">已完成</option>
+                        <option value="failed">失败</option>
+                      </select>
+                    </label>
+                    <label>任务类型
+                      <select id="crawlRunKindFilter">
+                        <option value="all">全部类型</option>
+                      </select>
+                    </label>
+                    <label>时间范围
+                      <select id="crawlRunTimeFilter">
+                        <option value="all">全部时间</option>
+                        <option value="24h">最近24小时</option>
+                        <option value="7d">最近7天</option>
+                        <option value="30d">最近30天</option>
+                      </select>
+                    </label>
+                    <button id="resetCrawlRunFilters" type="button">清除筛选</button>
+                  </div>
+                </details>
+              </div>
+              <div id="crawlRunList" class="crawl-run-list">正在加载任务记录…</div>
+            </aside>
+            <section class="log-viewer">
+              <div id="logBox" class="log-box">选择任务后显示执行过程和完整日志。</div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      </section>
+
+      <section class="modal-backdrop" id="aiSettingsModal" hidden>
+        <form class="settings-modal" id="aiSettingsForm">
+          <header>
+            <div>
+              <h2>AI 设置</h2>
+              <p>配置 LLM Provider、模型和 API Key。保存后 AI 助手会用 RAG 上下文调用模型。</p>
+            </div>
+            <button class="close-btn" id="closeAiSettings" type="button" aria-label="关闭">&times;</button>
+          </header>
+          <label>
+            <span>Provider</span>
+            <select id="aiProvider">
+              <option value="deepseek">DeepSeek</option>
+              <option value="openai">OpenAI</option>
+              <option value="custom">OpenAI-compatible</option>
+            </select>
+          </label>
+          <label>
+            <span>Base URL</span>
+            <input id="aiBaseUrl" type="url" autocomplete="off" readonly />
+            <small class="field-help">公司内网模型网关，所有 AI 功能统一使用此地址。</small>
+          </label>
+          <label>
+            <span>API Key</span>
+            <input id="aiApiKey" type="password" autocomplete="off" placeholder="已保存则可留空" />
+            <small class="field-help">Key 只会在点击保存后写入本机配置；获取列表时可临时试用。</small>
+          </label>
+          <label>
+            <span>Model</span>
+            <div class="model-picker-row">
+              <select id="aiModel" aria-label="选择模型"></select>
+              <button class="quiet-button model-fetch-button" id="fetchAiModels" type="button">获取模型列表</button>
+            </div>
+            <small class="field-help" id="aiModelHint">输入 Base URL 和 API Key 后获取可用模型。</small>
+          </label>
+          <div class="modal-status" id="aiConfigStatus">默认 DeepSeek：api.deepseek.com / deepseek-v4-flash</div>
+          <footer>
+            <button class="quiet-button" id="testAiConfig" type="button">测试连接</button>
+            <button class="primary-button" type="submit">保存设置</button>
+          </footer>
+        </form>
+      </section>
+
+      <section class="modal-backdrop" id="fileEditModal" hidden>
+        <form class="settings-modal file-edit-modal" id="fileEditForm">
+          <header>
+            <div>
+              <h2>编辑周报信息</h2>
+              <p>修改文件名会直接重命名本地 Word 文件，备注会显示在列表中。</p>
+            </div>
+            <button class="close-btn" id="closeFileEdit" type="button" aria-label="关闭">&times;</button>
+          </header>
+          <label>
+            <span>文件名</span>
+            <input id="editFileName" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>备注</span>
+            <textarea id="editFileNote" rows="4" placeholder="例如：本周正式版，已核对口径"></textarea>
+          </label>
+          <p id="fileEditStatus" class="settings-status"></p>
+          <footer>
+            <button class="quiet-button" id="cancelFileEdit" type="button">取消</button>
+            <button class="primary-button" type="submit">保存</button>
+          </footer>
+        </form>
+      </section>
+    </main>
+
+    <div id="globalAudioPlayer" class="audio-player-global" hidden>
+      <div id="audioSubtitle" class="audio-subtitle" hidden></div>
+      <div class="audio-player-content">
+        <div class="audio-info">
+          <button type="button" class="subtitle-toggle-btn" id="subtitleToggleBtn" aria-label="展开/收起字幕" hidden>
+            <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+          </button>
+          <strong id="audioFileName">音频摘要</strong>
+          <div class="soundwave" id="audioSoundwave" hidden>
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="audio-controls">
+          <button type="button" class="audio-btn" id="audioPlayPauseBtn" aria-label="播放/暂停">
+            <svg viewBox="0 0 24 24" class="icon-play"><path d="M5 3l14 9-14 9V3z"/></svg>
+            <svg viewBox="0 0 24 24" class="icon-pause"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <span class="audio-time" id="audioCurrentTime">00:00</span>
+          <input type="range" class="audio-progress" id="audioProgressBar" value="0" min="0" max="100" step="0.1" aria-label="播放进度" />
+          <span class="audio-time" id="audioDuration">00:00</span>
+          <button type="button" class="audio-btn text-btn" id="audioSpeedBtn" aria-label="倍速切换">1.0x</button>
+        </div>
+        <button type="button" class="audio-btn audio-close-btn" id="audioCloseBtn" aria-label="关闭播放器">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>    <script src="./static/public-snapshot-bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="./static/app.js?v=284"></script>
+    <script src="./static/news-review-sheet.js?v=5"></script>
+    <script src="./static/workspace-tabs.js?v=35"></script>
+  </body>
 </html>

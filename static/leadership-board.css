@@ -912,17 +912,3 @@
   .intelligence-ai-paragraph-skeleton i,
   .intelligence-ai-stream-cursor { animation: none; }
 }
-html, body { width: 100%; min-width: 0; min-height: 100%; margin: 0; background: #061724; }
-body.dashboard-page { overflow-x: hidden; }
-.app-shell { min-height: 100vh; }
-.header-runtime-status, .strategy-ticker-header, .strategy-ticker-footer { display: none !important; }
-.strategy-ticker { min-height: 104px; }
-.strategy-ticker-list { min-height: 104px; }
-.intelligence-command-board { min-height: calc(100vh - 154px); }
-.static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
-.static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .ai-insight-label,
-.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}

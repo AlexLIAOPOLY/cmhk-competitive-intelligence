@@ -1,0 +1,5194 @@
+{
+  "ok": true,
+  "data": {
+    "generatedAt": "2026-08-04 09:54:20",
+    "summary": {
+      "companies": 17,
+      "metrics": 34,
+      "records": 143,
+      "verifiedRecords": 67,
+      "crawlRecords": 48,
+      "acceptedAiFacts": 55,
+      "publishableAiFacts": 48,
+      "publishedAiFacts": 48,
+      "aiCleanedRecords": 48,
+      "qualityPassedRecords": 143,
+      "suppressedRecords": 0,
+      "excludedOutOfScopeFacts": 0,
+      "excludedNonFacts": 6,
+      "deduplicatedAiFacts": 1
+    },
+    "companies": [
+      "1O1O",
+      "3HK / Hutchison",
+      "HGC",
+      "HKBN",
+      "HKT",
+      "HKT / csl / 1O1O",
+      "Hutchison",
+      "Jio",
+      "Orange",
+      "SmarTone",
+      "T-Mobile US",
+      "csl",
+      "i-CABLE",
+      "中国电信",
+      "中国移动",
+      "中国联通",
+      "中国铁塔"
+    ],
+    "metrics": [
+      "5G-A",
+      "5G用户数",
+      "AI",
+      "ARPU",
+      "Capex方向",
+      "DICT",
+      "EBITDA / 利润",
+      "FWA",
+      "云网产品",
+      "产品规格",
+      "促销折扣",
+      "净利润",
+      "券商观点",
+      "增值服务",
+      "客户数/用户数",
+      "家宽套餐",
+      "家宽布局",
+      "市场反应",
+      "战略升级",
+      "披露日期",
+      "持续性关联交易",
+      "收益",
+      "数据中心",
+      "最新披露",
+      "派息",
+      "漫游",
+      "算力网络",
+      "股东大会",
+      "股票代码",
+      "董事会",
+      "资产负债率",
+      "资本开支",
+      "资费",
+      "边缘计算"
+    ],
+    "groups": [
+      "3HK / Hutchison",
+      "HGC",
+      "HKBN",
+      "HKT / csl / 1O1O",
+      "SmarTone",
+      "hong-kong",
+      "iCable",
+      "mainland",
+      "亚太运营商",
+      "香港本地竞对财报"
+    ],
+    "metricCategories": [
+      "产品资费",
+      "其他",
+      "客户经营",
+      "技术战略",
+      "披露信息",
+      "财务业绩"
+    ],
+    "sourceTypes": [
+      "official-financial-results",
+      "public-crawl",
+      "verified-performance"
+    ],
+    "companySummary": [
+      {
+        "company": "1O1O",
+        "metricCount": 5,
+        "recordCount": 5,
+        "sourceCount": 3
+      },
+      {
+        "company": "3HK / Hutchison",
+        "metricCount": 9,
+        "recordCount": 9,
+        "sourceCount": 3
+      },
+      {
+        "company": "HGC",
+        "metricCount": 11,
+        "recordCount": 15,
+        "sourceCount": 4
+      },
+      {
+        "company": "HKBN",
+        "metricCount": 12,
+        "recordCount": 13,
+        "sourceCount": 10
+      },
+      {
+        "company": "HKT",
+        "metricCount": 13,
+        "recordCount": 13,
+        "sourceCount": 6
+      },
+      {
+        "company": "HKT / csl / 1O1O",
+        "metricCount": 10,
+        "recordCount": 10,
+        "sourceCount": 2
+      },
+      {
+        "company": "Hutchison",
+        "metricCount": 5,
+        "recordCount": 5,
+        "sourceCount": 12
+      },
+      {
+        "company": "Jio",
+        "metricCount": 1,
+        "recordCount": 1,
+        "sourceCount": 3
+      },
+      {
+        "company": "Orange",
+        "metricCount": 1,
+        "recordCount": 1,
+        "sourceCount": 4
+      },
+      {
+        "company": "SmarTone",
+        "metricCount": 10,
+        "recordCount": 11,
+        "sourceCount": 6
+      },
+      {
+        "company": "T-Mobile US",
+        "metricCount": 1,
+        "recordCount": 1,
+        "sourceCount": 3
+      },
+      {
+        "company": "csl",
+        "metricCount": 5,
+        "recordCount": 5,
+        "sourceCount": 2
+      },
+      {
+        "company": "i-CABLE",
+        "metricCount": 7,
+        "recordCount": 8,
+        "sourceCount": 2
+      },
+      {
+        "company": "中国电信",
+        "metricCount": 10,
+        "recordCount": 11,
+        "sourceCount": 6
+      },
+      {
+        "company": "中国移动",
+        "metricCount": 11,
+        "recordCount": 12,
+        "sourceCount": 7
+      },
+      {
+        "company": "中国联通",
+        "metricCount": 13,
+        "recordCount": 14,
+        "sourceCount": 7
+      },
+      {
+        "company": "中国铁塔",
+        "metricCount": 9,
+        "recordCount": 9,
+        "sourceCount": 4
+      }
+    ],
+    "rows": [
+      {
+        "id": "100d7d02492b815c",
+        "company": "中国移动",
+        "metric": "最新披露",
+        "value": "2026年一季度业绩",
+        "detail": "2026年一季度业绩",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "aa78b8a53bb18f1f",
+        "company": "中国移动",
+        "metric": "披露日期",
+        "value": "2026年4月20日",
+        "detail": "2026年4月20日",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "dd877f1696a21b9c",
+        "company": "中国移动",
+        "metric": "收益",
+        "value": "2665亿元",
+        "detail": "2665亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "9b1c9e63dea0d89d",
+        "company": "中国移动",
+        "metric": "EBITDA / 利润",
+        "value": "归母净利润293亿元",
+        "detail": "归母净利润293亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3372f622edc66c1e",
+        "company": "中国移动",
+        "metric": "派息",
+        "value": "派息每股5.27港元；派息率75%",
+        "detail": "全年派息每股5.27港元，同比增加3.5%，全年派息率75%；公司指引2026年派息率稳中有升，继续增强股东回报。",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "4c8fe79710fdb6d6",
+        "company": "中国移动",
+        "metric": "资本开支",
+        "value": "资本开支1509亿元；资本开支1366亿元",
+        "detail": "2025年资本开支1509亿元，同比下降8.0%；2026年计划资本开支1366亿元，同比再降9.5%，其中算力网络投资增长62.4%、AI网络投资增长19.8%。",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "12b0b1d0f8832d73",
+        "company": "中国移动",
+        "metric": "战略升级",
+        "value": "年度说明会提出从传统通信服务向“通信服务、算力服务、AI服务”三大业务协同推进；最新一季度业绩显示营业收入2665亿元、同比增长1.0%，主营业务收入2199亿元、同比下降1.1%，其他业务收入466亿元、同比增长12.7%，转型业务对冲传统业务压力。",
+        "detail": "年度说明会提出从传统通信服务向“通信服务、算力服务、AI服务”三大业务协同推进；最新一季度业绩显示营业收入2665亿元、同比增长1.0%，主营业务收入2199亿元、同比下降1.1%，其他业务收入466亿元、同比增长12.7%，转型业务对冲传统业务压力。",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "c22e5a38711fd797",
+        "company": "中国移动",
+        "metric": "券商观点",
+        "value": "券商观点整体维持正面：花旗维持买入并给出105.1港元目标价；另有机构维持跑赢大市/与大市同步评级，关注高股息与资本开支效率。",
+        "detail": "券商观点整体维持正面：花旗维持买入并给出105.1港元目标价；另有机构维持跑赢大市/与大市同步评级，关注高股息与资本开支效率。",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "67f0643c7e579904",
+        "company": "中国移动",
+        "metric": "市场反应",
+        "value": "市场关注点从年度派息和资本开支效率，延伸到税改/成本压力、主营业务下滑和算力/AI转型兑现节奏。",
+        "detail": "最新一季度归母净利润293亿元、同比下降4.2%，市场关注点从年度派息和资本开支效率，延伸到税改/成本压力、主营业务下滑和算力/AI转型兑现节奏。",
+        "group": "mainland",
+        "disclosure": "2026年一季度业绩",
+        "disclosureDate": "2026年4月20日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "470d74eeb361d34d",
+        "company": "中国电信",
+        "metric": "最新披露",
+        "value": "2026年一季度报告",
+        "detail": "2026年一季度报告",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "91d37c787796fa56",
+        "company": "中国电信",
+        "metric": "披露日期",
+        "value": "2026年4月23日",
+        "detail": "2026年4月23日",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "23f4650010b7b19e",
+        "company": "中国电信",
+        "metric": "收益",
+        "value": "2025年5296亿元",
+        "detail": "2025年5296亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "8a485ae0425d7138",
+        "company": "中国电信",
+        "metric": "EBITDA / 利润",
+        "value": "2025年EBITDA 1439亿元",
+        "detail": "2025年EBITDA 1439亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c3c5f52395324b74",
+        "company": "中国电信",
+        "metric": "派息",
+        "value": "派息每股0.2720元；股息每股0.0908元",
+        "detail": "全年派息每股0.2720元，同比增加4.7%；其中末期股息每股0.0908元，全年现金分红比例为归母净利润的75%。",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "5b7bcd2a3cd57be0",
+        "company": "中国电信",
+        "metric": "资本开支",
+        "value": "资本开支804亿元",
+        "detail": "2025年资本开支804亿元；公司继续围绕云网融合、AIDC、算力和AI基础设施投入，同时保持自由现金流改善。",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3169004bcc131cfb",
+        "company": "中国电信",
+        "metric": "战略升级",
+        "value": "年度说明会将战略从“云改数转”升级为“云改数转智惠”，全面拥抱AI；最新一季度报告后，重点继续落在AI、天翼云、AIDC、安全、量子和低空经济等产业数字化能力。",
+        "detail": "年度说明会将战略从“云改数转”升级为“云改数转智惠”，全面拥抱AI；最新一季度报告后，重点继续落在AI、天翼云、AIDC、安全、量子和低空经济等产业数字化能力。",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "c501ec2da10308d8",
+        "company": "中国电信",
+        "metric": "券商观点",
+        "value": "券商观点偏审慎正面：华泰证券维持买入评级，看好产业数字化业务在AI时代的发展前景，但下调盈利预测和目标价以反映传统业务和增值税调整压力。",
+        "detail": "券商观点偏审慎正面：华泰证券维持买入评级，看好产业数字化业务在AI时代的发展前景，但下调盈利预测和目标价以反映传统业务和增值税调整压力。",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "04a937fd992f7a50",
+        "company": "中国电信",
+        "metric": "市场反应",
+        "value": "市场继续关注AI投入、Token经营、传统业务增长放缓、增值税影响和利润弹性。",
+        "detail": "年度业绩说明会后股价整体维持稳定；一季度报告发布后，市场继续关注AI投入、Token经营、传统业务增长放缓、增值税影响和利润弹性。",
+        "group": "mainland",
+        "disclosure": "2026年一季度报告",
+        "disclosureDate": "2026年4月23日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "52fda55fb8376037",
+        "company": "中国联通",
+        "metric": "最新披露",
+        "value": "2026年一季度经营与财务问答",
+        "detail": "2026年一季度经营与财务问答",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "1cd4934d9b09648e",
+        "company": "中国联通",
+        "metric": "披露日期",
+        "value": "2026年4月后",
+        "detail": "2026年4月后",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "0d08979012d9493a",
+        "company": "中国联通",
+        "metric": "收益",
+        "value": "2026Q1经营收入1028.24亿元",
+        "detail": "2026Q1经营收入1028.24亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "949d5ea808d10a18",
+        "company": "中国联通",
+        "metric": "EBITDA / 利润",
+        "value": "2026Q1归母净利润48.85亿元",
+        "detail": "2026Q1归母净利润48.85亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "6c573f1601a8c101",
+        "company": "中国联通",
+        "metric": "派息",
+        "value": "股息每股0.417元；派息率提升至61.3%；股息每股0.1329元",
+        "detail": "全年股息每股0.417元，同比增加3.1%，派息率提升至61.3%；其中末期股息每股0.1329元，已派中期股息每股0.2841元。",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c7a210a75c5979eb",
+        "company": "中国联通",
+        "metric": "资本开支",
+        "value": "资本开支542亿元；资本开支占服务收入比重降至16%；资本开支预计约500亿元",
+        "detail": "2025年资本开支542亿元，资本开支占服务收入比重降至16%；2026年资本开支预计约500亿元，其中算力投资占比超过35%。",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "24cfe8106eb93266",
+        "company": "中国联通",
+        "metric": "战略升级",
+        "value": "年度说明会强调落实“AI+”行动；官网一季度FAQ披露，公司围绕“联接、算力、服务、安全”四大主责主业推进，算力业务收入154亿元、同比增长8.3%，云智产品付费用户超过1.1亿。",
+        "detail": "年度说明会强调落实“AI+”行动；官网一季度FAQ披露，公司围绕“联接、算力、服务、安全”四大主责主业推进，算力业务收入154亿元、同比增长8.3%，云智产品付费用户超过1.1亿。",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "77dd2a2b33c8ac15",
+        "company": "中国联通",
+        "metric": "券商观点",
+        "value": "券商观点分化且偏谨慎：晨星下调中国联通公允价值预测至9.6港元并维持“无护城河”评级，瑞银维持中性评级并关注派息、EBITDA和收入增长低于预期的压力。",
+        "detail": "券商观点分化且偏谨慎：晨星下调中国联通公允价值预测至9.6港元并维持“无护城河”评级，瑞银维持中性评级并关注派息、EBITDA和收入增长低于预期的压力。",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "437ccf4c4934c7e7",
+        "company": "中国联通",
+        "metric": "市场反应",
+        "value": "市场主要担忧核心业务盈利能力、资本回报率、增值税调整和派息增长可持续性。",
+        "detail": "最新一季度经营收入1028.24亿元、同比下降0.5%，归母净利润48.85亿元、同比下降17.6%；市场主要担忧核心业务盈利能力、资本回报率、增值税调整和派息增长可持续性。",
+        "group": "mainland",
+        "disclosure": "2026年一季度经营与财务问答",
+        "disclosureDate": "2026年4月后",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "1f8a9eede56d0861",
+        "company": "中国铁塔",
+        "metric": "最新披露",
+        "value": "2026年一季度未经审核关键绩效指标",
+        "detail": "2026年一季度未经审核关键绩效指标",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "6ef62aed10c92078",
+        "company": "中国铁塔",
+        "metric": "披露日期",
+        "value": "2026年4月17日",
+        "detail": "2026年4月17日",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "e81178d792c0f5be",
+        "company": "中国铁塔",
+        "metric": "收益",
+        "value": "2025年1004.11亿元",
+        "detail": "2025年1004.11亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3fc6ce8ba4982dc8",
+        "company": "中国铁塔",
+        "metric": "EBITDA / 利润",
+        "value": "2025年归母净利润116亿元",
+        "detail": "2025年归母净利润116亿元",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "717eb47ec776cdd4",
+        "company": "中国铁塔",
+        "metric": "派息",
+        "value": "股息每股0.32539元；股息全年每股0.45789元；派息比率约77%",
+        "detail": "建议派发2025年末期股息每股0.32539元（税前），连同中期股息全年每股0.45789元（税前），全年可分配利润派息比率约77%。",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "650c3e8bcf352e09",
+        "company": "中国铁塔",
+        "metric": "资本开支",
+        "value": "资本开支294.86亿元",
+        "detail": "2025年资本开支294.86亿元，同比下降7.7%；自由现金流266.30亿元，同比增加91.03亿元，投资更聚焦站址共享、室分和两翼业务效率提升。",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "a8ee2f3b72be4876",
+        "company": "中国铁塔",
+        "metric": "战略升级",
+        "value": "年度说明会继续深化“一体两翼”战略；最新一季度KPI披露后，跟踪重点转向站址/租户规模、共享率、两翼业务延续增长和能源/智联业务质量。",
+        "detail": "年度说明会继续深化“一体两翼”战略；最新一季度KPI披露后，跟踪重点转向站址/租户规模、共享率、两翼业务延续增长和能源/智联业务质量。",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "4f3c974fd74f64d6",
+        "company": "中国铁塔",
+        "metric": "券商观点",
+        "value": "券商观点偏中性：市场关注铁塔旧站升级维修开支、运营商资本开支下行对塔类业务的影响，同时认可两翼业务增长和股东回报提升。",
+        "detail": "券商观点偏中性：市场关注铁塔旧站升级维修开支、运营商资本开支下行对塔类业务的影响，同时认可两翼业务增长和股东回报提升。",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "9dd93d6fb6fc49c3",
+        "company": "中国铁塔",
+        "metric": "市场反应",
+        "value": "市场反应重点在利润增长和派息提升的防御属性；一季度KPI披露后，继续关注运营商投资周期下行、塔类业务增速、站址共享效率和维护成本变化。",
+        "detail": "市场反应重点在利润增长和派息提升的防御属性；一季度KPI披露后，继续关注运营商投资周期下行、塔类业务增速、站址共享效率和维护成本变化。",
+        "group": "mainland",
+        "disclosure": "2026年一季度未经审核关键绩效指标",
+        "disclosureDate": "2026年4月17日",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/global/home.php"
+          },
+          {
+            "label": "ir.china-tower.com",
+            "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf"
+          },
+          {
+            "label": "china-tower.com",
+            "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html"
+          },
+          {
+            "label": "eeo.com.cn",
+            "url": "https://www.eeo.com.cn/2026/0326/818430.shtml"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "4c13ab3e8324426e",
+        "company": "HKT / csl / 1O1O",
+        "metric": "最新披露",
+        "value": "2025年度业绩",
+        "detail": "2025年度业绩",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "f227ad28babdd3c2",
+        "company": "HKT / csl / 1O1O",
+        "metric": "披露日期",
+        "value": "2026年2月9日",
+        "detail": "2026年2月9日",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "f2e9cfaa326d46a5",
+        "company": "HKT / csl / 1O1O",
+        "metric": "股票代码",
+        "value": "6823.HK",
+        "detail": "6823.HK",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "b78c782a8fdd3a83",
+        "company": "HKT / csl / 1O1O",
+        "metric": "收益",
+        "value": "365.53亿港元",
+        "detail": "365.53亿港元",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c998c02e266822fc",
+        "company": "HKT / csl / 1O1O",
+        "metric": "EBITDA / 利润",
+        "value": "EBITDA 142.34亿港元",
+        "detail": "EBITDA 142.34亿港元",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "6591a17724edaa32",
+        "company": "HKT / csl / 1O1O",
+        "metric": "派息",
+        "value": "分派0.8177港元；分派0.4797港元",
+        "detail": "2025年度每个股份合订单位全年分派0.8177港元，同比增加4%；其中末期分派0.4797港元。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "74e43aad80c4d5a6",
+        "company": "HKT / csl / 1O1O",
+        "metric": "资本开支",
+        "value": "资本开支2.70亿美元；资本开支收入比由6.4%；资本开支同比下降4%",
+        "detail": "2025年资本开支2.70亿美元，同比下降5%；资本开支收入比由6.4%改善至5.8%。其中移动资本开支同比下降4%，反映全港5G覆盖完成后的投资纪律。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "295e5daf72b8b68d",
+        "company": "HKT / csl / 1O1O",
+        "metric": "战略升级",
+        "value": "HKT继续围绕5G、光纤宽频、企业数字化、AI Exchange和智慧生活服务推进；2025年总收益365.53亿港元，撇除流动通讯产品销售后的收益约330.17亿港元，EBITDA为142.34亿港元，同比增长4%。",
+        "detail": "HKT继续围绕5G、光纤宽频、企业数字化、AI Exchange和智慧生活服务推进；2025年总收益365.53亿港元，撇除流动通讯产品销售后的收益约330.17亿港元，EBITDA为142.34亿港元，同比增长4%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "afb5cb73146cc932",
+        "company": "HKT / csl / 1O1O",
+        "metric": "券商观点",
+        "value": "公开检索未发现可稳定抓取且可核验的最新券商评级全文；后续应接入授权研报源。当前判断重点为分派增长、移动服务收入和AI驱动的成本效率。",
+        "detail": "公开检索未发现可稳定抓取且可核验的最新券商评级全文；后续应接入授权研报源。当前判断重点为分派增长、移动服务收入和AI驱动的成本效率。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "881702cf3a58d11f",
+        "company": "HKT / csl / 1O1O",
+        "metric": "市场反应",
+        "value": "11.87港元 → 12.00港元（+1.1%）",
+        "detail": "按公开交易数据，业绩发布前一交易日2月6日收盘价为11.87港元，后一交易日2月10日收盘价为12.00港元，上涨1.1%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年2月9日",
+        "stockCode": "6823.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "868d2a4fc7aac975",
+        "company": "3HK / Hutchison",
+        "metric": "战略升级",
+        "value": "2025年完成澳门业务出售后进一步聚焦香港市场；香港业务总收益54.48亿港元，同比增长17%，香港业务EBIT为1800万港元，同比增长6%，漫游收益增长31%，企业解决方案收益增长33%，5G渗透率升至62%。",
+        "detail": "2025年完成澳门业务出售后进一步聚焦香港市场；香港业务总收益54.48亿港元，同比增长17%，香港业务EBIT为1800万港元，同比增长6%，漫游收益增长31%，企业解决方案收益增长33%，5G渗透率升至62%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月9日",
+        "stockCode": "0215.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "828d8dea0cf020c8",
+        "company": "3HK / Hutchison",
+        "metric": "券商观点",
+        "value": "公开检索未发现可稳定抓取且可核验的最新券商评级全文；当前观察重点为出售澳门业务后的资源重配、漫游复苏及AI驱动企业解决方案增长。",
+        "detail": "公开检索未发现可稳定抓取且可核验的最新券商评级全文；当前观察重点为出售澳门业务后的资源重配、漫游复苏及AI驱动企业解决方案增长。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月9日",
+        "stockCode": "0215.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "2c259dbf141e74f6",
+        "company": "3HK / Hutchison",
+        "metric": "市场反应",
+        "value": "1.17港元 → 1.19港元（+1.7%）",
+        "detail": "按公开交易数据，业绩发布前一交易日3月6日收盘价为1.17港元，后一交易日3月10日收盘价为1.19港元，上涨1.7%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月9日",
+        "stockCode": "0215.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "3d192eb229c3a2d1",
+        "company": "SmarTone",
+        "metric": "战略升级",
+        "value": "2025/26上半年收益35.61亿港元，同比增长2%；本地服务收入18.71亿港元，同比增长3%；股东应占溢利2.78亿港元，同比增长8%；营运成本同比下降6%。",
+        "detail": "2025/26上半年收益35.61亿港元，同比增长2%；本地服务收入18.71亿港元，同比增长3%；股东应占溢利2.78亿港元，同比增长8%；营运成本同比下降6%。",
+        "group": "hong-kong",
+        "disclosure": "2025/26中期业绩",
+        "disclosureDate": "2026年2月24日",
+        "stockCode": "0315.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "2c8303e74003aba7",
+        "company": "SmarTone",
+        "metric": "券商观点",
+        "value": "公开市场信息显示分析师口径偏正面，并出现买入评级及5.50港元目标价；正式报告应继续接入授权研报源复核。",
+        "detail": "公开市场信息显示分析师口径偏正面，并出现买入评级及5.50港元目标价；正式报告应继续接入授权研报源复核。",
+        "group": "hong-kong",
+        "disclosure": "2025/26中期业绩",
+        "disclosureDate": "2026年2月24日",
+        "stockCode": "0315.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "2e26587657d491e2",
+        "company": "SmarTone",
+        "metric": "市场反应",
+        "value": "5.13港元 → 5.30港元（+3.3%）",
+        "detail": "按公开交易数据，业绩发布前一交易日2月23日收盘价为5.13港元，后一交易日2月25日收盘价为5.30港元，上涨3.3%。",
+        "group": "hong-kong",
+        "disclosure": "2025/26中期业绩",
+        "disclosureDate": "2026年2月24日",
+        "stockCode": "0315.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "43b624a5992ab4d4",
+        "company": "HKBN",
+        "metric": "战略升级",
+        "value": "2026财年上半年收益60.29亿港元，同比增长5.1%；核心服务收益增长8%；EBITDA为12.57亿港元，同比增长4.2%；净利润1.08亿港元。企业解决方案和“光纤进、铜线退”网络升级是重点。",
+        "detail": "2026财年上半年收益60.29亿港元，同比增长5.1%；核心服务收益增长8%；EBITDA为12.57亿港元，同比增长4.2%；净利润1.08亿港元。企业解决方案和“光纤进、铜线退”网络升级是重点。",
+        "group": "hong-kong",
+        "disclosure": "2026财年中期业绩",
+        "disclosureDate": "2026年4月24日",
+        "stockCode": "1310.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "fd34aecfee6337e8",
+        "company": "HKBN",
+        "metric": "券商观点",
+        "value": "公开市场分析页面给出约6.50港元的一年目标价；正式报告应继续接入授权研报源复核。市场关注AI与光纤升级投入、整合价值兑现及融资成本改善。",
+        "detail": "公开市场分析页面给出约6.50港元的一年目标价；正式报告应继续接入授权研报源复核。市场关注AI与光纤升级投入、整合价值兑现及融资成本改善。",
+        "group": "hong-kong",
+        "disclosure": "2026财年中期业绩",
+        "disclosureDate": "2026年4月24日",
+        "stockCode": "1310.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "7d69a2407a78bbde",
+        "company": "HKBN",
+        "metric": "市场反应",
+        "value": "8.20港元 → 7.34港元（-10.5%）",
+        "detail": "按公开交易数据，业绩发布前一交易日4月23日收盘价为8.20港元，后一交易日4月27日收盘价为7.34港元，下跌10.5%。",
+        "group": "hong-kong",
+        "disclosure": "2026财年中期业绩",
+        "disclosureDate": "2026年4月24日",
+        "stockCode": "1310.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "296ded3c0417e0b3",
+        "company": "HGC",
+        "metric": "最新披露",
+        "value": "企业转型动态",
+        "detail": "企业转型动态",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "412570ac15890ff2",
+        "company": "HGC",
+        "metric": "披露日期",
+        "value": "持续更新",
+        "detail": "持续更新",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "44a051eb67b89d04",
+        "company": "HGC",
+        "metric": "收益",
+        "value": "非上市主体未公开披露",
+        "detail": "非上市主体未公开披露",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "de9d29fe063224c9",
+        "company": "HGC",
+        "metric": "EBITDA / 利润",
+        "value": "非上市主体未公开披露",
+        "detail": "非上市主体未公开披露",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3154465308f9e385",
+        "company": "HGC",
+        "metric": "派息",
+        "value": "不适用：HGC为非上市主体，未公开披露派息口径。",
+        "detail": "不适用：HGC为非上市主体，未公开披露派息口径。",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "5bb5c6cee83df052",
+        "company": "HGC",
+        "metric": "资本开支",
+        "value": "未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。",
+        "detail": "未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c6805f4e0e0aaa84",
+        "company": "HGC",
+        "metric": "战略升级",
+        "value": "围绕企业通信、数据中心互联、云、安全和跨境连接推进转型。",
+        "detail": "围绕企业通信、数据中心互联、云、安全和跨境连接推进转型。",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "33145278e29a0439",
+        "company": "HGC",
+        "metric": "券商观点",
+        "value": "不适用：非上市主体，暂无公开券商评级口径。",
+        "detail": "不适用：非上市主体，暂无公开券商评级口径。",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "16376a3b7d57548d",
+        "company": "HGC",
+        "metric": "市场反应",
+        "value": "不适用：非上市主体，不存在独立公开股票交易表现。",
+        "detail": "不适用：非上市主体，不存在独立公开股票交易表现。",
+        "group": "hong-kong",
+        "disclosure": "企业转型动态",
+        "disclosureDate": "持续更新",
+        "stockCode": "",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "9239667f6d66b1f1",
+        "company": "i-CABLE",
+        "metric": "战略升级",
+        "value": "2025年收益5.39亿港元，同比下降7.8%；年度亏损4.90亿港元，较上年亏损5.53亿港元收窄。电讯业务收入约3.42亿港元，同比下降约6%，但电讯分部扣除折旧、摊销及减值前利润同比增加约11%。",
+        "detail": "2025年收益5.39亿港元，同比下降7.8%；年度亏损4.90亿港元，较上年亏损5.53亿港元收窄。电讯业务收入约3.42亿港元，同比下降约6%，但电讯分部扣除折旧、摊销及减值前利润同比增加约11%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月27日",
+        "stockCode": "1097.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "ea6ac9e104aa6006",
+        "company": "i-CABLE",
+        "metric": "券商观点",
+        "value": "公开检索未发现可稳定抓取且可核验的最新券商评级全文，公开券商覆盖有限。",
+        "detail": "公开检索未发现可稳定抓取且可核验的最新券商评级全文，公开券商覆盖有限。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月27日",
+        "stockCode": "1097.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "39f2cc142f1e8276",
+        "company": "i-CABLE",
+        "metric": "市场反应",
+        "value": "0.06港元 → 0.06港元（+3.5%）",
+        "detail": "按公开交易数据，业绩发布前一交易日3月26日收盘价为0.06港元，后一交易日3月30日收盘价为0.06港元，上涨3.5%。",
+        "group": "hong-kong",
+        "disclosure": "2025年度业绩",
+        "disclosureDate": "2026年3月27日",
+        "stockCode": "1097.HK",
+        "sourceType": "verified-performance",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "rowRef": "",
+        "qualityIssues": [],
+        "qualityStatus": "verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "207fa715779ae6f2",
+        "company": "HKT",
+        "metric": "收益",
+        "value": "186.85亿港元",
+        "detail": "186.85亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "70b601dce141fb17",
+        "company": "HKT",
+        "metric": "EBITDA / 利润",
+        "value": "65.86亿港元",
+        "detail": "65.86亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "9cf6525a2e0475b9",
+        "company": "HKT",
+        "metric": "净利润",
+        "value": "21.53亿港元",
+        "detail": "21.53亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "bcbc5a4abfca5bc0",
+        "company": "HKT",
+        "metric": "资本开支",
+        "value": "10.42亿港元",
+        "detail": "10.42亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ab3d706174ca3aa8",
+        "company": "HKT",
+        "metric": "派息",
+        "value": "0.348港元/股",
+        "detail": "0.348港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "7141a07f4c31dcc0",
+        "company": "HKT",
+        "metric": "5G用户数",
+        "value": "2.2 million",
+        "detail": "2.2 million",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "c19e38fcec97af09",
+        "company": "3HK / Hutchison",
+        "metric": "收益",
+        "value": "28.46亿港元",
+        "detail": "28.46亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ee41c7bf2c127dfc",
+        "company": "3HK / Hutchison",
+        "metric": "EBITDA / 利润",
+        "value": "7.63亿港元",
+        "detail": "7.63亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "e83a524e270f7897",
+        "company": "3HK / Hutchison",
+        "metric": "净利润",
+        "value": "0.11亿港元",
+        "detail": "0.11亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c6e6c4629ecae89f",
+        "company": "3HK / Hutchison",
+        "metric": "派息",
+        "value": "0.0228港元/股",
+        "detail": "0.0228港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3f0caeb271307ab0",
+        "company": "SmarTone",
+        "metric": "收益",
+        "value": "35.61亿港元",
+        "detail": "35.61亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "a9c9f3475009e754",
+        "company": "SmarTone",
+        "metric": "净利润",
+        "value": "2.78亿港元",
+        "detail": "2.78亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ab523b0a8a877077",
+        "company": "SmarTone",
+        "metric": "派息",
+        "value": "0.145港元/股",
+        "detail": "0.145港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "2c5849adee34b782",
+        "company": "HKBN",
+        "metric": "收益",
+        "value": "60.29亿港元",
+        "detail": "60.29亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "08113f3f3d35aa6e",
+        "company": "HKBN",
+        "metric": "EBITDA / 利润",
+        "value": "12.57亿港元",
+        "detail": "12.57亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "241319db855fb614",
+        "company": "HKBN",
+        "metric": "净利润",
+        "value": "1.08亿港元",
+        "detail": "1.08亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "00868993cb93adf5",
+        "company": "i-CABLE",
+        "metric": "收益",
+        "value": "5.39亿港元",
+        "detail": "5.39亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2025 Annual Report",
+            "url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "225d2b82a25999d9",
+        "company": "i-CABLE",
+        "metric": "净利润",
+        "value": "-4.90亿港元",
+        "detail": "-4.90亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2025 Annual Report",
+            "url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c192ded1c398531a",
+        "company": "i-CABLE",
+        "metric": "派息",
+        "value": "HK$Nil",
+        "detail": "HK$Nil",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2025 Annual Report",
+            "url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "03bdd4037b24157f",
+        "company": "HKT",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "93cbdd2a43500973",
+        "company": "HKT",
+        "metric": "披露日期",
+        "value": "2026-07-29",
+        "detail": "2026-07-29",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "6df0742cf48c4b23",
+        "company": "3HK / Hutchison",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "256c0cef5a5fd1e4",
+        "company": "3HK / Hutchison",
+        "metric": "披露日期",
+        "value": "2026-08-10",
+        "detail": "2026-08-10",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "16dadb7a9f4632f5",
+        "company": "SmarTone",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "551e7fc82fb62bcf",
+        "company": "SmarTone",
+        "metric": "披露日期",
+        "value": "2026-02-24",
+        "detail": "2026-02-24",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "436be5e6671e9e21",
+        "company": "HKBN",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "9e00a2e804a99db9",
+        "company": "HKBN",
+        "metric": "披露日期",
+        "value": "2026-04-24",
+        "detail": "2026-04-24",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "4b053517fe7aa291",
+        "company": "i-CABLE",
+        "metric": "最新披露",
+        "value": "FY 2025",
+        "detail": "FY 2025",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2025 Annual Report",
+            "url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "73acd53b2db5e8cb",
+        "company": "HKT",
+        "metric": "市场反应",
+        "value": "按公开交易数据，业绩发布前一交易日2月6日收盘价为11.87港元，后一交易日2月10日收盘价为12.00港元，上涨1.1%。",
+        "detail": "按公开交易数据，业绩发布前一交易日2月6日收盘价为11.87港元，后一交易日2月10日收盘价为12.00港元，上涨1.1%。",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_2",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从公开交易数据恢复市场反应事实；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "559c7783d452428b",
+        "company": "csl",
+        "metric": "市场反应",
+        "value": "不适用（品牌非独立上市主体）",
+        "detail": "csl为品牌口径，不存在独立上市股票交易表现。",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkcsl.com",
+            "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_2",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "依据主体上市口径确定；依据品牌上市口径确认不适用",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "c406cd8359e9ac26",
+        "company": "1O1O",
+        "metric": "市场反应",
+        "value": "不适用（品牌非独立上市主体）",
+        "detail": "1O1O为品牌口径，不存在独立上市股票交易表现。",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "1010.com.hk",
+            "url": "https://www.1010.com.hk/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_2",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "依据主体上市口径确定；依据品牌上市口径确认不适用",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "63e53dfcb3a5f8cd",
+        "company": "HKT",
+        "metric": "产品规格",
+        "value": "HKT旗下NETVIGATOR提供1000M及10,000M光纤入屋产品，家宽速度选择覆盖1G至10G",
+        "detail": "1000M Fibre-to-the-Home；Choose from 1G to 10G；10,000M Fibre-to-the-Home",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
+          },
+          {
+            "label": "netvigator.com",
+            "url": "https://www.netvigator.com/eng/index.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKT旗下NETVIGATOR官方产品页精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "a239761645211964",
+        "company": "HKT",
+        "metric": "资费",
+        "value": "NETVIGATOR 1000M光纤家宽月费低至108港元，5G家居宽频月费低至168港元，均为36个月合约",
+        "detail": "1000M Fibre-to-the-Home Free Home Wi-Fi Service From HK$ 108 /month 36 -month commitment；5G Home Internet From HK$ 168 /month 36 -month commitment",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
+          },
+          {
+            "label": "netvigator.com",
+            "url": "https://www.netvigator.com/eng/index.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKT旗下NETVIGATOR官方套餐页精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "a294f1a2477df8aa",
+        "company": "HKT",
+        "metric": "增值服务",
+        "value": "NETVIGATOR增值服务包括Home Wi-Fi、Cyber Security Service、Gamer Pack、Now TV",
+        "detail": "Home Wi-Fi；Cyber Security Service；Gamer Pack；Now TV",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
+          },
+          {
+            "label": "netvigator.com",
+            "url": "https://www.netvigator.com/eng/index.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKT旗下NETVIGATOR官方服务清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "e9a7d35c664d5f8c",
+        "company": "HKT",
+        "metric": "家宽套餐",
+        "value": "HKT旗下NETVIGATOR家宽用户可选1G至10G光纤入屋产品",
+        "detail": "Choose from 1G to 10G",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "netvigator.com",
+            "url": "https://www.netvigator.com/eng/index.html"
+          },
+          {
+            "label": "hkt.com",
+            "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKT旗下NETVIGATOR官方产品页精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "adaf53b9517327a2",
+        "company": "csl",
+        "metric": "产品规格",
+        "value": "csl产品线包括5G家居宽频、5G多用户及中港澳5G服务计划",
+        "detail": "5G Home internet service plan；5G Multi-User Service Plan；Chinese Mainland-Hong Kong-Macao 5G service plan",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkcsl.com",
+            "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+          },
+          {
+            "label": "hkcsl-5g.com",
+            "url": "https://www.hkcsl-5g.com/en/5g-tariff-plan/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从csl官方服务计划清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "7ee445fb603d3216",
+        "company": "csl",
+        "metric": "增值服务",
+        "value": "csl增值服务包括csl Wi-Fi、csl Direct Carrier Billing、HKT AR Lens、Blacknut Cloud Gaming、Surfshark ONE、Norton 360",
+        "detail": "csl Wi-Fi；csl Direct Carrier Billing；HKT AR Lens；Blacknut Cloud Gaming；Surfshark ONE；Norton 360",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkcsl.com",
+            "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+          },
+          {
+            "label": "hkcsl-5g.com",
+            "url": "https://www.hkcsl-5g.com/en/5g-tariff-plan/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从csl官方增值服务清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "c60c73e0a65bcfe7",
+        "company": "csl",
+        "metric": "家宽套餐",
+        "value": "csl官方列有5G家居宽频服务计划",
+        "detail": "5G Home internet service plan",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkcsl.com",
+            "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+          },
+          {
+            "label": "hkcsl-5g.com",
+            "url": "https://www.hkcsl-5g.com/en/5g-tariff-plan/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从csl官方服务计划清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "57f9d9b847e45e39",
+        "company": "csl",
+        "metric": "漫游",
+        "value": "csl漫游服务包括Golden Roaming、数据漫游通行证、机上及邮轮漫游",
+        "detail": "Golden Roaming；Data Roaming Pass；First In-Flight Data Roaming Pass；First Cruise Data Roaming Pass",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkcsl.com",
+            "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+          },
+          {
+            "label": "hkcsl-5g.com",
+            "url": "https://www.hkcsl-5g.com/en/5g-tariff-plan/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从csl官方漫游服务清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "111c31deabcc52b4",
+        "company": "1O1O",
+        "metric": "产品规格",
+        "value": "1O1O 5G移动网络提供Open API服务，支持企业移动号码验证等应用",
+        "detail": "provides Open API services on the 1O1O 5G mobile network；modernise mobile-number verification",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "1010corporate.com",
+            "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/"
+          },
+          {
+            "label": "1010.com.hk",
+            "url": "https://www.1010.com.hk/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从1O1O企业官方网站Open API介绍精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "24368933cabed2c2",
+        "company": "1O1O",
+        "metric": "增值服务",
+        "value": "1O1O增值服务包括MOOV、HKT AR Lens、csl Wi-Fi、Netflix、Now Player、Viu Premium、1O1O Direct Carrier Billing",
+        "detail": "MOOV；HKT AR Lens；csl Wi-Fi；Netflix；Now Player；Viu Premium；1O1O Direct Carrier Billing",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "1010corporate.com",
+            "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/"
+          },
+          {
+            "label": "1010.com.hk",
+            "url": "https://www.1010.com.hk/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从1O1O官方增值服务清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "685af7fd5a6cb4b6",
+        "company": "1O1O",
+        "metric": "漫游",
+        "value": "1O1O漫游服务包括Golden Roaming、中港一卡两号、数据及机上邮轮漫游",
+        "detail": "Golden Roaming；1O1O China HK 1-Card-2-Number；Data Roaming Pass；First In-Flight Data Roaming Pass；First Cruise Roaming Day Pass",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "1010.com.hk",
+            "url": "https://www.1010.com.hk/"
+          },
+          {
+            "label": "1010corporate.com",
+            "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_3",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从1O1O官方漫游服务清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "bc56a0fb6df874ba",
+        "company": "1O1O",
+        "metric": "5G-A",
+        "value": "1O1O企业方案已提供5G/5.5G无线方案、5G专网及管理式5G路由器",
+        "detail": "Enterprise 5G/5.5G & Wireless Solutions；5G Private Network；Managed 5G Router Solutions",
+        "group": "HKT / csl / 1O1O",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "1010corporate.com",
+            "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/"
+          },
+          {
+            "label": "1010.com.hk",
+            "url": "https://www.1010.com.hk/"
+          },
+          {
+            "label": "ezone.hk",
+            "url": "https://ezone.hk/article/20073735/open-api-%E4%BF%83%E9%80%B2%E9%A6%99%E6%B8%AF%E6%95%B8%E7%A2%BC%E5%89%B5%E6%96%B0-%E6%8F%90%E5%8D%87%E4%BC%81%E6%A5%AD%E6%9C%8D%E5%8B%99%E6%95%88%E7%8E%87"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_4",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从1O1O企业官方方案页精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "ebee964ebff51986",
+        "company": "Hutchison",
+        "metric": "客户数/用户数",
+        "value": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+        "detail": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+          },
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250808.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_5",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从和记电讯香港年报客户表精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "f206c384694d2048",
+        "company": "Hutchison",
+        "metric": "5G用户数",
+        "value": "5G渗透率62%",
+        "detail": "5G渗透率62%",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+          },
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250808.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_5",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "年报仅披露5G渗透率，未披露绝对用户数",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "89da89abd1b6e1c6",
+        "company": "Hutchison",
+        "metric": "ARPU",
+        "value": "后付费毛ARPU每月187港元，同比–2%；后付费净ARPU每月176港元，同比+1%",
+        "detail": "Postpaid gross ARPU (HK$) 187 190 –2%；Postpaid net ARPU (HK$) 176 175 +1%",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250808.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
+          },
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/reports.php"
+          },
+          {
+            "label": "m.hthkh.com",
+            "url": "https://m.hthkh.com/en/ir/presentations.php"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_5",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从港交所披露的和记电讯香港年度报告精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "76af488999e14a5e",
+        "company": "Hutchison",
+        "metric": "市场反应",
+        "value": "按公开交易数据，业绩发布前一交易日3月6日收盘价为1.17港元，后一交易日3月10日收盘价为1.19港元，上涨1.7%。",
+        "detail": "按公开交易数据，业绩发布前一交易日3月6日收盘价为1.17港元，后一交易日3月10日收盘价为1.19港元，上涨1.7%。",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_5",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从公开交易数据恢复市场反应事实；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "b19815a08f670977",
+        "company": "Hutchison",
+        "metric": "促销折扣",
+        "value": "HTHKH推出“3 for You”品牌权益，提供备用手机服务及100多项全球礼遇",
+        "detail": "3 for You' Brand Value with Backup Phone Service and 100+ Global Privileges",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp250529"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/media/press_3hk.php"
+          },
+          {
+            "label": "m.hthkh.com",
+            "url": "https://m.hthkh.com/en/media/press.php"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_6",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从和记电讯香港官方新闻列表精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "0c5d918e0c404a8f",
+        "company": "SmarTone",
+        "metric": "市场反应",
+        "value": "按公开交易数据，业绩发布前一交易日2月23日收盘价为5.13港元，后一交易日2月25日收盘价为5.30港元，上涨3.3%。",
+        "detail": "按公开交易数据，业绩发布前一交易日2月23日收盘价为5.13港元，后一交易日2月25日收盘价为5.30港元，上涨3.3%。",
+        "group": "SmarTone",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_8",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从公开交易数据恢复市场反应事实；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "d3a301af62cbd7f1",
+        "company": "SmarTone",
+        "metric": "5G-A",
+        "value": "香港首家采用5G-Advanced，提供网络优先和网络切片",
+        "detail": "片段提到'First operator in Hong Kong to leverage 5G Advanced'",
+        "group": "SmarTone",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          },
+          {
+            "label": "aastocks.com",
+            "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1"
+          }
+        ],
+        "confidence": 0.95,
+        "rowRef": "row_10",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.95,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.995,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "05ba256b78a6ab61",
+        "company": "SmarTone",
+        "metric": "家宽布局",
+        "value": "5G家宽收入+12%，EBIT+36%",
+        "detail": "片段提到'5G Home Broadband Revenue +12% EBIT +36%'",
+        "group": "SmarTone",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          },
+          {
+            "label": "aastocks.com",
+            "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1"
+          }
+        ],
+        "confidence": 0.95,
+        "rowRef": "row_10",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.95,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.995,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "a642d686852cc613",
+        "company": "HKBN",
+        "metric": "资产负债率",
+        "value": "总债务/总权益比率5.0x（截至31 August 2025）",
+        "detail": "gearing ratio, which was expressed as a ratio of the gross debt over total equity, was 5.0x as at 31 August 2025",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY25_HKBN_Annual_Results_Announcement_Presentation_en.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/financial-results"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_11",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKBN年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "7e3f35edc1943660",
+        "company": "HKBN",
+        "metric": "市场反应",
+        "value": "按公开交易数据，业绩发布前一交易日4月23日收盘价为8.20港元，后一交易日4月27日收盘价为7.34港元，下跌10.5%。",
+        "detail": "按公开交易数据，业绩发布前一交易日4月23日收盘价为8.20港元，后一交易日4月27日收盘价为7.34港元，下跌10.5%。",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_11",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从公开交易数据恢复市场反应事实；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "ad95d32afda78c5b",
+        "company": "HKBN",
+        "metric": "董事会",
+        "value": "董事会决议宣派2025财年末期股息每股0.189港元/股",
+        "detail": "Board has resolved to declare a final dividend of 18.9 cents per share",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_12",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKBN官方2025财年业绩公告精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "0de37ce7bac0867e",
+        "company": "HKBN",
+        "metric": "股东大会",
+        "value": "2025财年末期股息须经2025年股东周年大会批准，预计于2026年1月6日前后现金派付",
+        "detail": "Subject to the approval by the Shareholders at the 2025 annual general meeting of the Company (the “2025 AGM”), the proposed final dividend is expected to be paid in cash on or around Tuesday, 6 January 2026",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_12",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKBN官方2025年年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "07a34586d69888d8",
+        "company": "HKBN",
+        "metric": "持续性关联交易",
+        "value": "中国移动集团自2025年5月7日起成为HKBN关联人士；部分获豁免持续性关联交易于2025年10月30日公告，适用百分比率低于5%",
+        "detail": "China Mobile Group first became connected persons；announcement was made by the Company on 30 October 2025 in respect of, among other things, the Partially-exempt CCTs；all applicable ratios were less than 5%",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_12",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HKBN官方2025年年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "c621c0ba5c1f93bc",
+        "company": "HGC",
+        "metric": "数据中心",
+        "value": "HGC于2025年5月宣布将数据中心互联服务扩展至马来西亚",
+        "detail": "06 May 2025 HGC Expands the Data Center Interconnect to Malaysia",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HGC官方网站新闻条目精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "a1c08ca2ca34b13c",
+        "company": "HGC",
+        "metric": "云网产品",
+        "value": "云连接产品包括AWS Direct Connect、Azure ExpressRoute、Google Cloud Partner Interconnect、Alibaba Cloud Express Connect",
+        "detail": "云连接产品包括AWS Direct Connect、Azure ExpressRoute、Google Cloud Partner Interconnect、Alibaba Cloud Express Connect",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从HGC官方网站产品清单精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "产品资费",
+        "hasSources": true
+      },
+      {
+        "id": "7b6a2b786d2288a3",
+        "company": "HGC",
+        "metric": "派息",
+        "value": "不适用（非上市主体）",
+        "detail": "HGC为非上市主体，不存在独立公开派息、券商评级或股票交易口径。",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "依据主体上市状态确定；依据主体上市状态确认不适用",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3436cf6347d47157",
+        "company": "HGC",
+        "metric": "券商观点",
+        "value": "不适用（非上市主体）",
+        "detail": "HGC为非上市主体，不存在独立公开派息、券商评级或股票交易口径。",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "依据主体上市状态确定；依据主体上市状态确认不适用",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "8effe8e30abd3028",
+        "company": "HGC",
+        "metric": "市场反应",
+        "value": "不适用（非上市主体）",
+        "detail": "HGC为非上市主体，不存在独立公开派息、券商评级或股票交易口径。",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "依据主体上市状态确定；依据主体上市状态确认不适用",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "6e7121cbf66b04a4",
+        "company": "HGC",
+        "metric": "资本开支",
+        "value": "未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。",
+        "detail": "未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。",
+        "group": "HGC",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation"
+          },
+          {
+            "label": "hgc-intl.com",
+            "url": "https://www.hgc-intl.com/international-business"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_15",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "4278f12f7437970d",
+        "company": "i-CABLE",
+        "metric": "市场反应",
+        "value": "按公开交易数据，业绩发布前一交易日3月26日收盘价为0.06港元，后一交易日3月30日收盘价为0.06港元，上涨3.5%。",
+        "detail": "按公开交易数据，业绩发布前一交易日3月26日收盘价为0.06港元，后一交易日3月30日收盘价为0.06港元，上涨3.5%。",
+        "group": "iCable",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_17",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从公开交易数据恢复市场反应事实；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "bf8a9d9a86d25bcf",
+        "company": "Jio",
+        "metric": "Capex方向",
+        "value": "网络投入方向聚焦5G、AirFiber家宽及企业Private 5G能力",
+        "detail": "Jio is expanding 5G and broadband adoption across mobility, homes and enterprises; AirFiber subscribers crossed 5.6 million and Private 5G was deployed for enterprise connectivity.",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "ril.com",
+            "url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf"
+          },
+          {
+            "label": "jio.com",
+            "url": "https://www.jio.com/"
+          },
+          {
+            "label": "jio.com",
+            "url": "https://www.jio.com/business/5g/"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_19",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从Reliance FY2025业绩演示材料精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "aa84c47aaa0c8842",
+        "company": "Orange",
+        "metric": "边缘计算",
+        "value": "参与欧洲边缘连续体",
+        "detail": "片段提到Orange参与欧洲边缘连续体",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "developer.orange.com",
+            "url": "https://developer.orange.com/events/mwc-2026/"
+          },
+          {
+            "label": "telefonica.com",
+            "url": "https://www.telefonica.com/en/wp-content/uploads/sites/5/2026/02/pr_edge_continuum_mwc2026_29ef07.pdf"
+          },
+          {
+            "label": "developer.orange.com",
+            "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/"
+          },
+          {
+            "label": "telefonica.com",
+            "url": "https://www.telefonica.com/en/communication-room/blog/5g-will-rely-on-open-networks-by-enrique-blanco-chief-technology-and-information-officer/"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_20",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.962,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "5859c9bbcc8b97fc",
+        "company": "T-Mobile US",
+        "metric": "FWA",
+        "value": "5G宽带净增客户2025年为1.7百万，2024年为1.5百万",
+        "detail": "5G broadband (formerly High Speed Internet) net customer additions were 1.7 million and 1.5 million in 2025 and 2024, respectively.",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "report.telekom.com",
+            "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html"
+          },
+          {
+            "label": "opengateway.telefonica.com",
+            "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis"
+          },
+          {
+            "label": "prnewswire.com",
+            "url": "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_20",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从Deutsche Telekom 2025年年报美国业务章节精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.968,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "d9a67aa46bbc1352",
+        "company": "中国移动",
+        "metric": "AI",
+        "value": "AI网络投资同比增长19.8%；战略向通信服务、算力服务、AI服务协同推进",
+        "detail": "2025年资本开支1509亿元，同比下降8.0%；2026年计划资本开支1366亿元，同比再降9.5%，其中算力网络投资增长62.4%、AI网络投资增长19.8%。 年度说明会提出从传统通信服务向“通信服务、算力服务、AI服务”三大业务协同推进；最新一季度业绩显示营业收入2665亿元、同比增长1.0%，主营业务收入2199亿元、同比下降1.1%，其他业务收入466亿元、同比增长12.7%，转型业务对冲传统业务压力。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports.php"
+          },
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验年度业绩字段",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "6618ecc1b2b21369",
+        "company": "中国移动",
+        "metric": "算力网络",
+        "value": "算力网络投资同比增长62.4%",
+        "detail": "2025年资本开支1509亿元，同比下降8.0%；2026年计划资本开支1366亿元，同比再降9.5%，其中算力网络投资增长62.4%、AI网络投资增长19.8%。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports.php"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验年度业绩字段",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "cf55fca479494f7e",
+        "company": "中国移动",
+        "metric": "资本开支",
+        "value": "2025年资本开支1509亿元，同比下降8.0%；2026年计划资本开支1366亿元，同比再降9.5%，其中算力网络投资增长62.4%、AI网络投资增长19.8%。",
+        "detail": "2025年资本开支1509亿元，同比下降8.0%；2026年计划资本开支1366亿元，同比再降9.5%，其中算力网络投资增长62.4%、AI网络投资增长19.8%。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "dataclouds.cninfo.com.cn",
+            "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/reports.php"
+          },
+          {
+            "label": "marketscreener.com",
+            "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020"
+          },
+          {
+            "label": "chinamobileltd.com",
+            "url": "https://www.chinamobileltd.com/en/ir/dividend.php"
+          },
+          {
+            "label": "longbridge.com",
+            "url": "https://longbridge.com/en/news/280723495"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ec47fb3ff907c5f2",
+        "company": "中国电信",
+        "metric": "5G-A",
+        "value": "部署超过110,000个5G-A载波聚合基站，覆盖超过300个城市",
+        "detail": "over 110,000 5G-A carrier quantum security infrastructure, the Company aggregation base stations；RedCap continued to iterate ubiquitous quantum products, base stations in more than 300 cities",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从中国电信2025年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "020b9576e01076dc",
+        "company": "中国电信",
+        "metric": "资本开支",
+        "value": "2025年资本开支804亿元；公司继续围绕云网融合、AIDC、算力和AI基础设施投入，同时保持自由现金流改善。",
+        "detail": "2025年资本开支804亿元；公司继续围绕云网融合、AIDC、算力和AI基础设施投入，同时保持自由现金流改善。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf"
+          },
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "static.cninfo.com.cn",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          },
+          {
+            "label": "chinatelecom-h.com",
+            "url": "https://www.chinatelecom-h.com/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/bxjj/2026-04-27/doc-inhvxhze9117081.shtml"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "a28aeeaf28f24db0",
+        "company": "中国联通",
+        "metric": "AI",
+        "value": "云智产品服务用户超过300百万，收入同比增长超过11%",
+        "detail": "cloud-AI products, which served over 300 million users with revenue increasing by more than 11%",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "en.c114.com.cn",
+            "url": "https://en.c114.com.cn/576/a1307257.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从中国联通2025年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "db008408b17f8538",
+        "company": "中国联通",
+        "metric": "算力网络",
+        "value": "45;175亿元;8;5;110万;7;1;10;18;2026;500亿元",
+        "detail": "intelligent computing reached 45 EFLOPS cloud pools covering 252 cities adding more than 9,000 kilometres to achieve the interconnection of computing power hub nodes；搜索验证多数口径修正为：45;175亿元;8;5;110万;7;1;10;18;2026;500亿元",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "en.c114.com.cn",
+            "url": "https://en.c114.com.cn/576/a1307257.html"
+          },
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从中国联通2025年报精确提取；搜索验证多数口径覆盖当前候选值",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "c274878cbecebcee",
+        "company": "中国联通",
+        "metric": "DICT",
+        "value": "战略性新兴产业收入占比超过86%；算力业务收入占比超过15%；AI收入同比增长超过140%",
+        "detail": "Revenue contribution from strategic emerging industries reached over 86%；computing power business revenue3 ratio reached over 15%；AI revenue4 grew by over 140% year-on-year",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "en.c114.com.cn",
+            "url": "https://en.c114.com.cn/576/a1307257.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从中国联通2025年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "a46d31bcb93a9c53",
+        "company": "中国联通",
+        "metric": "5G-A",
+        "value": "5G-A基站已部署至超过330个城市",
+        "detail": "5G-A base stations were deployed in more than 330 cities",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "en.c114.com.cn",
+            "url": "https://en.c114.com.cn/576/a1307257.html"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "从中国联通2025年报精确提取",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "9e72f2f5bec05138",
+        "company": "中国联通",
+        "metric": "资本开支",
+        "value": "2025年资本开支542亿元，资本开支占服务收入比重降至16%；2026年资本开支预计约500亿元，其中算力投资占比超过35%。",
+        "detail": "2025年资本开支542亿元，资本开支占服务收入比重降至16%；2026年资本开支预计约500亿元，其中算力投资占比超过35%。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          },
+          {
+            "label": "gsma.com",
+            "url": "https://www.gsma.com/about-us/regions/greater-china/wp-content/uploads/2025/04/Mobile-Economy-Report-2025-China-EN.pdf"
+          },
+          {
+            "label": "en.c114.com.cn",
+            "url": "https://en.c114.com.cn/576/a1307257.html"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/faq.php"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+          },
+          {
+            "label": "chinaunicom.com.hk",
+            "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php"
+          },
+          {
+            "label": "finance.sina.com.cn",
+            "url": "https://finance.sina.com.cn/stock/hkstock/hkgg/2026-03-24/doc-inhsaeyu0493369.shtml"
+          }
+        ],
+        "confidence": 0.96,
+        "rowRef": "row_21",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "采用已核验公开来源字段；从已核验公开字段恢复",
+        "aiConfidence": 0.96,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.996,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      }
+    ]
+  },
+  "curation": {
+    "run_id": "20260819_031241_0a62fe9d",
+    "started_at": "2026-08-19T03:12:41+08:00",
+    "completed_at": "2026-08-19T03:28:25+08:00",
+    "tasks": 236,
+    "accepted": 55,
+    "rejected": 167,
+    "review": 14,
+    "gaps": 172,
+    "recrawl_rows": [
+      5,
+      8,
+      11
+    ],
+    "recrawl_performed": true,
+    "online_ai": false,
+    "node_events": [
+      "[数据整理][证据接收] 读取 227 条原始指标证据，复用 18 条缓存判断。",
+      "[数据整理][来源分类] 完成来源分级：commercial 2、missing 5、official 138、public 82。",
+      "[数据整理][事实抽取] 形成 227 条候选事实；待抽取 169 条，缓存复用 9 条。",
+      "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 35 条。",
+      "[数据整理][质量审计] 发布 58 条、证据缺口 69 条、质量拒绝 100 条、待复核 0 条。",
+      "[数据整理][冲突仲裁] 检查 58 组事实，发现 0 组冲突。",
+      "[数据整理][搜索验证] 并行核验 127 条事实，修正 0 条，转人工复核 12 条，发现冲突 31 条。",
+      "[数据整理][缺口规划] 识别 172 个事实缺口，安排 6 个定向补爬行。",
+      "[数据整理][编排决策] Supervisor 决定补爬 5, 8, 11；行5（3HK）3个缺口源于抽取结果不可用和搜索验证未形成多数口径，补爬有望获取净利润、客户数、5G用户数等关键指标。行8（SmarTone）当前为partial状态，2个缺口含抽取结果不可用，补爬可尝试获取完整数据。行11（HKBN）4个缺口含抽取结果不可用，补爬可能解决总收入、板块收入分拆、商誉等指标缺失。其余候选行（2、17、19）的缺口主因为指标语义未通过、格式门禁或低质量商业来源，重复补爬无法解决，故不纳入。",
+      "[数据整理][定向补爬] 完成行 5, 8, 11 的补爬，重新进入整理流程。",
+      "[数据整理][证据接收] 读取 236 条原始指标证据，复用 18 条缓存判断。",
+      "[数据整理][来源分类] 完成来源分级：commercial 2、missing 5、official 133、public 96。",
+      "[数据整理][事实抽取] 形成 236 条候选事实；待抽取 178 条，缓存复用 9 条。",
+      "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 35 条。",
+      "[数据整理][质量审计] 发布 58 条、证据缺口 73 条、质量拒绝 105 条、待复核 0 条。",
+      "[数据整理][冲突仲裁] 检查 58 组事实，发现 0 组冲突。",
+      "[数据整理][搜索验证] 并行核验 131 条事实，修正 1 条，转人工复核 14 条，发现冲突 39 条。",
+      "[数据整理][缺口规划] 识别 172 个事实缺口，安排 0 个定向补爬行。",
+      "[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。",
+      "[数据整理][发布] 发布层写入 55 条，拒绝 167 条，待人工复核 14 条。"
+    ],
+    "extra": {
+      "evidence_gaps": 62,
+      "quality_rejected": 105,
+      "supervisor_decision": "publish",
+      "supervisor_reason": "没有满足补爬条件的候选行，进入发布。",
+      "online_batches": 0,
+      "fallback_batches": 8,
+      "search_verification": {
+        "checked": 131,
+        "corrected": 1,
+        "review": 14,
+        "conflicts": 39,
+        "workers": 4,
+        "online_search": true,
+        "online_checked": 131,
+        "online_votes": 122
+      },
+      "cache_backup": "curation_data/cache_backups/20260819_031241_0a62fe9d_before_publish.json"
+    }
+  }
+}

@@ -67,5 +67,13 @@
       "published_at": "2026-08-03T18:25:37+08:00"
     }
   ],
-  "site_version": "7d9d8a0865d0d1dad8207e806e334020c6a6a27e1a86b254a0585acf27d3c213"
+  "monitor": {
+    "status": "snapshot",
+    "scan_times": [
+      "06:00",
+      "13:30"
+    ],
+    "last_error": ""
+  },
+  "site_version": "2c0d821e0cdee7c2447c51a79c49c141725787367cc4e5134a6c36ce0b5743e0"
 }

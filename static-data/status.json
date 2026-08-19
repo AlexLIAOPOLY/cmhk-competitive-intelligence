@@ -1,0 +1,347 @@
+{
+  "ok": true,
+  "status": {
+    "results": {
+      "count": 40,
+      "ok": 33,
+      "partial": 3
+    },
+    "visuals": {
+      "crawl": {
+        "success": 208,
+        "failed": 5,
+        "fallback": 0,
+        "total": 213,
+        "successRate": 98,
+        "completedAt": "2026-08-19 03:11:42"
+      },
+      "quality": {
+        "ok": 33,
+        "partial": 3,
+        "failed": 4,
+        "fieldTotal": 243,
+        "missingFields": 24,
+        "rawSources": 233
+      },
+      "blocks": [
+        {
+          "label": "运营动态",
+          "value": 20
+        },
+        {
+          "label": "经营指标",
+          "value": 12
+        },
+        {
+          "label": "产品资费",
+          "value": 8
+        }
+      ],
+      "sourceTypes": [
+        {
+          "label": "company_official",
+          "value": 121
+        },
+        {
+          "label": "government_public_info",
+          "value": 26
+        },
+        {
+          "label": "commercial_data",
+          "value": 18
+        },
+        {
+          "label": "company_official_investor_relations",
+          "value": 13
+        },
+        {
+          "label": "government_statistics",
+          "value": 9
+        },
+        {
+          "label": "regulator_public_info",
+          "value": 7
+        }
+      ],
+      "jurisdictions": [
+        {
+          "label": "HK",
+          "value": 111
+        },
+        {
+          "label": "US",
+          "value": 30
+        },
+        {
+          "label": "EU",
+          "value": 13
+        },
+        {
+          "label": "CN",
+          "value": 10
+        },
+        {
+          "label": "international",
+          "value": 9
+        },
+        {
+          "label": "UK",
+          "value": 7
+        }
+      ],
+      "methods": [
+        {
+          "label": "httpx",
+          "value": 175
+        },
+        {
+          "label": "cache:httpx",
+          "value": 34
+        },
+        {
+          "label": "curl_chrome_ua",
+          "value": 18
+        },
+        {
+          "label": "curl_direct_chrome_ua",
+          "value": 5
+        },
+        {
+          "label": "cache:curl_direct_chrome_ua",
+          "value": 1
+        }
+      ],
+      "rejection": {
+        "accepted": 55,
+        "rejected": 105,
+        "qualityRejected": 105,
+        "evidenceGaps": 62,
+        "reportedRejected": 167,
+        "review": 14,
+        "total": 236,
+        "qualityTotal": 174,
+        "rejectRate": 60,
+        "passRate": 32,
+        "reasons": [
+          {
+            "label": "在线模型不可用，离线结果不直接发布",
+            "value": 105
+          },
+          {
+            "label": "定性指标为截断网页片段",
+            "value": 2
+          },
+          {
+            "label": "未通过指标格式与单位门禁",
+            "value": 1
+          }
+        ],
+        "runId": "20260819_031241_0a62fe9d",
+        "completedAt": "2026-08-19T03:28:25+08:00"
+      },
+      "newsFunnel": {
+        "scope": "晨间扫描（2026-08-19@07:00）",
+        "label": "8月19日 07:00",
+        "completedAt": "2026-08-19T11:12:18+08:00",
+        "historyDuplicates": 284,
+        "summary": {
+          "discovered": 660,
+          "confirmed": 920,
+          "newCount": 635,
+          "sourceCount": 301
+        },
+        "categories": [
+          {
+            "label": "行业动态",
+            "value": 285
+          },
+          {
+            "label": "网络与技术",
+            "value": 131
+          },
+          {
+            "label": "竞对动态",
+            "value": 97
+          },
+          {
+            "label": "其他",
+            "value": 122
+          }
+        ],
+        "impacts": [
+          {
+            "label": "收入与需求",
+            "value": 85
+          },
+          {
+            "label": "供应韧性",
+            "value": 82
+          },
+          {
+            "label": "竞争格局",
+            "value": 80
+          },
+          {
+            "label": "产品与定价",
+            "value": 79
+          },
+          {
+            "label": "成本与效率",
+            "value": 79
+          },
+          {
+            "label": "资本配置",
+            "value": 75
+          },
+          {
+            "label": "网络与运营",
+            "value": 65
+          },
+          {
+            "label": "客户与渠道",
+            "value": 62
+          },
+          {
+            "label": "合规与牌照",
+            "value": 28
+          }
+        ],
+        "stages": [
+          {
+            "key": "discovered",
+            "label": "检索发现",
+            "value": 660,
+            "removed": 0,
+            "rate": 100,
+            "note": "候选池",
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 660 条候选。"
+          },
+          {
+            "key": "confirmed",
+            "label": "AI确认",
+            "value": 920,
+            "removed": 0,
+            "rate": 139,
+            "note": "保留 139%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 920 条，未确认 0 条。"
+          },
+          {
+            "key": "deduplicated",
+            "label": "历史去重",
+            "value": 636,
+            "removed": 284,
+            "rate": 69,
+            "note": "排除 284 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 284 条重复事件，剩余 636 条。"
+          },
+          {
+            "key": "new",
+            "label": "本轮新增",
+            "value": 635,
+            "removed": 1,
+            "rate": 100,
+            "note": "已写入飞书",
+            "detail": "最终 635 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+          }
+        ]
+      },
+      "todayNewsRounds": [],
+      "entities": [
+        {
+          "label": "HKBN",
+          "value": 4
+        },
+        {
+          "label": "HKT",
+          "value": 3
+        },
+        {
+          "label": "csl",
+          "value": 3
+        },
+        {
+          "label": "1O1O",
+          "value": 3
+        },
+        {
+          "label": "3HK",
+          "value": 3
+        },
+        {
+          "label": "Hutchison",
+          "value": 3
+        },
+        {
+          "label": "SmarTone",
+          "value": 3
+        },
+        {
+          "label": "行业资讯",
+          "value": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "8月14日周报.docx",
+          "mtime": 1786669137.0592186,
+          "mtimeText": "2026-08-14 08:58:57",
+          "audio": true
+        },
+        {
+          "name": "8月13日周报 (4).docx",
+          "mtime": 1786616541.3669343,
+          "mtimeText": "2026-08-13 18:22:21",
+          "audio": false
+        },
+        {
+          "name": "8月13日周报.docx",
+          "mtime": 1786615664.0,
+          "mtimeText": "2026-08-13 18:07:44",
+          "audio": false
+        },
+        {
+          "name": "8月13日周报 (3).docx",
+          "mtime": 1786612928.2043362,
+          "mtimeText": "2026-08-13 17:22:08",
+          "audio": true
+        },
+        {
+          "name": "8月13日周报 (2).docx",
+          "mtime": 1786611613.8852298,
+          "mtimeText": "2026-08-13 17:00:13",
+          "audio": true
+        },
+        {
+          "name": "8月13日运营商业绩摘要.docx",
+          "mtime": 1786610091.2196035,
+          "mtimeText": "2026-08-13 16:34:51",
+          "audio": true
+        },
+        {
+          "name": "8月13日周报 (1).docx",
+          "mtime": 1786609703.834235,
+          "mtimeText": "2026-08-13 16:28:23",
+          "audio": true
+        },
+        {
+          "name": "7月31日周报.docx",
+          "mtime": 1785459266.053557,
+          "mtimeText": "2026-07-31 08:54:26",
+          "audio": true
+        }
+      ]
+    },
+    "settings": {
+      "totalRows": 40,
+      "enabledRows": 40,
+      "selectedEntities": 74,
+      "selectedFields": 267
+    },
+    "tasks": {
+      "runningCount": 0,
+      "hasRunning": false
+    },
+    "latestOutputText": "2026-08-19 03:20:02",
+    "outputs": []
+  }
+}
