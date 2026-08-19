@@ -95,6 +95,8 @@
     const data = state.competitorData || { companies: [], metrics: [], cells: [] };
     const selection = state.competitorSelection;
     const knowledgeBases = Array.isArray(data.knowledgeBases) ? data.knowledgeBases : [];
+    const knowledgeBaseSummary = knowledgeBases.map((base) => `${base.label} ${number(base.companyCount)}主体`).join(" · ");
+    const groupKnowledgeLabel = (group) => group === "香港运营商" ? "本地运营商知识库" : "全球重点运营商知识库";
     const groups = data.companies.reduce((map, company) => {
       (map[company.group] ||= []).push(company);
       return map;
@@ -112,13 +114,9 @@
     });
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
-      <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>知识库 → 竞对 → 同单位指标 → 共同披露年 → 趋势与来源</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
-      <section class="competitor-knowledge-layer" aria-label="知识库类型与数据逻辑">
-        <div class="competitor-logic-path"><b>数据逻辑</b><span>先确认知识库范围，再生成可比趋势；缺失值、不同单位和不同币种均不补齐。</span></div>
-        <div class="competitor-knowledge-list">${knowledgeBases.map((base) => `<article><span>${esc(base.type)}</span><strong>${esc(base.label)}</strong><small>${esc(base.scope)}</small><em>${number(base.companyCount)} 个主体 · ${number(base.metricCount)} 项指标 · ${number(base.cellCount)} 个年度单元</em></article>`).join("")}</div>
-      </section>
+      <header class="competitor-builder-head"><div><strong>竞对数据工作台</strong><span>${esc(knowledgeBaseSummary)} · 依次选择竞对、同单位指标和共同披露年</span></div><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
-        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span>${esc(group)}</span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
+        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company) => `<label><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>截至最后共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
@@ -172,22 +170,19 @@
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
+    const fallbackItems = fallbackInsight.insights.map((item, index) => `<li><b>${["竞争格局", "公司定位", "业务含义"][index]}</b><span>${esc(item.replace(/^(竞争格局|公司定位|业务含义)[：|｜]\s*/, ""))}</span></li>`).join("");
     host.innerHTML = `<header class="workspace-panel-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><span>${companies.length} 家竞对</span></header>
+      <div class="competitor-result-overview">
       ${chart}
-      <section class="competitor-insight is-loading" id="competitorInsight" role="status" aria-live="polite" aria-busy="true">
+      <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="true">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在识别竞争格局与公司分化</small></div></div>
-          <span class="competitor-insight-badge" data-competitor-insight-badge>ANALYSING</span>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon>AI</i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>本地数据总结已生成，内网 AI 可用时自动增强</small></div></div>
+          <span class="competitor-insight-badge" data-competitor-insight-badge>DATA SUMMARY</span>
         </header>
         <div class="competitor-insight-body">
-          <div class="competitor-insight-loading" aria-hidden="true"><span></span><span></span><span></span></div>
-          <ol class="competitor-insight-list" data-competitor-insight-list>
-            <li><b>竞争格局</b><span>正在判断市场是收敛、分化还是出现追赶…</span></li>
-            <li><b>公司定位</b><span>正在识别各公司的规模、动能与稳定性特征…</span></li>
-            <li><b>业务含义</b><span>正在把数据变化转换为可解释的竞争信号…</span></li>
-          </ol>
+          <ol class="competitor-insight-list" data-competitor-insight-list>${fallbackItems}</ol>
         </div>
-      </section>
+      </section></div>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
   }
@@ -262,6 +257,11 @@
       gap: hasScopeBreak || hasSharedScope || hasBounds ? `${lastYear} · 不作精算` : `${lastYear} · ${format(lastSpread)}${isPercent ? "个百分点" : unit}`,
       relation,
       caveat: caveats.join(" "),
+      insights: [
+        `竞争格局｜${headline}`,
+        `公司定位｜${movements.map((item) => `${companyLabel(item.company)}较${firstYear}年${item.direction}`).join("；")}；${latestComparison}。`,
+        `业务含义｜${gapFinding}。${caveats.join(" ")}`,
+      ],
     };
   }
 
@@ -323,11 +323,11 @@
     card.setAttribute("aria-busy", "false");
     card.querySelector("[data-competitor-insight-icon]").textContent = "AI";
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
-    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "已完成竞争格局与公司定位分析" : "服务正在等待安全加载";
-    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "WAITING";
+    card.querySelector("[data-competitor-insight-status]").textContent = isAi ? "已完成竞争格局与公司定位分析" : "本地数据总结可用，内网 AI 正在等待安全加载";
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "DATA SUMMARY";
     const list = card.querySelector("[data-competitor-insight-list]");
     list.replaceChildren(...items.map((item, index) => {
-      const labels = isAi ? ["竞争格局", "公司定位", "业务含义"] : ["状态"];
+      const labels = ["竞争格局", "公司定位", "业务含义"];
       const li = document.createElement("li");
       const label = document.createElement("b");
       const copy = document.createElement("span");
@@ -353,7 +353,7 @@
       if (error.name === "AbortError") return;
       const card = document.querySelector("#competitorInsight");
       if (requestId === state.competitorInsightRequest && card) {
-        settleCompetitorInsight(card, { mode: "data", insights: ["AI 竞争洞察服务正在等待安全加载，趋势图与原始数据仍可正常查看。"] });
+        settleCompetitorInsight(card, { mode: "data", insights: fallbackInsight.insights });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;

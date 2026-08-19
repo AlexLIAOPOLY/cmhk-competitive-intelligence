@@ -279,16 +279,6 @@
 .competitor-builder-head > div { display: grid; gap: 3px; }
 .competitor-builder-head strong { color: #edf8fa; font-size: 14px; }
 .competitor-builder-head span { color: #7899a6; font-size: 10px; }
-.competitor-knowledge-layer { display: grid; grid-template-columns: minmax(210px,.72fr) minmax(0,1.7fr); gap: 14px; padding: 10px 14px; border-bottom: 1px solid rgba(66,103,118,.45); background: rgba(5,24,34,.42); }
-.competitor-logic-path { display: grid; align-content: center; gap: 4px; padding-right: 14px; border-right: 1px solid rgba(66,103,118,.4); }
-.competitor-logic-path b { color: #72c8d8; font-size: 10px; letter-spacing: .08em; }
-.competitor-logic-path span { color: #8ca9b3; font-size: 10px; line-height: 1.55; }
-.competitor-knowledge-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
-.competitor-knowledge-list article { display: grid; min-width: 0; gap: 2px; padding: 8px 10px; border: 1px solid rgba(78,134,153,.42); border-radius: 7px; background: rgba(12,43,55,.7); }
-.competitor-knowledge-list article > span { color: #62bed0; font-size: 9px; }
-.competitor-knowledge-list strong { overflow: hidden; color: #e1f0f3; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.competitor-knowledge-list small,.competitor-knowledge-list em { overflow: hidden; color: #7899a6; font-size: 9px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
-.competitor-knowledge-list em { color: #9bb7c0; }
 .competitor-steps { display: grid; grid-template-columns: 1.35fr 1fr .72fr; }
 .competitor-steps fieldset { min-width: 0; margin: 0; padding: 13px 15px 15px; border: 0; border-right: 1px solid rgba(66,103,118,.45); }
 .competitor-steps fieldset:last-child { border-right: 0; }
@@ -296,11 +286,13 @@
 .competitor-steps legend i { margin-right: 7px; color: #5fc4d7; font-style: normal; letter-spacing: .08em; }
 .competitor-steps legend small { float: right; color: #6f929f; font-size: 8px; font-weight: 400; }
 .competitor-option-group { display: flex; align-items: flex-start; gap: 8px; margin-top: 7px; }
-.competitor-option-group > span { flex: 0 0 58px; padding-top: 4px; color: #6f929f; font-size: 8px; }
+.competitor-option-group > span { display: grid; flex: 0 0 104px; gap: 2px; padding-top: 2px; color: #6f929f; }
+.competitor-option-group > span b { color: #93adb6; font-size: 8px; font-weight: 650; }
+.competitor-option-group > span small { color: #547783; font-size: 7px; white-space: nowrap; }
 .competitor-option-group > div { display: flex; flex-wrap: wrap; gap: 5px; }
 .competitor-option-group label,.competitor-year-options label { cursor: pointer; }
 .competitor-option-group input,.competitor-year-options input { position: absolute; opacity: 0; pointer-events: none; }
-.competitor-option-group b,.competitor-year-options span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border: 1px solid #365b6a; border-radius: 4px; color: #9eb8c1; background: #0a222e; font-size: 9px; font-weight: 600; }
+.competitor-option-group label > b,.competitor-year-options span { display: inline-flex; min-height: 26px; align-items: center; padding: 0 9px; border: 1px solid #365b6a; border-radius: 4px; color: #9eb8c1; background: #0a222e; font-size: 9px; font-weight: 600; }
 .competitor-option-group input:checked + b,.competitor-year-options input:checked + span { border-color: #5fc4d7; color: #eaf8fa; background: #174052; box-shadow: inset 0 0 0 1px rgba(95,196,215,.18); }
 .competitor-option-group input:disabled + b { cursor: not-allowed; opacity: .35; }
 .competitor-select { display: grid; gap: 7px; color: #7899a6; font-size: 9px; }
@@ -308,11 +300,12 @@
 .competitor-year-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
 .competitor-year-options span { justify-content: center; padding: 0 5px; }
 .competitor-result { min-height: 0; overflow: auto; }
+.competitor-result-overview { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(330px,.72fr); gap: 14px; margin: 0 14px 14px; align-items: stretch; }
 .competitor-empty { display: grid; min-height: 100%; place-content: center; justify-items: center; padding: 40px 20px; text-align: center; }
 .competitor-empty span { color: #4daec2; font: 700 10px/1 system-ui; letter-spacing: .24em; }
 .competitor-empty strong { margin-top: 14px; color: #dcecef; font-size: 17px; }
 .competitor-empty p { max-width: 440px; margin: 9px 0 0; color: #7899a6; font-size: 10px; line-height: 1.6; }
-.competitor-insight { position: relative; display: grid; gap: 17px; min-height: 220px; margin: 14px 14px 12px; padding: 20px 22px 17px; overflow: hidden; border: 1px solid rgba(82,181,201,.52); border-radius: 13px; color: #cce2e7; background: linear-gradient(135deg,rgba(20,72,89,.82),rgba(7,27,38,.96) 62%); box-shadow: 0 14px 38px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.025); font-size: 11px; }
+.competitor-insight { position: relative; display: grid; align-content: start; gap: 15px; min-height: 0; margin: 0; padding: 17px 18px 15px; overflow: hidden; border: 1px solid rgba(82,181,201,.52); border-radius: 13px; color: #cce2e7; background: linear-gradient(135deg,rgba(20,72,89,.82),rgba(7,27,38,.96) 62%); box-shadow: 0 14px 38px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.025); font-size: 11px; }
 .competitor-insight::before { position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg,transparent,#58bdd2 32%,#68d7b2 68%,transparent); content: ""; opacity: .68; }
 .competitor-insight-header,.competitor-insight-identity { display: flex; align-items: center; }
 .competitor-insight-header { justify-content: space-between; gap: 18px; }
@@ -324,9 +317,9 @@
 .competitor-insight-badge { padding: 5px 8px; border: 1px solid rgba(95,196,215,.35); border-radius: 999px; color: #75bdca; background: rgba(5,26,35,.42); font: 700 8px/1 system-ui; letter-spacing: .12em; }
 .competitor-insight-body { display: grid; grid-template-columns: minmax(0,1fr); align-items: center; gap: 22px; }
 .competitor-insight-list { display: grid; gap: 10px; max-width: 900px; margin: 0; padding: 0; list-style: none; }
-.competitor-insight-list li { display: grid; grid-template-columns: 74px minmax(0,1fr); gap: 12px; align-items: start; }
+.competitor-insight-list li { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 9px; align-items: start; }
 .competitor-insight-list li b { padding-top: 3px; color: #71d1e2; font-size: 9px; letter-spacing: .08em; }
-.competitor-insight-list li span { color: #e7f3f5; font-size: 13px; font-weight: 620; line-height: 1.62; letter-spacing: .01em; }
+.competitor-insight-list li span { color: #e7f3f5; font-size: 11px; font-weight: 620; line-height: 1.55; letter-spacing: .01em; }
 .competitor-insight-loading { display: none; gap: 9px; }
 .competitor-insight-loading span { display: block; height: 13px; border-radius: 4px; background: linear-gradient(90deg,rgba(89,143,158,.12),rgba(109,196,214,.32),rgba(89,143,158,.12)); background-size: 220% 100%; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-insight-loading span:nth-child(1) { width: 78%; }
@@ -339,7 +332,7 @@
 .competitor-insight.is-ai::before { opacity: .92; }
 @keyframes competitor-insight-shimmer { 0% { background-position: 110% 0; } 100% { background-position: -110% 0; } }
 @keyframes competitor-insight-pulse { 0%,100% { box-shadow: 0 0 0 rgba(82,181,201,0); } 50% { box-shadow: 0 0 0 7px rgba(82,181,201,.08),0 0 22px rgba(82,181,201,.22); } }
-.competitor-chart-card { margin: 0 14px 14px; padding: 14px 16px 10px; border: 1px solid rgba(66,103,118,.58); border-radius: 10px; background: radial-gradient(circle at 50% 0,rgba(35,99,121,.2),transparent 52%),#081f2a; box-shadow: 0 12px 32px rgba(0,0,0,.14); }
+.competitor-chart-card { display: flex; min-width: 0; margin: 0; padding: 14px 16px 10px; flex-direction: column; border: 1px solid rgba(66,103,118,.58); border-radius: 10px; background: radial-gradient(circle at 50% 0,rgba(35,99,121,.2),transparent 52%),#081f2a; box-shadow: 0 12px 32px rgba(0,0,0,.14); }
 .competitor-chart-card figcaption { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
 .competitor-chart-card figcaption > div:first-child { display: grid; gap: 4px; }
 .competitor-chart-card figcaption strong { color: #e9f6f8; font-size: 13px; }
@@ -348,7 +341,7 @@
 .competitor-chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: #a9c1c9 !important; white-space: nowrap; }
 .competitor-chart-legend i { width: 15px; height: 2px; border-radius: 999px; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb,var(--series-color) 55%,transparent); }
 .competitor-chart-scroll { width: 100%; margin-top: 8px; overflow-x: auto; overscroll-behavior-inline: contain; }
-.competitor-chart { display: block; width: 100%; min-width: 680px; height: auto; min-height: 250px; }
+.competitor-chart { display: block; width: 100%; min-width: 680px; height: clamp(250px,29vh,310px); min-height: 250px; }
 .competitor-chart-grid line { stroke: rgba(103,151,167,.18); stroke-width: 1; shape-rendering: crispEdges; }
 .competitor-chart-grid text { fill: #6f909c; font-size: 10px; text-anchor: end; }
 .competitor-chart-year line { stroke: #527483; stroke-width: 1; }
@@ -906,7 +899,7 @@ body.has-maximized-report-preview { overflow: hidden; }
   box-shadow: inset 0 1px rgba(212, 246, 252, .035);
 }
 
-.dashboard-page:not(.workspace-dashboard-active) .competitor-option-group b,
+.dashboard-page:not(.workspace-dashboard-active) .competitor-option-group label > b,
 .dashboard-page:not(.workspace-dashboard-active) .competitor-year-options span {
   border-color: rgba(91, 157, 177, .3);
   border-radius: 8px;
@@ -1046,9 +1039,8 @@ body.has-maximized-report-preview { overflow: hidden; }
   .workspace-module-actions { justify-content: flex-start; }
   .workspace-grid { grid-template-columns: 1fr; }
   .competitor-workbench { height: auto; min-height: 100%; }
-  .competitor-knowledge-layer { grid-template-columns: 1fr; }
-  .competitor-logic-path { padding: 0 0 8px; border-right: 0; border-bottom: 1px solid rgba(66,103,118,.4); }
-  .competitor-knowledge-list { grid-template-columns: 1fr; }
+  .competitor-result-overview { grid-template-columns: 1fr; }
+  .competitor-insight { margin-inline: 0; }
   .competitor-steps { grid-template-columns: 1fr; }
   .competitor-steps fieldset { border-right: 0; border-bottom: 1px solid rgba(66,103,118,.45); }
   .competitor-chart-card figcaption { flex-direction: column; }
