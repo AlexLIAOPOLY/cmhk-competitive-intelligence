@@ -73,7 +73,8 @@ RESULTS_DIR = ROOT / "results"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
 CURATION_CANDIDATE_FACTS_PATH = ROOT / "curation_data" / "candidate_facts.jsonl"
 CURATION_AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
-STRATEGIC_BRIEFING_RUNS_DIR = ROOT / "strategy_briefing" / "runs"
+STRATEGIC_BRIEFING_DIR = ROOT / "strategy_briefing"
+STRATEGIC_BRIEFING_RUNS_DIR = STRATEGIC_BRIEFING_DIR / "runs"
 LOCAL_TEMPLATE_PATH = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_TEMPLATE_PATH = ROOT / "weekly_report_template.docx"
 TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TEMPLATE_PATH
@@ -1847,6 +1848,79 @@ def strategic_news_items_for_crawl_run(run: object) -> list[dict]:
             }
         )
     return items
+
+
+def _strategic_process_item(raw: object) -> dict:
+    if not isinstance(raw, dict):
+        return {}
+    raw_url = str(raw.get("url") or raw.get("source_url") or "").strip()
+    parsed_url = urlparse(raw_url)
+    return {
+        "newsId": str(raw.get("news_id") or ""),
+        "sourceTitle": str(raw.get("source_title") or raw.get("title") or ""),
+        "sourceSummary": str(
+            raw.get("source_summary")
+            or raw.get("snippet")
+            or raw.get("summary")
+            or ""
+        ),
+        "source": str(raw.get("source") or raw.get("source_domain") or ""),
+        "url": raw_url if parsed_url.scheme in {"http", "https"} else "",
+        "publishedAt": str(raw.get("published_at") or raw.get("source_date") or ""),
+        "module": str(raw.get("module") or raw.get("category") or ""),
+        "matchedKeywords": str(raw.get("matched_keywords") or raw.get("keywords") or ""),
+        "status": str(raw.get("status") or ""),
+        "shouldInclude": raw.get("should_include") if isinstance(raw.get("should_include"), bool) else None,
+        "aiTitle": str(raw.get("ai_title") or ""),
+        "aiSummary": str(raw.get("ai_summary") or ""),
+        "category": str(raw.get("category") or ""),
+        "region": str(raw.get("region") or ""),
+        "decisionPath": str(raw.get("decision_path") or ""),
+        "signalType": str(raw.get("signal_type") or ""),
+        "businessImpact": str(raw.get("business_impact") or ""),
+        "exclusionCode": str(raw.get("exclusion_code") or ""),
+        "reason": str(raw.get("reason") or raw.get("inclusion_reason") or ""),
+        "duplicateOf": str(raw.get("duplicate_of") or ""),
+        "errors": [str(item) for item in raw.get("errors") or []],
+        "query": str(raw.get("query") or ""),
+        "searchOrigin": str(raw.get("search_origin") or ""),
+    }
+
+
+def strategic_news_process_items_for_crawl_run(run: object) -> dict:
+    """Expose per-object records for each strategic-news node, not only totals."""
+    empty = {"discoveryItems": [], "aiReviewItems": [], "dedupeItems": []}
+    if not isinstance(run, dict) or str(run.get("task_kind") or "") != "strategic-news":
+        return empty
+    summary = run.get("operational_summary")
+    slot = str(summary.get("slot") or "") if isinstance(summary, dict) else ""
+    payload = load_strategic_news_run(slot)
+    discovery = payload.get("news_discovery") if isinstance(payload.get("news_discovery"), dict) else {}
+    raw_discovery = discovery.get("items") if isinstance(discovery.get("items"), list) else []
+    if not raw_discovery:
+        latest_path = STRATEGIC_BRIEFING_DIR / "news_discovery_latest.json"
+        try:
+            latest = json.loads(latest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            latest = {}
+        generated_at = str(latest.get("generated_at") or "") if isinstance(latest, dict) else ""
+        if slot and generated_at[:16] == slot.replace("@", "T")[:16]:
+            raw_discovery = latest.get("items") if isinstance(latest.get("items"), list) else []
+    review_sheet = payload.get("review_sheet") if isinstance(payload.get("review_sheet"), dict) else {}
+    raw_ai = review_sheet.get("ai_review_items") if isinstance(review_sheet.get("ai_review_items"), list) else []
+    if not raw_ai and raw_discovery:
+        try:
+            from strategic_briefing import reconstruct_ai_review_items
+
+            raw_ai = reconstruct_ai_review_items(raw_discovery)
+        except Exception:
+            raw_ai = []
+    raw_dedupe = review_sheet.get("semantic_review_items") if isinstance(review_sheet.get("semantic_review_items"), list) else []
+    return {
+        "discoveryItems": [item for raw in raw_discovery[:300] if (item := _strategic_process_item(raw))],
+        "aiReviewItems": [item for raw in raw_ai[:300] if (item := _strategic_process_item(raw))],
+        "dedupeItems": [item for raw in raw_dedupe[:300] if (item := _strategic_process_item(raw))],
+    }
 
 
 def build_today_news_rounds(today_key: str = "") -> list[dict]:
@@ -4372,6 +4446,7 @@ class AppHandler(BaseHTTPRequestHandler):
             result = load_crawl_run_log(crawl_run_id)
             if result.get("ok"):
                 result["newsItems"] = strategic_news_items_for_crawl_run(result.get("run"))
+                result.update(strategic_news_process_items_for_crawl_run(result.get("run")))
             json_response(self, result, 200 if result.get("ok") else 404)
             return
         if path == "/api/curation-quality-records":

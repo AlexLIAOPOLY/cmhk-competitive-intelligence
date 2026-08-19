@@ -1316,6 +1316,7 @@ def sync_candidates(
         from strategic_briefing import (
             acknowledge_deferred_ai_candidates,
             agent_semantic_deduplicate_candidates,
+            load_latest_ai_review_audit,
             polish_candidates_before_review,
             unpublishable_copy_reason,
         )
@@ -1333,6 +1334,12 @@ def sync_candidates(
             if progress_callback is not None
             else polish_candidates_before_review(curated_items)
         )
+        ai_review_audit = load_latest_ai_review_audit()
+        ai_review_items = (
+            ai_review_audit.get("review_items")
+            if isinstance(ai_review_audit.get("review_items"), list)
+            else []
+        )
         ai_included_count = len(prepared_items)
         semantic_search_day, semantic_history_items = _same_day_semantic_history(
             existing_history_items,
@@ -1348,6 +1355,7 @@ def sync_candidates(
                 f"{len(semantic_history_items)} 条去重。"
             ),
         )
+        semantic_input_items = list(prepared_items)
         semantic_result = (
             agent_semantic_deduplicate_candidates(
                 prepared_items,
@@ -1361,6 +1369,50 @@ def sync_candidates(
             )
         )
         prepared_items = semantic_result["kept"]
+        semantic_decisions = {
+            _text(entry.get("id"), 80): entry
+            for entry in semantic_result.get("decisions") or []
+            if isinstance(entry, dict) and _text(entry.get("id"), 80)
+        }
+        semantic_review_items: list[dict[str, Any]] = []
+        ordered_semantic_decisions = [
+            entry
+            for entry in semantic_result.get("decisions") or []
+            if isinstance(entry, dict)
+        ]
+        for item_index, item in enumerate(semantic_input_items):
+            news_id = _text(item.get("news_id"), 80)
+            decision = semantic_decisions.get(news_id) or (
+                ordered_semantic_decisions[item_index]
+                if item_index < len(ordered_semantic_decisions)
+                else {}
+            )
+            is_duplicate = decision.get("is_duplicate") is True
+            semantic_review_items.append(
+                {
+                    "news_id": news_id,
+                    "title": _text(item.get("ai_title") or item.get("title"), 500),
+                    "summary": _text(
+                        item.get("ai_summary") or item.get("summary") or item.get("snippet"),
+                        1200,
+                    ),
+                    "source": _text(item.get("source") or item.get("source_domain"), 160),
+                    "url": _text(item.get("url") or item.get("source_url"), 1600),
+                    "published_at": _text(
+                        item.get("published_at") or item.get("source_date"), 80
+                    ),
+                    "status": "duplicate" if is_duplicate else "kept",
+                    "duplicate_of": _text(decision.get("duplicate_of"), 80),
+                    "reason": _text(
+                        decision.get("reason")
+                        or "本轮去重归档未保存逐条理由。",
+                        1000,
+                    ),
+                    "errors": [
+                        _text(error, 300) for error in decision.get("errors") or []
+                    ],
+                }
+            )
         # Final gate before human-facing rows. The AI layer already recovers or
         # rejects leaked prompt text and programme listings, so anything caught
         # here is an unseen model failure: block it and let monitoring alert
@@ -1659,6 +1711,7 @@ def sync_candidates(
             "candidate_count": candidate_count,
             "batch_count": len(items),
             "ai_included_count": ai_included_count,
+            "ai_review_items": ai_review_items,
             "archived_count": archived_count,
             "gate_filtered_count": len(items) - len(curated_items),
             "gate_filtered_reasons": dict(gate_reasons),
@@ -1674,6 +1727,7 @@ def sync_candidates(
             "new_items": new_items,
             "existing_count": len(existing_status),
             "semantic_duplicate_count": len(semantic_result["duplicates"]),
+            "semantic_review_items": semantic_review_items,
             "semantic_deferred_count": len(semantic_result["deferred"]),
             "semantic_history_count": semantic_result["history_count"],
             "semantic_history_shards": semantic_result["history_shards"],
