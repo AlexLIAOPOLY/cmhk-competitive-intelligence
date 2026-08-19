@@ -189,6 +189,21 @@
     return cell;
   }
 
+  function reviewerAvatar(reviewer) {
+    if (!reviewer?.name) return "";
+    const name = String(reviewer.name);
+    const title = `${name}最后复核${reviewer.reviewedAt ? ` · ${new Date(reviewer.reviewedAt).toLocaleString("zh-HK", { hour12: false })}` : ""}`;
+    let image = "";
+    try {
+      const raw = String(reviewer.avatarUrl || "").trim();
+      if (!raw) throw new Error("missing avatar URL");
+      const url = new URL(raw, location.origin);
+      if (!["http:", "https:"].includes(url.protocol)) throw new Error("unsupported avatar URL");
+      image = `<img src="${escapeHtml(url.href)}" alt="" />`;
+    } catch (_) { /* use initial */ }
+    return `<span class="news-review-reviewer" title="${escapeHtml(title)}" aria-label="最后复核人：${escapeHtml(name)}">${image || escapeHtml(name.slice(0, 1) || "用")}</span>`;
+  }
+
   function renderHead() {
     nodes.colgroup.replaceChildren();
     const rowNumberCol = document.createElement("col");
@@ -257,7 +272,7 @@
       const rowNumber = document.createElement("th");
       rowNumber.scope = "row";
       rowNumber.className = "news-review-row-number";
-      rowNumber.textContent = String(row.rowNumber);
+      rowNumber.innerHTML = `<span>${row.rowNumber}</span>${reviewerAvatar(row.reviewer)}`;
       tr.appendChild(rowNumber);
       row.values.forEach((_value, columnIndex) => tr.appendChild(buildCell(row, rowIndex, columnIndex)));
       fragment.appendChild(tr);
@@ -284,6 +299,7 @@
       ? payload.rows.map((row) => ({
         rowNumber: Number(row.rowNumber),
         values: model.headers.map((_header, index) => String(row.values?.[index] || "")),
+        reviewer: row.reviewer && typeof row.reviewer === "object" ? row.reviewer : null,
       }))
       : [];
     model.editableColumns = new Set((payload.editableColumns || []).map(Number));

@@ -125,6 +125,38 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertNotIn("exportExcel", script)
         self.assertIn("position: sticky", css)
         self.assertIn(".news-review-status-select.status-accepted", css)
+        self.assertIn("reviewerAvatar(row.reviewer)", script)
+        self.assertIn("news-review-reviewer", css)
+
+
+class NewsReviewActorTests(unittest.TestCase):
+    def test_latest_successful_decision_actor_is_attached_to_review_row(self) -> None:
+        snapshot = {"rows": [{"rowNumber": 2, "values": ["接受"]}, {"rowNumber": 3, "values": ["待审核"]}]}
+        events = [
+            {
+                "at": "2026-08-20T09:00:00+08:00",
+                "actor_id": "user-2",
+                "actor_name": "最新复核人",
+                "actor_avatar_url": "https://example.com/new.png",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"decision_rows": [2]},
+            },
+            {
+                "at": "2026-08-20T08:00:00+08:00",
+                "actor_id": "user-1",
+                "actor_name": "旧复核人",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"decision_rows": [2, 3]},
+            },
+        ]
+        with mock.patch.object(web_app.AUTH, "operation_audit", return_value=events):
+            result = web_app.attach_news_review_actors(snapshot)
+
+        self.assertEqual(result["rows"][0]["reviewer"]["name"], "最新复核人")
+        self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
+        self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
 
 
 if __name__ == "__main__":

@@ -38,7 +38,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=2', INDEX)
-        self.assertIn('/static/organization-admin.js?v=2', INDEX)
+        self.assertIn('/static/organization-admin.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.css?v=3', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
@@ -79,6 +79,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
+        self.assertIn('/static/news-review-sheet.css?v=3', INDEX)
         self.assertIn('/static/workspace-tabs.css?v=83', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=72', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)

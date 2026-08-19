@@ -3715,6 +3715,38 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
     }
 
 
+def attach_news_review_actors(snapshot: dict) -> dict:
+    """Attach the latest authenticated human reviewer to each reviewed row."""
+    reviewers: dict[int, dict[str, str]] = {}
+    for event in AUTH.operation_audit(limit=1000):
+        if event.get("action") != "news_review.update" or event.get("result") != "success":
+            continue
+        details = event.get("details") if isinstance(event.get("details"), dict) else {}
+        decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
+        reviewer = {
+            "id": str(event.get("actor_id") or ""),
+            "name": str(event.get("actor_name") or "未知用户"),
+            "avatarUrl": str(event.get("actor_avatar_url") or ""),
+            "reviewedAt": str(event.get("at") or ""),
+        }
+        for raw_row_number in decision_rows:
+            try:
+                row_number = int(raw_row_number)
+            except (TypeError, ValueError):
+                continue
+            reviewers.setdefault(row_number, reviewer)
+    for row in snapshot.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        try:
+            reviewer = reviewers.get(int(row.get("rowNumber") or 0))
+        except (TypeError, ValueError):
+            reviewer = None
+        if reviewer:
+            row["reviewer"] = reviewer
+    return snapshot
+
+
 def _task_incident_metadata() -> dict[str, dict]:
     try:
         monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
@@ -4339,7 +4371,7 @@ class AppHandler(BaseHTTPRequestHandler):
             try:
                 from news_review_sheet import review_sheet_snapshot
 
-                json_response(self, {"ok": True, **review_sheet_snapshot()})
+                json_response(self, {"ok": True, **attach_news_review_actors(review_sheet_snapshot())})
             except Exception as exc:
                 json_response(
                     self,
@@ -4793,6 +4825,8 @@ class AppHandler(BaseHTTPRequestHandler):
                 INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
             return
         if parsed.path == "/api/news-review-sheet/update":
+            actor = AUTH.current_actor(self)
+            changes = []
             try:
                 from news_review_sheet import update_review_sheet_cells
 
@@ -4801,10 +4835,52 @@ class AppHandler(BaseHTTPRequestHandler):
                 if not isinstance(changes, list):
                     raise ValueError("changes 必须是数组")
                 result = update_review_sheet_cells(changes)
-                json_response(self, {"ok": True, **result})
+                decision_rows = sorted({
+                    int(item.get("rowNumber") or 0)
+                    for item in changes
+                    if isinstance(item, dict) and int(item.get("columnIndex", -1)) in {0, 1}
+                    and str(item.get("before") or "") != str(item.get("value") or "")
+                })
+                if not int(result.get("changedCount") or 0):
+                    decision_rows = []
+                AUTH.record_operation(
+                    actor=actor,
+                    action="news_review.update",
+                    target=str(result.get("sheetId") or "news-review-sheet"),
+                    details={
+                        "changed_count": int(result.get("changedCount") or 0),
+                        "decision_rows": decision_rows,
+                        "cells": [
+                            {
+                                "row": int(item.get("rowNumber") or 0),
+                                "column": int(item.get("columnIndex", -1)),
+                                "before": str(item.get("before") or "")[:120],
+                                "after": str(item.get("value") or "")[:120],
+                            }
+                            for item in changes[:200]
+                            if isinstance(item, dict)
+                        ],
+                        "feishu_readback": bool(result.get("readbackVerified")),
+                    },
+                )
+                json_response(self, {"ok": True, **attach_news_review_actors(result)})
             except (ValueError, RuntimeError) as exc:
+                AUTH.record_operation(
+                    actor=actor,
+                    action="news_review.update",
+                    target="news-review-sheet",
+                    result="failure",
+                    details={"error": str(exc)[:240]},
+                )
                 json_response(self, {"ok": False, "error": str(exc)}, 409)
             except Exception as exc:
+                AUTH.record_operation(
+                    actor=actor,
+                    action="news_review.update",
+                    target="news-review-sheet",
+                    result="failure",
+                    details={"error": str(exc)[:240]},
+                )
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
         if parsed.path == "/api/crawl":
