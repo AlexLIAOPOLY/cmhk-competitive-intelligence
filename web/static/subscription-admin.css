@@ -128,6 +128,17 @@ td select { min-width: 84px; }
 .status.queued, .status.pending { color: #86c1e7; background: rgba(51,112,154,.17); }
 .status.retrying, .status.paused { color: #e1bd70; background: rgba(148,108,38,.17); }
 .status.failed { color: #dfa1a7; background: rgba(160,70,78,.16); }
+/* Readability scale: retain the compact admin layout while avoiding tiny text. */
+h1 { font-size: 20px; }
+.surface-header h2, .workbench-heading h2 { font-size: 15px; }
+.surface-header p, .workbench-heading p, .subtitle, .notice { font-size: 11px; }
+.button, label, select, input, textarea { font-size: 12px; }
+.table-person-name, .person-copy strong { font-size: 12px; }
+.table-person-id, .person-copy small, .invite-meta small { font-size: 10px; }
+table { font-size: 11px; }
+th, .status, .result-section-label, .result-type { font-size: 10px; }
+[data-outgoing-names], .schedule-form small, .schedule-meta, .manual-push-heading p { font-size: 10px; }
+.manual-push-heading h3, .drawer-tabs button, .drawer-summary, .empty.compact { font-size: 11px; }
 @media (max-width: 900px) {
   .upper-grid { grid-template-columns: 1fr; }
   .invite-surface, .subscriber-surface { min-height: 340px; }
