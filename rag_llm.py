@@ -540,21 +540,25 @@ def build_rag_index(dataset_ids: set[str] | None = None) -> list[dict[str, Any]]
 
 
 def _selected_quarterly_metrics_csv(dataset_ids: set[str] | None = None) -> Path | None:
-    candidates: list[Path] = []
+    candidates: list[tuple[str, float, Path]] = []
     if not AGENT_KNOWLEDGE_ROOT.exists():
         return None
     for folder in AGENT_KNOWLEDGE_ROOT.glob("quarterly_competitor_metrics_*"):
         if not folder.is_dir():
             continue
         manifest = _knowledge_manifest(folder)
+        if manifest.get("visibility") in {"hidden", "superseded", "archived"}:
+            continue
         if dataset_ids is not None and manifest["id"] not in dataset_ids and folder.name not in dataset_ids:
             continue
         csv_path = folder / "quarterly_metrics.csv"
         if csv_path.exists():
-            candidates.append(csv_path)
+            candidates.append(
+                (str(manifest.get("updated_at") or ""), csv_path.stat().st_mtime, csv_path)
+            )
     if not candidates:
         return None
-    return sorted(candidates, key=lambda path: (path.parent.name, path.stat().st_mtime), reverse=True)[0]
+    return max(candidates, key=lambda item: (item[0], item[1]))[2]
 
 
 def _global_operator_exact_metric_chunks(

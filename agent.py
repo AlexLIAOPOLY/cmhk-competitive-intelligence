@@ -1642,7 +1642,7 @@ def _seasonal_naive_forecast(values: list[float], horizon: int, season_length: i
 
 def _selected_quarterly_metrics_path() -> Path | None:
     selected = _selected_dataset_ids()
-    candidates: list[Path] = []
+    candidates: list[tuple[str, float, Path]] = []
     root = ROOT / "agent_knowledge"
     if not root.exists():
         return None
@@ -1657,16 +1657,18 @@ def _selected_quarterly_metrics_path() -> Path | None:
             manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
             dataset_id = str(manifest.get("id") or dataset_id)
             visibility = str(manifest.get("visibility") or "").strip().lower()
+            updated_at = str(manifest.get("updated_at") or "").strip()
         except Exception:
             visibility = ""
+            updated_at = ""
         if visibility in {"hidden", "superseded", "archived"}:
             continue
         if selected is not None and dataset_id not in selected and folder.name not in selected:
             continue
-        candidates.append(csv_path)
+        candidates.append((updated_at, csv_path.stat().st_mtime, csv_path))
     if not candidates:
         return None
-    return sorted(candidates, key=lambda path: (path.parent.name, path.stat().st_mtime), reverse=True)[0]
+    return max(candidates, key=lambda item: (item[0], item[1]))[2]
 
 
 @tool

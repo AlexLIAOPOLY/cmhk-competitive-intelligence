@@ -72,6 +72,7 @@ EXPECTED_DATASETS = [
 FORBIDDEN_DATASET_IDS = {
     "generated_charts",
     "quarterly_competitor_metrics_2026-06-17",
+    "quarterly_competitor_metrics_2026-08-18",
 }
 
 

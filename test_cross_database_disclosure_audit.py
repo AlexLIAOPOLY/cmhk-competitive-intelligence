@@ -146,20 +146,20 @@ class StrictSourceDocumentCountTest(unittest.TestCase):
         chunks = retrieve_context(
             "HKT 2025年上半年收入是多少？有几份独立来源文档？",
             limit=6,
-            dataset_ids={"quarterly_competitor_metrics_2026-08-18"},
+            dataset_ids={"quarterly_competitor_metrics_2026-06-18"},
         )
         combined = "\n".join(chunk["text"] for chunk in chunks)
         self.assertIn("subject=HKT / csl / 1O1O; period=H1 2025; metric_key=revenue", combined)
         self.assertIn("official_value=17322 millions HKD", combined)
-        self.assertIn("distinct_source_document_count=4", combined)
-        self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
+        self.assertIn("distinct_source_document_count=1", combined)
+        self.assertIn("triple_source_status=below_three_source_threshold", combined)
         self.assertNotIn("period=H1 2016; metric_key=revenue", combined)
 
     def test_quarterly_exact_context_exposes_strict_status(self) -> None:
         chunks = retrieve_context(
             "3HK H1 2021资本开支",
             limit=3,
-            dataset_ids={"quarterly_competitor_metrics_2026-08-18"},
+            dataset_ids={"quarterly_competitor_metrics_2026-06-18"},
         )
         exact = next(chunk["text"] for chunk in chunks if "精确季度指标行" in chunk["text"])
         self.assertIn("verification_count=3", exact)
@@ -170,7 +170,7 @@ class StrictSourceDocumentCountTest(unittest.TestCase):
         chunks = retrieve_context(
             "3HK 2025年下半年收入是多少？是否通过三来源核验？",
             limit=6,
-            dataset_ids={"quarterly_competitor_metrics_2026-08-18"},
+            dataset_ids={"quarterly_competitor_metrics_2026-06-18"},
         )
         exact = next(chunk["text"] for chunk in chunks if "period=H2 2025; metric_key=revenue" in chunk["text"])
         self.assertIn("official_value=3232 millions HKD", exact)

@@ -17,7 +17,10 @@ from bs4 import BeautifulSoup
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD_DATE = os.environ.get("CMHK_QUARTERLY_METRICS_BUILD_DATE") or date.today().isoformat()
+# Keep the established dataset ID stable so an ad-hoc rebuild cannot create a
+# second active quarterly package merely because it ran on a different date.
+CANONICAL_BUILD_DATE = "2026-06-18"
+BUILD_DATE = os.environ.get("CMHK_QUARTERLY_METRICS_BUILD_DATE") or CANONICAL_BUILD_DATE
 DATASET_ID = f"quarterly_competitor_metrics_{BUILD_DATE}"
 OUT_ROOT = Path(os.environ.get("CMHK_QUARTERLY_METRICS_OUT_ROOT") or ROOT / "agent_knowledge" / DATASET_ID)
 SOURCE_CACHE_ROOT = ROOT / "data" / "quarterly_sources" / "http_cache"

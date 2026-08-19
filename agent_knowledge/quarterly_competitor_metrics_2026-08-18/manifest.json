@@ -1,5 +1,8 @@
 {
   "id": "quarterly_competitor_metrics_2026-08-18",
+  "visibility": "superseded",
+  "superseded_by": "quarterly_competitor_metrics_2026-06-18",
+  "superseded_note": "This dated snapshot is retained only for audit history. The continuously refreshed canonical quarterly/half-year package remains quarterly_competitor_metrics_2026-06-18 and is the only package exposed to 小竞AI and default RAG retrieval.",
   "title": "竞对主体和重点云厂商季度/半年度经营数据包（2026-08-18）",
   "summary": "把原年度数据拆到 5 年季度或半年度粒度；覆盖主要运营商竞对和重点云厂商的可用期间数据、来源入口和核验状态。",
   "source_type": "external_standardized_and_official_public",
