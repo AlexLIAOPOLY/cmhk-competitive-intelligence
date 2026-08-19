@@ -13,6 +13,13 @@ class QuarterlyDatasetRoutingTests(unittest.TestCase):
         self.assertIn("quarterly_competitor_metrics_2026-06-18", dataset_ids)
         self.assertNotIn("quarterly_competitor_metrics_2026-08-18", dataset_ids)
 
+    def test_registry_rejects_explicit_superseded_august_snapshot(self) -> None:
+        datasets = rag_llm.list_knowledge_datasets(
+            dataset_ids={"quarterly_competitor_metrics_2026-08-18"}
+        )
+
+        self.assertEqual(datasets, [])
+
     def test_rag_exact_selector_uses_canonical_active_package(self) -> None:
         path = rag_llm._selected_quarterly_metrics_csv()
 

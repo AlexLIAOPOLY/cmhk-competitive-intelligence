@@ -327,7 +327,13 @@ def list_knowledge_datasets(dataset_ids: set[str] | None = None) -> list[dict[st
         if not folder.is_dir() or folder.name.startswith("."):
             continue
         manifest = _knowledge_manifest(folder)
-        if dataset_ids is None and manifest.get("visibility") in {"hidden", "superseded", "archived"}:
+        visibility = manifest.get("visibility")
+        # Superseded and archived packages are audit history, never selectable
+        # retrieval sources. Hidden packages may still be loaded explicitly by
+        # a visible parent dataset or as a backend support dataset.
+        if visibility in {"superseded", "archived"}:
+            continue
+        if dataset_ids is None and visibility == "hidden":
             continue
         if dataset_ids is not None and manifest["id"] not in dataset_ids and folder.name not in dataset_ids:
             continue
