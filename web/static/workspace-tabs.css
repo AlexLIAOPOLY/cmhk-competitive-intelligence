@@ -486,7 +486,7 @@
 .news-lineage-edge.is-amber text,.news-lineage-edge.is-feedback text { fill: #c99650; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
 .news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; }
-.news-lineage.is-global .news-lineage-edge text { font-size: 12px; font-weight: 700; paint-order: stroke fill; stroke-width: 3px; transform: translateY(-4px); }
+.news-lineage.is-global .news-lineage-edge text { font-size: 11px; font-weight: 720; stroke-width: 7px; }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
