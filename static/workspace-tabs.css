@@ -464,14 +464,14 @@
 .news-lineage-tools { display: flex; align-items: center; gap: 5px; }
 .news-lineage-tools button { min-width: 31px; height: 30px; padding: 0 9px; border: 1px solid rgba(73,118,135,.76); border-radius: 5px; color: #acc4ca; background: rgba(11,42,54,.86); font: 600 9px/1 system-ui,sans-serif; cursor: pointer; }
 .news-lineage-tools button:hover,.news-lineage-tools button:focus-visible { border-color: #58bed2; color: #effbfc; outline: 0; background: #143b4a; }
-.news-lineage-tools button:nth-child(-n+2) { min-width: 31px; padding: 0; font-size: 15px; }
+.news-lineage-tools button { min-width: 84px; font-size: 11px; }
 .news-lineage-viewport { width: 100%; min-height: 440px; overflow: auto hidden; overscroll-behavior-inline: contain; background-image: radial-gradient(circle at center,rgba(100,171,190,.11) 0 1px,transparent 1.3px); background-size: 22px 22px; scrollbar-color: rgba(87,174,193,.5) rgba(5,24,33,.7); scrollbar-width: thin; }
-.news-lineage.is-global .news-lineage-viewport { min-height: 400px; }
+.news-lineage.is-global .news-lineage-viewport { min-height: 560px; }
 .news-lineage.is-global .news-lineage-header { min-height: 96px; padding: 14px 18px; }
 .news-lineage.is-global .news-lineage-mode-switch { margin-bottom: 10px; }
 .news-lineage.is-global .news-lineage-mode-switch button { min-width: 88px; height: 30px; font-size: 11px; }
-.news-lineage.is-global .news-lineage-header h3 { font-size: 24px; line-height: 1.2; }
-.news-lineage.is-global .news-lineage-header p { margin-top: 7px; color: #8daab3; font-size: 12px; }
+.news-lineage.is-global .news-lineage-header h3 { font-size: 22px; line-height: 1.2; }
+.news-lineage.is-global .news-lineage-header p { margin-top: 7px; color: #9ab4bc; font-size: 13px; }
 .news-lineage-viewport:focus-visible { outline: 1px solid #58bed2; outline-offset: -1px; }
 .news-lineage-canvas { --lineage-zoom:1; position: relative; width: 1260px; height: 480px; transform: scale(var(--lineage-zoom)); transform-origin: left top; transition: transform .18s ease; }
 .news-lineage-edges { position: absolute; inset: 0; z-index: 1; width: 1260px; height: 480px; overflow: visible; pointer-events: none; }
@@ -483,9 +483,9 @@
 .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-feedback .news-lineage-pulse { stroke: #e3a64f; filter: drop-shadow(0 0 4px rgba(227,166,79,.6)); animation-duration: 3.2s; }
 .news-lineage-edge text { fill: #6f9ba7; font: 600 8px/1 system-ui,sans-serif; text-anchor: middle; paint-order: stroke; stroke: #061821; stroke-width: 5px; stroke-linejoin: round; }
 .news-lineage-edge.is-amber text,.news-lineage-edge.is-feedback text { fill: #c99650; }
-.news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 2.4; }
-.news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 5; stroke-dasharray: 2 26; }
-.news-lineage.is-global .news-lineage-edge text { fill: #e0aa53; font-size: 13px; font-weight: 750; stroke-width: 7px; }
+.news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
+.news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; }
+.news-lineage.is-global .news-lineage-edge text { font-size: 11px; font-weight: 720; stroke-width: 7px; }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
@@ -506,20 +506,14 @@
 .news-lineage-node > em { display: -webkit-box; overflow: hidden; color: #789aa5; font-size: 8px; font-style: normal; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .news-lineage-node.is-focus > span { padding: 0; color: #dff6f7; }
 .news-lineage-node.is-focus > em { color: #7fa7af; }
-.news-lineage.is-global .news-lineage-node { width: 250px; height: 335px; gap: 11px; padding: 22px 20px 18px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 14px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 18px 38px rgba(0,8,14,.34),inset 0 1px rgba(221,249,253,.07); }
+.news-lineage.is-global .news-lineage-node { width: 186px; height: 154px; gap: 9px; padding: 19px 17px 15px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 13px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 16px 32px rgba(0,8,14,.32),inset 0 1px rgba(221,249,253,.07); }
+.news-lineage.is-global .news-lineage-node.is-focus { width: 186px; height: 154px; min-height: 154px; place-content: start; border-radius: 13px; text-align: left; }
 .news-lineage.is-global .news-lineage-node.is-mint { border-color: rgba(82,187,163,.82); }
-.news-lineage-node-title { display: flex; min-height: 54px; align-items: center; gap: 13px; padding: 0 18px 11px 0; border-bottom: 1px solid rgba(94,147,164,.42); }
-.news-lineage-stage-icon { width: 38px; height: 38px; flex: 0 0 auto; fill: none; stroke: var(--node-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px color-mix(in srgb,var(--node-accent) 24%,transparent)); }
-.news-lineage-node-title span { color: #f0fafb; font-size: 20px; font-weight: 750; line-height: 1.25; }
-.news-lineage.is-global .news-lineage-node > strong { margin-top: 8px; font-size: 48px; }
-.news-lineage.is-global .news-lineage-node > strong small { margin-left: 8px; font-size: 15px; }
-.news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 13px; line-height: 1.45; white-space: pre-line; -webkit-line-clamp: 3; }
-.news-lineage-node-rows { display: grid; margin-top: 1px; }
-.news-lineage-node-rows > div { display: grid; min-height: 45px; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px; border-bottom: 1px solid rgba(84,133,150,.34); }
-.news-lineage-node-rows > div:last-child { border-bottom: 0; }
-.news-lineage-node-rows span { color: #b9d0d6; font-size: 17px; font-weight: 650; }
-.news-lineage-node-rows strong { color: #f2fbfc; font-size: 26px; font-variant-numeric: tabular-nums; }
-.news-lineage-node-rows small { margin-left: 4px; color: var(--node-accent); font-size: 12px; }
+.news-lineage.is-global .news-lineage-node > span { min-height: 38px; padding-right: 18px; color: #e9f6f8; font-size: 14px; font-weight: 750; line-height: 1.35; }
+.news-lineage.is-global .news-lineage-node > strong { font-size: 32px; line-height: 1.05; }
+.news-lineage.is-global .news-lineage-node > strong small { margin-left: 6px; font-size: 11px; }
+.news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 11px; line-height: 1.5; -webkit-line-clamp: 2; }
+.news-lineage.is-global .news-lineage-drag { top: 10px; right: 11px; color: #6f98a4; font-size: 13px; }
 .news-lineage.is-global .news-lineage-details > section { min-height: 138px; grid-template-columns: minmax(190px,.55fr) minmax(300px,1.1fr) minmax(320px,1.35fr); padding: 17px 20px; }
 .news-lineage.is-global .news-lineage-details div > span { font-size: 10px; }
 .news-lineage.is-global .news-lineage-details h4 { font-size: 19px; }
@@ -903,8 +897,15 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-severity.is-p3 { color: #8fc8d5; background: rgba(62,128,146,.18); }
 .fault-handler { color: #c7dbe0; white-space: nowrap; }
 .fault-empty { color: #7899a6 !important; text-align: center; }
+.fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
+.fault-pagination { display: flex; align-items: center; gap: 5px; }
+.fault-pagination button { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid rgba(74,121,138,.56); border-radius: 8px; color: #9fbdc6; background: rgba(12,42,54,.72); font: 650 10px/1 system-ui; cursor: pointer; }
+.fault-pagination button:hover:not(:disabled) { border-color: #61bfd2; color: #f1fafb; background: #194354; }
+.fault-pagination button.is-active { border-color: #65c7da; color: #06202b; background: #69c6d8; box-shadow: 0 0 16px rgba(79,190,211,.2); }
+.fault-pagination button:disabled { opacity: .3; cursor: default; }
+.fault-pagination em { margin-left: 5px; color: #6f929f; font-size: 9px; font-style: normal; white-space: nowrap; }
 .fault-monitor-note:empty { display: none; }
-.fault-monitor-note { flex: 0 0 auto; margin: 0; padding: 8px 12px; border-top: 1px solid rgba(49,85,103,.52); color: #6f929f; font-size: 9px; text-align: right; }
+.fault-monitor-note { margin-left: auto; color: #6f929f; font-size: 9px; text-align: right; }
 
 /* Embedded Feishu review uses the product's dark CMHK palette and paints
    cached rows immediately while the network refresh continues. */
@@ -1198,6 +1199,34 @@ body.has-maximized-report-preview { overflow: hidden; }
     var(--workspace-background-image) !important;
   background-position: center !important;
   background-size: cover !important;
+}
+
+/* Keep the assigned workspace image perceptible inside full-viewport business
+   surfaces. AI retains its purpose-built chat treatment, while the embedded
+   strategic cockpit keeps its own independently tuned imagery. */
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .workspace-module-shell:not(#workspace-panel-monitoring) {
+  background-image:
+    linear-gradient(145deg, rgba(3, 16, 24, .16), rgba(6, 27, 38, .12) 55%, rgba(3, 18, 27, .24)),
+    var(--workspace-background-image);
+}
+
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .workspace-panel,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .news-process-panel,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .fault-workbench,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .workspace-report-host .output-card,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) .workspace-report-side > .workspace-panel,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #outputArea.workspace-inline-report,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #logModal.workspace-inline-surface .log-modal,
+body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #newsReviewWorkspace.workspace-inline-review {
+  background-color: rgba(7, 29, 41, .56) !important;
+  background-image:
+    linear-gradient(145deg, rgba(4, 22, 32, .48), rgba(7, 31, 42, .56) 58%, rgba(4, 23, 33, .64)),
+    var(--workspace-background-image) !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  backdrop-filter: blur(7px) saturate(120%);
+  -webkit-backdrop-filter: blur(7px) saturate(120%);
 }
 
 @media (prefers-reduced-motion: reduce) {
