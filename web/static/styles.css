@@ -13372,6 +13372,46 @@ body.dashboard-page {
   color: #fff;
 }
 
+.dashboard-page #fileEditModal {
+  background: rgba(1, 10, 17, .78);
+  backdrop-filter: blur(12px) saturate(.86);
+}
+
+.dashboard-page #fileEditModal .file-edit-modal {
+  border-color: rgba(82, 167, 189, .58);
+  color: #e8f3f6;
+  background: linear-gradient(145deg, rgba(13, 45, 58, .98), rgba(5, 24, 34, .99));
+  box-shadow: 0 28px 80px rgba(0, 5, 10, .62), 0 0 42px rgba(49, 151, 178, .09);
+}
+
+.dashboard-page #fileEditModal .file-edit-modal header,
+.dashboard-page #fileEditModal .file-edit-modal footer {
+  border-color: rgba(66, 123, 142, .5);
+  background: rgba(12, 42, 54, .82);
+}
+
+.dashboard-page #fileEditModal .file-edit-modal h2 { color: #eef8fa; }
+.dashboard-page #fileEditModal .file-edit-modal p { color: #93b1bc; }
+.dashboard-page #fileEditModal .file-edit-modal label { color: #bad1d8; }
+.dashboard-page #fileEditModal .close-btn { color: #9dbbc5; }
+.dashboard-page #fileEditModal .close-btn:hover { color: #f2fbfc; background: rgba(44, 112, 132, .28); }
+
+.dashboard-page #fileEditModal input,
+.dashboard-page #fileEditModal textarea {
+  border-color: rgba(74, 139, 158, .62);
+  color: #edf7f9;
+  background: rgba(5, 27, 38, .86);
+}
+
+.dashboard-page #fileEditModal input::placeholder,
+.dashboard-page #fileEditModal textarea::placeholder { color: #708f9b; opacity: 1; }
+.dashboard-page #fileEditModal input:focus,
+.dashboard-page #fileEditModal textarea:focus { border-color: #62bfd2; box-shadow: 0 0 0 2px rgba(83, 185, 207, .14); }
+.dashboard-page #fileEditModal .quiet-button { border-color: #426d7c; color: #cce1e6; background: #123440; box-shadow: none; }
+.dashboard-page #fileEditModal .quiet-button:hover { border-color: #5b9caf; color: #f0f9fb; background: #194351; }
+.dashboard-page #fileEditModal .primary-button { border-color: #4bb0c5; color: #f5fcfd; background: linear-gradient(135deg, #218da3, #17687c); box-shadow: 0 8px 22px rgba(15, 107, 128, .28); }
+.dashboard-page #fileEditModal .settings-status { color: #83bdc9; }
+
 /* AI workspace: keep every generated/tool surface on the dark canvas. */
 .dashboard-page .floating-chat {
   --chat-surface-raised: #0f2b38;

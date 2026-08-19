@@ -94,6 +94,8 @@ const els = {
   outputArea: document.querySelector("#outputArea"),
   fileEditModal: document.querySelector("#fileEditModal"),
   fileEditForm: document.querySelector("#fileEditForm"),
+  fileEditTitle: document.querySelector("#fileEditTitle"),
+  fileEditDescription: document.querySelector("#fileEditDescription"),
   closeFileEdit: document.querySelector("#closeFileEdit"),
   cancelFileEdit: document.querySelector("#cancelFileEdit"),
   editFileName: document.querySelector("#editFileName"),
@@ -3762,7 +3764,10 @@ async function fetchStatus() {
 function openFileEditor(pathStr) {
   const file = state.outputs.find((item) => item.path_str === pathStr);
   if (!file) return;
+  const reportLabel = file.reportType === "carrier-performance" ? "业绩摘要" : "周报";
   state.editingFile = file;
+  if (els.fileEditTitle) els.fileEditTitle.textContent = `编辑${reportLabel}信息`;
+  if (els.fileEditDescription) els.fileEditDescription.textContent = `修改文件名会直接重命名本地${reportLabel} Word 文件，备注会显示在列表中。`;
   els.editFileName.value = file.name;
   els.editFileNote.value = file.note || "";
   els.fileEditStatus.textContent = "";

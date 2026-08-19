@@ -22,6 +22,14 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         self.assertIn('class="report-preview-pdf"', script)
         self.assertIn('下载原始 Word', script)
 
+    def test_maximized_preview_overrides_the_report_panel_layout(self):
+        style = (ROOT / "web/static/workspace-tabs.css").read_text(encoding="utf-8")
+
+        self.assertIn(".workspace-report-side > .report-preview.is-maximized", style)
+        self.assertIn("position: fixed !important", style)
+        self.assertIn("height: auto !important", style)
+        self.assertIn("max-height: none !important", style)
+
 
 if __name__ == "__main__":
     unittest.main()

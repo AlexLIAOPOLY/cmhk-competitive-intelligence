@@ -56,8 +56,10 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table th:nth-child(5) { width: 12%; }
 .subscriber-table th:nth-child(6) { width: 15%; }
 .subscriber-table td select { min-width: 0; }
+.table-person { display: flex; min-width: 0; align-items: center; gap: 9px; }
+.table-person-copy { min-width: 0; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
-.table-person-name { color: #edf5f7; font-size: 9px; }
+.table-person-name { overflow: hidden; color: #edf5f7; font-size: 9px; text-overflow: ellipsis; }
 .table-person-id { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
 .delivery-table table { min-width: 880px; }
 .delivery-recipient { display: block; min-width: 116px; }
@@ -109,6 +111,8 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .invite-row { grid-template-columns: auto auto minmax(0,1fr) auto; }
 .person-row:hover, .invite-row:hover { background: rgba(45,91,106,.11); }
 .avatar { width: 30px; height: 30px; flex: 0 0 30px; border: 1px solid #3a5b68; border-radius: 50%; object-fit: cover; background: #112e39; }
+.avatar-stack { position: relative; display: block; width: 30px; height: 30px; flex: 0 0 30px; }
+.avatar-stack > .avatar { position: absolute; inset: 0; }
 .avatar-fallback { display: grid; place-items: center; color: #c0d8de; font-size: 10px; font-weight: 700; }
 .person-copy { min-width: 0; }
 .person-copy strong { display: block; overflow: hidden; color: #e8f1f3; font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }

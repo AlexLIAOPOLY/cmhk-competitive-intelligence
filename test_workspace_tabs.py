@@ -52,8 +52,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=56', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=43', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=59', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=47', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 330", STYLE)
@@ -159,7 +159,7 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_fault_monitor_uses_real_incident_ledger_without_control_actions(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
         self.assertIn("故障报警监控系统", INDEX)
-        self.assertIn('fetch("/api/project-incidents?limit=100"', SCRIPT)
+        self.assertIn('fetch("/api/project-incidents?limit=500"', SCRIPT)
         self.assertIn("state.faultTotal", SCRIPT)
         self.assertIn("filtersActive ? rows.length : state.faultTotal", SCRIPT)
         self.assertIn("renderFaultMonitor", SCRIPT)
@@ -267,7 +267,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_module_exposes_draggable_live_lineage_and_next_run_feedback(self):
         for label in (
-            "每日情报如何形成",
+            "每天的信息从哪里来",
             "定时触发",
             "固定来源与关键词",
             "定时爬虫页面线索",
@@ -292,26 +292,34 @@ class WorkspaceTabsTests(unittest.TestCase):
         for label in (
             "每日全景",
             "本轮线索",
-            "每一天，情报这样产生",
-            "定时扫描",
-            "发现与审核",
-            "更新四库",
+            "每天的信息从哪里来",
+            "06:00 / 13:30 战略新闻",
+            "线索补缺",
+            "AI审核",
+            "历史去重",
+            "新增新闻",
+            "03:00 主爬虫",
+            "Agent 证据审核",
             "本地运营商",
             "内地电讯企业",
             "全球云厂商",
             "香港电讯市场",
-            "形成业务洞察",
+            "17项AI洞察",
+            "情报进入业务入口",
             "主页 · 小竞AI · 公开页",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn("frequency_counts", SCRIPT)
         self.assertIn("source_groups", SCRIPT)
         self.assertIn("data-news-lineage-mode", SCRIPT)
-        self.assertIn("news-lineage-node-rows", STYLE)
-        self.assertIn('feedbackLabel: "新线索影响下一轮扫描"', SCRIPT)
-        self.assertIn("newsLineageStageIcon", SCRIPT)
-        for key in ("scan", "review", "databases", "business"):
+        self.assertIn("canvasSize: [1580, 492]", SCRIPT)
+        self.assertIn('feedbackLabel: "历史记忆影响下一轮"', SCRIPT)
+        self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
+        self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)
+        for key in ("strategic", "news-search", "news-ai", "news-dedupe", "news-output", "main", "agent", "insights", "consumers"):
             self.assertIn(f'key: "{key}"', SCRIPT)
+        for domain in ("local", "international", "cloud", "macro"):
+            self.assertIn(f'domainNode("{domain}"', SCRIPT)
 
 
 if __name__ == "__main__":

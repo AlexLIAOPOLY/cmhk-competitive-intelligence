@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=11', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=13', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=15', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -50,10 +50,26 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertIn("执行日先生成当天最新周报", SCRIPT)
 
+    def test_report_schedule_controls_align_without_redundant_helper_copy(self):
+        report_form = SCRIPT.split('id="reportScheduleForm"', 1)[1].split("</form>", 1)[0]
+
+        self.assertNotIn("可填写多个日期，以逗号分隔", report_form)
+        self.assertNotIn("schedule-meta", report_form)
+        self.assertIn(".schedule-form > label { align-self: end; }", STYLE)
+        self.assertIn(".schedule-form > label input, .schedule-form > label select, .schedule-form > .schedule-save { height: 36px; min-height: 36px; }", STYLE)
+
     def test_admin_exposes_report_audio_preference(self):
         self.assertIn("data-subscriber-report-mode", SCRIPT)
         self.assertIn("reportMode", SCRIPT)
         self.assertIn("报告方式", SCRIPT)
+
+    def test_subscriber_names_include_real_avatar_with_initial_fallback(self):
+        self.assertIn('${avatar(item, true)}', SCRIPT)
+        self.assertIn('class="table-person"', SCRIPT)
+        self.assertIn('class="avatar-stack"', SCRIPT)
+        self.assertIn('/api/subscriptions/avatar?openId=', SCRIPT)
+        self.assertIn('event.target.remove()', SCRIPT)
+        self.assertIn('.table-person { display: flex;', STYLE)
 
     def test_admin_searches_feishu_people_with_avatar_and_invite_results(self):
         self.assertIn('action: "searchDirectory"', SCRIPT)
