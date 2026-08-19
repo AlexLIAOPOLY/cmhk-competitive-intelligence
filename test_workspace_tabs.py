@@ -38,8 +38,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=2', INDEX)
-        self.assertIn('/static/organization-admin.js?v=1', INDEX)
-        self.assertIn('/static/organization-admin.css?v=2', INDEX)
+        self.assertIn('/static/organization-admin.js?v=2', INDEX)
+        self.assertIn('/static/organization-admin.css?v=3', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -56,6 +56,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/api/auth/admin/users/${encodeURIComponent(row.dataset.userId)}', ORGANIZATION_SCRIPT)
         self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/users/import"', ORGANIZATION_SCRIPT)
+        self.assertIn('request("/api/auth/admin/audit?limit=200")', ORGANIZATION_SCRIPT)
+        self.assertIn("操作审计", ORGANIZATION_SCRIPT)
         self.assertIn('query.length < 2', ORGANIZATION_SCRIPT)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
@@ -77,8 +79,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=82', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=71', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=83', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=72', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 390", STYLE)
@@ -201,7 +203,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("AI问数", INDEX)
         self.assertNotIn("AI智能助手", operations)
 
-    def test_fault_monitor_uses_real_incident_ledger_without_control_actions(self):
+    def test_fault_monitor_uses_real_incident_ledger_with_identity_bound_resolution(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
         self.assertIn("故障报警监控系统", INDEX)
         self.assertIn('fetch("/api/project-incidents?limit=500"', SCRIPT)
@@ -223,6 +225,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("faultSolutions", SCRIPT)
         self.assertIn('task.source === "project-monitor"', SCRIPT)
         self.assertIn('class="fault-row"', SCRIPT)
+        self.assertIn('data-fault-resolve=', SCRIPT)
+        self.assertIn('fetch("/api/project-incidents/resolve"', SCRIPT)
+        self.assertIn("faultHandlerAvatar", SCRIPT)
         self.assertIn(".fault-table .fault-row", STYLE)
         self.assertNotIn("fault-summary", SCRIPT)
         self.assertNotIn("data-restart", SCRIPT)

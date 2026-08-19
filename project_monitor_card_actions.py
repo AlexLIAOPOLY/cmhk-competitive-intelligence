@@ -33,6 +33,7 @@ from project_monitor import (
     _redact,
     _to_simplified,
 )
+from cmhk_auth import AuthService
 from subscription_service import SubscriptionService
 
 
@@ -74,6 +75,7 @@ class CardActionHandler:
             environ=self.environ,
             command_runner=self._run,
         )
+        self.auth_service = AuthService(self.runtime_root)
         self.config = self.monitor.config
         self.actions_config = (
             self.config.get("card_actions")
@@ -86,6 +88,8 @@ class CardActionHandler:
             raise RuntimeError("unsupported card action event key")
         self.action_state_path = self.state_dir / "card_actions.json"
         self.events_path = self.state_dir / "events.jsonl"
+        self.web_actions_path = self.state_dir / "web_actions.jsonl"
+        self.web_actions_lock_path = self.state_dir / "web_actions.lock"
         self.lock_path = self.state_dir / "card_actions.lock"
         self.monitor_state_path = self.state_dir / "state.json"
         self.state = _read_json(self.action_state_path, {})
@@ -239,6 +243,60 @@ class CardActionHandler:
         if str(verified[12] or "") != operator_name or str(verified[13] or "") != "已处理":
             raise RuntimeError("错误台账处理人或处理状态写入后回读不一致")
         return {"row": row_number, "handler_name": operator_name, "newly_handled": True}
+
+    def mark_incident_handled_from_web(self, incident_id: str, operator_open_id: str) -> dict[str, Any]:
+        """Resolve a dashboard checkbox using the authenticated Feishu identity."""
+        incident_id = str(incident_id or "").strip()
+        operator_open_id = str(operator_open_id or "").strip()
+        if not INCIDENT_ID_RE.fullmatch(incident_id):
+            raise ValueError("告警ID格式无效")
+        if not operator_open_id.startswith("ou_"):
+            raise ValueError("当前登录账号没有可匹配的飞书身份")
+        monitor_state = _read_json(self.monitor_state_path, {})
+        incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
+        if not isinstance(incidents, dict) or not isinstance(incidents.get(incident_id), dict):
+            raise ValueError("告警不在本地监控账本中")
+
+        self.web_actions_lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.web_actions_lock_path.open("a+", encoding="utf-8") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            previous: dict[str, Any] | None = None
+            try:
+                lines = self.web_actions_path.read_text(encoding="utf-8").splitlines()
+            except OSError:
+                lines = []
+            for line in reversed(lines):
+                try:
+                    item = json.loads(line)
+                except (TypeError, ValueError):
+                    continue
+                if isinstance(item, dict) and str(item.get("incident_id") or "") == incident_id:
+                    previous = item
+                    break
+            if previous:
+                if str(previous.get("operator_id") or "") != operator_open_id:
+                    raise RuntimeError(f"该告警已由 {previous.get('operator_name') or '其他人员'} 标记处理")
+                return {**previous, "newly_handled": False}
+
+            self.monitor._verify_bot_identity()
+            operator_name = self._resolve_operator(operator_open_id)
+            sheet_result = self._write_handler_to_sheet(incident_id, operator_name)
+            effective_name = str(sheet_result.get("handler_name") or operator_name)
+            if effective_name != operator_name:
+                raise RuntimeError(f"飞书台账显示该告警已由 {effective_name} 处理")
+            result = {
+                "status": "completed",
+                "source": "web",
+                "incident_id": incident_id,
+                "operator_id": operator_open_id,
+                "operator_name": operator_name,
+                "sheet_row": sheet_result.get("row"),
+                "newly_handled": bool(sheet_result.get("newly_handled")),
+                "feishu_sync": "readback_verified",
+                "handled_at_hkt": _iso(self.now()),
+            }
+            _append_jsonl(self.web_actions_path, {"type": "incident_marked_handled_from_web", **result})
+            return result
 
     def _find_element(self, value: object, element_id: str) -> dict[str, Any] | None:
         if isinstance(value, dict):
@@ -528,6 +586,23 @@ class CardActionHandler:
         self.state["last_event_at_hkt"] = result["completed_at_hkt"]
         _atomic_json(self.action_state_path, self.state)
         _append_jsonl(self.events_path, {"type": "incident_marked_handled", **result})
+        actor = self.auth_service.public_user_by_feishu_open_id(effective_open_id) or {
+            "id": effective_open_id,
+            "name": effective_name,
+            "role": "",
+            "avatarUrl": "",
+        }
+        self.auth_service.record_operation(
+            actor={**actor, "feishuOpenId": effective_open_id},
+            action="fault.mark_handled",
+            target=incident_id,
+            details={
+                "source": "feishu_card",
+                "handler_name": effective_name,
+                "feishu_sync": "readback_verified",
+                "sheet_row": sheet_result.get("row"),
+            },
+        )
         return result
 
     def _handle_signal(self, _signum: int, _frame: object) -> None:

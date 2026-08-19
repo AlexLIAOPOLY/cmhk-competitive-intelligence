@@ -209,6 +209,10 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(button["text"]["content"], "已处理")
         self.assertIn(f"<at id={OPERATOR_ID}></at>", prompt["content"])
         self.assertEqual(card["header"]["template"], "green")
+        audit = self.handler.auth_service.operation_audit()
+        self.assertEqual(audit[0]["action"], "fault.mark_handled")
+        self.assertEqual(audit[0]["actor_open_id"], OPERATOR_ID)
+        self.assertEqual(audit[0]["details"]["source"], "feishu_card")
         serialized = json.dumps(card, ensure_ascii=False)
         self.assertNotRegex(serialized, r"[處狀請議響間級複斷據]")
 
@@ -221,6 +225,24 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(second, first)
         self.assertEqual(len(self.runner.ledger_write_calls()), writes_after_first)
         self.assertEqual(len(self.runner.card_updates), updates_after_first)
+
+    def test_dashboard_resolution_matches_feishu_identity_and_persists_separate_action(self):
+        result = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID)
+        self.assertEqual(result["operator_name"], "陈四")
+        self.assertEqual(result["feishu_sync"], "readback_verified")
+        self.assertTrue(result["newly_handled"])
+        self.assertEqual(self.runner.ledger_rows[0][12:14], ["陈四", "已处理"])
+        lines = self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()
+        saved = json.loads(lines[-1])
+        self.assertEqual(saved["incident_id"], INCIDENT_ID)
+        self.assertEqual(saved["operator_id"], OPERATOR_ID)
+        repeated = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID)
+        self.assertFalse(repeated["newly_handled"])
+        self.assertEqual(len(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()), 1)
+
+    def test_dashboard_resolution_rejects_non_feishu_login(self):
+        with self.assertRaisesRegex(ValueError, "飞书身份"):
+            self.handler.mark_incident_handled_from_web(INCIDENT_ID, "local-admin")
 
     def test_existing_handler_is_never_overwritten_by_later_clicker(self):
         self.runner.ledger_rows[0][12] = "王五"

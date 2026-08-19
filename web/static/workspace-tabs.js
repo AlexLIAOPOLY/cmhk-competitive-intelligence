@@ -1372,7 +1372,7 @@
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
       </div></header>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>解决</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-footer"><nav class="fault-pagination" id="faultPagination" aria-label="报警记录分页"></nav><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
@@ -1382,7 +1382,8 @@
   }
 
   function faultStatus(task) {
-    if (task.incident_status === "open") return task.handler_name ? { key: "attention", label: "处理中", tone: "is-running" } : { key: "attention", label: "待处理", tone: "is-alert" };
+    if (task.handler_name) return { key: "completed", label: "已处理", tone: "is-ok" };
+    if (task.incident_status === "open") return { key: "attention", label: "待处理", tone: "is-alert" };
     if (task.incident_status === "resolved") return { key: "completed", label: "已恢复", tone: "is-ok" };
     if (task.interrupted) return { key: "attention", label: "中断", tone: "is-alert" };
     if (task.run_status === "failed") return { key: "attention", label: "失败", tone: "is-alert" };
@@ -1407,6 +1408,18 @@
 
   function faultHandler(task) {
     return task.handler_name || (task.incident_status === "open" ? "待认领" : "—");
+  }
+
+  function faultHandlerAvatar(task) {
+    if (!task.handler_name) return "—";
+    const raw = String(task.handler_avatar_url || "").trim();
+    let image = "";
+    try {
+      if (!raw) throw new Error("missing avatar URL");
+      const url = new URL(raw, location.origin);
+      if (["http:", "https:"].includes(url.protocol)) image = `<img src="${esc(url.href)}" alt="" />`;
+    } catch (_error) { image = ""; }
+    return `<span class="fault-handler-avatar" title="${esc(task.handler_name)}" aria-label="处理人：${esc(task.handler_name)}">${image || esc(String(task.handler_name).slice(0, 1))}</span>`;
   }
 
   function faultSortValue(row, key) {
@@ -1453,8 +1466,11 @@
     document.querySelector("#faultResultCount").textContent = number(filtersActive ? rows.length : state.faultTotal || rows.length);
     body.innerHTML = visibleRows.length ? visibleRows.map(({ task, index, status }) => {
       const severity = faultSeverity(task);
-      return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${esc(faultHandler(task))}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
-    }).join("") : '<tr><td colspan="7" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
+      const canResolve = task.source === "project-monitor" && task.incident_id && window.CMHKAuth?.user?.authProvider === "feishu";
+      const checked = Boolean(task.handler_name);
+      const resolveTitle = checked ? `已由${faultHandler(task)}处理并同步飞书` : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
+      return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked ? "checked" : ""} ${checked || !canResolve ? "disabled" : ""}></td><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
+    }).join("") : '<tr><td colspan="8" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
     if (pagination) {
       const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
@@ -1507,6 +1523,29 @@
       }
     } catch (error) {
       if (status && !quiet) status.textContent = `状态刷新失败：${error.message}`;
+    }
+  }
+
+  async function resolveFault(input) {
+    const incidentId = String(input.dataset.faultResolve || "");
+    const status = document.querySelector("#faultMonitorStatus");
+    input.disabled = true;
+    if (status) status.textContent = "正在匹配登录身份并同步飞书…";
+    try {
+      const response = await fetch("/api/project-incidents/resolve", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ incidentId }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      if (status) status.textContent = `已由 ${payload.result?.operator_name || "当前用户"} 处理 · 飞书回读已确认`;
+      await refreshFaultData({ quiet: true });
+    } catch (error) {
+      input.checked = false;
+      input.disabled = false;
+      if (status) status.textContent = `处理失败：${error.message}`;
     }
   }
 
@@ -1630,7 +1669,7 @@
       renderFaultMonitor();
     }
     const faultDetail = event.target.closest("[data-fault-detail]");
-    if (faultDetail) openFaultDetail(Number(faultDetail.dataset.faultDetail));
+    if (faultDetail && !event.target.closest("input,button,a,select")) openFaultDetail(Number(faultDetail.dataset.faultDetail));
     if (event.target.closest("[data-open-task-log]")) activateModule("log");
     const jump = event.target.closest("[data-jump-dashboard]");
     if (jump) activateModule("dashboard");
@@ -1643,7 +1682,7 @@
 
   document.addEventListener("keydown", (event) => {
     const faultRow = event.target.closest?.(".fault-row[data-fault-detail]");
-    if (faultRow && ["Enter", " "].includes(event.key)) {
+    if (faultRow && !event.target.closest("input,button,a,select") && ["Enter", " "].includes(event.key)) {
       event.preventDefault();
       openFaultDetail(Number(faultRow.dataset.faultDetail));
       return;
@@ -1675,6 +1714,11 @@
   });
   reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {
+    const faultResolve = event.target.closest("[data-fault-resolve]");
+    if (faultResolve) {
+      if (faultResolve.checked) resolveFault(faultResolve);
+      return;
+    }
     const newsDate = event.target.closest("[data-news-date-select]");
     if (newsDate) {
       state.newsSelectedDate = newsDate.value;

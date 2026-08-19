@@ -197,6 +197,27 @@ class AuthServiceTest(unittest.TestCase):
         self.assertTrue(all(self.service._allow_oauth_start(handler) for _ in range(20)))
         self.assertFalse(self.service._allow_oauth_start(handler))
 
+    def test_operation_audit_is_separate_and_admin_only(self):
+        _, admin_session = self.dev_login()
+        actor = self.service.current_actor(FakeHandler(cookie=admin_session, origin=""))
+        event = self.service.record_operation(
+            actor=actor,
+            action="fault.mark_handled",
+            target="incident-1",
+            details={"feishu_sync": "readback_verified"},
+        )
+        self.assertTrue(self.service.operation_audit_path.exists())
+        self.assertNotEqual(self.service.operation_audit_path, self.service.audit_path)
+        self.assertEqual(self.service.operation_audit()[0]["id"], event["id"])
+        admin = FakeHandler(cookie=admin_session, origin="")
+        self.service.handle(admin, "GET", urlparse("/api/auth/admin/audit?limit=20"))
+        self.assertEqual(admin.status, 200)
+        self.assertEqual(admin.payload()["events"][0]["target"], "incident-1")
+        _, operations_session = self.dev_login("local-operations")
+        denied = FakeHandler(cookie=operations_session, origin="")
+        self.service.handle(denied, "GET", urlparse("/api/auth/admin/audit"))
+        self.assertEqual(denied.status, 403)
+
 
 if __name__ == "__main__":
     unittest.main()

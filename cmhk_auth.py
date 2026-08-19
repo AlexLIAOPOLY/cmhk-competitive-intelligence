@@ -9,6 +9,7 @@ import secrets
 import subprocess
 import threading
 import time
+import uuid
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -123,6 +124,7 @@ class AuthService:
         self.users_path = self.state_dir / "users.json"
         self.sessions_path = self.state_dir / "sessions.json"
         self.audit_path = self.state_dir / "admin-audit.json"
+        self.operation_audit_path = self.state_dir / "operation-audit.jsonl"
         self.lock = threading.RLock()
         self.require_login = os.environ.get("CMHK_AUTH_REQUIRE_LOGIN", "1") == "1"
         self.allow_dev_login = os.environ.get("CMHK_AUTH_ALLOW_DEV_LOGIN", "0") == "1"
@@ -219,6 +221,8 @@ class AuthService:
                 self._write(self.sessions_path, [])
             if not self.audit_path.exists():
                 self._write(self.audit_path, [])
+            if not self.operation_audit_path.exists():
+                self.operation_audit_path.touch(mode=0o600)
 
     def _users(self) -> list[dict[str, Any]]:
         value = self._read(self.users_path, [])
@@ -310,6 +314,78 @@ class AuthService:
                 return None
             user = next((item for item in self._users() if str(item.get("id")) == str(session.get("user_id"))), None)
             return self._public_user(user) if user and user.get("status") == "active" else None
+
+    def current_actor(self, handler) -> dict[str, Any] | None:
+        """Return the authenticated actor plus server-only Feishu identity fields."""
+        public = self.current_user(handler)
+        if not public:
+            return None
+        with self.lock:
+            user = next((item for item in self._users() if str(item.get("id")) == str(public.get("id"))), None)
+        if not user:
+            return None
+        return {
+            **public,
+            "feishuOpenId": str(user.get("feishu_open_id") or ""),
+            "feishuUnionId": str(user.get("feishu_union_id") or ""),
+        }
+
+    def public_user_by_feishu_open_id(self, open_id: str) -> dict[str, Any] | None:
+        open_id = str(open_id or "").strip()
+        if not open_id:
+            return None
+        with self.lock:
+            user = next((item for item in self._users() if str(item.get("feishu_open_id") or "") == open_id), None)
+        return self._public_user(user)
+
+    def record_operation(
+        self,
+        *,
+        actor: dict[str, Any] | None,
+        action: str,
+        target: str = "",
+        result: str = "success",
+        details: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Append a standalone, administrator-readable operation audit event."""
+        actor = actor or {}
+        event = {
+            "id": str(uuid.uuid4()),
+            "at": _now_iso(),
+            "actor_id": str(actor.get("id") or ""),
+            "actor_open_id": str(actor.get("feishuOpenId") or ""),
+            "actor_name": str(actor.get("name") or actor.get("account") or "未知用户")[:120],
+            "actor_avatar_url": str(actor.get("avatarUrl") or "")[:1000],
+            "actor_role": str(actor.get("role") or ""),
+            "action": str(action or "unknown")[:120],
+            "target": str(target or "")[:240],
+            "result": "failure" if result == "failure" else "success",
+            "details": details if isinstance(details, dict) else {},
+        }
+        line = json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n"
+        with self.lock:
+            self.operation_audit_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.operation_audit_path.open("a", encoding="utf-8") as handle:
+                handle.write(line)
+            os.chmod(self.operation_audit_path, 0o600)
+        return event
+
+    def operation_audit(self, *, limit: int = 200) -> list[dict[str, Any]]:
+        try:
+            lines = self.operation_audit_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return []
+        events: list[dict[str, Any]] = []
+        for line in reversed(lines):
+            try:
+                item = json.loads(line)
+            except (TypeError, ValueError):
+                continue
+            if isinstance(item, dict):
+                events.append(item)
+            if len(events) >= max(1, min(1000, int(limit or 200))):
+                break
+        return events
 
     def _create_session(self, handler, user: dict[str, Any]) -> str:
         token = secrets.token_urlsafe(32)
@@ -641,6 +717,21 @@ class AuthService:
             departments = sorted({str(item.get("department") or "") for item in users if item.get("department")})
             self._send_json(handler, 200, {"ok": True, "users": users, "departments": departments, "roles": ROLE_LABELS, "modules": MODULE_LABELS, "roleModules": self._role_modules()})
             return True
+        if path == "/api/auth/admin/audit" and method == "GET":
+            admin = self.current_user(handler)
+            if not admin:
+                self._send_json(handler, 401, {"ok": False, "message": "请先登录"})
+                return True
+            if not admin["permissions"]["manageOrganization"]:
+                self._send_json(handler, 403, {"ok": False, "message": "当前账号无权查看操作审计"})
+                return True
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(1000, int((query.get("limit") or ["200"])[0])))
+            except (TypeError, ValueError):
+                limit = 200
+            self._send_json(handler, 200, {"ok": True, "events": self.operation_audit(limit=limit)})
+            return True
         if path == "/api/auth/admin/directory/search" and method == "GET":
             admin = self.current_user(handler)
             if not admin or not admin["permissions"]["manageOrganization"]:
@@ -655,7 +746,7 @@ class AuthService:
                 self._send_json(handler, 502 if isinstance(exc, RuntimeError) else 400, {"ok": False, "message": str(exc)})
             return True
         if path == "/api/auth/admin/users/import" and method == "POST":
-            admin = self.current_user(handler)
+            admin = self.current_actor(handler)
             if not admin or not admin["permissions"]["manageOrganization"]:
                 self._send_json(handler, 403 if admin else 401, {"ok": False, "message": "当前账号无权添加成员"})
                 return True
@@ -689,6 +780,12 @@ class AuthService:
                     }
                     users.append(user)
                     self._write(self.users_path, users)
+                self.record_operation(
+                    actor=admin,
+                    action="organization.user_import",
+                    target=str(user.get("id") or email),
+                    details={"email": email, "name": str(user.get("name") or "")},
+                )
                 self._send_json(handler, 201, {"ok": True, "user": self._public_user(user)})
             except ValueError as exc:
                 self._send_json(handler, 400, {"ok": False, "message": str(exc)})
@@ -697,7 +794,7 @@ class AuthService:
             return True
         user_path = path.removeprefix("/api/auth/admin/users/") if path.startswith("/api/auth/admin/users/") else ""
         if user_path and method == "POST":
-            admin = self.current_user(handler)
+            admin = self.current_actor(handler)
             if not admin:
                 self._send_json(handler, 401, {"ok": False, "message": "请先登录"})
                 return True
@@ -744,6 +841,12 @@ class AuthService:
                 audit = self._read(self.audit_path, [])
                 audit.append({"at": target["updated_at"], "by": admin.get("id"), "target": target.get("id"), "before": before, "after": {"role": role, "status": status, "module_overrides": overrides}})
                 self._write(self.audit_path, audit[-1000:])
+                self.record_operation(
+                    actor=admin,
+                    action="organization.user_update",
+                    target=str(target.get("id") or ""),
+                    details={"before": before, "after": {"role": role, "status": status, "module_overrides": overrides}},
+                )
             self._send_json(handler, 200, {"ok": True, "user": self._public_user(target)})
             return True
         self._send_json(handler, 404, {"ok": False, "message": "认证接口不存在"})

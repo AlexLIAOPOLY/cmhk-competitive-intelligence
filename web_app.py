@@ -59,6 +59,7 @@ from subscription_service import (
     encode_strategic_news_digest,
 )
 from cmhk_auth import AuthService
+from project_monitor_card_actions import CardActionHandler
 
 
 ROOT = Path(__file__).resolve().parent
@@ -3141,6 +3142,7 @@ TASK_RUNS_LOG_DIR = TASK_RUNS_DIR / "logs"
 TASK_RUNS_INDEX_PATH = TASK_RUNS_DIR / "index.json"
 PROJECT_MONITOR_STATE_PATH = ROOT / "var" / "project_monitor" / "state.json"
 PROJECT_MONITOR_ACTIONS_PATH = ROOT / "var" / "project_monitor" / "card_actions.json"
+PROJECT_MONITOR_WEB_ACTIONS_PATH = ROOT / "var" / "project_monitor" / "web_actions.jsonl"
 TASK_RUNS_LOCK = threading.Lock()
 GENERAL_TASK_MAX_AUTO_RETRIES = max(1, int(os.environ.get("CMHK_TASK_AUTO_RETRY_MAX", "3")))
 GENERAL_TASK_RETRY_DELAY_SECONDS = max(
@@ -3671,6 +3673,48 @@ def _annotate_strategic_task_retries(tasks: list[dict]) -> None:
         attempts[key] = retry_index + 1
 
 
+def _project_monitor_handlers() -> dict[str, dict]:
+    """Merge Feishu-card and dashboard checkbox actions by latest handled time."""
+    handlers: dict[str, dict] = {}
+    try:
+        action_state = json.loads(PROJECT_MONITOR_ACTIONS_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        action_state = {}
+    handled_messages = action_state.get("handled_messages") if isinstance(action_state, dict) else {}
+    candidates = list(handled_messages.values()) if isinstance(handled_messages, dict) else []
+    try:
+        for line in PROJECT_MONITOR_WEB_ACTIONS_PATH.read_text(encoding="utf-8").splitlines():
+            item = json.loads(line)
+            if isinstance(item, dict):
+                candidates.append(item)
+    except (OSError, ValueError, TypeError):
+        pass
+    for handled in candidates:
+        if not isinstance(handled, dict):
+            continue
+        incident_id = str(handled.get("incident_id") or "")
+        if not incident_id:
+            continue
+        previous = handlers.get(incident_id, {})
+        handled_at = str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or "")
+        previous_at = str(previous.get("handled_at_hkt") or previous.get("completed_at_hkt") or "")
+        if handled_at >= previous_at:
+            handlers[incident_id] = handled
+    return handlers
+
+
+def _handler_public_fields(handled: dict) -> dict[str, str]:
+    open_id = str(handled.get("operator_id") or "")
+    user = AUTH.public_user_by_feishu_open_id(open_id) or {}
+    return {
+        "handler_id": str(user.get("id") or ""),
+        "handler_open_id": open_id,
+        "handler_name": str(handled.get("operator_name") or user.get("name") or ""),
+        "handler_avatar_url": str(user.get("avatarUrl") or ""),
+        "handled_at_hkt": str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or ""),
+    }
+
+
 def _task_incident_metadata() -> dict[str, dict]:
     try:
         monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
@@ -3679,22 +3723,7 @@ def _task_incident_metadata() -> dict[str, dict]:
     incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
     incidents = incidents if isinstance(incidents, dict) else {}
 
-    try:
-        action_state = json.loads(PROJECT_MONITOR_ACTIONS_PATH.read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError):
-        action_state = {}
-    handled_messages = action_state.get("handled_messages") if isinstance(action_state, dict) else {}
-    handled_messages = handled_messages if isinstance(handled_messages, dict) else {}
-    handlers: dict[str, dict] = {}
-    for handled in handled_messages.values():
-        if not isinstance(handled, dict):
-            continue
-        incident_id = str(handled.get("incident_id") or "")
-        if not incident_id:
-            continue
-        previous = handlers.get(incident_id, {})
-        if str(handled.get("handled_at_hkt") or "") >= str(previous.get("handled_at_hkt") or ""):
-            handlers[incident_id] = handled
+    handlers = _project_monitor_handlers()
 
     severity_labels = {"P1": "紧急", "P2": "高", "P3": "中"}
     metadata: dict[str, dict] = {}
@@ -3712,8 +3741,7 @@ def _task_incident_metadata() -> dict[str, dict]:
             "incident_status": str(incident.get("status") or ""),
             "severity": severity,
             "severity_label": severity_labels.get(severity, ""),
-            "handler_name": str(handled.get("operator_name") or ""),
-            "handled_at_hkt": str(handled.get("handled_at_hkt") or ""),
+            **_handler_public_fields(handled),
         }
     return metadata
 
@@ -3739,20 +3767,7 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
     incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
     incidents = incidents if isinstance(incidents, dict) else {}
 
-    try:
-        action_state = json.loads(PROJECT_MONITOR_ACTIONS_PATH.read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError):
-        action_state = {}
-    handled_messages = action_state.get("handled_messages") if isinstance(action_state, dict) else {}
-    handled_messages = handled_messages if isinstance(handled_messages, dict) else {}
-    handlers: dict[str, dict] = {}
-    for handled in handled_messages.values():
-        if not isinstance(handled, dict):
-            continue
-        incident_id = str(handled.get("incident_id") or "")
-        previous = handlers.get(incident_id, {})
-        if incident_id and str(handled.get("handled_at_hkt") or "") >= str(previous.get("handled_at_hkt") or ""):
-            handlers[incident_id] = handled
+    handlers = _project_monitor_handlers()
 
     severity_labels = {"P1": "紧急", "P2": "高", "P3": "中"}
     records: list[dict] = []
@@ -3783,14 +3798,13 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "run_status": "failed" if status == "open" else "completed",
             "severity": severity,
             "severity_label": severity_labels[severity],
-            "handler_name": str(handled.get("operator_name") or ""),
-            "handled_at_hkt": str(handled.get("handled_at_hkt") or ""),
+            **_handler_public_fields(handled),
             "summary": str(incident.get("summary") or ""),
             "error": str(diagnosis.get("fault_cause") or incident.get("error") or ""),
             "impact": str(diagnosis.get("fault_impact") or incident.get("impact") or ""),
             "suggestions": [str(item) for item in suggestions if str(item).strip()],
             "evidence": [str(item) for item in evidence if str(item).strip()],
-            "phase": "待处理" if status == "open" else "已恢复",
+            "phase": "已处理" if handled else ("待处理" if status == "open" else "已恢复"),
             "occurred_at_hkt": str(incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or ""),
             "started_at_hkt": str(incident.get("first_seen_at_hkt") or incident.get("occurred_at_hkt") or ""),
             "heartbeat_at_hkt": str(incident.get("last_seen_at_hkt") or ""),
@@ -4550,6 +4564,60 @@ class AppHandler(BaseHTTPRequestHandler):
         if AUTH.handle(self, "POST", parsed):
             return
         if parsed.path.startswith("/api/") and not AUTH.authorize_api(self, parsed.path, "POST"):
+            return
+        if parsed.path == "/api/project-incidents/resolve":
+            actor = AUTH.current_actor(self)
+            if not actor:
+                json_response(self, {"ok": False, "error": "登录状态已失效，请重新登录"}, 401)
+                return
+            incident_id = ""
+            try:
+                payload = read_request_json(self)
+                incident_id = str(payload.get("incidentId") or "").strip()
+                result = CardActionHandler(runtime_root=ROOT).mark_incident_handled_from_web(
+                    incident_id,
+                    str(actor.get("feishuOpenId") or ""),
+                )
+                AUTH.record_operation(
+                    actor=actor,
+                    action="fault.mark_handled",
+                    target=incident_id,
+                    details={
+                        "handler_name": result.get("operator_name"),
+                        "feishu_sync": result.get("feishu_sync"),
+                        "sheet_row": result.get("sheet_row"),
+                    },
+                )
+                records = load_project_incident_index(500)
+                incident = next((item for item in records if item.get("incident_id") == incident_id), None)
+                json_response(self, {"ok": True, "result": result, "incident": incident})
+            except ValueError as exc:
+                AUTH.record_operation(
+                    actor=actor,
+                    action="fault.mark_handled",
+                    target=incident_id,
+                    result="failure",
+                    details={"error": str(exc)[:240]},
+                )
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except RuntimeError as exc:
+                AUTH.record_operation(
+                    actor=actor,
+                    action="fault.mark_handled",
+                    target=incident_id,
+                    result="failure",
+                    details={"error": str(exc)[:240]},
+                )
+                json_response(self, {"ok": False, "error": str(exc)}, 409)
+            except Exception as exc:
+                AUTH.record_operation(
+                    actor=actor,
+                    action="fault.mark_handled",
+                    target=incident_id,
+                    result="failure",
+                    details={"error": "飞书同步失败"},
+                )
+                json_response(self, {"ok": False, "error": f"飞书同步失败：{exc}"}, 502)
             return
         if parsed.path == "/api/competitor-insight-stream":
             try:

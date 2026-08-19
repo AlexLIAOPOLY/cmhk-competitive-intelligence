@@ -5,6 +5,7 @@
   if (!host) return;
   const state = {
     loaded: false, loading: false, query: "", users: [], roles: {}, modules: {}, roleModules: {},
+    audit: [],
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -51,6 +52,32 @@
     </tr>`;
   }
 
+  function auditAvatar(event) {
+    const name = String(event.actor_name || "未知用户");
+    const raw = String(event.actor_avatar_url || "").trim();
+    try {
+      if (!raw) throw new Error("missing avatar URL");
+      const url = new URL(raw, location.origin);
+      if (["http:", "https:"].includes(url.protocol)) return `<span class="organization-avatar is-round"><img src="${esc(url.href)}" alt="" /></span>`;
+    } catch (_) { /* use initial */ }
+    return `<span class="organization-avatar is-round">${esc(name.slice(0, 1) || "用")}</span>`;
+  }
+
+  function auditAction(event) {
+    return ({ "fault.mark_handled": "处理告警", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员" })[event.action] || event.action || "系统操作";
+  }
+
+  function auditTime(value) {
+    const date = new Date(String(value || ""));
+    if (Number.isNaN(date.getTime())) return String(value || "—");
+    return date.toLocaleString("zh-CN", { hour12: false, timeZone: "Asia/Hong_Kong" });
+  }
+
+  function auditSurface() {
+    const rows = state.audit.map((event) => `<tr><td><div class="organization-member">${auditAvatar(event)}<span><strong>${esc(event.actor_name || "未知用户")}</strong><small>${esc(event.actor_id || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`).join("");
+    return `<section class="organization-surface organization-audit-surface"><header><div><span>OPERATION AUDIT</span><h2>操作审计</h2><p>独立记录告警处理等关键操作，管理员可按登录身份追踪操作人。</p></div><strong>${state.audit.length} 条</strong></header><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></section>`;
+  }
+
   function directoryResults() {
     const directory = state.directory;
     if (directory.loading) return '<div class="organization-directory-state">正在搜索飞书通讯录…</div>';
@@ -72,7 +99,7 @@
       <section class="organization-surface">
         <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、部门、账号或角色" /></label><span>显示 <strong>${users.length}</strong> / ${state.users.length} 名成员</span></div>
         <div class="organization-table-wrap"><table class="organization-table"><thead><tr><th>成员</th><th>角色</th><th>状态</th><th>模块权限</th><th>操作</th></tr></thead><tbody>${users.length ? users.map(row).join("") : '<tr><td colspan="5"><div class="organization-empty">没有符合条件的成员</div></td></tr>'}</tbody></table></div>
-      </section>`;
+      </section>${auditSurface()}`;
   }
 
   function renderError(message) {
@@ -84,11 +111,15 @@
     state.loading = true;
     if (!state.loaded) host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>';
     try {
-      const payload = await request("/api/auth/admin/users");
+      const [payload, auditPayload] = await Promise.all([
+        request("/api/auth/admin/users"),
+        request("/api/auth/admin/audit?limit=200"),
+      ]);
       state.users = Array.isArray(payload.users) ? payload.users : [];
       state.roles = payload.roles || {};
       state.modules = payload.modules || {};
       state.roleModules = payload.roleModules || {};
+      state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
       state.loaded = true;
       render();
     } catch (error) {
