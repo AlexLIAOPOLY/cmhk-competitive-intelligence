@@ -466,7 +466,7 @@
 .news-lineage-tools button:hover,.news-lineage-tools button:focus-visible { border-color: #58bed2; color: #effbfc; outline: 0; background: #143b4a; }
 .news-lineage-tools button { min-width: 84px; font-size: 11px; }
 .news-lineage-viewport { width: 100%; min-height: 440px; overflow: auto hidden; overscroll-behavior-inline: contain; background-image: radial-gradient(circle at center,rgba(100,171,190,.11) 0 1px,transparent 1.3px); background-size: 22px 22px; scrollbar-color: rgba(87,174,193,.5) rgba(5,24,33,.7); scrollbar-width: thin; }
-.news-lineage.is-global .news-lineage-viewport { min-height: 492px; }
+.news-lineage.is-global .news-lineage-viewport { min-height: 620px; }
 .news-lineage.is-global .news-lineage-header { min-height: 96px; padding: 14px 18px; }
 .news-lineage.is-global .news-lineage-mode-switch { margin-bottom: 10px; }
 .news-lineage.is-global .news-lineage-mode-switch button { min-width: 88px; height: 30px; font-size: 11px; }
@@ -518,6 +518,28 @@
 .news-lineage.is-global .news-lineage-node.is-result > span { min-height: 26px; }
 .news-lineage.is-global .news-lineage-node.is-result > strong { font-size: 27px; }
 .news-lineage.is-global .news-lineage-node.is-result > em { font-size: 9.5px; }
+.news-lineage.is-global .news-lineage-node.is-compact { width: 160px; height: 104px; min-height: 104px; gap: 4px; padding: 11px 12px 9px; }
+.news-lineage.is-global .news-lineage-node.is-compact > span { min-height: 22px; font-size: 11.5px; }
+.news-lineage.is-global .news-lineage-node.is-compact > strong { font-size: 22px; }
+.news-lineage.is-global .news-lineage-node.is-compact > em { font-size: 9px; line-height: 1.35; }
+.news-lineage.is-global .news-lineage-node.is-database-hub { width: 140px; border-style: dashed; }
+.news-lineage.is-global .news-lineage-node::before { position: absolute; top: 13px; bottom: 13px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--node-accent); opacity: .9; content: ""; }
+.news-lineage.is-global .news-lineage-node.is-crawler { --node-accent:#4bb8d1; background: linear-gradient(155deg,rgba(12,60,80,.98),rgba(5,29,42,.99)); }
+.news-lineage.is-global .news-lineage-node.is-source { --node-accent:#62cae4; background: linear-gradient(155deg,rgba(15,67,84,.98),rgba(6,31,43,.99)); }
+.news-lineage.is-global .news-lineage-node.is-ai { --node-accent:#9a8bf4; border-color: rgba(137,120,226,.88); background: linear-gradient(155deg,rgba(49,44,91,.96),rgba(17,27,52,.99)); }
+.news-lineage.is-global .news-lineage-node.is-gate { --node-accent:#5fc3a1; background: linear-gradient(155deg,rgba(19,69,62,.97),rgba(7,34,38,.99)); }
+.news-lineage.is-global .news-lineage-node.is-output { --node-accent:#63dbd2; border-color: rgba(88,210,202,.88); background: linear-gradient(155deg,rgba(20,74,78,.98),rgba(5,34,42,.99)); }
+.news-lineage.is-global .news-lineage-node.is-app { --node-accent:#68d3a7; border-color: rgba(91,199,157,.9); background: linear-gradient(155deg,rgba(22,75,61,.98),rgba(6,35,35,.99)); }
+.news-lineage.is-global .news-lineage-node.is-report { --node-accent:#e3ad58; border-color: rgba(218,157,69,.9); background: linear-gradient(155deg,rgba(81,59,27,.97),rgba(38,32,24,.99)); }
+.news-lineage.is-global .news-lineage-node.is-audit { --node-accent:#6aaee6; border-color: rgba(92,158,214,.86); background: linear-gradient(155deg,rgba(22,57,90,.97),rgba(7,31,48,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-hub { --node-accent:#78aec0; background: linear-gradient(155deg,rgba(27,61,72,.96),rgba(8,34,43,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-local { --node-accent:#4fcab1; border-color: rgba(70,188,157,.86); background: linear-gradient(155deg,rgba(19,70,61,.97),rgba(6,34,36,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-international { --node-accent:#5b9ee8; border-color: rgba(82,143,211,.86); background: linear-gradient(155deg,rgba(22,55,91,.97),rgba(7,30,48,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-cloud { --node-accent:#9a83e5; border-color: rgba(137,113,211,.86); background: linear-gradient(155deg,rgba(52,43,87,.97),rgba(19,27,49,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-macro { --node-accent:#d9a554; border-color: rgba(205,147,67,.86); background: linear-gradient(155deg,rgba(77,57,28,.97),rgba(35,31,24,.99)); }
+.news-lineage.is-global .news-lineage-node.is-insight { --node-accent:#a786ef; border-color: rgba(148,118,224,.88); background: linear-gradient(155deg,rgba(56,43,94,.97),rgba(20,27,52,.99)); }
+.news-lineage.is-global .news-lineage-node.is-delivery { --node-accent:#5fcc9a; border-color: rgba(82,190,140,.88); background: linear-gradient(155deg,rgba(20,72,55,.97),rgba(6,34,35,.99)); }
+.news-lineage.is-global .news-lineage-group { border-color: rgba(105,164,185,.52); background: linear-gradient(135deg,rgba(18,52,66,.38),rgba(8,34,45,.2)); }
 .news-lineage.is-global .news-lineage-node > span { min-height: 35px; padding-right: 16px; color: #e9f6f8; font-size: 13px; font-weight: 750; line-height: 1.35; }
 .news-lineage.is-global .news-lineage-node > strong { font-size: 30px; line-height: 1.05; }
 .news-lineage.is-global .news-lineage-node > strong small { margin-left: 5px; font-size: 10.5px; }

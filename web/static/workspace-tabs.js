@@ -686,8 +686,8 @@
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
       ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["agent", "database-hub", "四库分流", "cyan"],
-      ["database-hub", "database-local", "", "cyan"], ["database-hub", "database-international", "", "cyan"], ["database-hub", "database-cloud", "", "cyan"], ["database-hub", "database-macro", "", "cyan"],
-      ["database-local", "insights", "", "cyan"], ["database-international", "insights", "", "cyan"], ["database-cloud", "insights", "", "cyan"], ["database-macro", "insights", "", "cyan"], ["insights", "consumers", "", "cyan"],
+      ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-macro", "", "branch"],
+      ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-macro", "insights", "", "merge"], ["insights", "consumers", "", "cyan"],
     ];
     return {
       nodes,
@@ -716,6 +716,24 @@
       const railY = upperLoop ? 8 : from === "business" ? 425 : 472;
       return `M ${sx} ${sy} C ${sx + 60} ${railY}, ${tx - 110} ${railY}, ${tx} ${ty}`;
     }
+    if (kind === "branch") {
+      const topRow = target.y < source.y;
+      const sx = source.x + source.w;
+      const sy = source.y + source.h / 2;
+      const tx = target.x + target.w / 2;
+      const ty = topRow ? target.y : target.y + target.h;
+      const railY = topRow ? target.y - 18 : target.y + target.h + 18;
+      return `M ${sx} ${sy} H ${sx + 24} V ${railY} H ${tx} V ${ty}`;
+    }
+    if (kind === "merge") {
+      const topRow = source.y < target.y;
+      const sx = source.x + source.w / 2;
+      const sy = topRow ? source.y : source.y + source.h;
+      const tx = target.x + target.w / 2;
+      const ty = topRow ? target.y : target.y + target.h;
+      const railY = topRow ? source.y - 18 : source.y + source.h + 18;
+      return `M ${sx} ${sy} V ${railY} H ${tx} V ${ty}`;
+    }
     const forward = target.x >= source.x;
     const sx = forward ? source.x + source.w : source.x;
     const sy = source.y + source.h / 2;
@@ -738,7 +756,7 @@
   function lineageRunsForNode(nodeKey) {
     const date = state.newsSelectedDate;
     const sameDay = state.crawlRuns.filter((run) => newsRunDate(run) === date);
-    if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output", "app-result", "weekly-result"].includes(nodeKey)) return selectedNewsRuns();
+    if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
     if (["main", "agent"].includes(nodeKey)) return sameDay.filter((run) => String(run.trigger || "") === "定时爬虫");
     return sameDay.filter((run) => run.task_kind === "executive-intelligence-refresh");
