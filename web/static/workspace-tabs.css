@@ -168,6 +168,8 @@
 .workspace-layout.is-nav-collapsed .workspace-tab-label,
 .workspace-layout.is-nav-collapsed .workspace-tab-badge { pointer-events: none; opacity: 0; transform: translateX(-8px); }
 .workspace-layout.is-nav-collapsed .workspace-tabs { position: absolute; top: 0; left: 10px; z-index: 50; width: 44px; height: 48px; margin: 0; overflow: visible; border-color: transparent; background: transparent; box-shadow: none; backdrop-filter: none; pointer-events: none; }
+.dashboard-page:not(.workspace-ai-active) .workspace-layout.is-nav-collapsed .workspace-tabs { top: -54px; }
+.dashboard-page.workspace-dashboard-active .workspace-layout.is-nav-collapsed .workspace-tabs { left: 180px; }
 .workspace-layout.is-nav-collapsed .workspace-tabs::before,
 .workspace-layout.is-nav-collapsed .workspace-tabs::after { display: none; }
 .workspace-layout.is-nav-collapsed .workspace-nav-topline { min-height: 48px; justify-content: center; padding: 0 2px; border-bottom-color: transparent; }

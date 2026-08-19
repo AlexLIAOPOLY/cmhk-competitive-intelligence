@@ -52,7 +52,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/workspace-tabs.css?v=43', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=44', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=35', INDEX)
         self.assertIn("backdrop-filter: blur(22px) saturate(138%)", STYLE)
         self.assertIn("border-radius: 18px", STYLE)

@@ -17,6 +17,10 @@ class WorkspaceFloatingNavTests(unittest.TestCase):
         self.assertIn("pointer-events: none;", STYLE)
         self.assertIn("pointer-events: auto; }", STYLE)
 
+    def test_collapsed_navigation_uses_page_aware_header_clearance(self):
+        self.assertIn(".dashboard-page:not(.workspace-ai-active) .workspace-layout.is-nav-collapsed .workspace-tabs { top: -54px; }", STYLE)
+        self.assertIn(".dashboard-page.workspace-dashboard-active .workspace-layout.is-nav-collapsed .workspace-tabs { left: 180px; }", STYLE)
+
     def test_ai_workspace_hides_brand_bar_and_uses_full_viewport_height(self):
         self.assertIn('classList.toggle("workspace-ai-active", target === "ai")', SCRIPT)
         self.assertIn('if (workspace === "ai") document.body.classList.add("workspace-ai-active")', INDEX)
