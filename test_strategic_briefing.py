@@ -215,6 +215,38 @@ class StrategicBriefingTests(unittest.TestCase):
             ],
         )
 
+    def test_latest_reviewed_news_uses_all_verified_runs_and_global_publish_time(self):
+        with tempfile.TemporaryDirectory() as folder:
+            runs = Path(folder)
+            (runs / "2026-08-19@06-00.json").write_text(json.dumps({
+                "review_sheet": {
+                    "readback_verified": True,
+                    "new_items": [
+                        {"title": "较旧批次但更新发布", "published_at": "2026-08-19T10:00:00+08:00", "url": "https://example.test/newest"},
+                        {"title": "重复新闻", "published_at": "2026-08-19T08:00:00+08:00", "url": "https://example.test/duplicate"},
+                    ],
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            (runs / "2026-08-19@13-30.json").write_text(json.dumps({
+                "review_sheet": {
+                    "readback_verified": True,
+                    "new_items": [
+                        {"title": "较新批次但较早发布", "published_at": "2026-08-19T09:00:00+08:00", "url": "https://example.test/older"},
+                        {"title": "重复新闻", "published_at": "2026-08-19T08:00:00+08:00", "url": "https://example.test/duplicate"},
+                    ],
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            (runs / "unverified.json").write_text(json.dumps({
+                "review_sheet": {
+                    "readback_verified": False,
+                    "new_items": [{"title": "未回读", "published_at": "2026-08-19T11:00:00+08:00"}],
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            with mock.patch.object(briefing, "RUNS_DIR", runs):
+                items = briefing.latest_reviewed_news(limit=10)
+
+        self.assertEqual([item["title"] for item in items], ["较旧批次但更新发布", "较新批次但较早发布", "重复新闻"])
+
     def test_comprehensive_query_plans_cover_every_configured_keyword(self):
         spec = {
             "modules": [
@@ -1037,7 +1069,10 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_completed_scan_dispatches_reviewed_news_to_subscription_service(self):
         reviewed = [{"title": "已审核新闻", "summary": "摘要"}]
-        with mock.patch("subscription_service.SubscriptionService") as service_class:
+        with (
+            mock.patch("subscription_service.SubscriptionService") as service_class,
+            mock.patch.object(briefing, "latest_reviewed_news", return_value=reviewed),
+        ):
             service_class.return_value.dispatch_news_after_crawl.return_value = {
                 "recipient_count": 1,
                 "verified_count": 1,

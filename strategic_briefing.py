@@ -1942,12 +1942,16 @@ def _dispatch_subscription_news_after_scan(
         return {"status": "disabled", "crawl_slot": slot_key}
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}", slot_key):
         return {"status": "skipped", "crawl_slot": slot_key, "reason": "non_formal_slot"}
-    new_items = review_result.get("new_items")
-    items = (
-        [item for item in new_items if isinstance(item, dict)]
-        if isinstance(new_items, list)
-        else [item for item in candidates if isinstance(item, dict)]
-    )
+    # The archive is written immediately before this call, so this is the
+    # global reviewed pool as of the completed crawl rather than only its batch.
+    items = latest_reviewed_news()
+    if not items:
+        new_items = review_result.get("new_items")
+        items = (
+            [item for item in new_items if isinstance(item, dict)]
+            if isinstance(new_items, list)
+            else [item for item in candidates if isinstance(item, dict)]
+        )
     try:
         from subscription_service import SubscriptionService
 
@@ -5888,6 +5892,75 @@ def _public_candidate_items() -> list[dict[str, Any]]:
         )
     items.sort(key=lambda item: str(item.get("published_at") or ""), reverse=True)
     return items[:200]
+
+
+def _reviewed_news_timestamp(item: dict[str, Any]) -> float:
+    raw = _clean_text(
+        item.get("published_at") or item.get("source_date") or item.get("search_date"),
+        60,
+    )
+    if not raw:
+        return float("-inf")
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return float("-inf")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=HKT)
+    return parsed.timestamp()
+
+
+def latest_reviewed_news(*, limit: int | None = None) -> list[dict[str, Any]]:
+    """Return globally newest, deduplicated news from completed review-sheet runs."""
+    collected: dict[str, dict[str, Any]] = {}
+    run_paths = sorted(RUNS_DIR.glob("*.json"), reverse=True) if RUNS_DIR.exists() else []
+    for path in run_paths:
+        payload = _read_json(path, {})
+        if not isinstance(payload, dict):
+            continue
+        review = payload.get("review_sheet")
+        if not isinstance(review, dict) or review.get("readback_verified") is not True:
+            continue
+        new_items = review.get("new_items")
+        if not isinstance(new_items, list):
+            continue
+        for item in new_items:
+            if not isinstance(item, dict):
+                continue
+            title = _clean_text(item.get("title") or item.get("ai_title"), 240)
+            published_at = _clean_text(
+                item.get("published_at") or item.get("source_date") or item.get("search_date"),
+                60,
+            )
+            if not title or _reviewed_news_timestamp(item) == float("-inf"):
+                continue
+            source_url = _normalize_url(item.get("source_url") or item.get("url") or "")
+            identity = source_url or _clean_text(item.get("news_id") or item.get("id"), 100)
+            if not identity:
+                identity = hashlib.sha256(f"{title}|{published_at}".encode("utf-8")).hexdigest()
+            collected.setdefault(
+                identity,
+                {
+                    **item,
+                    "title": title,
+                    "summary": _clean_text(
+                        item.get("summary") or item.get("ai_summary") or item.get("snippet"),
+                        600,
+                    ),
+                    "category": _clean_text(
+                        item.get("category") or item.get("ai_category") or item.get("module"),
+                        80,
+                    ) or "战略动态",
+                    "region": _clean_text(item.get("region") or item.get("ai_region"), 40) or "未分类",
+                    "source": _clean_text(item.get("source") or item.get("source_domain"), 120),
+                    "source_url": source_url,
+                    "published_at": published_at,
+                },
+            )
+    ordered = sorted(collected.values(), key=_reviewed_news_timestamp, reverse=True)
+    if limit is None:
+        return ordered
+    return ordered[:max(0, int(limit))]
 
 
 def public_snapshot() -> dict[str, Any]:

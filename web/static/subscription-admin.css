@@ -179,6 +179,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .workbench-actions .button span { display: none; }
   .surface-header { min-height: 56px; padding: 11px 12px; }
   .invite-surface, .subscriber-surface { min-height: 0; }
+  .subscriber-table table { min-width: 760px; }
+  .subscriber-table td select { min-width: 88px; }
   .surface-actions .button span { display: none; }
   .push-surface .surface-body { padding: 12px; }
   .schedule-form { grid-template-columns: 1fr; }

@@ -32,6 +32,7 @@ FREQUENCY_LABELS = {
     "once_daily": "每天一次",
 }
 VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
+VALID_NEWS_ITEM_LIMITS = frozenset({5, 10, 15, 20})
 LEGACY_FREQUENCY_MAP = {
     "immediate": "twice_daily",
     "daily": "once_daily",
@@ -62,6 +63,19 @@ def _now_hkt() -> str:
 def _normalize_news_frequency(value: str) -> str:
     raw = str(value or "").strip()
     return LEGACY_FREQUENCY_MAP.get(raw, raw)
+
+
+def _news_sort_timestamp(item: dict[str, Any]) -> float:
+    raw = str(item.get("published_at") or item.get("source_date") or item.get("search_date") or "").strip()
+    if not raw:
+        return float("-inf")
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return float("-inf")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=HKT)
+    return parsed.timestamp()
 
 
 def _card_form_scalar(value: Any) -> str:
@@ -193,6 +207,18 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "options": [
                                 {"text": {"tag": "plain_text", "content": "每天两次"}, "value": "twice_daily"},
                                 {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
+                            ],
+                        },
+                        {"tag": "markdown", "content": "**每次战略新闻条数**"},
+                        {
+                            "tag": "select_static",
+                            "name": "news_item_limit",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "选择每次接收条数"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": f"最新 {count} 条"}, "value": str(count)}
+                                for count in sorted(VALID_NEWS_ITEM_LIMITS)
                             ],
                         },
                         {
@@ -363,6 +389,7 @@ class SubscriptionService:
                     status TEXT NOT NULL DEFAULT 'active',
                     frequency TEXT NOT NULL DEFAULT 'immediate',
                     report_mode TEXT NOT NULL DEFAULT 'pdf',
+                    news_item_limit INTEGER NOT NULL DEFAULT 10,
                     source_chat_id TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -513,6 +540,11 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN frequency TEXT NOT NULL DEFAULT 'immediate'")
             if "report_mode" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN report_mode TEXT NOT NULL DEFAULT 'pdf'")
+            if "news_item_limit" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
+            db.execute(
+                "UPDATE subscribers SET news_item_limit=10 WHERE news_item_limit NOT IN (5,10,15,20)"
+            )
             db.execute(
                 """UPDATE subscribers SET frequency=CASE frequency
                        WHEN 'immediate' THEN 'twice_daily'
@@ -639,6 +671,7 @@ class SubscriptionService:
         union_id: str = "",
         frequency: str = "once_daily",
         report_mode: str = "pdf",
+        news_item_limit: int = 10,
     ) -> dict[str, Any]:
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
@@ -648,16 +681,23 @@ class SubscriptionService:
             raise ValueError("接收频率无效")
         if report_mode not in VALID_REPORT_MODES:
             raise ValueError("报告接收形式无效")
+        try:
+            news_item_limit = int(news_item_limit)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("每次战略新闻条数无效") from exc
+        if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
+            raise ValueError("每次战略新闻条数无效")
         now = _now_hkt()
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, source_chat_id, created_at, updated_at)
-                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?)
+                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, source_chat_id, created_at, updated_at)
+                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(open_id) DO UPDATE SET display_name=excluded.display_name,
                    callback_open_id=excluded.callback_open_id, union_id=excluded.union_id,
                    status='active', frequency=excluded.frequency, report_mode=excluded.report_mode,
-                   source_chat_id=excluded.source_chat_id, updated_at=excluded.updated_at""",
-                (open_id, callback_open_id, union_id, display_name, frequency, report_mode, source_chat_id, now, now),
+                   news_item_limit=excluded.news_item_limit, source_chat_id=excluded.source_chat_id,
+                   updated_at=excluded.updated_at""",
+                (open_id, callback_open_id, union_id, display_name, frequency, report_mode, news_item_limit, source_chat_id, now, now),
             )
             for service in VALID_SERVICES:
                 db.execute(
@@ -673,6 +713,7 @@ class SubscriptionService:
             "frequency_label": FREQUENCY_LABELS[frequency],
             "news_frequency": frequency,
             "news_frequency_label": FREQUENCY_LABELS[frequency],
+            "news_item_limit": news_item_limit,
             "report_cadence": "biweekly_on_publish",
             "report_cadence_label": REPORT_CADENCE_LABEL,
             "report_mode": report_mode,
@@ -695,6 +736,7 @@ class SubscriptionService:
         services: list[str] = []
         frequency = "once_daily"
         report_mode = "pdf"
+        news_item_limit = 10
         if not is_pause:
             try:
                 form = json.loads(form_raw or "{}")
@@ -720,10 +762,16 @@ class SubscriptionService:
                     _card_form_scalar(form.get("news_frequency") or form.get("frequency"))
                 )
                 report_mode = _card_form_scalar(form.get("report_mode")) or "pdf"
+            try:
+                news_item_limit = int(_card_form_scalar(form.get("news_item_limit")) or 10)
+            except ValueError as exc:
+                raise ValueError("请选择有效的每次战略新闻条数") from exc
             if frequency not in VALID_FREQUENCIES:
                 raise ValueError("请选择有效的接收频率")
             if report_mode not in VALID_REPORT_MODES:
                 raise ValueError("请选择有效的报告接收形式")
+            if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
+                raise ValueError("请选择有效的每次战略新闻条数")
         open_id = str(event.get("operator_id") or "")
         chat_id = str(event.get("chat_id") or "")
         message_id = str(event.get("message_id") or "")
@@ -805,12 +853,13 @@ class SubscriptionService:
             callback_open_id=identity["callback_open_id"], union_id=identity["union_id"],
             frequency=frequency,
             report_mode=report_mode,
+            news_item_limit=news_item_limit,
         )
         record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
-            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**。以后重新提交订阅卡片即可覆盖选择。",
+            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**\n\n每次战略新闻：**最新 {saved['news_item_limit']} 条**。以后重新提交订阅卡片即可覆盖选择。",
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,
         )
@@ -821,7 +870,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -1532,6 +1581,7 @@ class SubscriptionService:
         status: str = "active",
         frequency: str = "once_daily",
         report_mode: str = "pdf",
+        news_item_limit: int = 10,
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
             raise ValueError("订阅者状态只能是 active 或 paused")
@@ -1551,6 +1601,7 @@ class SubscriptionService:
             union_id=str(row["union_id"]),
             frequency=frequency,
             report_mode=report_mode,
+            news_item_limit=news_item_limit,
         )
         with closing(self._connect()) as db, db:
             db.execute("UPDATE subscribers SET status=?, updated_at=? WHERE open_id=?", (status, _now_hkt(), open_id))
@@ -1808,7 +1859,7 @@ class SubscriptionService:
     def _subscribers_for(self, service: str) -> list[dict[str, str]]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.report_mode FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
+                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service=? AND x.active=1 ORDER BY s.open_id""",
                 (service,),
             ).fetchall()
@@ -1819,6 +1870,7 @@ class SubscriptionService:
                 # when it is published. Only strategic news uses a selectable cadence.
                 "frequency": _normalize_news_frequency(str(row["frequency"] or "once_daily")) if service == "news" else "immediate",
                 "report_mode": str(row["report_mode"] or "pdf"),
+                "news_item_limit": int(row["news_item_limit"] or 10),
             }
             for row in rows
         ]
@@ -2043,15 +2095,17 @@ class SubscriptionService:
                 "skipped_count": 0,
                 "results": [],
             }
-        clean_items = [item for item in items if isinstance(item, dict)]
+        clean_items = sorted(
+            (item for item in items if isinstance(item, dict)),
+            key=_news_sort_timestamp,
+            reverse=True,
+        )
         crawl_date = crawl_slot[:10]
         content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
         period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
-        title = f"{period_name}｜{len(clean_items)}条战略新闻" if clean_items else f"{period_name}｜本轮无新增"
-        body = encode_strategic_news_digest(clean_items)
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency FROM subscribers s
+                """SELECT s.open_id, s.frequency, s.news_item_limit FROM subscribers s
                    JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service='news' AND x.active=1
                    ORDER BY s.open_id"""
@@ -2062,6 +2116,16 @@ class SubscriptionService:
             frequency = _normalize_news_frequency(str(row["frequency"] or "once_daily"))
             if frequency not in VALID_FREQUENCIES:
                 frequency = "once_daily"
+            news_item_limit = int(row["news_item_limit"] or 10)
+            if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
+                news_item_limit = 10
+            recipient_items = clean_items[:news_item_limit]
+            title = (
+                f"{period_name}｜最新{len(recipient_items)}条战略新闻"
+                if recipient_items
+                else f"{period_name}｜本轮无新增"
+            )
+            body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
                 f"twice_daily:{crawl_slot}"
                 if frequency == "twice_daily"
@@ -2139,6 +2203,7 @@ class SubscriptionService:
             results.append({
                 "open_id": open_id,
                 "frequency": frequency,
+                "news_item_limit": news_item_limit,
                 "status": status,
                 "message_ids": message_ids,
                 "error": error,

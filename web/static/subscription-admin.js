@@ -49,6 +49,10 @@
     return modes.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
   }
 
+  function newsItemLimitOptions(selected = 10) {
+    return [5, 10, 15, 20].map((count) => `<option value="${count}"${Number(selected) === count ? " selected" : ""}>${count} 条</option>`).join("");
+  }
+
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="9" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
@@ -56,7 +60,7 @@
       <td class="name">${esc(item.display_name)}</td><td class="muted">${esc(item.open_id.slice(0, 8))}…</td>
       ${["weekly", "performance", "news"].map((service) => `<td><label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label></td>`).join("")}
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
-      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select></td>
+      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td><button class="button" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
   }
@@ -68,7 +72,7 @@
       <td><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
-      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select></td>
+      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}">${icon("send")}</button><button class="button compact-save" type="button" data-save-subscriber>保存</button></div></td></tr>`).join("");
   }
@@ -250,7 +254,7 @@
     if (save) {
       const row = save.closest("[data-subscriber-row]");
       const services = Array.from(row.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });

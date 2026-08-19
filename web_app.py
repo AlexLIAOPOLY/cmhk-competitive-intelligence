@@ -2427,21 +2427,20 @@ def push_latest_subscription_content(
             }
         except (FileNotFoundError, ValueError):
             continue
+    latest_news: list[dict] = []
     if "news" in selected_services:
-        from strategic_briefing import public_snapshot
+        from strategic_briefing import latest_reviewed_news
 
-        news_items = list(public_snapshot().get("items") or [])[:10]
-        if news_items:
-            content["news"] = {
-                "mode": "text",
-                "title": f"CMHK战略新闻｜最新{len(news_items)}条",
-                "body": encode_strategic_news_digest(news_items),
-            }
-    if not content:
+        latest_news = latest_reviewed_news(limit=max(
+            int(item.get("news_item_limit") or 10)
+            for item in active
+            if "news" in (item.get("services") or [])
+        ))
+    if not content and not latest_news:
         raise ValueError("当前没有可供人工推送的最新正式内容")
 
     results = []
-    for service_key in ("weekly", "performance", "news"):
+    for service_key in ("weekly", "performance"):
         if service_key not in content:
             continue
         item = content[service_key]
@@ -2454,6 +2453,19 @@ def push_latest_subscription_content(
             target_open_id=target_open_id,
             confirm_bulk=confirm_bulk,
         ))
+    if latest_news:
+        for subscriber in active:
+            if "news" not in (subscriber.get("services") or []):
+                continue
+            item_limit = int(subscriber.get("news_item_limit") or 10)
+            news_items = latest_news[:item_limit]
+            results.append(service.push(
+                service="news",
+                mode="text",
+                title=f"CMHK战略新闻｜最新{len(news_items)}条",
+                body=encode_strategic_news_digest(news_items),
+                target_open_id=str(subscriber.get("open_id") or ""),
+            ))
     return {
         "batch_id": f"manual-latest-{uuid.uuid4().hex[:12]}",
         "target_open_id": target_open_id,
@@ -4267,6 +4279,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         status=str(payload.get("status") or "active"),
                         frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "once_daily"),
                         report_mode=str(payload.get("reportMode") or "pdf"),
+                        news_item_limit=int(payload.get("newsItemLimit") or 10),
                     )
                 elif action == "updateReportSchedule":
                     result = service.update_report_schedule(

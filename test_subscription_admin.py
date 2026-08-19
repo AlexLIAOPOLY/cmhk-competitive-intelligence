@@ -34,6 +34,9 @@ class SubscriptionAdminTests(unittest.TestCase):
 
     def test_admin_exposes_real_subscription_frequency_controls(self):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
+        self.assertIn("data-subscriber-news-limit", SCRIPT)
+        self.assertIn("newsItemLimit", SCRIPT)
+        self.assertIn(".subscriber-table table { min-width: 760px; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)

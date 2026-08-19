@@ -17,6 +17,7 @@ class FakeSubscriptionService:
                     "open_id": "ou_target123",
                     "status": "active",
                     "services": ["weekly", "performance", "news"],
+                    "news_item_limit": 5,
                 },
                 {
                     "open_id": "ou_paused123",
@@ -50,11 +51,14 @@ class LatestSubscriptionPushTests(unittest.TestCase):
                     {"reportType": "carrier-performance", "path_str": performance.name},
                 ]
             }
-            news = {"items": [{"title": "正式新闻", "summary": "已审核"}]}
+            news = [
+                {"title": f"正式新闻{index}", "summary": "已审核", "published_at": f"2026-08-19T{index:02d}:00:00+08:00"}
+                for index in range(8)
+            ]
             with (
                 mock.patch.object(web_app, "ROOT", root),
                 mock.patch.object(web_app, "build_status", return_value=status),
-                mock.patch("strategic_briefing.public_snapshot", return_value=news),
+                mock.patch("strategic_briefing.latest_reviewed_news", return_value=news[:5]) as latest,
             ):
                 result = web_app.push_latest_subscription_content(
                     service,
@@ -66,6 +70,9 @@ class LatestSubscriptionPushTests(unittest.TestCase):
         self.assertEqual(service.calls[0]["mode"], "pdf_audio")
         self.assertEqual(service.calls[1]["mode"], "pdf_audio")
         self.assertEqual(service.calls[2]["mode"], "text")
+        self.assertEqual(service.calls[2]["title"], "CMHK战略新闻｜最新5条")
+        self.assertEqual(service.calls[2]["body"].count('"title"'), 5)
+        latest.assert_called_once_with(limit=5)
         self.assertEqual(result["service_count"], 3)
         self.assertEqual(result["verified_count"], 3)
 
