@@ -87,14 +87,6 @@
       item.disabled = true;
       item.setAttribute("aria-disabled", "true");
     });
-    ["weekly", "performance"].forEach((kind) => {
-      const reportPanel = document.querySelector(`[data-workspace-panel="${kind}"]`);
-      const latestReportRow = reportPanel?.querySelector('.workspace-report-host .file-row[data-path]');
-      if (latestReportRow && reportPanel.querySelector('[data-report-preview].is-placeholder') && !reportPanel.dataset.publicAutoPreviewed) {
-        reportPanel.dataset.publicAutoPreviewed = "true";
-        latestReportRow.click();
-      }
-    });
   }
   document.addEventListener("DOMContentLoaded", lockPrivateControls);
   new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
