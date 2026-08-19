@@ -9019,6 +9019,15 @@ document.addEventListener("keydown", (event) => {
     focusPaused = false;
     resumeScroll(500);
   });
+  window.addEventListener("workspace-tab-change", function (event) {
+    if (!event.detail || event.detail.tab !== "dashboard") {
+      pauseScroll();
+      return;
+    }
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(restartScroll);
+    });
+  });
   fetchStrategicBriefs();
   window.setInterval(fetchStrategicBriefs, 60000);
 })();
