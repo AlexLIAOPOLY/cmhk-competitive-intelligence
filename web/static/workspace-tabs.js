@@ -223,8 +223,18 @@
     return allowedModules.includes(requested) ? requested : (allowedModules[0] || "dashboard");
   }
 
+  function animateActivatedPanel(panel) {
+    if (!panel || motionPreference.matches) return;
+    panel.classList.remove("is-panel-entering");
+    void panel.offsetWidth;
+    panel.classList.add("is-panel-entering");
+    window.setTimeout(() => panel.classList.remove("is-panel-entering"), 220);
+  }
+
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
     const target = allowedModules.includes(name) ? name : (allowedModules[0] || "dashboard");
+    const activePanel = panels.find((panel) => panel.dataset.workspacePanel === target);
+    const shouldAnimatePanel = Boolean(activePanel?.hidden);
     state.previewRequest.weekly += 1;
     state.previewRequest.performance += 1;
     tabs.forEach((tab) => {
@@ -236,6 +246,7 @@
     });
     clearWorkspaceSignal(target);
     panels.forEach((panel) => { panel.hidden = panel.dataset.workspacePanel !== target; });
+    if (shouldAnimatePanel) animateActivatedPanel(activePanel);
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
@@ -245,7 +256,7 @@
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
     window.dispatchEvent(new CustomEvent("workspace-tab-change", { detail: { tab: target } }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: motionPreference.matches ? "auto" : "smooth" });
   }
 
   tabs.forEach((tab) => {
