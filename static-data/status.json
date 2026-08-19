@@ -330,6 +330,1837 @@
       "hasRunning": false
     },
     "latestOutputText": "2026-08-19 03:20:02",
-    "outputs": []
+    "outputs": [
+      {
+        "name": "8月19日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643506,
+        "mtime": 1787123652.9412923,
+        "mtimeText": "2026-08-19 15:14:12",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月14日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643619,
+        "mtime": 1786669137.0592186,
+        "mtimeText": "2026-08-14 08:58:57",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645297,
+        "mtime": 1786616541.3669343,
+        "mtimeText": "2026-08-13 18:22:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645809,
+        "mtime": 1786615664.0,
+        "mtimeText": "2026-08-13 18:07:44",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643018,
+        "mtime": 1786612928.2043362,
+        "mtimeText": "2026-08-13 17:22:08",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643685,
+        "mtime": 1786611613.8852298,
+        "mtimeText": "2026-08-13 17:00:13",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25665,
+        "mtime": 1786610091.2196035,
+        "mtimeText": "2026-08-13 16:34:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "8月13日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643788,
+        "mtime": 1786609703.834235,
+        "mtimeText": "2026-08-13 16:28:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651840,
+        "mtime": 1785459266.053557,
+        "mtimeText": "2026-07-31 08:54:26",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月30日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651886,
+        "mtime": 1785407309.7059085,
+        "mtimeText": "2026-07-30 18:28:29",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月30日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650721,
+        "mtime": 1785406008.8679757,
+        "mtimeText": "2026-07-30 18:06:48",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月30日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646171,
+        "mtime": 1785405245.3395648,
+        "mtimeText": "2026-07-30 17:54:05",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月30日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650275,
+        "mtime": 1785343986.8129973,
+        "mtimeText": "2026-07-30 00:53:06",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (7).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651214,
+        "mtime": 1785342489.3606114,
+        "mtimeText": "2026-07-30 00:28:09",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646288,
+        "mtime": 1785337531.679546,
+        "mtimeText": "2026-07-29 23:05:31",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646285,
+        "mtime": 1785337343.138037,
+        "mtimeText": "2026-07-29 23:02:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1648009,
+        "mtime": 1785321394.3752673,
+        "mtimeText": "2026-07-29 18:36:34",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1647992,
+        "mtime": 1785320851.7770944,
+        "mtimeText": "2026-07-29 18:27:31",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1649713,
+        "mtime": 1785319868.7112124,
+        "mtimeText": "2026-07-29 18:11:08",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1648299,
+        "mtime": 1785318794.4561133,
+        "mtimeText": "2026-07-29 17:53:14",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月29日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650656,
+        "mtime": 1785316510.3062558,
+        "mtimeText": "2026-07-29 17:15:10",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1641877,
+        "mtime": 1784890858.3851848,
+        "mtimeText": "2026-07-24 19:00:58",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1641689,
+        "mtime": 1784890505.7109492,
+        "mtimeText": "2026-07-24 18:55:05",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1640480,
+        "mtime": 1784889463.5707693,
+        "mtimeText": "2026-07-24 18:37:43",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1641670,
+        "mtime": 1784889350.9987812,
+        "mtimeText": "2026-07-24 18:35:50",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要 (5).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25639,
+        "mtime": 1784889085.0467086,
+        "mtimeText": "2026-07-24 18:31:25",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要 (4).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25614,
+        "mtime": 1784888641.1013281,
+        "mtimeText": "2026-07-24 18:24:01",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1641670,
+        "mtime": 1784888473.1009934,
+        "mtimeText": "2026-07-24 18:21:13",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1641670,
+        "mtime": 1784887212.3847547,
+        "mtimeText": "2026-07-24 18:00:12",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1640747,
+        "mtime": 1784878866.8912187,
+        "mtimeText": "2026-07-24 15:41:06",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644845,
+        "mtime": 1784875539.099661,
+        "mtimeText": "2026-07-24 14:45:39",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644845,
+        "mtime": 1784874852.743901,
+        "mtimeText": "2026-07-24 14:34:12",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645259,
+        "mtime": 1784874545.9894335,
+        "mtimeText": "2026-07-24 14:29:05",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25564,
+        "mtime": 1784873155.3041365,
+        "mtimeText": "2026-07-24 14:05:55",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25227,
+        "mtime": 1784864642.502742,
+        "mtimeText": "2026-07-24 11:44:02",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25489,
+        "mtime": 1784864340.11662,
+        "mtimeText": "2026-07-24 11:39:00",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646311,
+        "mtime": 1784863343.8818412,
+        "mtimeText": "2026-07-24 11:22:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日） (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646323,
+        "mtime": 1784862561.6295733,
+        "mtimeText": "2026-07-24 11:09:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月24日）.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644249,
+        "mtime": 1784857513.8984087,
+        "mtimeText": "2026-07-24 09:45:13",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月24日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25843,
+        "mtime": 1784856231.8311338,
+        "mtimeText": "2026-07-24 09:23:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月22日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25099,
+        "mtime": 1784704443.5160816,
+        "mtimeText": "2026-07-22 15:14:03",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月22日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25099,
+        "mtime": 1784704054.2486265,
+        "mtimeText": "2026-07-22 15:07:34",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月31日周报（截至7月22日）.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1642592,
+        "mtime": 1784702379.0043323,
+        "mtimeText": "2026-07-22 14:39:39",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月17日周报（草稿，截至7月15日）.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643957,
+        "mtime": 1784085925.413445,
+        "mtimeText": "2026-07-15 11:25:25",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646358,
+        "mtime": 1784081086.0,
+        "mtimeText": "2026-07-15 10:04:46",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646281,
+        "mtime": 1784079796.0,
+        "mtimeText": "2026-07-15 09:43:16",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646198,
+        "mtime": 1784079703.0,
+        "mtimeText": "2026-07-15 09:41:43",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646848,
+        "mtime": 1784079643.0,
+        "mtimeText": "2026-07-15 09:40:43",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646271,
+        "mtime": 1784079503.0,
+        "mtimeText": "2026-07-15 09:38:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646598,
+        "mtime": 1784079375.0,
+        "mtimeText": "2026-07-15 09:36:15",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月15日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1647193,
+        "mtime": 1784079188.0,
+        "mtimeText": "2026-07-15 09:33:08",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月14日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1784014088.4607408,
+        "mtimeText": "2026-07-14 15:28:08",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月14日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1784013351.1095026,
+        "mtimeText": "2026-07-14 15:15:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月14日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1784012947.6742976,
+        "mtimeText": "2026-07-14 15:09:07",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月14日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651235,
+        "mtime": 1784012871.5966005,
+        "mtimeText": "2026-07-14 15:07:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (6).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783931797.8678505,
+        "mtimeText": "2026-07-13 16:36:37",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (5).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783930759.21055,
+        "mtimeText": "2026-07-13 16:19:19",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (4).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783930757.2573063,
+        "mtimeText": "2026-07-13 16:19:17",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783930259.6968808,
+        "mtimeText": "2026-07-13 16:10:59",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783929793.104843,
+        "mtimeText": "2026-07-13 16:03:13",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783926822.3047392,
+        "mtimeText": "2026-07-13 15:13:42",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651235,
+        "mtime": 1783926210.5276864,
+        "mtimeText": "2026-07-13 15:03:30",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651235,
+        "mtime": 1783926196.9168844,
+        "mtimeText": "2026-07-13 15:03:16",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27262,
+        "mtime": 1783925873.7406726,
+        "mtimeText": "2026-07-13 14:57:53",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月13日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650926,
+        "mtime": 1783914559.758034,
+        "mtimeText": "2026-07-13 11:49:19",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月10日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27927,
+        "mtime": 1783647850.0,
+        "mtimeText": "2026-07-10 09:44:10",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "7月10日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652700,
+        "mtime": 1783647662.0,
+        "mtimeText": "2026-07-10 09:41:02",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月19日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781799440.0,
+        "mtimeText": "2026-06-19 00:17:20",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月17日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781682741.0,
+        "mtimeText": "2026-06-17 15:52:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月17日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781681940.0,
+        "mtimeText": "2026-06-17 15:39:00",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月17日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781678929.0,
+        "mtimeText": "2026-06-17 14:48:49",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月17日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781678469.0,
+        "mtimeText": "2026-06-17 14:41:09",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月17日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652416,
+        "mtime": 1781677687.0,
+        "mtimeText": "2026-06-17 14:28:07",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1653174,
+        "mtime": 1781596284.0,
+        "mtimeText": "2026-06-16 15:51:24",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650548,
+        "mtime": 1781578408.0,
+        "mtimeText": "2026-06-16 10:53:28",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要 (5).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28134,
+        "mtime": 1781576278.0,
+        "mtimeText": "2026-06-16 10:17:58",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651027,
+        "mtime": 1781576002.0,
+        "mtimeText": "2026-06-16 10:13:22",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要 (4).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28134,
+        "mtime": 1781574996.0,
+        "mtimeText": "2026-06-16 09:56:36",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28138,
+        "mtime": 1781574752.0,
+        "mtimeText": "2026-06-16 09:52:32",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28276,
+        "mtime": 1781574460.0,
+        "mtimeText": "2026-06-16 09:47:40",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28199,
+        "mtime": 1781574091.0,
+        "mtimeText": "2026-06-16 09:41:31",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651027,
+        "mtime": 1781573523.0,
+        "mtimeText": "2026-06-16 09:32:03",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651022,
+        "mtime": 1781573433.0,
+        "mtimeText": "2026-06-16 09:30:33",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28409,
+        "mtime": 1781573194.0,
+        "mtimeText": "2026-06-16 09:26:34",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月16日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651026,
+        "mtime": 1781573193.0,
+        "mtimeText": "2026-06-16 09:26:33",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651559,
+        "mtime": 1781517217.0,
+        "mtimeText": "2026-06-15 17:53:37",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28040,
+        "mtime": 1781515791.0,
+        "mtimeText": "2026-06-15 17:29:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1651225,
+        "mtime": 1781515733.0,
+        "mtimeText": "2026-06-15 17:28:53",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1655238,
+        "mtime": 1781515403.0,
+        "mtimeText": "2026-06-15 17:23:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 28235,
+        "mtime": 1781515296.0,
+        "mtimeText": "2026-06-15 17:21:36",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25262,
+        "mtime": 1781490374.0,
+        "mtimeText": "2026-06-15 10:26:14",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25262,
+        "mtime": 1781490323.0,
+        "mtimeText": "2026-06-15 10:25:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月15日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643403,
+        "mtime": 1781490081.0,
+        "mtimeText": "2026-06-15 10:21:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月11日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25262,
+        "mtime": 1781165591.0,
+        "mtimeText": "2026-06-11 16:13:11",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月11日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1642779,
+        "mtime": 1781164795.0,
+        "mtimeText": "2026-06-11 15:59:55",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (11).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643449,
+        "mtime": 1781084910.0,
+        "mtimeText": "2026-06-10 17:48:30",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (10).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643122,
+        "mtime": 1781084752.0,
+        "mtimeText": "2026-06-10 17:45:52",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (9).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643049,
+        "mtime": 1781081822.0,
+        "mtimeText": "2026-06-10 16:57:02",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (8).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643049,
+        "mtime": 1781080771.0,
+        "mtimeText": "2026-06-10 16:39:31",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (7).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643070,
+        "mtime": 1781080080.0,
+        "mtimeText": "2026-06-10 16:28:00",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644283,
+        "mtime": 1781078936.0,
+        "mtimeText": "2026-06-10 16:08:56",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1643968,
+        "mtime": 1781077133.0,
+        "mtimeText": "2026-06-10 15:38:53",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644134,
+        "mtime": 1781061213.0,
+        "mtimeText": "2026-06-10 11:13:33",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644032,
+        "mtime": 1781060595.0,
+        "mtimeText": "2026-06-10 11:03:15",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25262,
+        "mtime": 1781060244.0,
+        "mtimeText": "2026-06-10 10:57:24",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1642140,
+        "mtime": 1781059949.0,
+        "mtimeText": "2026-06-10 10:52:29",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1642140,
+        "mtime": 1781058252.0,
+        "mtimeText": "2026-06-10 10:24:12",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25262,
+        "mtime": 1781058158.0,
+        "mtimeText": "2026-06-10 10:22:38",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25272,
+        "mtime": 1781055231.0,
+        "mtimeText": "2026-06-10 09:33:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月10日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644140,
+        "mtime": 1781054960.0,
+        "mtimeText": "2026-06-10 09:29:20",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644560,
+        "mtime": 1780987701.0,
+        "mtimeText": "2026-06-09 14:48:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644434,
+        "mtime": 1780987602.0,
+        "mtimeText": "2026-06-09 14:46:42",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780986331.0,
+        "mtimeText": "2026-06-09 14:25:31",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644463,
+        "mtime": 1780986140.0,
+        "mtimeText": "2026-06-09 14:22:20",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644428,
+        "mtime": 1780975936.0,
+        "mtimeText": "2026-06-09 11:32:16",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644466,
+        "mtime": 1780975563.0,
+        "mtimeText": "2026-06-09 11:26:03",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780975416.0,
+        "mtimeText": "2026-06-09 11:23:36",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644665,
+        "mtime": 1780975349.0,
+        "mtimeText": "2026-06-09 11:22:29",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780972536.0,
+        "mtimeText": "2026-06-09 10:35:36",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月9日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645767,
+        "mtime": 1780972532.0,
+        "mtimeText": "2026-06-09 10:35:32",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (9).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780906366.0,
+        "mtimeText": "2026-06-08 16:12:46",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (8).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780906150.0,
+        "mtimeText": "2026-06-08 16:09:10",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (7).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 26785,
+        "mtime": 1780905465.0,
+        "mtimeText": "2026-06-08 15:57:45",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (6).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 26785,
+        "mtime": 1780905354.0,
+        "mtimeText": "2026-06-08 15:55:54",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (11).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645767,
+        "mtime": 1780904823.0,
+        "mtimeText": "2026-06-08 15:47:03",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (10).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1645767,
+        "mtime": 1780904624.0,
+        "mtimeText": "2026-06-08 15:43:44",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (9).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646031,
+        "mtime": 1780904472.0,
+        "mtimeText": "2026-06-08 15:41:12",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (8).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646256,
+        "mtime": 1780904390.0,
+        "mtimeText": "2026-06-08 15:39:50",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (7).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646256,
+        "mtime": 1780904221.0,
+        "mtimeText": "2026-06-08 15:37:01",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1646178,
+        "mtime": 1780903952.0,
+        "mtimeText": "2026-06-08 15:32:32",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (5).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 26785,
+        "mtime": 1780903849.0,
+        "mtimeText": "2026-06-08 15:30:49",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (4).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 26785,
+        "mtime": 1780903833.0,
+        "mtimeText": "2026-06-08 15:30:33",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780903244.0,
+        "mtimeText": "2026-06-08 15:20:44",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780902967.0,
+        "mtimeText": "2026-06-08 15:16:07",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780902859.0,
+        "mtimeText": "2026-06-08 15:14:19",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780902524.0,
+        "mtimeText": "2026-06-08 15:08:44",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780902136.0,
+        "mtimeText": "2026-06-08 15:02:16",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644817,
+        "mtime": 1780901624.0,
+        "mtimeText": "2026-06-08 14:53:44",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 26020,
+        "mtime": 1780889975.0,
+        "mtimeText": "2026-06-08 11:39:35",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780888379.0,
+        "mtimeText": "2026-06-08 11:12:59",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780888349.0,
+        "mtimeText": "2026-06-08 11:12:29",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月8日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780888098.0,
+        "mtimeText": "2026-06-08 11:08:18",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (15).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780301188.0,
+        "mtimeText": "2026-06-01 16:06:28",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (14).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780299513.0,
+        "mtimeText": "2026-06-01 15:38:33",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (13).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25271,
+        "mtime": 1780299291.0,
+        "mtimeText": "2026-06-01 15:34:51",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (12).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25207,
+        "mtime": 1780298212.0,
+        "mtimeText": "2026-06-01 15:16:52",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (11).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25207,
+        "mtime": 1780298068.0,
+        "mtimeText": "2026-06-01 15:14:28",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日香港竞对业绩摘要 (7).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22046,
+        "mtime": 1780297192.0,
+        "mtimeText": "2026-06-01 14:59:52",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (10).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 21818,
+        "mtime": 1780284483.0,
+        "mtimeText": "2026-06-01 11:28:03",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (9).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 21818,
+        "mtime": 1780283001.0,
+        "mtimeText": "2026-06-01 11:03:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (8).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22187,
+        "mtime": 1780281448.0,
+        "mtimeText": "2026-06-01 10:37:28",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (7).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22187,
+        "mtime": 1780281313.0,
+        "mtimeText": "2026-06-01 10:35:13",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (5).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22187,
+        "mtime": 1780281257.0,
+        "mtimeText": "2026-06-01 10:34:17",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (4).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 21984,
+        "mtime": 1780280575.0,
+        "mtimeText": "2026-06-01 10:22:55",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (6).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 21984,
+        "mtime": 1780280270.0,
+        "mtimeText": "2026-06-01 10:17:50",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (2).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22208,
+        "mtime": 1780278141.0,
+        "mtimeText": "2026-06-01 09:42:21",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (3).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 22208,
+        "mtime": 1780277843.0,
+        "mtimeText": "2026-06-01 09:37:23",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 20441,
+        "mtime": 1780277446.0,
+        "mtimeText": "2026-06-01 09:30:46",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "6月1日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 20441,
+        "mtime": 1780277419.0,
+        "mtimeText": "2026-06-01 09:30:19",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (14).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780048105.0,
+        "mtimeText": "2026-05-29 17:48:25",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (13).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780046209.0,
+        "mtimeText": "2026-05-29 17:16:49",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (12).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780045897.0,
+        "mtimeText": "2026-05-29 17:11:37",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (11).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780045793.0,
+        "mtimeText": "2026-05-29 17:09:53",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (10).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780044886.0,
+        "mtimeText": "2026-05-29 16:54:46",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (9).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780044168.0,
+        "mtimeText": "2026-05-29 16:42:48",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (8).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780043839.0,
+        "mtimeText": "2026-05-29 16:37:19",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (7).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780041893.0,
+        "mtimeText": "2026-05-29 16:04:53",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780041769.0,
+        "mtimeText": "2026-05-29 16:02:49",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780041585.0,
+        "mtimeText": "2026-05-29 15:59:45",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644824,
+        "mtime": 1780041495.0,
+        "mtimeText": "2026-05-29 15:58:15",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1780036389.0,
+        "mtimeText": "2026-05-29 14:33:09",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1780036217.0,
+        "mtimeText": "2026-05-29 14:30:17",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1780025189.0,
+        "mtimeText": "2026-05-29 11:26:29",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月29日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1780022666.0,
+        "mtimeText": "2026-05-29 10:44:26",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (8).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1779954458.0,
+        "mtimeText": "2026-05-28 15:47:38",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (7).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1779954280.0,
+        "mtimeText": "2026-05-28 15:44:40",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (6).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644822,
+        "mtime": 1779954179.0,
+        "mtimeText": "2026-05-28 15:42:59",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (5).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644861,
+        "mtime": 1779936216.0,
+        "mtimeText": "2026-05-28 10:43:36",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (4).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644861,
+        "mtime": 1779936126.0,
+        "mtimeText": "2026-05-28 10:42:06",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644861,
+        "mtime": 1779935927.0,
+        "mtimeText": "2026-05-28 10:38:47",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (2).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644861,
+        "mtime": 1779935860.0,
+        "mtimeText": "2026-05-28 10:37:40",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1644861,
+        "mtime": 1779935637.0,
+        "mtimeText": "2026-05-28 10:33:57",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "5月28日周报.docx",
+        "note": "本周正式版",
+        "reportType": "weekly",
+        "size": 1644907,
+        "mtime": 1779932350.0,
+        "mtimeText": "2026-05-28 09:39:10",
+        "url": "",
+        "audio": null
+      }
+    ]
   }
 }
