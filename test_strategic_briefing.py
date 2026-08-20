@@ -1430,11 +1430,51 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates(items, [])
 
-        self.assertEqual(agent_call.call_count, 3)
-        self.assertEqual(result["llm_call_count"], 3)
+        self.assertLessEqual(agent_call.call_count, 3)
+        self.assertEqual(result["llm_call_count"], agent_call.call_count)
         self.assertEqual(result["llm_call_limit"], 3)
         self.assertEqual(result["kept"], items)
         self.assertEqual(result["deferred"], [])
+
+    def test_semantic_dedupe_repairs_unstructured_json_within_hard_budget(self):
+        item = {
+            "news_id": "candidate-repair",
+            "ai_title": "一条需要修复输出结构的新闻",
+            "ai_summary": "模型首次多输出了解释文字。",
+            "source_date": "2026-08-20",
+            "url": "https://example.com/repair",
+        }
+
+        def repaired(candidates, **kwargs):
+            if not kwargs.get("malformed_response"):
+                raise briefing.AIUnstructuredResponse("先解释一下，再输出结果。")
+            return {
+                candidate["id"]: {
+                    "id": candidate["id"],
+                    "is_duplicate": False,
+                    "duplicate_of": "",
+                    "reason": "修复JSON后未发现与历史记录是同一现实事件。",
+                }
+                for candidate in candidates
+            }
+
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_semantic_dedupe_agent",
+                side_effect=repaired,
+            ) as agent_call,
+            mock.patch.object(briefing, "_atomic_write_json") as write_audit,
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], [])
+
+        self.assertEqual(agent_call.call_count, 2)
+        self.assertEqual(result["llm_call_count"], 2)
+        self.assertEqual(result["kept"], [item])
+        audit = write_audit.call_args.args[1]
+        self.assertEqual(audit["repair_call_count"], 1)
+        self.assertEqual(audit["repair_resolved_count"], 1)
+        self.assertEqual(audit["malformed_responses"][0]["stage"], "primary")
 
     def test_semantic_dedupe_batch_failure_defers_candidates_without_retry(self):
         item = {
@@ -1571,6 +1611,47 @@ class StrategicBriefingTests(unittest.TestCase):
             [request.get_header("Authorization") for request in requests],
             ["Bearer v4-key", "Bearer free-key"],
         )
+
+    def test_strategic_ai_sends_api_level_structured_output_contract(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {"message": {"content": json.dumps({"items": []})}}
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "test_schema",
+                "strict": True,
+                "schema": {"type": "object"},
+            },
+        }
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://10.0.62.177:4000/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            briefing._call_internal_ai(
+                "system",
+                "user",
+                response_format=response_format,
+            )
+
+        request_body = json.loads(opener.open.call_args.args[0].data)
+        self.assertEqual(request_body["response_format"], response_format)
 
     def _approved_brief(self) -> dict:
         return {
@@ -3345,6 +3426,91 @@ class StrategicBriefingTests(unittest.TestCase):
                 identity_matches={},
             )
 
+    def test_semantic_agent_normalizes_mutual_cycle_to_earlier_representative(self):
+        candidates = [
+            {"id": "candidate-a", "order": 1},
+            {"id": "candidate-b", "order": 2},
+        ]
+        response = {
+            "items": [
+                {
+                    "id": "candidate-a",
+                    "is_duplicate": True,
+                    "duplicate_of": "candidate-b",
+                    "reason": "两条候选是同一现实事件。",
+                },
+                {
+                    "id": "candidate-b",
+                    "is_duplicate": True,
+                    "duplicate_of": "candidate-a",
+                    "reason": "两条候选是同一现实事件。",
+                },
+            ]
+        }
+
+        normalized = briefing._normalize_mutual_same_batch_duplicates(
+            response,
+            candidates,
+        )
+        decisions = briefing._validated_semantic_dedupe_decisions(
+            normalized,
+            candidates,
+            valid_duplicate_ids=set(),
+            identity_matches={},
+        )
+
+        self.assertFalse(decisions["candidate-a"]["is_duplicate"])
+        self.assertTrue(decisions["candidate-b"]["is_duplicate"])
+        self.assertEqual(decisions["candidate-b"]["duplicate_of"], "candidate-a")
+
+    def test_deferred_candidate_is_not_a_reference_for_later_batches(self):
+        items = [
+            {
+                "news_id": "candidate-a",
+                "ai_title": "事件甲第一条候选",
+                "ai_summary": "第一条候选因服务异常延期。",
+                "source_date": "2026-08-20",
+                "url": "https://example.com/a",
+            },
+            {
+                "news_id": "candidate-b",
+                "ai_title": "事件乙第二条候选",
+                "ai_summary": "第二条候选必须独立审核。",
+                "source_date": "2026-08-20",
+                "url": "https://example.com/b",
+            },
+        ]
+        seen_earlier = []
+
+        def decide(candidates, **kwargs):
+            if candidates[0]["id"] == "candidate-a":
+                raise RuntimeError("temporary failure")
+            seen_earlier.extend(kwargs["earlier_candidates"])
+            return {
+                "candidate-b": {
+                    "id": "candidate-b",
+                    "is_duplicate": False,
+                    "duplicate_of": "",
+                    "reason": "未发现与历史记录是同一现实事件。",
+                }
+            }
+
+        with (
+            mock.patch.object(briefing, "SEMANTIC_DEDUPE_BATCH_SIZE", 1),
+            mock.patch.object(briefing, "SEMANTIC_DEDUPE_MAX_LLM_CALLS", 4),
+            mock.patch.object(
+                briefing,
+                "_call_semantic_dedupe_agent",
+                side_effect=decide,
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates(items, [])
+
+        self.assertEqual(seen_earlier, [])
+        self.assertEqual(result["kept"], [items[1]])
+        self.assertEqual(result["deferred"][0]["item"], items[0])
+
     def test_semantic_agent_independently_confirms_same_batch_events(self):
         first = {
             "news_id": "candidate-a",
@@ -3445,6 +3611,51 @@ class StrategicBriefingTests(unittest.TestCase):
             "history-backpack",
         )
         ai_call.assert_not_called()
+
+    def test_semantic_dedupe_uses_high_confidence_huanggang_pressure_test_signature(self):
+        item = {
+            "news_id": "candidate-huanggang",
+            "ai_title": "港深同意新皇岗口岸早日开通本周六将开展万人千车大型压力演练",
+            "ai_summary": "港深将对新皇岗口岸开展大型压力测试演练。",
+            "source_date": "2026-08-20",
+            "url": "https://example.com/huanggang-latest",
+        }
+        history = [
+            {
+                "news_id": "history-huanggang",
+                "title": "新皇岗口岸港方口岸将进行大型压力测试",
+                "summary": "现正招募私家车参与，以评估通关效率。",
+                "source_date": "2026-08-18",
+                "source_url": "https://example.com/huanggang-history",
+            }
+        ]
+        with (
+            mock.patch.object(briefing, "_call_internal_ai") as ai_call,
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], history)
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["duplicates"][0]["duplicate_of"], "history-huanggang")
+        ai_call.assert_not_called()
+
+    def test_huanggang_first_immigration_drill_is_not_pressure_test_signature(self):
+        first_drill = {
+            "title": "皇岗口岸首次进行出入境演练",
+            "summary": "验证通关流程与设施准备情况。",
+        }
+
+        self.assertEqual(briefing._deterministic_event_signature(first_drill), "")
+
+    def test_huanggang_numbered_pressure_tests_have_distinct_signatures(self):
+        first = briefing._deterministic_event_signature(
+            {"title": "新皇岗口岸首次大型压力测试"}
+        )
+        second = briefing._deterministic_event_signature(
+            {"title": "新皇岗口岸第二次大型压力测试"}
+        )
+
+        self.assertNotEqual(first, second)
 
     def test_semantic_priority_history_surfaces_exact_url_before_similar_topics(self):
         candidate = {

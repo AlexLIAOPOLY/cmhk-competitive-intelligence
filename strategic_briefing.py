@@ -71,7 +71,7 @@ AI_EDITOR_DEFERRED_RETRY_MINUTES = max(
 )
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
-    min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "4"))),
+    min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "1"))),
 )
 SEMANTIC_DEDUPE_MAX_LLM_CALLS = max(
     1,
@@ -329,6 +329,16 @@ class AIUnstructuredResponse(RuntimeError):
     def __init__(self, content: str):
         super().__init__("公司内部 AI 未返回 JSON")
         self.content = _clean_text(content, 4000)
+
+
+class AIInvalidStructuredResponse(RuntimeError):
+    """Structured JSON was returned, but it violated the required contract."""
+
+    def __init__(self, content: str, detail: str):
+        super().__init__(f"公司内部 AI 返回的 JSON 字段不完整：{_clean_text(detail, 180)}")
+        self.content = _clean_text(content, 4000)
+
+
 LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 MONITOR_SHEET_TOKEN = (
     os.environ.get("CMHK_STRATEGY_SHEET_TOKEN") or "NB6Gsi9tChARfGtBDpFc6QfOnmb"
@@ -2725,6 +2735,7 @@ def _call_internal_ai(
     max_tokens: int = 900,
     model_override: str = "",
     allow_plain_text: bool = False,
+    response_format: dict[str, Any] | None = None,
     deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
@@ -2790,6 +2801,8 @@ def _call_internal_ai(
             "temperature": 0.1,
             "max_tokens": max_tokens,
         }
+        if response_format:
+            request_body["response_format"] = response_format
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
@@ -4893,6 +4906,30 @@ def _deterministic_event_signature(item: dict[str, Any]) -> str:
             ),
         )
     ).casefold()
+    if re.search(r"皇岗口岸", text) and re.search(
+        r"压力(?:测试|演练|测试演练)",
+        text,
+    ):
+        ordinal_match = re.search(r"(首次|第[\d一二三四五六七八九十]+次)", text)
+        ordinal = ordinal_match.group(1) if ordinal_match else "unspecified"
+        return f"huanggang-port:large-pressure-test:{ordinal}"
+    high_confidence_event_patterns = (
+        (
+            "bochk-ant-international:strategic-cooperation",
+            (r"中银香港|bochk", r"蚂蚁国际|ant international", r"战略合作"),
+        ),
+        (
+            "guangzhou-hong-kong-productivity-center:unveiling",
+            (r"穗港新质生产力赋能中心", r"揭牌"),
+        ),
+        (
+            "west-kowloon-airport-express:autonomous-shuttle-test",
+            (r"西九龙", r"机场快线", r"自动驾驶|无人驾驶", r"测试|试行|接驳"),
+        ),
+    )
+    for signature, required_patterns in high_confidence_event_patterns:
+        if all(re.search(pattern, text, re.I) for pattern in required_patterns):
+            return signature
     entity_patterns = (
         ("verizon", r"(?<![a-z0-9])verizon(?![a-z0-9])"),
         ("att", r"(?<![a-z0-9])at&t(?![a-z0-9])|(?<![a-z0-9])att(?![a-z0-9])"),
@@ -5055,12 +5092,58 @@ def _validated_semantic_dedupe_decisions(
     return decisions
 
 
+def _normalize_mutual_same_batch_duplicates(
+    response: dict[str, Any],
+    candidates: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Keep the earlier representative when the model returns an A/B cycle."""
+    response_items = response.get("items") if isinstance(response, dict) else []
+    if not isinstance(response_items, list):
+        return response
+    normalized_items = [
+        dict(entry) if isinstance(entry, dict) else entry
+        for entry in response_items
+    ]
+    by_id = {
+        _clean_text(entry.get("id"), 80): entry
+        for entry in normalized_items
+        if isinstance(entry, dict) and _clean_text(entry.get("id"), 80)
+    }
+    order_by_id = {
+        _clean_text(candidate.get("id"), 80): int(candidate.get("order") or 0)
+        for candidate in candidates
+    }
+    for candidate in candidates:
+        candidate_id = _clean_text(candidate.get("id"), 80)
+        entry = by_id.get(candidate_id)
+        if not isinstance(entry, dict) or entry.get("is_duplicate") is not True:
+            continue
+        duplicate_of = _clean_text(entry.get("duplicate_of"), 80)
+        target = by_id.get(duplicate_of)
+        if (
+            not isinstance(target, dict)
+            or target.get("is_duplicate") is not True
+            or _clean_text(target.get("duplicate_of"), 80) != candidate_id
+            or order_by_id.get(duplicate_of, 0) <= order_by_id.get(candidate_id, 0)
+        ):
+            continue
+        entry["is_duplicate"] = False
+        entry["duplicate_of"] = ""
+        entry["reason"] = (
+            "模型已双向确认两条候选为同一事件；"
+            "为防止循环删除，按顺序保留较早候选作为事件代表。"
+        )
+        target["duplicate_of"] = candidate_id
+    return {**response, "items": normalized_items}
+
+
 def _call_semantic_dedupe_agent(
     candidates: list[dict[str, Any]],
     *,
     history: list[dict[str, Any]],
     priority_history: list[dict[str, Any]],
     earlier_candidates: list[dict[str, Any]],
+    malformed_response: str = "",
 ) -> dict[str, dict[str, Any]]:
     reference_items = [*priority_history, *history, *earlier_candidates]
     valid_duplicate_ids = {
@@ -5093,8 +5176,66 @@ def _call_semantic_dedupe_agent(
         }
         if matches:
             identity_matches[candidate_id] = matches
+    allowed_duplicate_ids = {
+        candidate["id"]: sorted(
+            valid_duplicate_ids
+            | {
+                prior["id"]
+                for prior in candidates
+                if prior["order"] < candidate["order"]
+            }
+        )
+        for candidate in candidates
+    }
+    response_schema = {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "semantic_news_dedupe",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "minItems": len(candidates),
+                        "maxItems": len(candidates),
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "enum": [
+                                        candidate["id"] for candidate in candidates
+                                    ],
+                                },
+                                "is_duplicate": {"type": "boolean"},
+                                "duplicate_of": {"type": "string"},
+                                "reason": {"type": "string"},
+                            },
+                            "required": [
+                                "id",
+                                "is_duplicate",
+                                "duplicate_of",
+                                "reason",
+                            ],
+                            "additionalProperties": False,
+                        },
+                    }
+                },
+                "required": ["items"],
+                "additionalProperties": False,
+            },
+        },
+    }
+    task_instruction = (
+        "你是新闻事件语义去重 Agent，拥有最终去重判断权。"
+        "请修复malformed_response的JSON结构，并根据原始输入重新校验每条结论。"
+        if malformed_response
+        else "你是新闻事件语义去重 Agent，拥有最终去重判断权。"
+    )
     prompt = (
-        "你是新闻事件语义去重 Agent，拥有最终去重判断权。只输出合法JSON对象，结构为"
+        task_instruction
+        + "只输出符合接口JSON Schema的对象，结构为"
         "{\"items\":[{\"id\":\"当前候选id\",\"is_duplicate\":true或false,"
         "\"duplicate_of\":\"历史或更早候选id；不重复时为空\","
         "\"reason\":\"判断依据\"}]}。必须逐条返回当前候选，id原样保留。"
@@ -5102,35 +5243,49 @@ def _call_semantic_dedupe_agent(
         "同一项产品发布或同一笔交易，即使标题、语言、媒体和措辞不同也算重复。"
         "同一家公司、同一行业主题、相近关键词或同一天发生但属于不同动作时绝不算重复。"
         "不得仅凭标题词重合判断，必须综合标题、摘要、发布时间、主体、动作和关键数字。"
-        "duplicate_of只能引用history或earlier_candidates，或当前列表中顺序更早的候选；"
+        "duplicate_of只能引用该候选allowed_duplicate_ids中的ID；"
         "priority_history是程序从全历史中召回的高可能匹配项，只用于帮助定位，不代表已经重复；"
         "必须优先逐条核对priority_history，尤其是URL相同、主体动作相同或关键数字相同的记录。"
         "identity_matches列出同ID或规范化URL完全相同的身份匹配；这已证明是同一条记录，"
         "必须判is_duplicate=true并从对应ID中选择duplicate_of。"
         "证据不足时判为不重复。不要Markdown，不要输出未提供的事实。"
     )
+    request_payload = {
+        "current_candidates": candidates,
+        "priority_history": priority_history,
+        "identity_matches": {
+            key: sorted(value) for key, value in identity_matches.items()
+        },
+        "allowed_duplicate_ids": allowed_duplicate_ids,
+        "history": history,
+        "earlier_candidates": earlier_candidates,
+    }
+    if malformed_response:
+        request_payload["malformed_response"] = _clean_text(
+            malformed_response,
+            4000,
+        )
     response = _call_internal_ai(
         prompt,
-        json.dumps(
-            {
-                "current_candidates": candidates,
-                "priority_history": priority_history,
-                "identity_matches": {
-                    key: sorted(value) for key, value in identity_matches.items()
-                },
-                "history": history,
-                "earlier_candidates": earlier_candidates,
-            },
-            ensure_ascii=False,
-        ),
-        max_tokens=max(1200, len(candidates) * 320),
+        json.dumps(request_payload, ensure_ascii=False),
+        # DeepSeek-V4-Pro may emit a substantial reasoning stream before the
+        # final content.  A low ceiling can truncate the response before JSON.
+        max_tokens=max(4000, len(candidates) * 700),
+        response_format=response_schema,
     )
-    return _validated_semantic_dedupe_decisions(
-        response,
-        candidates,
-        valid_duplicate_ids=valid_duplicate_ids,
-        identity_matches=identity_matches,
-    )
+    response = _normalize_mutual_same_batch_duplicates(response, candidates)
+    try:
+        return _validated_semantic_dedupe_decisions(
+            response,
+            candidates,
+            valid_duplicate_ids=valid_duplicate_ids,
+            identity_matches=identity_matches,
+        )
+    except RuntimeError as exc:
+        raise AIInvalidStructuredResponse(
+            json.dumps(response, ensure_ascii=False),
+            str(exc),
+        ) from exc
 
 
 def agent_semantic_deduplicate_candidates(
@@ -5227,7 +5382,8 @@ def agent_semantic_deduplicate_candidates(
         )
         if exact_match:
             reason = (
-                "程序高置信事件去重：候选与历史或更早候选的运营商、核心动作和发布时间匹配。"
+                "程序高置信事件去重：候选与历史或更早候选的主体、"
+                "核心动作和发布时间匹配。"
                 if signature_match
                 else "程序确定性去重：候选与历史或更早候选的ID或规范化URL完全相同。"
             )
@@ -5258,12 +5414,18 @@ def agent_semantic_deduplicate_candidates(
         for candidate in candidates
         if not aggregate[candidate["id"]]["is_duplicate"]
     ]
+    # Use the full hard budget to keep each reasoning request small.  Repairs
+    # are allowed only when enough calls remain for every untouched batch.
+    primary_call_budget = SEMANTIC_DEDUPE_MAX_LLM_CALLS
     llm_batch_size = max(
         SEMANTIC_DEDUPE_BATCH_SIZE,
-        (len(active_candidates) + SEMANTIC_DEDUPE_MAX_LLM_CALLS - 1)
-        // SEMANTIC_DEDUPE_MAX_LLM_CALLS,
+        (len(active_candidates) + primary_call_budget - 1)
+        // primary_call_budget,
     )
     llm_call_count = 0
+    repair_call_count = 0
+    repair_resolved_count = 0
+    malformed_responses: list[dict[str, Any]] = []
     processed_candidates: list[dict[str, Any]] = []
     batch_total = (
         (len(active_candidates) + llm_batch_size - 1) // llm_batch_size
@@ -5303,6 +5465,7 @@ def agent_semantic_deduplicate_candidates(
                 f"召回 {len(priority_history)} 条历史和 {len(earlier_candidates)} 条更早候选。"
             ),
         )
+        batch_error = ""
         try:
             decisions = _call_semantic_dedupe_agent(
                 batch,
@@ -5310,15 +5473,72 @@ def agent_semantic_deduplicate_candidates(
                 priority_history=priority_history,
                 earlier_candidates=earlier_candidates,
             )
+        except (AIUnstructuredResponse, AIInvalidStructuredResponse) as exc:
+            malformed_responses.append(
+                {
+                    "batch": batch_number,
+                    "stage": "primary",
+                    "error": _clean_text(exc, 240),
+                    "response_excerpt": _clean_text(exc.content, 1000),
+                }
+            )
+            remaining_primary_calls = batch_total - batch_number
+            can_repair = (
+                llm_call_count + 1 + remaining_primary_calls
+                <= SEMANTIC_DEDUPE_MAX_LLM_CALLS
+            )
+            if can_repair:
+                llm_call_count += 1
+                repair_call_count += 1
+                _emit_progress(
+                    progress_callback,
+                    "语义去重格式修复",
+                    (
+                        f"第 {batch_number}/{batch_total} 轮返回结构异常；"
+                        f"使用第 {llm_call_count}/{SEMANTIC_DEDUPE_MAX_LLM_CALLS} 次"
+                        "LLM问询修复JSON并重新校验。"
+                    ),
+                )
+                try:
+                    decisions = _call_semantic_dedupe_agent(
+                        batch,
+                        history=[],
+                        priority_history=priority_history,
+                        earlier_candidates=earlier_candidates,
+                        malformed_response=exc.content,
+                    )
+                    repair_resolved_count += 1
+                except Exception as repair_exc:
+                    batch_error = _clean_text(repair_exc, 240)
+                    if isinstance(
+                        repair_exc,
+                        (AIUnstructuredResponse, AIInvalidStructuredResponse),
+                    ):
+                        malformed_responses.append(
+                            {
+                                "batch": batch_number,
+                                "stage": "repair",
+                                "error": batch_error,
+                                "response_excerpt": _clean_text(
+                                    repair_exc.content,
+                                    1000,
+                                ),
+                            }
+                        )
+                    decisions = {}
+            else:
+                batch_error = _clean_text(exc, 240)
+                decisions = {}
         except Exception as exc:
-            error = _clean_text(exc, 240)
+            batch_error = _clean_text(exc, 240)
+            decisions = {}
+        if batch_error:
             logging.error(
                 "语义去重第 %s/%s 轮失败；为控制问询次数，本批暂缓且不写入审核表：%s",
                 batch_number,
                 batch_total,
-                error,
+                batch_error,
             )
-            decisions = {}
             for candidate in batch:
                 aggregate[candidate["id"]].update(
                     {
@@ -5327,7 +5547,7 @@ def agent_semantic_deduplicate_candidates(
                     }
                 )
                 aggregate[candidate["id"]]["errors"].append(
-                    f"bounded batch {batch_number}: {error}"
+                    f"bounded batch {batch_number}: {batch_error}"
                 )
         for candidate in batch:
             record = aggregate[candidate["id"]]
@@ -5342,7 +5562,8 @@ def agent_semantic_deduplicate_candidates(
                             "reason": decision["reason"],
                         }
                     )
-            processed_candidates.append(candidate)
+            if not record["is_deferred"] and not record["is_duplicate"]:
+                processed_candidates.append(candidate)
         _emit_progress(
             progress_callback,
             "语义去重限额批次",
@@ -5385,6 +5606,9 @@ def agent_semantic_deduplicate_candidates(
         "llm_call_limit": SEMANTIC_DEDUPE_MAX_LLM_CALLS,
         "llm_call_count": llm_call_count,
         "llm_batch_size": llm_batch_size,
+        "repair_call_count": repair_call_count,
+        "repair_resolved_count": repair_resolved_count,
+        "malformed_responses": malformed_responses,
         "failed_open_count": 0,
         "failed_deferred_count": len(deferred),
         "candidate_count": len(items),
