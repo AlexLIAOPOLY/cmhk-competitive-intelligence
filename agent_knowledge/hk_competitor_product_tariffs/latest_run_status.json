@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "captured_at_hkt": "2026-07-13T08:54:16+08:00",
+  "dataset_dir": "/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/agent_knowledge/hk_competitor_product_tariffs",
+  "brands": [
+    "3HK / Hutchison",
+    "HGC",
+    "HKBN",
+    "SmarTone",
+    "i-CABLE"
+  ],
+  "source_count": 234,
+  "current_count": 161,
+  "historical_count": 523,
+  "source_gap_count": 70,
+  "unresolved_source_gap_count": 41,
+  "verification_backlog_count": 29,
+  "multi_verified_count": 684
+}

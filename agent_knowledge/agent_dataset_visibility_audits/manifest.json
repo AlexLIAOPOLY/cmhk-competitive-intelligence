@@ -1,0 +1,42 @@
+{
+  "id": "agent_dataset_visibility_audits",
+  "title": "小竞AI数据库登记与RAG可见性审计",
+  "summary": "检查核心知识库和维护审计库是否在小竞AI数据库列表中可见、入口文件存在、RAG 定向检索可命中，并确认空图表目录和 superseded 旧知识包不会作为数据库暴露。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "小竞AI database picker, backend registry, entrypoints, and RAG retrieval visibility.",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "dataset-registry",
+    "rag",
+    "frontend-database-picker"
+  ],
+  "keywords": [
+    "agent_dataset_visibility_audits",
+    "agent-datasets",
+    "RAG",
+    "entrypoints",
+    "generated_charts",
+    "superseded"
+  ],
+  "entrypoints": [
+    "agent_dataset_visibility_2026-06-19.md",
+    "agent_dataset_visibility_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 11,
+    "checks": 11,
+    "passed": 11,
+    "failed": 0,
+    "api_checked": true,
+    "notes": [
+      "核心数据包和审计包必须能被小竞AI后端列出并能定向检索。",
+      "无可读知识文件且无 manifest 的输出目录不得暴露为数据库。",
+      "被 manifest 标记为 superseded 的旧数据包不得进入默认数据库选择和默认 RAG 范围。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}

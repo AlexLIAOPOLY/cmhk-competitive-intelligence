@@ -1,0 +1,49 @@
+{
+  "id": "knowledge_integrity_audits",
+  "title": "小竞AI知识库完整性审计",
+  "summary": "统一检查业务知识库的常见披露字段、严格三来源文档门槛、来源缺口和小竞AI使用边界。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "小竞AI数据库选择、RAG 检索、预测前数据质量检查和维护验收。",
+  "updated_at": "2026-08-18",
+  "tags": [
+    "audit",
+    "knowledge-integrity",
+    "source-integrity",
+    "rag"
+  ],
+  "keywords": [
+    "knowledge_integrity_audits",
+    "verification_count",
+    "official_value",
+    "source_gap_confirmed",
+    "quarterly_competitor_metrics_2026-06-18",
+    "cloud_vendor_metrics_2026-06-17",
+    "cmhk_macro_policy_2026-06-19"
+  ],
+  "entrypoints": [
+    "knowledge_integrity_audit_2026-06-19.md",
+    "knowledge_integrity_audit_2026-06-19.csv",
+    "cross_database_common_disclosure_audit_2026-08-18.md",
+    "cross_database_common_disclosure_audit_2026-08-18.csv",
+    "cross_database_common_disclosure_audit_2026-08-18.json",
+    "triple_source_backlog_2026-08-18.csv",
+    "common_disclosure_catalog_2026-08-18.csv"
+  ],
+  "quality": {
+    "status": "backlog_open",
+    "datasets_checked": 5,
+    "available_value_rows": 12888,
+    "three_distinct_source_certified_rows": 5004,
+    "below_three_source_rows": 7884,
+    "missing_common_disclosures": 23,
+    "notes": [
+      "三来源按不同文档URL去重，不以旧verification_count直接代替。",
+      "未通过的现有值保留为可追溯资料，但小竞AI不得称为三来源验证。",
+      "新增正式数值必须先通过三来源文档门槛。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19",
+  "last_audit_path": "agent_knowledge/knowledge_integrity_audits/cross_database_common_disclosure_audit_2026-08-18.md"
+}

@@ -1,0 +1,4 @@
+﻿dataset_id,status,row_count,rows_with_any_issue,issue_counts_json,min_verification_sources,max_verification_sources,top_source_hosts,folder,primary_csv
+cmhk_macro_policy_2026-06-19,pass,7580,0,{},2,4,www.censtatd.gov.hk:5108; www.ofca.gov.hk:2472,agent_knowledge/cmhk_macro_policy_2026-06-19,macro_policy_metrics.csv
+quarterly_competitor_metrics_2026-06-18,pass,3013,0,{},2,8,doc.irasia.com:728; www.sec.gov:219; www.chinatelecom-h.com:179; www.chinamobileltd.com:177; money.finance.sina.com.cn:163; reg.hkbn.net:160; www.hthkh.com:158; www.smartoneholdings.com:150,agent_knowledge/quarterly_competitor_metrics_2026-06-18,quarterly_metrics.csv
+cloud_vendor_metrics_2026-06-17,pass,83,0,{},2,3,www.sec.gov:39; www.microsoft.com:14; data.alibabagroup.com:11; static.www.tencent.com:11; www.huawei.com:8,agent_knowledge/cloud_vendor_metrics_2026-06-17,cloud_vendor_metrics_2023_2025.csv

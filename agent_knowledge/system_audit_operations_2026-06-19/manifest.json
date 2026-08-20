@@ -1,0 +1,45 @@
+{
+  "id": "system_audit_operations_2026-06-19",
+  "title": "系统审计与运行记录",
+  "summary": "合并展示小竞AI数据库可见性、Agent提示对齐、预测边界、目标完成度、知识库完整性、来源证据、URL可达性和爬虫运行日志的审计入口；明细审计包保留在原目录但不再作为前台平级数据库展示。",
+  "source_type": "consolidated_local_audit",
+  "scope": "用于回答数据质量、来源完整性、URL可达性、预测边界、数据库可见性、运行日志和目标完成度问题。",
+  "tags": [
+    "audit",
+    "quality-control",
+    "operations",
+    "crawl-run-logs",
+    "database-visibility",
+    "forecast-readiness",
+    "source-integrity"
+  ],
+  "keywords": [
+    "审计",
+    "运行日志",
+    "数据库可见性",
+    "来源完整性",
+    "URL可达性",
+    "预测边界",
+    "目标完成度",
+    "知识库完整性",
+    "爬虫日志",
+    "质量控制"
+  ],
+  "entrypoints": [
+    "README.md",
+    "audit_index.md"
+  ],
+  "updated_at": "2026-06-19T13:35:00",
+  "quality": {
+    "status": "consolidated_index",
+    "notes": [
+      "This package is a visible index for audit and operational evidence.",
+      "Detailed audit packages are preserved in their original folders and marked hidden from the default database picker.",
+      "Use the referenced original paths for deep evidence checks."
+    ]
+  },
+  "visibility": "hidden",
+  "version": "2026-06-19T13:35:00",
+  "built_at": "2026-06-19T13:35:00",
+  "last_audit_path": "agent_knowledge/system_audit_operations_2026-06-19/audit_index.md"
+}

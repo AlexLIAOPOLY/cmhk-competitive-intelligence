@@ -1,0 +1,1381 @@
+from __future__ import annotations
+
+import json
+import hashlib
+import re
+from functools import lru_cache
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parent
+LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
+LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
+INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"
+CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
+MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
+AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
+REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
+INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
+
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
+INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
+SAFE_VERIFICATION_STATUSES = {
+    "official_match",
+    "official_only",
+    "official_derived_from_verified_rows",
+    "multi_source_or_multi_snapshot_verified",
+}
+
+
+def _read_json(path: Path) -> Any:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _read_json_optional(path: Path, default: Any) -> Any:
+    try:
+        return _read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return default
+
+
+def _number(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    text = str(value).replace(",", "").replace("%", "").strip()
+    if not text or text in {"-", "N/A", "null"}:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _verified_number(row: dict[str, Any] | None) -> float | None:
+    """Return the official value when a published row contains one."""
+    if not row:
+        return None
+    official = _number(row.get("official_value"))
+    return official if official is not None else _number(row.get("value"))
+
+
+def _period_rank(value: Any) -> tuple[int, int]:
+    match = re.search(r"Q([1-4])\s+(20\d{2})", str(value or ""))
+    if match:
+        return int(match.group(2)), int(match.group(1))
+    year = re.search(r"(20\d{2})", str(value or ""))
+    return (int(year.group(1)), 0) if year else (0, 0)
+
+
+def _source(label: str, url: Any) -> dict[str, str] | None:
+    clean_url = str(url or "").strip()
+    if not clean_url.startswith(("https://", "http://")):
+        return None
+    return {"label": label, "url": clean_url}
+
+
+def _dedupe_sources(items: list[dict[str, str] | None]) -> list[dict[str, str]]:
+    seen: set[str] = set()
+    result: list[dict[str, str]] = []
+    for item in items:
+        if not item or item["url"] in seen:
+            continue
+        seen.add(item["url"])
+        result.append(item)
+    return result
+
+
+def _median(values: list[float]) -> float | None:
+    ordered = sorted(values)
+    if not ordered:
+        return None
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _focus_metric(items: list[dict[str, Any]], label: str, unit: str, mode: str = "max") -> dict[str, Any]:
+    values = [float(item["value"]) for item in items if _number(item.get("value")) is not None]
+    if not values:
+        return {"value": "-", "unit": unit, "label": label}
+    value = min(values) if mode == "min" else max(values)
+    return {"value": round(value, 2), "unit": unit, "label": label}
+
+
+def _format_price(value: Any) -> str:
+    number = _number(value)
+    if number is None:
+        return "-"
+    return f"{number:.0f}" if number.is_integer() else f"{number:.1f}"
+
+
+def _local_price_insight(items: list[dict[str, Any]]) -> str:
+    """Turn the current price distribution into a decision-ready judgement."""
+    comparable = [item for item in items if _number(item.get("value")) is not None]
+    if not comparable:
+        return "当前没有可用于价格判断的品牌月费中位数。"
+
+    ordered = sorted(comparable, key=lambda item: float(item["value"]))
+    lowest = ordered[0]
+    highest = ordered[-1]
+    lowest_value = float(lowest["value"])
+    highest_value = float(highest["value"])
+    spread = highest_value - lowest_value
+    spread_rate = (spread / highest_value * 100) if highest_value else 0
+    ladder = "、".join(
+        f"{item['name']}{_format_price(item['value'])}"
+        for item in ordered
+    )
+
+    category_ranges: dict[str, list[float]] = {}
+    for component in lowest.get("components") or []:
+        category = str(component.get("detail") or "").strip()
+        value = _number(component.get("value"))
+        if category and value is not None:
+            category_ranges.setdefault(category, []).append(value)
+    category_note = ""
+    if len(category_ranges) > 1:
+        category_parts = []
+        for category, values in category_ranges.items():
+            low_value = min(values)
+            high_value = max(values)
+            range_text = (
+                _format_price(low_value)
+                if low_value == high_value
+                else f"{_format_price(low_value)}–{_format_price(high_value)}"
+            )
+            category_parts.append(
+                f"{category}{range_text}"
+            )
+        category_note = (
+            f"其中{lowest['name']}的最低值来自"
+            + "、".join(category_parts)
+            + "，低价入口与主产品不是同一类，不能直接等同为主产品最低价。"
+        )
+
+    return (
+        f"按品牌月费中位数，{lowest['name']}最低为{_format_price(lowest_value)}港元/月，"
+        f"{highest['name']}最高为{_format_price(highest_value)}港元/月，"
+        f"价差{_format_price(spread)}港元（约{spread_rate:.0f}%）；"
+        f"当前价格梯度为{ladder}港元/月。"
+        f"{category_note}"
+    )
+
+
+def _component(label: Any, value: Any = None, unit: Any = "", detail: Any = "") -> dict[str, Any]:
+    item = {"label": str(label or "").strip()}
+    if value is not None:
+        item["value"] = value
+    if str(unit or "").strip():
+        item["unit"] = str(unit).strip()
+    if str(detail or "").strip():
+        item["detail"] = str(detail).strip()
+    return item
+
+
+def _dedupe_components(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    result: list[dict[str, Any]] = []
+    for item in items:
+        label = str(item.get("label") or "").strip()
+        if not label or label in seen:
+            continue
+        seen.add(label)
+        result.append(item)
+    return result
+
+
+def _financial_metric(report: dict[str, Any], metric_key: str) -> dict[str, Any] | None:
+    return next(
+        (
+            metric for metric in report.get("metrics") or []
+            if str(metric.get("metric_key") or "") == metric_key
+        ),
+        None,
+    )
+
+
+def _financial_metric_number(report: dict[str, Any], metric_key: str) -> float | None:
+    metric = _financial_metric(report, metric_key)
+    if not metric:
+        return None
+    match = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", str(metric.get("value") or ""))
+    return float(match.group().replace(",", "")) if match else None
+
+
+def _local_financial_focus(reports: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if not reports:
+        return None
+    periods: dict[str, list[dict[str, Any]]] = {}
+    for report in reports:
+        periods.setdefault(str(report.get("period") or "期间待核"), []).append(report)
+    comparison_period, comparable = max(
+        periods.items(),
+        key=lambda entry: (len(entry[1]), _period_rank(entry[0])),
+    )
+    revenues = sorted(
+        (
+            (value, report) for report in comparable
+            if (value := _financial_metric_number(report, "revenue")) is not None
+        ),
+        key=lambda entry: entry[0], reverse=True,
+    )
+    profits = sorted(
+        (
+            (value, report) for report in comparable
+            if (value := _financial_metric_number(report, "net_profit")) is not None
+        ),
+        key=lambda entry: entry[0], reverse=True,
+    )
+    if len(revenues) >= 2 and len(profits) >= 2:
+        revenue_high, revenue_low = revenues[0], revenues[-1]
+        profit_high, profit_low = profits[0], profits[-1]
+        insight = (
+            f"同为{comparison_period}，{revenue_high[1].get('company')}收入{revenue_high[0]:,.0f}m、"
+            f"{revenue_low[1].get('company')}为{revenue_low[0]:,.0f}m；净利润从"
+            f"{profit_high[1].get('company')}的{profit_high[0]:,.0f}m到"
+            f"{profit_low[1].get('company')}的{profit_low[0]:,.0f}m，表明规模差距伴随利润转化明显分层。"
+        )
+    else:
+        insight = (
+            f"已收录{len(reports)}家公司最新官方财报，但同期间收入与净利润可比样本不足，"
+            "披露完整度差异仍是判断本地竞争结构的主要边界。"
+        )
+    return {
+        "id": "financials",
+        "label": "重要财务指标",
+        "visual": "financial",
+        "metric": {"value": len(reports), "unit": "家公司", "label": "已入库最新官方财报"},
+        "context": (
+            f"最新披露 {reports[0].get('publication_date') or '日期待核'}；"
+            "每日 03:00（香港时间）自动检查"
+        ),
+        "headline": "本地业绩呈现规模与盈利分层",
+        "insight": insight,
+        "items": [
+            {
+                "name": report.get("company") or "未标明公司",
+                "value": int(report.get("core_metric_count") or len(report.get("metrics") or [])),
+                "unit": "项核心指标",
+                "period": report.get("period") or "期间待核",
+                "publication_date": report.get("publication_date") or "",
+                "detail": (
+                    f"{report.get('period') or '期间待核'} · "
+                    f"{report.get('publication_date') or '披露日期待核'}"
+                ),
+                "analysis": (
+                    f"{report.get('company') or '该公司'}最新官方财报披露"
+                    f"{len(report.get('metrics') or [])}项核心指标；仅与同期间、同币种和同口径数据比较。"
+                ),
+                "components": [
+                    {
+                        "label": metric.get("metric") or metric.get("metric_key") or "指标",
+                        "value": metric.get("value") or "—",
+                        "detail": report.get("period") or "",
+                        "metric_key": metric.get("metric_key") or "",
+                    }
+                    for metric in report.get("metrics") or []
+                ],
+                "component_count": len(report.get("metrics") or []),
+                "source_url": report.get("source_url") or "",
+            }
+            for report in reports
+        ],
+    }
+
+
+def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    captured_at = max((str(row.get("captured_at_hkt") or "") for row in rows), default="")
+    captured_display = captured_at[:16].replace("T", " ") if captured_at else ""
+    data_time_note = (
+        f"数据采集于 {captured_display}（香港时间）"
+        if captured_display else "数据库未记录更新日期"
+    )
+    category_labels = {
+        "business_mobile_4g": "企业移动4G",
+        "business_mobile_5g": "企业移动5G",
+        "home_5g_broadband": "5G家宽",
+        "home_fibre_broadband": "光纤家宽",
+        "mobile_consumer_5g": "个人5G",
+        "mobile_consumer_roaming": "个人漫游",
+        "prepaid_mobile": "预付卡",
+        "roaming_data_pack": "漫游数据包",
+        "wifi_pass": "Wi-Fi通行证",
+    }
+    by_brand: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        brand = str(row.get("brand") or "").strip()
+        if brand:
+            by_brand.setdefault(brand, []).append(row)
+
+    def norm(value: Any) -> str:
+        return re.sub(r"\s+", " ", str(value or "").strip()).casefold()
+
+    def plan_key(row: dict[str, Any]) -> tuple[Any, ...]:
+        return (
+            norm(row.get("product_category")),
+            norm(row.get("plan_name") or row.get("plan_family")),
+            _number(row.get("monthly_fee_hkd")),
+            _number(row.get("local_data_gb")),
+            _number(row.get("broadband_speed_mbps")),
+            _number(row.get("contract_months")),
+        )
+
+    def short_product_label(row: dict[str, Any]) -> str:
+        category = category_labels.get(
+            str(row.get("product_category") or ""),
+            str(row.get("product_category") or "产品").replace("_", " "),
+        )
+        details = [category]
+        if _number(row.get("local_data_gb")) is not None:
+            details.append(f"{_format_price(row.get('local_data_gb'))}GB")
+        if _number(row.get("broadband_speed_mbps")) is not None:
+            details.append(f"{_format_price(row.get('broadband_speed_mbps'))}Mbps")
+        if _number(row.get("contract_months")) is not None:
+            details.append(f"{_format_price(row.get('contract_months'))}个月")
+        return "｜".join(details)
+
+    brand_profiles: dict[str, dict[str, Any]] = {}
+    for brand, brand_rows in by_brand.items():
+        unique: dict[tuple[Any, ...], dict[str, Any]] = {}
+        for row in brand_rows:
+            unique.setdefault(plan_key(row), row)
+        unique_rows = list(unique.values())
+        source_url = next((str(row.get("source_url") or "") for row in brand_rows if row.get("source_url")), "")
+        brand_profiles[brand] = {"rows": brand_rows, "unique_rows": unique_rows, "source_url": source_url}
+
+    overlaps: list[dict[str, Any]] = []
+    brands = sorted(brand_profiles)
+    for index, first in enumerate(brands):
+        for second in brands[index + 1 :]:
+            first_by_category: dict[str, list[float]] = {}
+            second_by_category: dict[str, list[float]] = {}
+            for profile, bucket in ((brand_profiles[first], first_by_category), (brand_profiles[second], second_by_category)):
+                for row in profile["unique_rows"]:
+                    category = str(row.get("product_category") or "")
+                    fee = _number(row.get("monthly_fee_hkd"))
+                    tariff_type = str(row.get("tariff_type") or "")
+                    if category and fee is not None and fee > 0 and tariff_type != "monthly_add_on_fee":
+                        bucket.setdefault(category, []).append(fee)
+            category_overlaps = []
+            for category in sorted(set(first_by_category) & set(second_by_category)):
+                low = max(min(first_by_category[category]), min(second_by_category[category]))
+                high = min(max(first_by_category[category]), max(second_by_category[category]))
+                if low <= high:
+                    category_overlaps.append({"category": category, "low": low, "high": high})
+            if category_overlaps:
+                overlaps.append({"pair": f"{first} 与 {second}", "categories": category_overlaps})
+    overlaps.sort(key=lambda item: len(item["categories"]), reverse=True)
+    overlaps_by_brand: dict[str, list[dict[str, Any]]] = {brand: [] for brand in brands}
+    for overlap in overlaps:
+        first, second = overlap["pair"].split(" 与 ", 1)
+        overlaps_by_brand[first].append({**overlap, "peer": second})
+        overlaps_by_brand[second].append({**overlap, "peer": first})
+
+    scale_items: list[dict[str, Any]] = []
+    mobile_items: list[dict[str, Any]] = []
+    fibre_items: list[dict[str, Any]] = []
+    overlap_items: list[dict[str, Any]] = []
+    for brand, profile in brand_profiles.items():
+        unique_rows = profile["unique_rows"]
+        categories = sorted({str(row.get("product_category") or "") for row in unique_rows if row.get("product_category")})
+        labels = [category_labels.get(category, category.replace("_", " ")) for category in categories]
+        brand_overlaps = sorted(overlaps_by_brand.get(brand, []), key=lambda item: len(item["categories"]), reverse=True)
+        shared_categories = {item["category"] for overlap in brand_overlaps for item in overlap["categories"]}
+        plan_components = [
+            _component(
+                short_product_label(row),
+                _number(row.get("monthly_fee_hkd")),
+                "港元/月",
+            )
+            for row in unique_rows
+        ]
+        duplicate_records = max(0, len(profile["rows"]) - len(plan_components))
+        scale_items.append({
+            "name": brand,
+            "value": len(plan_components),
+            "unit": "个产品",
+            "detail": f"{data_time_note} · {len(profile['rows'])} 条数据库记录",
+            "analysis": (
+                f"数据库有 {len(profile['rows'])} 条记录，按产品类型、名称、月费、数据量、宽带速度及合约期去重后为 {len(plan_components)} 个在售产品；"
+                f"记录含重复，不能当作 {len(profile['rows'])} 种产品。"
+            ),
+            "components": plan_components,
+            "component_count": len(plan_components),
+            "record_count": len(profile["rows"]),
+            "source_url": profile["source_url"],
+        })
+        mobile_rows = [row for row in unique_rows if row.get("product_category") == "mobile_consumer_5g" and row.get("tariff_type") == "monthly_plan_fee" and (_number(row.get("monthly_fee_hkd")) or 0) > 0]
+        mobile_fees = [_number(row.get("monthly_fee_hkd")) for row in mobile_rows]
+        mobile_fees = [fee for fee in mobile_fees if fee is not None]
+        mobile_median = _median(mobile_fees)
+        mobile_items.append({
+            "name": brand, "value": round(mobile_median, 1) if mobile_median is not None else None,
+            "unit": "港元/月",
+            "low": round(min(mobile_fees), 1) if mobile_fees else None,
+            "high": round(max(mobile_fees), 1) if mobile_fees else None,
+            "detail": f"{data_time_note} · 个人5G月费 HK${min(mobile_fees):.0f}–{max(mobile_fees):.0f}" if mobile_fees else f"{data_time_note} · 未披露个人5G月费",
+            "analysis": (
+                f"个人5G月费中位数为 HK${mobile_median:.0f}，范围为 HK${min(mobile_fees):.0f}–{max(mobile_fees):.0f}。"
+                if mobile_median is not None else "数据库没有可计算的个人5G月费，不作估算。"
+            ),
+            "components": [_component(short_product_label(row), _number(row.get("monthly_fee_hkd")), "港元/月") for row in mobile_rows] or [_component("个人5G月费", detail="未披露")],
+            "component_count": len(mobile_rows), "source_url": profile["source_url"],
+        })
+        fibre_rows = [row for row in unique_rows if row.get("product_category") == "home_fibre_broadband" and (_number(row.get("monthly_fee_hkd")) or 0) > 0 and (_number(row.get("broadband_speed_mbps")) or 0) > 0]
+        fibre_values = [float(_number(row.get("monthly_fee_hkd"))) / float(_number(row.get("broadband_speed_mbps"))) * 1000 for row in fibre_rows]
+        fibre_median = _median(fibre_values)
+        fibre_items.append({
+            "name": brand, "value": round(fibre_median, 1) if fibre_median is not None else None, "unit": "港元/千兆/月",
+            "detail": f"{data_time_note} · 按每1000Mbps折算" if fibre_values else f"{data_time_note} · 未披露可计算的家宽速度与月费",
+            "analysis": (f"按每1000Mbps折算，月费中位数为 {fibre_median:.1f} 港元；安装费、优惠和覆盖地区未计入。" if fibre_median is not None else "数据库缺少同一产品的速度与月费，不作估算。"),
+            "components": [
+                _component(
+                    short_product_label(row),
+                    round(value, 1),
+                    "港元/千兆/月",
+                    " · ".join(filter(None, [
+                        f"原月费 HK${_format_price(row.get('monthly_fee_hkd'))}",
+                        f"速度 {_format_price(row.get('broadband_speed_mbps'))}Mbps",
+                        f"合约期 {_format_price(row.get('contract_months'))}个月" if _number(row.get("contract_months")) is not None else "合约期未披露",
+                    ])),
+                )
+                for row, value in zip(fibre_rows, fibre_values)
+            ] or [_component("家宽每1000Mbps价格", detail="未披露")],
+            "component_count": len(fibre_rows), "source_url": profile["source_url"],
+        })
+        overlap_items.append({
+            "name": brand,
+            "value": len(shared_categories),
+            "unit": "类产品价格区间重合",
+            "peers": len(brand_overlaps),
+            "detail": f"与 {len(brand_overlaps)} 家运营商的同类产品月费区间重合",
+            "analysis": (
+                "；".join(
+                    f"与{item['peer']}的"
+                    + "、".join(
+                        f"{category_labels.get(entry['category'], entry['category'])}月费区间在 HK${entry['low']:.0f}–{entry['high']:.0f} 重合"
+                        for entry in item["categories"]
+                    )
+                    for item in brand_overlaps
+                ) + "。"
+                if brand_overlaps else "数据库当前未发现同类产品月费区间重合。"
+            ),
+            "components": [
+                _component(
+                    item["peer"],
+                    len(item["categories"]), "类产品",
+                    "、".join(f"{category_labels.get(entry['category'], entry['category'])}月费区间 HK${entry['low']:.0f}–{entry['high']:.0f} 重合" for entry in item["categories"]),
+                )
+                for item in brand_overlaps
+            ] or [_component("同类套餐价格重合", detail="未发现")],
+            "component_count": len(brand_overlaps),
+            "source_url": profile["source_url"],
+        })
+
+    scale_items.sort(key=lambda item: item["value"], reverse=True)
+    mobile_items.sort(key=lambda item: (_number(item.get("value")) is not None, -(_number(item.get("value")) or 0)), reverse=True)
+    fibre_items.sort(key=lambda item: (_number(item.get("value")) is not None, -(_number(item.get("value")) or 0)), reverse=True)
+    overlap_items.sort(key=lambda item: (item["value"], item["peers"]), reverse=True)
+    comparable_mobile = [item for item in mobile_items if _number(item.get("value")) is not None]
+    if len(comparable_mobile) >= 2:
+        mobile_low, mobile_high = comparable_mobile[0], comparable_mobile[-1]
+        overlap_low = max(float(mobile_low.get("low") or 0), float(mobile_high.get("low") or 0))
+        overlap_high = min(float(mobile_low.get("high") or 0), float(mobile_high.get("high") or 0))
+        overlap_note = f"双方月费区间在{overlap_low:.0f}至{overlap_high:.0f}港元重合" if overlap_low <= overlap_high else "双方月费区间没有重合"
+        mobile_insight = (
+            f"仅{mobile_low['name']}和{mobile_high['name']}有可比月费：中位数分别为{float(mobile_low['value']):.0f}和{float(mobile_high['value']):.0f}港元，相差{float(mobile_high['value']) - float(mobile_low['value']):.0f}港元；{overlap_note}，这说明仅靠低价难以拉开差距。"
+        )
+    else:
+        mobile_insight = "个人5G可比月费不足，不判断价格区隔。"
+    comparable_fibre = [item for item in fibre_items if _number(item.get("value")) is not None]
+    fibre_insight = (
+        f"按每1000Mbps折算，{comparable_fibre[0]['name']}月费中位数为{comparable_fibre[0]['value']:.1f}港元，"
+        f"{comparable_fibre[-1]['name']}为{comparable_fibre[-1]['value']:.1f}港元，约为前者的{float(comparable_fibre[-1]['value']) / float(comparable_fibre[0]['value']):.1f}倍。"
+        "安装费、合约优惠和覆盖地区未纳入，不能直接视为客户最终总成本。"
+        if len(comparable_fibre) >= 2 else "家宽速度与月费的可比方案不足，不判断价格优势。"
+    )
+    lead = overlaps[0] if overlaps else None
+    if lead:
+        entry = lead["categories"][0]
+        insight = f"{lead['pair']}的{category_labels.get(entry['category'], entry['category'])}月费区间在 HK${entry['low']:.0f}–{entry['high']:.0f} 重合；这说明同类价格区隔有限。"
+    else:
+        insight = "数据库已按运营商、套餐类型和月费范围整理本地在售套餐。"
+
+    unique_plan_count = sum(int(item["component_count"]) for item in scale_items)
+    top_three = scale_items[:3]
+    scale_insight = (
+        f"{top_three[0]['name']}、{top_three[1]['name']}、{top_three[2]['name']}去重后分别有"
+        f"{top_three[0]['value']}、{top_three[1]['value']}、{top_three[2]['value']}个在售产品，"
+        f"而{scale_items[-2]['name']}和{scale_items[-1]['name']}为{scale_items[-2]['value']}、{scale_items[-1]['value']}个，数量形成两层；"
+        f"头部三家最多只差{top_three[0]['value'] - top_three[-1]['value']}个，这说明产品数量差距难以成为头部之间的主要区隔。"
+        if unique_plan_count and len(scale_items) >= 5 else "数据库暂无足够运营商形成产品数量关系判断。"
+    )
+    focuses = [
+        {
+            "id": "scale", "label": "在售产品组合", "visual": "columns",
+            "metric": {"value": unique_plan_count, "unit": "个产品", "label": "去重后在售产品"},
+            "context": f"比较 {len(by_brand)} 家本地运营商；{data_time_note}",
+            "insight": scale_insight,
+            "items": scale_items,
+        },
+        {
+            "id": "mobile_price", "label": "个人5G月费", "visual": "ranges",
+            "metric": {**_focus_metric(mobile_items, "个人5G月费中位数", "港元/月", mode="min"), "label": "可比品牌中较低的月费中位数"},
+            "context": data_time_note, "insight": mobile_insight, "items": mobile_items,
+        },
+        {
+            "id": "fibre_value", "label": "家宽每千兆价格", "visual": "rows",
+            "metric": {**_focus_metric(fibre_items, "每1000Mbps月费中位数", "港元/千兆/月", mode="min"), "label": "较低的每1000Mbps月费中位数"},
+            "context": data_time_note, "insight": fibre_insight, "items": fibre_items,
+        },
+        {
+            "id": "overlap", "label": "同类价格重合", "visual": "network",
+            "metric": {
+                **_focus_metric(overlap_items, "价格区间重合的产品类型", "类"), "label": "与其他运营商价格区间重合的产品类型",
+            },
+            "context": f"比较 {len(overlaps)} 组运营商的产品类型与月费范围；{data_time_note}",
+            "insight": insight,
+            "items": overlap_items,
+        },
+    ]
+    for focus in focuses:
+        focus["headline"] = {
+            "scale": "在售产品集中于三家", "mobile_price": "个人月费区隔有限",
+            "fibre_value": "家宽折算价格相差近四倍", "overlap": "同类产品月费区间重合",
+        }[focus["id"]]
+    entities = scale_items
+    financial_payload = _read_json_optional(LOCAL_FINANCIAL_PATH, {})
+    financial_reports = [
+        report for report in financial_payload.get("reports", [])
+        if report.get("verification_status") == "official_document_extracted"
+    ]
+    financial_reports.sort(
+        key=lambda report: (str(report.get("publication_date") or ""), _period_rank(report.get("period"))),
+        reverse=True,
+    )
+    financial_focus = _local_financial_focus(financial_reports)
+    if financial_focus:
+        focuses.insert(0, financial_focus)
+    newest_financial = financial_reports[0] if financial_reports else None
+    if newest_financial:
+        financial_note = (
+            f"最新官方财报为{newest_financial['company']} {newest_financial['period']}，"
+            f"披露于{newest_financial.get('publication_date') or '日期待核'}；核心指标已结构化入库。"
+        )
+    else:
+        financial_note = "本地官方财报尚无通过结构化门禁的新记录。"
+    financial_relations = []
+    for report in financial_reports[:4]:
+        metric_text = "、".join(
+            f"{item.get('metric')} {item.get('value')}"
+            for item in (report.get("metrics") or [])[:3]
+        )
+        financial_relations.append(
+            {
+                "title": f"{report.get('company')} {report.get('period')}",
+                "detail": metric_text or "官方财报已入库",
+                "kind": "最新财报",
+            }
+        )
+    sources = _dedupe_sources(
+        [_source(item["name"], item["source_url"]) for item in scale_items]
+        + [_source(f"{report.get('company')} {report.get('period')} 官方财报", report.get("source_url")) for report in financial_reports]
+    )
+    return {
+        "id": "local",
+        "index": "01",
+        "title": "本地运营商",
+        "kicker": "产品组合与价格区隔",
+        "metric": {"value": unique_plan_count, "unit": "个产品", "label": "去重后在售产品"},
+        "context": f"{data_time_note}；{financial_note}",
+        "data_time": data_time_note,
+        "latest_financial_results": financial_reports,
+        "insight": insight,
+        "entities": entities,
+        "focuses": focuses,
+        "relations": financial_relations + [
+            {
+                "title": item["pair"],
+                "detail": f"{len(item['categories'])} 类同类套餐月费区间重合",
+                "kind": "数据关系",
+            }
+            for item in overlaps[:4]
+        ],
+        "sources": sources,
+    }
+
+
+def _latest_metric(rows: list[dict[str, Any]], subject_key: str, subject: str, metric: str) -> dict[str, Any] | None:
+    candidates = [
+        row for row in rows
+        if row.get(subject_key) == subject
+        and row.get("metric_key") == metric
+        and _verified_number(row) is not None
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+    ]
+    if not candidates:
+        return None
+    period_key = "period" if subject_key == "subject" else "fiscal_year"
+    return max(candidates, key=lambda row: _period_rank(row.get(period_key)))
+
+
+def _metric_history(rows: list[dict[str, Any]], subject_key: str, subject: str, metric: str) -> list[dict[str, Any]]:
+    period_key = "period" if subject_key == "subject" else "fiscal_year"
+    candidates = [
+        row for row in rows
+        if row.get(subject_key) == subject
+        and row.get("metric_key") == metric
+        and _verified_number(row) is not None
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+    ]
+    return sorted(candidates, key=lambda row: _period_rank(row.get(period_key)))
+
+
+def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
+    rows = payload.get("rows") or []
+    growth_items: list[dict[str, Any]] = []
+    momentum_items: list[dict[str, Any]] = []
+    investment_items: list[dict[str, Any]] = []
+    margin_items: list[dict[str, Any]] = []
+    for subject in INTERNATIONAL_SUBJECTS:
+        row = _latest_metric(rows, "subject", subject, "revenue_growth_yoy")
+        if not row:
+            continue
+        value = _verified_number(row) or 0
+        history = _metric_history(rows, "subject", subject, "revenue_growth_yoy")
+        previous_value = _verified_number(history[-2]) if len(history) > 1 else None
+        change = value - previous_value if previous_value is not None else None
+        source_url = str(row.get("official_source_url") or "")
+        growth_items.append({
+            "name": subject,
+            "value": round(value, 2),
+            "unit": "%",
+            "period": str(row.get("period") or ""),
+            "detail": f"{row.get('period') or '最新期'}营收同比",
+            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%。",
+            "components": [_component(row.get("period") or "最新期", round(value, 2), "%", row.get("metric_zh") or "营收同比")],
+            "component_count": 1,
+            "source_url": source_url,
+        })
+        momentum_items.append({
+            "name": subject,
+            "value": round(change, 2) if change is not None else None,
+            "unit": "个百分点" if change is not None else "",
+            "detail": (
+                f"较{history[-2].get('period')} {'改善' if change >= 0 else '回落'} {abs(change):.2f} 个百分点"
+                if change is not None else "缺少上一可比期"
+            ),
+            "analysis": (
+                f"营收增速由 {previous_value:+.2f}% 变为 {value:+.2f}%，较上期{'增加' if change > 0 else '减少' if change < 0 else '没有变化'} {abs(change):.2f} 个百分点。"
+                if change is not None else "当前只有一个可比期，无法计算增速较上期的变化。"
+            ),
+            "trend": [
+                {"label": str(item.get("period") or ""), "value": _verified_number(item)}
+                for item in history[-4:]
+            ],
+            "components": [
+                _component(item.get("period") or "未标期间", _verified_number(item), "%", item.get("metric_zh") or "营收同比")
+                for item in history[-4:]
+            ],
+            "component_count": len(history[-4:]),
+            "source_url": source_url,
+        })
+        capex_row = _latest_metric(rows, "subject", subject, "capital_expenditures")
+        revenue_row = _latest_metric(rows, "subject", subject, "revenue")
+        capex_value = _verified_number(capex_row)
+        revenue_value = _verified_number(revenue_row)
+        capex_period = str((capex_row or {}).get("period") or "")
+        revenue_period = str((revenue_row or {}).get("period") or "")
+        periods_match = bool(capex_period and capex_period == revenue_period)
+        intensity = (
+            abs(capex_value) / revenue_value * 100
+            if capex_value is not None and revenue_value not in (None, 0) and periods_match
+            else None
+        )
+        investment_items.append({
+            "name": subject,
+            "value": round(intensity, 2) if intensity is not None else None,
+            "unit": "%" if intensity is not None else "",
+            "period": capex_period or revenue_period,
+            "detail": (
+                f"{capex_period}资本开支占营收"
+                if intensity is not None else "缺少同期间官方资本开支或营收"
+            ),
+            "analysis": (
+                f"{capex_period}资本开支为人民币{abs(capex_value) / 100:.1f}亿元，占同期营收{intensity:.2f}%。"
+                if intensity is not None else "当前缺少同期间、同币种的官方资本开支与营收，无法计算资本开支占营收比例。"
+            ),
+            "components": (
+                [
+                    _component("资本开支", round(abs(capex_value) / 100, 1), "亿元人民币", capex_period),
+                    _component("同期营收", round(revenue_value / 100, 1), "亿元人民币", revenue_period),
+                ]
+                if intensity is not None else [_component("资本开支占营收", detail="缺少同期间官方数据")]
+            ),
+            "component_count": 2 if intensity is not None else 1,
+            "source_url": str((capex_row or revenue_row or row).get("official_source_url") or ""),
+        })
+        margin_row = _latest_metric(rows, "subject", subject, "operating_margin")
+        margin_value = _verified_number(margin_row)
+        margin_period = str((margin_row or {}).get("period") or "")
+        margin_items.append({
+            "name": subject, "value": round(margin_value, 2) if margin_value is not None else None,
+            "unit": "%" if margin_value is not None else "", "period": margin_period,
+            "detail": f"{margin_period}经营利润率" if margin_value is not None else "数据库未披露经营利润率",
+            "analysis": (f"{margin_period}经营利润率为 {margin_value:.2f}%。" if margin_value is not None else "未披露经营利润率。"),
+            "components": [_component("经营利润率", round(margin_value, 2), "%", margin_period)] if margin_value is not None else [_component("经营利润率", detail="未披露")],
+            "component_count": 1,
+            "source_url": str((margin_row or row).get("official_source_url") or ""),
+        })
+    growth_items.sort(key=lambda item: item["value"], reverse=True)
+    momentum_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    investment_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    margin_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
+    momentum_leader = next((item for item in momentum_items if _number(item.get("value")) is not None), None)
+    investment_leader = next((item for item in investment_items if _number(item.get("value")) is not None), None)
+    investment_comparable = [item for item in investment_items if _number(item.get("value")) is not None]
+    if len(investment_comparable) >= 2:
+        investment_low = investment_comparable[-1]
+        investment_gap = float(investment_leader["value"]) - float(investment_low["value"])
+        investment_period = str(investment_leader.get("period") or "最新期")
+        investment_peers = "、".join(
+            f"{item['name']}{float(item['value']):.2f}%"
+            for item in investment_comparable[1:]
+        )
+        investment_insight = (
+            f"{investment_period}{investment_leader['name']}资本开支/营收为{investment_leader['value']:.2f}%，"
+            f"高于{investment_peers}；"
+            f"三家公司最高与最低相差{investment_gap:.2f}个百分点；当前数据只说明投入比例不同，不代表投资回报。"
+        )
+    else:
+        investment_insight = "当前只有不足两家公司同时具备同期间资本开支和营收，无法横向比较该比例。"
+    positive = [item for item in growth_items if item["value"] >= 0]
+    negative = [item for item in growth_items if item["value"] < 0]
+    momentum_comparable = [item for item in momentum_items if _number(item.get("value")) is not None]
+    if momentum_comparable:
+        improving = [item for item in momentum_comparable if float(item["value"]) > 0]
+        slowing = [item for item in momentum_comparable if float(item["value"]) < 0]
+        if len(improving) == len(momentum_comparable):
+            momentum_insight = f"{len(improving)} 家公司的营收同比增速均较上一可比期加快。"
+        elif len(slowing) == len(momentum_comparable):
+            momentum_insight = f"{len(slowing)} 家公司的营收同比增速均较上一可比期放缓，说明收入扩张压力同步上升。"
+        else:
+            momentum_insight = f"{len(improving)} 家加快、{len(slowing)} 家放缓；各公司均与自己的上一可比期相比。"
+    else:
+        momentum_insight = "当前缺少两个可比期间的营收增速，不作增长节奏判断。"
+    margin_comparable = [item for item in margin_items if _number(item.get("value")) is not None]
+    margin_insight = (
+        f"只有{len(margin_comparable)}家公司披露可比经营利润率；{margin_comparable[0]['name']}为{margin_comparable[0]['value']:.2f}%，"
+        f"{margin_comparable[-1]['name']}为{margin_comparable[-1]['value']:.2f}%，相差{float(margin_comparable[0]['value']) - float(margin_comparable[-1]['value']):.2f}个百分点，这说明盈利缓冲明显不同。"
+        if len(margin_comparable) >= 2 else "经营利润率披露不足，不跨口径替代。"
+    )
+    growth_facts = "、".join(f"{item['name']}{float(item['value']):+.2f}%" for item in growth_items)
+    insight = f"Q1 2026，{growth_facts}；两家公司已同比下降，另外两家增幅也低于2%，这说明行业收入扩张承压。"
+    largest_slowing = sorted(
+        [item for item in momentum_comparable if float(item["value"]) < 0],
+        key=lambda item: float(item["value"]),
+    )[:2]
+    if largest_slowing and len(largest_slowing) >= 2:
+        momentum_insight = (
+            "四家公司增速均较Q4 2025下降；"
+            + "、".join(f"{item['name']}回落{abs(float(item['value'])):.2f}个百分点" for item in largest_slowing)
+            + "，这说明放缓已扩散至全部公司，行业收入增长同步承压。"
+        )
+    focuses = [
+        {
+            "id": "growth", "label": "营收增长", "visual": "diverging",
+            "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": f"{leader['name']} {leader.get('period') or '最近披露期'}营收同比增长"},
+            "context": f"比较 {len(growth_items)} 家公司最近披露的营收同比数据", "insight": insight, "items": growth_items,
+        },
+        {
+            "id": "momentum", "label": "增长变化", "visual": "trends",
+            "metric": {
+                "value": momentum_leader["value"] if momentum_leader else "-",
+                "unit": "个百分点",
+                "label": f"{momentum_leader['name']}增速变化" if momentum_leader else "增速变化",
+            },
+            "context": "最新期相对上一可比期",
+            "insight": momentum_insight,
+            "items": momentum_items,
+        },
+        {
+            "id": "investment", "label": "资本投入占比", "visual": "rows",
+            "metric": {
+                "value": investment_leader["value"] if investment_leader else "-",
+                "unit": "%",
+                "label": f"{investment_leader['name']}资本开支/营收" if investment_leader else "资本开支/营收",
+            },
+            "context": "同期间资本开支占营收比例",
+            "insight": investment_insight,
+            "items": investment_items,
+        },
+        {
+            "id": "margin", "label": "经营利润率", "visual": "diverging",
+            "metric": {"value": margin_comparable[0]["value"] if margin_comparable else "-", "unit": "%", "label": f"{margin_comparable[0]['name']}经营利润率" if margin_comparable else "经营利润率"},
+            "context": "各公司最近可核验披露期", "insight": margin_insight, "items": margin_items,
+        },
+    ]
+    for focus in focuses:
+        focus["headline"] = {
+            "growth": "两家已负增长，行业扩张转弱", "momentum": "放缓已扩散至全部公司",
+            "investment": "资本投入占比相近", "margin": "利润缓冲差距超过一倍",
+        }[focus["id"]]
+    return {
+        "id": "international",
+        "index": "02",
+        "title": "内地电讯企业",
+        "kicker": "增长、利润与资本投入",
+        "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": f"{leader['name']} {leader.get('period') or '最近披露期'}营收同比增长"},
+        "context": f"比较 {len(growth_items)} 家公司最近披露的营收同比数据",
+        "insight": insight,
+        "entities": growth_items,
+        "focuses": focuses,
+        "relations": [
+            {"title": item["name"], "detail": f"{item.get('period') or '最近披露期'}营收同比 {item['value']:+.2f}%", "kind": "公司披露数据"}
+            for item in growth_items
+        ],
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items]),
+    }
+
+
+def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
+    rows = payload.get("rows") or []
+    vendors = [str(vendor.get("vendor") or "") for vendor in payload.get("vendors") or []]
+    growth_items: list[dict[str, Any]] = []
+    trend_items: list[dict[str, Any]] = []
+    profit_items: list[dict[str, Any]] = []
+    margin_change_items: list[dict[str, Any]] = []
+    profit_keys = ("operating_margin", "adjusted_ebita_margin", "proxy_segment_gross_margin")
+    for vendor in vendors:
+        row = _latest_metric(rows, "vendor", vendor, "revenue_yoy")
+        if not row:
+            continue
+        value = _verified_number(row)
+        if value is None:
+            continue
+        name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
+        name = {
+            "Google Cloud": "Google",
+            "Microsoft Azure": "Azure",
+            "Alibaba Cloud": "Alibaba",
+            "Tencent Cloud": "腾讯",
+            "Huawei Cloud": "Huawei",
+            "Oracle Cloud": "Oracle",
+        }.get(name, name)
+        source_url = str(row.get("primary_source_url") or "")
+        disclosure_quality = str(row.get("disclosure_quality") or "")
+        if disclosure_quality.startswith("direct"):
+            growth_scope = "公司直接披露的云业务口径"
+        elif "proxy" in disclosure_quality:
+            growth_scope = "代理分部口径，可能包含非云业务"
+        elif "reclassification" in disclosure_quality:
+            growth_scope = "含重分类的分部口径"
+        else:
+            growth_scope = "公司披露口径"
+        growth_items.append({
+            "name": name, "value": round(value, 1), "unit": "%",
+            "period": f"FY{row.get('fiscal_year')}",
+            "detail": f"FY{row.get('fiscal_year')} · {growth_scope}",
+            "analysis": f"FY{row.get('fiscal_year')}该披露口径的收入同比变化为 {value:+.1f}%；{growth_scope}。不同口径不可直接视为纯云业务排名。",
+            "components": [_component(f"FY{row.get('fiscal_year')}云业务营收同比", round(value, 1), "%")],
+            "component_count": 1,
+            "source_url": source_url,
+        })
+        history = _metric_history(rows, "vendor", vendor, "revenue_yoy")
+        previous = _verified_number(history[-2]) if len(history) > 1 else None
+        change = value - previous if previous is not None else None
+        trend_items.append({
+            "name": name,
+            "value": round(change, 1) if change is not None else None,
+            "unit": "个百分点" if change is not None else "",
+            "detail": f"FY{history[-2].get('fiscal_year')}→FY{row.get('fiscal_year')}" if previous is not None else "缺少上一财年",
+            "analysis": (
+                f"营收增速由 {previous:.1f}% 变为 {value:.1f}%，同比增速{'加快' if change > 0 else '放缓' if change < 0 else '持平'} {abs(change):.1f} 个百分点。"
+                if change is not None else "缺少上一财年可比增速，不推断趋势。"
+            ),
+            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in history[-3:]],
+            "components": [
+                _component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", item.get("metric_zh") or "云业务营收同比")
+                for item in history[-3:]
+            ],
+            "component_count": len(history[-3:]),
+            "source_url": source_url,
+        })
+        profit_row = None
+        for key in profit_keys:
+            profit_row = _latest_metric(rows, "vendor", vendor, key)
+            if profit_row:
+                break
+        profit_value = _verified_number(profit_row)
+        profit_label = {
+            "operating_margin": "经营利润率",
+            "adjusted_ebita_margin": "调整后EBITA率",
+            "proxy_segment_gross_margin": "代理分部毛利率",
+        }.get(str((profit_row or {}).get("metric_key") or ""), "利润率") if profit_row else "未披露利润率"
+        profit_items.append({
+            "name": name,
+            "value": round(profit_value, 1) if profit_value is not None else None,
+            "unit": "%" if profit_value is not None else "",
+            "detail": f"FY{profit_row.get('fiscal_year')} · {profit_label}" if profit_row else "保留披露缺口",
+            "analysis": (
+                f"FY{profit_row.get('fiscal_year')}披露的{profit_label}为 {profit_value:.1f}%；不同利润口径不可直接比较。"
+                if profit_value is not None and profit_row else "未披露利润率。"
+            ),
+            "components": (
+                [_component(profit_label, round(profit_value, 1), "%", f"FY{profit_row.get('fiscal_year')}")]
+                if profit_value is not None and profit_row else [_component("利润率", detail="未披露")]
+            ),
+            "component_count": 1,
+            "source_url": str((profit_row or row).get("primary_source_url") or ""),
+        })
+        profit_history = _metric_history(rows, "vendor", vendor, str((profit_row or {}).get("metric_key") or "")) if profit_row else []
+        previous_profit = _verified_number(profit_history[-2]) if len(profit_history) > 1 else None
+        margin_change = profit_value - previous_profit if profit_value is not None and previous_profit is not None else None
+        margin_change_items.append({
+            "name": name, "value": round(margin_change, 1) if margin_change is not None else None,
+            "unit": "个百分点" if margin_change is not None else "",
+            "detail": f"FY{profit_history[-2].get('fiscal_year')}→FY{profit_row.get('fiscal_year')} · {profit_label}" if margin_change is not None else "缺少同口径上一财年",
+            "analysis": (
+                f"{profit_label}由 {previous_profit:.1f}% 变为 {profit_value:.1f}%，变化 {margin_change:+.1f} 个百分点；"
+                f"利润转化{'改善' if margin_change > 0 else '减弱' if margin_change < 0 else '持平'}。"
+                if margin_change is not None else "缺少同一利润率口径的连续两年数据。"
+            ),
+            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in profit_history[-3:]],
+            "components": [_component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", profit_label) for item in profit_history[-3:]] or [_component(profit_label, detail="未披露连续两年")],
+            "component_count": len(profit_history[-3:]), "source_url": str((profit_row or row).get("primary_source_url") or ""),
+        })
+    growth_items.sort(key=lambda item: item["value"], reverse=True)
+    trend_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    profit_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    margin_change_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
+    direct_growth = [item for item in growth_items if "直接披露" in str(item.get("detail") or "")]
+    short_cloud_name = lambda name: str(name).replace(" Cloud", "").replace("Microsoft Azure", "Azure").replace("Tencent", "腾讯")
+    direct_growth_text = "、".join(f"{short_cloud_name(item['name'])}{item['value']:.1f}%" for item in direct_growth[:4])
+    proxy_names = "、".join(short_cloud_name(item["name"]) for item in growth_items if "代理分部" in str(item.get("detail") or ""))
+    insight = (
+        f"直接披露云收入的厂商中，{direct_growth_text}；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。"
+        + (f"{proxy_names}采用代理分部口径，不参与同一排名。" if proxy_names else "")
+    )
+    best_trend = next((item for item in trend_items if _number(item.get("value")) is not None), None)
+    aws_profit = next((item for item in profit_items if item["name"] == "AWS" and _number(item.get("value")) is not None), None)
+    proxy_profit = next((item for item in profit_items if "代理分部" in str(item.get("detail") or "") and _number(item.get("value")) is not None), None)
+    profit_insight = (
+        f"AWS披露经营利润率{aws_profit['value']:.1f}%，{proxy_profit['name']}披露代理分部毛利率{proxy_profit['value']:.1f}%；"
+        "两者利润口径不同，这说明数值不可直接比较，只能分别观察各自的利润转化变化。"
+        if aws_profit and proxy_profit else "各厂商利润率口径不同，这说明数值不可直接比较，只能分别观察各自变化。"
+    )
+    comparable_margin_changes = [item for item in margin_change_items if _number(item.get("value")) is not None]
+    margin_change_insight = (
+        f"{comparable_margin_changes[0]['name']}同口径利润率提高 {comparable_margin_changes[0]['value']:+.1f} 个百分点，"
+        f"{comparable_margin_changes[-1]['name']}下降 {abs(float(comparable_margin_changes[-1]['value'])):.1f} 个百分点；差距说明收入增长不等于利润转化同步改善。"
+        if len(comparable_margin_changes) >= 2 else "缺少同口径连续两年利润率，不判断增长质量变化。"
+    )
+    comparable_trends = [item for item in trend_items if _number(item.get("value")) is not None]
+    accelerating = [item for item in comparable_trends if float(item["value"]) > 0]
+    slowing = [item for item in comparable_trends if float(item["value"]) < 0]
+    trend_insight = (
+        f"FY2025相对FY2024，{len(comparable_trends)}家可比厂商中{len(accelerating)}家收入增速提高"
+        + (f"，只有{'、'.join(short_cloud_name(item['name']) for item in slowing)}放缓" if len(slowing) == 1 else f"、{len(slowing)}家放缓")
+        + f"；{short_cloud_name(best_trend['name'])}提高{float(best_trend['value']):.1f}个百分点最多，这说明提速并非少数现象。"
+        if best_trend and comparable_trends else "缺少连续两年收入增速，不判断增长变化。"
+    )
+    focuses = [
+        {
+            "id": "growth", "label": "收入增长", "visual": "columns",
+            "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": f"{leader['name']} {leader.get('period') or '最近财年'}收入同比变化"},
+            "context": f"覆盖 {len(growth_items)} 家全球云厂商", "insight": insight, "items": growth_items,
+        },
+        {
+            "id": "trend", "label": "增长变化", "visual": "trends",
+            "metric": {
+                "value": best_trend["value"] if best_trend else "-",
+                "unit": "个百分点",
+                "label": f"{best_trend['name']}增速变化" if best_trend else "增速变化",
+            },
+            "context": "FY2025 相对 FY2024",
+            "insight": trend_insight,
+            "items": trend_items,
+        },
+        {
+            "id": "profit", "label": "已披露利润率", "visual": "diverging",
+            "metric": {
+                "value": next((item["value"] for item in profit_items if item["name"] == "AWS" and _number(item.get("value")) is not None), next((item["value"] for item in profit_items if _number(item.get("value")) is not None), "-")),
+                "unit": "%", "label": "AWS经营利润率",
+            },
+            "context": "按各厂商披露口径标注",
+            "insight": profit_insight,
+            "items": profit_items,
+        },
+        {
+            "id": "margin_change", "label": "利润率变化", "visual": "trends",
+            "metric": {"value": next((item["value"] for item in margin_change_items if _number(item.get("value")) is not None), "-"), "unit": "个百分点", "label": "同口径利润率变化"},
+            "context": "同一厂商、同一利润率口径连续两年",
+            "insight": margin_change_insight,
+            "items": margin_change_items,
+        },
+    ]
+    for focus in focuses:
+        focus["headline"] = {
+            "growth": "直接披露仍有分层", "trend": "收入提速并非少数",
+            "profit": "利润率不能跨厂商排名", "margin_change": "利润改善方向分化",
+        }[focus["id"]]
+    return {
+        "id": "cloud",
+        "index": "03",
+        "title": "全球云厂商",
+        "kicker": "营收增速与已披露利润率",
+        "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": f"{leader['name']} {leader.get('period') or '最近财年'}收入同比变化"},
+        "context": f"覆盖 {len(growth_items)} 家全球云厂商",
+        "insight": insight,
+        "entities": growth_items,
+        "focuses": focuses,
+        "relations": [
+            {"title": item["name"], "detail": f"FY2025 披露收入同比 {item['value']:+.1f}%", "kind": "公司披露数据"}
+            for item in growth_items
+        ],
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items]),
+    }
+
+
+def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    def readable_value(metric: str, value: float | None) -> tuple[Any, str]:
+        if value is None:
+            return None, ""
+        if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions"}:
+            return int(round(value)), "个连接"
+        if metric == "mobile_subscriber_penetration_rate":
+            return round(value, 1), "%"
+        if metric == "mobile_data_usage_total_mbytes":
+            return round(value / 100_000_000, 1), "亿MB"
+        if metric == "mobile_data_usage_per_mobile_broadband_subscription_mbytes":
+            return round(value, 1), "MB/连接"
+        if metric == "median_monthly_household_income":
+            return int(round(value)), "港元/月"
+        if metric == "annual_telecom_investment":
+            return value, "百万港元"
+        if metric == "telecom_consumer_complaints_total":
+            return int(round(value)), "宗"
+        return value, ""
+
+    def history(metric: str, name_contains: str = "") -> list[dict[str, Any]]:
+        matches = [row for row in rows if row.get("metric_key") == metric and _number(row.get("value")) is not None and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES and (not name_contains or name_contains in str(row.get("metric_name") or ""))]
+        return sorted(matches, key=lambda row: str(row.get("period_end") or ""))
+
+    def yoy_item(metric: str, label: str, same_grain: bool = False, name_contains: str = "") -> dict[str, Any] | None:
+        series = history(metric, name_contains)
+        if not series:
+            return None
+        latest = series[-1]
+        if same_grain:
+            for candidate in reversed(series):
+                candidate_date = str(candidate.get("period_end") or "")
+                try:
+                    prior_date = datetime.fromisoformat(candidate_date).replace(year=datetime.fromisoformat(candidate_date).year - 1).date().isoformat()
+                except ValueError:
+                    continue
+                if any(str(row.get("period_end") or "") == prior_date and str(row.get("grain") or "") == str(candidate.get("grain") or "") for row in series):
+                    latest = candidate
+                    break
+        latest_value = _number(latest.get("value"))
+        latest_date = str(latest.get("period_end") or "")
+        try:
+            previous_date = datetime.fromisoformat(latest_date).replace(year=datetime.fromisoformat(latest_date).year - 1).date().isoformat()
+        except ValueError:
+            previous_date = ""
+        grain = str(latest.get("grain") or "")
+        previous = next((row for row in reversed(series[:-1]) if str(row.get("period_end") or "") == previous_date and (not same_grain or str(row.get("grain") or "") == grain)), None)
+        previous_value = _number((previous or {}).get("value"))
+        change = ((latest_value / previous_value - 1) * 100) if latest_value is not None and previous_value not in (None, 0) else None
+        meanings = {
+            "手机卡/设备": "同一客户可有多张卡，联网设备也会单独登记",
+            "移动宽带": "登记数量不等同独立客户人数",
+            "每百人登记": "该指标同时受多卡及联网设备影响",
+            "移动数据总量": "变化反映整体数据需求强度",
+            "每个移动宽带连接用量": "变化反映单连接使用强度",
+            "家庭月入中位数": "变化是家庭购买力代理",
+            "电讯业投资": "变化反映行业网络投入规模",
+            "电讯投诉": "变化反映服务压力，不证明单一原因",
+        }
+        latest_display, component_unit = readable_value(metric, latest_value)
+        previous_display, _ = readable_value(metric, previous_value)
+        if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions"}:
+            latest_text = f"{int(latest_display):,}个连接"
+        elif metric == "mobile_data_usage_total_mbytes":
+            latest_text = f"{latest_display:,.1f}亿MB"
+        elif metric == "mobile_data_usage_per_mobile_broadband_subscription_mbytes":
+            latest_text = f"{latest_display:,.1f}MB/连接"
+        elif metric == "median_monthly_household_income":
+            latest_text = f"{int(latest_display):,}港元/月"
+        else:
+            latest_text = f"{latest_display:g}{component_unit}" if isinstance(latest_display, (int, float)) else str(latest_display or "未披露")
+        return {
+            "name": label, "value": round(change, 1) if change is not None else None, "unit": "%" if change is not None else "",
+            "detail": f"{latest_date} 对比 {previous_date}" if change is not None else f"截至 {latest_date} · 缺少同周期上年值",
+            "analysis": (f"{latest_date}为{latest_text}，同比{change:+.1f}%；{meanings.get(label, '变化反映该指标的年度趋势')}。" if change is not None else f"截至{latest_date}缺少同周期上年值。"),
+            "components": [_component(latest_date, latest_display, component_unit), _component(previous_date, previous_display, component_unit)] if previous else [_component(latest_date, latest_display, component_unit)],
+            "component_count": 2 if previous else 1, "source_url": str(latest.get("official_source_url") or ""),
+        }
+
+    connection_items = [item for item in [yoy_item("mobile_subscriptions", "手机卡/设备"), yoy_item("mobile_broadband_subscriptions", "移动宽带"), yoy_item("mobile_subscriber_penetration_rate", "每百人登记")] if item]
+    traffic_items = [item for item in [yoy_item("mobile_data_usage_total_mbytes", "移动数据总量"), yoy_item("mobile_data_usage_per_mobile_broadband_subscription_mbytes", "每个移动宽带连接用量")] if item]
+    income_item = yoy_item("median_monthly_household_income", "家庭月入中位数")
+    cpi_series = history("consumer_price_indices_a_cm_1920", "Year-on-year % change")
+    cpi_item = None
+    if cpi_series:
+        income_period = str((income_item or {}).get("detail") or "").split(" 对比 ", 1)[0]
+        row = next((item for item in reversed(cpi_series) if str(item.get("period_end") or "") == income_period), cpi_series[-1])
+        value = _number(row.get("value"))
+        cpi_item = {"name": "甲类消费物价同比", "value": round(value, 1) if value is not None else None, "unit": "%", "detail": f"截至 {row.get('period_end')}", "analysis": f"截至 {row.get('period_end')}甲类消费物价同比为 {value:.1f}%；它是购买力压力代理，不等于电讯消费支出。", "components": [_component("甲类消费物价同比", value, "%", row.get("period_end"))], "component_count": 1, "source_url": str(row.get("official_source_url") or "")}
+    purchasing_items = [item for item in [income_item, cpi_item] if item]
+    periods_align = bool(income_item and cpi_item and str(income_item.get("detail") or "").startswith(str(cpi_item.get("detail") or "").replace("截至 ", "")))
+    if periods_align and income_item and cpi_item and _number(income_item.get("value")) is not None and _number(cpi_item.get("value")) is not None:
+        gap = float(income_item["value"]) - float(cpi_item["value"])
+        income_period = str(income_item.get("detail") or "").split(" 对比 ", 1)[0]
+        purchasing_analysis = (
+            f"{income_period}家庭月入同比{float(income_item['value']):+.1f}%，甲类消费物价同比{float(cpi_item['value']):+.1f}%，"
+            f"两者相减的购买力代理为{gap:+.1f}%；这说明家庭购买力承压，但电讯消费行为未单独统计。"
+        )
+        purchasing_items.insert(0, {"name": "购买力代理变化", "value": round(gap, 1), "unit": "%", "detail": f"{income_item['detail']} · 收入增幅减物价增幅", "analysis": purchasing_analysis, "components": [_component("家庭月入同比", income_item["value"], "%"), _component("甲类消费物价同比", cpi_item["value"], "%")], "component_count": 2, "source_url": income_item["source_url"]})
+    investment_item = yoy_item("annual_telecom_investment", "电讯业投资")
+    complaints_item = yoy_item("telecom_consumer_complaints_total", "电讯投诉", same_grain=True)
+    service_items = [item for item in [investment_item, complaints_item] if item]
+    for metric, label, unit in (("5g_population_coverage_status", "5G人口覆盖", "%"), ("5g_spectrum_assigned_mhz", "已分配公共移动及5G频谱", "MHz")):
+        series = history(metric)
+        if series:
+            row = series[-1]
+            value = _number(row.get("value"))
+            plus = metric == "5g_population_coverage_status" and str(row.get("unit") or "") == "percent_plus"
+            display_value = f"超过{value:g}%" if plus else value
+            display_unit = "" if plus else unit
+            service_items.append({"name": label, "value": display_value, "unit": display_unit, "detail": f"截至 {row.get('period_end')}", "analysis": f"截至 {row.get('period_end')}{label}{'超过' if plus else '为 '}{value:g}{unit}；这是网络供给背景，不单独证明服务质量改善。", "components": [_component(label, display_value, display_unit, row.get("period_end"))], "component_count": 1, "source_url": str(row.get("official_source_url") or "")})
+
+    traffic_total = next((item for item in traffic_items if item["name"] == "移动数据总量"), None)
+    traffic_per = next((item for item in traffic_items if item["name"] == "每个移动宽带连接用量"), None)
+    traffic_insight = (f"总流量同比 {traffic_total['value']:+.1f}%，每连接流量同比 {traffic_per['value']:+.1f}%；差距说明增量更偏连接规模，而非单连接使用强度。" if traffic_total and traffic_per and _number(traffic_total.get("value")) is not None and _number(traffic_per.get("value")) is not None else "缺少同周期数据，不判断流量增长来源。")
+    purchasing_gap = purchasing_items[0] if purchasing_items and purchasing_items[0]["name"] == "购买力代理变化" else None
+    focuses = [
+        {"id": "connections", "label": "登记数量", "visual": "diverging", "metric": {**_focus_metric(connection_items, "手机卡/设备同比", "%"), "label": "手机卡/设备同比"}, "context": "最新月对比上年同月", "insight": (f"手机卡及联网设备登记数、移动宽带登记数、每百人移动登记数同比分别为{connection_items[0]['value']:+.1f}%、{connection_items[1]['value']:+.1f}%、{connection_items[2]['value']:+.1f}%；同一客户可有多张卡，联网设备也会单独登记，因此这些增幅不能当作客户人数增长。" if len(connection_items) >= 3 and all(_number(item.get('value')) is not None for item in connection_items[:3]) else "缺少同月上年数据，无法比较登记数量变化。"), "items": connection_items},
+        {"id": "traffic", "label": "流量增长", "visual": "diverging", "metric": {**_focus_metric(traffic_items, "移动数据总量同比", "%"), "label": "移动数据总量同比"}, "context": "最新年度对比上年", "insight": traffic_insight, "items": traffic_items},
+        {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "%", "label": "购买力代理变化"}, "context": "收入与物价的同周期变化", "insight": (purchasing_gap["analysis"] if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
+        {"id": "service", "label": "投入与投诉", "visual": "kpis", "metric": {"value": investment_item["value"] if investment_item else "-", "unit": "%", "label": "电讯业投资同比"}, "context": "投资和投诉各自与同周期上年比较", "insight": (f"电讯业投资在截至2025年3月的财政年度增长{investment_item['value']:.1f}%；2025年全年投诉增长{complaints_item['value']:.1f}%。两项数据期间不同，这说明它们只能分别反映投入与服务压力，不能比较差距或建立关系。" if investment_item and complaints_item and _number(investment_item.get("value")) is not None and _number(complaints_item.get("value")) is not None else "投资与投诉缺少同周期对照，不建立因果关系。"), "items": service_items},
+    ]
+    for focus in focuses:
+        focus["headline"] = {
+            "connections": "登记增加不等于客户增加", "traffic": "总量增长高于单连接",
+            "purchasing": "购买力代理指标下降", "service": "投入与投诉不可直接关联",
+        }[focus["id"]]
+    entities = [item for focus in focuses for item in focus["items"]]
+    lead_connection = connection_items[0] if connection_items else {"value": "-"}
+    insight = "登记数量、流量、购买力和服务压力分别判断；手机卡及联网设备登记数不等于独立客户人数。"
+    return {
+        "id": "macro",
+        "index": "04",
+        "title": "香港电讯市场",
+        "kicker": "需求、购买力与服务压力",
+        "metric": {"value": lead_connection["value"], "unit": "%", "label": "手机卡/设备同比"},
+        "context": "香港官方市场与监管数据",
+        "insight": insight,
+        "entities": entities,
+        "focuses": focuses,
+        "relations": [
+            {"title": item["name"], "detail": f"{item['value']} {item['unit']} · {item['detail']}", "kind": "官方指标"}
+            for item in entities
+        ],
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in entities]),
+    }
+
+
+def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the exact source-backed payload used to generate model summaries."""
+    evidence_domains: list[dict[str, Any]] = []
+    for domain in domains:
+        focuses = []
+        for focus in domain.get("focuses") or []:
+            focuses.append(
+                {
+                    "id": focus.get("id"),
+                    "label": focus.get("label"),
+                    "metric": focus.get("metric"),
+                    "insight": focus.get("insight"),
+                    "items": [
+                        {
+                            "name": item.get("name"),
+                            "value": item.get("value"),
+                            "unit": item.get("unit"),
+                            "detail": item.get("detail"),
+                            "analysis": item.get("analysis"),
+                            "components": item.get("components") or [],
+                            "component_count": item.get("component_count"),
+                            "record_count": item.get("record_count"),
+                            "source_url": item.get("source_url"),
+                        }
+                        for item in (focus.get("items") or [])[:8]
+                    ],
+                }
+            )
+        evidence_domains.append(
+            {
+                "id": domain.get("id"),
+                "title": domain.get("title"),
+                "metric": domain.get("metric"),
+                "deterministic_insight": domain.get("insight"),
+                "focuses": focuses,
+                "agent_verified_facts": (domain.get("ai_analysis") or [])[:8],
+            }
+        )
+    return {"domains": evidence_domains, "relations": []}
+
+
+def _content_hash(payload: Any) -> str:
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _reader_percent_units(value: Any) -> Any:
+    """Use one compact percent notation throughout the reader-facing board."""
+    if isinstance(value, dict):
+        return {key: _reader_percent_units(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_reader_percent_units(item) for item in value]
+    if isinstance(value, str):
+        return value.replace(" 个百分点", "%").replace("个百分点", "%")
+    return value
+
+
+@lru_cache(maxsize=4)
+def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
+    del signature
+    local = _local_domain(_read_json(LOCAL_PATH))
+    international = _international_domain(_read_json(INTERNATIONAL_PATH))
+    cloud = _cloud_domain(_read_json(CLOUD_PATH))
+    macro = _macro_domain(_read_json(MACRO_PATH))
+    domains = [local, international, cloud, macro]
+    ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
+    ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
+    for domain in domains:
+        domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
+    domains = _reader_percent_units(domains)
+    evidence = _analysis_evidence_snapshot(domains)
+    evidence_hash = _content_hash(evidence)
+    model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
+    model_analysis_fresh = bool(
+        str(model_analysis.get("evidence_hash") or "")
+        and str(model_analysis.get("evidence_hash") or "") == evidence_hash
+        and str(model_analysis.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
+    )
+    model_summaries = {
+        str(item.get("domain") or ""): item
+        for item in (model_analysis.get("summaries") or [])
+        if isinstance(item, dict)
+    } if model_analysis_fresh else {}
+    for domain in domains:
+        domain["ai_summary"] = model_summaries.get(domain["id"], {})
+        focus_summaries = {
+            str(item.get("id") or ""): item
+            for item in (domain["ai_summary"].get("focuses") or [])
+            if isinstance(item, dict)
+        }
+        for focus in domain.get("focuses") or []:
+            focus_summary = focus_summaries.get(str(focus.get("id") or ""), {})
+            focus["ai_summary"] = focus_summary
+            entity_summaries = {
+                str(item.get("name") or ""): item
+                for item in (focus_summary.get("entities") or [])
+                if isinstance(item, dict)
+            }
+            for entity in focus.get("items") or []:
+                entity["ai_summary"] = entity_summaries.get(str(entity.get("name") or ""), {})
+        domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
+        domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
+    domains = _reader_percent_units(domains)
+    deterministic_relations = [
+        {
+            "from": "macro",
+            "to": "local",
+            "title": "香港登记数量与本地产品分别统计",
+            "detail": f"手机卡及联网设备登记数同比 {macro['metric']['value']}%；本地数据库有 {local['metric']['value']} 个去重后在售产品。两者统计对象不同，不直接比较。",
+            "kind": "数据并列",
+        },
+        {
+            "from": "international",
+            "to": "cloud",
+            "title": "云厂商与电讯企业披露口径不同",
+            "detail": (
+                f"云厂商页面最高值为 {cloud['metric']['value']}%，中国内地电讯企业页面最高值为 {international['metric']['value']}%；"
+                "报告期间和业务范围不同，不作高低排名。"
+            ),
+            "kind": "不可直接比较",
+        },
+        {
+            "from": "local",
+            "to": "cloud",
+            "title": "本地产品与云厂商指标分别展示",
+            "detail": "本地页面统计在售产品类型与月费；云厂商页面统计各公司披露的收入与利润率。两组数据没有共同统计口径。",
+            "kind": "数据边界",
+        },
+        {
+            "from": "macro",
+            "to": "international",
+            "title": "香港行业投资与公司资本开支分别统计",
+            "detail": "香港页面展示全行业电信业投资；内地电讯企业页面展示各公司资本开支占营收比例。统计范围不同，不直接比较。",
+            "kind": "数据边界",
+        },
+    ]
+    model_discoveries = [
+        item for item in (model_analysis.get("discoveries") or [])
+        if isinstance(item, dict)
+        and item.get("from") in {"local", "international", "cloud", "macro"}
+        and item.get("to") in {"local", "international", "cloud", "macro"}
+        and item.get("from") != item.get("to")
+        and str(item.get("title") or "").strip()
+        and str(item.get("detail") or "").strip()
+    ] if model_analysis_fresh else []
+    relations = [
+        {
+            "from": item["from"],
+            "to": item["to"],
+            "title": str(item["title"]).strip(),
+            "detail": str(item["detail"]).strip(),
+            "kind": str(item.get("kind") or "AI综合研判").strip(),
+            "source_urls": list(item.get("source_urls") or []),
+            "origin": "ai",
+        }
+        for item in model_discoveries[:4]
+    ] if len(model_discoveries) >= 4 else deterministic_relations
+    relations = _reader_percent_units(relations)
+    refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
+    return {
+        "domains": domains,
+        "relations": relations,
+        "method": "页面只使用通过质量检查的数据库记录；不同期间、代理分部口径和不可直接比较的数据均单独说明。",
+        "refresh": refresh_state if isinstance(refresh_state, dict) else {},
+        "ai": {
+            "agent_run_id": ai_payload.get("agent_run_id", "") if isinstance(ai_payload, dict) else "",
+            "updated_at": ai_payload.get("generated_at_hkt", "") if isinstance(ai_payload, dict) else "",
+            "domain_counts": ai_payload.get("domain_counts", {}) if isinstance(ai_payload, dict) else {},
+            "model_analysis": model_analysis if model_analysis_fresh else {},
+            "evidence_hash": evidence_hash,
+            "model_analysis_fresh": model_analysis_fresh,
+            "discoveries_generated": bool(len(model_discoveries) >= 4),
+        },
+        "source_record_count": sum(int(domain["metric"]["value"]) if domain["id"] == "local" else len(domain["entities"]) for domain in domains),
+    }
+
+
+def build_executive_intelligence_snapshot() -> dict[str, Any]:
+    signature = tuple(path.stat().st_mtime_ns if path.exists() else 0 for path in DOMAIN_PATHS)
+    return _build_cached(signature)
+
+
+def build_executive_intelligence_evidence_snapshot() -> dict[str, Any]:
+    """Expose the source-only evidence pack used for AI freshness checks."""
+    snapshot = build_executive_intelligence_snapshot()
+    return _analysis_evidence_snapshot(snapshot.get("domains") or [])

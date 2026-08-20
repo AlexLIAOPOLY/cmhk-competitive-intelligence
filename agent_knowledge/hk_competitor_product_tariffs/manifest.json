@@ -1,0 +1,48 @@
+{
+  "id": "hk_competitor_product_tariffs",
+  "title": "香港竞对产品资费",
+  "summary": "覆盖 3HK/Hutchison、SmarTone、HKBN、HGC、i-CABLE 等香港竞对公开产品和套餐资费的当前与历史数据库。",
+  "source_type": "official_public_product_pages_and_public_archives",
+  "visibility": "hidden",
+  "superseded_by": "competitor_product_tariffs",
+  "superseded_note": "作为底层产品子库保留；前端统一显示 competitor_product_tariffs，后端选中该合并库时会自动展开读取本目录。",
+  "scope": "公开产品/套餐页面和 Wayback 公开归档；不登录、不绕过权限、不估算缺口。",
+  "tags": [
+    "3HK",
+    "SmarTone",
+    "HKBN",
+    "HGC",
+    "i-CABLE",
+    "资费",
+    "套餐",
+    "宽频",
+    "5G"
+  ],
+  "entrypoints": [
+    "current_plans.csv",
+    "historical_plans.csv",
+    "source_gaps.csv",
+    "quality_audit.md",
+    "quality_audit.json",
+    "verification_followup_audit.csv",
+    "verification_followup_audit.md",
+    "hk_competitor_product_tariffs_human_readable.xlsx",
+    "hk_competitor_product_tariffs_followup_audit.xlsx",
+    "source_snapshots.json"
+  ],
+  "updated_at": "2026-07-13T08:54:16+08:00",
+  "row_count": 684,
+  "current_count": 161,
+  "historical_count": 523,
+  "source_gap_count": 70,
+  "unresolved_source_gap_count": 41,
+  "verification_backlog_count": 29,
+  "verification_followup": {
+    "verification_backlog_rechecked": 29,
+    "confirmed_source_gaps": 41,
+    "near_match_not_equivalent": 16,
+    "no_equivalent_second_source_found": 13,
+    "out": "/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/agent_knowledge/hk_competitor_product_tariffs/verification_followup_audit.csv"
+  },
+  "quality": "needs_final_review"
+}

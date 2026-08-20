@@ -1,0 +1,41 @@
+{
+  "id": "goal_readiness_audits",
+  "title": "CMHK知识库目标完成度证据审计",
+  "summary": "把当前持续维护目标拆成数据完整性、来源证据、URL、预测边界和小竞AI数据库可见性要求，并记录每项要求的当前证据。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "Goal-level readiness for CMHK competitor, cloud vendor, macro policy, RAG, and forecast support maintenance.",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "goal-readiness",
+    "knowledge-base",
+    "forecast",
+    "rag"
+  ],
+  "keywords": [
+    "goal_readiness_audits",
+    "official_value",
+    "verification_count",
+    "source_gap",
+    "forecast_readiness",
+    "agent-datasets"
+  ],
+  "entrypoints": [
+    "goal_readiness_2026-06-19.md",
+    "goal_readiness_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 7,
+    "requirements_checked": 7,
+    "passed": 7,
+    "failed": 0,
+    "notes": [
+      "This audit maps goal requirements to evidence and should be rerun after any data, source, forecast, or RAG visibility change.",
+      "It does not estimate missing data and treats source gaps as acceptable only when official_value is blank and evidence is preserved."
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}

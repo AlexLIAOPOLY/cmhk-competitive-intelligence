@@ -1,0 +1,19 @@
+*.docx binary
+*.xlsx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.wav binary
+*.aiff binary
+*.mp3 binary
+
+*.json diff=json
+*.md text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.tsv text eol=lf
+*.csv text eol=lf

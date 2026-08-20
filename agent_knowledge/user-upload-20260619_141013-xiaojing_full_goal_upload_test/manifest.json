@@ -1,0 +1,27 @@
+{
+  "id": "user-upload-20260619_141013-xiaojing_full_goal_upload_test",
+  "title": "用户上传：xiaojing_full_goal_upload_test.md",
+  "summary": "用户上传文件生成的临时知识库，原始文件 xiaojing_full_goal_upload_test.md，已抽取为可检索文本。",
+  "source_type": "user_uploaded_file",
+  "scope": "用户手动上传给小竞AI的知识库文件",
+  "tags": [
+    "user-upload",
+    "knowledge-base"
+  ],
+  "keywords": [
+    "xiaojing_full_goal_upload_test",
+    "xiaojing_full_goal_upload_test.md",
+    "用户上传",
+    "知识库"
+  ],
+  "entrypoints": [
+    "README.md",
+    "uploaded_knowledge.md"
+  ],
+  "updated_at": "2026-06-19T14:10:13+08:00",
+  "quality": "user_uploaded_unverified; visible to AI only when selected in the database picker",
+  "original_file": "original.md",
+  "visibility": "archived",
+  "version": "2026-06-19T14:10:13+08:00",
+  "built_at": "2026-06-19T14:10:13+08:00"
+}

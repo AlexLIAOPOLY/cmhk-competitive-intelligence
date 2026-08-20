@@ -1,0 +1,41 @@
+{
+  "id": "source_evidence_audits",
+  "title": "小竞AI来源链接与证据完整性审计",
+  "summary": "检查宏观政策、季度/半年度竞对、云厂商数据包每行是否保留可解析来源链接、证据文本和 verification_sources。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "official/public source links, evidence notes, verification_count alignment, and RAG source traceability.",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "source-integrity",
+    "evidence",
+    "verification-sources"
+  ],
+  "keywords": [
+    "source_evidence_audits",
+    "verification_sources",
+    "official_source_url",
+    "primary_source_url",
+    "official_evidence",
+    "verification_count"
+  ],
+  "entrypoints": [
+    "source_evidence_integrity_2026-06-19.md",
+    "source_evidence_integrity_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 3,
+    "datasets_checked": 3,
+    "passed": 3,
+    "failed": 0,
+    "notes": [
+      "结构审计确认来源链接和证据字段存在且可解析。",
+      "新增数据点仍需按用户要求逐条打开官方/公开来源核实。",
+      "若本审计失败，不能把相关数据用于正式结论。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}

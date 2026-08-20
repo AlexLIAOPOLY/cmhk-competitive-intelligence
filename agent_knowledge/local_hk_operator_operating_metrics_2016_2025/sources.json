@@ -1,0 +1,356 @@
+{
+  "generated_at": "2026-08-18T00:00:00+08:00",
+  "sources": [
+    {
+      "source_id": "hkt_ar_2016",
+      "operator_id": "hkt",
+      "year": 2016,
+      "label": "HKT 2016 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/01e%20-%20Annual%20Repor.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2016",
+      "operator_id": "three_hk",
+      "year": 2016,
+      "label": "Hutchison Telecommunications Hong Kong 2016 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2016/ar2016.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2017",
+      "operator_id": "hkt",
+      "year": 2017,
+      "label": "HKT 2017 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2017",
+      "operator_id": "three_hk",
+      "year": 2017,
+      "label": "Hutchison Telecommunications Hong Kong 2017 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2018",
+      "operator_id": "hkt",
+      "year": 2018,
+      "label": "HKT 2018 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2018",
+      "operator_id": "three_hk",
+      "year": 2018,
+      "label": "Hutchison Telecommunications Hong Kong 2018 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2018/ar2018.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2019",
+      "operator_id": "hkt",
+      "year": 2019,
+      "label": "HKT 2019 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e1-Annual-Report.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2019",
+      "operator_id": "three_hk",
+      "year": 2019,
+      "label": "Hutchison Telecommunications Hong Kong 2019 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2019/ar2019.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2020",
+      "operator_id": "hkt",
+      "year": 2020,
+      "label": "HKT 2020 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01_Annual%20Report.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2020",
+      "operator_id": "three_hk",
+      "year": 2020,
+      "label": "Hutchison Telecommunications Hong Kong 2020 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2020/ar2020.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2021",
+      "operator_id": "hkt",
+      "year": 2021,
+      "label": "HKT 2021 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01-e_Annual%20Repor.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2021",
+      "operator_id": "three_hk",
+      "year": 2021,
+      "label": "Hutchison Telecommunications Hong Kong 2021 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2021/ar2021.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2022",
+      "operator_id": "hkt",
+      "year": 2022,
+      "label": "HKT 2022 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01-HKT%20Annual%20Rep.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2022",
+      "operator_id": "three_hk",
+      "year": 2022,
+      "label": "Hutchison Telecommunications Hong Kong 2022 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2022/ar2022.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2023",
+      "operator_id": "hkt",
+      "year": 2023,
+      "label": "HKT 2023 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01-2023%20Annual%20Re.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2023",
+      "operator_id": "three_hk",
+      "year": 2023,
+      "label": "Hutchison Telecommunications Hong Kong 2023 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2023/ar2023.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2024",
+      "operator_id": "hkt",
+      "year": 2024,
+      "label": "HKT 2024 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e01-2024%20Annual%20Report.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2024",
+      "operator_id": "three_hk",
+      "year": 2024,
+      "label": "Hutchison Telecommunications Hong Kong 2024 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2024/ar2024.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_ar_2025",
+      "operator_id": "hkt",
+      "year": 2025,
+      "label": "HKT 2025 Annual Report",
+      "url": "https://www.hkt.com/api-service/assets/e-2025_Annual_Report.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_ar_2025",
+      "operator_id": "three_hk",
+      "year": 2025,
+      "label": "Hutchison Telecommunications Hong Kong 2025 Annual Report",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2017",
+      "operator_id": "smartone",
+      "year": 2017,
+      "label": "SmarTone FY2017 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2016_2017_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2018",
+      "operator_id": "smartone",
+      "year": 2018,
+      "label": "SmarTone FY2018 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2019",
+      "operator_id": "smartone",
+      "year": 2019,
+      "label": "SmarTone FY2019 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2020",
+      "operator_id": "smartone",
+      "year": 2020,
+      "label": "SmarTone FY2020 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2021",
+      "operator_id": "smartone",
+      "year": 2021,
+      "label": "SmarTone FY2021 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2022",
+      "operator_id": "smartone",
+      "year": 2022,
+      "label": "SmarTone FY2022 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2021_2022_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2023",
+      "operator_id": "smartone",
+      "year": 2023,
+      "label": "SmarTone FY2023 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2024",
+      "operator_id": "smartone",
+      "year": 2024,
+      "label": "SmarTone FY2024 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_ar_2025",
+      "operator_id": "smartone",
+      "year": 2025,
+      "label": "SmarTone FY2025 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "hkbn_ar_2024",
+      "operator_id": "hkbn",
+      "year": 2024,
+      "label": "HKBN FY2025 Annual Report and FY2024 comparative",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_results_2024",
+      "operator_id": "hkbn",
+      "year": 2024,
+      "label": "HKBN FY2025 Annual Results Presentation and FY2024 comparative",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY25_HKBN_Annual_Results_Announcement_Presentation_en.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2025",
+      "operator_id": "hkbn",
+      "year": 2025,
+      "label": "HKBN FY2025 Annual Report and FY2024 comparative",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_results_2025",
+      "operator_id": "hkbn",
+      "year": 2025,
+      "label": "HKBN FY2025 Annual Results Presentation and FY2024 comparative",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY25_HKBN_Annual_Results_Announcement_Presentation_en.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "icable_ar_2022",
+      "operator_id": "icable",
+      "year": 2022,
+      "label": "i-CABLE 2022 Annual Report",
+      "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "source_type": "official_annual_report_page",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2023",
+      "operator_id": "icable",
+      "year": 2023,
+      "label": "i-CABLE 2023 Annual Report",
+      "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "source_type": "official_annual_report_page",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2024",
+      "operator_id": "icable",
+      "year": 2024,
+      "label": "i-CABLE 2024 Annual Report",
+      "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "source_type": "official_annual_report_page",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2025",
+      "operator_id": "icable",
+      "year": 2025,
+      "label": "i-CABLE 2025 Annual Report",
+      "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "source_type": "official_annual_report_page",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "hgc_2016_group_ar",
+      "operator_id": "hgc",
+      "year": 2016,
+      "label": "Hutchison Telecommunications Hong Kong 2016 Annual Report (HGC then within group)",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2016/ar2016.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hgc_current_site",
+      "operator_id": "hgc",
+      "year": 2025,
+      "label": "HGC official website",
+      "url": "https://www.hgc-intl.com/",
+      "source_type": "official_company_site",
+      "publisher": "HGC Global Communications Limited"
+    }
+  ]
+}

@@ -1,0 +1,579 @@
+{
+  "row": 32,
+  "need": "收购、融资、合资、股权交易等",
+  "status": "ok",
+  "object": "行业资讯",
+  "entities": [
+    "行业资讯"
+  ],
+  "selected_fields": [
+    "收购",
+    "融资",
+    "合资",
+    "股权交易"
+  ],
+  "ignored_selected_fields": [],
+  "source_urls": [
+    "https://www.investhk.gov.hk/en/news/",
+    "https://www.gsma.com/newsroom/press-releases/",
+    "https://www.totaltele.com/",
+    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+    "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+    "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html"
+  ],
+  "attempted_urls": [
+    "https://www.totaltele.com/",
+    "https://www.gsma.com/newsroom/press-releases/",
+    "https://www.investhk.gov.hk/en/news/",
+    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+    "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+    "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html"
+  ],
+  "extracted": {
+    "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
+    "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
+    "合资": "nel costs 26 Other operating expenses 27 Depreciation, amortization and impairment losses 28 Profit/loss from operations 29 Finance costs 30 Share of profit/loss of associates and joint ventures accounted for using the e",
+    "股权交易": "ific: cybersecurity ESRS index Financial statements Financial statements Statement of financial position Income statement Statement of comprehensive income Statement of changes in equity Statement of cash flows Notes Not"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "行业资讯",
+      "status": "ok",
+      "source_urls": [
+        "https://www.investhk.gov.hk/en/news/",
+        "https://www.gsma.com/newsroom/press-releases/",
+        "https://www.totaltele.com/",
+        "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+        "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+        "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html"
+      ],
+      "extracted": {
+        "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
+        "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
+        "合资": "nel costs 26 Other operating expenses 27 Depreciation, amortization and impairment losses 28 Profit/loss from operations 29 Finance costs 30 Share of profit/loss of associates and joint ventures accounted for using the e",
+        "股权交易": "ific: cybersecurity ESRS index Financial statements Financial statements Statement of financial position Income statement Statement of comprehensive income Statement of changes in equity Statement of cash flows Notes Not"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 32,
+          "url": "https://www.investhk.gov.hk/en/news/",
+          "final_url": "https://www.investhk.gov.hk/en/news/",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "News | InvestHK",
+          "bytes": 129017,
+          "elapsed_seconds": 1.778,
+          "method": "httpx",
+          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Life & Health ",
+          "evidence_path": "evidence_cache/5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad.txt",
+          "content_hash": "5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.investhk.gov.hk/en/news/",
+              "final_url": "https://www.investhk.gov.hk/en/news/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 129017,
+              "text_chars": 7790,
+              "title": "News | InvestHK",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.gsma.com/newsroom/press-releases/",
+          "final_url": "https://www.gsma.com/newsroom/press-releases/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Press Releases - Newsroom",
+          "bytes": 111058,
+          "elapsed_seconds": 1.966,
+          "method": "httpx",
+          "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
+          "evidence_path": "evidence_cache/ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41.txt",
+          "content_hash": "ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.gsma.com/newsroom/press-releases/",
+              "final_url": "https://www.gsma.com/newsroom/press-releases/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 111058,
+              "text_chars": 4332,
+              "title": "Press Releases - Newsroom",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "industry_association",
+          "jurisdiction": "international",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.totaltele.com/",
+          "final_url": "https://totaltele.com/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Total Telecom - News, analysis and events for global telecoms",
+          "bytes": 647458,
+          "elapsed_seconds": 2.011,
+          "method": "httpx",
+          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Comarch User Group 2026: Navigating the 2% Growth Trap with Agentic AI and Composable Architecture Posted by Rosie Foster | Jun 22, 2026 Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre",
+          "evidence_path": "evidence_cache/c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872.txt",
+          "content_hash": "c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.totaltele.com/",
+              "final_url": "https://totaltele.com/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 647458,
+              "text_chars": 7497,
+              "title": "Total Telecom - News, analysis and events for global telecoms",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "media",
+          "jurisdiction": "UK",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+          "bytes": 407011,
+          "elapsed_seconds": 3.017,
+          "method": "httpx",
+          "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
+          "evidence_path": "evidence_cache/f65d210c6070fa0ae3638a703ac9fdee9f5921e2251d664cb427d750a5333add.txt",
+          "content_hash": "f65d210c6070fa0ae3638a703ac9fdee9f5921e2251d664cb427d750a5333add",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+              "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 407011,
+              "text_chars": 8464,
+              "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "US",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+          "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "United States - Deutsche Telekom Annual Report 2025",
+          "bytes": 221720,
+          "elapsed_seconds": 5.376,
+          "method": "httpx",
+          "text_sample": "United States - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technology Segment structure Group strategy Group strateg",
+          "evidence_path": "evidence_cache/c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076.txt",
+          "content_hash": "c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+              "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 221720,
+              "text_chars": 30108,
+              "title": "United States - Deutsche Telekom Annual Report 2025",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "exchange_public_filing",
+          "jurisdiction": "DE",
+          "tos_status": "public_disclosure",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+          "final_url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025",
+          "bytes": 252320,
+          "elapsed_seconds": 3.63,
+          "method": "httpx",
+          "text_sample": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technolo",
+          "evidence_path": "evidence_cache/f736ec9678288e02585af10a746c273b73c5680e7ff8b8922353444c4d2e7769.txt",
+          "content_hash": "f736ec9678288e02585af10a746c273b73c5680e7ff8b8922353444c4d2e7769",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+              "final_url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 252320,
+              "text_chars": 40041,
+              "title": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "exchange_public_filing",
+          "jurisdiction": "DE",
+          "tos_status": "public_disclosure",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        }
+      ],
+      "confidence_score": 0.2,
+      "verification_reason": "The extracted data fields such as '收购', '融资', '合资', and '股权交易' contain fragments that are either unrelated to the source text or appear to be cut off and taken out of context. The source text is about InvestHK and GSMA press releases and does not include any specific information about acquisitions, financing, joint ventures, or equity transactions matching those fragments."
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 32,
+      "url": "https://www.investhk.gov.hk/en/news/",
+      "final_url": "https://www.investhk.gov.hk/en/news/",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "News | InvestHK",
+      "bytes": 129017,
+      "elapsed_seconds": 1.778,
+      "method": "httpx",
+      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Life & Health ",
+      "evidence_path": "evidence_cache/5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad.txt",
+      "content_hash": "5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.investhk.gov.hk/en/news/",
+          "final_url": "https://www.investhk.gov.hk/en/news/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 129017,
+          "text_chars": 7790,
+          "title": "News | InvestHK",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://www.gsma.com/newsroom/press-releases/",
+      "final_url": "https://www.gsma.com/newsroom/press-releases/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Press Releases - Newsroom",
+      "bytes": 111058,
+      "elapsed_seconds": 1.966,
+      "method": "httpx",
+      "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
+      "evidence_path": "evidence_cache/ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41.txt",
+      "content_hash": "ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.gsma.com/newsroom/press-releases/",
+          "final_url": "https://www.gsma.com/newsroom/press-releases/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 111058,
+          "text_chars": 4332,
+          "title": "Press Releases - Newsroom",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "industry_association",
+      "jurisdiction": "international",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://www.totaltele.com/",
+      "final_url": "https://totaltele.com/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Total Telecom - News, analysis and events for global telecoms",
+      "bytes": 647458,
+      "elapsed_seconds": 2.011,
+      "method": "httpx",
+      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Comarch User Group 2026: Navigating the 2% Growth Trap with Agentic AI and Composable Architecture Posted by Rosie Foster | Jun 22, 2026 Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre",
+      "evidence_path": "evidence_cache/c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872.txt",
+      "content_hash": "c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.totaltele.com/",
+          "final_url": "https://totaltele.com/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 647458,
+          "text_chars": 7497,
+          "title": "Total Telecom - News, analysis and events for global telecoms",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "media",
+      "jurisdiction": "UK",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+      "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+      "bytes": 407011,
+      "elapsed_seconds": 3.017,
+      "method": "httpx",
+      "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
+      "evidence_path": "evidence_cache/f65d210c6070fa0ae3638a703ac9fdee9f5921e2251d664cb427d750a5333add.txt",
+      "content_hash": "f65d210c6070fa0ae3638a703ac9fdee9f5921e2251d664cb427d750a5333add",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 407011,
+          "text_chars": 8464,
+          "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+      "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "United States - Deutsche Telekom Annual Report 2025",
+      "bytes": 221720,
+      "elapsed_seconds": 5.376,
+      "method": "httpx",
+      "text_sample": "United States - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technology Segment structure Group strategy Group strateg",
+      "evidence_path": "evidence_cache/c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076.txt",
+      "content_hash": "c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+          "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 221720,
+          "text_chars": 30108,
+          "title": "United States - Deutsche Telekom Annual Report 2025",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "exchange_public_filing",
+      "jurisdiction": "DE",
+      "tos_status": "public_disclosure",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+      "final_url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025",
+      "bytes": 252320,
+      "elapsed_seconds": 3.63,
+      "method": "httpx",
+      "text_sample": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technolo",
+      "evidence_path": "evidence_cache/f736ec9678288e02585af10a746c273b73c5680e7ff8b8922353444c4d2e7769.txt",
+      "content_hash": "f736ec9678288e02585af10a746c273b73c5680e7ff8b8922353444c4d2e7769",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+          "final_url": "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 252320,
+          "text_chars": 40041,
+          "title": "Changes in the composition of the Group and other transactions - Deutsche Telekom Annual Report 2025",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "exchange_public_filing",
+      "jurisdiction": "DE",
+      "tos_status": "public_disclosure",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    }
+  ],
+  "live_fetch_status": "ok",
+  "live_fetch_success_count": 6,
+  "evidence_fallback_count": 0,
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-24T03:33:52.038353+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:52.038641+08:00"
+}

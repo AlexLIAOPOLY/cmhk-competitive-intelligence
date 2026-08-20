@@ -1,0 +1,315 @@
+{
+  "row": 33,
+  "need": "地缘政治与经济、重大政策/声明等",
+  "status": "ok",
+  "object": "政治新闻",
+  "entities": [
+    "政治新闻"
+  ],
+  "selected_fields": [
+    "地缘政治",
+    "经济",
+    "重大政策/声明"
+  ],
+  "ignored_selected_fields": [],
+  "source_urls": [
+    "https://www.gov.cn/",
+    "https://english.www.gov.cn/",
+    "https://www.mfa.gov.cn/eng/"
+  ],
+  "attempted_urls": [
+    "https://www.gov.cn/",
+    "https://english.www.gov.cn/",
+    "https://www.mfa.gov.cn/eng/"
+  ],
+  "extracted": {
+    "地缘政治": "to China Signs Convention on the Establishment of the International Organization for Mediation in Beijing June 22, 2026 Director-General of the Department of Asian Affairs of the Foreign Ministry Holds Work Consultation ",
+    "经济": "re>> Chinese president holds talks with Myanmar counterpart on boosting cooperation Xi's article on boosting education, sci-tech, talent building to be published A look at China's economy in May, 2026 NEWS Chinese premie",
+    "重大政策/声明": "MINISTRIES INDIVIDUALS A Guide to Working and Living in China as Business Expatriates (2025 Edition) Announcement on the Implementation of Electronic Border Management Area Permit Policy Interpretation of the Online Acco"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "政治新闻",
+      "status": "ok",
+      "source_urls": [
+        "https://www.gov.cn/",
+        "https://english.www.gov.cn/",
+        "https://www.mfa.gov.cn/eng/"
+      ],
+      "extracted": {
+        "地缘政治": "to China Signs Convention on the Establishment of the International Organization for Mediation in Beijing June 22, 2026 Director-General of the Department of Asian Affairs of the Foreign Ministry Holds Work Consultation ",
+        "经济": "re>> Chinese president holds talks with Myanmar counterpart on boosting cooperation Xi's article on boosting education, sci-tech, talent building to be published A look at China's economy in May, 2026 NEWS Chinese premie",
+        "重大政策/声明": "MINISTRIES INDIVIDUALS A Guide to Working and Living in China as Business Expatriates (2025 Edition) Announcement on the Implementation of Electronic Border Management Area Permit Policy Interpretation of the Online Acco"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 33,
+          "url": "https://www.gov.cn/",
+          "final_url": "https://www.gov.cn/",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "中国政府网_中央人民政府门户网站",
+          "bytes": 69328,
+          "elapsed_seconds": 0.148,
+          "method": "httpx",
+          "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 《习近平党建文选》第一卷、第二卷出版发行 收入习近平同志2012年11月至2026年2月期间关于党的建设最重要、最基本的著作 | 部分著作是第一次公开发表 | 主要篇目介绍 | 视频 《习近平党建文选》第一卷、第二卷出版发行 收入习近平同志2012年11月至2026年2月期间关于党的建设最重要、最基本的著作 | 部分著作是第一次公开发表 | 主要篇目介绍 | 视频 更多 >> 更多>> 习近平同缅甸总统敏昂莱会谈 习近平：一体推进教育科技人才发展 端午假期交通出行人数近6.48亿人次 要闻 李强会见几内亚总理 | 会见哈萨克斯坦总理 | 会见韩国总理 | 会见蒙古国总理 | 会见黑山总理 全国政协十四届常委会第十七次会议开幕 王沪宁主持 丁薛祥作报告 何立峰：加快完善产业创新体系 持续推动外贸稳规模优结构 张国清：突出战略使命 聚焦主责主业 坚定不移深化国资国企改革 刘国中：打造生物医药新兴支柱产业 培育发展脑机接口未来产业 王小洪：坚持综合施策系统治理 纵深推进新时代禁毒人民战争 最新政策 国务院关于印发《实施就业优先战略“十五五”规划》的通知 国务院关于浙江、福建、山东等3省国家级自然保护区和国家级风景名胜区整合优化方案的批复 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于对外投资的规定 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 两部门负责人就《实施就业优先战略“十五五”规划》答记者问 解读：精准发力建好“六张网”——现代物流网怎么建 解读：7项改革举措，推动企业购置不动产转移登记“高效办成一件事” 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 科技创新和产业创新融合发展步伐加快 新动能引领作用不断增强 前5月消费品以旧换新惠及超1.1亿人次 今年第三批资",
+          "evidence_path": "evidence_cache/e3f67dda0df8522b5ba775c24a4b2bca68d9a102718316c88853e1c97b281ab8.txt",
+          "content_hash": "e3f67dda0df8522b5ba775c24a4b2bca68d9a102718316c88853e1c97b281ab8",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.gov.cn/",
+              "final_url": "https://www.gov.cn/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 69328,
+              "text_chars": 2858,
+              "title": "中国政府网_中央人民政府门户网站",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "CN",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "政治新闻"
+          ]
+        },
+        {
+          "row": 33,
+          "url": "https://english.www.gov.cn/",
+          "final_url": "https://english.www.gov.cn/",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "The State Council of the People's Republic of China",
+          "bytes": 59526,
+          "elapsed_seconds": 0.184,
+          "method": "httpx",
+          "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Selected works of Xi Jinping on Party building published More>> Chinese president holds talks with Myanmar counterpart on boosting cooperation Xi's article on boosting education, sci-tech, talent building to be published A look at China's economy in May, 2026 NEWS Chinese premier meets ROK prime minister Chinese premier meets Mongolian PM Chinese premier meets Montenegro's PM Senior political advisors meet to discuss China's high-quality development Chinese vice premier urges improving industrial innovation system, stabilizing foreign trade Chinese vice premier urges deeper reform of state-owned capital, SOEs Chinese vice premier stresses developing biomedicine, brain-computer interface industries POLICIES China to further implement employment-first strategy in 2026-2030 China to integrate,",
+          "evidence_path": "evidence_cache/94a3493c92c0d77bde8e47b2d8c4c4072872fc2571663339d859be94969a5c04.txt",
+          "content_hash": "94a3493c92c0d77bde8e47b2d8c4c4072872fc2571663339d859be94969a5c04",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://english.www.gov.cn/",
+              "final_url": "https://english.www.gov.cn/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 59526,
+              "text_chars": 4646,
+              "title": "The State Council of the People's Republic of China",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "CN",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "政治新闻"
+          ]
+        },
+        {
+          "row": 33,
+          "url": "https://www.mfa.gov.cn/eng/",
+          "final_url": "https://www.mfa.gov.cn/eng/",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Ministry of Foreign Affairs of the People's Republic of China",
+          "bytes": 46580,
+          "elapsed_seconds": 3.549,
+          "method": "httpx",
+          "text_sample": "Ministry of Foreign Affairs of the People's Republic of China IPC Visas English EN 简体中文 Français Русский Español عربي Ministry of Foreign Affairs People’s Republic of China The Ministry Main Responsibilities The Minister Principal Officials Departments Related Agencies News Top Stories Speeches Diplomatic Schedule New Ambassadors MFA News Spokesperson’s Remarks News from Overseas Missions Resources Communiqués Foreign Policies In Focus Diplomatic History Diplomatic Figures Protocol Affairs Overseas Missions Chinese Embassies Chinese Consulates General Chinese Missions to International Organizations and Representative Offices Abroad Countries and Regions Asia Africa Europe North America South America Oceania ABOUT CHINA HOME THE MINISTRY Main Responsibilities The Minister Principal Officials Departments Related Agencies NEWS Top Stories Speeches Diplomatic Schedule New Ambassadors MFA New",
+          "evidence_path": "evidence_cache/b0bc5b5e75594ffd65d8c6339763aa404b23ff9a2ac06559379fe6a58815b9db.txt",
+          "content_hash": "b0bc5b5e75594ffd65d8c6339763aa404b23ff9a2ac06559379fe6a58815b9db",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.mfa.gov.cn/eng/",
+              "final_url": "https://www.mfa.gov.cn/eng/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 46580,
+              "text_chars": 7770,
+              "title": "Ministry of Foreign Affairs of the People's Republic of China",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "CN",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "政治新闻"
+          ]
+        }
+      ],
+      "confidence_score": 0.3,
+      "verification_reason": "The Extracted Data contains fragments that are partially present in the Source Text, but the content is severely misaligned: the '地缘政治' field conflates unrelated items (e.g., 'to China Signs Convention' does not appear), the '经济' field is a jumbled mix of headlines, and the '重大政策/声明' field includes generic ministry listings without clear policy text. Overall, the extracted information is incomplete, out of order, and does not faithfully represent the Source Text."
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 33,
+      "url": "https://www.gov.cn/",
+      "final_url": "https://www.gov.cn/",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "中国政府网_中央人民政府门户网站",
+      "bytes": 69328,
+      "elapsed_seconds": 0.148,
+      "method": "httpx",
+      "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 《习近平党建文选》第一卷、第二卷出版发行 收入习近平同志2012年11月至2026年2月期间关于党的建设最重要、最基本的著作 | 部分著作是第一次公开发表 | 主要篇目介绍 | 视频 《习近平党建文选》第一卷、第二卷出版发行 收入习近平同志2012年11月至2026年2月期间关于党的建设最重要、最基本的著作 | 部分著作是第一次公开发表 | 主要篇目介绍 | 视频 更多 >> 更多>> 习近平同缅甸总统敏昂莱会谈 习近平：一体推进教育科技人才发展 端午假期交通出行人数近6.48亿人次 要闻 李强会见几内亚总理 | 会见哈萨克斯坦总理 | 会见韩国总理 | 会见蒙古国总理 | 会见黑山总理 全国政协十四届常委会第十七次会议开幕 王沪宁主持 丁薛祥作报告 何立峰：加快完善产业创新体系 持续推动外贸稳规模优结构 张国清：突出战略使命 聚焦主责主业 坚定不移深化国资国企改革 刘国中：打造生物医药新兴支柱产业 培育发展脑机接口未来产业 王小洪：坚持综合施策系统治理 纵深推进新时代禁毒人民战争 最新政策 国务院关于印发《实施就业优先战略“十五五”规划》的通知 国务院关于浙江、福建、山东等3省国家级自然保护区和国家级风景名胜区整合优化方案的批复 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于对外投资的规定 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 两部门负责人就《实施就业优先战略“十五五”规划》答记者问 解读：精准发力建好“六张网”——现代物流网怎么建 解读：7项改革举措，推动企业购置不动产转移登记“高效办成一件事” 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 科技创新和产业创新融合发展步伐加快 新动能引领作用不断增强 前5月消费品以旧换新惠及超1.1亿人次 今年第三批资",
+      "evidence_path": "evidence_cache/e3f67dda0df8522b5ba775c24a4b2bca68d9a102718316c88853e1c97b281ab8.txt",
+      "content_hash": "e3f67dda0df8522b5ba775c24a4b2bca68d9a102718316c88853e1c97b281ab8",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.gov.cn/",
+          "final_url": "https://www.gov.cn/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 69328,
+          "text_chars": 2858,
+          "title": "中国政府网_中央人民政府门户网站",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "政治新闻"
+      ]
+    },
+    {
+      "row": 33,
+      "url": "https://english.www.gov.cn/",
+      "final_url": "https://english.www.gov.cn/",
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "title": "The State Council of the People's Republic of China",
+      "bytes": 59526,
+      "elapsed_seconds": 0.184,
+      "method": "httpx",
+      "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Selected works of Xi Jinping on Party building published More>> Chinese president holds talks with Myanmar counterpart on boosting cooperation Xi's article on boosting education, sci-tech, talent building to be published A look at China's economy in May, 2026 NEWS Chinese premier meets ROK prime minister Chinese premier meets Mongolian PM Chinese premier meets Montenegro's PM Senior political advisors meet to discuss China's high-quality development Chinese vice premier urges improving industrial innovation system, stabilizing foreign trade Chinese vice premier urges deeper reform of state-owned capital, SOEs Chinese vice premier stresses developing biomedicine, brain-computer interface industries POLICIES China to further implement employment-first strategy in 2026-2030 China to integrate,",
+      "evidence_path": "evidence_cache/94a3493c92c0d77bde8e47b2d8c4c4072872fc2571663339d859be94969a5c04.txt",
+      "content_hash": "94a3493c92c0d77bde8e47b2d8c4c4072872fc2571663339d859be94969a5c04",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://english.www.gov.cn/",
+          "final_url": "https://english.www.gov.cn/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 59526,
+          "text_chars": 4646,
+          "title": "The State Council of the People's Republic of China",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "政治新闻"
+      ]
+    },
+    {
+      "row": 33,
+      "url": "https://www.mfa.gov.cn/eng/",
+      "final_url": "https://www.mfa.gov.cn/eng/",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Ministry of Foreign Affairs of the People's Republic of China",
+      "bytes": 46580,
+      "elapsed_seconds": 3.549,
+      "method": "httpx",
+      "text_sample": "Ministry of Foreign Affairs of the People's Republic of China IPC Visas English EN 简体中文 Français Русский Español عربي Ministry of Foreign Affairs People’s Republic of China The Ministry Main Responsibilities The Minister Principal Officials Departments Related Agencies News Top Stories Speeches Diplomatic Schedule New Ambassadors MFA News Spokesperson’s Remarks News from Overseas Missions Resources Communiqués Foreign Policies In Focus Diplomatic History Diplomatic Figures Protocol Affairs Overseas Missions Chinese Embassies Chinese Consulates General Chinese Missions to International Organizations and Representative Offices Abroad Countries and Regions Asia Africa Europe North America South America Oceania ABOUT CHINA HOME THE MINISTRY Main Responsibilities The Minister Principal Officials Departments Related Agencies NEWS Top Stories Speeches Diplomatic Schedule New Ambassadors MFA New",
+      "evidence_path": "evidence_cache/b0bc5b5e75594ffd65d8c6339763aa404b23ff9a2ac06559379fe6a58815b9db.txt",
+      "content_hash": "b0bc5b5e75594ffd65d8c6339763aa404b23ff9a2ac06559379fe6a58815b9db",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.mfa.gov.cn/eng/",
+          "final_url": "https://www.mfa.gov.cn/eng/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 46580,
+          "text_chars": 7770,
+          "title": "Ministry of Foreign Affairs of the People's Republic of China",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "政治新闻"
+      ]
+    }
+  ],
+  "live_fetch_status": "ok",
+  "live_fetch_success_count": 3,
+  "evidence_fallback_count": 0,
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-24T03:33:50.551327+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:50.551503+08:00"
+}

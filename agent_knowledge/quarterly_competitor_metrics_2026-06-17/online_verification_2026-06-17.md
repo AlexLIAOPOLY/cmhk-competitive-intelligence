@@ -1,0 +1,629 @@
+# 季度/半年度数据核验状态（2026-06-17）
+
+本文件记录当前季度包的核验边界。已完成在线标准化季度/半年度表抓取、官方来源入口登记，并开始把官方公告逐项交叉核验写回数据行。
+
+## 当前判断
+
+- 中国移动、中国电信、中国联通、中国铁塔：2026Q1 首批关键指标已用官方一季报、上交所公告或港交所/IRAsia 公告交叉核验。
+- 中国移动 2025Q2：收入、通信服务收入、EBITDA、归母净利润、经营现金流和现金流口径资本开支已用官网单季度数据、港交所中报和上交所Q1报告做多源复算；发现标准化表 EBITDA 和通信服务收入与官方值冲突。
+- 中国移动 2025Q3：9项关键指标已用官网单季度表、港交所前三季度公告、公司官网公告镜像和中报复核；标准化表的通信服务收入和 EBITDA 与官方复算值冲突。
+- 中国移动 2025Q4：8项关键指标已用年报/全年业绩材料、港交所前三季度公告和中文公告摘要复核；标准化表的主营业务收入、EBITDA、现金及现金等价物与官方复算/时点值冲突。
+- 中国联通：当前官方核验采用 600050 A 股一季报口径；如问题要求 0762.HK 红筹公司纯口径，仍需读取中国联通香港官网 FAQ 或公告交叉确认。
+- HKT、3HK、SmarTone、HKBN、i-CABLE：公开披露更接近半年度/年度，数据包按 H1/H2 标记，不称为季度。
+- HGC：非上市主体，未发现公开完整季度/半年度财务表。
+- 云厂商：需要从官方 earnings release、10-Q、半年报或年报 segment/product-line 表抽取云分部；不能用母公司季度总表替代。
+
+## 核验状态计数
+
+- official_match: 741
+- official_conflict: 400
+- official_only: 131
+- source_gap_confirmed: 117
+- official_source_registered: 0
+- needs_official_row_crosscheck: 0
+
+## 已发现口径冲突
+
+- 中国移动 Q1 2023 EBITDA：标准化表 `79,005`，官方值 `79900 millions CNY`。标准化表 79005 与官方值 79900 不一致，差异 -895.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2023
+- 中国移动 Q2 2023 EBITDA：标准化表 `105,278`，官方值 `103600 millions CNY`。标准化表 105278 与官方值 103600 不一致，差异 1678.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2023
+- 中国移动 Q3 2023 EBITDA：标准化表 `85,406`，官方值 `85000 millions CNY`。标准化表 85406 与官方值 85000 不一致，差异 406.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2023
+- 中国移动 Q1 2023 现金及等价物：标准化表 `225,812`，官方值 `193648 millions CNY`。标准化表 225812 与官方值 193648 不一致，差异 32164.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2023-04-21/1216490015.PDF
+- 中国移动 Q1 2023 经营利润/营业利润：标准化表 `28,986`，官方值 `36141 millions CNY`。标准化表 28986 与官方值 36141 不一致，差异 -7155.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2023-04-21/1216490015.PDF
+- 中国移动 Q1 2023 经营利润率：标准化表 `11.56%`，官方值 `14.414 percent`。标准化表 11.56 与官方值 14.414 不一致，差异 -2.854；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2023-04-21/1216490015.PDF
+- 中国移动 Q2 2023 现金及等价物：标准化表 `227,983`，官方值 `204928 millions CNY`。标准化表 227983 与官方值 204928 不一致，差异 23055.000；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9397960&stockid=600941
+- 中国移动 Q2 2023 毛利：标准化表 `91,345`，官方值 `91583 millions CNY`。标准化表 91345 与官方值 91583 不一致，差异 -238.000；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9397960&stockid=600941
+- 中国移动 Q2 2023 经营利润/营业利润：标准化表 `53,693`，官方值 `61859 millions CNY`。标准化表 53693 与官方值 61859 不一致，差异 -8166.000；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9397960&stockid=600941
+- 中国移动 Q2 2023 经营利润率：标准化表 `19.18%`，官方值 `22.095 percent`。标准化表 19.18 与官方值 22.095 不一致，差异 -2.915；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9397960&stockid=600941
+- 中国移动 Q3 2023 现金及等价物：标准化表 `225,285`，官方值 `177383 millions CNY`。标准化表 225285 与官方值 177383 不一致，差异 47902.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600941&id=9580251
+- 中国移动 Q3 2023 毛利：标准化表 `70,279`，官方值 `70041 millions CNY`。标准化表 70279 与官方值 70041 不一致，差异 238.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600941&id=9580251
+- 中国移动 Q3 2023 经营利润/营业利润：标准化表 `35,387`，官方值 `38912 millions CNY`。标准化表 35387 与官方值 38912 不一致，差异 -3525.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600941&id=9580251
+- 中国移动 Q3 2023 经营利润率：标准化表 `14.45%`，官方值 `15.893 percent`。标准化表 14.45 与官方值 15.893 不一致，差异 -1.443；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600941&id=9580251
+- 中国移动 Q4 2023 现金及等价物：标准化表 `178,772`，官方值 `141559 millions CNY`。标准化表 178772 与官方值 141559 不一致，差异 37213.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9887182&stockid=600941
+- 中国移动 Q4 2023 毛利：标准化表 `61,752`，官方值 `61998 millions CNY`。标准化表 61752 与官方值 61998 不一致，差异 -246.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9887182&stockid=600941
+- 中国移动 Q4 2023 经营利润/营业利润：标准化表 `21,283`，官方值 `31205 millions CNY`。标准化表 21283 与官方值 31205 不一致，差异 -9922.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9887182&stockid=600941
+- 中国移动 Q4 2023 经营利润率：标准化表 `9.11%`，官方值 `13.35 percent`。标准化表 9.11 与官方值 13.35 不一致，差异 -4.240；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9887182&stockid=600941
+- 中国移动 Q1 2024 EBITDA：标准化表 `82,657`，官方值 `78000 millions CNY`。标准化表 82657 与官方值 78000 不一致，差异 4657.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q1 2024 EBITDA率：标准化表 `31.34%`，官方值 `29.58 percent`。标准化表 31.34 与官方值 29.58 不一致，差异 1.760；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q2 2024 经营收入/运营收入：标准化表 `199,882`，官方值 `283000 millions CNY`。标准化表 199882 与官方值 283000 不一致，差异 -83118.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q2 2024 EBITDA：标准化表 `103,990`，官方值 `104300 millions CNY`。标准化表 103990 与官方值 104300 不一致，差异 -310.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q3 2024 经营收入/运营收入：标准化表 `327,869`，官方值 `244800 millions CNY`。标准化表 327869 与官方值 244800 不一致，差异 83069.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q3 2024 EBITDA：标准化表 `79,940`，官方值 `80800 millions CNY`。标准化表 79940 与官方值 80800 不一致，差异 -860.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q4 2024 EBITDA：标准化表 `72,184`，官方值 `70600 millions CNY`。标准化表 72184 与官方值 70600 不一致，差异 1584.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动 Q2 2024 现金及等价物：标准化表 `172,891`，官方值 `132073 millions CNY`。标准化表 172891 与官方值 132073 不一致，差异 40818.000；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10365602&stockid=600941
+- 中国移动 Q2 2024 经营利润/营业利润：标准化表 `55,722`，官方值 `64372 millions CNY`。标准化表 55722 与官方值 64372 不一致，差异 -8650.000；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10365602&stockid=600941
+- 中国移动 Q2 2024 经营利润率：标准化表 `19.69%`，官方值 `22.743 percent`。标准化表 19.69 与官方值 22.743 不一致，差异 -3.053；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10365602&stockid=600941
+- 中国移动 Q3 2024 现金及等价物：标准化表 `168,281`，官方值 `121279 millions CNY`。标准化表 168281 与官方值 121279 不一致，差异 47002.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动 Q3 2024 毛利：标准化表 `190,904`，官方值 `75409 millions CNY`。标准化表 190904 与官方值 75409 不一致，差异 115495.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动 Q3 2024 毛利率：标准化表 `78.01%`，官方值 `30.815 percent`。标准化表 78.01 与官方值 30.815 不一致，差异 47.195；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动 Q3 2024 经营利润/营业利润：标准化表 `32,308`，官方值 `38973 millions CNY`。标准化表 32308 与官方值 38973 不一致，差异 -6665.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动 Q3 2024 经营利润率：标准化表 `13.20%`，官方值 `15.926 percent`。标准化表 13.2 与官方值 15.926 不一致，差异 -2.726；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动 Q4 2024 现金及等价物：标准化表 `242,275`，官方值 `167309 millions CNY`。标准化表 242275 与官方值 167309 不一致，差异 74966.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动 Q4 2024 毛利：标准化表 `-57,402`，官方值 `58119 millions CNY`。标准化表 -57402 与官方值 58119 不一致，差异 -115521.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动 Q4 2024 毛利率：标准化表 `-23.03%`，官方值 `23.313 percent`。标准化表 -23.03 与官方值 23.313 不一致，差异 -46.343；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动 Q4 2024 经营利润/营业利润：标准化表 `25,251`，官方值 `34805 millions CNY`。标准化表 25251 与官方值 34805 不一致，差异 -9554.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动 Q4 2024 经营利润率：标准化表 `10.13%`，官方值 `13.961 percent`。标准化表 10.13 与官方值 13.961 不一致，差异 -3.831；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动 Q1 2026 现金及等价物：标准化表 `205,262`，官方值 `155287 millions CNY`。标准化表 205262 与官方值 155287 不一致，差异 49975.000；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国移动 Q1 2026 经营利润/营业利润：标准化表 `29,251`，官方值 `37300 millions CNY`。标准化表 29251 与官方值 37300 不一致，差异 -8049.000；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国移动 Q1 2026 经营利润率：标准化表 `10.98%`，官方值 `13.997 percent`。标准化表 10.98 与官方值 13.997 不一致，差异 -3.017；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国移动 Q1 2024 现金及等价物：标准化表 `199,813`，官方值 `166026 millions CNY`。标准化表 199813 与官方值 166026 不一致，差异 33787.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-04-23/1219737430.PDF
+- 中国移动 Q1 2024 经营利润/营业利润：标准化表 `30,874`，官方值 `38134 millions CNY`。标准化表 30874 与官方值 38134 不一致，差异 -7260.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-04-23/1219737430.PDF
+- 中国移动 Q1 2024 经营利润率：标准化表 `11.71%`，官方值 `14.461 percent`。标准化表 11.71 与官方值 14.461 不一致，差异 -2.751；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2024-04-23/1219737430.PDF
+- 中国电信 Q1 2023 EBITDA率：标准化表 `25.94%`，官方值 `28.59 percent`。标准化表 25.94 与官方值 28.59 不一致，差异 -2.650；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2023/int.pdf
+- 中国电信 Q2 2023 EBITDA率：标准化表 `30.34%`，官方值 `33.59 percent`。标准化表 30.34 与官方值 33.59 不一致，差异 -3.250；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2023/int.pdf
+- 中国电信 Q3 2023 EBITDA率：标准化表 `26.14%`，官方值 `28.39 percent`。标准化表 26.14 与官方值 28.39 不一致，差异 -2.250；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2023/int3q.pdf
+- 中国电信 Q4 2023 EBITDA：标准化表 `6,714`，官方值 `31182 millions CNY`。标准化表 6714 与官方值 31182 不一致，差异 -24468.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/annual/2023/res.pdf
+- 中国电信 Q4 2023 EBITDA率：标准化表 `5.19%`，官方值 `27.06 percent`。标准化表 5.19 与官方值 27.06 不一致，差异 -21.870；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/annual/2023/res.pdf
+- 中国电信 Q2 2023 自由现金流：标准化表 `23,507`，官方值 `23630.885 millions CNY`。标准化表 23507 与官方值 23630.9 不一致，差异 -123.885；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信 Q2 2023 毛利：标准化表 `71,291`，官方值 `41311.688 millions CNY`。标准化表 71291 与官方值 41311.7 不一致，差异 29979.312；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信 Q2 2023 毛利率：标准化表 `54.81%`，官方值 `32.043 percent`。标准化表 54.81 与官方值 32.043 不一致，差异 22.767；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信 Q2 2023 经营现金流：标准化表 `37,321`，官方值 `37448.691 millions CNY`。标准化表 37321 与官方值 37448.7 不一致，差异 -127.691；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信 Q2 2023 经营利润/营业利润：标准化表 `15,506`，官方值 `16517.355 millions CNY`。标准化表 15506 与官方值 16517.4 不一致，差异 -1011.355；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信 Q3 2023 资本开支：标准化表 `-32,246`，官方值 `-32394.018 millions CNY`。标准化表 -32246 与官方值 -32394 不一致，差异 148.018；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 自由现金流：标准化表 `14,548`，官方值 `14932.899 millions CNY`。标准化表 14548 与官方值 14932.9 不一致，差异 -384.899；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 毛利：标准化表 `60,460`，官方值 `35216.679 millions CNY`。标准化表 60460 与官方值 35216.7 不一致，差异 25243.321；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 毛利率：标准化表 `48.92%`，官方值 `28.766 percent`。标准化表 48.92 与官方值 28.766 不一致，差异 20.154；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 经营现金流：标准化表 `46,794`，官方值 `47326.917 millions CNY`。标准化表 46794 与官方值 47326.9 不一致，差异 -532.917；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 经营利润/营业利润：标准化表 `8,329`，官方值 `9536.836 millions CNY`。标准化表 8329 与官方值 9536.84 不一致，差异 -1207.836；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q3 2023 经营利润率：标准化表 `6.74%`，官方值 `7.79 percent`。标准化表 6.74 与官方值 7.79 不一致，差异 -1.050；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信 Q4 2023 资本开支：标准化表 `-29,302`，官方值 `-29454.075 millions CNY`。标准化表 -29302 与官方值 -29454.1 不一致，差异 152.075；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 自由现金流：标准化表 `-4,124`，官方值 `-3821.197 millions CNY`。标准化表 -4124 与官方值 -3821.2 不一致，差异 -302.803；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 毛利：标准化表 `64,261`，官方值 `31647.098 millions CNY`。标准化表 64261 与官方值 31647.1 不一致，差异 32613.902；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 毛利率：标准化表 `49.70%`，官方值 `24.97 percent`。标准化表 49.7 与官方值 24.97 不一致，差异 24.730；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 经营现金流：标准化表 `25,178`，官方值 `25632.878 millions CNY`。标准化表 25178 与官方值 25632.9 不一致，差异 -454.878；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 经营利润/营业利润：标准化表 `3,291`，官方值 `5838.459 millions CNY`。标准化表 3291 与官方值 5838.46 不一致，差异 -2547.459；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q4 2023 经营利润率：标准化表 `2.54%`，官方值 `4.607 percent`。标准化表 2.54 与官方值 4.607 不一致，差异 -2.067；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信 Q1 2024 EBITDA率：标准化表 `25.91%`，官方值 `28.23 percent`。标准化表 25.91 与官方值 28.23 不一致，差异 -2.320；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q2 2024 EBITDA率：标准化表 `31.46%`，官方值 `34.21 percent`。标准化表 31.46 与官方值 34.21 不一致，差异 -2.750；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q3 2024 营业收入/收益：标准化表 `123,957`，官方值 `126707 millions CNY`。标准化表 123957 与官方值 126707 不一致，差异 -2750.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q3 2024 EBITDA：标准化表 `34,886`，官方值 `34231 millions CNY`。标准化表 34886 与官方值 34231 不一致，差异 655.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q3 2024 EBITDA率：标准化表 `28.14%`，官方值 `29.34 percent`。标准化表 28.14 与官方值 29.34 不一致，差异 -1.200；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q4 2024 营业收入/收益：标准化表 `131,601`，官方值 `134699 millions CNY`。标准化表 131601 与官方值 134699 不一致，差异 -3098.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q4 2024 EBITDA：标准化表 `23,175`，官方值 `29824 millions CNY`。标准化表 23175 与官方值 29824 不一致，差异 -6649.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q4 2024 EBITDA率：标准化表 `17.61%`，官方值 `25.03 percent`。标准化表 17.61 与官方值 25.03 不一致，差异 -7.420；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信 Q2 2024 资本开支：标准化表 `-20,274`，官方值 `-20321.562 millions CNY`。标准化表 -20274 与官方值 -20321.6 不一致，差异 47.562；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q2 2024 自由现金流：标准化表 `18,109`，官方值 `17157.213 millions CNY`。标准化表 18109 与官方值 17157.2 不一致，差异 951.787；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q2 2024 毛利：标准化表 `71,959`，官方值 `42467.912 millions CNY`。标准化表 71959 与官方值 42467.9 不一致，差异 29491.088；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q2 2024 毛利率：标准化表 `54.30%`，官方值 `32.3 percent`。标准化表 54.3 与官方值 32.3 不一致，差异 22.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q2 2024 经营现金流：标准化表 `38,383`，官方值 `37478.775 millions CNY`。标准化表 38383 与官方值 37478.8 不一致，差异 904.225；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q2 2024 经营利润/营业利润：标准化表 `16,708`，官方值 `17079.587 millions CNY`。标准化表 16708 与官方值 17079.6 不一致，差异 -371.587；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信 Q3 2024 资本开支：标准化表 `-23,305`，官方值 `-23255.101 millions CNY`。标准化表 -23305 与官方值 -23255.1 不一致，差异 -49.899；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 现金及等价物：标准化表 `-`，官方值 `73337.524 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 自由现金流：标准化表 `15,408`，官方值 `15816.637 millions CNY`。标准化表 15408 与官方值 15816.6 不一致，差异 -408.637；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 毛利：标准化表 `-19,759`，官方值 `35538.84 millions CNY`。标准化表 -19759 与官方值 35538.8 不一致，差异 -55297.840；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 毛利率：标准化表 `-15.94%`，官方值 `28.207 percent`。标准化表 -15.94 与官方值 28.207 不一致，差异 -44.147；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 经营现金流：标准化表 `38,712`，官方值 `39071.737 millions CNY`。标准化表 38712 与官方值 39071.7 不一致，差异 -359.737；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 经营利润/营业利润：标准化表 `9,902`，官方值 `9635.415 millions CNY`。标准化表 9902 与官方值 9635.42 不一致，差异 266.585；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 收入同比增长：标准化表 `0.30%`，官方值 `2.917 percent`。标准化表 0.3 与官方值 2.917 不一致，差异 -2.617；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 总资产：标准化表 `-`，官方值 `865467.894 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q3 2024 总债务：标准化表 `-`，官方值 `61335.099 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信 Q4 2024 现金及等价物：标准化表 `102,009`，官方值 `82206.794 millions CNY`。标准化表 102009 与官方值 82206.8 不一致，差异 19802.206；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信 Q4 2024 经营利润/营业利润：标准化表 `1,955`，官方值 `3565.916 millions CNY`。标准化表 1955 与官方值 3565.92 不一致，差异 -1610.916；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信 Q4 2024 经营利润率：标准化表 `1.49%`，官方值 `2.71 percent`。标准化表 1.49 与官方值 2.71 不一致，差异 -1.220；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信 Q4 2024 收入同比增长：标准化表 `1.78%`，官方值 `3.835 percent`。标准化表 1.78 与官方值 3.835 不一致，差异 -2.055；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信 Q4 2024 总债务：标准化表 `69,355`，官方值 `60873.17 millions CNY`。标准化表 69355 与官方值 60873.2 不一致，差异 8481.830；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信 Q1 2023 毛利：标准化表 `64,323`，官方值 `38245.006 millions CNY`。标准化表 64323 与官方值 38245 不一致，差异 26077.994；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca230421b.pdf
+- 中国电信 Q1 2023 毛利率：标准化表 `49.26%`，官方值 `29.475 percent`。标准化表 49.26 与官方值 29.475 不一致，差异 19.785；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca230421b.pdf
+- 中国电信 Q1 2023 经营利润/营业利润：标准化表 `10,002`，官方值 `10676.455 millions CNY`。标准化表 10002 与官方值 10676.5 不一致，差异 -674.455；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca230421b.pdf
+- 中国电信 Q1 2026 自由现金流：标准化表 `8,367`，官方值 `8522.574 millions CNY`。标准化表 8367 与官方值 8522.57 不一致，差异 -155.574；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2026 毛利：标准化表 `63,994`，官方值 `36952.797 millions CNY`。标准化表 63994 与官方值 36952.8 不一致，差异 27041.203；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2026 毛利率：标准化表 `48.49%`，官方值 `28.124 percent`。标准化表 48.49 与官方值 28.124 不一致，差异 20.366；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2026 总债务：标准化表 `45,555`，官方值 `45696.975 millions CNY`。标准化表 45555 与官方值 45697 不一致，差异 -141.975；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2025 毛利：标准化表 `67,394`，官方值 `39637.473 millions CNY`。标准化表 67394 与官方值 39637.5 不一致，差异 27756.527；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf
+- 中国电信 Q1 2025 毛利率：标准化表 `49.74%`，官方值 `29.468 percent`。标准化表 49.74 与官方值 29.468 不一致，差异 20.272；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf
+- 中国电信 Q2 2025 毛利：标准化表 `75,349`，官方值 `43039.217 millions CNY`。标准化表 75349 与官方值 43039.2 不一致，差异 32309.783；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250815.pdf
+- 中国电信 Q2 2025 毛利率：标准化表 `55.42%`，官方值 `31.901 percent`。标准化表 55.42 与官方值 31.901 不一致，差异 23.519；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250815.pdf
+- 中国电信 Q3 2025 毛利：标准化表 `-23,231`，官方值 `36835.687 millions CNY`。标准化表 -23231 与官方值 36835.7 不一致，差异 -60066.687；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca251022.pdf
+- 中国电信 Q3 2025 毛利率：标准化表 `-18.92%`，官方值 `29.504 percent`。标准化表 -18.92 与官方值 29.504 不一致，差异 -48.424；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca251022.pdf
+- 中国电信 Q4 2025 现金及等价物：标准化表 `99,806`，官方值 `61393.795 millions CNY`。标准化表 99806 与官方值 61393.8 不一致，差异 38412.205；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2025_ashare.pdf
+- 中国电信 Q4 2025 经营利润/营业利润：标准化表 `5,043`，官方值 `6011.885 millions CNY`。标准化表 5043 与官方值 6011.89 不一致，差异 -968.885；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2025_ashare.pdf
+- 中国电信 Q4 2025 总债务：标准化表 `61,932`，官方值 `49676.795 millions CNY`。标准化表 61932 与官方值 49676.8 不一致，差异 12255.205；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/sc/ir/report/annual2025_ashare.pdf
+- 中国电信 Q1 2024 自由现金流：标准化表 `5,606`，官方值 `6148.771 millions CNY`。标准化表 5606 与官方值 6148.77 不一致，差异 -542.771；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国电信 Q1 2024 毛利：标准化表 `65,355`，官方值 `39548.432 millions CNY`。标准化表 65355 与官方值 39548.4 不一致，差异 25806.568；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国电信 Q1 2024 毛利率：标准化表 `48.23%`，官方值 `29.405 percent`。标准化表 48.23 与官方值 29.405 不一致，差异 18.825；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国电信 Q1 2024 经营现金流：标准化表 `20,317`，官方值 `20861.776 millions CNY`。标准化表 20317 与官方值 20861.8 不一致，差异 -544.776；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国电信 Q1 2024 经营利润/营业利润：标准化表 `10,552`，官方值 `12316.258 millions CNY`。标准化表 10552 与官方值 12316.3 不一致，差异 -1764.258；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国电信 Q1 2024 经营利润率：标准化表 `7.79%`，官方值 `9.157 percent`。标准化表 7.79 与官方值 9.157 不一致，差异 -1.367；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国联通 Q1 2023 EBITDA率：标准化表 `26.46%`，官方值 `29.88 percent`。标准化表 26.46 与官方值 29.88 不一致，差异 -3.420；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinaunicom.com.hk/en/ir/reports/ir2023.pdf
+- 中国联通 Q2 2023 EBITDA：标准化表 `26,052`，官方值 `27820 millions CNY`。标准化表 26052 与官方值 27820 不一致，差异 -1768.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinaunicom.com.hk/en/ir/reports/ir2023.pdf
+- 中国联通 Q2 2023 EBITDA率：标准化表 `27.54%`，官方值 `32.76 percent`。标准化表 27.54 与官方值 32.76 不一致，差异 -5.220；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinaunicom.com.hk/en/ir/reports/ir2023.pdf
+- 中国联通 Q3 2023 EBITDA：标准化表 `21,756`，官方值 `25269 millions CNY`。标准化表 21756 与官方值 25269 不一致，差异 -3513.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/interim/2023/int3q.pdf
+- 中国联通 Q3 2023 EBITDA率：标准化表 `24.21%`，官方值 `31.01 percent`。标准化表 24.21 与官方值 31.01 不一致，差异 -6.800；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/interim/2023/int3q.pdf
+- 中国联通 Q3 2023 经营利润/营业利润：标准化表 `4,315`，官方值 `4228 millions CNY`。标准化表 4315 与官方值 4228 不一致，差异 87.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/interim/2023/int3q.pdf
+- 中国联通 Q4 2023 EBITDA：标准化表 `17,782`，官方值 `20991 millions CNY`。标准化表 17782 与官方值 20991 不一致，差异 -3209.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通 Q4 2023 EBITDA率：标准化表 `19.56%`，官方值 `25.4 percent`。标准化表 19.56 与官方值 25.4 不一致，差异 -5.840；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通 Q4 2023 净利润/股东应占利润：标准化表 `1,480`，官方值 `1484 millions CNY`。标准化表 1480 与官方值 1484 不一致，差异 -4.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通 Q4 2023 经营利润/营业利润：标准化表 `788`，官方值 `-388 millions CNY`。标准化表 788 与官方值 -388 不一致，差异 1176.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通 Q4 2023 经营利润率：标准化表 `0.87%`，官方值 `-0.43 percent`。标准化表 0.87 与官方值 -0.43 不一致，差异 1.300；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通 Q1 2023 现金及等价物：标准化表 `-`，官方值 `53145.202 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通 Q1 2023 毛利：标准化表 `53,626`，官方值 `23732.345 millions CNY`。标准化表 53626 与官方值 23732.3 不一致，差异 29893.655；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通 Q1 2023 毛利率：标准化表 `55.16%`，官方值 `24.411 percent`。标准化表 55.16 与官方值 24.411 不一致，差异 30.749；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通 Q1 2023 总资产：标准化表 `-`，官方值 `651737.443 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通 Q1 2023 总债务：标准化表 `56,476`，官方值 `49950.864 millions CNY`。标准化表 56476 与官方值 49950.9 不一致，差异 6525.136；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通 Q2 2023 毛利：标准化表 `50,647`，官方值 `24406.191 millions CNY`。标准化表 50647 与官方值 24406.2 不一致，差异 26240.809；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9395483&stockid=600050
+- 中国联通 Q2 2023 毛利率：标准化表 `53.53%`，官方值 `25.796 percent`。标准化表 53.53 与官方值 25.796 不一致，差异 27.734；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9395483&stockid=600050
+- 中国联通 Q2 2023 总债务：标准化表 `53,770`，官方值 `47970.063 millions CNY`。标准化表 53770 与官方值 47970.1 不一致，差异 5799.937；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9395483&stockid=600050
+- 中国联通 Q3 2023 现金及等价物：标准化表 `-`，官方值 `59498.809 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通 Q3 2023 毛利：标准化表 `49,739`，官方值 `22782.899 millions CNY`。标准化表 49739 与官方值 22782.9 不一致，差异 26956.101；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通 Q3 2023 毛利率：标准化表 `55.35%`，官方值 `25.354 percent`。标准化表 55.35 与官方值 25.354 不一致，差异 29.996；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通 Q3 2023 总资产：标准化表 `-`，官方值 `665846.21 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通 Q3 2023 总债务：标准化表 `53,770`，官方值 `47411.165 millions CNY`。标准化表 53770 与官方值 47411.2 不一致，差异 6358.835；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通 Q4 2023 毛利：标准化表 `57,386`，官方值 `20444.802 millions CNY`。标准化表 57386 与官方值 20444.8 不一致，差异 36941.198；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9883072&stockid=600050
+- 中国联通 Q4 2023 毛利率：标准化表 `63.13%`，官方值 `22.49 percent`。标准化表 63.13 与官方值 22.49 不一致，差异 40.640；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9883072&stockid=600050
+- 中国联通 Q4 2023 总资产：标准化表 `661,051`，官方值 `662844.797 millions CNY`。标准化表 661051 与官方值 662845 不一致，差异 -1793.797；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9883072&stockid=600050
+- 中国联通 Q2 2024 EBITDA：标准化表 `26,430`，官方值 `28399 millions CNY`。标准化表 26430 与官方值 28399 不一致，差异 -1969.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinaunicom.com.hk/en/ir/reports/ir2024.pdf
+- 中国联通 Q3 2024 EBITDA：标准化表 `21,523`，官方值 `25390 millions CNY`。标准化表 21523 与官方值 25390 不一致，差异 -3867.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/1022/2024102200803.pdf
+- 中国联通 Q4 2024 EBITDA：标准化表 `12,599`，官方值 `19020 millions CNY`。标准化表 12599 与官方值 19020 不一致，差异 -6421.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2024/res.pdf
+- 中国联通 Q1 2024 现金及等价物：标准化表 `-`，官方值 `45065.738 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 毛利：标准化表 `56,544`，官方值 `24420.749 millions CNY`。标准化表 56544 与官方值 24420.7 不一致，差异 32123.251；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 毛利率：标准化表 `56.83%`，官方值 `24.544 percent`。标准化表 56.83 与官方值 24.544 不一致，差异 32.286；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 经营利润/营业利润：标准化表 `5,429`，官方值 `7089.224 millions CNY`。标准化表 5429 与官方值 7089.22 不一致，差异 -1660.224；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 经营利润率：标准化表 `5.46%`，官方值 `7.125 percent`。标准化表 5.46 与官方值 7.125 不一致，差异 -1.665；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 总资产：标准化表 `-`，官方值 `665855.422 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q1 2024 总债务：标准化表 `46,425`，官方值 `45770.558 millions CNY`。标准化表 46425 与官方值 45770.6 不一致，差异 654.442；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通 Q2 2024 毛利：标准化表 `54,707`，官方值 `26914.858 millions CNY`。标准化表 54707 与官方值 26914.9 不一致，差异 27792.142；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10379167&stockid=600050
+- 中国联通 Q2 2024 毛利率：标准化表 `55.91%`，官方值 `27.508 percent`。标准化表 55.91 与官方值 27.508 不一致，差异 28.402；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10379167&stockid=600050
+- 中国联通 Q2 2024 经营利润/营业利润：标准化表 `7,221`，官方值 `8889.237 millions CNY`。标准化表 7221 与官方值 8889.24 不一致，差异 -1668.237；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10379167&stockid=600050
+- 中国联通 Q2 2024 经营利润率：标准化表 `7.38%`，官方值 `9.085 percent`。标准化表 7.38 与官方值 9.085 不一致，差异 -1.705；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10379167&stockid=600050
+- 中国联通 Q2 2024 EBITDA率：标准化表 `27.01%`，官方值 `29.025 percent`。标准化表 27.01 与官方值 29.025 不一致，差异 -2.015；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinaunicom.com.hk/en/ir/reports/ir2024.pdf
+- 中国联通 Q3 2024 现金及等价物：标准化表 `-`，官方值 `49459.744 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 毛利：标准化表 `51,000`，官方值 `24141.194 millions CNY`。标准化表 51000 与官方值 24141.2 不一致，差异 26858.806；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 毛利率：标准化表 `54.97%`，官方值 `26.019 percent`。标准化表 54.97 与官方值 26.019 不一致，差异 28.951；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 经营利润/营业利润：标准化表 `4,529`，官方值 `5972.02 millions CNY`。标准化表 4529 与官方值 5972.02 不一致，差异 -1443.020；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 经营利润率：标准化表 `4.88%`，官方值 `6.437 percent`。标准化表 4.88 与官方值 6.437 不一致，差异 -1.557；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 总资产：标准化表 `-`，官方值 `671533.603 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 总债务：标准化表 `44,081`，官方值 `42749.737 millions CNY`。标准化表 44081 与官方值 42749.7 不一致，差异 1331.263；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通 Q3 2024 EBITDA率：标准化表 `23.20%`，官方值 `27.365 percent`。标准化表 23.2 与官方值 27.365 不一致，差异 -4.165；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/1022/2024102200803.pdf
+- 中国联通 Q4 2024 毛利：标准化表 `54,902`，官方值 `15766.629 millions CNY`。标准化表 54902 与官方值 15766.6 不一致，差异 39135.371；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通 Q4 2024 毛利率：标准化表 `55.20%`，官方值 `15.851 percent`。标准化表 55.2 与官方值 15.851 不一致，差异 39.349；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通 Q4 2024 经营利润/营业利润：标准化表 `-3,973`，官方值 `749.075 millions CNY`。标准化表 -3973 与官方值 749.075 不一致，差异 -4722.075；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通 Q4 2024 经营利润率：标准化表 `-3.99%`，官方值 `0.753 percent`。标准化表 -3.99 与官方值 0.753 不一致，差异 -4.743；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通 Q4 2024 总资产：标准化表 `671,237`，官方值 `672836.702 millions CNY`。标准化表 671237 与官方值 672837 不一致，差异 -1599.702；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通 Q4 2024 EBITDA率：标准化表 `12.67%`，官方值 `19.122 percent`。标准化表 12.67 与官方值 19.122 不一致，差异 -6.452；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinaunicom/annual/2024/res.pdf
+- 中国联通 Q1 2026 现金及等价物：标准化表 `-`，官方值 `22378.803 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 毛利：标准化表 `55,297`，官方值 `24398.058 millions CNY`。标准化表 55297 与官方值 24398.1 不一致，差异 30898.942；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 毛利率：标准化表 `53.78%`，官方值 `23.728 percent`。标准化表 53.78 与官方值 23.728 不一致，差异 30.052；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 经营利润/营业利润：标准化表 `4,277`，官方值 `5871.361 millions CNY`。标准化表 4277 与官方值 5871.36 不一致，差异 -1594.361；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 经营利润率：标准化表 `4.16%`，官方值 `5.71 percent`。标准化表 4.16 与官方值 5.71 不一致，差异 -1.550；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 总资产：标准化表 `-`，官方值 `670198.478 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国联通 Q1 2026 总债务：标准化表 `34,087`，官方值 `33036.873 millions CNY`。标准化表 34087 与官方值 33036.9 不一致，差异 1050.127；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国铁塔 Q1 2023 EBITDA：标准化表 `13,680`，官方值 `16112 millions CNY`。标准化表 13680 与官方值 16112 不一致，差异 -2432.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2023/int1qc.pdf
+- 中国铁塔 Q1 2023 EBITDA率：标准化表 `58.97%`，官方值 `69.5 percent`。标准化表 58.97 与官方值 69.5 不一致，差异 -10.530；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2023/int1qc.pdf
+- 中国铁塔 Q2 2023 EBITDA：标准化表 `15,839`，官方值 `15909 millions CNY`。标准化表 15839 与官方值 15909 不一致，差异 -70.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2023/int.pdf
+- 中国铁塔 Q3 2023 EBITDA：标准化表 `13,903`，官方值 `16082 millions CNY`。标准化表 13903 与官方值 16082 不一致，差异 -2179.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2023/int3qc.pdf
+- 中国铁塔 Q3 2023 EBITDA率：标准化表 `58.69%`，官方值 `67.89 percent`。标准化表 58.69 与官方值 67.89 不一致，差异 -9.200；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2023/int3qc.pdf
+- 中国铁塔 Q4 2023 EBITDA：标准化表 `12,151`，官方值 `15448 millions CNY`。标准化表 12151 与官方值 15448 不一致，差异 -3297.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/annual/2023/res.pdf
+- 中国铁塔 Q4 2023 EBITDA率：标准化表 `50.93%`，官方值 `64.75 percent`。标准化表 50.93 与官方值 64.75 不一致，差异 -13.820；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/annual/2023/res.pdf
+- 中国铁塔 Q1 2024 EBITDA：标准化表 `13,718`，官方值 `16597 millions CNY`。标准化表 13718 与官方值 16597 不一致，差异 -2879.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int1qc.pdf
+- 中国铁塔 Q1 2024 EBITDA率：标准化表 `57.22%`，官方值 `69.2 percent`。标准化表 57.22 与官方值 69.2 不一致，差异 -11.980；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int1qc.pdf
+- 中国铁塔 Q2 2024 EBITDA：标准化表 `16,406`，官方值 `16448 millions CNY`。标准化表 16406 与官方值 16448 不一致，差异 -42.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int.pdf
+- 中国铁塔 Q3 2024 EBITDA：标准化表 `11,891`，官方值 `16672 millions CNY`。标准化表 11891 与官方值 16672 不一致，差异 -4781.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int3qc.pdf
+- 中国铁塔 Q3 2024 EBITDA率：标准化表 `49.13%`，官方值 `68.88 percent`。标准化表 49.13 与官方值 68.88 不一致，差异 -19.750；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int3qc.pdf
+- 中国铁塔 Q3 2024 净利润/股东应占利润：标准化表 `-`，官方值 `2823 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int3qc.pdf
+- 中国铁塔 Q3 2024 总资产：标准化表 `-`，官方值 `324491 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2024/int3qc.pdf
+- 中国铁塔 Q4 2024 EBITDA：标准化表 `14,757`，官方值 `16842 millions CNY`。标准化表 14757 与官方值 16842 不一致，差异 -2085.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/annual/2024/res.pdf
+- 中国铁塔 Q4 2024 EBITDA率：标准化表 `58.28%`，官方值 `66.52 percent`。标准化表 58.28 与官方值 66.52 不一致，差异 -8.240；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/annual/2024/res.pdf
+- 中国铁塔 Q4 2024 净利润/股东应占利润：标准化表 `-`，官方值 `2576 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/hk/chinatower/annual/2024/res.pdf
+- 中国移动 Q1 2026 EBITDA：标准化表 `65,748`，官方值 `76700 millions CNY`。标准化表 65748 与官方值 76700 不一致，差异 -10952.000；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国电信 Q1 2026 营业收入/收益：标准化表 `131,967`，官方值 `131393.926 millions CNY`。标准化表 131967 与官方值 131394 不一致，差异 573.074；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2026 经营现金流：标准化表 `23,057`，官方值 `23215.066 millions CNY`。标准化表 23057 与官方值 23215.1 不一致，差异 -158.066；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信 Q1 2026 经营利润/营业利润：标准化表 `8,151`，官方值 `9477.563 millions CNY`。标准化表 8151 与官方值 9477.56 不一致，差异 -1326.563；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国联通 Q1 2026 净利润/股东应占利润：标准化表 `4,885`，官方值 `4857.161 millions CNY`。标准化表 4885 与官方值 4857.16 不一致，差异 27.839；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国铁塔 Q1 2026 EBITDA：标准化表 `15,265`，官方值 `15366 millions CNY`。标准化表 15265 与官方值 15366 不一致，差异 -101.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2026/int1q.pdf
+- 中国移动 Q1 2025 EBITDA：标准化表 `81,159`，官方值 `80700 millions CNY`。标准化表 81159 与官方值 80700 不一致，差异 459.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf
+- 中国移动 Q1 2025 经营利润/营业利润：标准化表 `33,384`，官方值 `39016 millions CNY`。标准化表 33384 与官方值 39016 不一致，差异 -5632.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf
+- 中国移动 Q1 2025 现金及等价物：标准化表 `220,208`，官方值 `125078 millions CNY`。标准化表 220208 与官方值 125078 不一致，差异 95130.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf
+- 中国移动 Q2 2025 现金及等价物：标准化表 `190,262`，官方值 `94566 millions CNY`。标准化表 190262 与官方值 94566 不一致，差异 95696.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf
+- 中国移动 Q2 2025 毛利：标准化表 `100,626`，官方值 `100900 millions CNY`。标准化表 100626 与官方值 100900 不一致，差异 -274.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2025-08-08/1224425060.PDF
+- 中国移动 Q2 2025 经营利润/营业利润：标准化表 `57,247`，官方值 `67279 millions CNY`。标准化表 57247 与官方值 67279 不一致，差异 -10032.000；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2025-08-08/1224425060.PDF
+- 中国移动 Q2 2025 经营利润率：标准化表 `20.45%`，官方值 `24.027 percent`。标准化表 20.45 与官方值 24.027 不一致，差异 -3.577；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2025-08-08/1224425060.PDF
+- 中国移动 Q3 2025 毛利：标准化表 `191,224`，官方值 `75113 millions CNY`。标准化表 191224 与官方值 75113 不一致，差异 116111.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11521245&stockid=600941
+- 中国移动 Q3 2025 毛利率：标准化表 `76.22%`，官方值 `29.938 percent`。标准化表 76.22 与官方值 29.938 不一致，差异 46.282；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11521245&stockid=600941
+- 中国移动 Q3 2025 经营利润/营业利润：标准化表 `32,741`，官方值 `39409 millions CNY`。标准化表 32741 与官方值 39409 不一致，差异 -6668.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11521245&stockid=600941
+- 中国移动 Q3 2025 经营利润率：标准化表 `13.05%`，官方值 `15.708 percent`。标准化表 13.05 与官方值 15.708 不一致，差异 -2.658；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11521245&stockid=600941
+- 中国移动 Q4 2025 毛利：标准化表 `-59,893`，官方值 `56140 millions CNY`。标准化表 -59893 与官方值 56140 不一致，差异 -116033.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12023001&stockid=600941
+- 中国移动 Q4 2025 毛利率：标准化表 `-23.44%`，官方值 `21.972 percent`。标准化表 -23.44 与官方值 21.972 不一致，差异 -45.412；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12023001&stockid=600941
+- 中国移动 Q4 2025 经营利润/营业利润：标准化表 `25,858`，官方值 `32740 millions CNY`。标准化表 25858 与官方值 32740 不一致，差异 -6882.000；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12023001&stockid=600941
+- 中国移动 Q4 2025 经营利润率：标准化表 `10.12%`，官方值 `12.813 percent`。标准化表 10.12 与官方值 12.813 不一致，差异 -2.693；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12023001&stockid=600941
+- 中国电信 Q2 2025 资本开支：标准化表 `-13,517`，官方值 `-20490 millions CNY`。标准化表 -13517 与官方值 -20490 不一致，差异 6973.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf
+- 中国电信 Q2 2025 自由现金流：标准化表 `23,463`，官方值 `16483 millions CNY`。标准化表 23463 与官方值 16483 不一致，差异 6980.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf
+- 中国电信 Q3 2025 营业收入/收益：标准化表 `122,801`，官方值 `125529 millions CNY`。标准化表 122801 与官方值 125529 不一致，差异 -2728.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 EBITDA：标准化表 `32,785`，官方值 `35012 millions CNY`。标准化表 32785 与官方值 35012 不一致，差异 -2227.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 经营利润/营业利润：标准化表 `6,733`，官方值 `9190 millions CNY`。标准化表 6733 与官方值 9190 不一致，差异 -2457.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 经营现金流：标准化表 `40,005`，官方值 `40121 millions CNY`。标准化表 40005 与官方值 40121 不一致，差异 -116.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 资本开支：标准化表 `-17,609`，官方值 `-10610 millions CNY`。标准化表 -17609 与官方值 -10610 不一致，差异 -6999.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 自由现金流：标准化表 `22,396`，官方值 `29511 millions CNY`。标准化表 22396 与官方值 29511 不一致，差异 -7115.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q3 2025 现金及等价物：标准化表 `79,139`，官方值 `44594 millions CNY`。标准化表 79139 与官方值 44594 不一致，差异 34545.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q4 2025 营业收入/收益：标准化表 `129,655`，官方值 `132602 millions CNY`。标准化表 129655 与官方值 132602 不一致，差异 -2947.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国电信 Q4 2025 EBITDA：标准化表 `24,913`，官方值 `28272 millions CNY`。标准化表 24913 与官方值 28272 不一致，差异 -3359.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国电信 Q4 2025 经营现金流：标准化表 `37,207`，官方值 `37679 millions CNY`。标准化表 37207 与官方值 37679 不一致，差异 -472.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国电信 Q4 2025 资本开支：标准化表 `-28,312`，官方值 `-35590 millions CNY`。标准化表 -28312 与官方值 -35590 不一致，差异 7278.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国电信 Q4 2025 自由现金流：标准化表 `8,895`，官方值 `2089 millions CNY`。标准化表 8895 与官方值 2089 不一致，差异 6806.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国联通 Q1 2025 净利润/股东应占利润：标准化表 `5,929`，官方值 `5896.768 millions CNY`。标准化表 5929 与官方值 5896.77 不一致，差异 32.232；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 经营利润/营业利润：标准化表 `5,858`，官方值 `7243.432 millions CNY`。标准化表 5858 与官方值 7243.43 不一致，差异 -1385.432；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 总资产：标准化表 `-`，官方值 `667650.178 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 现金及等价物：标准化表 `-`，官方值 `22377.978 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 毛利：标准化表 `58,166`，官方值 `25954.637 millions CNY`。标准化表 58166 与官方值 25954.6 不一致，差异 32211.363；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 毛利率：标准化表 `56.28%`，官方值 `25.112 percent`。标准化表 56.28 与官方值 25.112 不一致，差异 31.168；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q1 2025 总债务：标准化表 `40,723`，官方值 `38944.138 millions CNY`。标准化表 40723 与官方值 38944.1 不一致，差异 1778.862；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q2 2025 经营利润/营业利润：标准化表 `8,060`，官方值 `9753.245 millions CNY`。标准化表 8060 与官方值 9753.25 不一致，差异 -1693.245；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q2 2025 毛利：标准化表 `55,248`，官方值 `28214.261 millions CNY`。标准化表 55248 与官方值 28214.3 不一致，差异 27033.739；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q2 2025 毛利率：标准化表 `57.05%`，官方值 `29.132 percent`。标准化表 57.05 与官方值 29.132 不一致，差异 27.918；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q2 2025 净利润/股东应占利润：标准化表 `8,555`，官方值 `8536.48 millions CNY`。标准化表 8555 与官方值 8536.48 不一致，差异 18.520；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q2 2025 经营利润/营业利润：标准化表 `8,060`，官方值 `9753.245 millions CNY`。标准化表 8060 与官方值 9753.25 不一致，差异 -1693.245；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q2 2025 经营利润率：标准化表 `8.32%`，官方值 `10.071 percent`。标准化表 8.32 与官方值 10.071 不一致，差异 -1.751；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通 Q3 2025 现金及等价物：标准化表 `-`，官方值 `27752.605 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 毛利：标准化表 `50,837`，官方值 `24848.645 millions CNY`。标准化表 50837 与官方值 24848.6 不一致，差异 25988.355；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 毛利率：标准化表 `54.79%`，官方值 `26.782 percent`。标准化表 54.79 与官方值 26.782 不一致，差异 28.008；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 净利润/股东应占利润：标准化表 `5,516`，官方值 `5503.741 millions CNY`。标准化表 5516 与官方值 5503.74 不一致，差异 12.259；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 经营利润/营业利润：标准化表 `5,251`，官方值 `6680.302 millions CNY`。标准化表 5251 与官方值 6680.3 不一致，差异 -1429.302；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 经营利润率：标准化表 `5.66%`，官方值 `7.2 percent`。标准化表 5.66 与官方值 7.2 不一致，差异 -1.540；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 总资产：标准化表 `-`，官方值 `671346.506 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q3 2025 总债务：标准化表 `36,844`，官方值 `35427.734 millions CNY`。标准化表 36844 与官方值 35427.7 不一致，差异 1416.266；正式回答应采用官方值并说明口径冲突。 来源：https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通 Q4 2025 毛利：标准化表 `52,212`，官方值 `13299.469 millions CNY`。标准化表 52212 与官方值 13299.5 不一致，差异 38912.531；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通 Q4 2025 毛利率：标准化表 `52.61%`，官方值 `13.402 percent`。标准化表 52.61 与官方值 13.402 不一致，差异 39.208；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通 Q4 2025 净利润/股东应占利润：标准化表 `816`，官方值 `850.8 millions CNY`。标准化表 816 与官方值 850.8 不一致，差异 -34.800；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通 Q4 2025 经营利润/营业利润：标准化表 `-3,272`，官方值 `1358.747 millions CNY`。标准化表 -3272 与官方值 1358.75 不一致，差异 -4630.747；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通 Q4 2025 经营利润率：标准化表 `-3.30%`，官方值 `1.369 percent`。标准化表 -3.3 与官方值 1.369 不一致，差异 -4.669；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通 Q4 2025 总资产：标准化表 `669,618`，官方值 `671056.309 millions CNY`。标准化表 669618 与官方值 671056 不一致，差异 -1438.309；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 3HK / Hutchison H1 2023 毛利：标准化表 `1,601`，官方值 `1528 millions HKD`。标准化表 1601 与官方值 1528 不一致，差异 73.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ir2023/analysis.pdf
+- 3HK / Hutchison H2 2023 毛利：标准化表 `1,529`，官方值 `1543 millions HKD`。标准化表 1529 与官方值 1543 不一致，差异 -14.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- 3HK / Hutchison H2 2023 EBITDA：标准化表 `91`，官方值 `699 millions HKD`。标准化表 91 与官方值 699 不一致，差异 -608.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- 3HK / Hutchison H2 2023 经营利润/营业利润：标准化表 `-53`，官方值 `-43 millions HKD`。标准化表 -53 与官方值 -43 不一致，差异 -10.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- 3HK / Hutchison H1 2024 毛利：标准化表 `1,530`，官方值 `1523 millions HKD`。标准化表 1530 与官方值 1523 不一致，差异 7.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ir2024/analysis.pdf
+- 3HK / Hutchison H2 2024 营业收入/收益：标准化表 `-`，官方值 `2724 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 收入同比增长：标准化表 `-`，官方值 `6.075 percent`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 毛利：标准化表 `-`，官方值 `1548 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 EBITDA：标准化表 `-`，官方值 `769 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 经营利润/营业利润：标准化表 `-`，官方值 `15 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 经营利润率：标准化表 `-`，官方值 `0.551 percent`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 净利润/股东应占利润：标准化表 `-`，官方值 `18 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/highlights.pdf
+- 3HK / Hutchison H2 2024 经营现金流：标准化表 `-`，官方值 `552 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/cashflows.pdf
+- 3HK / Hutchison H2 2024 资本开支：标准化表 `-`，官方值 `-268 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- 3HK / Hutchison H2 2024 自由现金流：标准化表 `-`，官方值 `284 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2024/cashflows.pdf
+- 3HK / Hutchison H1 2025 毛利：标准化表 `1,599`，官方值 `1525 millions HKD`。标准化表 1599 与官方值 1525 不一致，差异 74.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf
+- 3HK / Hutchison H1 2025 EBITDA：标准化表 `748`，官方值 `771 millions HKD`。标准化表 748 与官方值 771 不一致，差异 -23.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf
+- 3HK / Hutchison H1 2025 经营利润/营业利润：标准化表 `2`，官方值 `6 millions HKD`。标准化表 2 与官方值 6 不一致，差异 -4.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf
+- 3HK / Hutchison H2 2025 营业收入/收益：标准化表 `-`，官方值 `3232 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 3HK / Hutchison H2 2025 收入同比增长：标准化表 `-`，官方值 `25.029 percent`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 3HK / Hutchison H2 2025 毛利：标准化表 `-`，官方值 `1389 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 3HK / Hutchison H2 2025 EBITDA：标准化表 `-`，官方值 `737 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 3HK / Hutchison H2 2025 经营利润/营业利润：标准化表 `-`，官方值 `12 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 3HK / Hutchison H2 2025 净利润/股东应占利润：标准化表 `-`，官方值 `-31 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf
+- 3HK / Hutchison H2 2025 自由现金流：标准化表 `-`，官方值 `284 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf
+- HKT / csl / 1O1O H1 2023 EBITDA：标准化表 `4,526`，官方值 `6009 millions HKD`。标准化表 4526 与官方值 6009 不一致，差异 -1483.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H1 2023 资本开支：标准化表 `-`，官方值 `-1078 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2023 EBITDA：标准化表 `5,408`，官方值 `7391 millions HKD`。标准化表 5408 与官方值 7391 不一致，差异 -1983.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2023 资本开支：标准化表 `-2,138`，官方值 `-1060 millions HKD`。标准化表 -2138 与官方值 -1060 不一致，差异 -1078.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2023 总债务：标准化表 `47,453`，官方值 `44804 millions HKD`。标准化表 47453 与官方值 44804 不一致，差异 2649.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H1 2024 EBITDA：标准化表 `4,670`，官方值 `6168 millions HKD`。标准化表 4670 与官方值 6168 不一致，差异 -1498.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H1 2024 资本开支：标准化表 `-`，官方值 `-1041 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2024 EBITDA：标准化表 `5,555`，官方值 `7575 millions HKD`。标准化表 5555 与官方值 7575 不一致，差异 -2020.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2024 资本开支：标准化表 `-2,037`，官方值 `-996 millions HKD`。标准化表 -2037 与官方值 -996 不一致，差异 -1041.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H2 2024 总债务：标准化表 `44,395`，官方值 `41723 millions HKD`。标准化表 44395 与官方值 41723 不一致，差异 2672.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT / csl / 1O1O H1 2023 自由现金流：标准化表 `4,760`，官方值 `3682 millions HKD`。标准化表 4760 与官方值 3682 不一致，差异 1078.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2023/0907/2023090700442.pdf
+- HKT / csl / 1O1O H1 2023 总债务：标准化表 `47,181`，官方值 `45117 millions HKD`。标准化表 47181 与官方值 45117 不一致，差异 2064.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2023/0907/2023090700442.pdf
+- HKT / csl / 1O1O H2 2023 净利润/股东应占利润：标准化表 `3,039`，官方值 `2997 millions HKD`。标准化表 3039 与官方值 2997 不一致，差异 42.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf
+- HKT / csl / 1O1O H2 2023 自由现金流：标准化表 `4,363`，官方值 `5441 millions HKD`。标准化表 4363 与官方值 5441 不一致，差异 -1078.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf
+- HKT / csl / 1O1O H1 2024 自由现金流：标准化表 `5,345`，官方值 `4304 millions HKD`。标准化表 5345 与官方值 4304 不一致，差异 1041.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0905/2024090500415.pdf
+- HKT / csl / 1O1O H1 2024 总债务：标准化表 `48,858`，官方值 `46344 millions HKD`。标准化表 48858 与官方值 46344 不一致，差异 2514.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0905/2024090500415.pdf
+- HKT / csl / 1O1O H2 2024 自由现金流：标准化表 `4,529`，官方值 `5570 millions HKD`。标准化表 4529 与官方值 5570 不一致，差异 -1041.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf
+- HKT / csl / 1O1O H1 2025 EBITDA：标准化表 `4,966`，官方值 `6380 millions HKD`。标准化表 4966 与官方值 6380 不一致，差异 -1414.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H2 2025 EBITDA：标准化表 `5,098`，官方值 `7854 millions HKD`。标准化表 5098 与官方值 7854 不一致，差异 -2756.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H1 2025 资本开支：标准化表 `-`，官方值 `-1008 millions HKD`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H2 2025 资本开支：标准化表 `-1,977`，官方值 `-969 millions HKD`。标准化表 -1977 与官方值 -969 不一致，差异 -1008.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H2 2025 总债务：标准化表 `48,337`，官方值 `44750 millions HKD`。标准化表 48337 与官方值 44750 不一致，差异 3587.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H1 2025 自由现金流：标准化表 `5,313`，官方值 `4305 millions HKD`。标准化表 5313 与官方值 4305 不一致，差异 1008.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf
+- HKT / csl / 1O1O H1 2025 总债务：标准化表 `46,401`，官方值 `43433 millions HKD`。标准化表 46401 与官方值 43433 不一致，差异 2968.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf
+- HKT / csl / 1O1O H2 2025 经营利润/营业利润：标准化表 `4,665`，官方值 `4778 millions HKD`。标准化表 4665 与官方值 4778 不一致，差异 -113.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT / csl / 1O1O H2 2025 自由现金流：标准化表 `4,338`，官方值 `5346 millions HKD`。标准化表 4338 与官方值 5346 不一致，差异 -1008.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf
+- SmarTone H1 2023 毛利：标准化表 `1,782`，官方值 `2143.298 millions HKD`。标准化表 1782 与官方值 2143.3 不一致，差异 -361.298；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_interim.pdf
+- SmarTone H1 2023 EBITDA：标准化表 `896.27`，官方值 `1279.065 millions HKD`。标准化表 896.27 与官方值 1279.07 不一致，差异 -382.795；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_interim.pdf
+- SmarTone H1 2023 经营利润/营业利润：标准化表 `388.63`，官方值 `391.373 millions HKD`。标准化表 388.63 与官方值 391.373 不一致，差异 -2.743；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_interim.pdf
+- SmarTone H2 2023 毛利：标准化表 `1,658`，官方值 `2027.932 millions HKD`。标准化表 1658 与官方值 2027.93 不一致，差异 -369.932；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_annual.pdf
+- SmarTone H2 2023 EBITDA：标准化表 `811.85`，官方值 `1183.051 millions HKD`。标准化表 811.85 与官方值 1183.05 不一致，差异 -371.201；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_annual.pdf
+- SmarTone H2 2023 经营利润/营业利润：标准化表 `313.14`，官方值 `311.061 millions HKD`。标准化表 313.14 与官方值 311.061 不一致，差异 2.079；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_annual.pdf
+- SmarTone H1 2024 毛利：标准化表 `1,728`，官方值 `2080.998 millions HKD`。标准化表 1728 与官方值 2081 不一致，差异 -352.998；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_interim.pdf
+- SmarTone H1 2024 EBITDA：标准化表 `860.35`，官方值 `1241.179 millions HKD`。标准化表 860.35 与官方值 1241.18 不一致，差异 -380.829；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_interim.pdf
+- SmarTone H1 2024 经营利润/营业利润：标准化表 `359.6`，官方值 `360.835 millions HKD`。标准化表 359.6 与官方值 360.835 不一致，差异 -1.235；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_interim.pdf
+- SmarTone H2 2024 毛利：标准化表 `1,678`，官方值 `2037.99 millions HKD`。标准化表 1678 与官方值 2037.99 不一致，差异 -359.990；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_annual.pdf
+- SmarTone H2 2024 EBITDA：标准化表 `838.57`，官方值 `1200.408 millions HKD`。标准化表 838.57 与官方值 1200.41 不一致，差异 -361.838；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_annual.pdf
+- SmarTone H2 2025 经营利润/营业利润：标准化表 `331.17`，官方值 `332.697 millions HKD`。标准化表 331.17 与官方值 332.697 不一致，差异 -1.527；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp
+- SmarTone H1 2025 毛利：标准化表 `1,745`，官方值 `2102.365 millions HKD`。标准化表 1745 与官方值 2102.36 不一致，差异 -357.365；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf
+- SmarTone H1 2025 EBITDA：标准化表 `924.78`，官方值 `1278.786 millions HKD`。标准化表 924.78 与官方值 1278.79 不一致，差异 -354.006；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf
+- SmarTone H2 2025 毛利：标准化表 `1,597`，官方值 `1954.236 millions HKD`。标准化表 1597 与官方值 1954.24 不一致，差异 -357.236；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf
+- SmarTone H2 2025 EBITDA：标准化表 `824.81`，官方值 `1166.274 millions HKD`。标准化表 824.81 与官方值 1166.27 不一致，差异 -341.464；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf
+- SmarTone H1 2026 毛利：标准化表 `1,652`，官方值 `1991.269 millions HKD`。标准化表 1652 与官方值 1991.27 不一致，差异 -339.269；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2025_2026_interim.pdf
+- SmarTone H1 2026 EBITDA：标准化表 `881.79`，官方值 `1219.6 millions HKD`。标准化表 881.79 与官方值 1219.6 不一致，差异 -337.810；正式回答应采用官方值并说明口径冲突。 来源：https://www.smartoneholdings.com/about/investor/financial_reports/english/2025_2026_interim.pdf
+- HKBN H1 2023 经营利润/营业利润：标准化表 `387.4`，官方值 `397.595 millions HKD`。标准化表 387.4 与官方值 397.595 不一致，差异 -10.195；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN H1 2023 EBITDA：标准化表 `951.57`，官方值 `1195.742 millions HKD`。标准化表 951.57 与官方值 1195.74 不一致，差异 -244.172；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN H1 2023 资本开支：标准化表 `-292.36`，官方值 `-304.234 millions HKD`。标准化表 -292.36 与官方值 -304.234 不一致，差异 11.874；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN H1 2023 总债务：标准化表 `11,628`，官方值 `11745 millions HKD`。标准化表 11628 与官方值 11745 不一致，差异 -117.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN H2 2023 经营利润/营业利润：标准化表 `333.72`，官方值 `343.711 millions HKD`。标准化表 333.72 与官方值 343.711 不一致，差异 -9.991；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN H2 2023 EBITDA：标准化表 `909.01`，官方值 `1094.172 millions HKD`。标准化表 909.01 与官方值 1094.17 不一致，差异 -185.162；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN H2 2023 资本开支：标准化表 `-197.04`，官方值 `-207.768 millions HKD`。标准化表 -197.04 与官方值 -207.768 不一致，差异 10.728；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN H2 2023 总债务：标准化表 `11,493`，官方值 `11589 millions HKD`。标准化表 11493 与官方值 11589 不一致，差异 -96.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN H1 2024 EBITDA：标准化表 `934.79`，官方值 `1151.172 millions HKD`。标准化表 934.79 与官方值 1151.17 不一致，差异 -216.382；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_InterimResultsAnnouncement.pdf
+- HKBN H1 2024 资本开支：标准化表 `-195.92`，官方值 `-204.24 millions HKD`。标准化表 -195.92 与官方值 -204.24 不一致，差异 8.320；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_InterimResultsAnnouncement.pdf
+- HKBN H1 2024 总债务：标准化表 `11,385`，官方值 `11461 millions HKD`。标准化表 11385 与官方值 11461 不一致，差异 -76.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_InterimResultsAnnouncement.pdf
+- HKBN H2 2024 经营利润/营业利润：标准化表 `455.82`，官方值 `480.824 millions HKD`。标准化表 455.82 与官方值 480.824 不一致，差异 -25.004；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN H2 2024 EBITDA：标准化表 `1,015`，官方值 `1213.587 millions HKD`。标准化表 1015 与官方值 1213.59 不一致，差异 -198.587；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN H2 2024 资本开支：标准化表 `-166.79`，官方值 `-175.096 millions HKD`。标准化表 -166.79 与官方值 -175.096 不一致，差异 8.306；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN H2 2024 总债务：标准化表 `11,502`，官方值 `11528 millions HKD`。标准化表 11502 与官方值 11528 不一致，差异 -26.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN H1 2025 EBITDA：标准化表 `982.35`，官方值 `1206.122 millions HKD`。标准化表 982.35 与官方值 1206.12 不一致，差异 -223.772；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_InterimResultsAnnouncement.pdf
+- HKBN H1 2025 总债务：标准化表 `11,375`，官方值 `11406 millions HKD`。标准化表 11375 与官方值 11406 不一致，差异 -31.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_InterimResultsAnnouncement.pdf
+- HKBN H2 2025 EBITDA：标准化表 `971.97`，官方值 `1245.038 millions HKD`。标准化表 971.97 与官方值 1245.04 不一致，差异 -273.068；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN H2 2025 资本开支：标准化表 `-255.06`，官方值 `-272.028 millions HKD`。标准化表 -255.06 与官方值 -272.028 不一致，差异 16.968；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN H2 2025 总债务：标准化表 `11,291`，官方值 `11416 millions HKD`。标准化表 11291 与官方值 11416 不一致，差异 -125.000；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN H1 2026 EBITDA：标准化表 `1,041`，官方值 `1256.5 millions HKD`。标准化表 1041 与官方值 1256.5 不一致，差异 -215.500；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf
+- HKBN H1 2026 资本开支：标准化表 `-250.01`，官方值 `-269.744 millions HKD`。标准化表 -250.01 与官方值 -269.744 不一致，差异 19.734；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf
+- HKBN H1 2023 毛利：标准化表 `2,072`，官方值 `2134.176 millions HKD`。标准化表 2072 与官方值 2134.18 不一致，差异 -62.176；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN H2 2023 毛利：标准化表 `1,974`，官方值 `2032.981 millions HKD`。标准化表 1974 与官方值 2032.98 不一致，差异 -58.981；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN H1 2024 毛利：标准化表 `1,968`，官方值 `2036.943 millions HKD`。标准化表 1968 与官方值 2036.94 不一致，差异 -68.943；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_InterimResultsAnnouncement.pdf
+- HKBN H2 2024 毛利：标准化表 `1,936`，官方值 `1952.301 millions HKD`。标准化表 1936 与官方值 1952.3 不一致，差异 -16.301；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN H1 2025 毛利：标准化表 `1,982`，官方值 `2014.581 millions HKD`。标准化表 1982 与官方值 2014.58 不一致，差异 -32.581；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_InterimResultsAnnouncement.pdf
+- HKBN H1 2025 经营利润/营业利润：标准化表 `473.29`，官方值 `479.09 millions HKD`。标准化表 473.29 与官方值 479.09 不一致，差异 -5.800；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_InterimResultsAnnouncement.pdf
+- HKBN H2 2025 毛利：标准化表 `1,992`，官方值 `2028.344 millions HKD`。标准化表 1992 与官方值 2028.34 不一致，差异 -36.344；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN H2 2025 经营利润/营业利润：标准化表 `444.2`，官方值 `447.178 millions HKD`。标准化表 444.2 与官方值 447.178 不一致，差异 -2.978；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN H1 2026 毛利：标准化表 `2,020`，官方值 `2055.306 millions HKD`。标准化表 2020 与官方值 2055.31 不一致，差异 -35.306；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf
+- HKBN H1 2026 经营利润/营业利润：标准化表 `556.75`，官方值 `558.899 millions HKD`。标准化表 556.75 与官方值 558.899 不一致，差异 -2.149；正式回答应采用官方值并说明口径冲突。 来源：https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf
+- i-CABLE H1 2023 EBITDA：标准化表 `-64.09`，官方值 `-44.063 millions HKD`。标准化表 -64.09 与官方值 -44.063 不一致，差异 -20.027；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2023/0825/2023082502129.pdf
+- i-CABLE H1 2023 资本开支：标准化表 `-38.94`，官方值 `-34.242 millions HKD`。标准化表 -38.94 与官方值 -34.242 不一致，差异 -4.698；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2023/0825/2023082502129.pdf
+- i-CABLE H2 2023 收入同比增长：标准化表 `-`，官方值 `11.098 percent`。标准化表数值为空或无法解析，采用官方值。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0322/2024032201867.pdf
+- i-CABLE H2 2023 EBITDA：标准化表 `-279.14`，官方值 `-152.318 millions HKD`。标准化表 -279.14 与官方值 -152.318 不一致，差异 -126.822；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0322/2024032201867.pdf
+- i-CABLE H2 2023 资本开支：标准化表 `-37.81`，官方值 `-32.674 millions HKD`。标准化表 -37.81 与官方值 -32.674 不一致，差异 -5.136；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0322/2024032201867.pdf
+- i-CABLE H1 2024 EBITDA：标准化表 `-154.78`，官方值 `-115.018 millions HKD`。标准化表 -154.78 与官方值 -115.018 不一致，差异 -39.762；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0826/2025082601734.pdf
+- i-CABLE H1 2024 资本开支：标准化表 `-29.11`，官方值 `-20.945 millions HKD`。标准化表 -29.11 与官方值 -20.945 不一致，差异 -8.165；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0826/2025082601734.pdf
+- i-CABLE H2 2024 EBITDA：标准化表 `-187.18`，官方值 `-93.292 millions HKD`。标准化表 -187.18 与官方值 -93.292 不一致，差异 -93.888；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf
+- i-CABLE H2 2024 资本开支：标准化表 `-37.59`，官方值 `-33.055 millions HKD`。标准化表 -37.59 与官方值 -33.055 不一致，差异 -4.535；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf
+- i-CABLE H1 2025 EBITDA：标准化表 `-126.66`，官方值 `-68.566 millions HKD`。标准化表 -126.66 与官方值 -68.566 不一致，差异 -58.094；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0826/2025082601734.pdf
+- i-CABLE H2 2025 EBITDA：标准化表 `-175.94`，官方值 `-110.076 millions HKD`。标准化表 -175.94 与官方值 -110.076 不一致，差异 -65.864；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf
+- 中国铁塔 Q1 2025 EBITDA：标准化表 `14,341`，官方值 `17295 millions CNY`。标准化表 14341 与官方值 17295 不一致，差异 -2954.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int1q.pdf
+- 中国铁塔 Q1 2025 EBITDA率：标准化表 `57.90%`，官方值 `69.8 percent`。标准化表 57.9 与官方值 69.8 不一致，差异 -11.900；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int1q.pdf
+- 中国铁塔 Q1 2025 总资产：标准化表 `-`，官方值 `329540 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int1q.pdf
+- 中国铁塔 Q2 2025 EBITDA：标准化表 `17,426`，官方值 `16932 millions CNY`。标准化表 17426 与官方值 16932 不一致，差异 494.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int.pdf
+- 中国铁塔 Q2 2025 净利润/股东应占利润：标准化表 `-`，官方值 `2733 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int.pdf
+- 中国铁塔 Q3 2025 EBITDA：标准化表 `13,926`，官方值 `16732 millions CNY`。标准化表 13926 与官方值 16732 不一致，差异 -2806.000；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int3qc.pdf
+- 中国铁塔 Q4 2025 EBITDA：标准化表 `15,068`，官方值 `14855 millions CNY`。标准化表 15068 与官方值 14855 不一致，差异 213.000；正式回答应采用官方值并说明口径冲突。 来源：https://ir.china-tower.com/en/ir/presentation/pre260318.pdf
+- 中国铁塔 Q4 2025 净利润/股东应占利润：标准化表 `-`，官方值 `2922 millions CNY`。标准化表数值为空或无法解析，采用官方值。 来源：https://ir.china-tower.com/en/ir/presentation/pre260318.pdf
+- 中国移动 Q2 2025 经营收入/运营收入：标准化表 `203,229`，官方值 `244589 millions CNY`。标准化表 203229 与官方值 244589 不一致，差异 -41360.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动 Q2 2025 EBITDA：标准化表 `94,422`，官方值 `105258 millions CNY`。标准化表 94422 与官方值 105258 不一致，差异 -10836.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动 Q3 2025 经营收入/运营收入：标准化表 `327,677`，官方值 `216157 millions CNY`。标准化表 327677 与官方值 216157 不一致，差异 111520.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动 Q3 2025 EBITDA：标准化表 `100,416`，官方值 `79438 millions CNY`。标准化表 100416 与官方值 79438 不一致，差异 20978.000；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动 Q4 2025 经营收入/运营收入：标准化表 `255,521`，官方值 `212384 millions CNY`。标准化表 255521 与官方值 212384 不一致，差异 43137.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 中国移动 Q4 2025 EBITDA：标准化表 `29,820`，官方值 `73535 millions CNY`。标准化表 29820 与官方值 73535 不一致，差异 -43715.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 中国移动 Q4 2025 现金及等价物：标准化表 `171,094`，官方值 `97267 millions CNY`。标准化表 171094 与官方值 97267 不一致，差异 73827.000；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 3HK / Hutchison H2 2025 经营利润率：标准化表 `-`，官方值 `0.371 percent`。标准化表数值为空或无法解析，采用官方值。 来源：https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- 中国电信 Q3 2025 经营利润率：标准化表 `5.48%`，官方值 `7.321 percent`。标准化表 5.48 与官方值 7.321 不一致，差异 -1.841；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q1 2026 经营利润率：标准化表 `6.18%`，官方值 `7.213 percent`。标准化表 6.18 与官方值 7.213 不一致，差异 -1.033；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国移动 Q1 2025 经营利润率：标准化表 `12.66%`，官方值 `14.792 percent`。标准化表 12.66 与官方值 14.792 不一致，差异 -2.132；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf
+- 中国联通 Q1 2025 经营利润率：标准化表 `5.67%`，官方值 `7.008 percent`。标准化表 5.67 与官方值 7.008 不一致，差异 -1.338；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通 Q2 2025 经营利润率：标准化表 `8.32%`，官方值 `10.071 percent`。标准化表 8.32 与官方值 10.071 不一致，差异 -1.751；正式回答应采用官方值并说明口径冲突。 来源：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国电信 Q3 2025 EBITDA率：标准化表 `26.70%`，官方值 `27.892 percent`。标准化表 26.7 与官方值 27.892 不一致，差异 -1.192；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信 Q4 2025 EBITDA率：标准化表 `19.21%`，官方值 `21.321 percent`。标准化表 19.21 与官方值 21.321 不一致，差异 -2.111；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国移动 Q2 2025 EBITDA率：标准化表 `33.72%`，官方值 `37.591 percent`。标准化表 33.72 与官方值 37.591 不一致，差异 -3.871；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf
+- 中国移动 Q3 2025 EBITDA率：标准化表 `40.02%`，官方值 `31.662 percent`。标准化表 40.02 与官方值 31.662 不一致，差异 8.358；正式回答应采用官方值并说明口径冲突。 来源：https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动 Q4 2025 EBITDA率：标准化表 `11.67%`，官方值 `28.778 percent`。标准化表 11.67 与官方值 28.778 不一致，差异 -17.108；正式回答应采用官方值并说明口径冲突。 来源：https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 中国移动 Q1 2026 EBITDA率：标准化表 `24.67%`，官方值 `28.783 percent`。标准化表 24.67 与官方值 28.783 不一致，差异 -4.113；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国铁塔 Q2 2025 EBITDA率：标准化表 `70.18%`，官方值 `68.192 percent`。标准化表 70.18 与官方值 68.192 不一致，差异 1.988；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int.pdf
+- 中国铁塔 Q3 2025 EBITDA率：标准化表 `56.34%`，官方值 `67.692 percent`。标准化表 56.34 与官方值 67.692 不一致，差异 -11.352；正式回答应采用官方值并说明口径冲突。 来源：https://doc.irasia.com/listco/hk/chinatower/interim/2025/int3qc.pdf
+
+## 已完成官方核验来源
+
+- Amazon Q1 2025 earnings release: https://s2.q4cdn.com/299287126/files/doc_financials/2025/q1/AMZN-Q1-2025-Earnings-Release.pdf
+- Amazon Q2 2025 earnings release: https://s2.q4cdn.com/299287126/files/doc_financials/2025/q2/AMZN-Q2-2025-Earnings-Release.pdf
+- Amazon Q3 2025 earnings release: https://s2.q4cdn.com/299287126/files/doc_financials/2025/q3/AMZN-Q3-2025-Earnings-Release.pdf
+- Amazon 2025 Form 10-K AWS segment reconciliation: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm
+- Microsoft FY25 Q3 earnings release: https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/press-release-webcast
+- Microsoft FY25 Q4 earnings release: https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/press-release-webcast
+- Microsoft FY26 Q1 earnings release: https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q1/press-release-webcast
+- Microsoft FY26 Q2 earnings release: https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/press-release-webcast
+- Microsoft FY26 Q3 earnings release: https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/press-release-webcast
+- Alphabet Q1 2025 Form 10-Q: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000043/goog-20250331.htm
+- Alphabet Q2 2025 Form 10-Q: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm
+- Alphabet Q3 2025 Form 10-Q: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm
+- Alphabet Q4 2025 earnings release exhibit: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm
+- Oracle FY2025 Q4 earnings release: https://www.oracle.com/news/announcement/q4fy25-earnings-release-2025-06-11/
+- Oracle FY2026 Q1 earnings release: https://www.oracle.com/news/announcement/q1fy26-earnings-release-2025-09-09/
+- Oracle FY2026 Q2 earnings release: https://www.oracle.com/news/announcement/q2fy26-earnings-release-2025-12-10/
+- Oracle FY2026 Q3 earnings release: https://www.oracle.com/news/announcement/q3fy26-earnings-release-2026-03-10/
+- Oracle FY2026 Q4 earnings release: https://www.oracle.com/news/announcement/q4fy26-earnings-release-2026-06-10/
+- Tencent 2025 second quarter earnings release: https://static.www.tencent.com/uploads/2025/08/13/56af6c5c98acdc7bd757a7bd208d8189.pdf
+- Tencent 2025 third quarter earnings release: https://static.www.tencent.com/uploads/2025/11/13/a33b6f19738615834787623f17d20ba3.pdf
+- Tencent 2025 fourth quarter earnings release: https://static.www.tencent.com/uploads/2026/03/18/e6a646796d0d869acc76271c9ee1a6a5.pdf
+- Alibaba June Quarter 2025 results: https://data.alibabagroup.com/ecms-files/1532295521/d09dd487-1a87-4e17-aa5d-9eb4da7eb56b/Alibaba%20Group%20Announces%20June%20Quarter%202025%20Results.pdf
+- Alibaba September Quarter 2025 results: https://data.alibabagroup.com/ecms-files/1532295521/96ebbe16-9309-479f-b628-48b0ccc31b9c/Alibaba%20Group%20Announces%20September%20Quarter%202025%20Results%20and%20Interim%20Results%20for%20the%20Six%20Months%20Ended%20September%2030%2C%202025.pdf
+- Alibaba December Quarter 2025 results: https://data.alibabagroup.com/ecms-files/1532295521/e48e70a1-e5c8-40ac-bdd2-951ebcb36946/Alibaba%20Group%20Announces%20December%20Quarter%202025%20Results.pdf
+- Alibaba March Quarter 2026 and Fiscal Year 2026 results: https://data.alibabagroup.com/ecms-files/1532295521/5b1cb883-8d00-4237-a148-6631cc12a5d2/Alibaba%20Group%20Announces%20March%20Quarter%202026%20and%20Fiscal%20Year%202026%20Results.pdf
+- 中国移动官网2023单季度经营数据: https://www.chinamobileltd.com/en/ir/operation_q.php?year=2023
+- 中国移动2023年第一季度报告: https://static.cninfo.com.cn/finalpage/2023-04-21/1216490015.PDF
+- 中国移动2023年半年度报告: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9397960&stockid=600941
+- 中国移动2023年第三季度报告: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600941&id=9580251
+- 中国移动2023年年度报告: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9887182&stockid=600941
+- 中国移动官网2024单季度经营数据: https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024
+- 中国移动2024年半年度报告: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10365602&stockid=600941
+- 中国移动2024年第三季度报告: https://static.cninfo.com.cn/finalpage/2024-10-22/1221451112.PDF
+- 中国移动2024年年度报告: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10795365&stockid=600941
+- 中国移动2026年第一季度报告: https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF
+- 中国移动2024年第一季度报告: https://static.cninfo.com.cn/finalpage/2024-04-23/1219737430.PDF
+- 中国电信2023官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinatelecom/interim/2023/int.pdf
+- 中国电信2023官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinatelecom/interim/2023/int3q.pdf
+- 中国电信2023官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinatelecom/annual/2023/res.pdf
+- 中国电信2023半年度报告（新浪财经正文）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9393219&stockid=601728
+- 中国电信2023年前三季度报告（IRAsia中文版）: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca231021e.pdf
+- 中国电信2023年度A股年报: https://www.chinatelecom-h.com/sc/ir/report/annual2023_ashare.pdf
+- 中国电信官网Key Financial Data季度表: https://www.chinatelecom-h.com/en/ir/finhigh_keyfindata_quarterly.php
+- 中国电信2024半年度A股报告: https://www.chinatelecom-h.com/sc/ir/report/interim2024_ashare.pdf
+- 中国电信2024年前三季度报告（IRAsia中文版）: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca241023.pdf
+- 中国电信2024年度A股年报: https://www.chinatelecom-h.com/sc/ir/report/annual2024_ashare.pdf
+- 中国电信2023年第一季度报告（IRAsia中文版）: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca230421b.pdf
+- 中国电信2026年第一季度报告: https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF
+- 中国电信2025年第一季度报告: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf
+- 中国电信2025年中期业绩公告: https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf
+- 中国电信2025年半年度报告摘要: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250815.pdf
+- 中国电信2025年前三季度报告（IRAsia中文版）: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca251022.pdf
+- 中国电信2025年前三季度报告（港交所/IRAsia）: https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf
+- 中国电信2025年度A股年报: https://www.chinatelecom-h.com/sc/ir/report/annual2025_ashare.pdf
+- 中国电信2024年第一季度报告: https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca240424.pdf
+- 中国联通2023官方季度/累计业绩披露: https://www.chinaunicom.com.hk/en/ir/reports/ir2023.pdf
+- 中国联通2023官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinaunicom/interim/2023/int3q.pdf
+- 中国联通2023官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinaunicom/annual/2023/res.pdf
+- 中国联通2023年第一季度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9008241&stockid=600050
+- 中国联通2023年半年度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9395483&stockid=600050
+- 中国联通2023年第三季度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9587353&stockid=600050
+- 中国联通2023年度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=9883072&stockid=600050
+- 中国联通2024官方季度/累计业绩披露: https://www.chinaunicom.com.hk/en/ir/reports/ir2024.pdf
+- 中国联通2024官方季度/累计业绩披露: https://www1.hkexnews.hk/listedco/listconews/sehk/2024/1022/2024102200803.pdf
+- 中国联通2024官方季度/累计业绩披露: https://doc.irasia.com/listco/hk/chinaunicom/annual/2024/res.pdf
+- 中国联通2024年第一季度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10009087&stockid=600050
+- 中国联通2024年第一季度主要财务数据: https://doc.irasia.com/listco/hk/chinaunicom/interim/2024/int1q.pdf
+- 中国联通2024年半年度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10379167&stockid=600050
+- 中国联通2024中期报告: https://www.chinaunicom.com.hk/en/ir/reports/ir2024.pdf
+- 中国联通2024年第三季度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10537147&stockid=600050
+- 中国联通2024年前三季度业绩公告: https://www1.hkexnews.hk/listedco/listconews/sehk/2024/1022/2024102200803.pdf
+- 中国联通2024年度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10790581&stockid=600050
+- 中国联通2024年度业绩公告: https://doc.irasia.com/listco/hk/chinaunicom/annual/2024/res.pdf
+- 中国联通2026年第一季度报告: https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国铁塔2023年第一季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2023/int1qc.pdf
+- 中国铁塔2023中期业绩公告: https://doc.irasia.com/listco/hk/chinatower/interim/2023/int.pdf
+- 中国铁塔2023年前三季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2023/int3qc.pdf
+- 中国铁塔2023年度业绩公告: https://doc.irasia.com/listco/hk/chinatower/annual/2023/res.pdf
+- 中国铁塔2024年第一季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2024/int1qc.pdf
+- 中国铁塔2024中期业绩公告: https://doc.irasia.com/listco/hk/chinatower/interim/2024/int.pdf
+- 中国铁塔2024年前三季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2024/int3qc.pdf
+- 中国铁塔2024年度业绩公告: https://doc.irasia.com/listco/hk/chinatower/annual/2024/res.pdf
+- 中国铁塔2025中期业绩公告: https://doc.irasia.com/listco/hk/chinatower/interim/2025/int.pdf
+- 中国铁塔2025年前三季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2025/int3qc.pdf
+- 中国铁塔2025年度业绩公告: https://doc.irasia.com/listco/hk/chinatower/annual/2025/res.pdf
+- 中国铁塔2026年第一季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2026/int1q.pdf
+- 中国联通2026年第一季度报告（上交所）: https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- 中国铁塔2026年第一季度未经审核的主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2026/int1q.pdf
+- 中国移动2025年第一季度报告（上交所）: https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf
+- 中国移动2025中期报告（港交所，现金流口径）: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf
+- 中国移动2025年半年度报告（巨潮资讯原文）: https://static.cninfo.com.cn/finalpage/2025-08-08/1224425060.PDF
+- 中国移动2025年第三季度报告（新浪财经正文）: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11521245&stockid=600941
+- 中国移动2025年年度报告（新浪财经正文）: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12023001&stockid=600941
+- 中国电信2025年第一季度报告（港交所/IRAsia）: https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf
+- 中国电信2025中期业绩（港交所/IRAsia）: https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf
+- 中国电信2025年度业绩新闻稿: https://www.chinatelecom-h.com/en/media/press/p260324.pdf
+- 中国联通2025年第一季度报告（上交所，600050 A股口径）: https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf
+- 中国联通2025中期报告（0762.HK）: https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf
+- 中国联通2025年半年度报告（600050 A股口径）: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通2025年度业绩公告: https://www.chinaunicom.com.hk/en/media/press/p260319.pdf
+- 中国联通2025年第三季度报告（600050 A股口径）: https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11526422&stockid=600050
+- 中国联通2025年度报告（600050 A股口径）: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- HTHKH 2023 Interim Report: https://www.hthkh.com/en/ir/reports/ir2023/ir2023.pdf
+- HTHKH 2023 Interim Report: https://www.hthkh.com/en/ir/reports/ir2023/analysis.pdf
+- HTHKH 2023 Interim Report - MD&A: https://www.hthkh.com/en/ir/reports/ir2023/analysis.pdf
+- HTHKH 2023 Interim Report - Supplementary Financial Information: https://www.hthkh.com/en/ir/reports/ir2023/ir2023.pdf
+- HTHKH 2023 Interim Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ir2023/ir2023.pdf
+- HTHKH 2023 Interim Report - Financial Statements: https://www.hthkh.com/en/ir/reports/ir2023/ir2023.pdf
+- HTHKH 2023 Annual Report - MD&A: https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- HTHKH 2023 Annual Report - Supplementary Financial Information: https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- HTHKH 2023 Annual Report: https://www.hthkh.com/en/ir/reports/ar2023/highlights.pdf
+- HTHKH 2023 Annual Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ar2023/cashflows.pdf
+- HTHKH 2023 Annual Report: https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf
+- HTHKH 2023 Annual Report - Financial Position: https://www.hthkh.com/en/ir/reports/ar2023/financialposition.pdf
+- HTHKH 2024 Interim Report: https://www.hthkh.com/en/ir/reports/ir2024/ir2024.pdf
+- HTHKH 2024 Interim Report: https://www.hthkh.com/en/ir/reports/ir2024/analysis.pdf
+- HTHKH 2024 Interim Report - MD&A: https://www.hthkh.com/en/ir/reports/ir2024/analysis.pdf
+- HTHKH 2024 Interim Report - Supplementary Financial Information: https://www.hthkh.com/en/ir/reports/ir2024/ir2024.pdf
+- HTHKH 2024 Interim Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ir2024/ir2024.pdf
+- HTHKH 2024 Interim Report - Financial Statements: https://www.hthkh.com/en/ir/reports/ir2024/ir2024.pdf
+- HTHKH 2024 Annual Report - MD&A: https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- HTHKH 2024 Annual Report - Supplementary Financial Information: https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- HTHKH 2024 Annual Report: https://www.hthkh.com/en/ir/reports/ar2024/highlights.pdf
+- HTHKH 2024 Annual Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ar2024/cashflows.pdf
+- HTHKH 2024 Annual Report: https://www.hthkh.com/en/ir/reports/ar2024/analysis.pdf
+- HTHKH 2024 Annual Report - Financial Position: https://www.hthkh.com/en/ir/reports/ar2024/financialposition.pdf
+- HTHKH 2025 Interim Report: https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf
+- HTHKH 2025 Interim Report - MD&A: https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf
+- HTHKH 2025 Interim Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ir2025/cashflows.pdf
+- HTHKH 2025 Interim Report - Financial Position: https://www.hthkh.com/en/ir/reports/ir2025/financialposition.pdf
+- HTHKH 2025 Annual Report: https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- HTHKH 2025 Annual Report - MD&A: https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf
+- HTHKH 2025 Annual Report: https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf
+- HTHKH 2025 Annual Report - Cash Flows: https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf
+- HTHKH 2025 Annual Report - Financial Position: https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf
+- HKT 2024 Annual Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0220/2025022000325.pdf
+- HKT 2023 Interim Report: https://www.hkexnews.hk/listedco/listconews/sehk/2023/0907/2023090700442.pdf
+- HKT 2023 Interim Report and 2024 Annual Results Announcement: https://www.hkexnews.hk/listedco/listconews/sehk/2023/0907/2023090700442.pdf
+- HKT 2024 Annual Report: https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf
+- HKT 2024 Annual Report and Annual Results Announcement: https://www.hkexnews.hk/listedco/listconews/sehk/2025/0402/2025040200953.pdf
+- HKT 2024 Interim Report: https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0905/2024090500415.pdf
+- HKT 2024 Interim Report and Annual Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0905/2024090500415.pdf
+- HKT 2025 Annual Results Announcement: https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf
+- HKT 2023 Annual Report: https://www.hkexnews.hk/listedco/listconews/sehk/2024/0402/2024040202244.pdf
+- HKT 2025 Interim Report: https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf
+- HKT 2025 Interim Report and Annual Results Announcement: https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf
+- HKT 2025 Annual Report: https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf
+- HKT 2025 Annual Report and Annual Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf
+- SmarTone 2022/23 Interim Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_interim.pdf
+- SmarTone 2022/23 Annual Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2022_2023_annual.pdf
+- SmarTone 2023/24 Interim Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_interim.pdf
+- SmarTone 2023/24 Annual Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2023_2024_annual.pdf
+- SmarTone 2024/25 Interim Results Announcement: https://www.smartoneholdings.com/about/investor/results/english/2025_interim_results.pdf
+- SmarTone 2025/26 Interim Results Announcement: https://www.smartoneholdings.com/about/investor/major_announcements/2026/02/2026_02_24_1029.pdf
+- SmarTone 2024/25 Annual Report: https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp
+- SmarTone 2024/25 Interim Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf
+- SmarTone 2024/25 Annual Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf
+- SmarTone 2025/26 Interim Report: https://www.smartoneholdings.com/about/investor/financial_reports/english/2025_2026_interim.pdf
+- HKBN FY23 Interim Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_InterimResultsAnnouncement.pdf
+- HKBN FY23 Annual Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf
+- HKBN FY24 Interim Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_InterimResultsAnnouncement.pdf
+- HKBN FY24 Annual Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY24_AnnualResultsAnnouncement.pdf
+- HKBN FY25 Interim Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_InterimResultsAnnouncement.pdf
+- HKBN FY25 Annual Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY25_AnnualResultsAnnouncement.pdf
+- HKBN FY26 Interim Results Announcement: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf
+- HKBN FY23 Interim Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_InterimReport_2023.pdf
+- HKBN FY23 Annual Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2023.pdf
+- HKBN FY24 Interim Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_InterimReport_2024.pdf
+- HKBN FY24 Annual Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2024.pdf
+- HKBN FY25 Interim Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_InterimReport_2025.pdf
+- HKBN FY25 Annual Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf
+- HKBN FY26 Interim Report: https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_InterimReport_2026.pdf
+- i-CABLE 2023 Interim Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2023/0825/2023082502129.pdf
+- i-CABLE 2023 Final Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0322/2024032201867.pdf
+- i-CABLE 2025 Interim Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0826/2025082601734.pdf
+- i-CABLE 2025 Final Results Announcement: https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf
+- i-CABLE 2023 Interim Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/650c442342fa6ad7b9a378a0_2023092101369.pdf
+- i-CABLE 2023 Annual Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/66265701c9699b6ccbd38aa4_2023%20Annual%20Report%20(Eng).pdf
+- i-CABLE 2024 Interim Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/66f15fb50ab5cc34cd11dcdd_2024092301348%20(Eng).pdf
+- i-CABLE 2024 Annual Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/680782762c959f8ed84d6f9f_ANNUAL%20REPORT%202024.pdf
+- i-CABLE 2025 Interim Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/68d28114d4d00d3da20d58b1_2025ir-Eng.pdf
+- i-CABLE 2025 Annual Report: https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf
+- 中国铁塔2025年第一季度未经审核的主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2025/int1q.pdf
+- 中国铁塔2025年度业绩演示: https://ir.china-tower.com/en/ir/presentation/pre260318.pdf
+- 中国铁塔2025业绩新闻稿: https://www.china-tower.com/Index/show/catid/17/id/1648.html
+- 中国移动2025年官方单季度经营数据: https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025
+- 中国移动2025中期报告（港交所）: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf
+- 中国移动2025前三季度业绩（港交所）: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf
+- 中国移动2025前三季度业绩（港交所，现金流口径）: https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf
+- 中国移动2025年报（港交所）: https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 中国移动2025年报（港交所，现金流口径）: https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf
+- 中国铁塔2025中期业绩: https://doc.irasia.com/listco/hk/chinatower/interim/2025/int.pdf
+- 中国铁塔2025年第一季度未经审核主要运营数据: https://doc.irasia.com/listco/hk/chinatower/interim/2025/int1q.pdf
+- 中国联通2025中期报告及600050半年度报告: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050
+- 中国联通2025年度报告及三季度报告（600050 A股口径）: https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12005771&stockid=600050
+- 中国联通2026年第一季度报告（上交所，600050 A股口径）: https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf
+- HGC company profile: https://www.hgc.com.hk/about-hgc/about-us/company-profile
+- Huawei 2025 Annual Report quick view: https://www.huawei.com/en/annual-report/2025

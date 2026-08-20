@@ -1,0 +1,34 @@
+{
+  "run_id": "20260616_151851_b00f23e7",
+  "started_at": "2026-06-16T15:18:51+08:00",
+  "completed_at": "2026-06-16T15:20:14+08:00",
+  "tasks": 210,
+  "accepted": 110,
+  "rejected": 100,
+  "review": 0,
+  "gaps": 97,
+  "recrawl_rows": [],
+  "recrawl_performed": false,
+  "online_ai": true,
+  "node_events": [
+    "[数据整理][证据接收] 读取 210 条原始指标证据，复用 107 条缓存判断。",
+    "[数据整理][来源分类] 完成来源分级：commercial 2、missing 9、official 114、public 85。",
+    "[数据整理][事实抽取] 形成 210 条候选事实；待抽取 102 条，缓存复用 59 条。",
+    "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 74 条。",
+    "[数据整理][质量审计] 发布 110 条、证据缺口 98 条、质量拒绝 2 条、待复核 0 条。",
+    "[数据整理][冲突仲裁] 检查 110 组事实，发现 0 组冲突。",
+    "[数据整理][缺口规划] 识别 97 个事实缺口，安排 0 个定向补爬行。",
+    "[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。",
+    "[数据整理][发布] 发布层写入 110 条，拒绝 100 条，待人工复核 0 条。"
+  ],
+  "extra": {
+    "evidence_gaps": 98,
+    "quality_rejected": 2,
+    "supervisor_decision": "publish",
+    "supervisor_reason": "没有满足补爬条件的候选行，进入发布。",
+    "online_batches": 5,
+    "fallback_batches": 0,
+    "cache_backup": "curation_data/cache_backups/20260616_151851_b00f23e7_before_publish.json",
+    "agent_trace": "curation_data/agent_trace.jsonl"
+  }
+}

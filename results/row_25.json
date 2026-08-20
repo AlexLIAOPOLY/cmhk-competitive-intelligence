@@ -1,0 +1,222 @@
+{
+  "row": 25,
+  "need": "本地生活咨询（例如公屋轮候等）",
+  "status": "ok",
+  "object": "社会资讯",
+  "entities": [
+    "社会资讯"
+  ],
+  "selected_fields": [
+    "本地生活咨询"
+  ],
+  "ignored_selected_fields": [],
+  "source_urls": [
+    "https://www.info.gov.hk/gia/general/today.htm",
+    "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html"
+  ],
+  "attempted_urls": [
+    "https://www.info.gov.hk/gia/general/today.htm",
+    "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html"
+  ],
+  "extracted": {
+    "本地生活咨询": ") Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy SOURCE: https://www.housingauthority.gov.hk/en/about-us/news"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "社会资讯",
+      "status": "ok",
+      "source_urls": [
+        "https://www.info.gov.hk/gia/general/today.htm",
+        "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html"
+      ],
+      "extracted": {
+        "本地生活咨询": ") Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy SOURCE: https://www.housingauthority.gov.hk/en/about-us/news"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 25,
+          "url": "https://www.info.gov.hk/gia/general/today.htm",
+          "final_url": "https://www.info.gov.hk/gia/general/today.htm",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "HKSAR Government Press Releases",
+          "bytes": 11701,
+          "elapsed_seconds": 0.596,
+          "method": "httpx",
+          "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Four Plum Blossom Award winners from Hebei Bangzi Opera Theatre of Hebei Province to stage masterpieces at Chinese Culture Festival 2026 in July (with photos) Red flag hoisted at Pui O Beach DH reminds public to take precautions against heat-related illnesses during very hot weather Very Hot Weather Warning issued Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+          "evidence_path": "evidence_cache/a7f8ef1e5fca645c724a24d1f25115d29000162423c2582fe90b4e153de00e11.txt",
+          "content_hash": "a7f8ef1e5fca645c724a24d1f25115d29000162423c2582fe90b4e153de00e11",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.info.gov.hk/gia/general/today.htm",
+              "final_url": "https://www.info.gov.hk/gia/general/today.htm",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 11701,
+              "text_chars": 639,
+              "title": "HKSAR Government Press Releases",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "社会资讯"
+          ]
+        },
+        {
+          "row": 25,
+          "url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+          "final_url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
+          "bytes": 119864,
+          "elapsed_seconds": 1.415,
+          "method": "httpx",
+          "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
+          "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
+          "content_hash": "43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+              "final_url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 119864,
+              "text_chars": 11432,
+              "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "社会资讯"
+          ]
+        }
+      ],
+      "confidence_score": 0.0,
+      "verification_reason": "The extracted data contains only the source URL and navigation text from the Housing Authority page, but the source text includes multiple press releases from both the HKSAR Government and the Housing Authority. The key content in the extracted data is a mixture of unrelated navigation elements (e.g., 'Archives Yesterday's Press Releases') and does not represent any actual press release content. Therefore, the extracted data does not accurately reflect the source text."
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 25,
+      "url": "https://www.info.gov.hk/gia/general/today.htm",
+      "final_url": "https://www.info.gov.hk/gia/general/today.htm",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "HKSAR Government Press Releases",
+      "bytes": 11701,
+      "elapsed_seconds": 0.596,
+      "method": "httpx",
+      "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Four Plum Blossom Award winners from Hebei Bangzi Opera Theatre of Hebei Province to stage masterpieces at Chinese Culture Festival 2026 in July (with photos) Red flag hoisted at Pui O Beach DH reminds public to take precautions against heat-related illnesses during very hot weather Very Hot Weather Warning issued Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+      "evidence_path": "evidence_cache/a7f8ef1e5fca645c724a24d1f25115d29000162423c2582fe90b4e153de00e11.txt",
+      "content_hash": "a7f8ef1e5fca645c724a24d1f25115d29000162423c2582fe90b4e153de00e11",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.info.gov.hk/gia/general/today.htm",
+          "final_url": "https://www.info.gov.hk/gia/general/today.htm",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 11701,
+          "text_chars": 639,
+          "title": "HKSAR Government Press Releases",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "社会资讯"
+      ]
+    },
+    {
+      "row": 25,
+      "url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+      "final_url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
+      "bytes": 119864,
+      "elapsed_seconds": 1.415,
+      "method": "httpx",
+      "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
+      "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
+      "content_hash": "43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+          "final_url": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 119864,
+          "text_chars": 11432,
+          "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "社会资讯"
+      ]
+    }
+  ],
+  "live_fetch_status": "ok",
+  "live_fetch_success_count": 2,
+  "evidence_fallback_count": 0,
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-23T03:33:17.850071+00:00",
+  "fetched_at_hkt": "2026-06-23T11:33:17.850087+08:00"
+}

@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-08-18T00:00:00+08:00",
+  "items": [
+    {
+      "operator_id": "three_hk",
+      "years": "2024-2025",
+      "metric": "customers_and_arpu",
+      "type": "scope_change_and_restatement",
+      "selected_basis": "retain original historical rows; record 2025 restated comparators",
+      "detail": "FY2025 isolates Hong Kong after disposal of the Macau operation and restates FY2024 postpaid 1.316m, prepaid 3.162m, total 4.478m, gross ARPU HKD190 and net ARPU HKD175."
+    },
+    {
+      "operator_id": "smartone",
+      "years": "2019",
+      "metric": "mobile_postpaid_arpu",
+      "type": "accounting_standard_change",
+      "selected_basis": "HKFRS 15 annual ARPU HKD224",
+      "detail": "The same report also showed HKD247 under the former HKAS 18 basis."
+    },
+    {
+      "operator_id": "smartone",
+      "years": "2017-2025",
+      "metric": "period_end",
+      "type": "fiscal_year_difference",
+      "selected_basis": "30 June fiscal year end",
+      "detail": "Do not align SmarTone FY labels with HKT/3HK/i-CABLE calendar years without using period_end."
+    },
+    {
+      "operator_id": "hkbn",
+      "years": "2024-2025",
+      "metric": "period_end",
+      "type": "fiscal_year_difference",
+      "selected_basis": "31 August fiscal year end",
+      "detail": "Do not align HKBN FY labels with calendar-year operators without using period_end."
+    },
+    {
+      "operator_id": "icable",
+      "years": "2023-2025",
+      "metric": "pay_tv_customers",
+      "type": "service_discontinuation",
+      "selected_basis": "leave later annual rows absent/gap",
+      "detail": "Pay-TV service ceased in June 2023; no zero or synthetic continuation is inserted."
+    },
+    {
+      "operator_id": "icable",
+      "years": "2022-2025",
+      "metric": "homes_passed_or_connected",
+      "type": "scope_wording_change",
+      "selected_basis": "retain comparator and scope text",
+      "detail": "2025 uses connected-households wording while prior disclosures describe households covered."
+    },
+    {
+      "operator_id": "hgc",
+      "years": "2016-2025",
+      "metric": "all_operating_kpis",
+      "type": "private_company_disclosure_gap",
+      "selected_basis": "only assert explicitly published values",
+      "detail": "HGC does not publish a listed-company-style annual customer/ARPU series; missing values remain source gaps."
+    }
+  ]
+}

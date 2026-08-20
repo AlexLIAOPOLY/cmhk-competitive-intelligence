@@ -1,0 +1,491 @@
+﻿operator_id,operator,year,metric_key,status
+china_mobile,中国移动,2016,mobile_subscribers,available
+china_mobile,中国移动,2016,5g_network_subscribers,not_collected
+china_mobile,中国移动,2016,fixed_broadband_subscribers,available
+china_mobile,中国移动,2016,mobile_arpu,available
+china_mobile,中国移动,2016,mobile_dou,available
+china_mobile,中国移动,2016,handset_data_traffic,available
+china_mobile,中国移动,2016,5g_base_stations,not_collected
+china_mobile,中国移动,2017,mobile_subscribers,available
+china_mobile,中国移动,2017,5g_network_subscribers,not_collected
+china_mobile,中国移动,2017,fixed_broadband_subscribers,available
+china_mobile,中国移动,2017,mobile_arpu,available
+china_mobile,中国移动,2017,mobile_dou,available
+china_mobile,中国移动,2017,handset_data_traffic,available
+china_mobile,中国移动,2017,5g_base_stations,not_collected
+china_mobile,中国移动,2018,mobile_subscribers,available
+china_mobile,中国移动,2018,5g_network_subscribers,not_collected
+china_mobile,中国移动,2018,fixed_broadband_subscribers,available
+china_mobile,中国移动,2018,mobile_arpu,available
+china_mobile,中国移动,2018,mobile_dou,available
+china_mobile,中国移动,2018,handset_data_traffic,available
+china_mobile,中国移动,2018,5g_base_stations,not_collected
+china_mobile,中国移动,2019,mobile_subscribers,available
+china_mobile,中国移动,2019,5g_network_subscribers,not_collected
+china_mobile,中国移动,2019,fixed_broadband_subscribers,available
+china_mobile,中国移动,2019,mobile_arpu,available
+china_mobile,中国移动,2019,mobile_dou,available
+china_mobile,中国移动,2019,handset_data_traffic,available
+china_mobile,中国移动,2019,5g_base_stations,available
+china_mobile,中国移动,2020,mobile_subscribers,available
+china_mobile,中国移动,2020,5g_network_subscribers,not_collected
+china_mobile,中国移动,2020,fixed_broadband_subscribers,available
+china_mobile,中国移动,2020,mobile_arpu,available
+china_mobile,中国移动,2020,mobile_dou,available
+china_mobile,中国移动,2020,handset_data_traffic,available
+china_mobile,中国移动,2020,5g_base_stations,available
+china_mobile,中国移动,2021,mobile_subscribers,available
+china_mobile,中国移动,2021,5g_network_subscribers,available
+china_mobile,中国移动,2021,fixed_broadband_subscribers,available
+china_mobile,中国移动,2021,mobile_arpu,available
+china_mobile,中国移动,2021,mobile_dou,available
+china_mobile,中国移动,2021,handset_data_traffic,available
+china_mobile,中国移动,2021,5g_base_stations,available
+china_mobile,中国移动,2022,mobile_subscribers,available
+china_mobile,中国移动,2022,5g_network_subscribers,available
+china_mobile,中国移动,2022,fixed_broadband_subscribers,available
+china_mobile,中国移动,2022,mobile_arpu,available
+china_mobile,中国移动,2022,mobile_dou,available
+china_mobile,中国移动,2022,handset_data_traffic,available
+china_mobile,中国移动,2022,5g_base_stations,available
+china_mobile,中国移动,2023,mobile_subscribers,available
+china_mobile,中国移动,2023,5g_network_subscribers,available
+china_mobile,中国移动,2023,fixed_broadband_subscribers,available
+china_mobile,中国移动,2023,mobile_arpu,available
+china_mobile,中国移动,2023,mobile_dou,available
+china_mobile,中国移动,2023,handset_data_traffic,available
+china_mobile,中国移动,2023,5g_base_stations,available
+china_mobile,中国移动,2024,mobile_subscribers,available
+china_mobile,中国移动,2024,5g_network_subscribers,available
+china_mobile,中国移动,2024,fixed_broadband_subscribers,available
+china_mobile,中国移动,2024,mobile_arpu,available
+china_mobile,中国移动,2024,mobile_dou,available
+china_mobile,中国移动,2024,handset_data_traffic,available
+china_mobile,中国移动,2024,5g_base_stations,available
+china_mobile,中国移动,2025,mobile_subscribers,available
+china_mobile,中国移动,2025,5g_network_subscribers,available
+china_mobile,中国移动,2025,fixed_broadband_subscribers,source_gap_confirmed
+china_mobile,中国移动,2025,mobile_arpu,available
+china_mobile,中国移动,2025,mobile_dou,available
+china_mobile,中国移动,2025,handset_data_traffic,available
+china_mobile,中国移动,2025,5g_base_stations,available
+china_telecom,中国电信,2016,mobile_subscribers,available
+china_telecom,中国电信,2016,5g_network_subscribers,not_collected
+china_telecom,中国电信,2016,fixed_broadband_subscribers,available
+china_telecom,中国电信,2016,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2016,handset_data_traffic,available
+china_telecom,中国电信,2016,5g_base_stations,not_collected
+china_telecom,中国电信,2017,mobile_subscribers,available
+china_telecom,中国电信,2017,5g_network_subscribers,not_collected
+china_telecom,中国电信,2017,fixed_broadband_subscribers,available
+china_telecom,中国电信,2017,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2017,handset_data_traffic,available
+china_telecom,中国电信,2017,5g_base_stations,not_collected
+china_telecom,中国电信,2018,mobile_subscribers,available
+china_telecom,中国电信,2018,5g_network_subscribers,not_collected
+china_telecom,中国电信,2018,fixed_broadband_subscribers,available
+china_telecom,中国电信,2018,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2018,handset_data_traffic,available
+china_telecom,中国电信,2018,5g_base_stations,not_collected
+china_telecom,中国电信,2019,mobile_subscribers,available
+china_telecom,中国电信,2019,5g_network_subscribers,not_collected
+china_telecom,中国电信,2019,fixed_broadband_subscribers,available
+china_telecom,中国电信,2019,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2019,handset_data_traffic,available
+china_telecom,中国电信,2019,5g_base_stations,not_collected
+china_telecom,中国电信,2020,mobile_subscribers,available
+china_telecom,中国电信,2020,5g_network_subscribers,not_collected
+china_telecom,中国电信,2020,fixed_broadband_subscribers,available
+china_telecom,中国电信,2020,mobile_arpu,available
+china_telecom,中国电信,2020,handset_data_traffic,available
+china_telecom,中国电信,2020,5g_base_stations,available
+china_telecom,中国电信,2021,mobile_subscribers,available
+china_telecom,中国电信,2021,5g_network_subscribers,not_collected
+china_telecom,中国电信,2021,fixed_broadband_subscribers,available
+china_telecom,中国电信,2021,mobile_arpu,available
+china_telecom,中国电信,2021,handset_data_traffic,available
+china_telecom,中国电信,2021,5g_base_stations,available
+china_telecom,中国电信,2022,mobile_subscribers,available
+china_telecom,中国电信,2022,5g_network_subscribers,not_collected
+china_telecom,中国电信,2022,fixed_broadband_subscribers,available
+china_telecom,中国电信,2022,mobile_arpu,available
+china_telecom,中国电信,2022,handset_data_traffic,available
+china_telecom,中国电信,2022,5g_base_stations,available
+china_telecom,中国电信,2023,mobile_subscribers,available
+china_telecom,中国电信,2023,5g_network_subscribers,not_collected
+china_telecom,中国电信,2023,fixed_broadband_subscribers,available
+china_telecom,中国电信,2023,mobile_arpu,available
+china_telecom,中国电信,2023,handset_data_traffic,source_gap_confirmed
+china_telecom,中国电信,2023,5g_base_stations,available
+china_telecom,中国电信,2024,mobile_subscribers,available
+china_telecom,中国电信,2024,5g_network_subscribers,available
+china_telecom,中国电信,2024,fixed_broadband_subscribers,available
+china_telecom,中国电信,2024,mobile_arpu,available
+china_telecom,中国电信,2024,handset_data_traffic,available
+china_telecom,中国电信,2024,5g_base_stations,available
+china_telecom,中国电信,2025,mobile_subscribers,available
+china_telecom,中国电信,2025,5g_network_subscribers,available
+china_telecom,中国电信,2025,fixed_broadband_subscribers,available
+china_telecom,中国电信,2025,mobile_arpu,available
+china_telecom,中国电信,2025,handset_data_traffic,available
+china_telecom,中国电信,2025,5g_base_stations,available
+china_unicom,中国联通,2016,mobile_subscribers,available
+china_unicom,中国联通,2016,5g_network_subscribers,not_collected
+china_unicom,中国联通,2016,fixed_broadband_subscribers,available
+china_unicom,中国联通,2016,mobile_arpu,available
+china_unicom,中国联通,2016,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2016,5g_base_stations,not_collected
+china_unicom,中国联通,2017,mobile_subscribers,available
+china_unicom,中国联通,2017,5g_network_subscribers,not_collected
+china_unicom,中国联通,2017,fixed_broadband_subscribers,available
+china_unicom,中国联通,2017,mobile_arpu,available
+china_unicom,中国联通,2017,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2017,5g_base_stations,not_collected
+china_unicom,中国联通,2018,mobile_subscribers,available
+china_unicom,中国联通,2018,5g_network_subscribers,not_collected
+china_unicom,中国联通,2018,fixed_broadband_subscribers,available
+china_unicom,中国联通,2018,mobile_arpu,available
+china_unicom,中国联通,2018,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2018,5g_base_stations,not_collected
+china_unicom,中国联通,2019,mobile_subscribers,available
+china_unicom,中国联通,2019,5g_network_subscribers,not_collected
+china_unicom,中国联通,2019,fixed_broadband_subscribers,available
+china_unicom,中国联通,2019,mobile_arpu,available
+china_unicom,中国联通,2019,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2019,5g_base_stations,not_collected
+china_unicom,中国联通,2020,mobile_subscribers,available
+china_unicom,中国联通,2020,5g_network_subscribers,not_collected
+china_unicom,中国联通,2020,fixed_broadband_subscribers,available
+china_unicom,中国联通,2020,mobile_arpu,available
+china_unicom,中国联通,2020,mobile_dou,available
+china_unicom,中国联通,2020,5g_base_stations,available
+china_unicom,中国联通,2021,mobile_subscribers,available
+china_unicom,中国联通,2021,5g_network_subscribers,not_collected
+china_unicom,中国联通,2021,fixed_broadband_subscribers,available
+china_unicom,中国联通,2021,mobile_arpu,available
+china_unicom,中国联通,2021,mobile_dou,available
+china_unicom,中国联通,2021,5g_base_stations,available
+china_unicom,中国联通,2022,mobile_subscribers,available
+china_unicom,中国联通,2022,5g_network_subscribers,not_collected
+china_unicom,中国联通,2022,fixed_broadband_subscribers,available
+china_unicom,中国联通,2022,mobile_arpu,available
+china_unicom,中国联通,2022,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2022,5g_base_stations,available
+china_unicom,中国联通,2023,mobile_subscribers,available
+china_unicom,中国联通,2023,5g_network_subscribers,not_collected
+china_unicom,中国联通,2023,fixed_broadband_subscribers,available
+china_unicom,中国联通,2023,mobile_arpu,source_gap_confirmed
+china_unicom,中国联通,2023,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2023,5g_base_stations,available
+china_unicom,中国联通,2024,mobile_subscribers,available
+china_unicom,中国联通,2024,5g_network_subscribers,not_collected
+china_unicom,中国联通,2024,fixed_broadband_subscribers,available
+china_unicom,中国联通,2024,mobile_arpu,source_gap_confirmed
+china_unicom,中国联通,2024,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2024,5g_base_stations,available
+china_unicom,中国联通,2025,mobile_subscribers,available
+china_unicom,中国联通,2025,5g_network_subscribers,available
+china_unicom,中国联通,2025,fixed_broadband_subscribers,available
+china_unicom,中国联通,2025,mobile_arpu,source_gap_confirmed
+china_unicom,中国联通,2025,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2025,5g_base_stations,available
+china_broadnet,中国广电,2016,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2016,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2016,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2016,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2016,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2016,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2016,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2016,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2016,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2016,revenue,source_gap_confirmed
+china_broadnet,中国广电,2016,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2016,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2016,capex,source_gap_confirmed
+china_broadnet,中国广电,2017,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2017,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2017,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2017,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2017,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2017,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2017,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2017,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2017,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2017,revenue,source_gap_confirmed
+china_broadnet,中国广电,2017,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2017,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2017,capex,source_gap_confirmed
+china_broadnet,中国广电,2018,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2018,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2018,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2018,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2018,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2018,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2018,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2018,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2018,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2018,revenue,source_gap_confirmed
+china_broadnet,中国广电,2018,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2018,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2018,capex,source_gap_confirmed
+china_broadnet,中国广电,2019,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2019,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2019,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2019,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2019,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2019,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2019,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2019,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2019,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2019,revenue,source_gap_confirmed
+china_broadnet,中国广电,2019,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2019,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2019,capex,source_gap_confirmed
+china_broadnet,中国广电,2020,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2020,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2020,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2020,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2020,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2020,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2020,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2020,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2020,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2020,revenue,source_gap_confirmed
+china_broadnet,中国广电,2020,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2020,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2020,capex,source_gap_confirmed
+china_broadnet,中国广电,2021,mobile_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2021,5g_network_subscribers,not_applicable_precommercial
+china_broadnet,中国广电,2021,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2021,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2021,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2021,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2021,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2021,5g_base_stations,not_applicable_precommercial
+china_broadnet,中国广电,2021,cable_tv_actual_users,not_collected
+china_broadnet,中国广电,2021,revenue,source_gap_confirmed
+china_broadnet,中国广电,2021,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2021,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2021,capex,source_gap_confirmed
+china_broadnet,中国广电,2022,mobile_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2022,5g_network_subscribers,available
+china_broadnet,中国广电,2022,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2022,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2022,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2022,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2022,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2022,5g_base_stations,available
+china_broadnet,中国广电,2022,cable_tv_actual_users,available
+china_broadnet,中国广电,2022,revenue,source_gap_confirmed
+china_broadnet,中国广电,2022,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2022,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2022,capex,source_gap_confirmed
+china_broadnet,中国广电,2023,mobile_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2023,5g_network_subscribers,available
+china_broadnet,中国广电,2023,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2023,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2023,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2023,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2023,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2023,5g_base_stations,available
+china_broadnet,中国广电,2023,cable_tv_actual_users,available
+china_broadnet,中国广电,2023,revenue,source_gap_confirmed
+china_broadnet,中国广电,2023,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2023,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2023,capex,source_gap_confirmed
+china_broadnet,中国广电,2024,mobile_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2024,5g_network_subscribers,available
+china_broadnet,中国广电,2024,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2024,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2024,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2024,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2024,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2024,5g_base_stations,source_gap_confirmed
+china_broadnet,中国广电,2024,cable_tv_actual_users,available
+china_broadnet,中国广电,2024,revenue,source_gap_confirmed
+china_broadnet,中国广电,2024,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2024,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2024,capex,source_gap_confirmed
+china_broadnet,中国广电,2025,mobile_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2025,5g_network_subscribers,available
+china_broadnet,中国广电,2025,fixed_broadband_subscribers,source_gap_confirmed
+china_broadnet,中国广电,2025,mobile_arpu,source_gap_confirmed
+china_broadnet,中国广电,2025,broadband_arpu,source_gap_confirmed
+china_broadnet,中国广电,2025,mobile_dou,source_gap_confirmed
+china_broadnet,中国广电,2025,total_data_traffic,source_gap_confirmed
+china_broadnet,中国广电,2025,5g_base_stations,source_gap_confirmed
+china_broadnet,中国广电,2025,cable_tv_actual_users,available
+china_broadnet,中国广电,2025,revenue,source_gap_confirmed
+china_broadnet,中国广电,2025,ebitda,source_gap_confirmed
+china_broadnet,中国广电,2025,net_profit,source_gap_confirmed
+china_broadnet,中国广电,2025,capex,source_gap_confirmed
+bharti_airtel,Bharti Airtel,2016,total_customers,available
+bharti_airtel,Bharti Airtel,2016,revenue,available
+bharti_airtel,Bharti Airtel,2016,ebitda,available
+bharti_airtel,Bharti Airtel,2016,net_profit,available
+bharti_airtel,Bharti Airtel,2016,capex,available
+bharti_airtel,Bharti Airtel,2016,network_towers,available
+bharti_airtel,Bharti Airtel,2016,total_data_traffic,available
+bharti_airtel,Bharti Airtel,2017,total_customers,available
+bharti_airtel,Bharti Airtel,2017,revenue,available
+bharti_airtel,Bharti Airtel,2017,ebitda,available
+bharti_airtel,Bharti Airtel,2017,net_profit,available
+bharti_airtel,Bharti Airtel,2017,capex,available
+bharti_airtel,Bharti Airtel,2017,network_towers,available
+bharti_airtel,Bharti Airtel,2017,total_data_traffic,available
+bharti_airtel,Bharti Airtel,2018,total_customers,available
+bharti_airtel,Bharti Airtel,2018,revenue,available
+bharti_airtel,Bharti Airtel,2018,ebitda,available
+bharti_airtel,Bharti Airtel,2018,net_profit,available
+bharti_airtel,Bharti Airtel,2018,capex,available
+bharti_airtel,Bharti Airtel,2018,network_towers,available
+bharti_airtel,Bharti Airtel,2018,total_data_traffic,available
+bharti_airtel,Bharti Airtel,2019,total_customers,available
+bharti_airtel,Bharti Airtel,2019,revenue,available
+bharti_airtel,Bharti Airtel,2019,ebitda,available
+bharti_airtel,Bharti Airtel,2019,net_profit,available
+bharti_airtel,Bharti Airtel,2019,capex,available
+bharti_airtel,Bharti Airtel,2019,network_towers,available
+bharti_airtel,Bharti Airtel,2019,total_data_traffic,available
+bharti_airtel,Bharti Airtel,2020,total_customers,available
+bharti_airtel,Bharti Airtel,2020,revenue,available
+bharti_airtel,Bharti Airtel,2020,ebitda,available
+bharti_airtel,Bharti Airtel,2020,net_profit,available
+bharti_airtel,Bharti Airtel,2020,capex,available
+bharti_airtel,Bharti Airtel,2020,network_towers,available
+bharti_airtel,Bharti Airtel,2020,total_data_traffic,available
+bharti_airtel,Bharti Airtel,2021,total_customers,available
+bharti_airtel,Bharti Airtel,2021,revenue,available
+bharti_airtel,Bharti Airtel,2021,ebitda,available
+bharti_airtel,Bharti Airtel,2021,net_profit,available
+bharti_airtel,Bharti Airtel,2021,capex,available
+bharti_airtel,Bharti Airtel,2021,network_towers,available
+bharti_airtel,Bharti Airtel,2021,total_data_traffic,not_collected
+bharti_airtel,Bharti Airtel,2022,total_customers,available
+bharti_airtel,Bharti Airtel,2022,revenue,available
+bharti_airtel,Bharti Airtel,2022,ebitda,available
+bharti_airtel,Bharti Airtel,2022,net_profit,available
+bharti_airtel,Bharti Airtel,2022,capex,available
+bharti_airtel,Bharti Airtel,2022,network_towers,available
+bharti_airtel,Bharti Airtel,2022,total_data_traffic,not_collected
+bharti_airtel,Bharti Airtel,2023,total_customers,available
+bharti_airtel,Bharti Airtel,2023,revenue,available
+bharti_airtel,Bharti Airtel,2023,ebitda,available
+bharti_airtel,Bharti Airtel,2023,net_profit,available
+bharti_airtel,Bharti Airtel,2023,capex,available
+bharti_airtel,Bharti Airtel,2023,network_towers,available
+bharti_airtel,Bharti Airtel,2023,total_data_traffic,not_collected
+bharti_airtel,Bharti Airtel,2024,total_customers,available
+bharti_airtel,Bharti Airtel,2024,revenue,available
+bharti_airtel,Bharti Airtel,2024,ebitda,available
+bharti_airtel,Bharti Airtel,2024,net_profit,available
+bharti_airtel,Bharti Airtel,2024,capex,available
+bharti_airtel,Bharti Airtel,2024,network_towers,available
+bharti_airtel,Bharti Airtel,2024,total_data_traffic,not_collected
+bharti_airtel,Bharti Airtel,2025,total_customers,available
+bharti_airtel,Bharti Airtel,2025,revenue,available
+bharti_airtel,Bharti Airtel,2025,ebitda,available
+bharti_airtel,Bharti Airtel,2025,net_profit,available
+bharti_airtel,Bharti Airtel,2025,capex,available
+bharti_airtel,Bharti Airtel,2025,network_towers,available
+bharti_airtel,Bharti Airtel,2025,total_data_traffic,not_collected
+reliance_jio,Reliance Jio,2016,total_customers,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,value_of_sales_and_services,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,revenue_from_operations,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,ebitda,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,mobile_arpu,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,mobile_dou,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,total_data_traffic,not_applicable_precommercial
+reliance_jio,Reliance Jio,2016,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2016,connected_homes,not_collected
+reliance_jio,Reliance Jio,2016,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2017,total_customers,available
+reliance_jio,Reliance Jio,2017,value_of_sales_and_services,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,revenue_from_operations,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,ebitda,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,mobile_arpu,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,mobile_dou,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,total_data_traffic,source_gap_confirmed
+reliance_jio,Reliance Jio,2017,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2017,connected_homes,not_collected
+reliance_jio,Reliance Jio,2017,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2018,total_customers,available
+reliance_jio,Reliance Jio,2018,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2018,revenue_from_operations,source_gap_confirmed
+reliance_jio,Reliance Jio,2018,ebitda,source_gap_confirmed
+reliance_jio,Reliance Jio,2018,mobile_arpu,source_gap_confirmed
+reliance_jio,Reliance Jio,2018,mobile_dou,source_gap_confirmed
+reliance_jio,Reliance Jio,2018,total_data_traffic,source_gap_confirmed
+reliance_jio,Reliance Jio,2018,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2018,connected_homes,not_collected
+reliance_jio,Reliance Jio,2018,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2019,total_customers,available
+reliance_jio,Reliance Jio,2019,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2019,revenue_from_operations,source_gap_confirmed
+reliance_jio,Reliance Jio,2019,ebitda,source_gap_confirmed
+reliance_jio,Reliance Jio,2019,mobile_arpu,available
+reliance_jio,Reliance Jio,2019,mobile_dou,available
+reliance_jio,Reliance Jio,2019,total_data_traffic,source_gap_confirmed
+reliance_jio,Reliance Jio,2019,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2019,connected_homes,not_collected
+reliance_jio,Reliance Jio,2019,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2020,total_customers,available
+reliance_jio,Reliance Jio,2020,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2020,revenue_from_operations,available
+reliance_jio,Reliance Jio,2020,ebitda,available
+reliance_jio,Reliance Jio,2020,mobile_arpu,available
+reliance_jio,Reliance Jio,2020,mobile_dou,available
+reliance_jio,Reliance Jio,2020,total_data_traffic,source_gap_confirmed
+reliance_jio,Reliance Jio,2020,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2020,connected_homes,not_collected
+reliance_jio,Reliance Jio,2020,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2021,total_customers,available
+reliance_jio,Reliance Jio,2021,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2021,revenue_from_operations,available
+reliance_jio,Reliance Jio,2021,ebitda,available
+reliance_jio,Reliance Jio,2021,mobile_arpu,available
+reliance_jio,Reliance Jio,2021,mobile_dou,available
+reliance_jio,Reliance Jio,2021,total_data_traffic,available
+reliance_jio,Reliance Jio,2021,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2021,connected_homes,source_gap_confirmed
+reliance_jio,Reliance Jio,2021,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2022,total_customers,available
+reliance_jio,Reliance Jio,2022,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2022,revenue_from_operations,available
+reliance_jio,Reliance Jio,2022,ebitda,available
+reliance_jio,Reliance Jio,2022,mobile_arpu,available
+reliance_jio,Reliance Jio,2022,mobile_dou,available
+reliance_jio,Reliance Jio,2022,total_data_traffic,available
+reliance_jio,Reliance Jio,2022,5g_network_subscribers,not_collected
+reliance_jio,Reliance Jio,2022,connected_homes,available
+reliance_jio,Reliance Jio,2022,5g_base_stations,not_collected
+reliance_jio,Reliance Jio,2023,total_customers,available
+reliance_jio,Reliance Jio,2023,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2023,revenue_from_operations,available
+reliance_jio,Reliance Jio,2023,ebitda,available
+reliance_jio,Reliance Jio,2023,mobile_arpu,available
+reliance_jio,Reliance Jio,2023,mobile_dou,available
+reliance_jio,Reliance Jio,2023,total_data_traffic,available
+reliance_jio,Reliance Jio,2023,5g_network_subscribers,source_gap_confirmed
+reliance_jio,Reliance Jio,2023,connected_homes,available
+reliance_jio,Reliance Jio,2023,5g_base_stations,available
+reliance_jio,Reliance Jio,2024,total_customers,available
+reliance_jio,Reliance Jio,2024,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2024,revenue_from_operations,available
+reliance_jio,Reliance Jio,2024,ebitda,available
+reliance_jio,Reliance Jio,2024,mobile_arpu,available
+reliance_jio,Reliance Jio,2024,mobile_dou,available
+reliance_jio,Reliance Jio,2024,total_data_traffic,available
+reliance_jio,Reliance Jio,2024,5g_network_subscribers,available
+reliance_jio,Reliance Jio,2024,connected_homes,available
+reliance_jio,Reliance Jio,2024,5g_base_stations,available
+reliance_jio,Reliance Jio,2025,total_customers,available
+reliance_jio,Reliance Jio,2025,value_of_sales_and_services,available
+reliance_jio,Reliance Jio,2025,revenue_from_operations,available
+reliance_jio,Reliance Jio,2025,ebitda,available
+reliance_jio,Reliance Jio,2025,mobile_arpu,available
+reliance_jio,Reliance Jio,2025,mobile_dou,available
+reliance_jio,Reliance Jio,2025,total_data_traffic,available
+reliance_jio,Reliance Jio,2025,5g_network_subscribers,available
+reliance_jio,Reliance Jio,2025,connected_homes,available
+reliance_jio,Reliance Jio,2025,5g_base_stations,available

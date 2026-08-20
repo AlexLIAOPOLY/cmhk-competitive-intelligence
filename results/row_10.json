@@ -1,0 +1,278 @@
+{
+  "row": 10,
+  "need": "战略合作、中标、5G-A、家宽布局、区域动作",
+  "status": "ok",
+  "object": "SmarTone",
+  "entities": [
+    "SmarTone"
+  ],
+  "selected_fields": [
+    "战略合作",
+    "中标",
+    "5G-A",
+    "家宽布局",
+    "区域动作"
+  ],
+  "ignored_selected_fields": [],
+  "source_urls": [
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1"
+  ],
+  "attempted_urls": [
+    "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+  ],
+  "extracted": {
+    "战略合作": "demand for premium home connectivity. • Enhanced home service offering now includes 5G Broadband, Disney+ content, and Home Phone Plus—a compelling family proposition. • Strategic partnerships and tailored offerings for ",
+    "中标": "Tech Corner • Service Corner at retail shops to help customers with their devices • One-on-one AI consultation services Hong Kong Retail Management Association Service & Courtesy Awards 9 awards for shops and individual ",
+    "5G-A": "Central as a start 14 Leading the Future: From Smart Infrastructure to Advanced Network Intelligence Premier 5G network x SmarTone PRIORITY • Deliver 3× network resources through 5G-Advanced technology and network slicin",
+    "家宽布局": "ARPU Mobile Postpaid ARPU ($) $224 $222 $224 2x +15% + 1% YoY YoY 4G ARPU 5G ARPU Dec-23 Dec-24 Dec-25 Customer Number (‘000) 2,647 2,873 3,158 + 10% YoY Dec-23 Dec-24 Dec-25 5 5G Home Broadband: Sustaining Strong Moment",
+    "区域动作": "netration Rate increased to 70% in December 2025 64% 70% 56% +6pp-3pp YoY 1H'24 1H'25 1H'26 9 Customer Centric: Through Network Leadership 5G Advanced Leadership First operator in Hong Kong to leverage 5G Advanced, offer"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "SmarTone",
+      "status": "ok",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+        "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1"
+      ],
+      "extracted": {
+        "战略合作": "demand for premium home connectivity. • Enhanced home service offering now includes 5G Broadband, Disney+ content, and Home Phone Plus—a compelling family proposition. • Strategic partnerships and tailored offerings for ",
+        "中标": "Tech Corner • Service Corner at retail shops to help customers with their devices • One-on-one AI consultation services Hong Kong Retail Management Association Service & Courtesy Awards 9 awards for shops and individual ",
+        "5G-A": "Central as a start 14 Leading the Future: From Smart Infrastructure to Advanced Network Intelligence Premier 5G network x SmarTone PRIORITY • Deliver 3× network resources through 5G-Advanced technology and network slicin",
+        "家宽布局": "ARPU Mobile Postpaid ARPU ($) $224 $222 $224 2x +15% + 1% YoY YoY 4G ARPU 5G ARPU Dec-23 Dec-24 Dec-25 Customer Number (‘000) 2,647 2,873 3,158 + 10% YoY Dec-23 Dec-24 Dec-25 5 5G Home Broadband: Sustaining Strong Moment",
+        "区域动作": "netration Rate increased to 70% in December 2025 64% 70% 56% +6pp-3pp YoY 1H'24 1H'25 1H'26 9 Customer Centric: Through Network Leadership 5G Advanced Leadership First operator in Hong Kong to leverage 5G Advanced, offer"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 10,
+          "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 3484296,
+          "elapsed_seconds": 2.022,
+          "method": "httpx",
+          "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+          "evidence_path": "evidence_cache/02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380.txt",
+          "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 3484296,
+              "text_chars": 13913,
+              "title": "PDF extracted by pdftotext",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        },
+        {
+          "row": 10,
+          "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
+          "bytes": 244989,
+          "elapsed_seconds": 3.885,
+          "method": "curl_chrome_ua",
+          "text_sample": "AASTOCKS Financial News - SMARTONE TELE (00315.HK) 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants A",
+          "evidence_path": "evidence_cache/476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c.txt",
+          "content_hash": "476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+              "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+              "status": 403,
+              "method": "httpx",
+              "bytes": 25568,
+              "text_chars": 515,
+              "title": "AASTOCKS",
+              "error": "",
+              "meta_refresh_url": ""
+            },
+            {
+              "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+              "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+              "status": 403,
+              "method": "curl_crawler_ua",
+              "bytes": 25568,
+              "text_chars": 515,
+              "title": "AASTOCKS",
+              "error": "",
+              "meta_refresh_url": ""
+            },
+            {
+              "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+              "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
+              "status": 200,
+              "method": "curl_chrome_ua",
+              "bytes": 244989,
+              "text_chars": 21503,
+              "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "commercial_data",
+          "jurisdiction": "HK",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        }
+      ],
+      "confidence_score": 0.95,
+      "verification_reason": "The extracted data accurately captures key phrases and values from the source text, including references to 5G Home Broadband, strategic partnerships, AI services, 5G-Advanced, and detailed financial metrics. Minor truncation and slight reordering do not affect factual accuracy."
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 10,
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 3484296,
+      "elapsed_seconds": 2.022,
+      "method": "httpx",
+      "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+      "evidence_path": "evidence_cache/02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380.txt",
+      "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 3484296,
+          "text_chars": 13913,
+          "title": "PDF extracted by pdftotext",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 10,
+      "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+      "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
+      "bytes": 244989,
+      "elapsed_seconds": 3.885,
+      "method": "curl_chrome_ua",
+      "text_sample": "AASTOCKS Financial News - SMARTONE TELE (00315.HK) 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants A",
+      "evidence_path": "evidence_cache/476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c.txt",
+      "content_hash": "476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "status": 403,
+          "method": "httpx",
+          "bytes": 25568,
+          "text_chars": 515,
+          "title": "AASTOCKS",
+          "error": "",
+          "meta_refresh_url": ""
+        },
+        {
+          "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "status": 403,
+          "method": "curl_crawler_ua",
+          "bytes": 25568,
+          "text_chars": 515,
+          "title": "AASTOCKS",
+          "error": "",
+          "meta_refresh_url": ""
+        },
+        {
+          "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+          "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
+          "status": 200,
+          "method": "curl_chrome_ua",
+          "bytes": 244989,
+          "text_chars": 21503,
+          "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    }
+  ],
+  "live_fetch_status": "ok",
+  "live_fetch_success_count": 2,
+  "evidence_fallback_count": 0,
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-24T03:32:49.807958+00:00",
+  "fetched_at_hkt": "2026-06-24T11:32:49.808139+08:00"
+}

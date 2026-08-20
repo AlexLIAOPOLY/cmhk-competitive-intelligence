@@ -1,0 +1,1109 @@
+{
+  "generated_at": "2026-06-16T00:06:32",
+  "period": "FY2023-FY2025",
+  "excluded": [
+    "broker_view"
+  ],
+  "companies": [
+    {
+      "subject": "中国移动",
+      "legal_name": "China Mobile Limited",
+      "ticker": "0941.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions CNY",
+      "metrics": {
+        "revenue": {
+          "2025": "1,050,187",
+          "2024": "1,040,759",
+          "2023": "1,009,309"
+        },
+        "revenue_growth_yoy": {
+          "2025": "0.91%",
+          "2024": "3.12%",
+          "2023": "7.69%"
+        },
+        "gross_profit": {
+          "2025": "302,975",
+          "2024": "301,770",
+          "2023": "284,705"
+        },
+        "gross_margin": {
+          "2025": "28.85%",
+          "2024": "28.99%",
+          "2023": "28.21%"
+        },
+        "operating_income": {
+          "2025": "149,230",
+          "2024": "144,155",
+          "2023": "139,349"
+        },
+        "operating_margin": {
+          "2025": "14.21%",
+          "2024": "13.85%",
+          "2023": "13.81%"
+        },
+        "net_income": {
+          "2025": "137,095",
+          "2024": "138,373",
+          "2023": "131,766"
+        },
+        "ebitda": {
+          "2025": "295,216",
+          "2024": "335,256",
+          "2023": "346,481"
+        },
+        "ebitda_margin": {
+          "2025": "28.11%",
+          "2024": "32.21%",
+          "2023": "34.33%"
+        },
+        "operating_cash_flow": {
+          "2025": "232,919",
+          "2024": "315,741",
+          "2023": "303,780"
+        },
+        "capital_expenditures": {
+          "2025": "-156,951",
+          "2024": "-155,979",
+          "2023": "-181,263"
+        },
+        "free_cash_flow": {
+          "2025": "75,968",
+          "2024": "159,762",
+          "2023": "122,517"
+        },
+        "cash_and_equivalents": {
+          "2025": "171,094",
+          "2024": "242,275",
+          "2023": "178,772"
+        },
+        "total_assets": {
+          "2025": "2,092,882",
+          "2024": "2,072,827",
+          "2023": "1,957,357"
+        },
+        "total_debt": {
+          "2025": "101,197",
+          "2024": "88,442",
+          "2023": "102,934"
+        }
+      },
+      "sources": [
+        {
+          "label": "中国移动2026年第一季度报告",
+          "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
+          "type": "quarterly_results"
+        },
+        {
+          "label": "中国移动2025年度业绩公告",
+          "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020",
+          "type": "annual_results"
+        },
+        {
+          "label": "中国移动股息历史",
+          "url": "https://www.chinamobileltd.com/en/ir/dividend.php",
+          "type": "official_dividend"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0941/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0941/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0941/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "4.1%",
+        "net_income_2023_to_2025": "4.0%"
+      }
+    },
+    {
+      "subject": "中国电信",
+      "legal_name": "China Telecom Corporation Limited",
+      "ticker": "0728.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions CNY",
+      "metrics": {
+        "revenue": {
+          "2025": "523,925",
+          "2024": "523,569",
+          "2023": "513,551"
+        },
+        "revenue_growth_yoy": {
+          "2025": "0.07%",
+          "2024": "1.95%",
+          "2023": "6.67%"
+        },
+        "gross_profit": {
+          "2025": "152,310",
+          "2024": "150,067",
+          "2023": "260,335"
+        },
+        "gross_margin": {
+          "2025": "29.07%",
+          "2024": "28.66%",
+          "2023": "50.69%"
+        },
+        "operating_income": {
+          "2025": "40,325",
+          "2024": "39,117",
+          "2023": "37,128"
+        },
+        "operating_margin": {
+          "2025": "7.70%",
+          "2024": "7.47%",
+          "2023": "7.23%"
+        },
+        "net_income": {
+          "2025": "33,185",
+          "2024": "33,012",
+          "2023": "30,446"
+        },
+        "ebitda": {
+          "2025": "119,803",
+          "2024": "123,998",
+          "2023": "112,362"
+        },
+        "ebitda_margin": {
+          "2025": "22.87%",
+          "2024": "23.68%",
+          "2023": "21.88%"
+        },
+        "operating_cash_flow": {
+          "2025": "124,519",
+          "2024": "145,268",
+          "2023": "137,508"
+        },
+        "capital_expenditures": {
+          "2025": "-73,148",
+          "2024": "-90,271",
+          "2023": "-89,866"
+        },
+        "free_cash_flow": {
+          "2025": "51,371",
+          "2024": "54,997",
+          "2023": "47,642"
+        },
+        "cash_and_equivalents": {
+          "2025": "99,806",
+          "2024": "102,009",
+          "2023": "81,046"
+        },
+        "total_assets": {
+          "2025": "870,644",
+          "2024": "866,625",
+          "2023": "835,814"
+        },
+        "total_debt": {
+          "2025": "61,932",
+          "2024": "69,355",
+          "2023": "65,191"
+        }
+      },
+      "sources": [
+        {
+          "label": "中国电信2026年第一季度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF",
+          "type": "quarterly_results"
+        },
+        {
+          "label": "中国电信2025年度业绩公告",
+          "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "中国电信股息历史",
+          "url": "https://www.chinatelecom-h.com/en/ir/dividend.php",
+          "type": "official_dividend"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0728/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0728/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0728/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "2.0%",
+        "net_income_2023_to_2025": "9.0%"
+      }
+    },
+    {
+      "subject": "中国联通",
+      "legal_name": "China Unicom (Hong Kong) Limited",
+      "ticker": "0762.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions CNY",
+      "metrics": {
+        "revenue": {
+          "2025": "392,223",
+          "2024": "389,589",
+          "2023": "372,597"
+        },
+        "revenue_growth_yoy": {
+          "2025": "0.68%",
+          "2024": "4.56%",
+          "2023": "4.97%"
+        },
+        "gross_profit": {
+          "2025": "216,463",
+          "2024": "217,153",
+          "2023": "211,398"
+        },
+        "gross_margin": {
+          "2025": "55.19%",
+          "2024": "55.74%",
+          "2023": "56.74%"
+        },
+        "operating_income": {
+          "2025": "15,897",
+          "2024": "13,206",
+          "2023": "16,146"
+        },
+        "operating_margin": {
+          "2025": "4.05%",
+          "2024": "3.39%",
+          "2023": "4.33%"
+        },
+        "net_income": {
+          "2025": "20,816",
+          "2024": "20,613",
+          "2023": "18,726"
+        },
+        "ebitda": {
+          "2025": "80,522",
+          "2024": "79,494",
+          "2023": "84,122"
+        },
+        "ebitda_margin": {
+          "2025": "20.53%",
+          "2024": "20.40%",
+          "2023": "22.58%"
+        },
+        "operating_cash_flow": {
+          "2025": "90,175",
+          "2024": "89,402",
+          "2023": "102,391"
+        },
+        "capital_expenditures": {
+          "2025": "-67,641",
+          "2024": "-75,740",
+          "2023": "-79,375"
+        },
+        "free_cash_flow": {
+          "2025": "22,534",
+          "2024": "13,662",
+          "2023": "23,016"
+        },
+        "cash_and_equivalents": {
+          "2025": "25,109",
+          "2024": "28,480",
+          "2023": "47,733"
+        },
+        "total_assets": {
+          "2025": "669,618",
+          "2024": "671,237",
+          "2023": "661,051"
+        },
+        "total_debt": {
+          "2025": "34,087",
+          "2024": "41,207",
+          "2023": "46,425"
+        }
+      },
+      "sources": [
+        {
+          "label": "中国联通2026年一季度FAQ",
+          "url": "https://www.chinaunicom.com.hk/en/ir/faq.php",
+          "type": "quarterly_results"
+        },
+        {
+          "label": "中国联通2025年度业绩公告",
+          "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "中国联通股息历史",
+          "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php",
+          "type": "official_dividend"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0762/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0762/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0762/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "5.3%",
+        "net_income_2023_to_2025": "11.2%"
+      }
+    },
+    {
+      "subject": "中国铁塔",
+      "legal_name": "China Tower Corporation Limited",
+      "ticker": "0788.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions CNY",
+      "metrics": {
+        "revenue": {
+          "2025": "100,411",
+          "2024": "97,772",
+          "2023": "94,009"
+        },
+        "revenue_growth_yoy": {
+          "2025": "2.70%",
+          "2024": "4.00%",
+          "2023": "1.99%"
+        },
+        "gross_profit": {
+          "2025": "83,231",
+          "2024": "81,207",
+          "2023": "77,757"
+        },
+        "gross_margin": {
+          "2025": "82.89%",
+          "2024": "83.06%",
+          "2023": "82.71%"
+        },
+        "operating_income": {
+          "2025": "17,187",
+          "2024": "15,804",
+          "2023": "14,898"
+        },
+        "operating_margin": {
+          "2025": "17.12%",
+          "2024": "16.16%",
+          "2023": "15.85%"
+        },
+        "net_income": {
+          "2025": "11,630",
+          "2024": "10,729",
+          "2023": "9,750"
+        },
+        "ebitda": {
+          "2025": "54,676",
+          "2024": "54,646",
+          "2023": "52,513"
+        },
+        "ebitda_margin": {
+          "2025": "54.45%",
+          "2024": "55.89%",
+          "2023": "55.86%"
+        },
+        "operating_cash_flow": {
+          "2025": "56,116",
+          "2024": "49,468",
+          "2023": "32,840"
+        },
+        "capital_expenditures": {
+          "2025": "-30,510",
+          "2024": "-29,783",
+          "2023": "-33,464"
+        },
+        "free_cash_flow": {
+          "2025": "25,606",
+          "2024": "19,685",
+          "2023": "-624"
+        },
+        "cash_and_equivalents": {
+          "2025": "12,312",
+          "2024": "2,598",
+          "2023": "3,955"
+        },
+        "total_assets": {
+          "2025": "336,579",
+          "2024": "332,834",
+          "2023": "326,007"
+        },
+        "total_debt": {
+          "2025": "90,460",
+          "2024": "92,542",
+          "2023": "94,626"
+        }
+      },
+      "sources": [
+        {
+          "label": "中国铁塔2026年第一季度未经审核KPI",
+          "url": "https://ir.china-tower.com/en/global/home.php",
+          "type": "quarterly_results"
+        },
+        {
+          "label": "中国铁塔2025年度业绩演示",
+          "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "中国铁塔2025业绩新闻稿",
+          "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html",
+          "type": "official_news"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0788/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0788/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0788/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "6.8%",
+        "net_income_2023_to_2025": "19.3%"
+      }
+    },
+    {
+      "subject": "HKT / csl / 1O1O",
+      "legal_name": "HKT Trust and HKT Limited",
+      "ticker": "6823.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions HKD",
+      "metrics": {
+        "revenue": {
+          "2025": "36,553",
+          "2024": "34,753",
+          "2023": "34,330"
+        },
+        "revenue_growth_yoy": {
+          "2025": "5.18%",
+          "2024": "1.23%",
+          "2023": "0.60%"
+        },
+        "gross_profit": {
+          "2025": "17,413",
+          "2024": "17,043",
+          "2023": "16,876"
+        },
+        "gross_margin": {
+          "2025": "47.64%",
+          "2024": "49.04%",
+          "2023": "49.16%"
+        },
+        "operating_income": {
+          "2025": "8,289",
+          "2024": "8,248",
+          "2023": "7,746"
+        },
+        "operating_margin": {
+          "2025": "22.68%",
+          "2024": "23.73%",
+          "2023": "22.56%"
+        },
+        "net_income": {
+          "2025": "5,286",
+          "2024": "5,070",
+          "2023": "4,991"
+        },
+        "ebitda": {
+          "2025": "10,064",
+          "2024": "10,225",
+          "2023": "9,934"
+        },
+        "ebitda_margin": {
+          "2025": "27.53%",
+          "2024": "29.42%",
+          "2023": "28.94%"
+        },
+        "operating_cash_flow": {
+          "2025": "11,628",
+          "2024": "11,911",
+          "2023": "11,261"
+        },
+        "capital_expenditures": {
+          "2025": "-1,977",
+          "2024": "-2,037",
+          "2023": "-2,138"
+        },
+        "free_cash_flow": {
+          "2025": "9,651",
+          "2024": "9,874",
+          "2023": "9,123"
+        },
+        "cash_and_equivalents": {
+          "2025": "1,957",
+          "2024": "1,850",
+          "2023": "1,630"
+        },
+        "total_assets": {
+          "2025": "121,152",
+          "2024": "116,813",
+          "2023": "112,118"
+        },
+        "total_debt": {
+          "2025": "48,337",
+          "2024": "44,395",
+          "2023": "47,453"
+        }
+      },
+      "sources": [
+        {
+          "label": "HKT 2025年度业绩演示",
+          "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "HKT 2025年度业绩公告",
+          "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/6823/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/6823/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/6823/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "6.5%",
+        "net_income_2023_to_2025": "5.9%"
+      }
+    },
+    {
+      "subject": "3HK / Hutchison",
+      "legal_name": "Hutchison Telecommunications Hong Kong Holdings Limited",
+      "ticker": "0215.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions HKD",
+      "metrics": {
+        "revenue": {
+          "2025": "5,448",
+          "2024": "4,643",
+          "2023": "4,896"
+        },
+        "revenue_growth_yoy": {
+          "2025": "17.34%",
+          "2024": "-5.17%",
+          "2023": "0.29%"
+        },
+        "gross_profit": {
+          "2025": "3,243",
+          "2024": "3,018",
+          "2023": "3,130"
+        },
+        "gross_margin": {
+          "2025": "59.53%",
+          "2024": "65.00%",
+          "2023": "63.93%"
+        },
+        "operating_income": {
+          "2025": "4",
+          "2024": "-1",
+          "2023": "-96"
+        },
+        "operating_margin": {
+          "2025": "0.07%",
+          "2024": "-0.02%",
+          "2023": "-1.96%"
+        },
+        "net_income": {
+          "2025": "-25",
+          "2024": "6",
+          "2023": "-52"
+        },
+        "ebitda": {
+          "2025": "928",
+          "2024": "904",
+          "2023": "787"
+        },
+        "ebitda_margin": {
+          "2025": "17.03%",
+          "2024": "19.47%",
+          "2023": "16.07%"
+        },
+        "operating_cash_flow": {
+          "2025": "1,211",
+          "2024": "1,081",
+          "2023": "1,127"
+        },
+        "capital_expenditures": {
+          "2025": "-440",
+          "2024": "-434",
+          "2023": "-481"
+        },
+        "free_cash_flow": {
+          "2025": "771",
+          "2024": "647",
+          "2023": "646"
+        },
+        "cash_and_equivalents": {
+          "2025": "594",
+          "2024": "3,168",
+          "2023": "1,910"
+        },
+        "total_assets": {
+          "2025": "13,412",
+          "2024": "13,970",
+          "2023": "14,560"
+        },
+        "total_debt": {
+          "2025": "401",
+          "2024": "463",
+          "2023": "482"
+        }
+      },
+      "sources": [
+        {
+          "label": "和记电讯香港2025年度业绩演示",
+          "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "和记电讯香港2025年度业绩新闻稿",
+          "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309",
+          "type": "annual_results"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0215/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0215/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0215/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "11.3%",
+        "net_income_2023_to_2025": "-51.9%"
+      }
+    },
+    {
+      "subject": "SmarTone",
+      "legal_name": "SmarTone Telecommunications Holdings Limited",
+      "ticker": "0315.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions HKD",
+      "metrics": {
+        "revenue": {
+          "2025": "6,253",
+          "2024": "6,221",
+          "2023": "6,763"
+        },
+        "revenue_growth_yoy": {
+          "2025": "0.52%",
+          "2024": "-8.01%",
+          "2023": "-2.79%"
+        },
+        "gross_profit": {
+          "2025": "3,342",
+          "2024": "3,406",
+          "2023": "3,440"
+        },
+        "gross_margin": {
+          "2025": "53.44%",
+          "2024": "54.75%",
+          "2023": "50.87%"
+        },
+        "operating_income": {
+          "2025": "750.98",
+          "2024": "699.18",
+          "2023": "701.77"
+        },
+        "operating_margin": {
+          "2025": "12.01%",
+          "2024": "11.24%",
+          "2023": "10.38%"
+        },
+        "net_income": {
+          "2025": "478.9",
+          "2024": "470.13",
+          "2023": "268.85"
+        },
+        "ebitda": {
+          "2025": "1,750",
+          "2024": "1,699",
+          "2023": "1,708"
+        },
+        "ebitda_margin": {
+          "2025": "27.98%",
+          "2024": "27.31%",
+          "2023": "25.26%"
+        },
+        "operating_cash_flow": {
+          "2025": "2,133",
+          "2024": "2,162",
+          "2023": "2,254"
+        },
+        "capital_expenditures": {
+          "2025": "-597.47",
+          "2024": "-601.55",
+          "2023": "-708.77"
+        },
+        "free_cash_flow": {
+          "2025": "1,536",
+          "2024": "1,560",
+          "2023": "1,546"
+        },
+        "cash_and_equivalents": {
+          "2025": "2,028",
+          "2024": "1,577",
+          "2023": "1,155"
+        },
+        "total_assets": {
+          "2025": "11,308",
+          "2024": "11,178",
+          "2023": "10,899"
+        },
+        "total_debt": {
+          "2025": "877.59",
+          "2024": "963.18",
+          "2023": "852.99"
+        }
+      },
+      "sources": [
+        {
+          "label": "SmarTone 2025/26中期业绩",
+          "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf",
+          "type": "interim_results"
+        },
+        {
+          "label": "SmarTone投资者关系",
+          "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html",
+          "type": "official_ir"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/0315/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/0315/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/0315/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "-7.5%",
+        "net_income_2023_to_2025": "78.1%"
+      }
+    },
+    {
+      "subject": "HKBN",
+      "legal_name": "HKBN Ltd.",
+      "ticker": "1310.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions HKD",
+      "metrics": {
+        "revenue": {
+          "2025": "11,129",
+          "2024": "10,651",
+          "2023": "11,692"
+        },
+        "revenue_growth_yoy": {
+          "2025": "4.48%",
+          "2024": "-8.91%",
+          "2023": "0.57%"
+        },
+        "gross_profit": {
+          "2025": "3,974",
+          "2024": "3,904",
+          "2023": "4,047"
+        },
+        "gross_margin": {
+          "2025": "35.71%",
+          "2024": "36.65%",
+          "2023": "34.61%"
+        },
+        "operating_income": {
+          "2025": "917.49",
+          "2024": "864.88",
+          "2023": "721.13"
+        },
+        "operating_margin": {
+          "2025": "8.24%",
+          "2024": "8.12%",
+          "2023": "6.17%"
+        },
+        "net_income": {
+          "2025": "206.86",
+          "2024": "10.28",
+          "2023": "-1,267"
+        },
+        "ebitda": {
+          "2025": "1,954",
+          "2024": "1,950",
+          "2023": "1,861"
+        },
+        "ebitda_margin": {
+          "2025": "17.56%",
+          "2024": "18.30%",
+          "2023": "15.91%"
+        },
+        "operating_cash_flow": {
+          "2025": "1,911",
+          "2024": "2,058",
+          "2023": "1,983"
+        },
+        "capital_expenditures": {
+          "2025": "-493.58",
+          "2024": "-362.71",
+          "2023": "-489.39"
+        },
+        "free_cash_flow": {
+          "2025": "1,417",
+          "2024": "1,696",
+          "2023": "1,493"
+        },
+        "cash_and_equivalents": {
+          "2025": "1,192",
+          "2024": "1,217",
+          "2023": "1,017"
+        },
+        "total_assets": {
+          "2025": "17,253",
+          "2024": "17,669",
+          "2023": "18,148"
+        },
+        "total_debt": {
+          "2025": "11,291",
+          "2024": "11,502",
+          "2023": "11,493"
+        }
+      },
+      "sources": [
+        {
+          "label": "HKBN 2026财年中期业绩",
+          "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
+          "type": "interim_results"
+        },
+        {
+          "label": "HKBN 2025财年年度业绩",
+          "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/",
+          "type": "annual_results"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/1310/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/1310/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/1310/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "-4.8%",
+        "net_income_2023_to_2025": "-116.3%"
+      }
+    },
+    {
+      "subject": "HGC",
+      "legal_name": "HGC Global Communications Limited",
+      "ticker": null,
+      "period": "FY2023-FY2025",
+      "unit": "not disclosed",
+      "metrics": {},
+      "sources": [
+        {
+          "label": "HGC企业转型动态",
+          "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation",
+          "type": "official_news"
+        },
+        {
+          "label": "HGC业务概览",
+          "url": "https://www.hgc-intl.com/international-business",
+          "type": "official_overview"
+        }
+      ],
+      "quality_notes": [
+        "非上市主体，未稳定公开三年完整财务报表；只记录公开可核验说明，不填造财务数值。"
+      ]
+    },
+    {
+      "subject": "i-CABLE",
+      "legal_name": "i-CABLE Communications Limited",
+      "ticker": "1097.HK",
+      "period": "FY2023-FY2025",
+      "unit": "millions HKD",
+      "metrics": {
+        "revenue": {
+          "2025": "538.74",
+          "2024": "584.49",
+          "2023": "597.9"
+        },
+        "revenue_growth_yoy": {
+          "2025": "-7.83%",
+          "2024": "-2.24%",
+          "2023": "6.24%"
+        },
+        "gross_profit": {
+          "2025": "-165.37",
+          "2024": "-174.76",
+          "2023": "-218.15"
+        },
+        "gross_margin": {
+          "2025": "-30.70%",
+          "2024": "-29.90%",
+          "2023": "-36.49%"
+        },
+        "operating_income": {
+          "2025": "-360.35",
+          "2024": "-409.76",
+          "2023": "-427.77"
+        },
+        "operating_margin": {
+          "2025": "-66.89%",
+          "2024": "-70.11%",
+          "2023": "-71.55%"
+        },
+        "net_income": {
+          "2025": "-489.98",
+          "2024": "-553.34",
+          "2023": "-589.27"
+        },
+        "ebitda": {
+          "2025": "-302.59",
+          "2024": "-341.96",
+          "2023": "-343.23"
+        },
+        "ebitda_margin": {
+          "2025": "-56.17%",
+          "2024": "-58.51%",
+          "2023": "-57.41%"
+        },
+        "operating_cash_flow": {
+          "2025": "-213.92",
+          "2024": "-220.65",
+          "2023": "-287.25"
+        },
+        "capital_expenditures": {
+          "2025": "-52.02",
+          "2024": "-66.7",
+          "2023": "-76.75"
+        },
+        "free_cash_flow": {
+          "2025": "-265.93",
+          "2024": "-287.35",
+          "2023": "-364"
+        },
+        "cash_and_equivalents": {
+          "2025": "113.73",
+          "2024": "53.77",
+          "2023": "28.92"
+        },
+        "total_assets": {
+          "2025": "867.06",
+          "2024": "882.53",
+          "2023": "945.16"
+        },
+        "total_debt": {
+          "2025": "2,724",
+          "2024": "2,277",
+          "2023": "1,843"
+        }
+      },
+      "sources": [
+        {
+          "label": "i-CABLE 2025年度业绩公告",
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+          "type": "annual_results"
+        },
+        {
+          "label": "StockAnalysis income_statement",
+          "url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis balance_sheet",
+          "url": "https://stockanalysis.com/quote/hkg/1097/financials/balance-sheet/",
+          "type": "normalized_financials"
+        },
+        {
+          "label": "StockAnalysis cash_flow",
+          "url": "https://stockanalysis.com/quote/hkg/1097/financials/cash-flow-statement/",
+          "type": "normalized_financials"
+        }
+      ],
+      "quality_notes": [
+        "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+      ],
+      "three_year_trend": {
+        "revenue_2023_to_2025": "-9.9%",
+        "net_income_2023_to_2025": "-16.8%"
+      }
+    }
+  ]
+}

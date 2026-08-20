@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: cmhk-competitive-intelligence
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python web_app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: TTS_BACKEND
+        value: internal
+      - key: INTERNAL_TTS_MODEL
+        value: Qwen3TTS
+      - key: INTERNAL_TTS_VOICE
+        value: vivian
+      - key: INTERNAL_TTS_SPEED
+        value: "1.0"
+      - key: INTERNAL_TTS_CHUNK_CHARS
+        value: "1200"
+      - key: CMHK_INTERNAL_AI_PROVIDER
+        value: deepseek
+      - key: CMHK_INTERNAL_AI_BASE_URL
+        value: http://10.0.62.177:4000/v1
+      - key: CMHK_INTERNAL_AI_MODEL
+        value: deepseek-v4
+      - key: CMHK_INTERNAL_AI_API_KEY
+        sync: false
+      - key: CMHK_REQUIRE_ROBOTS
+        value: "1"
+      - key: CMHK_SAVE_RAW_BODY
+        value: "0"

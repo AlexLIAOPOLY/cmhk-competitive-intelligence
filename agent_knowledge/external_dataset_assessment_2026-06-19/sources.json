@@ -1,0 +1,65 @@
+[
+  {
+    "id": "sec_companyfacts_api",
+    "label": "SEC companyfacts API",
+    "url": "https://data.sec.gov/api/xbrl/companyfacts/",
+    "source_type": "official_api",
+    "assessment": "Downloaded AMZN, MSFT, GOOGL and ORCL JSON files; useful for official filing discovery and consolidated XBRL facts, not sufficient as a replacement cloud-segment quarterly dataset."
+  },
+  {
+    "id": "sec_financial_statement_data_sets",
+    "label": "SEC Financial Statement Data Sets",
+    "url": "https://www.sec.gov/data-research/sec-markets-data/financial-statement-data-sets",
+    "source_type": "official_bulk_xbrl_data",
+    "assessment": "Official quarterly downloadable ZIPs provide XBRL face financial statement data from SEC filings; useful for auxiliary consolidated-statement checks, but not a replacement for cloud segment/product-line extraction."
+  },
+  {
+    "id": "hkex_historical_data_products",
+    "label": "HKEX Historical Data Products - corporate documents",
+    "url": "https://www.hkex.com.hk/eng/ods/historicalData.aspx",
+    "source_type": "paid_document_archive",
+    "assessment": "HKEX corporate-document archives can be purchased and downloaded, but they are document archives rather than a structured audited operating-metric dataset."
+  },
+  {
+    "id": "financialreports_eu",
+    "label": "FinancialReports.eu public-company filing index",
+    "url": "https://financialreports.eu/",
+    "source_type": "filing_index_api",
+    "assessment": "Broad filing index with web/API/S3 access; useful as filing discovery, but not accepted as a formal replacement metric source because target values still require official row-level extraction and verification."
+  },
+  {
+    "id": "finnhub_financials_api",
+    "label": "Finnhub global company financials API",
+    "url": "https://finnhub.io/docs/api/financials",
+    "source_type": "commercial_financial_api",
+    "assessment": "Potential screening API; rejected as formal replacement because it requires API access and does not preserve the project audit schema by default."
+  },
+  {
+    "id": "data_gov_hk_ofca_provider",
+    "label": "DATA.GOV.HK OFCA provider datasets",
+    "url": "https://data.gov.hk/en-datasets/provider/hk-ofca",
+    "source_type": "official_public_data_portal",
+    "assessment": "Official government datasets; already adapted in the CMHK macro-policy package."
+  },
+  {
+    "id": "data_gov_hk_telecom_indicators",
+    "label": "Hong Kong Telecommunications Indicators",
+    "url": "https://data.gov.hk/en-data/dataset/hk-ofca-ofca-ofca-dataset-22",
+    "source_type": "official_public_data",
+    "assessment": "Official OFCA telecommunications indicators, update frequency yearly, with CSV/data-dictionary/source links."
+  },
+  {
+    "id": "kaggle_cloud_service_providers_financials",
+    "label": "Cloud Service Providers Financials - Kaggle",
+    "url": "https://www.kaggle.com/datasets/devaangbarthwal/cloud-service-providers-financials",
+    "source_type": "secondary_dataset",
+    "assessment": "Not accepted as a replacement formal source because accessible metadata does not provide official row-level verification controls."
+  },
+  {
+    "id": "macromicro_big_tech_cloud_revenue",
+    "label": "Big Tech - Cloud Business Revenue - MacroMicro",
+    "url": "https://en.macromicro.me/charts/32809/google-cloud-revenue",
+    "source_type": "secondary_chart",
+    "assessment": "Not accepted as a replacement formal source; may be used only as a public comparison lead after official verification."
+  }
+]

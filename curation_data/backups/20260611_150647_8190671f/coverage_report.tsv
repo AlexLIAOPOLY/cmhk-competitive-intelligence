@@ -1,0 +1,348 @@
+row	status	entities	source_urls	extracted_fields	missing_fields	result_file
+2	ok	HKT,csl,1O1O	"【HKT】
+- https://stockanalysis.com/quote/hkg/6823/financials/
+- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/
+- https://stockanalysis.com/quote/hkg/6823/revenue/
+- https://www.hkt.com/en/about-hkt/investor-relations/financial-results/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+【csl】
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
+- https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/
+- https://www.hkcsl.com/en/network-improvement-2025/
+【1O1O】
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
+- https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/"	运营收入/总收益,服务收入,EBITDA,净利润,客户数/用户数,5G用户数,ARPU,资本开支,派息,战略升级,券商观点,市场反应,宽频线数/家宽用户数		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_2.json
+3	ok	HKT,csl,1O1O	"【HKT】
+- https://www.hkcsl-5g.com/en/5g-tariff-plan/
+- https://www.1010.com.hk/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/
+【csl】
+- https://www.hkcsl-5g.com/en/5g-tariff-plan/
+- https://www.1010.com.hk/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/
+- https://www.netvigator.com/eng/
+【1O1O】
+- https://www.hkcsl-5g.com/en/5g-tariff-plan/
+- https://www.1010.com.hk/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/"	5G套餐,产品规格,合约期,资费,增值服务,家宽套餐,企业专线,漫游,促销折扣		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_3.json
+4	partial	HKT,csl,1O1O	"【HKT】
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/
+- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
+- https://www.hkcsl.com/en/network-improvement-2025/
+【csl】
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
+- https://www.hkcsl.com/en/network-improvement-2025/
+【1O1O】
+- https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/
+- https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/"	战略合作,中标,投资并购,5G-A,网络API,边缘计算,数据中心,高管人事	csl:投资并购,1O1O:投资并购	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_4.json
+5	ok	3HK,Hutchison	"【3HK】
+- https://www.hthkh.com/en/ir/reports.php
+【Hutchison】
+- https://m.hthkh.com/en/ir/presentations.php
+- https://www.hthkh.com/en/ir/reports.php"	运营收入/总收益,服务收入,EBITDA,净利润,客户数/用户数,5G用户数,ARPU,资本开支,派息,战略升级,券商观点,市场反应		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_5.json
+6	ok	3HK,Hutchison	"【3HK】
+- https://www.hthkh.com/en/media/press_3hk.php
+- https://m.hthkh.com/en/media/press.php
+- https://web.three.com.hk/plans/3business5g/index-en.html
+- https://web.three.com.hk/plans/apac/index2-en.html
+- https://www.hthkh.com/en/about/cg.php?subsection=cg_policy
+【Hutchison】
+- https://www.hthkh.com/en/media/press_3hk.php
+- https://m.hthkh.com/en/media/press.php
+- https://www.hthkh.com/en/about/cg.php?subsection=cg_policy
+- https://www.hthkh.com/en/media/press.php?prid=/press/p240229
+- https://www.hthkh.com/en/media/press.php?prid=/press/p250313"	5G套餐,SoSIM/Mo+,企业方案,漫游,促销折扣		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_6.json
+7	ok	3HK,Hutchison	"【3HK】
+- https://m.hthkh.com/en/media/press.php
+- https://www.hthkh.com/en/media/press_3hk.php
+- https://www.hthkh.com/en/media/press.php?prid=/press/p260309
+- https://www.hthkh.com/en/ir/fin_results.php
+- https://www.hthkh.com/en/about/cg.php?subsection=cg_policy
+【Hutchison】
+- https://m.hthkh.com/en/media/press.php
+- https://www.hthkh.com/en/media/press_3hk.php
+- https://www.hthkh.com/en/media/press.php?prid=/press/p260309
+- https://www.hthkh.com/en/ir/fin_results.php
+- https://www.hthkh.com/en/about/cg.php?subsection=cg_policy"	战略合作,中标,5G-A,企业ICT,IoT,区域动作		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_7.json
+8	ok	SmarTone	"【SmarTone】
+- https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/
+- https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2026/33085922/
+- https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"	运营收入/总收益,服务收入,EBITDA,净利润,客户数/用户数,5G用户数,ARPU,资本开支,派息,战略升级,券商观点,市场反应		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_8.json
+9	ok	SmarTone	"【SmarTone】
+- https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/
+- https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"	5G套餐,家宽,企业方案,漫游,促销折扣		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_9.json
+10	ok	SmarTone	"【SmarTone】
+- https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1
+- https://www.aastocks.com/en/stocks/news/aafn/result-announcement
+- https://www.aastocks.com/en/stocks/market/calendar.aspx
+- https://www.aastocks.com/en/stocks/news/aafn/research-report"	战略合作,中标,5G-A,家宽布局,区域动作		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_10.json
+11	ok	HKBN	"【HKBN】
+- https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"	总收入,板块收入分拆,EBITDA,净利润,融资成本,资本开支,商誉,资产负债率,用户数,商业楼宇覆盖率,派息,战略升级,券商观点,市场反应		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_11.json
+12	ok	HKBN	"【HKBN】
+- https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results
+- https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"	业绩报告公告,董事会,股东大会,派息,持续性关联交易		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_12.json
+13	ok	HKBN	"【HKBN】
+- https://stockanalysis.com/quote/hkg/1310/
+- https://www.hkbn.net/group/en/investor-engagement/announcement-circulars
+- https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310
+- https://stockanalysis.com/quote/hkg/1310/filings/2925673/
+- https://stockanalysis.com/quote/hkg/1310/financials/"	股价异动		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_13.json
+14	ok	HKBN	"【HKBN】
+- https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html
+- https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html
+- https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"	宽带套餐,企业ICT,云/安全,融合产品,重大合作,区域布局		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_14.json
+15	partial	HGC	"【HGC】
+- https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/
+- https://www.hgc-intl.com/
+- https://www.hgc-intl.com/privacy-policy-and-personal-information-collection-statement-2025
+- https://www.hgc-intl.com/search-result?keyword=A2P SMS
+- https://www.hgc-intl.com/search-result?keyword=SDN"	家宽用户数,网络覆盖,企业通信,跨境链路,数据中心,云网产品,派息,战略升级,券商观点,市场反应	资本开支,HGC:资本开支	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_15.json
+16	ok	HGC	"【HGC】
+- https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/
+- https://www.hgc-intl.com/
+- https://www.hgc-intl.com/privacy-policy-and-personal-information-collection-statement-2025
+- https://www.hgc-intl.com/search-result?keyword=SDN"	海缆/跨境链路,数据中心,企业网络,合作项目		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_16.json
+17	ok	iCable	"【iCable】
+- https://www.i-cablecomm.com/annual-interim-reports?lang=en
+- https://www.i-cablecomm.com/en/contact-us
+- https://www.i-cablecomm.com/en/annual-interim-reports
+- https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/
+- https://stockanalysis.com/quote/hkg/1097/financials/"	运营收入/总收益,服务收入,EBITDA,净利润,客户数/用户数,5G用户数,ARPU,资本开支,派息,战略升级,券商观点,市场反应,宽频线数/家宽用户数,网络覆盖		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_17.json
+18	ok	iCable	"【iCable】
+- https://www.i-cablecomm.com/annual-interim-reports?lang=en
+- https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer
+- https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/
+- https://www.i-cablebroadband-offer.com/
+- https://www.i-cablecomm.com/en-newsroom/fivb-volleyball-nations-league-hong-kong-2025-kicks-off-exclusive-free-live-broadcast-on-hoy-starting-from-june-16-at-8-30-pm-on-channel-77"	宽带套餐,电讯业务战略合作		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_18.json
+19	partial	Singtel,Telstra,SK Telecom,KT,NTT Docomo,KDDI,SoftBank,Jio,Airtel	"【Singtel】
+- https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit
+- https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced
+【Telstra】
+- https://www.telstra.com.au/aboutus/media
+【SK Telecom】
+- https://news.sktelecom.com/en/category/press-center/press-release
+- https://news.sktelecom.com/en/2787
+- https://www.jio.com/
+- https://news.sktelecom.com/en/3015
+- https://news.sktelecom.com/en/3039
+【KT】
+- https://news.sktelecom.com/en/category/press-center/press-release
+- https://news.sktelecom.com/en/2787
+- https://corp.kt.com/eng/
+- https://www.jio.com/
+- https://news.sktelecom.com/en/3015
+【NTT Docomo】
+- https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html
+- https://news.sktelecom.com/en/category/press-center/press-release
+- https://www.docomo.ne.jp/english/info/media_center/pr/2026/0303_00.html
+- https://www.docomo.ne.jp/english/info/media_center/pr/2025/0303_02.html?icid=CRP_EN_INFO_media_center_pr_2026_0225_02_to_CRP_EN_INFO_media_center_pr_2025_0303_02
+- https://www.docomo.ne.jp/english/info/media_center/pr/2024/0221_00.html?icid=CRP_EN_INFO_media_center_pr_2026_0225_02_to_CRP_EN_INFO_media_center_pr_2024_0221_00
+【KDDI】
+- https://newsroom.kddi.com/english/news/detail/kddi_nr-560_3842.html
+- https://newsroom.kddi.com/english/news/index
+【SoftBank】
+- https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/
+- https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260416_02/
+- https://www.softbank.jp/en/corp/philosophy/strategy/financial/
+- https://newsroom.kddi.com/english/news/index
+- https://www.softbank.jp/en/corp/ir/documents/financial_reports/
+【Jio】
+- https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/
+- https://www.jio.com/
+- https://www.airtel.in/press-release
+- https://www.airtel.in/press-release/08-2025/nxtra-by-sirtel-releases-sustainability-report-for-fy2024-25
+- https://www.airtel.in/press-release/09-2025/airtels-fight-against-fraud-reduces-financial-losses-for-its-customers-by-nearly-70/
+【Airtel】
+- https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/
+- https://www.airtel.in/press-release
+- https://www.airtel.in/press-release/08-2025/nxtra-by-sirtel-releases-sustainability-report-for-fy2024-25
+- https://www.airtel.in/press-release/09-2025/airtels-fight-against-fraud-reduces-financial-losses-for-its-customers-by-nearly-70/
+- https://www.airtel.in/press-release/01-2025/bharti-airtel-and-bajaj-finance-enter-into-a-strategic-partnership-to-create-one-of-indias-largest-digital-platforms-for-financial-services/"	AI,5G-A,云,企业ICT,Capex方向	Singtel:AI,云,企业ICT,Capex方向,Telstra:5G-A,云,Capex方向,SK Telecom:5G-A,KT:5G-A,NTT Docomo:5G-A,KDDI:5G-A,Capex方向,SoftBank:5G-A,Capex方向	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_19.json
+20	partial	Vodafone,Deutsche Telekom,Orange,Telefonica,BT/EE,TIM,Verizon,AT&T,T-Mobile US	"【Vodafone】
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://www.vodafone.com/news/technology/vodafone-advances-future-ready-radio-access-network
+- https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd
+- https://www.vodafone.com/pdf-viewer.aspx?gid=514358169&src=/~/media/Files/V/vodafone/Universal/documents/vodafone-plc-mss-2024-25.pdf
+- https://www.vodafone.com/sustainable-business/esg-reporting-centre
+【Deutsche Telekom】
+- https://www.telekom.com/en/media/media-information
+- https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882
+- https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://www.telekom.com/en/media/media-information/archive/first-quarter-report-2026-1104752
+【Orange】
+- https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/
+- https://developer.orange.com/events/mwc-2026/
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+【Telefonica】
+- https://www.telefonica.com/en/communication-room/press-room/
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://www.telefonica.com/en/communication-room/reports/
+- https://www.telefonica.com/en/communication-room/press-room/telefonica-increases-revenue-8127-million-euros-quarter-confirms-financial-targets-2026/
+- https://www.telefonica.com/en/communication-room/reports/telefonica-esg-2024-key-indicators-and-progress-toward-a-sustainable-model/
+【BT/EE】
+- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
+- https://www.bt.com/about/bt/our-company/group-businesses/networks
+- https://www.bt.com/about/investors/financial-reporting-and-news
+- https://www.bt.com/about/bt/policy-and-regulation/download-centre
+- https://www.bt.com/about/investors/financial-reporting-and-news#financial-results
+【TIM】
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.telekom.com/en/media/media-information
+- https://www.gruppotim.it/en/press-archive.html
+- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
+- https://www.verizon.com/5g/home/
+【Verizon】
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.verizon.com/5g/home/
+- https://www.verizon.com/solutions-and-services/report-security-vulnerability/
+- https://www.verizon.com/financial-services/verizon-visa-card/?origin=gnavHeader
+- https://www.verizon.com/financial-services/verizon-visa-card/?origin=gnavFooter
+【AT&T】
+- https://investors.att.com/financial-reports/annual-reports/2025
+- https://investors.att.com/financial-reports/quarterly-earnings/2026
+【T-Mobile US】
+- https://www.telekom.com/en/media/media-information
+- https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882
+- https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626
+- https://www.telekom.com/en/media/media-information/archive/first-quarter-report-2026-1104752
+- https://report.telekom.com/cr-report/2025/"	网络API,Open RAN,边缘计算,FWA,AI网络	Vodafone:FWA,Deutsche Telekom:FWA,Orange:FWA,Telefonica:FWA,BT/EE:FWA,Verizon:边缘计算,T-Mobile US:FWA	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_20.json
+21	ok	e&,stc,中国移动,中国电信,中国联通	"【e&】
+- https://www.eand.com/en/news/28-04-26-eand-financial-results-q1-2026.html
+- https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html
+- https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html
+- https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html
+- https://www.eand.com/en/news/news-overview.html
+【stc】
+- https://www.eand.com/en/news/news-overview.html
+- https://www.stc.com/en/investors.html
+- https://www.stc.com/content/dam/stc/stc-annual-report-2024
+- https://www.stc.com/content/stcgroupwebsite/sa/en/sustainability.html
+【中国移动】
+- https://www.chinamobileltd.com/en/ir/reports.php
+【中国电信】
+- https://www.chinatelecom-h.com/en/ir/reports.php
+- https://en.c114.com.cn/576/a1307257.html
+- http://en.c114.com.cn/576/a1309042.html
+【中国联通】
+- https://en.c114.com.cn/576/a1307257.html
+- http://en.c114.com.cn/576/a1309042.html"	AI,算力网络,云,DICT,5G-A,资本开支		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_21.json
+22	ok	政治资讯（和25行可能存在重合，请Alex考虑是否合并）	"【政治资讯（和25行可能存在重合，请Alex考虑是否合并）】
+- https://www.policyaddress.gov.hk/2024/en/index.html
+- https://www.policyaddress.gov.hk/2025/en/index.html
+- https://www.digitalpolicy.gov.hk/en/
+- https://www.itib.gov.hk/en/index.html
+- https://www.digitalpolicy.gov.hk/en/about_us/consolidated_annual_open_data_plans/"	施政报告,战略规划,区域发展,重大投资		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_22.json
+23	ok	经济资讯（和30行可能存在重合，请Alex考虑是否合并）	"【经济资讯（和30行可能存在重合，请Alex考虑是否合并）】
+- https://www.censtatd.gov.hk/en/scode460.html
+- https://www.censtatd.gov.hk/en/scode200.html
+- https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds
+- https://www.pmi.spglobal.com/Public/Home/PressRelease/a8f02e53a64c42c7bed05c6df7b1a487
+- https://apidocs.hkma.gov.hk/abouthkmasapi/"	人口,零售额,PMI,失业率		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_23.json
+24	ok	行业资讯	"【行业资讯】
+- https://www.policyaddress.gov.hk/2025/en/highlight.html
+- https://www.digitalpolicy.gov.hk/en/
+- https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm
+- https://www.investhk.gov.hk/en/news/
+- https://www.info.gov.hk/gia/general/202506/26/P2025062500847.htm"	跨境贸易,科技创投,人工智能,低空经济,Web3		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_24.json
+25	ok	社会资讯	"【社会资讯】
+- https://www.info.gov.hk/gia/general/today.htm
+- https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html
+- https://www.info.gov.hk/gia/general/202606/11c.htm
+- https://www.housingauthority.gov.hk/en/about-us/publications-and-statistics/annual-report/index.html
+- https://www.info.gov.hk/gia/general/202606/11/P2026061100302.htm"	本地生活咨询		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_25.json
+26	partial	香港本地监管,政策	"【香港本地监管】
+- https://www.digitalpolicy.gov.hk/en/
+- https://www.ofca.gov.hk/en/home/index.html
+- https://www.pcpd.org.hk/english/artificial_intelligence/index.html
+- https://www.digitalpolicy.gov.hk/en/about_us/consolidated_annual_open_data_plans/
+- https://www.ofca.gov.hk/en/about_us/reports/trading_fund/index.html
+【政策】
+- https://www.digitalpolicy.gov.hk/en/
+- https://www.ofca.gov.hk/en/home/index.html
+- https://www.pcpd.org.hk/english/artificial_intelligence/index.html
+- https://www.digitalpolicy.gov.hk/en/about_us/consolidated_annual_open_data_plans/
+- https://www.ofca.gov.hk/en/about_us/reports/trading_fund/index.html"	OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境	香港本地监管:OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境,政策:OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_26.json
+27	partial	重点国家,地区AI与数据监管	"【重点国家】
+- https://digital-strategy.ec.europa.eu/en/policies/data-act
+- https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+- https://digital-strategy.ec.europa.eu/en/policies/digital-services-act-package
+- https://digital-strategy.ec.europa.eu/en/policies/data-act-explained
+- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
+【地区AI与数据监管】
+- https://digital-strategy.ec.europa.eu/en/policies/data-act
+- https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+- https://digital-strategy.ec.europa.eu/en/policies/digital-services-act-package
+- https://digital-strategy.ec.europa.eu/en/policies/data-act-explained
+- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en"	EU AI Act,EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规	重点国家:EU AI Act,EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规,地区AI与数据监管:EU AI Act,EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
+28	ok	通信监管机构	"【通信监管机构】
+- https://www.ofca.gov.hk/en/home/index.html
+- https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html
+- https://www.ofca.gov.hk/en/site_map/index.html
+- https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html
+- https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/"	频谱拍卖,5G/6G规划,网络共享,覆盖义务,网络安全,卫星通信,携号转网/漫游		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_28.json
+29	partial	国际组织,行业权威机构	"【国际组织】
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.gsma.com/newsroom/press-releases/
+- https://oecd.ai/
+- https://www.itu.int/
+- https://oecd.ai/en/working-group-innovation-and-commercialisation
+【行业权威机构】
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.gsma.com/newsroom/press-releases/
+- https://oecd.ai/
+- https://www.itu.int/
+- https://oecd.ai/en/working-group-innovation-and-commercialisation"	ITU数字发展,宽带指标,OECD数字经济,World Bank/IMF宏观	国际组织:ITU数字发展,宽带指标,OECD数字经济,World Bank/IMF宏观,行业权威机构:ITU数字发展,宽带指标,OECD数字经济,World Bank/IMF宏观	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_29.json
+30	partial	宏观经济,人口,消费	"【宏观经济】
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm
+- https://apidocs.hkma.gov.hk/abouthkmasapi/
+- https://www.censtatd.gov.hk/en/scode200.html
+- https://www.censtatd.gov.hk/en/scode460.html
+【人口】
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm
+- https://apidocs.hkma.gov.hk/abouthkmasapi/
+- https://www.censtatd.gov.hk/en/scode200.html
+- https://www.censtatd.gov.hk/en/scode460.html
+【消费】
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm
+- https://apidocs.hkma.gov.hk/abouthkmasapi/
+- https://www.censtatd.gov.hk/en/scode200.html
+- https://www.censtatd.gov.hk/en/scode460.html"	访港旅客,零售,失业率,CPI,利率,汇率	宏观经济:访港旅客,零售,失业率,CPI,利率,汇率,人口:访港旅客,零售,失业率,CPI,利率,汇率,消费:访港旅客,零售,失业率,CPI,利率,汇率	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_30.json
+31	ok	行业资讯	"【行业资讯】
+- https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/
+- https://www.totaltele.com/
+- https://www.gsma.com/newsroom/press-releases/
+- https://www.softbank.jp/en/corp/philosophy/strategy/financial/
+- https://www.softbank.jp/en/corp/ir/documents/financial_reports/"	技术动态,市场趋势,企业重大合作,前沿产品		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_31.json
+32	ok	行业资讯	"【行业资讯】
+- https://www.totaltele.com/
+- https://www.gsma.com/newsroom/press-releases/
+- https://www.investhk.gov.hk/en/news/
+- https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval
+- https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html"	收购,融资,合资,股权交易		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_32.json
+33	ok	政治新闻	"【政治新闻】
+- https://www.gov.cn/
+- https://english.www.gov.cn/
+- https://www.mfa.gov.cn/eng/
+- https://www.gov.cn/yaowen/liebiao/202606/content_7071776.htm
+- https://www.gov.cn/yaowen/liebiao/202606/content_7071734.htm"	地缘政治,经济,重大政策/声明		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_33.json
+34	ok	宏观指标	"【宏观指标】
+- https://www.stats.gov.cn/english/
+- https://www.censtatd.gov.hk/en/scode200.html
+- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
+- https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html
+- https://www.stats.gov.cn/english/PressRelease/202605/t20260522_1963789.html"	GDP,进出口,失业率,旅游业数据		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_34.json

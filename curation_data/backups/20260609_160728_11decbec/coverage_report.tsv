@@ -1,0 +1,24 @@
+row	status	entities	source_urls	extracted_fields	missing_fields	result_file
+19	fetch_failed	Singtel,Telstra,SK Telecom,KT,NTT Docomo,KDDI,SoftBank,Jio,Airtel	"【Singtel】
+【Telstra】
+【SK Telecom】
+【KT】
+【NTT Docomo】
+【KDDI】
+【SoftBank】
+【Jio】
+【Airtel】"		AI,5G-A,云,企业ICT,Capex方向,Singtel:AI,5G-A,云,企业ICT,Capex方向,Telstra:AI,5G-A,云,企业ICT,Capex方向,SK Telecom:AI,5G-A,云,企业ICT,Capex方向,KT:AI,5G-A,云,企业ICT,Capex方向,NTT Docomo:AI,5G-A,云,企业ICT,Capex方向,KDDI:AI,5G-A,云,企业ICT,Capex方向,SoftBank:AI,5G-A,云,企业ICT,Capex方向,Jio:AI,5G-A,云,企业ICT,Capex方向,Airtel:AI,5G-A,云,企业ICT,Capex方向	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_19.json
+20	fetch_failed	Vodafone,Deutsche Telekom,Orange,Telefonica,BT/EE,TIM,Verizon,AT&T,T-Mobile US	"【Vodafone】
+【Deutsche Telekom】
+【Orange】
+【Telefonica】
+【BT/EE】
+【TIM】
+【Verizon】
+【AT&T】
+【T-Mobile US】"		网络API,Open RAN,边缘计算,FWA,AI网络,Vodafone:网络API,Open RAN,边缘计算,FWA,AI网络,Deutsche Telekom:网络API,Open RAN,边缘计算,FWA,AI网络,Orange:网络API,Open RAN,边缘计算,FWA,AI网络,Telefonica:网络API,Open RAN,边缘计算,FWA,AI网络,BT/EE:网络API,Open RAN,边缘计算,FWA,AI网络,TIM:网络API,Open RAN,边缘计算,FWA,AI网络,Verizon:网络API,Open RAN,边缘计算,FWA,AI网络,AT&T:网络API,Open RAN,边缘计算,FWA,AI网络,T-Mobile US:网络API,Open RAN,边缘计算,FWA,AI网络	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_20.json
+21	fetch_failed	e&,stc,中国移动,中国电信,中国联通	"【e&】
+【stc】
+【中国移动】
+【中国电信】
+【中国联通】"		AI,算力网络,云,DICT,5G-A,资本开支,e&:AI,算力网络,云,DICT,5G-A,资本开支,stc:AI,算力网络,云,DICT,5G-A,资本开支,中国移动:AI,算力网络,云,DICT,5G-A,资本开支,中国电信:AI,算力网络,云,DICT,5G-A,资本开支,中国联通:AI,算力网络,云,DICT,5G-A,资本开支	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_21.json

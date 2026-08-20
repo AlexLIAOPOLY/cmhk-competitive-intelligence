@@ -1,0 +1,49 @@
+{
+  "id": "global_top5_operators_2016_2025",
+  "title": "全球重点六家运营商2016–2025财务与运营数据库",
+  "summary": "保留原五家研究对象并补入中国广电；中国三家链接既有财务库，中国广电保留公开值及明确缺口，Airtel/Jio收录完整披露历史。",
+  "source_type": "official_public_multi_source",
+  "updated_at": "2026-08-18T00:00:00+08:00",
+  "tags": [
+    "global_carriers",
+    "10_year_history",
+    "subscribers",
+    "5g",
+    "broadband",
+    "arpu",
+    "traffic",
+    "base_stations",
+    "financials"
+  ],
+  "entrypoints": [
+    "README.md",
+    "summary.md",
+    "annual_metrics.json",
+    "annual_metrics.csv",
+    "sources.json",
+    "coverage.csv",
+    "quality_audit.json",
+    "quality_audit.md",
+    "conflicts_and_scope_breaks.json",
+    "conflicts_and_scope_breaks.csv"
+  ],
+  "row_count": 676,
+  "quality": {
+    "status": "backlog_open",
+    "source_count": 248,
+    "available_value_rows": 441,
+    "three_distinct_source_certified_rows": 340,
+    "three_source_certified_rows_by_operator": {
+      "Bharti Airtel": 98,
+      "Reliance Jio": 27,
+      "中国广电": 6,
+      "中国电信": 64,
+      "中国移动": 80,
+      "中国联通": 65
+    },
+    "below_three_source_rows": 101
+  },
+  "linked_existing_datasets": [
+    "quarterly_competitor_metrics_2026-06-18"
+  ]
+}

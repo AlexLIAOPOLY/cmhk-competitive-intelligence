@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "summary": "Agent Evals：6/6 通过",
+  "cases": [
+    {
+      "name": "competitor_rag_official_value",
+      "passed": true,
+      "details": {
+        "chunks": 10,
+        "audit": {
+          "token_budget": 6500,
+          "token_estimate": 6013,
+          "headroom": 1200,
+          "input_chunks": 10,
+          "retained_chunks": 10,
+          "skipped_chunks": 0,
+          "compressed_chunks": 0,
+          "skipped": [],
+          "token_counter": "tiktoken"
+        }
+      }
+    },
+    {
+      "name": "macro_not_target_variable",
+      "passed": true,
+      "details": {
+        "chunks": 10
+      }
+    },
+    {
+      "name": "cloud_vendor_retrieval",
+      "passed": true,
+      "details": {
+        "chunks": 10
+      }
+    },
+    {
+      "name": "dangerous_action_requires_confirmation",
+      "passed": true,
+      "details": {
+        "preview": "需要用户确认后才能执行：全量爬虫。\n- 原因：该操作会改变本地文件、触发外部同步或启动耗时任务。\n- 操作说明：执行完整公开信息爬取、飞书同步和公司指标刷新。\n请点击前端确认按钮后再执行。\n<metadata>{\"type\": \"action_confirmation\", \"action\": \"trigger_full_crawl\", \"actionId\": \"trigger_full_crawl:44136fa355b3\", \"label\": \"全量爬虫\", \"description\": \"执行完整公开信息爬取、飞书同步和公司指标刷新。\", \"risk\": \"该操作会改变本地文件、触发外部同"
+      }
+    },
+    {
+      "name": "memory_loads_without_error",
+      "passed": true,
+      "details": {
+        "count": 1
+      }
+    },
+    {
+      "name": "rag_metadata_contains_quality",
+      "passed": true,
+      "details": {
+        "preview": "rics_2026-06-18.csv\"}]}, {\"index\": 10, \"source\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/online_verification_2026-06-18.csv · 片段 10\", \"links\": [{\"label\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/online_verification_2026-06-18.csv · 片段 10\", \"url\": \"/references/agent_knowledge/quarterly_competitor_metrics_2026-06-18/online_verification_2026-06-18.csv\"}]}], \"contextAudit\": {\"token_budget\": 6500, \"token_estimate\": 6013, \"headroom\": 1200, \"input_chunks\": 10, \"retained_chunks\": 10, \"skipped_chunks\": 0, \"compressed_chunks\": 0, \"skipped\": [], \"token_counter\": \"tiktoken\"}, \"retrievalQuality\": {\"score\": 100, \"retained_chunks\": 10, \"official_hits\": 10, \"conflict_hits\": 4, \"source_gap_hits\": 7, \"query_term_hits\": 10, \"unique_sources\": 8, \"status\": \"strong\"}}</metadata>"
+      }
+    }
+  ]
+}

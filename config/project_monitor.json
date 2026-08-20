@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "project": "CMHK竞争情报主项目",
+  "timezone": "Asia/Hong_Kong",
+  "poll_seconds": 30,
+  "ignore_existing_logs_on_first_observation": true,
+  "lookback_hours": 48,
+  "web_health_url": "http://127.0.0.1:8765/api/health",
+  "services": [
+    {
+      "id": "frequency-scheduler",
+      "name": "飞书频率调度器",
+      "launchd_label": "com.liaowang.cmhk-frequency-scheduler",
+      "severity": "P1"
+    },
+    {
+      "id": "web-app",
+      "name": "主项目Web与战略新闻监视器",
+      "launchd_label": "com.liaowang.cmhk-web-app",
+      "severity": "P1"
+    },
+    {
+      "id": "feishu-media-metrics",
+      "name": "Feishu媒体指标定时汇总",
+      "launchd_label": "com.liaowang.cmhk-feishu-media-metrics",
+      "severity": "P2"
+    },
+    {
+      "id": "project-monitor",
+      "name": "主项目错误监控器",
+      "launchd_label": "com.liaowang.cmhk-project-monitor",
+      "severity": "P1"
+    },
+    {
+      "id": "project-monitor-card-actions",
+      "name": "错误告警处理按钮监听器",
+      "launchd_label": "com.liaowang.cmhk-project-monitor-card-actions",
+      "severity": "P2"
+    }
+  ],
+  "task_kinds": [
+    {
+      "id": "crawl",
+      "name": "主爬虫与定时爬虫",
+      "stale_after_seconds": 4200
+    },
+    {
+      "id": "strategic-news",
+      "name": "06:00/13:30战略新闻爬虫",
+      "stale_after_seconds": 4200
+    },
+    {
+      "id": "executive-intelligence-refresh",
+      "name": "四库与AI观察结论刷新",
+      "stale_after_seconds": 2400
+    },
+    {
+      "id": "weekly-report",
+      "name": "双周报生成",
+      "stale_after_seconds": 10800
+    },
+    {
+      "id": "carrier-performance",
+      "name": "运营商业绩摘要生成",
+      "stale_after_seconds": 10800
+    },
+    {
+      "id": "audio-generation",
+      "name": "TTS语音与真实字幕生成",
+      "stale_after_seconds": 3600
+    },
+    {
+      "id": "feishu-media-metrics",
+      "name": "Feishu媒体指标定时汇总",
+      "stale_after_seconds": 3600
+    }
+  ],
+  "pipeline_failure_stages": [
+    "crawl",
+    "feishu_sync",
+    "agent_review",
+    "local_financial_results",
+    "financial_frontend_publish",
+    "news_bridge",
+    "strategic_news",
+    "executive_intelligence_refresh"
+  ],
+  "strategic_scan_times": [
+    "06:00",
+    "13:30"
+  ],
+  "strategic_daily_cutoff": "00:00",
+  "strategic_start_grace_minutes": 15,
+  "strategic_finish_grace_minutes": 70,
+  "strategic_deferred_queue_limit": 40,
+  "media_metrics_scan_times": [
+    "10:00",
+    "17:00"
+  ],
+  "media_metrics_grace_minutes": 20,
+  "alert_routing": {
+    "policy": "incident_group_only",
+    "reason": "故障通知只发战略竞对故障处理群；原项目总群和需求沟通群不再接收新报障卡片",
+    "env_override": "CMHK_ALERT_TARGET_ROLES"
+  },
+  "targets": [
+    {
+      "role": "requirements",
+      "chat_id": "oc_22bf3c7febc4bab295fedfb0b8e6c176",
+      "expected_name": "竞对AI项目需求沟通群",
+      "alert_notify": false
+    },
+    {
+      "role": "project",
+      "chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
+      "expected_name": "揭榜-竞争对手与行业情报监测AI应用",
+      "alert_notify": false
+    },
+    {
+      "role": "incident",
+      "chat_id": "oc_4b8863e13b04e8d70023ba165b496a6b",
+      "expected_name": "战略竞对故障处理群",
+      "alert_notify": true,
+      "notify_from_hkt": "2026-08-18T17:14:19+08:00"
+    }
+  ],
+  "bot": {
+    "profile": "cli_a9575e70ae799cb2",
+    "app_id": "cli_a9575e70ae799cb2",
+    "expected_name": "Alex的狂热粉丝"
+  },
+  "card_actions": {
+    "enabled": true,
+    "event_key": "card.action.trigger",
+    "action": "cmhk_mark_handled_v1",
+    "primary_handler_open_id": "ou_c90bf12154574fc836d69f4bf1429ddc",
+    "primary_handler_expected_name": "廖望 Alex LIAO Wang"
+  },
+  "subscriptions": {
+    "entry_profile": "cli_a9575e70ae799cb2",
+    "directory_profile": "cmhk-innovation-digital",
+    "delivery_profile": "cmhk-innovation-digital",
+    "delivery_app_id": "cli_aac933f059a2dbfb",
+    "delivery_app_name": "科创及数智化",
+    "primary_delivery_open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+    "poster_image_keys": {
+      "cli_a9575e70ae799cb2": "img_v3_0214m_eed56d10-66fa-4891-84e7-da4de0193cdg",
+      "cmhk-innovation-digital": "img_v3_0214m_005b2a54-0800-4789-bb79-56a832c9e08g"
+    }
+  },
+  "error_ledger": {
+    "enabled": true,
+    "spreadsheet_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+    "expected_main_sheet_id": "9c638d",
+    "sheet_id": "j1AY6G",
+    "sheet_name": "项目错误告警",
+    "columns": [
+      "告警ID",
+      "故障时间",
+      "首次发现时间",
+      "重要等级",
+      "重要等级理由",
+      "任务",
+      "组件",
+      "故障原因",
+      "故障影响",
+      "错误证据",
+      "建议解决方案",
+      "是否需人工介入",
+      "处理人员",
+      "处理状态",
+      "最近同步时间",
+      "AI模型",
+      "群通知状态"
+    ]
+  },
+  "excluded_components": [
+    "token-hub",
+    "com.liaowang.cmhk-token-hub-crawl"
+  ]
+}

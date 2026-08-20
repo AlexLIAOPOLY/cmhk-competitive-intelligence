@@ -1,0 +1,41 @@
+{
+  "id": "forecast_readiness_audits",
+  "title": "小竞AI预测工具边界审计",
+  "summary": "检查 forecast_quarterly_metric 是否按当前季度/半年度数据边界排除 source-gap、legacy 非预测口径和宏观政策事件。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "小竞AI趋势预测、半年度预测、source-gap 拒绝和宏观政策解释边界。",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "forecast",
+    "trend",
+    "source-gap",
+    "legacy-boundary"
+  ],
+  "keywords": [
+    "forecast_readiness_audits",
+    "forecast_quarterly_metric",
+    "source_gap_confirmed",
+    "legacy_cloud_segment_revenue_including_dingtalk",
+    "cmhk_macro_policy"
+  ],
+  "entrypoints": [
+    "forecast_readiness_alignment_2026-06-19.md",
+    "forecast_readiness_alignment_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 8,
+    "cases_checked": 8,
+    "passed": 8,
+    "failed": 0,
+    "notes": [
+      "审计调用真实 forecast_quarterly_metric 工具输出，而不是只检查 CSV。",
+      "source-gap、legacy 非预测口径和宏观政策事件不得作为公司季度数值预测目标。",
+      "半年度主体必须以半年度样本和半年度预测标签输出。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}
