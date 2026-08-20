@@ -890,6 +890,7 @@ class AuthService:
             "/static/login.js",
             "/static/assets/china-mobile-blue-logo.png",
             "/static/assets/cmhk-login-background.jpg",
+            "/static/assets/login-hong-kong-network-bg-v1.webp",
         }
         if path in public_static or not self.require_login:
             return True

@@ -156,6 +156,8 @@ class AuthServiceTest(unittest.TestCase):
         self.assertFalse(self.service.authorize_resource(report, "/outputs/example.docx"))
         login = FakeHandler(origin="")
         self.assertTrue(self.service.authorize_resource(login, "/static/login.html"))
+        login_background = FakeHandler(origin="")
+        self.assertTrue(self.service.authorize_resource(login_background, "/static/assets/login-hong-kong-network-bg-v1.webp"))
 
     def test_unknown_api_fails_closed_and_proxy_cannot_use_dev_login(self):
         _, session = self.dev_login()
