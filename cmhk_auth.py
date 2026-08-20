@@ -482,6 +482,19 @@ class AuthService:
         except Exception:
             return dict(identity)
 
+    @staticmethod
+    def _position_from_directory_departments(departments: list[Any]) -> str:
+        """Use explicit position-type directory memberships when job_title is absent."""
+        markers = (
+            "graduate trainee", "management trainee", "trainee", "intern", "apprentice",
+            "毕业培训生", "管理培训生", "管培生", "实习生", "学徒",
+        )
+        for value in departments:
+            label = str(value or "").strip()
+            if label and any(marker in label.lower() for marker in markers):
+                return label
+        return ""
+
     def _cached_directory_profile(self, name: str) -> dict[str, str]:
         """Read the refreshed Feishu directory cache without triggering a network sync."""
         db_path = self.root / "var" / "subscriptions" / "subscriptions.sqlite3"
@@ -503,10 +516,14 @@ class AuthService:
             departments = json.loads(row[2] or "[]")
         except (TypeError, ValueError, json.JSONDecodeError):
             departments = []
+        departments = [str(item).strip() for item in departments if str(item).strip()]
+        stored_title = str(row[1] or "").strip()
+        inferred_title = self._position_from_directory_departments(departments) if not stored_title else ""
+        organization_departments = [item for item in departments if item != inferred_title]
         return {
             "avatar_url": str(row[0] or ""),
-            "title": str(row[1] or ""),
-            "department": " / ".join(str(item) for item in departments if str(item).strip()),
+            "title": stored_title or inferred_title,
+            "department": " / ".join(organization_departments),
         }
 
     def _refresh_missing_feishu_profiles(self) -> None:
@@ -514,7 +531,7 @@ class AuthService:
         candidates = [
             item for item in self._users()
             if item.get("credential_source") == "feishu_sso"
-            and (not item.get("department") or not item.get("avatar_url"))
+            and (not item.get("department") or not item.get("title") or not item.get("avatar_url"))
         ]
         for candidate in candidates:
             query = str(candidate.get("email") or candidate.get("name") or "").strip()

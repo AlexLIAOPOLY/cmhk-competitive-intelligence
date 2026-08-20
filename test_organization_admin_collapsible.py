@@ -10,7 +10,7 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=9', INDEX)
+        self.assertIn('/static/organization-admin.js?v=10', INDEX)
         self.assertIn('/static/organization-admin.css?v=10', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
@@ -25,6 +25,8 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn('class="organization-section-chevron"', SCRIPT)
         self.assertIn('title: "角色与账号"', SCRIPT)
         self.assertIn("body: account, open: true", SCRIPT)
+        self.assertIn('body: organization, open: true', SCRIPT)
+        self.assertIn('body: profile, open: true', SCRIPT)
         self.assertIn("data-permission-count", SCRIPT)
         self.assertIn('class="organization-surface organization-audit-surface"', SCRIPT)
         self.assertIn('["Enter", " "].includes(event.key)', SCRIPT)

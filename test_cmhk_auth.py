@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import sqlite3
 import tempfile
 import unittest
 from email.message import Message
@@ -247,6 +248,45 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(users[0]["avatar_url"], "https://example.test/member.webp")
         self.assertEqual(users[0]["title"], "Project Manager")
         self.assertEqual(users[0]["department"], "科创及数智化部 / 科技创新管理")
+
+    def test_directory_profile_uses_explicit_trainee_membership_as_position(self):
+        db_path = Path(self.temp.name) / "var" / "subscriptions" / "subscriptions.sqlite3"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        with sqlite3.connect(db_path) as connection:
+            connection.execute(
+                """CREATE TABLE subscription_directory_people (
+                       display_name TEXT, avatar_url TEXT, job_title TEXT,
+                       department_names TEXT, active INTEGER)"""
+            )
+            connection.execute(
+                "INSERT INTO subscription_directory_people VALUES (?, ?, ?, ?, 1)",
+                ("测试成员", "https://example.test/avatar.webp", "", json.dumps([
+                    "2025 Graduate Trainee", "Technology & Innovation Management",
+                ])),
+            )
+        profile = self.service._cached_directory_profile("测试成员")
+        self.assertEqual(profile["title"], "2025 Graduate Trainee")
+        self.assertEqual(profile["department"], "Technology & Innovation Management")
+
+    def test_missing_title_is_included_in_feishu_profile_backfill(self):
+        users = self.service._users()
+        users.append({
+            "id": "fs-title-gap", "account": "feishu_title_gap",
+            "email": "member@hk.chinamobile.com", "name": "测试成员",
+            "department": "科技创新管理", "title": "",
+            "avatar_url": "https://example.test/avatar.webp",
+            "credential_source": "feishu_sso", "role": "UNCONFIGURED", "status": "active",
+        })
+        self.service._write(self.service.users_path, users)
+        match = {
+            "email": "member@hk.chinamobile.com", "name": "测试成员",
+            "department": "科技创新管理", "title": "2025 Graduate Trainee",
+            "avatar_url": "https://example.test/avatar.webp",
+        }
+        with patch.object(self.service, "_search_directory_users", return_value=[match]):
+            self.service._refresh_missing_feishu_profiles()
+        refreshed = next(item for item in self.service._users() if item["id"] == "fs-title-gap")
+        self.assertEqual(refreshed["title"], "2025 Graduate Trainee")
 
     def test_admin_can_delete_member_but_not_current_account(self):
         _, session = self.dev_login()

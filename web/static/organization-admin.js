@@ -108,8 +108,8 @@
     const permissions = `<div class="organization-permission-grid">${checks}</div>`;
     return `<section class="organization-member-detail" data-user-id="${esc(user.id)}">
       <header class="organization-profile-heading">${avatar(user, "is-profile")}<div><h2>${esc(user.name || user.account || "未命名成员")}</h2><p>${esc(user.account || user.email || "—")}</p></div><span class="organization-account-state ${user.status === "disabled" ? "is-disabled" : ""}">${user.status === "disabled" ? "已停用" : "启用"}</span></header>
-      ${detailSection({ title: "组织信息", summary: user.department || "部门资料未填写", body: organization })}
-      ${detailSection({ title: "成员资料", summary: user.authProvider === "feishu" ? "飞书企业身份" : "本地账号", body: profile })}
+      ${detailSection({ title: "组织信息", summary: user.department || "部门资料未填写", body: organization, open: true })}
+      ${detailSection({ title: "成员资料", summary: user.authProvider === "feishu" ? "飞书企业身份" : "本地账号", body: profile, open: true })}
       ${detailSection({ title: "角色与账号", summary: `${user.roleLabel || "待分配"} · ${user.status === "disabled" ? "已停用" : "启用"}`, body: account, open: true })}
       <details class="organization-detail-section"><summary class="organization-section-summary"><span class="organization-section-copy"><h3>功能权限</h3><small data-permission-count>已启用 ${enabled} / ${Object.keys(state.modules).length} 项</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-section-body">${permissions}</div></details>
       <footer class="organization-save-bar"><span data-row-status aria-live="polite">选择角色或权限后保存</span><button type="button" data-save disabled>保存成员权限</button></footer>
