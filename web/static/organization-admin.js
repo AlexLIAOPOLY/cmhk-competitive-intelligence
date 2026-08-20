@@ -131,8 +131,7 @@
     const users = filteredUsers();
     const selected = selectedUser(users);
     const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
-    host.innerHTML = `<header class="organization-heading"><div><span>ORGANIZATION &amp; ACCESS</span><h1>组织管理</h1><p>点击成员查看真实个人资料、个人行动记录并配置角色与功能权限。</p></div></header>
-      ${directoryPanel()}
+    host.innerHTML = `${directoryPanel()}
       <section class="organization-surface organization-access-surface">
         <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">＋</button></div>
         <div class="organization-access-layout">${memberList(users, selected)}${memberDetail(selected)}</div>
