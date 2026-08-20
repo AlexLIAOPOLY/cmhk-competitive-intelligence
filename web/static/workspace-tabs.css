@@ -573,8 +573,22 @@
 .news-lineage.is-global .news-lineage-node.is-database-macro { --node-accent:#d9a554; border-color: rgba(205,147,67,.86); background: linear-gradient(155deg,rgba(77,57,28,.97),rgba(35,31,24,.99)); }
 .news-lineage.is-global .news-lineage-node.is-insight { --node-accent:#a786ef; border-color: rgba(148,118,224,.88); background: linear-gradient(155deg,rgba(56,43,94,.97),rgba(20,27,52,.99)); }
 .news-lineage.is-global .news-lineage-node.is-delivery { --node-accent:#5fcc9a; border-color: rgba(82,190,140,.88); background: linear-gradient(155deg,rgba(20,72,55,.97),rgba(6,34,35,.99)); }
+.news-health-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; margin-left: auto; color: #8facb5; font-size: 10px; }
+.news-health-legend > span,.news-lineage-health { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.news-health-legend i,.news-lineage-health i { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px color-mix(in srgb,currentColor 52%,transparent); }
+.news-health-legend .is-healthy { color: #62d4a7; }
+.news-health-legend .is-running { color: #65cbe5; }
+.news-health-legend .is-warning { color: #f2bd62; }
+.news-health-legend .is-critical { color: #f08078; }
+.news-health-legend .is-unknown { color: #879ba3; }
+.news-lineage-health { position: absolute; top: 10px; right: 28px; z-index: 1; color: var(--node-accent); font-size: 9px; font-weight: 750; line-height: 1; }
+.news-lineage.is-global .news-lineage-node.is-health-healthy { --node-accent:#62d4a7; border-color: rgba(80,190,147,.88); background: linear-gradient(155deg,rgba(18,68,56,.98),rgba(6,32,34,.99)); }
+.news-lineage.is-global .news-lineage-node.is-health-running { --node-accent:#65cbe5; border-color: rgba(83,181,207,.9); background: linear-gradient(155deg,rgba(13,61,79,.98),rgba(5,31,43,.99)); }
+.news-lineage.is-global .news-lineage-node.is-health-warning { --node-accent:#f2bd62; border-color: rgba(220,163,75,.92); background: linear-gradient(155deg,rgba(78,56,24,.98),rgba(38,31,22,.99)); }
+.news-lineage.is-global .news-lineage-node.is-health-critical { --node-accent:#f08078; border-color: rgba(222,105,96,.94); background: linear-gradient(155deg,rgba(83,36,37,.98),rgba(42,23,28,.99)); }
+.news-lineage.is-global .news-lineage-node.is-health-unknown { --node-accent:#879ba3; border-color: rgba(112,134,143,.82); background: linear-gradient(155deg,rgba(43,54,59,.98),rgba(22,29,33,.99)); }
 .news-lineage.is-global .news-lineage-group { border-color: rgba(105,164,185,.52); background: linear-gradient(135deg,rgba(18,52,66,.38),rgba(8,34,45,.2)); }
-.news-lineage.is-global .news-lineage-node > span { min-height: 35px; padding-right: 16px; color: #e9f6f8; font-size: 13px; font-weight: 750; line-height: 1.35; }
+.news-lineage.is-global .news-lineage-node > span { min-height: 35px; padding-right: 58px; color: #e9f6f8; font-size: 13px; font-weight: 750; line-height: 1.35; }
 .news-lineage.is-global .news-lineage-node > strong { font-size: 30px; line-height: 1.05; }
 .news-lineage.is-global .news-lineage-node > strong small { margin-left: 5px; font-size: 10.5px; }
 .news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 10.5px; line-height: 1.45; -webkit-line-clamp: 2; }
