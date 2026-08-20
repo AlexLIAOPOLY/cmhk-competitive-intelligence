@@ -253,136 +253,17 @@ def analyze_chat_image(payload: dict) -> dict:
     return {"description": description, "model": model}
 
 
-def _competitor_metric_business_lens(metric_key: str, metric_label: str) -> str:
-    text = f"{metric_key} {metric_label}".lower()
-    if "churn" in text or "流失率" in text:
-        return "该指标反映客户留存压力，通常越低代表留存更稳；不能据此推断整体经营优劣。"
-    if any(token in text for token in ("arpu", "arph")):
-        return "该指标反映客户变现能力与客户结构；较高值不自动等于整体经营更优，也可能受套餐和客群结构影响。"
-    if "growth" in text or "增长" in text or "擴展幅度" in text:
-        return "该指标反映业务动能；需要同时观察动能是否持续、公司间是否收敛，以及基数差异。"
-    if "penetration" in text or "渗透率" in text or "滲透率" in text:
-        return "该指标反映产品或网络采用进程；适合判断转化节奏与公司间采用差异，不直接代表利润。"
-    if "dou" in text or "traffic" in text or "流量" in text:
-        return "该指标反映使用强度与网络承载需求；使用量上升不自动等于收入或利润同比上升。"
-    if any(token in text for token in ("subscriber", "customer", "user", "connection", "homes", "building", "base_station", "客户", "用戶", "用户", "基站", "覆盖", "覆蓋", "连接", "連接")):
-        return "该指标主要反映业务、客户或网络规模；规模领先不自动代表效率、利润或客户质量领先。"
-    return "该指标只能用于判断所选维度上的竞争位置与变化，不能单独代表公司的整体经营优劣。"
-
-
-def _parse_competitor_business_insights(content: object) -> list[str]:
-    text = str(content or "").strip()
-    if not text:
+def _competitor_insight_content(content: object) -> str:
+    """Return the model's visible answer without restructuring, filtering, or rewriting it."""
+    if isinstance(content, list):
+        text = "".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
+    elif isinstance(content, dict):
+        text = str(content.get("text") or content.get("content") or "")
+    else:
+        text = str(content or "")
+    if not text.strip():
         raise RuntimeError("AI 未返回可用洞察")
-    text = re.sub(r"^```(?:json|text)?\s*|\s*```$", "", text, flags=re.I)
-    lines = [re.sub(r"^\s*(?:[-*•]|\d+[.)、])\s*", "", line).strip() for line in text.splitlines()]
-    lines = [line for line in lines if line]
-    if len(lines) == 1:
-        lines = [part.strip() for part in re.split(r"(?=(?:竞争格局|公司分化|公司定位|业务含义)[：|｜])", lines[0]) if part.strip()]
-    insights = lines[:3]
-    if len(insights) != 3:
-        raise RuntimeError("AI 竞争洞察结构不完整")
-    if any(len(line) > 220 for line in insights):
-        raise RuntimeError("AI 竞争洞察超出长度限制")
-    return insights
-
-
-def _validate_competitor_business_insights(insights: list[str], companies: list[str], rows: list[dict]) -> None:
-    prefixes = ("竞争格局｜", "公司定位｜", "业务含义｜")
-    if len(insights) != 3 or any(not line.startswith(prefix) for line, prefix in zip(insights, prefixes)):
-        raise RuntimeError("AI 竞争洞察标签或顺序不正确")
-    if any(not re.search(r"\d", line) for line in insights):
-        raise RuntimeError("AI 竞争洞察缺少数据证据")
-    position_line = insights[1]
-    if any(company not in position_line for company in companies):
-        raise RuntimeError("AI 公司定位未覆盖全部所选公司")
-    combined = " ".join(insights)
-    has_shared_scope = any(re.search(r"shared|共建|共享", str(row.get("scope") or ""), flags=re.I) for row in rows)
-    has_scope_break = any(re.search(r"scope change|口径变化|unsafe|not comparable|不可比|restated", " ".join(str(row.get(key) or "") for key in ("scope", "basis", "note")), flags=re.I) for row in rows)
-    comparators = {str(row.get("comparator") or "=") for row in rows}
-    has_bounds = any(value != "=" for value in comparators)
-    if has_shared_scope and not ("共享" in combined and "不可相加" in combined):
-        raise RuntimeError("AI 竞争洞察遗漏共建共享限制")
-    if has_scope_break and not ("口径" in combined and re.search(r"不可比|不作|不能", combined)):
-        raise RuntimeError("AI 竞争洞察遗漏口径变化限制")
-    if has_bounds and not re.search(r"下限|上限|约数|边界", combined):
-        raise RuntimeError("AI 竞争洞察遗漏边界披露限制")
-
-
-def _ensure_competitor_numeric_evidence(insights: list[str], companies: list[str], rows: list[dict]) -> list[str]:
-    """Attach a canonical table anchor when a generated line omits its required number."""
-    company_years = {
-        company: {int(row.get("year") or 0) for row in rows if str(row.get("company") or "") == company}
-        for company in companies
-    }
-    common_years = sorted(set.intersection(*(years for years in company_years.values()))) if company_years else []
-    if not common_years:
-        return insights
-    anchor_year = common_years[-1]
-    anchor_rows = {
-        company: next(
-            (
-                row
-                for row in rows
-                if str(row.get("company") or "") == company and int(row.get("year") or 0) == anchor_year
-            ),
-            None,
-        )
-        for company in companies
-    }
-    anchor = next((row for row in anchor_rows.values() if row), None)
-    if not anchor:
-        return insights
-    comparator = {">=": "≥", "<=": "≤", "~": "约", "approx": "约"}.get(
-        str(anchor.get("comparator") or "").lower(),
-        "",
-    )
-    value = f"{float(anchor.get('value')):g}"
-    unit = {
-        "percent": "%",
-        "million_base_stations": "百万座",
-        "base_stations": "座",
-        "million_subscribers": "百万户",
-        "million_customers": "百万户",
-    }.get(str(anchor.get("unit") or ""), str(anchor.get("unit") or ""))
-    evidence = f"{anchor_year}年{anchor.get('company')}{comparator}{value}{unit}"
-    repaired = [
-        line if re.search(r"\d", line) else f"{line.rstrip('。')}；数据锚点为{evidence}。"
-        for line in insights
-    ]
-    if len(repaired) >= 2:
-        missing_companies = [company for company in companies if company not in repaired[1]]
-        company_anchors = []
-        for company in missing_companies:
-            row = anchor_rows.get(company)
-            if not row:
-                continue
-            row_comparator = {">=": "≥", "<=": "≤", "~": "约", "approx": "约"}.get(
-                str(row.get("comparator") or "").lower(),
-                "",
-            )
-            row_value = f"{float(row.get('value')):g}"
-            row_unit = {
-                "percent": "%",
-                "million_base_stations": "百万座",
-                "base_stations": "座",
-                "million_subscribers": "百万户",
-                "million_customers": "百万户",
-            }.get(str(row.get("unit") or ""), str(row.get("unit") or ""))
-            company_anchors.append(f"{company}{anchor_year}年{row_comparator}{row_value}{row_unit}")
-        if company_anchors:
-            repaired[1] = f"{repaired[1].rstrip('。')}；公司证据补充：{'、'.join(company_anchors)}。"
-    combined = " ".join(repaired)
-    has_shared_scope = any(re.search(r"shared|共建|共享", str(row.get("scope") or ""), flags=re.I) for row in rows)
-    has_scope_break = any(re.search(r"scope change|口径变化|unsafe|not comparable|不可比|restated", " ".join(str(row.get(key) or "") for key in ("scope", "basis", "note")), flags=re.I) for row in rows)
-    has_bounds = any(str(row.get("comparator") or "=") != "=" for row in rows)
-    if has_shared_scope and not ("共享" in combined and "不可相加" in combined):
-        repaired[2] = f"{repaired[2].rstrip('。')}；共建共享数值不可相加。"
-    if has_scope_break and not ("口径" in combined and re.search(r"不可比|不作|不能", combined)):
-        repaired[2] = f"{repaired[2].rstrip('。')}；口径变化年度不可直接比较。"
-    if has_bounds and not re.search(r"下限|上限|约数|边界", combined):
-        repaired[2] = f"{repaired[2].rstrip('。')}；边界披露仅按下限、上限或约数解读。"
-    return repaired
+    return text
 
 
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
@@ -446,16 +327,12 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     if not base_url or not api_key or not model or not is_internal_ai_base_url(base_url):
         raise RuntimeError("公司内网 AI 配置不完整")
     metric_label = str(metric.get("label") or metric_key)[:120]
-    business_lens = _competitor_metric_business_lens(metric_key, metric_label)
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞争策略分析师。任务不是复述数据，而是生成公司层面的竞争洞察。只输出三行简体中文纯文本，每行控制在45—75个汉字，禁止前言、编号和结语。三行必须依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头，且每行至少引用一个表格数字。第一行判断收敛、分化、追赶、反转或稳定；第二行覆盖所有所选公司，比较位置、动能和稳定性；第三行解释对客户留存、变现、采用进程、规模竞争或网络投入的含义。数字只能作证据，不得逐家公司机械罗列起止值。不要出现‘共同可比年度’‘共同首尾锚点’‘数据口径’，不要给行动建议。只能基于表格和指标解释边界审慎推断，不得声称已证明主观战略、原因或因果关系，必要时用‘显示’‘可能反映’。趋势、差距和最新比较只能使用所有公司共同首尾年度。除非指标方向明确，不得擅自使用整体领先、落后或经营更好。保留大于、至少、约等比较符；边界值重叠时不得排名或精算差距；财年结束日不同只能比较趋势；共建共享数值不得相加或解释为两套网络；口径变化时不得跨口径计算；不得补数、预测或引用外部知识。"},
-            {"role": "user", "content": f"指标：{metric_label}\n指标解释边界：{business_lens}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同可比年度：{','.join(str(year) for year in common_years)}\n共同首尾锚点：{common_years[0]}—{common_years[-1]}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
+            {"role": "system", "content": "你是电信行业竞争策略分析师。请分析用户提供的竞争数据并给出洞察。"},
+            {"role": "user", "content": f"指标：{metric_label}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n数据年度：{','.join(str(year) for year in common_years)}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
-        "temperature": 0.1,
-        "max_tokens": 900,
-        "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
     request = urllib.request.Request(
@@ -505,13 +382,8 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                 raw_content = message.get("content") or message.get("reasoning_content") or ""
     finally:
         reset_internal_ai_priority(priority_token)
-    insights = _ensure_competitor_numeric_evidence(
-        _parse_competitor_business_insights(raw_content),
-        companies,
-        comparison_rows,
-    )
-    _validate_competitor_business_insights(insights, companies, comparison_rows)
-    return {"requestId": request_id, "insight": "\n".join(insights), "insights": insights, "model": model}
+    insight = _competitor_insight_content(raw_content)
+    return {"requestId": request_id, "insight": insight, "model": model}
 
 
 def transcribe_chat_audio(payload: dict) -> dict:

@@ -5,6 +5,15 @@ from unittest.mock import patch
 import web_app
 
 
+MODEL_CONTENT = (
+    "# 自由格式洞察\n\n"
+    "模型可以自行决定段落、标签和篇幅。\n"
+    "- 不要求每段带数字\n"
+    "- 不强制覆盖固定栏目\n\n"
+    "口径变化也不触发系统补写。"
+)
+
+
 class _Response:
     def __enter__(self):
         return self
@@ -13,24 +22,14 @@ class _Response:
         return False
 
     def read(self):
-        content = (
-            "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
-            "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
-            "业务含义｜较低流失率可能反映后付客户稳定性增强，但0.1个百分点差距不足以代表整体经营优劣。"
-        )
-        return json.dumps({"choices": [{"message": {"content": content}}]}).encode()
+        return json.dumps({"choices": [{"message": {"content": MODEL_CONTENT}}]}).encode()
 
 
 class _StreamingResponse(_Response):
     def __iter__(self):
-        content = (
-            "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
-            "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
-            "业务含义｜较低流失率可能反映后付客户稳定性增强，但0.1个百分点差距不足以代表整体经营优劣。"
-        )
         events = [
             {"choices": [{"delta": {"reasoning_content": "分析中"}}]},
-            *({"choices": [{"delta": {"content": chunk}}]} for chunk in (content[:48], content[48:106], content[106:])),
+            *({"choices": [{"delta": {"content": chunk}}]} for chunk in (MODEL_CONTENT[:28], MODEL_CONTENT[28:63], MODEL_CONTENT[63:])),
         ]
         for event in events:
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode()
@@ -67,15 +66,14 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("HKT\t2020\t=\t0.9\tpercent", captured["body"]["messages"][1]["content"])
         self.assertIn("官方来源", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
-        self.assertEqual(len(result["insights"]), 3)
-        self.assertIn("竞争格局", result["insights"][0])
-        self.assertIn("不是复述数据", captured["body"]["messages"][0]["content"])
-        self.assertIn("公司层面的竞争洞察", captured["body"]["messages"][0]["content"])
-        self.assertIn("覆盖所有所选公司", captured["body"]["messages"][0]["content"])
-        self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
-        self.assertEqual(captured["body"]["max_tokens"], 900)
-        self.assertIn("指标解释边界", captured["body"]["messages"][1]["content"])
-        self.assertIn("客户留存压力", captured["body"]["messages"][1]["content"])
+        self.assertEqual(result["insight"], MODEL_CONTENT)
+        self.assertNotIn("insights", result)
+        self.assertEqual(captured["body"]["messages"][0]["content"], "你是电信行业竞争策略分析师。请分析用户提供的竞争数据并给出洞察。")
+        self.assertNotIn("只输出三行", captured["body"]["messages"][0]["content"])
+        self.assertNotIn("不得", captured["body"]["messages"][0]["content"])
+        self.assertNotIn("max_tokens", captured["body"])
+        self.assertNotIn("temperature", captured["body"])
+        self.assertNotIn("chat_template_kwargs", captured["body"])
 
     def test_browser_cells_are_not_trusted(self):
         captured = {}
@@ -114,7 +112,7 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertEqual(captured["timeout"], 55)
         self.assertEqual([event["stage"] for event in events if event["type"] == "status"], ["queue", "generating", "reasoning"])
         self.assertGreaterEqual(len([event for event in events if event["type"] == "delta"]), 3)
-        self.assertEqual(len(result["insights"]), 3)
+        self.assertEqual(result["insight"], MODEL_CONTENT)
 
     def test_model_receives_only_common_comparison_years(self):
         captured = {}
@@ -133,7 +131,7 @@ class CompetitorInsightTests(unittest.TestCase):
             web_app.generate_competitor_insight(payload)
 
         prompt = captured["body"]["messages"][1]["content"]
-        self.assertIn("共同首尾锚点：2020—2022", prompt)
+        self.assertIn("数据年度：2020,2021,2022", prompt)
         self.assertNotIn("HKT\t2018", prompt)
         self.assertNotIn("HKT\t2019", prompt)
         self.assertIn("SmarTone\t2022", prompt)
@@ -144,29 +142,13 @@ class CompetitorInsightTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "数据版本已更新"):
             web_app.generate_competitor_insight(payload)
 
-    def test_rejects_incomplete_business_insight_structure(self):
-        with self.assertRaisesRegex(RuntimeError, "结构不完整"):
-            web_app._parse_competitor_business_insights("只有一条数据摘要")
+    def test_visible_model_content_is_returned_exactly_without_format_gate(self):
+        content = "  任意开头\n\n第四段也保留\n* Markdown 符号保留\n  末尾空格  "
+        self.assertEqual(web_app._competitor_insight_content(content), content)
 
-    def test_business_lens_does_not_equate_scale_with_overall_performance(self):
-        lens = web_app._competitor_metric_business_lens("mobile_subscribers", "移动用户数")
-        self.assertIn("规模", lens)
-        self.assertIn("不自动代表", lens)
-
-    def test_rejects_wrong_insight_labels(self):
-        insights = ["数据摘要｜0.1", "公司定位｜HKT 0.8、SmarTone 0.7", "业务含义｜0.1"]
-        with self.assertRaisesRegex(RuntimeError, "标签或顺序"):
-            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
-
-    def test_rejects_company_position_that_omits_selected_company(self):
-        insights = ["竞争格局｜差距0.1", "公司定位｜HKT为0.8", "业务含义｜流失率0.8"]
-        with self.assertRaisesRegex(RuntimeError, "未覆盖全部"):
-            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
-
-    def test_rejects_causal_or_overall_superiority_claim(self):
-        insights = ["竞争格局｜差距0.1证明竞争稳定", "公司定位｜HKT为0.8、SmarTone为0.7", "业务含义｜HKT整体经营领先0.1"]
-        with self.assertRaisesRegex(RuntimeError, "过强因果"):
-            web_app._validate_competitor_business_insights(insights, ["HKT", "SmarTone"], [])
+    def test_only_empty_model_content_is_rejected(self):
+        with self.assertRaisesRegex(RuntimeError, "未返回可用洞察"):
+            web_app._competitor_insight_content(" \n ")
 
     def test_demo_report_listing_excludes_test_output(self):
         self.assertFalse(web_app.is_report_file_name("test_out.docx"))

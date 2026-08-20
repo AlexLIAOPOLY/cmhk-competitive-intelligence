@@ -588,10 +588,9 @@
     });
   }
 
-  function settleCompetitorInsight(card, { mode, insights, status = "" }) {
+  function settleCompetitorInsight(card, { mode, insight = "", insights = [], status = "" }) {
     if (!card) return;
     const isAi = mode === "ai";
-    const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     card.classList.remove("is-loading", "is-streaming");
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
@@ -599,6 +598,16 @@
     setCompetitorInsightStatus(card, isAi ? "" : (status || "AI未生成；当前显示本地数据总结"));
     card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "LOCAL DATA";
     const list = card.querySelector("[data-competitor-insight-list]");
+    if (isAi) {
+      const li = document.createElement("li");
+      const copy = document.createElement("span");
+      li.className = "is-raw-ai-output";
+      copy.textContent = String(insight ?? "");
+      li.append(copy);
+      list.replaceChildren(li);
+      return;
+    }
+    const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean);
     list.replaceChildren(...items.map((item, index) => {
       const labels = ["竞争格局", "公司定位", "业务含义"];
       const li = document.createElement("li");
@@ -628,22 +637,17 @@
   }
 
   function renderCompetitorInsightDraft(card, text) {
-    const drafts = String(text || "").split(/\n+/).map((item) => item.trim()).filter(Boolean).slice(0, 3);
-    if (!card || !drafts.length) return;
+    if (!card || !String(text || "").length) return;
     card.classList.remove("is-loading");
     card.classList.add("is-streaming");
     setCompetitorInsightStatus(card, `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
-    const labels = ["竞争格局", "公司定位", "业务含义"];
-    card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
-      const li = document.createElement("li");
-      const label = document.createElement("b");
-      const copy = document.createElement("span");
-      label.textContent = labels[index];
-      copy.textContent = item.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "");
-      li.append(label, copy);
-      return li;
-    }));
+    const li = document.createElement("li");
+    const copy = document.createElement("span");
+    li.className = "is-raw-ai-output";
+    copy.textContent = String(text);
+    li.append(copy);
+    card.querySelector("[data-competitor-insight-list]").replaceChildren(li);
   }
 
   async function requestLegacyCompetitorInsight(payload, requestId, controller, card) {
@@ -655,7 +659,7 @@
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.ok) throw new Error(result.error || `AI兼容接口 HTTP ${response.status}`);
     if (requestId !== state.competitorInsightRequest) return false;
-    settleCompetitorInsight(card, { mode: "ai", insights: result.insights });
+    settleCompetitorInsight(card, { mode: "ai", insight: result.insight });
     return true;
   }
 
@@ -694,7 +698,7 @@
             renderCompetitorInsightDraft(card, generated);
           } else if (event.type === "done" && event.ok) {
             completed = true;
-            settleCompetitorInsight(card, { mode: "ai", insights: event.insights });
+            settleCompetitorInsight(card, { mode: "ai", insight: event.insight });
           } else if (event.type === "error") {
             throw new Error(event.error || "AI生成失败");
           }
