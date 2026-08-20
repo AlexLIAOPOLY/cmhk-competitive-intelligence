@@ -1436,11 +1436,11 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["kept"], items)
         self.assertEqual(result["deferred"], [])
 
-    def test_semantic_dedupe_batch_failure_keeps_candidates_without_retry(self):
+    def test_semantic_dedupe_batch_failure_defers_candidates_without_retry(self):
         item = {
             "news_id": "candidate-fail-open",
             "ai_title": "一条需要语义判断的新闻",
-            "ai_summary": "模型暂时不可用时也应继续保留该候选。",
+            "ai_summary": "模型暂时不可用时应暂缓该候选。",
             "source_date": "2026-08-19",
             "url": "https://example.com/fail-open",
         }
@@ -1455,9 +1455,11 @@ class StrategicBriefingTests(unittest.TestCase):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
         agent_call.assert_called_once()
-        self.assertEqual(result["kept"], [item])
-        self.assertEqual(result["deferred"], [])
-        self.assertEqual(write_audit.call_args.args[1]["failed_open_count"], 1)
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["deferred"][0]["item"], item)
+        audit = write_audit.call_args.args[1]
+        self.assertEqual(audit["failed_open_count"], 0)
+        self.assertEqual(audit["failed_deferred_count"], 1)
 
     def test_strategic_news_review_defaults_to_deepseek_v4_pro(self):
         self.assertEqual(briefing.DEFAULT_STRATEGY_AI_MODEL, "DeepSeek-V4-Pro")
@@ -3466,7 +3468,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["kept"], [item])
         self.assertEqual(result["duplicates"], [])
 
-    def test_semantic_agent_failure_keeps_candidate_without_retry(self):
+    def test_semantic_agent_failure_defers_candidate_without_retry(self):
         item = {
             "news_id": "candidate-3",
             "ai_title": "香港宽频推出企业服务",
@@ -3485,9 +3487,9 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
-        self.assertEqual(result["kept"], [item])
+        self.assertEqual(result["kept"], [])
         self.assertEqual(result["duplicates"], [])
-        self.assertEqual(result["deferred"], [])
+        self.assertEqual(result["deferred"][0]["item"], item)
 
     def test_semantic_agent_cannot_deny_same_id_or_url_identity_match(self):
         item = {

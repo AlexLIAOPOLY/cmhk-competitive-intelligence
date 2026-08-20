@@ -12,7 +12,7 @@ import threading
 import time
 from collections import Counter
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
 from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -1092,13 +1092,13 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
     ]
 
 
-def _same_day_semantic_history(
+def _recent_semantic_history(
     history_items: list[dict[str, Any]],
     *,
     generated_at: str = "",
     candidate_items: list[dict[str, Any]] | None = None,
 ) -> tuple[str, list[dict[str, Any]]]:
-    """Limit semantic history to the current Hong Kong search day."""
+    """Return the current Hong Kong search day plus the preceding two days."""
     search_day = _search_date(generated_at or _now_iso())
     candidate_days = {
         _search_date(
@@ -1112,11 +1112,25 @@ def _same_day_semantic_history(
     candidate_days.discard("")
     if len(candidate_days) == 1:
         search_day = next(iter(candidate_days))
+    try:
+        anchor_day = datetime.fromisoformat(search_day).date()
+    except ValueError:
+        anchor_day = datetime.now(HKT).date()
+        search_day = anchor_day.isoformat()
+    included_days = {
+        (anchor_day - timedelta(days=offset)).isoformat()
+        for offset in range(3)
+    }
     return search_day, [
         item
         for item in history_items
-        if _search_date(item.get("search_date")) == search_day
+        if _search_date(item.get("search_date")) in included_days
     ]
+
+
+# Compatibility alias for callers outside this module. Its behavior now follows
+# the required three-day search window.
+_same_day_semantic_history = _recent_semantic_history
 
 
 HUMAN_DECISION_COLUMNS = (0, 1, 2)
@@ -1341,7 +1355,7 @@ def sync_candidates(
             else []
         )
         ai_included_count = len(prepared_items)
-        semantic_search_day, semantic_history_items = _same_day_semantic_history(
+        semantic_search_day, semantic_history_items = _recent_semantic_history(
             existing_history_items,
             generated_at=generated_at,
             candidate_items=curated_items,
@@ -1351,7 +1365,7 @@ def sync_candidates(
             "AI逐条审核",
             (
                 f"AI审核结束，保留 {len(prepared_items)}/{len(curated_items)} 条；"
-                f"即将仅对 {semantic_search_day} 当日历史 "
+                f"即将对 {semantic_search_day} 及前两日历史 "
                 f"{len(semantic_history_items)} 条去重。"
             ),
         )
@@ -1388,6 +1402,7 @@ def sync_candidates(
                 else {}
             )
             is_duplicate = decision.get("is_duplicate") is True
+            is_deferred = decision.get("is_deferred") is True
             semantic_review_items.append(
                 {
                     "news_id": news_id,
@@ -1401,7 +1416,11 @@ def sync_candidates(
                     "published_at": _text(
                         item.get("published_at") or item.get("source_date"), 80
                     ),
-                    "status": "duplicate" if is_duplicate else "kept",
+                    "status": (
+                        "deferred"
+                        if is_deferred
+                        else "duplicate" if is_duplicate else "kept"
+                    ),
                     "duplicate_of": _text(decision.get("duplicate_of"), 80),
                     "reason": _text(
                         decision.get("reason")
@@ -1449,6 +1468,11 @@ def sync_candidates(
             *[
                 entry["item"]
                 for entry in semantic_result["duplicates"]
+                if isinstance(entry, dict) and isinstance(entry.get("item"), dict)
+            ],
+            *[
+                entry["item"]
+                for entry in semantic_result["deferred"]
                 if isinstance(entry, dict) and isinstance(entry.get("item"), dict)
             ],
         ]
@@ -1695,7 +1719,7 @@ def sync_candidates(
                 "last_semantic_deferred_count": len(semantic_result["deferred"]),
                 "last_semantic_history_count": semantic_result["history_count"],
                 "last_semantic_history_shards": semantic_result["history_shards"],
-                "last_semantic_history_scope": "same_hkt_search_day",
+                "last_semantic_history_scope": "hkt_search_day_and_previous_2_days",
                 "last_semantic_search_day": semantic_search_day,
                 GATE_METADATA_STATE_KEY: candidate_gate_metadata,
                 "last_sync_at": _now_iso(),
@@ -1731,7 +1755,7 @@ def sync_candidates(
             "semantic_deferred_count": len(semantic_result["deferred"]),
             "semantic_history_count": semantic_result["history_count"],
             "semantic_history_shards": semantic_result["history_shards"],
-            "semantic_history_scope": "same_hkt_search_day",
+            "semantic_history_scope": "hkt_search_day_and_previous_2_days",
             "semantic_search_day": semantic_search_day,
             "deferred_delivery_ack": deferred_ack,
         }

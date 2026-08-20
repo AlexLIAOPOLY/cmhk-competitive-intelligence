@@ -5174,8 +5174,9 @@ def agent_semantic_deduplicate_candidates(
         candidate["id"]: {
             "id": candidate["id"],
             "is_duplicate": False,
+            "is_deferred": False,
             "duplicate_of": "",
-            "reason": "在有限语义去重预算内未发现同一事件，默认保留。",
+            "reason": "在有限语义去重预算内未发现同一事件，保留。",
             "assessed_shards": 0,
             "errors": [],
         }
@@ -5307,13 +5308,19 @@ def agent_semantic_deduplicate_candidates(
         except Exception as exc:
             error = _clean_text(exc, 240)
             logging.error(
-                "语义去重第 %s/%s 轮失败；为控制问询次数，本批默认保留且不重试：%s",
+                "语义去重第 %s/%s 轮失败；为控制问询次数，本批暂缓且不写入审核表：%s",
                 batch_number,
                 batch_total,
                 error,
             )
             decisions = {}
             for candidate in batch:
+                aggregate[candidate["id"]].update(
+                    {
+                        "is_deferred": True,
+                        "reason": "语义去重批次异常，本轮暂缓且不写入审核表。",
+                    }
+                )
                 aggregate[candidate["id"]]["errors"].append(
                     f"bounded batch {batch_number}: {error}"
                 )
@@ -5337,7 +5344,7 @@ def agent_semantic_deduplicate_candidates(
             (
                 f"完成第 {batch_number}/{batch_total} 轮；累计判定重复 "
                 f"{sum(1 for record in aggregate.values() if record['is_duplicate'])} 条，"
-                f"失败默认保留 {sum(1 for record in aggregate.values() if record['errors'])} 条。"
+                f"失败暂缓 {sum(1 for record in aggregate.values() if record['errors'])} 条。"
             ),
         )
 
@@ -5347,7 +5354,15 @@ def agent_semantic_deduplicate_candidates(
     for candidate in candidates:
         decision = aggregate[candidate["id"]]
         source_item = item_by_id[candidate["id"]]
-        if decision["is_duplicate"]:
+        if decision["is_deferred"]:
+            deferred.append(
+                {
+                    "item": source_item,
+                    "reason": decision["reason"],
+                    "errors": list(decision["errors"]),
+                }
+            )
+        elif decision["is_duplicate"]:
             duplicates.append(
                 {
                     "item": source_item,
@@ -5365,9 +5380,8 @@ def agent_semantic_deduplicate_candidates(
         "llm_call_limit": SEMANTIC_DEDUPE_MAX_LLM_CALLS,
         "llm_call_count": llm_call_count,
         "llm_batch_size": llm_batch_size,
-        "failed_open_count": sum(
-            1 for record in aggregate.values() if record["errors"]
-        ),
+        "failed_open_count": 0,
+        "failed_deferred_count": len(deferred),
         "candidate_count": len(items),
         "kept_count": len(kept),
         "duplicate_count": len(duplicates),
@@ -5381,8 +5395,8 @@ def agent_semantic_deduplicate_candidates(
         (
             f"候选 {len(items)} 条、历史 {len(history)} 条；LLM 问询 "
             f"{llm_call_count}/{SEMANTIC_DEDUPE_MAX_LLM_CALLS} 轮，"
-            f"重复 {len(duplicates)} 条，失败默认保留 "
-            f"{audit['failed_open_count']} 条，总保留 {len(kept)} 条。"
+            f"重复 {len(duplicates)} 条，失败暂缓 "
+            f"{audit['failed_deferred_count']} 条，总保留 {len(kept)} 条。"
         ),
     )
     return {

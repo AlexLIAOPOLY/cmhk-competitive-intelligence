@@ -390,8 +390,14 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual([cell_range for cell_range, _ in sheet.writes], ["A2:N2"])
         self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
         self.assertEqual(sheet.rows[1], self._existing_row())
-        self.assertEqual(semantic_histories, [[]])
-        self.assertEqual(result["semantic_history_scope"], "same_hkt_search_day")
+        self.assertEqual(
+            [[item["news_id"] for item in history] for history in semantic_histories],
+            [["NEWS-4A3C54DE894A40"]],
+        )
+        self.assertEqual(
+            result["semantic_history_scope"],
+            "hkt_search_day_and_previous_2_days",
+        )
         self.assertEqual(result["semantic_search_day"], "2026-07-22")
         self.assertEqual(acknowledged_items, [self._new_item()])
         self.assertEqual(result["deferred_delivery_ack"]["removed_count"], 1)
@@ -415,11 +421,13 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "2026-07-22",
         )
 
-    def test_same_day_semantic_history_keeps_morning_and_excludes_prior_days(self):
+    def test_recent_semantic_history_includes_today_and_previous_two_days(self):
         search_day, history = review_sheet._same_day_semantic_history(
             [
                 {"news_id": "morning", "search_date": "2026-08-15"},
-                {"news_id": "prior", "search_date": "2026-08-14"},
+                {"news_id": "prior-1", "search_date": "2026-08-14"},
+                {"news_id": "prior-2", "search_date": "2026-08-13"},
+                {"news_id": "too-old", "search_date": "2026-08-12"},
                 {"news_id": "malformed", "search_date": ""},
             ],
             generated_at="2026-08-15T15:05:00+08:00",
@@ -427,7 +435,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         )
 
         self.assertEqual(search_day, "2026-08-15")
-        self.assertEqual([item["news_id"] for item in history], ["morning"])
+        self.assertEqual(
+            [item["news_id"] for item in history],
+            ["morning", "prior-1", "prior-2"],
+        )
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
         existing = self._existing_row()
