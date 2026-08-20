@@ -15,12 +15,12 @@ class WorkspaceLogIndicatorTests(unittest.TestCase):
         ]
 
         self.assertIn("state.hasRunningTasks || localBusy", render_activity)
-        self.assertIn('document.querySelector("[data-workspace-running]")', render_activity)
-        self.assertIn("workspaceRunningDot.hidden = !active", render_activity)
+        self.assertIn('setWorkspaceTabIndicator(workspaceLogTab, "indicatorRunning", active)', render_activity)
         self.assertIn("has-running-task", render_activity)
         self.assertIn('workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false")', render_activity)
         self.assertIn('workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志")', render_activity)
-        self.assertIn("data-workspace-running hidden", INDEX)
+        self.assertIn("data-workspace-indicator hidden", INDEX)
+        self.assertNotIn("workspace-running-dot", INDEX)
 
     def test_unread_reports_update_and_clear_the_workspace_report_tabs(self) -> None:
         report_indicator = APP[
@@ -33,9 +33,7 @@ class WorkspaceLogIndicatorTests(unittest.TestCase):
         ]
 
         self.assertIn('document.querySelector(`[data-workspace-tab="${tabName}"]`)', report_indicator)
-        self.assertIn('dot.dataset.workspaceReportUnread = ""', report_indicator)
-        self.assertIn('dot.className = "workspace-running-dot"', report_indicator)
-        self.assertIn("dot.hidden = !visible", report_indicator)
+        self.assertIn('setWorkspaceTabIndicator(tab, "indicatorReport", visible)', report_indicator)
         self.assertIn('setWorkspaceReportTabNewState("weekly"', report_indicator)
         self.assertIn('setWorkspaceReportTabNewState("performance"', report_indicator)
         self.assertIn('reportType === "weekly" || reportType === "performance"', viewed_handler)

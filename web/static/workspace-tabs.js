@@ -58,11 +58,11 @@
   const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
 
   function workspaceSignalDot(tab) {
-    let dot = tab?.querySelector("[data-workspace-signal]");
+    let dot = tab?.querySelector("[data-workspace-indicator]");
     if (!dot && tab) {
       dot = document.createElement("i");
       dot.className = "workspace-signal-dot";
-      dot.dataset.workspaceSignal = "";
+      dot.dataset.workspaceIndicator = "";
       dot.hidden = true;
       tab.appendChild(dot);
     }
@@ -71,9 +71,11 @@
 
   function clearWorkspaceSignal(module) {
     const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
-    const dot = tab?.querySelector("[data-workspace-signal]");
+    const dot = tab?.querySelector("[data-workspace-indicator]");
     if (!tab || !dot) return;
-    dot.hidden = true;
+    delete dot.dataset.indicatorSignal;
+    dot.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+      .some((key) => dot.dataset[key] === "true");
     tab.classList.remove("has-unread-signal");
     delete tab.dataset.signalTone;
   }
@@ -82,6 +84,7 @@
     const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
     if (!tab || tab.classList.contains("is-active")) return;
     const dot = workspaceSignalDot(tab);
+    dot.dataset.indicatorSignal = "true";
     dot.hidden = false;
     tab.dataset.signalTone = tone;
     tab.classList.add("has-unread-signal");
@@ -1831,8 +1834,14 @@
     if (can("performance")) state.status ? renderReports("performance") : renderLoadError("performance", "业绩摘要");
     if (can("fault")) tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
     const running = Boolean(state.status?.tasks?.hasRunning);
-    const runningDot = document.querySelector("[data-workspace-running]");
-    if (runningDot) runningDot.hidden = !running;
+    const logTab = document.querySelector('[data-workspace-tab="log"]');
+    const runningIndicator = workspaceSignalDot(logTab);
+    if (runningIndicator) {
+      if (running) runningIndicator.dataset.indicatorRunning = "true";
+      else delete runningIndicator.dataset.indicatorRunning;
+      runningIndicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+        .some((key) => runningIndicator.dataset[key] === "true");
+    }
     const initialNewsRuns = can("news") ? selectedNewsRuns() : [];
     if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
     if (can("fault") && !motionState.pollingTimer) {

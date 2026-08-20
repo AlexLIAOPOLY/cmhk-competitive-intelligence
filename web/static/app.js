@@ -264,15 +264,30 @@ function renderLogButtonActivity() {
   // The unified workspace navigation is rendered independently from the
   // legacy log launcher. Keep its live task indicator on the same state path
   // so a task that starts after page load is visible immediately.
-  const workspaceRunningDot = document.querySelector("[data-workspace-running]");
-  if (workspaceRunningDot) workspaceRunningDot.hidden = !active;
   const workspaceLogTab = document.querySelector('[data-workspace-tab="log"]');
   if (workspaceLogTab) {
+    setWorkspaceTabIndicator(workspaceLogTab, "indicatorRunning", active);
     workspaceLogTab.classList.toggle("has-running-task", active);
     workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false");
     workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
     workspaceLogTab.title = active ? "有任务正在运行，点击查看日志" : "日志";
   }
+}
+
+function setWorkspaceTabIndicator(tab, reason, visible) {
+  if (!tab) return;
+  let indicator = tab.querySelector("[data-workspace-indicator]");
+  if (!indicator) {
+    indicator = document.createElement("i");
+    indicator.className = "workspace-signal-dot";
+    indicator.dataset.workspaceIndicator = "";
+    indicator.hidden = true;
+    tab.appendChild(indicator);
+  }
+  if (visible) indicator.dataset[reason] = "true";
+  else delete indicator.dataset[reason];
+  indicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+    .some((key) => indicator.dataset[key] === "true");
 }
 
 function setBusy(value, label = "运行中", action = "all") {
@@ -2035,15 +2050,7 @@ function setWorkspaceReportTabNewState(reportType, visible) {
   tab.setAttribute("aria-label", visible ? `${label}，有未读新报告` : label);
   tab.title = visible ? "有未读新报告，点击查看" : label;
 
-  let dot = tab.querySelector("[data-workspace-report-unread]");
-  if (!dot) {
-    dot = document.createElement("i");
-    dot.className = "workspace-running-dot";
-    dot.dataset.workspaceReportUnread = "";
-    dot.setAttribute("aria-hidden", "true");
-    tab.appendChild(dot);
-  }
-  dot.hidden = !visible;
+  setWorkspaceTabIndicator(tab, "indicatorReport", visible);
 }
 
 function setReportCategoryNewDots(unreadByType) {
