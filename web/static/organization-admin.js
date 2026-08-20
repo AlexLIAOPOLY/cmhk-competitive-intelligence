@@ -9,6 +9,22 @@
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  const escapeRegExp = (value) => String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  function highlightSearchMatch(value, query) {
+    const text = String(value ?? "");
+    const keyword = String(query ?? "").trim();
+    if (!keyword) return esc(text);
+    const matcher = new RegExp(escapeRegExp(keyword), "giu");
+    let cursor = 0;
+    let html = "";
+    for (const match of text.matchAll(matcher)) {
+      html += esc(text.slice(cursor, match.index));
+      html += `<mark class="organization-search-match">${esc(match[0])}</mark>`;
+      cursor = match.index + match[0].length;
+    }
+    return html + esc(text.slice(cursor));
+  }
 
   async function request(url, options = {}) {
     const response = await fetch(url, { credentials: "same-origin", cache: "no-store", ...options });
@@ -128,7 +144,7 @@
     if (directory.error) return `<div class="organization-directory-state is-error">${esc(directory.error)}</div>`;
     if (directory.query.trim().length < 2) return '<div class="organization-directory-state">请输入至少 2 个字符，可按姓名或企业邮箱搜索。</div>';
     if (!directory.users.length) return '<div class="organization-directory-state">飞书通讯录中没有匹配成员。</div>';
-    return `<div class="organization-directory-list">${directory.users.map((user) => `<article class="organization-directory-user" data-directory-email="${esc(user.email)}">${avatar(user, "is-directory")}<span><strong>${esc(user.name || "未命名成员")}</strong><small>${esc([user.department, user.email].filter(Boolean).join(" · ") || "—")}</small></span><button type="button" data-import-email="${esc(user.email)}"${user.added ? " disabled" : ""}>${user.added ? "已添加" : "加入组织"}</button></article>`).join("")}</div>`;
+    return `<div class="organization-directory-list">${directory.users.map((user) => `<article class="organization-directory-user" data-directory-email="${esc(user.email)}">${avatar(user, "is-directory")}<span><strong>${highlightSearchMatch(user.name || "未命名成员", directory.query)}</strong><small>${highlightSearchMatch([user.department, user.email].filter(Boolean).join(" · ") || "—", directory.query)}</small></span><button type="button" data-import-email="${esc(user.email)}"${user.added ? " disabled" : ""}>${user.added ? "已添加" : "加入组织"}</button></article>`).join("")}</div>`;
   }
 
   function directoryPanel() {
