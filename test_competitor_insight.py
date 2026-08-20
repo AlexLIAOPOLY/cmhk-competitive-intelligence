@@ -1,5 +1,6 @@
 import json
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 import web_app
@@ -136,6 +137,20 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("HKT\t2018", prompt)
         self.assertNotIn("HKT\t2019", prompt)
         self.assertIn("SmarTone\t2022", prompt)
+
+    def test_stream_retries_once_when_upstream_breaks_before_content(self):
+        events = []
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot") as wait_slot, patch(
+            "web_app.urllib.request.urlopen",
+            side_effect=[urllib.error.URLError("connection reset"), _StreamingResponse()],
+        ) as open_request:
+            result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
+
+        self.assertEqual(open_request.call_count, 2)
+        self.assertEqual(wait_slot.call_count, 2)
+        self.assertTrue(any("自动续接" in str(event.get("message") or "") for event in events))
+        self.assertEqual(result["insight"], MODEL_CONTENT)
 
     def test_rejects_stale_evidence_version(self):
         payload = self.payload()
