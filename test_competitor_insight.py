@@ -6,11 +6,9 @@ import web_app
 
 
 MODEL_CONTENT = (
-    "# 自由格式洞察\n\n"
-    "模型可以自行决定段落、标签和篇幅。\n"
-    "- 不要求每段带数字\n"
-    "- 不强制覆盖固定栏目\n\n"
-    "口径变化也不触发系统补写。"
+    "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
+    "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
+    "业务含义｜较低流失率可能反映后付客户稳定性增强，但不单独代表整体经营优劣。"
 )
 
 
@@ -67,13 +65,12 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("官方来源", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
         self.assertEqual(result["insight"], MODEL_CONTENT)
-        self.assertNotIn("insights", result)
-        self.assertEqual(captured["body"]["messages"][0]["content"], "你是电信行业竞争策略分析师。请分析用户提供的竞争数据并给出洞察。")
-        self.assertNotIn("只输出三行", captured["body"]["messages"][0]["content"])
-        self.assertNotIn("不得", captured["body"]["messages"][0]["content"])
-        self.assertNotIn("max_tokens", captured["body"])
-        self.assertNotIn("temperature", captured["body"])
-        self.assertNotIn("chat_template_kwargs", captured["body"])
+        self.assertEqual(len(result["insights"]), 3)
+        self.assertIn("只输出三行", captured["body"]["messages"][0]["content"])
+        self.assertIn("竞争格局｜", captured["body"]["messages"][0]["content"])
+        self.assertEqual(captured["body"]["max_tokens"], 500)
+        self.assertEqual(captured["body"]["temperature"], 0.1)
+        self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
 
     def test_browser_cells_are_not_trusted(self):
         captured = {}
@@ -113,6 +110,7 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertEqual([event["stage"] for event in events if event["type"] == "status"], ["queue", "generating", "reasoning"])
         self.assertGreaterEqual(len([event for event in events if event["type"] == "delta"]), 3)
         self.assertEqual(result["insight"], MODEL_CONTENT)
+        self.assertEqual(len(result["insights"]), 3)
 
     def test_model_receives_only_common_comparison_years(self):
         captured = {}
@@ -131,7 +129,7 @@ class CompetitorInsightTests(unittest.TestCase):
             web_app.generate_competitor_insight(payload)
 
         prompt = captured["body"]["messages"][1]["content"]
-        self.assertIn("数据年度：2020,2021,2022", prompt)
+        self.assertIn("共同数据年度：2020,2021,2022", prompt)
         self.assertNotIn("HKT\t2018", prompt)
         self.assertNotIn("HKT\t2019", prompt)
         self.assertIn("SmarTone\t2022", prompt)
@@ -142,9 +140,18 @@ class CompetitorInsightTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "数据版本已更新"):
             web_app.generate_competitor_insight(payload)
 
-    def test_visible_model_content_is_returned_exactly_without_format_gate(self):
-        content = "  任意开头\n\n第四段也保留\n* Markdown 符号保留\n  末尾空格  "
-        self.assertEqual(web_app._competitor_insight_content(content), content)
+    def test_format_drift_is_compacted_without_rejecting_or_fallback(self):
+        content = "# 分析\n\n竞争格局：差距正在收窄。\n公司定位：HKT与SmarTone均下降。\n这是模型自行表述的业务解读。"
+        items = web_app._parse_competitor_insight_items(content)
+        self.assertEqual(len(items), 3)
+        self.assertTrue(items[0].startswith("竞争格局｜"))
+        self.assertTrue(items[1].startswith("公司定位｜"))
+        self.assertTrue(items[2].startswith("业务含义｜"))
+        self.assertNotIn("#", " ".join(items))
+
+    def test_missing_scope_wording_does_not_reject_usable_model_content(self):
+        content = "竞争格局｜数值持续增长。\n公司定位｜两家趋势接近。\n业务含义｜竞争重心转向使用体验。"
+        self.assertEqual(len(web_app._parse_competitor_insight_items(content)), 3)
 
     def test_only_empty_model_content_is_rejected(self):
         with self.assertRaisesRegex(RuntimeError, "未返回可用洞察"):

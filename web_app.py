@@ -254,7 +254,7 @@ def analyze_chat_image(payload: dict) -> dict:
 
 
 def _competitor_insight_content(content: object) -> str:
-    """Return the model's visible answer without restructuring, filtering, or rewriting it."""
+    """Normalize the model response container without applying semantic gates."""
     if isinstance(content, list):
         text = "".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
     elif isinstance(content, dict):
@@ -264,6 +264,48 @@ def _competitor_insight_content(content: object) -> str:
     if not text.strip():
         raise RuntimeError("AI 未返回可用洞察")
     return text
+
+
+def _parse_competitor_insight_items(content: object) -> list[str]:
+    """Best-effort three-row display parsing; format drift must not reject a usable answer."""
+    text = _competitor_insight_content(content).strip()
+    text = re.sub(r"^```(?:json|text|markdown)?\s*|\s*```$", "", text, flags=re.I)
+    labels = ("竞争格局", "公司定位", "业务含义")
+    aliases = {"竞争格局": 0, "公司分化": 1, "公司定位": 1, "业务含义": 2}
+    labelled: dict[int, str] = {}
+    candidates: list[str] = []
+    for raw_line in text.splitlines():
+        line = re.sub(r"^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)", "", raw_line).strip()
+        line = re.sub(r"^\*\*(.*?)\**$", r"\1", line).strip()
+        if not line or re.fullmatch(r"\|?\s*:?-{2,}[-| :]*", line):
+            continue
+        match = re.match(r"^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$", line)
+        if match:
+            labelled.setdefault(aliases[match.group(1)], match.group(2).strip())
+            continue
+        if len(line) < 12 and not re.search(r"[\d。！？!?；;，,]", line):
+            continue
+        if not (line.startswith("|") and line.endswith("|")):
+            candidates.append(line)
+    if len(candidates) < 3:
+        sentences = [part.strip() for part in re.split(r"(?<=[。！？!?])\s*", " ".join(candidates) or text) if part.strip()]
+        if len(sentences) > len(candidates):
+            candidates = sentences
+    result: list[str] = []
+    candidate_index = 0
+    for index, label in enumerate(labels):
+        value = labelled.get(index, "")
+        while not value and candidate_index < len(candidates):
+            candidate = candidates[candidate_index]
+            candidate_index += 1
+            value = candidate
+        if not value:
+            continue
+        value = re.sub(r"^(?:竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*", "", value).strip()
+        if len(value) > 180:
+            value = value[:179].rstrip("，,；; ") + "…"
+        result.append(f"{label}｜{value}")
+    return result
 
 
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
@@ -330,9 +372,12 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞争策略分析师。请分析用户提供的竞争数据并给出洞察。"},
-            {"role": "user", "content": f"指标：{metric_label}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n数据年度：{','.join(str(year) for year in common_years)}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
+            {"role": "system", "content": "你是电信行业竞争策略分析师。只输出三行精炼的简体中文纯文本，每行约45—90字，禁止前言、编号、Markdown标题、表格和结语。三行依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头，基于表格数据判断趋势、公司间位置与业务意义。保留大于、至少、约等原始比较符，共建共享数值不得相加，不得补数或引用外部知识。"},
+            {"role": "user", "content": f"指标：{metric_label}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同数据年度：{','.join(str(year) for year in common_years)}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
         ],
+        "temperature": 0.1,
+        "max_tokens": 500,
+        "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
     request = urllib.request.Request(
@@ -383,7 +428,8 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     finally:
         reset_internal_ai_priority(priority_token)
     insight = _competitor_insight_content(raw_content)
-    return {"requestId": request_id, "insight": insight, "model": model}
+    insights = _parse_competitor_insight_items(insight)
+    return {"requestId": request_id, "insight": insight, "insights": insights, "model": model}
 
 
 def transcribe_chat_audio(payload: dict) -> dict:

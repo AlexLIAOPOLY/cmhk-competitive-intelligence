@@ -413,25 +413,23 @@
     const unitLabel = metricMeta.unitLabels?.[comparison.unit] || comparison.unit;
     const chartLegend = companies.map((company, index) => `<span><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}</span>`).join("");
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
-    const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
-    const fallbackItems = fallbackInsight.insights.map((item, index) => `<li><b>${["竞争格局", "公司定位", "业务含义"][index]}</b><span>${esc(item.replace(/^(竞争格局|公司定位|业务含义)[：|｜]\s*/, ""))}</span></li>`).join("");
     host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
       <div class="competitor-result-overview">
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
-          <span class="competitor-insight-badge" data-competitor-insight-badge>LOCAL DATA</span>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在连接内网 AI</small></div></div>
+          <span class="competitor-insight-badge" data-competitor-insight-badge>CONNECTING</span>
         </header>
         <div class="competitor-insight-body">
           <div class="competitor-insight-loading" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-          <ol class="competitor-insight-list" data-competitor-insight-list>${fallbackItems}</ol>
+          <ol class="competitor-insight-list" data-competitor-insight-list></ol>
         </div>
       </section></div>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     bindCompetitorChartTooltip(host);
-    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
+    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
   }
 
   function competitorComparator(value) {
@@ -595,20 +593,11 @@
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
-    setCompetitorInsightStatus(card, isAi ? "" : (status || "AI未生成；当前显示本地数据总结"));
-    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "LOCAL DATA";
+    setCompetitorInsightStatus(card, status || (isAi ? "" : "AI暂未完成"));
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "RETRY";
     const list = card.querySelector("[data-competitor-insight-list]");
-    if (isAi) {
-      const li = document.createElement("li");
-      const copy = document.createElement("div");
-      li.className = "is-raw-ai-output";
-      copy.className = "competitor-insight-markdown markdown-body";
-      renderCompetitorInsightMarkdown(copy, insight);
-      li.append(copy);
-      list.replaceChildren(li);
-      return;
-    }
-    const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean);
+    const sourceItems = Array.isArray(insights) && insights.length ? insights : parseCompetitorInsightItems(insight);
+    const items = sourceItems.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     list.replaceChildren(...items.map((item, index) => {
       const labels = ["竞争格局", "公司定位", "业务含义"];
       const li = document.createElement("li");
@@ -621,14 +610,41 @@
     }));
   }
 
-  function renderCompetitorInsightMarkdown(target, content) {
-    const markdown = String(content ?? "");
-    target.dataset.rawMarkdown = markdown;
-    if (typeof window.markdownToHtml === "function") {
-      target.innerHTML = window.markdownToHtml(markdown);
-      return;
+  function parseCompetitorInsightItems(content) {
+    const text = String(content || "").replace(/^```(?:json|text|markdown)?\s*|\s*```$/gi, "").trim();
+    if (!text) return [];
+    const labelled = new Map();
+    const candidates = [];
+    text.split(/\n+/).forEach((rawLine) => {
+      const line = rawLine
+        .replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "")
+        .replace(/^\*\*(.*?)\**$/, "$1")
+        .trim();
+      if (!line || /^\|?\s*:?-{2,}[-| :]*$/.test(line)) return;
+      const match = line.match(/^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$/);
+      if (match) {
+        const index = match[1] === "竞争格局" ? 0 : match[1] === "业务含义" ? 2 : 1;
+        if (!labelled.has(index)) labelled.set(index, match[2].trim());
+      } else if (line.length < 12 && !/[\d。！？!?；;，,]/.test(line)) {
+        return;
+      } else if (!(line.startsWith("|") && line.endsWith("|"))) {
+        candidates.push(line);
+      }
+    });
+    if (candidates.length < 3) {
+      const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
+      if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
     }
-    target.textContent = markdown;
+    const labels = ["竞争格局", "公司定位", "业务含义"];
+    let candidateIndex = 0;
+    return labels.flatMap((label, index) => {
+      let value = labelled.get(index) || "";
+      if (!value) value = candidates[candidateIndex++] || "";
+      value = value.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "").trim();
+      if (!value) return [];
+      if (value.length > 180) value = `${value.slice(0, 179).replace(/[，,；;\s]+$/, "")}…`;
+      return [`${label}｜${value}`];
+    });
   }
 
   function setCompetitorInsightStatus(card, message = "") {
@@ -648,18 +664,22 @@
   }
 
   function renderCompetitorInsightDraft(card, text) {
-    if (!card || !String(text || "").length) return;
+    const drafts = parseCompetitorInsightItems(text);
+    if (!card || !drafts.length) return;
     card.classList.remove("is-loading");
     card.classList.add("is-streaming");
     setCompetitorInsightStatus(card, `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
-    const li = document.createElement("li");
-    const copy = document.createElement("div");
-    li.className = "is-raw-ai-output";
-    copy.className = "competitor-insight-markdown markdown-body";
-    renderCompetitorInsightMarkdown(copy, text);
-    li.append(copy);
-    card.querySelector("[data-competitor-insight-list]").replaceChildren(li);
+    const labels = ["竞争格局", "公司定位", "业务含义"];
+    card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
+      const li = document.createElement("li");
+      const label = document.createElement("b");
+      const copy = document.createElement("span");
+      label.textContent = labels[index];
+      copy.textContent = item.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "");
+      li.append(label, copy);
+      return li;
+    }));
   }
 
   async function requestLegacyCompetitorInsight(payload, requestId, controller, card) {
@@ -671,15 +691,16 @@
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.ok) throw new Error(result.error || `AI兼容接口 HTTP ${response.status}`);
     if (requestId !== state.competitorInsightRequest) return false;
-    settleCompetitorInsight(card, { mode: "ai", insight: result.insight });
+    settleCompetitorInsight(card, { mode: "ai", insight: result.insight, insights: result.insights });
     return true;
   }
 
-  async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
+  async function requestCompetitorInsight(payload, requestId) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
     const card = document.querySelector("#competitorInsight");
     beginCompetitorInsightStream(card);
+    let generated = "";
     try {
       const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
       if (response.status === 404) {
@@ -690,7 +711,6 @@
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-      let generated = "";
       let completed = false;
       while (true) {
         const { value, done } = await reader.read();
@@ -710,7 +730,7 @@
             renderCompetitorInsightDraft(card, generated);
           } else if (event.type === "done" && event.ok) {
             completed = true;
-            settleCompetitorInsight(card, { mode: "ai", insight: event.insight });
+            settleCompetitorInsight(card, { mode: "ai", insight: event.insight, insights: event.insights });
           } else if (event.type === "error") {
             throw new Error(event.error || "AI生成失败");
           }
@@ -721,7 +741,13 @@
     } catch (error) {
       if (error.name === "AbortError") return;
       if (requestId === state.competitorInsightRequest && card) {
-        settleCompetitorInsight(card, { mode: "data", insights: fallbackInsight.insights, status: `AI未生成：${error.message || "服务不可用"}；当前显示本地数据总结` });
+        const partial = parseCompetitorInsightItems(generated);
+        settleCompetitorInsight(card, {
+          mode: partial.length ? "ai" : "unavailable",
+          insight: generated,
+          insights: partial,
+          status: partial.length ? "本次生成提前结束，已保留 AI 返回内容" : "本次 AI 暂未完成，请稍后重试",
+        });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;

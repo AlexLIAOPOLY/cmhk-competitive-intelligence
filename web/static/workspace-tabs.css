@@ -390,23 +390,6 @@
 .competitor-insight-list > li { display: grid; grid-template-columns: 76px minmax(0,1fr); gap: 12px; align-items: start; }
 .competitor-insight-list > li > b { padding-top: 3px; color: #71d1e2; font-size: 11px; letter-spacing: .08em; }
 .competitor-insight-list > li > span { min-width: 0; color: #e7f3f5; font-size: 14px; font-weight: 620; line-height: 1.7; letter-spacing: .01em; overflow-wrap: anywhere; white-space: pre-wrap; }
-.competitor-insight-list > li.is-raw-ai-output { display: block; }
-.competitor-insight-markdown { min-width: 0; color: #dceff3; font-size: 14px; font-weight: 520; line-height: 1.72; letter-spacing: .01em; overflow-wrap: anywhere; }
-.competitor-insight-markdown > :first-child { margin-top: 0; }
-.competitor-insight-markdown > :last-child { margin-bottom: 0; }
-.competitor-insight-markdown h3,.competitor-insight-markdown h4,.competitor-insight-markdown h5 { margin: 22px 0 9px; color: #f2fbfc; line-height: 1.35; letter-spacing: .015em; }
-.competitor-insight-markdown h3 { font-size: 19px; }
-.competitor-insight-markdown h4 { font-size: 16px; color: #bfeaf1; }
-.competitor-insight-markdown h5 { font-size: 14px; color: #9fd9e5; }
-.competitor-insight-markdown p { margin: 0 0 12px; }
-.competitor-insight-markdown ul,.competitor-insight-markdown ol { display: grid; gap: 7px; margin: 4px 0 15px; padding-left: 24px; }
-.competitor-insight-markdown li { display: list-item; color: #dceff3; }
-.competitor-insight-markdown strong { color: #f5fcfd; font-weight: 760; }
-.competitor-insight-markdown em { color: #b8dce3; font-style: italic; }
-.competitor-insight-markdown .chat-table-wrap { max-width: 100%; margin: 12px 0 17px; overflow-x: auto; border-color: rgba(91,176,194,.42); background: rgba(4,27,37,.58); }
-.competitor-insight-markdown .chat-data-table { min-width: 560px; color: #dceff3; background: rgba(5,31,42,.76); }
-.competitor-insight-markdown .chat-data-table th { color: #eaf9fb; background: rgba(25,73,88,.82); }
-.competitor-insight-markdown .chat-data-table th,.competitor-insight-markdown .chat-data-table td { padding: 9px 11px; border-color: rgba(72,132,149,.5); white-space: normal; }
 .competitor-insight-loading { display: none; gap: 9px; }
 .competitor-insight-loading span { display: block; height: 13px; border-radius: 4px; background: linear-gradient(90deg,rgba(89,143,158,.12),rgba(109,196,214,.32),rgba(89,143,158,.12)); background-size: 220% 100%; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-insight-loading span:nth-child(1) { width: 78%; }
@@ -1622,8 +1605,6 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .competitor-insight { margin-inline: 10px; }
   .competitor-insight-list > li { grid-template-columns: 68px minmax(0,1fr); gap: 8px; }
   .competitor-insight-list > li > span { font-size: 14px; line-height: 1.7; }
-  .competitor-insight-markdown h3 { font-size: 17px; }
-  .competitor-insight-markdown h4 { font-size: 15px; }
   .workspace-inline-surface .floating-chat,
   #logModal.workspace-inline-surface .log-modal { height: calc(100vh - 100px) !important; min-height: 560px; }
   .fault-toolbar { gap: 14px; padding: 14px; }

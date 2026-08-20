@@ -4585,7 +4585,6 @@ function inlineMarkdown(value) {
     .replace(/&#42;&#42;(.+?)&#42;&#42;/g, "<strong>$1</strong>")
     .replace(/^\*\*([^*\n]+)$/g, "<strong>$1</strong>")
     .replace(/^&#42;&#42;([^*\n]+)$/g, "<strong>$1</strong>")
-    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
     .replace(/`(.+?)`/g, "<code>$1</code>");
 }
 
