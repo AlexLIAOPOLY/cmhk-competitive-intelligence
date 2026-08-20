@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import secrets
+import sqlite3
 import subprocess
 import threading
 import time
@@ -297,6 +298,7 @@ class AuthService:
             "roleLabel": ROLE_LABELS.get(str(user.get("role")), "待分配"),
             "status": "disabled" if user.get("status") == "disabled" else "active",
             "authProvider": "feishu" if user.get("credential_source") == "feishu_sso" else "local",
+            "developmentAccount": user.get("credential_source") == "development_seed",
             "permissions": {"manageOrganization": modules["organization"], "modules": modules},
         }
 
@@ -471,9 +473,71 @@ class AuthService:
                 "job_title": directory_user.get("job_title") or directory_user.get("title") or identity.get("job_title") or "",
                 "department_ids": [str(item) for item in departments],
             })
+            cached_profile = self._cached_directory_profile(str(result.get("name") or ""))
+            if cached_profile:
+                result["avatar_url"] = cached_profile.get("avatar_url") or result.get("avatar_url") or ""
+                result["job_title"] = cached_profile.get("title") or result.get("job_title") or ""
+                result["department"] = cached_profile.get("department") or result.get("department") or ""
             return result
         except Exception:
             return dict(identity)
+
+    def _cached_directory_profile(self, name: str) -> dict[str, str]:
+        """Read the refreshed Feishu directory cache without triggering a network sync."""
+        db_path = self.root / "var" / "subscriptions" / "subscriptions.sqlite3"
+        if not name.strip() or not db_path.is_file():
+            return {}
+        try:
+            with sqlite3.connect(db_path, timeout=3) as connection:
+                row = connection.execute(
+                    """SELECT avatar_url, job_title, department_names
+                       FROM subscription_directory_people
+                       WHERE active=1 AND display_name=? LIMIT 1""",
+                    (name.strip(),),
+                ).fetchone()
+        except sqlite3.Error:
+            return {}
+        if not row:
+            return {}
+        try:
+            departments = json.loads(row[2] or "[]")
+        except (TypeError, ValueError, json.JSONDecodeError):
+            departments = []
+        return {
+            "avatar_url": str(row[0] or ""),
+            "title": str(row[1] or ""),
+            "department": " / ".join(str(item) for item in departments if str(item).strip()),
+        }
+
+    def _refresh_missing_feishu_profiles(self) -> None:
+        """Backfill existing Feishu members once when organization fields are missing."""
+        candidates = [
+            item for item in self._users()
+            if item.get("credential_source") == "feishu_sso"
+            and (not item.get("department") or not item.get("avatar_url"))
+        ]
+        for candidate in candidates:
+            query = str(candidate.get("email") or candidate.get("name") or "").strip()
+            if len(query) < 2:
+                continue
+            try:
+                matches = self._search_directory_users(query)
+            except (ValueError, RuntimeError):
+                continue
+            email = str(candidate.get("email") or "").lower()
+            match = next((item for item in matches if str(item.get("email") or "").lower() == email), None)
+            if not match:
+                continue
+            with self.lock:
+                users = self._users()
+                target = next((item for item in users if str(item.get("id")) == str(candidate.get("id"))), None)
+                if not target:
+                    continue
+                target["department"] = match.get("department") or target.get("department") or ""
+                target["title"] = match.get("title") or target.get("title") or ""
+                target["avatar_url"] = match.get("avatar_url") or target.get("avatar_url") or ""
+                target["directory_profile_synced_at"] = _now_iso()
+                self._write(self.users_path, users)
 
     def _search_directory_users(self, query: str) -> list[dict[str, str]]:
         keyword = query.strip()
@@ -504,10 +568,15 @@ class AuthService:
             email = str(item.get("enterprise_email") or item.get("email") or "").strip().lower()
             if not email.endswith("@" + self.email_domain):
                 continue
+            name = str(item.get("localized_name") or item.get("name") or "").strip()
+            avatar = item.get("avatar") if isinstance(item.get("avatar"), dict) else {}
+            cached_profile = self._cached_directory_profile(name)
             users.append({
-                "name": str(item.get("localized_name") or item.get("name") or "").strip(),
+                "name": name,
                 "email": email,
-                "department": str(item.get("department") or "").replace(" - ", " / ").strip(),
+                "department": str(item.get("department") or cached_profile.get("department") or "").replace(" - ", " / ").replace("&amp;", "&").strip(),
+                "title": str(item.get("job_title") or item.get("title") or cached_profile.get("title") or "").strip(),
+                "avatar_url": str(avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or item.get("avatar_url") or cached_profile.get("avatar_url") or "").strip(),
             })
         return [item for item in users if item["name"] and item["email"]]
 
@@ -544,6 +613,7 @@ class AuthService:
             user["feishu_tenant_key"] = str(identity.get("tenant_key") or "")
             user["name"] = str(identity.get("name") or identity.get("en_name") or user.get("name") or "飞书用户")[:80]
             user["email"] = email or str(user.get("email") or "")
+            user["department"] = str(identity.get("department") or user.get("department") or "")[:160]
             user["avatar_url"] = str(identity.get("avatar_url") or user.get("avatar_url") or "")
             user["title"] = str(identity.get("job_title") or identity.get("title") or user.get("title") or "")[:80]
             user["last_login_at"] = _now_iso()
@@ -708,6 +778,7 @@ class AuthService:
             if not admin["permissions"]["manageOrganization"]:
                 self._send_json(handler, 403, {"ok": False, "message": "当前账号无权管理组织"})
                 return True
+            self._refresh_missing_feishu_profiles()
             users = []
             for item in self._users():
                 public = self._public_user(item) or {}
@@ -770,6 +841,8 @@ class AuthService:
                         "email": email,
                         "name": match["name"],
                         "department": match["department"],
+                        "title": match.get("title", ""),
+                        "avatar_url": match.get("avatar_url", ""),
                         "role": "UNCONFIGURED",
                         "status": "active",
                         "module_overrides": {},
@@ -793,6 +866,52 @@ class AuthService:
                 self._send_json(handler, 502, {"ok": False, "message": str(exc)})
             return True
         user_path = path.removeprefix("/api/auth/admin/users/") if path.startswith("/api/auth/admin/users/") else ""
+        if user_path and method == "DELETE":
+            admin = self.current_actor(handler)
+            if not admin:
+                self._send_json(handler, 401, {"ok": False, "message": "请先登录"})
+                return True
+            if not admin["permissions"]["manageOrganization"]:
+                self._send_json(handler, 403, {"ok": False, "message": "当前账号无权删除成员"})
+                return True
+            with self.lock:
+                users = self._users()
+                target = next((item for item in users if str(item.get("id")) == user_path), None)
+                if not target:
+                    self._send_json(handler, 404, {"ok": False, "message": "成员不存在"})
+                    return True
+                if str(target.get("id")) == str(admin.get("id")):
+                    self._send_json(handler, 409, {"ok": False, "message": "不能删除当前登录管理员"})
+                    return True
+                enterprise_admins = [
+                    item for item in users
+                    if item.get("credential_source") == "feishu_sso"
+                    and item.get("status") == "active"
+                    and self._effective_modules(item).get("organization")
+                ]
+                if target in enterprise_admins and len(enterprise_admins) == 1:
+                    self._send_json(handler, 409, {"ok": False, "message": "必须保留至少一名飞书企业管理员"})
+                    return True
+                removed = {
+                    "id": str(target.get("id") or ""),
+                    "name": str(target.get("name") or ""),
+                    "email": str(target.get("email") or ""),
+                    "role": str(target.get("role") or ""),
+                }
+                self._write(self.users_path, [item for item in users if item is not target])
+                sessions = [item for item in self._read(self.sessions_path, []) if str(item.get("user_id")) != str(target.get("id"))]
+                self._write(self.sessions_path, sessions)
+                audit = self._read(self.audit_path, [])
+                audit.append({"at": _now_iso(), "by": admin.get("id"), "target": target.get("id"), "before": removed, "after": {"deleted": True}})
+                self._write(self.audit_path, audit[-1000:])
+                self.record_operation(
+                    actor=admin,
+                    action="organization.user_delete",
+                    target=str(target.get("id") or ""),
+                    details=removed,
+                )
+            self._send_json(handler, 200, {"ok": True, "deleted": removed})
+            return True
         if user_path and method == "POST":
             admin = self.current_actor(handler)
             if not admin:

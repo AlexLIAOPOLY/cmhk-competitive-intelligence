@@ -40,8 +40,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=2', INDEX)
-        self.assertIn('/static/organization-admin.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.css?v=4', INDEX)
+        self.assertIn('/static/organization-admin.js?v=7', INDEX)
+        self.assertIn('/static/organization-admin.css?v=7', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -55,11 +55,20 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('event.key === "Escape"', AUTH_SCRIPT)
         self.assertIn('打开账户菜单', AUTH_SCRIPT)
         self.assertIn('request("/api/auth/admin/users")', ORGANIZATION_SCRIPT)
-        self.assertIn('/api/auth/admin/users/${encodeURIComponent(row.dataset.userId)}', ORGANIZATION_SCRIPT)
+        self.assertIn('/api/auth/admin/users/${encodeURIComponent(detail.dataset.userId)}', ORGANIZATION_SCRIPT)
         self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/users/import"', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/audit?limit=200")', ORGANIZATION_SCRIPT)
-        self.assertIn("操作审计", ORGANIZATION_SCRIPT)
+        self.assertIn("可审计操作记录", ORGANIZATION_SCRIPT)
+        self.assertIn("个人行动记录", ORGANIZATION_SCRIPT)
+        self.assertIn("data-select-user", ORGANIZATION_SCRIPT)
+        self.assertIn("person.avatarUrl", ORGANIZATION_SCRIPT)
+        self.assertIn("!user.developmentAccount", ORGANIZATION_SCRIPT)
+        self.assertIn("data-delete-user", ORGANIZATION_SCRIPT)
+        self.assertIn('method: "DELETE"', ORGANIZATION_SCRIPT)
+        self.assertIn('data-directory-open aria-label="添加成员"', ORGANIZATION_SCRIPT)
+        self.assertNotIn('>添加飞书成员</button>', ORGANIZATION_SCRIPT)
+        self.assertNotIn('>刷新成员</button>', ORGANIZATION_SCRIPT)
         self.assertIn('query.length < 2', ORGANIZATION_SCRIPT)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
@@ -136,7 +145,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=19', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=20', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)

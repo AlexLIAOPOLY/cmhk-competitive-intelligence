@@ -112,6 +112,7 @@ class AuthServiceTest(unittest.TestCase):
         self.service.handle(me, "GET", urlparse("/api/auth/me"))
         self.assertTrue(me.payload()["authenticated"])
         self.assertEqual(me.payload()["user"]["role"], "ADMIN")
+        self.assertTrue(me.payload()["user"]["developmentAccount"])
 
     def test_enabling_dev_login_seeds_an_existing_empty_user_store(self):
         empty_root = Path(self.temp.name) / "existing-empty"
@@ -229,6 +230,34 @@ class AuthServiceTest(unittest.TestCase):
         denied = FakeHandler(cookie=operations_session, origin="")
         self.service.handle(denied, "GET", urlparse("/api/auth/admin/audit"))
         self.assertEqual(denied.status, 403)
+
+    def test_directory_search_keeps_real_avatar_and_job_title(self):
+        directory_payload = {
+            "data": {"users": [{
+                "name": "测试成员",
+                "enterprise_email": "member@hk.chinamobile.com",
+                "department": "科创及数智化部 - 科技创新管理",
+                "is_activated": True,
+            }]}
+        }
+        completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
+        profile = {"avatar_url": "https://example.test/member.webp", "title": "Project Manager", "department": "缓存部门"}
+        with patch("cmhk_auth.subprocess.run", return_value=completed), patch.object(self.service, "_cached_directory_profile", return_value=profile):
+            users = self.service._search_directory_users("测试")
+        self.assertEqual(users[0]["avatar_url"], "https://example.test/member.webp")
+        self.assertEqual(users[0]["title"], "Project Manager")
+        self.assertEqual(users[0]["department"], "科创及数智化部 / 科技创新管理")
+
+    def test_admin_can_delete_member_but_not_current_account(self):
+        _, session = self.dev_login()
+        delete = FakeHandler(cookie=session, origin="")
+        self.service.handle(delete, "DELETE", urlparse("/api/auth/admin/users/local-content"))
+        self.assertEqual(delete.status, 200)
+        self.assertFalse(any(user["id"] == "local-content" for user in self.service._users()))
+        self.assertEqual(self.service.operation_audit()[0]["action"], "organization.user_delete")
+        self_delete = FakeHandler(cookie=session, origin="")
+        self.service.handle(self_delete, "DELETE", urlparse("/api/auth/admin/users/local-admin"))
+        self.assertEqual(self_delete.status, 409)
 
 
 if __name__ == "__main__":
