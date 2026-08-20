@@ -21,6 +21,16 @@ class WorkspaceBrandLogoTests(unittest.TestCase):
             STYLE,
         )
 
+    def test_collapsed_navigation_toggle_stays_right_of_logo(self):
+        self.assertIn(
+            ".workspace-layout.is-nav-collapsed .workspace-tabs { position: absolute; top: -54px; left: 180px;",
+            STYLE,
+        )
+        self.assertNotIn(
+            ".workspace-layout.is-nav-collapsed .workspace-tabs { position: absolute; top: -54px; left: 10px;",
+            STYLE,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
