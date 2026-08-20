@@ -69,6 +69,7 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
 .table-person-name { overflow: hidden; color: #edf5f7; font-size: 9px; text-overflow: ellipsis; }
 .table-person-id { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
+.preference-source { margin-top: 3px; color: #72c7ad; font-size: 7px; font-weight: 600; }
 .delivery-table table { min-width: 880px; }
 .delivery-recipient { display: block; min-width: 116px; }
 .delivery-recipient strong, .delivery-recipient small { display: block; white-space: nowrap; }

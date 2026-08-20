@@ -324,6 +324,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(subscribers["ou_persona123"]["news_item_limit"], 5)
         self.assertEqual(subscribers["ou_personb123"]["news_categories"], ["政策监管"])
         self.assertEqual(subscribers["ou_personb123"]["news_item_limit"], 20)
+        self.assertEqual(subscribers["ou_persona123"]["preference_source"], "group_card")
+        self.assertEqual(subscribers["ou_personb123"]["preference_message_id"], "om_test123")
         group_invitation = self.service.list_summary()["group_invitations"][0]
         self.assertEqual(group_invitation["status"], "responded")
         self.assertEqual(group_invitation["response_count"], 2)

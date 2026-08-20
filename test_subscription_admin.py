@@ -117,6 +117,9 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("group-response-list", SCRIPT)
         self.assertIn("window.setInterval", SCRIPT)
         self.assertIn(".group-invite-row", STYLE)
+        self.assertIn("群卡本人提交", SCRIPT)
+        self.assertIn("preference_message_id", SCRIPT)
+        self.assertIn(".preference-source", STYLE)
 
     def test_admin_keeps_three_primary_blocks_and_moves_secondary_views_to_icons(self):
         self.assertIn('class="three-block-layout"', SCRIPT)

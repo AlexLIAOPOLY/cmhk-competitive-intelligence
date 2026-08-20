@@ -1087,8 +1087,18 @@ class SubscriptionService:
             ).fetchall()
         subscribers = []
         counts = {key: 0 for key in VALID_SERVICES}
+        latest_group_response_by_delivery: dict[str, dict[str, Any]] = {}
+        for response_row in group_responses:
+            response = dict(response_row)
+            latest_group_response_by_delivery.setdefault(str(response["delivery_open_id"]), response)
         for row in rows:
             services = sorted(filter(None, str(row["services"] or "").split(",")))
+            response_evidence = latest_group_response_by_delivery.get(str(row["open_id"]))
+            is_group_card_submission = bool(
+                response_evidence
+                and str(response_evidence.get("chat_id") or "") == str(row["source_chat_id"] or "")
+                and str(response_evidence.get("updated_at") or "") == str(row["updated_at"] or "")
+            )
             if row["status"] == "active":
                 for service in services:
                     if service in counts:
@@ -1107,6 +1117,9 @@ class SubscriptionService:
                 "report_mode_label": REPORT_MODE_LABELS.get(str(row["report_mode"]), str(row["report_mode"])),
                 "report_cadence": "biweekly_on_publish",
                 "report_cadence_label": REPORT_CADENCE_LABEL,
+                "preference_source": "group_card" if is_group_card_submission else "current_config",
+                "preference_source_label": "群卡本人提交" if is_group_card_submission else "当前配置",
+                "preference_message_id": str(response_evidence.get("message_id") or "") if is_group_card_submission else "",
             })
         card_actions = self.config.get("card_actions") if isinstance(self.config.get("card_actions"), dict) else {}
         primary_name = str(card_actions.get("primary_handler_expected_name") or "").strip()
