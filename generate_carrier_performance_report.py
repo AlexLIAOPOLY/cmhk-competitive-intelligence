@@ -29,6 +29,7 @@ from opencc import OpenCC
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
 from company_metrics import build_company_metrics_payload
 from network_utils import urlopen_with_local_proxy_fallback
 from report_web_research import public_web_search, run_web_research
@@ -973,6 +974,8 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         }
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
+    if provider != "openai":
+        body = prepare_structured_chat_body(body)
     request = urllib.request.Request(
         url,
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -1018,8 +1021,8 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
                     output_parts.append(content["text"])
         content = "\n".join(output_parts)
     else:
-        content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
-    return extract_json_payload(content), model
+        content = final_chat_message_text(payload, operation="运营商业绩摘要")
+    return load_json_response(content, operation="运营商业绩摘要"), model
 
 
 def call_performance_editor_batches(

@@ -25,6 +25,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_response_compat import deepseek_nonthinking_parameters
 from rag_llm import estimate_tokens
 from company_metrics import (
     AI_CACHE_PATH,
@@ -2159,7 +2160,7 @@ def _build_supervisor_model() -> ChatDeepSeek:
         model=str(config.get("model") or "deepseek-v4"),
         api_key=api_key,
         base_url=str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/"),
-        extra_body=dict(config.get("extra_parameters") or {}),
+        extra_body=deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
         temperature=0,
         timeout=120,
         max_retries=1,

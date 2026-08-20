@@ -233,6 +233,9 @@ def analyze_chat_image(payload: dict) -> dict:
         "max_tokens": 900,
         "stream": False,
     }
+    from ai_response_compat import deepseek_nonthinking_parameters
+    body.update(config.get("extra_parameters") or {})
+    body = deepseek_nonthinking_parameters(body)
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -242,8 +245,8 @@ def analyze_chat_image(payload: dict) -> dict:
     wait_for_internal_ai_slot("chat-image-analyze")
     with urllib.request.urlopen(request, timeout=90) as response:
         result = json.loads(response.read().decode("utf-8"))
-    message = ((result.get("choices") or [{}])[0].get("message") or {})
-    content = message.get("content") or message.get("reasoning_content") or ""
+    from ai_response_compat import final_chat_message_text
+    content = final_chat_message_text(result, operation="图片识别")
     if isinstance(content, list):
         content = "\n".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
     elif isinstance(content, dict):
@@ -381,6 +384,9 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
+    from ai_response_compat import deepseek_nonthinking_parameters
+    body.update(config.get("extra_parameters") or {})
+    body = deepseek_nonthinking_parameters(body)
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -436,8 +442,8 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                         raw_content = "".join(content_parts)
                     else:
                         result = json.loads(response.read().decode("utf-8"))
-                        message = ((result.get("choices") or [{}])[0].get("message") or {})
-                        raw_content = message.get("content") or message.get("reasoning_content") or ""
+                        from ai_response_compat import final_chat_message_text
+                        raw_content = final_chat_message_text(result, operation="竞争指标AI洞察")
                 break
             except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
                 retryable_http = not isinstance(exc, urllib.error.HTTPError) or exc.code in {429, 500, 502, 503, 504}
@@ -739,6 +745,9 @@ def generate_chat_thread_title(first_user: str) -> str:
         "temperature": 0.1,
         "max_tokens": 48,
     }
+    from ai_response_compat import deepseek_nonthinking_parameters
+    body.update(config.get("extra_parameters") or {})
+    body = deepseek_nonthinking_parameters(body)
     req = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -5356,6 +5365,9 @@ class AppHandler(BaseHTTPRequestHandler):
                         "stream": False,
                     }
                 body.update(config.get("extra_parameters") or {})
+                if provider != "openai":
+                    from ai_response_compat import deepseek_nonthinking_parameters
+                    body = deepseek_nonthinking_parameters(body)
                 request = urllib.request.Request(
                     url,
                     data=json.dumps(body, ensure_ascii=False).encode("utf-8"),

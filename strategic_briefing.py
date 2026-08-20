@@ -24,6 +24,7 @@ from opencc import OpenCC
 
 from ai_config import load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from ai_response_compat import load_json_response
 from crawl_run_registry import (
     append_crawl_run_event,
     finalize_operational_crawl_run,
@@ -3167,8 +3168,12 @@ def _call_internal_ai(
         raise AIInvalidStructuredResponse(reasoning_content, detail)
     content = content.replace(chr(96) * 3 + "json", "").replace(chr(96) * 3, "").strip()
     try:
-        parsed = json.loads(content)
-    except json.JSONDecodeError:
+        parsed = (
+            load_json_response(content, operation="战略新闻结构化审核")
+            if response_format
+            else json.loads(content)
+        )
+    except (json.JSONDecodeError, ValueError):
         if response_format and finish_reason in {"length", "max_tokens"}:
             raise AIInvalidStructuredResponse(
                 content,

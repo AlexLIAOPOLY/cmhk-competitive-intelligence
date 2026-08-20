@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from rag_llm import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
 from company_metrics import (
@@ -1871,24 +1872,25 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "只有栏目名称、菜单词或没有具体动作的泛泛描述仍应 unavailable。"
         "value 必须短，优先保留数字、单位、比例、金额、用户数、日期、评级或一句战略事实。"
         "basis 用一句话说明依据来自片段中的哪部分。"
-        "只返回 JSON 数组，不要 Markdown。"
+        "只返回 JSON 对象，顶层字段只能是 items 数组，不要 Markdown。"
     )
     prepared_tasks = _prepare_tasks_for_token_budget(tasks, model=model, token_budget=AI_BATCH_TOKEN_BUDGET)
     user_prompt = (
         "请清洗以下公司指标记录。每个输入对象有 id/company/metric/current_value/raw_text/sources。\n"
-        "返回数组，每项字段必须为：id, status, value, basis, note, "
+        "返回 {\"items\":[...]}，items 每项字段必须为：id, status, value, basis, note, "
         "entity_supported, metric_supported, value_supported, confidence。\n"
         "status 只能是 ok 或 unavailable。\n\n"
         f"{json.dumps(prepared_tasks, ensure_ascii=False)}"
     )
-    body = {
+    body = prepare_structured_chat_body({
+        **dict(config.get("extra_parameters") or {}),
         "model": model,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 0.0,
-    }
+    })
     req = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -1902,11 +1904,8 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:1000]
         raise RuntimeError(f"DeepSeek HTTP {exc.code}: {detail}") from exc
-    content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
-    cleaned = extract_json(content)
-    if not isinstance(cleaned, list):
-        raise RuntimeError("模型没有返回 JSON 数组")
-    return cleaned
+    content = final_chat_message_text(payload, operation="公司指标清洗")
+    return unwrap_items_payload(load_json_response(content, operation="公司指标清洗"), operation="公司指标清洗")
 
 
 def _prepare_tasks_for_token_budget(tasks: list[dict[str, Any]], *, model: str, token_budget: int) -> list[dict[str, Any]]:

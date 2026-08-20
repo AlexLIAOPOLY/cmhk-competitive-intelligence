@@ -1783,10 +1783,45 @@ class StrategicBriefingTests(unittest.TestCase):
                     max_tokens=800,
                     response_format=briefing.AI_POLISH_RESPONSE_FORMAT,
                 )
-
         request_body = json.loads(opener.open.call_args.args[0].data)
         self.assertGreaterEqual(request_body["max_tokens"], 4000)
         self.assertIn("JSON完成前被截断", str(raised.exception))
+
+    def test_structured_ai_safely_closes_only_terminal_delimiters(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {"content": '{"ok":true', "reasoning_content": "ignored"},
+                    }
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = briefing._strict_object_response_format(
+            "test_safe_close",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://10.0.62.177:4000/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            self.assertEqual(
+                briefing._call_internal_ai("system", "user", response_format=response_format),
+                {"ok": True},
+            )
 
     def test_all_strategic_json_stages_define_strict_api_contracts(self):
         formats = (

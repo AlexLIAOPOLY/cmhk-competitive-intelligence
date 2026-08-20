@@ -403,6 +403,8 @@ def _extract_json_object(text: str) -> dict[str, Any]:
 
 
 def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: int, model: str) -> None:
+    from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+
     ai = load_ai_config(include_key=True)
     api_key = str(ai.get("api_key") or "").strip()
     if not api_key:
@@ -438,7 +440,8 @@ def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: 
             }
         )
     facts = {"group_count": group_count, "expected_cells": expected_cells}
-    body = {
+    body = prepare_structured_chat_body({
+        **dict(ai.get("extra_parameters") or {}),
         "model": model,
         "messages": [
             {
@@ -453,7 +456,7 @@ def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: 
             {"role": "user", "content": json.dumps({"facts": facts, "markdown": markdown}, ensure_ascii=False)},
         ],
         "temperature": 0,
-    }
+    })
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -465,9 +468,10 @@ def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: 
             payload = json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
         raise ReportError(f"DeepSeek-V4-Pro 校验失败：{type(exc).__name__}") from exc
-    choices = payload.get("choices") or []
-    content = (((choices[0] if choices else {}).get("message") or {}).get("content") or "").strip()
-    verdict = _extract_json_object(content)
+    content = final_chat_message_text(payload, operation="飞书传播数据校验")
+    verdict = load_json_response(content, operation="飞书传播数据校验")
+    if not isinstance(verdict, dict):
+        raise ReportError("DeepSeek-V4-Pro 未返回JSON对象")
     if verdict.get("ok") is not True or verdict.get("issues"):
         raise ReportError(f"DeepSeek-V4-Pro 拒绝发送：{_safe_error(verdict.get('issues'))}")
 

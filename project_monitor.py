@@ -31,6 +31,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
 
+from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+
 try:
     from opencc import OpenCC
 except ImportError:  # local monitor prompts already require simplified Chinese
@@ -1683,7 +1685,8 @@ class ProjectMonitor:
             "deterministic_suggestions": incident.get("suggestions"),
             "occurred_at_hkt": incident.get("occurred_at_hkt"),
         }
-        body = {
+        body = prepare_structured_chat_body({
+            **dict(config.get("extra_parameters") or {}),
             "model": model,
             "messages": [
                 {
@@ -1708,8 +1711,7 @@ class ProjectMonitor:
             ],
             "temperature": 0.1,
             "max_tokens": 720,
-            "chat_template_kwargs": {"enable_thinking": False},
-        }
+        })
         # Some internal gateways cache by request_id even when the HTTP request
         # carries no-cache headers.  Give each contract-validation retry its own
         # deterministic ID so an empty/malformed first response cannot be
@@ -1738,11 +1740,8 @@ class ProjectMonitor:
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")[:500]
             raise RuntimeError(f"内部AI HTTP {exc.code}: {_redact(detail, 500)}") from exc
-        message = ((response_payload.get("choices") or [{}])[0].get("message") or {})
-        content = self._ai_message_text(message.get("content")) or self._ai_message_text(
-            message.get("reasoning_content")
-        )
-        parsed = self._extract_json_object(content)
+        content = final_chat_message_text(response_payload, operation="运维告警诊断")
+        parsed = load_json_response(content, operation="运维告警诊断")
         if not parsed:
             raise ValueError(
                 "AI诊断未返回可解析JSON对象"

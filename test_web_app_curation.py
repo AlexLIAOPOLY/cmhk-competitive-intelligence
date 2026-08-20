@@ -985,7 +985,7 @@ class ChatImageAnalysisTests(unittest.TestCase):
         response = mock.MagicMock()
         response.__enter__.return_value = response
         response.read.return_value = json.dumps({
-            "choices": [{"message": {"content": "", "reasoning_content": "图片中包含一张趋势图。"}}],
+            "choices": [{"finish_reason": "stop", "message": {"content": "图片中包含一张趋势图。"}}],
         }).encode("utf-8")
         payload = {
             "model": "deepseek-v4",
@@ -1012,6 +1012,7 @@ class ChatImageAnalysisTests(unittest.TestCase):
 
         request_body = json.loads(urlopen.call_args.args[0].data.decode("utf-8"))
         self.assertEqual(request_body["model"], "Kimi-K2.5")
+        self.assertEqual(request_body["thinking"], {"type": "disabled"})
         self.assertEqual(result["model"], "Kimi-K2.5")
         self.assertIn("趋势图", result["description"])
 

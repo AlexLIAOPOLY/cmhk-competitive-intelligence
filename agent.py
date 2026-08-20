@@ -29,6 +29,7 @@ from ai_rate_limit import (
 from langgraph.prebuilt import create_react_agent
 
 from ai_config import load_ai_config
+from ai_response_compat import deepseek_nonthinking_parameters
 from agent_memory import add_memory, auto_capture_user_memory, load_memories, memory_context, search_memories
 from agent_production import (
     AgentRunRecorder,
@@ -197,7 +198,7 @@ def _ensure_ai_follow_up_suggestions(
             model=model_name,
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
-            extra_body=dict(config.get("extra_parameters") or {}),
+            extra_body=deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
             temperature=0.2,
             disable_streaming=True,
             max_retries=1,
@@ -2212,7 +2213,11 @@ def get_agent(
         model=model_name,
         api_key=api_key,
         api_base=base_url,
-        extra_body=dict(config.get("extra_parameters") or {}),
+        extra_body=(
+            dict(config.get("extra_parameters") or {})
+            if thinking_enabled
+            else deepseek_nonthinking_parameters(config.get("extra_parameters") or {})
+        ),
         temperature=0.1,
         disable_streaming=True,
         max_retries=3,

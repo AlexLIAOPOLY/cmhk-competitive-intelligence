@@ -4,6 +4,7 @@ import re
 from langchain_core.messages import SystemMessage, HumanMessage
 from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from ai_config import load_ai_config
+from ai_response_compat import deepseek_nonthinking_parameters, load_json_response
 
 _llm = None
 
@@ -16,15 +17,14 @@ def parse_verification_response(content: str) -> dict:
         content = content[3:-3].strip()
 
     try:
-        return json.loads(content)
-    except json.JSONDecodeError:
+        parsed = load_json_response(content, operation="证据审核")
+        if isinstance(parsed, dict):
+            return parsed
+    except ValueError:
         pass
 
     match = re.search(r"\{.*\}", content, re.S)
     if not match:
-        partial = parse_partial_verification_response(content)
-        if partial:
-            return partial
         raise ValueError(f"no JSON object in verification response: {content[:300]}")
     return json.loads(match.group(0))
 
@@ -73,7 +73,10 @@ def get_verification_llm():
             model=model_name,
             api_key=api_key,
             api_base=base_url,
-            extra_body=dict(config.get("extra_parameters") or {}),
+            extra_body={
+                **deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
+                "response_format": {"type": "json_object"},
+            },
             max_retries=3,
         )
     return _llm

@@ -605,6 +605,9 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
         }
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
+    if provider != "openai":
+        from ai_response_compat import deepseek_nonthinking_parameters
+        body = deepseek_nonthinking_parameters(body)
 
     req = urllib.request.Request(
         url,

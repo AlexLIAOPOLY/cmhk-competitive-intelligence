@@ -22,6 +22,8 @@ from typing import Any, Callable
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
+from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
+
 
 ROOT = Path(__file__).resolve().parent
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -1046,7 +1048,7 @@ def _validate_model_summaries(
     expected_domains: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
-        raise ValueError("AI分析没有返回JSON数组")
+        raise ValueError("AI分析没有返回items数组")
     expected = expected_domains or {"local", "international", "cloud", "macro"}
     allowed_numbers = _numeric_tokens(evidence)
     allowed_urls = {
@@ -2300,13 +2302,13 @@ def generate_model_focus_insight(
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions"
             f"?request_id={urllib.parse.quote(request_id, safe='')}",
-            data=json.dumps({
+            data=json.dumps(prepare_structured_chat_body({
+                **dict(config.get("extra_parameters") or {}),
                 "model": attempt_model,
                 "messages": attempt_messages,
                 "temperature": temperature if attempt == 0 else max(0.55, temperature),
                 "max_tokens": 480,
-                "chat_template_kwargs": {"enable_thinking": False},
-            }, ensure_ascii=False).encode("utf-8"),
+            }), ensure_ascii=False).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
@@ -2332,8 +2334,11 @@ def generate_model_focus_insight(
                 continue
             raise last_error
         try:
-            message = (payload.get("choices") or [{}])[0].get("message") or {}
-            parsed = _extract_focus_response(message.get("content") or message.get("reasoning_content") or "")
+            parsed = load_json_response(
+                final_chat_message_text(payload, operation="单项AI洞察"), operation="单项AI洞察"
+            )
+            if not isinstance(parsed, dict):
+                raise ValueError("单项AI洞察未返回JSON对象")
             headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
             forbidden_headline_terms = {
@@ -2609,13 +2614,13 @@ def generate_model_domain_summaries(
         "发布日期、披露项数和资料完整度只能写入risk，不能成为headline或analysis的主要结论。"
         "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
-        "source_urls只能从输入中原样选择。只返回JSON数组。"
+        "source_urls只能从输入中原样选择。只返回JSON对象，顶层字段只能是items数组。"
         + FOCUS_RELATION_FEW_SHOTS
     )
     requested_domain_ids = [str(domain.get("id") or "") for domain in evidence.get("domains") or []]
     validation_domains = set(requested_domain_ids) if allow_partial_domains else None
     user_prompt = (
-        f"请分析输入中的领域：{', '.join(requested_domain_ids)}。每项字段严格为"
+        f"请分析输入中的领域：{', '.join(requested_domain_ids)}。返回{{\"items\":[...]}}，每项字段严格为"
         "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
         "id, analysis, risk, source_urls, entities；entities每项字段严格为"
         "name, headline, analysis, risk, evidence_labels, source_urls。不要Markdown。输入：\n"
@@ -2625,13 +2630,13 @@ def generate_model_domain_summaries(
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt},
     ]
-    body = {
+    body = prepare_structured_chat_body({
+        **dict(config.get("extra_parameters") or {}),
         "model": str(config.get("model") or "deepseek-v4"),
         "messages": messages,
         "temperature": temperature,
         "max_tokens": 16000,
-        "chat_template_kwargs": {"enable_thinking": False},
-    }
+    })
     summaries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
     used_models: set[str] = set()
@@ -2658,10 +2663,11 @@ def generate_model_domain_summaries(
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
-        message = (payload.get("choices") or [{}])[0].get("message") or {}
-        content = message.get("content") or message.get("reasoning_content") or ""
         try:
-            raw_summaries = _extract_json_payload(content)
+            content = final_chat_message_text(payload, operation="17项AI洞察")
+            raw_summaries = unwrap_items_payload(
+                load_json_response(content, operation="17项AI洞察"), operation="17项AI洞察"
+            )
             summaries = _validate_model_summaries(
                 _repair_model_summaries(
                     _drop_unsupported_numeric_clauses(raw_summaries, evidence),
@@ -2682,7 +2688,7 @@ def generate_model_domain_summaries(
                             "role": "user",
                             "content": (
                                 f"上一版未通过事实门禁：{exc}。请删除或改写所有未获输入支持的数字/来源，"
-                                "保持四个领域、全部focus和全部实体完整并重新只返回JSON数组。"
+                                "保持四个领域、全部focus和全部实体完整并重新只返回JSON对象{\"items\":[...]}。"
                             ),
                         },
                     ]
@@ -2704,7 +2710,7 @@ def generate_model_domain_summaries(
                 {
                     "role": "user",
                     "content": (
-                        f"只分析 {domain_id} 这一个领域，返回只含一个对象的JSON数组。"
+                        f"只分析 {domain_id} 这一个领域，返回JSON对象{{\"items\":[单个领域对象]}}。"
                         "必须逐一返回输入中的全部focus id及其全部实体。字段协议不变。输入：\n"
                         + json.dumps({"domains": [domain_evidence]}, ensure_ascii=False)
                     ),
@@ -2723,11 +2729,15 @@ def generate_model_domain_summaries(
                 try:
                     with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
                         domain_payload = json.loads(response.read().decode("utf-8"))
-                    domain_message = (domain_payload.get("choices") or [{}])[0].get("message") or {}
-                    domain_content = domain_message.get("content") or domain_message.get("reasoning_content") or ""
-                    parsed = _extract_json_payload(domain_content)
-                    if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
-                        raise ValueError("必须返回单对象JSON数组")
+                    domain_content = final_chat_message_text(
+                        domain_payload, operation=f"{domain_id}领域AI洞察"
+                    )
+                    parsed = unwrap_items_payload(
+                        load_json_response(domain_content, operation=f"{domain_id}领域AI洞察"),
+                        operation=f"{domain_id}领域AI洞察",
+                    )
+                    if len(parsed) != 1 or not isinstance(parsed[0], dict):
+                        raise ValueError("必须返回只含一个领域对象的items数组")
                     candidate = _drop_unsupported_numeric_clauses(
                         _pin_scoped_model_identity([parsed[0]], domain_id),
                         {"domains": [domain_evidence]},
@@ -2787,7 +2797,7 @@ def generate_model_domain_summaries(
                                 f"上一版未通过门禁：{exc}。请完整返回全部focus和全部实体。"
                                 "每个focus.analysis用一至两句、总长不超过120字：引用输入原值，并解释数字背后的结构、驱动、"
                                 "集中度、口径可比性或市场阶段。禁止建议、应、需、优先、关注、评估、验证等行动话术。"
-                                "不要只复述高低增减或解释指标用途。仍只返回单对象JSON数组。"
+                                "不要只复述高低增减或解释指标用途。仍只返回JSON对象{\"items\":[单个领域对象]}。"
                             ),
                         })
             if domain_summary is None:
@@ -2803,7 +2813,7 @@ def generate_model_domain_summaries(
                         {
                             "role": "system",
                             "content": (
-                                "你是电信竞争情报分析员。只返回合法JSON数组，不要解释。只能使用输入证据。"
+                                "你是电信竞争情报分析员。只返回合法JSON对象，顶层字段只能是items数组，不要解释。只能使用输入证据。"
                                 "逐一覆盖items中的全部实体，name必须原样；实体只需准确陈述事实、期间、单位和口径，"
                                 "不强迫单个实体推导经营含义。evidence_labels如使用，只能原样选自该实体components.label。"
                                 "focus.analysis必须用一至两句、总长不超过120字，引用输入具体数值并解释结构、驱动、"
@@ -2814,9 +2824,9 @@ def generate_model_domain_summaries(
                         {
                             "role": "user",
                             "content": (
-                                f"只分析 {domain_id}.{focus_id} 这一个分类，返回只含一个领域对象、一个focus的JSON数组。"
+                                f"只分析 {domain_id}.{focus_id} 这一个分类，返回JSON对象{{\"items\":[只含一个focus的领域对象]}}。"
                                 f"实体name必须完整且原样等于：{json.dumps(sorted(expected_names), ensure_ascii=False)}。"
-                                "固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,analysis,risk,"
+                                "items固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,analysis,risk,"
                                 "source_urls,entities:[{name,headline,analysis,risk,evidence_labels,source_urls}]}]}]。输入：\n"
                                 + json.dumps({"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}, ensure_ascii=False)
                             ),
@@ -2837,11 +2847,17 @@ def generate_model_domain_summaries(
                         try:
                             with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
                                 focus_payload = json.loads(response.read().decode("utf-8"))
-                            focus_message = (focus_payload.get("choices") or [{}])[0].get("message") or {}
-                            focus_content = focus_message.get("content") or focus_message.get("reasoning_content") or ""
-                            parsed = _extract_json_payload(focus_content)
-                            if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
-                                raise ValueError("必须返回单对象JSON数组")
+                            focus_content = final_chat_message_text(
+                                focus_payload, operation=f"{domain_id}.{focus_id} AI洞察"
+                            )
+                            parsed = unwrap_items_payload(
+                                load_json_response(
+                                    focus_content, operation=f"{domain_id}.{focus_id} AI洞察"
+                                ),
+                                operation=f"{domain_id}.{focus_id} AI洞察",
+                            )
+                            if len(parsed) != 1 or not isinstance(parsed[0], dict):
+                                raise ValueError("必须返回只含一个领域对象的items数组")
                             candidate = _drop_unsupported_numeric_clauses(
                                 _pin_scoped_model_identity([parsed[0]], domain_id, focus_id),
                                 {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]},
@@ -2884,7 +2900,7 @@ def generate_model_domain_summaries(
                                         f"上一版未通过门禁：{exc}。请只返回该focus及全部实体。"
                                         "focus.analysis必须用一至两句、总长不超过120字，引用输入原值并解释数字背后的结构、驱动、"
                                         "集中度、口径可比性或市场阶段；禁止建议、应、需、优先、关注、评估、验证等行动话术，"
-                                        "也不能只复述高低增减或指标定义。只返回合法JSON数组。"
+                                        "也不能只复述高低增减或指标定义。只返回合法JSON对象{\"items\":[单个领域对象]}。"
                                     ),
                                 })
                     if focus_candidate is None:
@@ -3022,10 +3038,10 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
         "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
         "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
-        "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON数组。"
+        "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON对象，顶层字段只能是items数组。"
     )
     user_prompt = (
-        "请返回四条发现，每项字段严格为from,to,title,detail,kind,source_urls。"
+        "请返回{\"items\":[四条发现]}，每项字段严格为from,to,title,detail,kind,source_urls。"
         "title不超过28字，detail不超过110字，kind统一写AI综合研判。不要Markdown。输入：\n"
         + json.dumps(prompt_evidence, ensure_ascii=False)
     )
@@ -3033,11 +3049,12 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt},
     ]
-    body = {
+    body = prepare_structured_chat_body({
+        **dict(config.get("extra_parameters") or {}),
         "model": str(config.get("model") or "deepseek-v4"),
         "messages": messages,
         "temperature": 0.0,
-    }
+    })
     discoveries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
     configured_model = str(body["model"])
@@ -3063,11 +3080,14 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         except (TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             continue
-        message = (payload.get("choices") or [{}])[0].get("message") or {}
-        content = message.get("content") or message.get("reasoning_content") or ""
         try:
+            content = final_chat_message_text(payload, operation="跨库AI发现")
             discoveries = _validate_model_discoveries(
-                _repair_discovery_conciseness(_extract_json_payload(content)),
+                _repair_discovery_conciseness(
+                    unwrap_items_payload(
+                        load_json_response(content, operation="跨库AI发现"), operation="跨库AI发现"
+                    )
+                ),
                 evidence,
             )
             used_model = discovery_model
@@ -3082,7 +3102,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                         "content": (
                             f"上一版未通过跨库门禁：{exc}。请改成有数字锚点的深层数据关系结论，只解释结构、驱动、"
                             "集中度、口径或市场阶段；每条detail必须含表明、说明、意味着、并非、而非或不能等同之一，"
-                            "不写发生了什么，不提建议或下一步；仍只返回四项JSON数组。"
+                            "不写发生了什么，不提建议或下一步；仍只返回{\"items\":[四条发现]}。"
                         ),
                     },
                 ])
@@ -3261,13 +3281,13 @@ def regenerate_model_discovery(
             }]
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps({
+            data=json.dumps(prepare_structured_chat_body({
+                **dict(config.get("extra_parameters") or {}),
                 "model": model,
                 "messages": request_messages,
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
-                "chat_template_kwargs": {"enable_thinking": False},
-            }, ensure_ascii=False).encode("utf-8"),
+            }), ensure_ascii=False).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
@@ -3281,8 +3301,10 @@ def regenerate_model_discovery(
         try:
             with urlopen_with_local_proxy_fallback(request, timeout=15) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
-            message = (response_payload.get("choices") or [{}])[0].get("message") or {}
-            parsed = _extract_json_payload(message.get("content") or message.get("reasoning_content") or "")
+            parsed = load_json_response(
+                final_chat_message_text(response_payload, operation="跨库AI发现重生成"),
+                operation="跨库AI发现重生成",
+            )
             if isinstance(parsed, list) and len(parsed) == 1:
                 parsed = parsed[0]
             if not isinstance(parsed, dict):
