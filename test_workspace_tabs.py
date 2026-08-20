@@ -39,9 +39,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertEqual(INDEX.count('role="tabpanel"'), len(modules))
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
-        self.assertIn('/static/auth-client.js?v=2', INDEX)
+        self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=9', INDEX)
-        self.assertIn('/static/organization-admin.css?v=9', INDEX)
+        self.assertIn('/static/organization-admin.css?v=10', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)

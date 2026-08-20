@@ -11,7 +11,14 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
         self.assertIn('/static/organization-admin.js?v=9', INDEX)
-        self.assertIn('/static/organization-admin.css?v=9', INDEX)
+        self.assertIn('/static/organization-admin.css?v=10', INDEX)
+
+    def test_account_menu_keeps_department_label_and_role_visible(self):
+        self.assertIn('id="authUserDepartment"', INDEX)
+        self.assertIn('class="auth-user-role" id="authUserRole"', INDEX)
+        self.assertIn("grid-template-columns:44px minmax(0,1fr)", STYLE)
+        self.assertIn("overflow-wrap:anywhere", STYLE)
+        self.assertIn("width:min(420px,calc(100vw - 16px))", STYLE)
 
     def test_member_sections_have_compact_native_disclosures(self):
         self.assertIn("function detailSection(", SCRIPT)

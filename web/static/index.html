@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=4" />
   <link rel="stylesheet" href="/static/workspace-tabs.css?v=90" />
-  <link rel="stylesheet" href="/static/organization-admin.css?v=9" />
+  <link rel="stylesheet" href="/static/organization-admin.css?v=10" />
   </head>
   <body class="dashboard-page">
     <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
@@ -52,7 +52,11 @@
             </span>
             <span class="auth-user-copy">
               <strong id="authUserName">当前用户</strong>
-              <small id="authUserRole">—</small>
+              <small class="auth-user-summary">
+                <span id="authUserDepartment">—</span>
+                <span class="auth-user-summary-separator" aria-hidden="true">·</span>
+                <span class="auth-user-role" id="authUserRole">—</span>
+              </small>
             </span>
             <span class="auth-user-chevron" aria-hidden="true"></span>
           </button>
@@ -557,7 +561,7 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/auth-client.js?v=2"></script>
+    <script src="/static/auth-client.js?v=3"></script>
     <script src="/static/app.js?v=288"></script>
     <script src="/static/news-review-sheet.js?v=6"></script>
     <script src="/static/organization-admin.js?v=9"></script>
