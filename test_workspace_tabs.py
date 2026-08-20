@@ -40,7 +40,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=12', INDEX)
+        self.assertIn('/static/organization-admin.js?v=13', INDEX)
         self.assertIn('/static/organization-admin.css?v=12', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
@@ -80,6 +80,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('class="organization-title-readonly" aria-label="员工岗位"', ORGANIZATION_SCRIPT)
         self.assertNotIn('data-title maxlength="80"', ORGANIZATION_SCRIPT)
         self.assertNotIn('title: detail.querySelector("[data-title]").value', ORGANIZATION_SCRIPT)
+        self.assertNotIn('修改岗位', ORGANIZATION_SCRIPT)
         self.assertIn('.organization-title-readonly', ORGANIZATION_STYLE)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
