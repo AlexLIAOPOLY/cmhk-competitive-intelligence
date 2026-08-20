@@ -10,8 +10,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=13', INDEX)
-        self.assertIn('/static/organization-admin.css?v=12', INDEX)
+        self.assertIn('/static/organization-admin.js?v=14', INDEX)
+        self.assertIn('/static/organization-admin.css?v=14', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)

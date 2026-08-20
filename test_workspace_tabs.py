@@ -40,8 +40,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=13', INDEX)
-        self.assertIn('/static/organization-admin.css?v=12', INDEX)
+        self.assertIn('/static/organization-admin.js?v=14', INDEX)
+        self.assertIn('/static/organization-admin.css?v=14', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -77,11 +77,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('highlightSearchMatch(user.name || "未命名成员", directory.query)', ORGANIZATION_SCRIPT)
         self.assertIn('highlightSearchMatch([user.department, user.email]', ORGANIZATION_SCRIPT)
         self.assertIn('.organization-search-match', ORGANIZATION_STYLE)
-        self.assertIn('class="organization-title-readonly" aria-label="员工岗位"', ORGANIZATION_SCRIPT)
+        self.assertIn('<div><dt>员工岗位</dt><dd>${esc(user.title', ORGANIZATION_SCRIPT)
         self.assertNotIn('data-title maxlength="80"', ORGANIZATION_SCRIPT)
         self.assertNotIn('title: detail.querySelector("[data-title]").value', ORGANIZATION_SCRIPT)
         self.assertNotIn('修改岗位', ORGANIZATION_SCRIPT)
-        self.assertIn('.organization-title-readonly', ORGANIZATION_STYLE)
+        self.assertNotIn('.organization-title-readonly', ORGANIZATION_STYLE)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
         for endpoint in (
