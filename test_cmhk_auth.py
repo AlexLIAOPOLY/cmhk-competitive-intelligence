@@ -78,6 +78,9 @@ class AuthServiceTest(unittest.TestCase):
         self.assertNotIn("测试身份", page)
         self.assertNotIn("/api/auth/dev-login", page)
         self.assertNotIn("身份由服务端校验", page)
+        self.assertIn("width:min(1480px,calc(100% - 48px))", page)
+        self.assertIn("white-space:nowrap", page)
+        self.assertIn("font-size:clamp(28px,8.5vw,48px)", page)
 
     def test_role_defaults_keep_leader_on_dashboard_only(self):
         self.assertEqual(ROLE_MODULES["LEADER"], ["dashboard"])
