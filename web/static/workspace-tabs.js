@@ -1084,6 +1084,79 @@
     return selected.map((line, index) => ({ ...actualEventMeta(line, index), run }));
   }
 
+  const newsErrorStageLabels = {
+    strategic_news: "战略新闻任务",
+    scheduled_cutoff: "战略新闻调度截止",
+    financial_frontend_publish: "情报进入业务入口 / 前端发布",
+    executive_intelligence_refresh: "四库更新",
+  };
+
+  function newsErrorLocation(nodeKey, run, event, message) {
+    const text = `${event?.stage || ""}\n${message || ""}`;
+    if (/后台服务已重新启动|原爬虫进程已不存在|任务中断/.test(text)) return { label: "运行进程 / 服务重启", nodeKey: "news-search" };
+    if (/飞书审核表|逐格回读|写入后|群通知/.test(text)) return { label: "新增新闻 / 飞书写入回读", nodeKey: "news-output" };
+    if (/新闻索引|搜索|检索|查询/.test(text)) return { label: "线索补缺 / 检索", nodeKey: "news-search" };
+    if (/AI审核|AI 审核|模型调用|模型返回/.test(text)) return { label: "AI审核", nodeKey: "news-ai" };
+    if (/语义去重|历史去重|重复判定/.test(text)) return { label: "历史去重", nodeKey: "news-dedupe" };
+    if (/financial_frontend_publish|前端发布|publish_executive_dashboard_pages|\/api\/status/.test(text)) return { label: "情报进入业务入口 / 前端发布", nodeKey: "consumers" };
+    const rowMatch = text.match(/第\s*(\d+)\s*行失败/);
+    if (rowMatch) return { label: `03:00 主爬虫 / 第 ${rowMatch[1]} 行网页抓取`, nodeKey: "main" };
+    if (/AGENT_TRACE|数据整理|Agent/.test(text)) return { label: "Agent 证据审核", nodeKey: "agent" };
+    const stage = String(event?.stage || run?.failure_stage || "").trim();
+    return { label: newsErrorStageLabels[stage] || stage || "运行登记 / 未细分阶段", nodeKey: nodeKey === "strategic" ? "strategic" : "" };
+  }
+
+  function newsErrorMessage(event) {
+    const raw = event?.error || event?.message || event?.text || "";
+    return String(raw).replace(/^\[[^\]]+\]\s*/, "").replace(/^失败[:：]\s*/, "").trim();
+  }
+
+  function newsRunErrors(nodeKey, run, detail) {
+    const diagnostics = [];
+    let lastTime = String(run?.started_at_hkt || "").replace("T", " ").slice(0, 19) || "未记录时间";
+    const add = (event, source) => {
+      const message = newsErrorMessage(event);
+      if (!message) return;
+      const time = String(event?.timestamp || event?.ts || event?.at || lastTime || "未记录时间").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+      const location = newsErrorLocation(nodeKey, run, event, message);
+      const signature = `${run.crawl_run_id}|${location.label}|${time}|${message}`;
+      if (diagnostics.some((item) => item.signature === signature)) return;
+      diagnostics.push({ signature, run, time, location, message, source });
+    };
+    String(detail?.raw || "").split("\n").forEach((line) => {
+      const value = String(line || "").trim();
+      if (!value) return;
+      try {
+        const event = JSON.parse(value);
+        lastTime = String(event.timestamp || event.ts || event.at || event.startedAt || lastTime);
+        const status = String(event.status || "").toLowerCase();
+        const explicitLogFailure = event.type === "log" && /(?:^|\])\s*(?:失败[:：]|\[任务中断\])/.test(String(event.text || ""));
+        if (event.ok === false || event.interrupted === true || ["failed", "error", "errored"].includes(status) || explicitLogFailure) add(event, "原始运行日志");
+      } catch (_error) { /* unstructured traceback is retained by the structured failure event that follows it */ }
+    });
+    const runStatus = String(run?.run_status || run?.status || "").toLowerCase();
+    if (run.interrupted || ["failed", "error", "errored"].includes(runStatus) || detail?.error) {
+      const registeredMessage = String(detail?.error || run.status_detail || run.progress_detail || "运行登记为失败，但没有保存错误正文。").trim();
+      const alreadyCovered = diagnostics.some((item) => item.message === newsErrorMessage({ message: registeredMessage }));
+      if (!alreadyCovered) add({ stage: run.failure_stage, message: registeredMessage, timestamp: run.completed_at_hkt || run.heartbeat_at_hkt || lastTime }, detail?.error ? "日志读取失败" : "运行状态登记");
+    }
+    return diagnostics;
+  }
+
+  function renderNewsErrors(nodeKey, relatedRuns) {
+    const diagnostics = relatedRuns.flatMap((run) => newsRunErrors(nodeKey, run, state.newsRunDetails[run.crawl_run_id] || {}));
+    const directCount = diagnostics.filter((item) => item.location.nodeKey === nodeKey || nodeKey === "strategic").length;
+    if (!diagnostics.length) {
+      return `<section class="news-lineage-dialog-section is-error-details is-clear"><header><h3>错误定位与完整明细</h3><span>0 条</span></header><div class="news-lineage-error-empty"><strong>该节点关联运行没有记录错误</strong><p>如果节点仍显示异常，说明当天归档只保留了汇总状态，没有留下可逐条定位的错误正文。</p></div></section>`;
+    }
+    const relation = directCount ? `本节点直接错误 ${number(directCount)} 条` : "本节点无直接错误；异常来自关联运行的其他环节";
+    return `<section class="news-lineage-dialog-section is-error-details"><header><h3>错误定位与完整明细</h3><span>${number(diagnostics.length)} 条 · ${esc(relation)}</span></header><ol class="news-lineage-error-list">${diagnostics.map((item, index) => {
+      const facts = item.message.split(/；|\n+/).map((part) => part.trim()).filter(Boolean);
+      const relationLabel = item.location.nodeKey === nodeKey || nodeKey === "strategic" ? "本节点直接错误" : `异常位置：${item.location.label}`;
+      return `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><strong>${esc(item.location.label)}</strong><em>${esc(relationLabel)}</em></div></header><dl><div><dt>所属运行</dt><dd>${esc(item.run.crawl_run_id || "未记录运行ID")} · ${esc(newsRunTime(item.run))}</dd></div><div><dt>失败阶段</dt><dd>${esc(item.run.failure_stage || item.location.label)}</dd></div><div><dt>记录时间</dt><dd>${esc(item.time)}</dd></div><div><dt>证据来源</dt><dd>${esc(item.source)}</dd></div></dl><div class="news-lineage-error-facts"><strong>具体错误</strong><ol>${facts.map((fact) => `<li>${esc(fact)}</li>`).join("")}</ol></div><details><summary>查看完整错误原文</summary><pre>${esc(item.message)}</pre></details></article></li>`;
+    }).join("")}</ol></section>`;
+  }
+
   function executiveNodeRecords(nodeKey) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
@@ -1205,6 +1278,7 @@
     const reviewItemDetails = (node.reviewRows || []).length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天选用明细</h3><span>${number(node.reviewRows.length)} 条审核表记录</span></header><div class="news-lineage-detail-items">${node.reviewRows.map((item) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(item.publishedAt || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title || "未命名新闻")}</a>` : esc(item.title || "未命名新闻")}</h4><p>${esc(item.summary || "审核表未保存内容简介。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>APP状态</dt><dd>${esc(item.rollingStatus || "未记录")} · ${esc(item.syncStatus || "未记录同步状态")}</dd></div><div><dt>周报状态</dt><dd>${esc(item.weeklyStatus || "未记录")}</dd></div><div><dt>入池理由</dt><dd>${esc(item.reason || "审核表未记录入池理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
+      ${renderNewsErrors(nodeKey, relatedRuns)}
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
       ${renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
