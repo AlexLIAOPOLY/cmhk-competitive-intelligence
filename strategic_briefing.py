@@ -5024,16 +5024,19 @@ def _semantic_dedupe_history(item: dict[str, Any]) -> dict[str, Any]:
 
 
 def _deterministic_event_signature(item: dict[str, Any]) -> str:
-    text = " ".join(
-        (
-            _clean_text(item.get("title") or item.get("ai_title"), 300),
-            _clean_text(
-                item.get("summary")
-                or item.get("ai_summary")
-                or item.get("snippet"),
-                600,
-            ),
-        )
+    text = _to_simplified_chinese(
+        " ".join(
+            (
+                _clean_text(item.get("title") or item.get("ai_title"), 300),
+                _clean_text(
+                    item.get("summary")
+                    or item.get("ai_summary")
+                    or item.get("snippet"),
+                    600,
+                ),
+            )
+        ),
+        900,
     ).casefold()
     if re.search(r"皇岗口岸", text) and re.search(
         r"压力(?:测试|演练|测试演练)",

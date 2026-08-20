@@ -3696,8 +3696,8 @@ class StrategicBriefingTests(unittest.TestCase):
         history = [
             {
                 "news_id": "history-huanggang",
-                "title": "新皇岗口岸港方口岸将进行大型压力测试",
-                "summary": "现正招募私家车参与，以评估通关效率。",
+                "title": "新皇崗口岸港方口岸大型壓力測試供私家車報名",
+                "summary": "現正招募私家車參與，以評估通關效率。",
                 "source_date": "2026-08-18",
                 "source_url": "https://example.com/huanggang-history",
             }
