@@ -508,9 +508,22 @@ class SubscriptionService:
                     message_id TEXT PRIMARY KEY,
                     target_type TEXT NOT NULL,
                     target_id TEXT NOT NULL,
+                    target_name TEXT NOT NULL DEFAULT '',
                     chat_id TEXT NOT NULL,
                     source_profile TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS subscription_group_responses (
+                    message_id TEXT NOT NULL,
+                    chat_id TEXT NOT NULL,
+                    callback_open_id TEXT NOT NULL,
+                    delivery_open_id TEXT NOT NULL,
+                    display_name TEXT NOT NULL,
+                    avatar_url TEXT NOT NULL DEFAULT '',
+                    status TEXT NOT NULL,
+                    responded_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (message_id, callback_open_id)
                 );
                 CREATE TABLE IF NOT EXISTS subscription_invite_candidates (
                     callback_open_id TEXT PRIMARY KEY,
@@ -683,6 +696,7 @@ class SubscriptionService:
             migrations = {
                 "subscription_entry_cards": {
                     "source_profile": "TEXT NOT NULL DEFAULT ''",
+                    "target_name": "TEXT NOT NULL DEFAULT ''",
                 },
                 "subscription_invite_candidates": {
                     "source_profile": "TEXT NOT NULL DEFAULT ''",
@@ -700,6 +714,21 @@ class SubscriptionService:
                 for column, declaration in additions.items():
                     if column not in existing:
                         db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {declaration}")
+            db.execute(
+                """INSERT INTO subscription_group_responses(
+                       message_id, chat_id, callback_open_id, delivery_open_id,
+                       display_name, avatar_url, status, responded_at, updated_at
+                   )
+                   SELECT c.message_id, c.chat_id,
+                          COALESCE(NULLIF(s.callback_open_id, ''), s.open_id), s.open_id,
+                          s.display_name, '',
+                          CASE WHEN s.status='paused' THEN 'paused' ELSE 'accepted' END,
+                          s.updated_at, s.updated_at
+                   FROM subscription_entry_cards c
+                   JOIN subscribers s ON s.source_chat_id=c.chat_id AND s.updated_at>=c.created_at
+                   WHERE c.target_type='chat'
+                   ON CONFLICT(message_id, callback_open_id) DO NOTHING"""
+            )
 
     def _run(self, argv: list[str], *, timeout: float = 45) -> subprocess.CompletedProcess[str]:
         if self.command_runner is not None:
@@ -920,13 +949,32 @@ class SubscriptionService:
         def record_invitation_response(status: str) -> None:
             now = _now_hkt()
             with closing(self._connect()) as db, db:
+                if str(published["target_type"] or "") == "chat":
+                    db.execute(
+                        """INSERT INTO subscription_group_responses(
+                               message_id, chat_id, callback_open_id, delivery_open_id,
+                               display_name, avatar_url, status, responded_at, updated_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                           ON CONFLICT(message_id, callback_open_id) DO UPDATE SET
+                               delivery_open_id=excluded.delivery_open_id,
+                               display_name=excluded.display_name,
+                               avatar_url=excluded.avatar_url,
+                               status=excluded.status,
+                               responded_at=excluded.responded_at,
+                               updated_at=excluded.updated_at""",
+                        (
+                            message_id, chat_id, identity["callback_open_id"], identity["open_id"],
+                            identity["display_name"], identity.get("avatar_url", ""), status, now, now,
+                        ),
+                    )
+                    return
                 updated = db.execute(
                     """UPDATE subscription_invitations
                        SET status=?, responded_at=?, updated_at=?
                        WHERE message_id=? AND callback_open_id=?""",
                     (status, now, now, message_id, identity["callback_open_id"]),
                 )
-                if updated.rowcount or str(published["target_type"] or "") != "user":
+                if updated.rowcount:
                     return
                 db.execute(
                     """INSERT INTO subscription_invitations(
@@ -1019,6 +1067,24 @@ class SubscriptionService:
             invitations = db.execute(
                 "SELECT * FROM subscription_invitations ORDER BY id DESC LIMIT 200"
             ).fetchall()
+            group_cards = db.execute(
+                """SELECT c.*,
+                          COUNT(r.callback_open_id) AS response_count,
+                          SUM(CASE WHEN r.status='accepted' THEN 1 ELSE 0 END) AS accepted_count,
+                          SUM(CASE WHEN r.status='paused' THEN 1 ELSE 0 END) AS paused_count,
+                          MAX(r.updated_at) AS latest_response_at
+                   FROM subscription_entry_cards c
+                   LEFT JOIN subscription_group_responses r ON r.message_id=c.message_id
+                   WHERE c.target_type='chat'
+                   GROUP BY c.message_id
+                   ORDER BY c.created_at DESC LIMIT 30"""
+            ).fetchall()
+            group_responses = db.execute(
+                """SELECT r.* FROM subscription_group_responses r
+                   JOIN subscription_entry_cards c ON c.message_id=r.message_id
+                   WHERE c.target_type='chat'
+                   ORDER BY r.updated_at DESC LIMIT 300"""
+            ).fetchall()
         subscribers = []
         counts = {key: 0 for key in VALID_SERVICES}
         for row in rows:
@@ -1058,6 +1124,17 @@ class SubscriptionService:
             delivery["recipient_open_id"] = str(delivery.get("open_id") or "")
             delivery["message_ids"] = json.loads(delivery.get("message_ids") or "[]")
             delivery_items.append(delivery)
+        responses_by_message: dict[str, list[dict[str, Any]]] = {}
+        for row in group_responses:
+            response = dict(row)
+            responses_by_message.setdefault(str(response["message_id"]), []).append(response)
+        group_invitation_items = []
+        for row in group_cards:
+            item = dict(row)
+            item["target_name"] = str(item.get("target_name") or item.get("target_id") or "飞书群聊")
+            item["status"] = "responded" if int(item.get("response_count") or 0) else "verified"
+            item["responses"] = responses_by_message.get(str(item["message_id"]), [])
+            group_invitation_items.append(item)
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
             "news_categories": [
@@ -1067,6 +1144,7 @@ class SubscriptionService:
             "subscribers": subscribers,
             "deliveries": delivery_items,
             "invite_candidates": self.list_invite_candidates(),
+            "group_invitations": group_invitation_items,
             "invitations": [dict(item) for item in invitations],
             "invitation_counts": {
                 status: sum(1 for item in invitations if str(item["status"]) == status)
@@ -1776,6 +1854,7 @@ class SubscriptionService:
             target_type="chat",
             key_context="invite-group",
             profile=self.delivery_profile,
+            target_name=chat["name"],
         )
         return {
             **sent,
@@ -1879,6 +1958,7 @@ class SubscriptionService:
         key_context: str = "publish",
         profile: str = "",
         recipient_name: str = "",
+        target_name: str = "",
     ) -> dict[str, Any]:
         source_profile = profile or self.delivery_profile
         if target_type == "chat":
@@ -1914,12 +1994,12 @@ class SubscriptionService:
             raise RuntimeError("订阅卡片发送成功但没有返回有效会话ID")
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscription_entry_cards(message_id, target_type, target_id, chat_id, source_profile, created_at)
-                   VALUES(?, ?, ?, ?, ?, ?)
+                """INSERT INTO subscription_entry_cards(message_id, target_type, target_id, target_name, chat_id, source_profile, created_at)
+                   VALUES(?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(message_id) DO UPDATE SET target_type=excluded.target_type,
-                   target_id=excluded.target_id, chat_id=excluded.chat_id,
+                   target_id=excluded.target_id, target_name=excluded.target_name, chat_id=excluded.chat_id,
                    source_profile=excluded.source_profile, created_at=excluded.created_at""",
-                (message_id, target_type, target_id, chat_id, source_profile, _now_hkt()),
+                (message_id, target_type, target_id, target_name, chat_id, source_profile, _now_hkt()),
             )
         return {"message_id": message_id, "chat_id": chat_id, "target_id": target_id, "target_type": target_type, "verified": True}
 

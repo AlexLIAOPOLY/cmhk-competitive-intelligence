@@ -110,6 +110,14 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('action: "inviteTarget"', SCRIPT)
         self.assertIn("群内每个人的选择会分别保存", SCRIPT)
 
+    def test_admin_shows_group_invitation_delivery_and_live_response_count(self):
+        self.assertIn("group_invitations", SCRIPT)
+        self.assertIn("已发送并回读", SCRIPT)
+        self.assertIn("已选择 ${number(responseCount)} 人", SCRIPT)
+        self.assertIn("group-response-list", SCRIPT)
+        self.assertIn("window.setInterval", SCRIPT)
+        self.assertIn(".group-invite-row", STYLE)
+
     def test_admin_keeps_three_primary_blocks_and_moves_secondary_views_to_icons(self):
         self.assertIn('class="three-block-layout"', SCRIPT)
         self.assertIn('class="surface invite-surface"', SCRIPT)

@@ -2,6 +2,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 from unittest import mock
 
@@ -279,6 +280,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(send_call[send_call.index("--chat-id") + 1], "oc_strategy123")
         card = json.loads(send_call[send_call.index("--content") + 1])
         self.assertTrue(card["config"]["update_multi"])
+        group_invitation = self.service.list_summary()["group_invitations"][0]
+        self.assertEqual(group_invitation["target_name"], "战略情报群")
+        self.assertEqual(group_invitation["status"], "verified")
+        self.assertEqual(group_invitation["response_count"], 0)
 
     def test_two_people_can_save_different_preferences_from_one_group_card(self):
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
@@ -319,6 +324,18 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(subscribers["ou_persona123"]["news_item_limit"], 5)
         self.assertEqual(subscribers["ou_personb123"]["news_categories"], ["政策监管"])
         self.assertEqual(subscribers["ou_personb123"]["news_item_limit"], 20)
+        group_invitation = self.service.list_summary()["group_invitations"][0]
+        self.assertEqual(group_invitation["status"], "responded")
+        self.assertEqual(group_invitation["response_count"], 2)
+        self.assertEqual(
+            {item["display_name"] for item in group_invitation["responses"]},
+            {"ou_persona123", "ou_personb123"},
+        )
+        with closing(self.service._connect()) as db:
+            db.execute("DELETE FROM subscription_group_responses")
+            db.commit()
+        reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
+        self.assertEqual(reloaded.list_summary()["group_invitations"][0]["response_count"], 2)
 
     def test_personal_card_still_rejects_a_different_operator(self):
         self.service._send_entry_card_to_user("ou_invited123")
