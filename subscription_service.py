@@ -1426,7 +1426,7 @@ class SubscriptionService:
         ], timeout=60)
 
     def refresh_people_directory(self) -> dict[str, Any]:
-        departments: dict[str, dict[str, str]] = {}
+        departments: dict[str, str] = {}
         page_token = ""
         for _ in range(20):
             params: dict[str, Any] = {
@@ -1451,10 +1451,7 @@ class SubscriptionService:
                     and not status.get("is_deleted")
                     and "已撤销" not in name
                 ):
-                    departments[department_id] = {
-                        "name": name,
-                        "leader_open_id": str(item.get("leader_user_id") or ""),
-                    }
+                    departments[department_id] = name
             if not data.get("has_more"):
                 break
             page_token = str(data.get("page_token") or "")
@@ -1462,9 +1459,7 @@ class SubscriptionService:
                 break
 
         people: dict[str, dict[str, Any]] = {}
-        for department_id, department in departments.items():
-            department_name = department["name"]
-            leader_open_id = department["leader_open_id"]
+        for department_id, department_name in departments.items():
             page_token = ""
             for _ in range(30):
                 params = {
@@ -1494,10 +1489,8 @@ class SubscriptionService:
                         "avatar_url": str(avatar.get("avatar_72") or avatar.get("avatar_240") or ""),
                         "job_title": str(user.get("job_title") or "")[:160],
                         "department_names": set(),
-                        "is_department_leader": False,
                     })
                     record["department_names"].add(department_name)
-                    record["is_department_leader"] = record["is_department_leader"] or open_id == leader_open_id
                 if not data.get("has_more"):
                     break
                 page_token = str(data.get("page_token") or "")
@@ -1510,18 +1503,6 @@ class SubscriptionService:
             for person in people.values():
                 department_names = sorted(person["department_names"])
                 job_title = str(person["job_title"] or "").strip()
-                if not job_title:
-                    if person["is_department_leader"]:
-                        job_title = "负责人"
-                    else:
-                        position_markers = (
-                            "graduate trainee", "management trainee", "trainee", "intern", "apprentice",
-                            "毕业培训生", "管理培训生", "管培生", "实习生", "学徒",
-                        )
-                        job_title = next((
-                            name for name in department_names
-                            if any(marker in name.lower() for marker in position_markers)
-                        ), "成员")
                 db.execute(
                     """INSERT INTO subscription_directory_people(
                            directory_open_id, union_id, display_name, en_name, avatar_url,

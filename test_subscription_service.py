@@ -266,14 +266,14 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(added["added_count"], 1)
         self.assertEqual(added["candidates"][0]["display_name"], "测试用户")
 
-    def test_directory_refresh_derives_nonblank_position_from_real_org_relationship(self):
+    def test_directory_refresh_does_not_infer_position_from_org_relationship(self):
         self.service.command_runner = FakeLark(job_title="", leader_open_id="ou_delivery123")
         self.service.refresh_people_directory()
-        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "负责人")
+        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "")
 
-        self.service.command_runner = FakeLark(job_title="", leader_open_id="ou_someone_else")
+        self.service.command_runner = FakeLark(job_title="经理", leader_open_id="ou_someone_else")
         self.service.refresh_people_directory()
-        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "成员")
+        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "经理")
 
     def test_chat_search_returns_only_visible_normal_group_matches(self):
         results = self.service.search_chat_directory("战略")

@@ -5,8 +5,10 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import sqlite3
+import ssl
 import subprocess
 import threading
 import time
@@ -139,6 +141,14 @@ class AuthService:
             item.strip() for item in os.environ.get("CMHK_AUTH_ALLOWED_ORIGINS", "").split(",") if item.strip()
         }
         self.oauth_attempts: dict[str, list[float]] = {}
+        self._tenant_token_cache: tuple[str, float] = ("", 0.0)
+        self._custom_attr_cache: tuple[list[dict[str, Any]], float] = ([], 0.0)
+        certificate_file = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/cert.pem"
+        ssl_context = ssl.create_default_context(cafile=certificate_file if Path(certificate_file).is_file() else None)
+        self._url_opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({}),
+            urllib.request.HTTPSHandler(context=ssl_context),
+        )
         self._ensure_state()
 
     @property
@@ -442,13 +452,102 @@ class AuthService:
             headers["Authorization"] = "Bearer " + token
         request = urllib.request.Request(url, data=body, headers=headers, method=method)
         try:
-            with urllib.request.urlopen(request, timeout=20) as response:
+            with self._url_opener.open(request, timeout=20) as response:
                 result = json.loads(response.read().decode("utf-8"))
         except (urllib.error.URLError, ValueError) as exc:
             raise RuntimeError("飞书认证服务暂不可用") from exc
         if not isinstance(result, dict) or int(result.get("code") or 0) != 0:
             raise RuntimeError("飞书认证返回失败")
         return result
+
+    def _tenant_access_token(self) -> str:
+        token, expires_at = self._tenant_token_cache
+        if token and expires_at > time.time() + 60:
+            return token
+        if not self.feishu_configured:
+            raise RuntimeError("飞书应用凭证未配置")
+        payload = self._json_request(
+            "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+            method="POST",
+            payload={"app_id": self.app_id, "app_secret": self.app_secret},
+        )
+        token = str(payload.get("tenant_access_token") or "")
+        if not token:
+            raise RuntimeError("飞书应用授权未返回凭证")
+        self._tenant_token_cache = (token, time.time() + max(60, int(payload.get("expire") or 7200) - 120))
+        return token
+
+    def _custom_attr_definitions(self, token: str) -> list[dict[str, Any]]:
+        definitions, expires_at = self._custom_attr_cache
+        if definitions and expires_at > time.time():
+            return definitions
+        payload = self._json_request(
+            "https://open.feishu.cn/open-apis/contact/v3/custom_attrs?page_size=100",
+            token=token,
+        )
+        items = payload.get("data", {}).get("items", [])
+        definitions = [item for item in items if isinstance(item, dict)]
+        self._custom_attr_cache = (definitions, time.time() + 3600)
+        return definitions
+
+    @staticmethod
+    def _custom_attr_name(definition: dict[str, Any]) -> str:
+        names = definition.get("i18n_name") if isinstance(definition.get("i18n_name"), list) else []
+        simplified = next((item for item in names if isinstance(item, dict) and item.get("locale") == "zh_cn"), None)
+        fallback = next((item for item in names if isinstance(item, dict) and item.get("locale") == "default"), None)
+        return str((simplified or fallback or {}).get("value") or definition.get("name") or "").strip()
+
+    def _simplified_position(self, directory_user: dict[str, Any], token: str) -> str:
+        values = {
+            str(item.get("id") or ""): str((item.get("value") or {}).get("text") or "").strip()
+            for item in directory_user.get("custom_attrs") or []
+            if isinstance(item, dict) and isinstance(item.get("value"), dict)
+        }
+        if values:
+            definitions = self._custom_attr_definitions(token)
+            field = next((
+                item for item in definitions
+                if re.search(r"(?:简中|简体).*(?:岗位|职位)|simplified.*position", self._custom_attr_name(item), re.I)
+            ), None)
+            value = values.get(str((field or {}).get("id") or ""), "")
+            if value:
+                return re.split(r"[,，、;；\n]+", value, maxsplit=1)[0].strip()[:80]
+        return str(directory_user.get("job_title") or directory_user.get("title") or "").strip()[:80]
+
+    def _feishu_profile_by_email(self, email: str) -> dict[str, str]:
+        normalized = str(email or "").strip().lower()
+        if not normalized.endswith("@" + self.email_domain):
+            return {}
+        token = self._tenant_access_token()
+        payload = self._json_request(
+            "https://open.feishu.cn/open-apis/contact/v3/users/batch_get_id?user_id_type=open_id",
+            method="POST",
+            payload={"emails": [normalized], "include_resigned": False},
+            token=token,
+        )
+        entries = payload.get("data", {}).get("user_list", [])
+        matched = next((
+            item for item in entries
+            if isinstance(item, dict)
+            and str(item.get("email") or "").strip().lower() == normalized
+            and item.get("user_id")
+        ), None)
+        if not matched:
+            return {}
+        detail = self._json_request(
+            "https://open.feishu.cn/open-apis/contact/v3/users/"
+            + quote(str(matched["user_id"]))
+            + "?user_id_type=open_id&department_id_type=open_department_id",
+            token=token,
+        )
+        directory_user = detail.get("data", {}).get("user", {})
+        if not isinstance(directory_user, dict):
+            return {}
+        avatar = directory_user.get("avatar") if isinstance(directory_user.get("avatar"), dict) else {}
+        return {
+            "title": self._simplified_position(directory_user, token),
+            "avatar_url": str(avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or ""),
+        }
 
     def _enrich_feishu_identity(self, identity: dict[str, Any], access_token: str) -> dict[str, Any]:
         open_id = str(identity.get("open_id") or "")
@@ -465,35 +564,24 @@ class AuthService:
             if not isinstance(directory_user, dict):
                 return identity
             departments = directory_user.get("department_ids") if isinstance(directory_user.get("department_ids"), list) else []
+            token = self._tenant_access_token()
+            position = self._simplified_position(directory_user, token)
             result = dict(identity)
             result.update({
                 "name": directory_user.get("name") or identity.get("name"),
                 "enterprise_email": directory_user.get("enterprise_email") or identity.get("enterprise_email") or "",
                 "avatar_url": (directory_user.get("avatar") or {}).get("avatar_240") or identity.get("avatar_url") or "",
-                "job_title": directory_user.get("job_title") or directory_user.get("title") or identity.get("job_title") or "",
+                "job_title": position or identity.get("job_title") or "",
                 "department_ids": [str(item) for item in departments],
             })
             cached_profile = self._cached_directory_profile(str(result.get("name") or ""))
             if cached_profile:
                 result["avatar_url"] = cached_profile.get("avatar_url") or result.get("avatar_url") or ""
-                result["job_title"] = cached_profile.get("title") or result.get("job_title") or ""
+                result["job_title"] = result.get("job_title") or cached_profile.get("title") or ""
                 result["department"] = cached_profile.get("department") or result.get("department") or ""
             return result
         except Exception:
             return dict(identity)
-
-    @staticmethod
-    def _position_from_directory_departments(departments: list[Any]) -> str:
-        """Use explicit position-type directory memberships when job_title is absent."""
-        markers = (
-            "graduate trainee", "management trainee", "trainee", "intern", "apprentice",
-            "毕业培训生", "管理培训生", "管培生", "实习生", "学徒",
-        )
-        for value in departments:
-            label = str(value or "").strip()
-            if label and any(marker in label.lower() for marker in markers):
-                return label
-        return ""
 
     def _cached_directory_profile(self, name: str) -> dict[str, str]:
         """Read the refreshed Feishu directory cache without triggering a network sync."""
@@ -517,23 +605,35 @@ class AuthService:
         except (TypeError, ValueError, json.JSONDecodeError):
             departments = []
         departments = [str(item).strip() for item in departments if str(item).strip()]
-        stored_title = str(row[1] or "").strip()
-        inferred_title = self._position_from_directory_departments(departments) if not stored_title else ""
-        organization_departments = [item for item in departments if item != inferred_title]
         return {
             "avatar_url": str(row[0] or ""),
-            "title": stored_title or inferred_title,
-            "department": " / ".join(organization_departments),
+            "title": str(row[1] or "").strip(),
+            "department": " / ".join(departments),
         }
 
     def _refresh_missing_feishu_profiles(self) -> None:
-        """Backfill existing Feishu members once when organization fields are missing."""
-        candidates = [
-            item for item in self._users()
-            if item.get("credential_source") == "feishu_sso"
-            and (not item.get("department") or not item.get("title") or not item.get("avatar_url"))
-        ]
+        """Sync authoritative Feishu position and backfill other missing profile fields."""
+        candidates = [item for item in self._users() if item.get("credential_source") == "feishu_sso"]
         for candidate in candidates:
+            email = str(candidate.get("email") or "").strip().lower()
+            try:
+                enterprise_profile = self._feishu_profile_by_email(email)
+            except RuntimeError:
+                enterprise_profile = {}
+            if enterprise_profile:
+                with self.lock:
+                    users = self._users()
+                    target = next((item for item in users if str(item.get("id")) == str(candidate.get("id"))), None)
+                    if target and (
+                        target.get("title") != enterprise_profile.get("title", "")
+                        or (not target.get("avatar_url") and enterprise_profile.get("avatar_url"))
+                    ):
+                        target["title"] = enterprise_profile.get("title", "")
+                        target["avatar_url"] = target.get("avatar_url") or enterprise_profile.get("avatar_url") or ""
+                        target["directory_profile_synced_at"] = _now_iso()
+                        self._write(self.users_path, users)
+                if candidate.get("department") and candidate.get("avatar_url"):
+                    continue
             query = str(candidate.get("email") or candidate.get("name") or "").strip()
             if len(query) < 2:
                 continue
@@ -541,7 +641,6 @@ class AuthService:
                 matches = self._search_directory_users(query)
             except (ValueError, RuntimeError):
                 continue
-            email = str(candidate.get("email") or "").lower()
             match = next((item for item in matches if str(item.get("email") or "").lower() == email), None)
             if not match:
                 continue
@@ -588,12 +687,18 @@ class AuthService:
             name = str(item.get("localized_name") or item.get("name") or "").strip()
             avatar = item.get("avatar") if isinstance(item.get("avatar"), dict) else {}
             cached_profile = self._cached_directory_profile(name)
+            enterprise_profile: dict[str, str] = {}
+            if keyword.strip().lower() == email:
+                try:
+                    enterprise_profile = self._feishu_profile_by_email(email)
+                except RuntimeError:
+                    enterprise_profile = {}
             users.append({
                 "name": name,
                 "email": email,
                 "department": str(item.get("department") or cached_profile.get("department") or "").replace(" - ", " / ").replace("&amp;", "&").strip(),
-                "title": str(item.get("job_title") or item.get("title") or cached_profile.get("title") or "").strip(),
-                "avatar_url": str(avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or item.get("avatar_url") or cached_profile.get("avatar_url") or "").strip(),
+                "title": str(enterprise_profile.get("title") or item.get("job_title") or item.get("title") or cached_profile.get("title") or "").strip(),
+                "avatar_url": str(enterprise_profile.get("avatar_url") or avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or item.get("avatar_url") or cached_profile.get("avatar_url") or "").strip(),
             })
         return [item for item in users if item["name"] and item["email"]]
 
@@ -952,10 +1057,6 @@ class AuthService:
                 if role not in ROLE_LABELS:
                     self._send_json(handler, 400, {"ok": False, "message": "角色不存在"})
                     return True
-                title = str(payload.get("title") if "title" in payload else target.get("title") or "").strip()
-                if len(title) > 80:
-                    self._send_json(handler, 400, {"ok": False, "message": "员工岗位不能超过 80 个字符"})
-                    return True
                 status = "disabled" if payload.get("status") == "disabled" else "active"
                 requested = payload.get("modules") if isinstance(payload.get("modules"), dict) else self._effective_modules(target)
                 if any(not isinstance(value, bool) for key, value in requested.items() if key in MODULE_LABELS):
@@ -974,13 +1075,12 @@ class AuthService:
                 before = {"role": target.get("role"), "status": target.get("status"), "title": target.get("title", ""), "module_overrides": target.get("module_overrides", {})}
                 target["role"] = role
                 target["status"] = status
-                target["title"] = title
                 target["module_overrides"] = overrides
                 target["updated_at"] = _now_iso()
                 target["updated_by"] = admin.get("id")
                 self._write(self.users_path, users)
                 audit = self._read(self.audit_path, [])
-                after = {"role": role, "status": status, "title": title, "module_overrides": overrides}
+                after = {"role": role, "status": status, "title": target.get("title", ""), "module_overrides": overrides}
                 audit.append({"at": target["updated_at"], "by": admin.get("id"), "target": target.get("id"), "before": before, "after": after})
                 self._write(self.audit_path, audit[-1000:])
                 self.record_operation(

@@ -189,20 +189,21 @@ class AuthServiceTest(unittest.TestCase):
         self.service.handle(self_lock, "POST", urlparse("/api/auth/admin/users/local-admin"))
         self.assertEqual(self_lock.status, 409)
 
-    def test_admin_can_fill_missing_employee_title_and_audit_it(self):
+    def test_admin_cannot_override_feishu_employee_position(self):
         _, session = self.dev_login()
-        update = FakeHandler(body={"title": "Project Manager"}, cookie=session)
+        users = self.service._users()
+        target = next(item for item in users if item["id"] == "local-content")
+        target["title"] = "经理"
+        self.service._write(self.service.users_path, users)
+
+        update = FakeHandler(body={"title": "伪造岗位"}, cookie=session)
         self.service.handle(update, "POST", urlparse("/api/auth/admin/users/local-content"))
         self.assertEqual(update.status, 200)
-        self.assertEqual(update.payload()["user"]["title"], "Project Manager")
+        self.assertEqual(update.payload()["user"]["title"], "经理")
         stored = next(item for item in self.service._users() if item["id"] == "local-content")
-        self.assertEqual(stored["title"], "Project Manager")
+        self.assertEqual(stored["title"], "经理")
         event = self.service.operation_audit()[0]
-        self.assertEqual(event["details"]["after"]["title"], "Project Manager")
-
-        too_long = FakeHandler(body={"title": "x" * 81}, cookie=session)
-        self.service.handle(too_long, "POST", urlparse("/api/auth/admin/users/local-content"))
-        self.assertEqual(too_long.status, 400)
+        self.assertEqual(event["details"]["after"]["title"], "经理")
 
     def test_email_collision_does_not_bind_existing_admin(self):
         users = self.service._users()
@@ -267,7 +268,27 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(users[0]["title"], "Project Manager")
         self.assertEqual(users[0]["department"], "科创及数智化部 / 科技创新管理")
 
-    def test_directory_profile_uses_explicit_trainee_membership_as_position(self):
+    def test_directory_email_search_uses_simplified_position_for_new_member(self):
+        directory_payload = {
+            "data": {"users": [{
+                "name": "徐亮 Alan XU Liang",
+                "enterprise_email": "alanxu@hk.chinamobile.com",
+                "department": "科创及数智化部 - 科技创新管理",
+                "job_title": "Manager, Government & Enterprise Business Support Service",
+                "is_activated": True,
+            }]}
+        }
+        completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
+        with patch("cmhk_auth.subprocess.run", return_value=completed), patch.object(
+            self.service,
+            "_feishu_profile_by_email",
+            return_value={"title": "经理", "avatar_url": "https://example.test/alan.webp"},
+        ):
+            users = self.service._search_directory_users("alanxu@hk.chinamobile.com")
+        self.assertEqual(users[0]["title"], "经理")
+        self.assertEqual(users[0]["avatar_url"], "https://example.test/alan.webp")
+
+    def test_directory_profile_does_not_treat_department_as_position(self):
         db_path = Path(self.temp.name) / "var" / "subscriptions" / "subscriptions.sqlite3"
         db_path.parent.mkdir(parents=True, exist_ok=True)
         with sqlite3.connect(db_path) as connection:
@@ -283,8 +304,19 @@ class AuthServiceTest(unittest.TestCase):
                 ])),
             )
         profile = self.service._cached_directory_profile("测试成员")
-        self.assertEqual(profile["title"], "2025 Graduate Trainee")
-        self.assertEqual(profile["department"], "Technology & Innovation Management")
+        self.assertEqual(profile["title"], "")
+        self.assertEqual(profile["department"], "2025 Graduate Trainee / Technology & Innovation Management")
+
+    def test_simplified_position_uses_first_value_from_authoritative_custom_field(self):
+        self.service._custom_attr_cache = ([{
+            "id": "position-field",
+            "i18n_name": [{"locale": "zh_cn", "value": "简中岗位"}],
+        }], float("inf"))
+        position = self.service._simplified_position({
+            "job_title": "Manager, Government & Enterprise Business Support Service",
+            "custom_attrs": [{"id": "position-field", "value": {"text": "经理, 科技创新管理, 算力网络技术专家"}}],
+        }, "token")
+        self.assertEqual(position, "经理")
 
     def test_missing_title_is_included_in_feishu_profile_backfill(self):
         users = self.service._users()
@@ -296,15 +328,12 @@ class AuthServiceTest(unittest.TestCase):
             "credential_source": "feishu_sso", "role": "UNCONFIGURED", "status": "active",
         })
         self.service._write(self.service.users_path, users)
-        match = {
-            "email": "member@hk.chinamobile.com", "name": "测试成员",
-            "department": "科技创新管理", "title": "2025 Graduate Trainee",
-            "avatar_url": "https://example.test/avatar.webp",
-        }
-        with patch.object(self.service, "_search_directory_users", return_value=[match]):
+        with patch.object(self.service, "_feishu_profile_by_email", return_value={
+            "title": "经理", "avatar_url": "https://example.test/avatar.webp",
+        }):
             self.service._refresh_missing_feishu_profiles()
         refreshed = next(item for item in self.service._users() if item["id"] == "fs-title-gap")
-        self.assertEqual(refreshed["title"], "2025 Graduate Trainee")
+        self.assertEqual(refreshed["title"], "经理")
 
     def test_admin_can_delete_member_but_not_current_account(self):
         _, session = self.dev_login()
