@@ -187,7 +187,15 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .reach-wave i:hover { opacity: 1; filter: brightness(1.2); }
 .reach-wave i span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.finance-content > div { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(235px, .82fr); gap: clamp(8px, .65vw, 24px); }
+.finance-content > div { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(235px, .82fr); grid-template-rows: auto minmax(0, 1fr); gap: clamp(8px, .65vw, 24px); }
+.finance-company-tabs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; min-width: 0; padding: 3px; border: 1px solid rgba(100, 205, 244, .16); border-radius: 4px; background: rgba(2, 13, 23, .46); }
+.finance-company-tabs button { min-width: 0; min-height: 34px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 5px; padding: 0 clamp(6px, .55vw, 16px); border: 0; border-radius: 2px; color: #87a7b5; background: transparent; font: 650 clamp(10px, .62vw, 22px)/1 var(--font-ui); cursor: pointer; transition: color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+.finance-company-tabs button:hover { color: #e8f7fb; background: rgba(92, 156, 255, .1); }
+.finance-company-tabs button[aria-selected="true"] { color: #f5fbff; background: rgba(73, 157, 207, .28); box-shadow: inset 0 0 0 1px rgba(100, 205, 244, .32); }
+.finance-company-tabs button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.finance-company-tabs span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.finance-company-tabs small { color: #648897; font-size: .72em; font-weight: 580; white-space: nowrap; }
+.finance-company-tabs button[aria-selected="true"] small { color: #a7c9d5; }
 .finance-revenue-hero { position: relative; min-width: 0; min-height: 0; overflow: hidden; padding: clamp(18px, 1.25vw, 48px); }
 .finance-revenue-copy { position: relative; z-index: 2; }
 .finance-revenue-copy > span { color: var(--text-secondary); font-size: clamp(13px, .82vw, 31px); }
@@ -339,7 +347,9 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
   .business-pair .monitor-kpi + .monitor-kpi { border-left: 0; border-top: 1px solid var(--line); }
   .reach-content > div { grid-template-columns: 1fr; }
   .reach-dial-card { grid-template-columns: minmax(100px, .7fr) minmax(0, 1.3fr); }
-  .finance-content > div { grid-template-columns: 1fr; grid-template-rows: minmax(330px, 1.5fr) repeat(2, minmax(150px, .7fr)); }
+  .finance-content > div { grid-template-columns: 1fr; grid-template-rows: auto minmax(330px, 1.5fr) repeat(2, minmax(150px, .7fr)); }
+  .finance-company-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .finance-company-tabs button { grid-template-columns: 1fr; gap: 3px; padding-block: 6px; }
   .finance-gauge-stack { display: contents; }
   .comparison-grid .panel { min-height: 450px; }
   .comparison-grid .comparison-finance-panel { min-height: 520px; }

@@ -32,7 +32,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             'const pdf = `./static/report-previews/${key}.pdf`;',
         )
 
-    def test_monitoring_dashboard_uses_hkt_official_data_only(self):
+    def test_monitoring_dashboard_uses_local_operator_financial_tabs(self):
         html = (publisher.STATIC_DIR / "executive-dashboard-demo.html").read_text(
             encoding="utf-8"
         )
@@ -41,9 +41,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
         )
 
         self.assertIn('aria-label="HKT战略监控四层体系"', html)
-        self.assertIn('src="/static/executive-dashboard-demo.js?v=21"', html)
+        self.assertIn('src="/static/executive-dashboard-demo.js?v=22"', html)
         self.assertIn("HKT经营全景", html)
         self.assertIn("本地运营商对比", html)
+        self.assertIn("financeCompanyFallbacks", script)
+        self.assertIn('fetch("/api/executive-intelligence"', script)
+        self.assertIn("data-finance-company", script)
+        self.assertNotIn("来源：HKT官方公开数据", script)
         for source in (
             "2026072900430.pdf",
             "e-2025_Annual_Report.pdf",
@@ -77,9 +81,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             "[263.7, 283.0, 244.8, 249.3, 263.8, 280.0, 250.9]",
         ):
             self.assertNotIn(stale_value, script)
-        self.assertIn("HKT官方公开数据", script)
+        self.assertNotIn("来源：HKT官方公开数据", script)
         self.assertIn("[17.322, 19.231, 18.685]", script)
-        for company in ("3香港", "SmarTone", "HKBN"):
+        for company in ("3香港", "SmarTone", "HKBN", "i-CABLE"):
             self.assertIn(company, script)
         for comparable_value in ("3.494", "1.289", "1.488", "0.907", "14234", "1508", "2445", "2451"):
             self.assertIn(comparable_value, script)
@@ -250,14 +254,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=41"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=42"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=21"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=22"', html)
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)
@@ -345,7 +349,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("2026年6月", script)
             self.assertIn("data-tooltip", script)
             self.assertIn("data-source", script)
-            self.assertIn("HKT官方公开数据", script)
+            self.assertNotIn("来源：HKT官方公开数据", script)
             self.assertIn("[17.322, 19.231, 18.685]", script)
             self.assertNotIn("chinamobileltd.com", script)
             self.assertNotIn("342.8", script)

@@ -10,7 +10,7 @@
   const networkMetrics = [
     { label: "5G网络香港覆盖率", value: "99", unit: "%", trend: "2025年末", periods: ["2025年末"], values: [99], source: SOURCES.esg2025 },
     { label: "Wi-Fi热点", value: "19,097", unit: "个", trend: "2025年末", periods: ["2025年末"], values: [19097], valueLabels: ["19,097"], source: SOURCES.esg2025 },
-    { label: "2025年新增流动通信站点", value: "94", unit: "个", trend: "HKT官方披露", periods: ["2025"], values: [94], source: SOURCES.annual2025 }
+    { label: "2025年新增流动通信站点", value: "94", unit: "个", trend: "2025年", periods: ["2025"], values: [94], source: SOURCES.annual2025 }
   ];
 
   const businessGroups = [
@@ -39,6 +39,34 @@
     { label: "EBITDA", value: "6.586", unit: "十亿港元", trend: "同比 +3%", periods: halfYearPeriods, values: [6.380, 7.854, 6.586], source: SOURCES.interim2026, gauge: 74 },
     { label: "股份合订单位持有人应占溢利", value: "2.153", unit: "十亿港元", trend: "同比 +4%", periods: halfYearPeriods, values: [2.070, 3.216, 2.153], source: SOURCES.interim2026, gauge: 72 }
   ];
+
+  const financeCompanyFallbacks = [
+    { key: "hkt", company: "HKT", period: "H1 2026", metrics: financeMetrics },
+    { key: "three", company: "3香港", period: "H1 2026", metrics: [
+      { label: "总收入", value: "2.846", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [2.846] },
+      { label: "EBITDA", value: "0.763", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [0.763], gauge: 74 },
+      { label: "净利润", value: "0.011", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [0.011], gauge: 72 }
+    ] },
+    { key: "smartone", company: "SmarTone", period: "H1 2026", metrics: [
+      { label: "总收入", value: "3.561", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [3.561] },
+      { label: "EBITDA", value: "—", unit: "", trend: "未披露", periods: ["H1 2026"], values: [0], valueLabels: ["—"], gauge: 0 },
+      { label: "净利润", value: "0.278", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [0.278], gauge: 72 }
+    ] },
+    { key: "hkbn", company: "HKBN", period: "H1 2026", metrics: [
+      { label: "总收入", value: "6.029", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [6.029] },
+      { label: "EBITDA", value: "1.257", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [1.257], gauge: 74 },
+      { label: "净利润", value: "0.108", unit: "十亿港元", trend: "H1 2026", periods: ["H1 2026"], values: [0.108], gauge: 72 }
+    ] },
+    { key: "icable", company: "i-CABLE", period: "FY 2025", metrics: [
+      { label: "总收入", value: "0.539", unit: "十亿港元", trend: "FY 2025", periods: ["FY 2025"], values: [0.539] },
+      { label: "EBITDA", value: "—", unit: "", trend: "未披露", periods: ["FY 2025"], values: [0], valueLabels: ["—"], gauge: 0 },
+      { label: "净利润", value: "-0.490", unit: "十亿港元", trend: "FY 2025", periods: ["FY 2025"], values: [-0.490], gauge: 72 }
+    ] }
+  ];
+  let financeCompaniesData = financeCompanyFallbacks;
+  let selectedFinanceCompany = 0;
+  let financeRotationTimer = null;
+  let financeManualPauseUntil = 0;
 
   const COMPARISON_SOURCES = {
     hkt: SOURCES.annual2025,
@@ -99,7 +127,7 @@
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const displayValue = (metric, index) => metric.valueLabels?.[index] ?? String(metric.values[index]);
-  const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.fullUnit || metric.unit}`).join("\n")}\n来源：HKT官方公开数据`;
+  const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.fullUnit || metric.unit}`.trim()).join("\n")}`;
   const formatInteger = (value) => new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 0 }).format(value);
 
   function chartGeometry(values, width, height, padX = 4, padY = 5) {
@@ -180,10 +208,10 @@
     }).join("");
   }
 
-  function financeChart(metric) {
+  function financeChart(metric, company) {
     const { points, line } = chartGeometry(metric.values, 480, 170, 0, 24);
     const area = `${line} L480 170 L0 170 Z`;
-    return `<svg class="finance-area-chart" viewBox="0 0 480 170" preserveAspectRatio="none" role="img" aria-label="HKT总收入半年真实趋势">
+    return `<svg class="finance-area-chart" viewBox="0 0 480 170" preserveAspectRatio="none" role="img" aria-label="${escapeHtml(company)}总收入趋势">
       <defs><linearGradient id="financeArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#54d9ff" stop-opacity=".42"/><stop offset="1" stop-color="#357ee8" stop-opacity="0"/></linearGradient></defs>
       <path class="finance-grid-line" d="M0 42H480M0 85H480M0 128H480"/>
       <path class="finance-area" d="${area}"/>
@@ -194,17 +222,105 @@
 
   function renderFinance() {
     const target = document.querySelector("[data-finance-content]");
-    const revenue = financeMetrics[0];
+    const selected = financeCompaniesData[selectedFinanceCompany] || financeCompaniesData[0];
+    const metrics = selected.metrics;
+    const revenue = metrics[0];
     target.innerHTML = `
+      <div class="finance-company-tabs" role="tablist" aria-label="本地运营商财务数据">
+        ${financeCompaniesData.map((item, index) => `<button type="button" role="tab" aria-selected="${index === selectedFinanceCompany}" data-finance-company="${index}" title="查看${escapeHtml(item.company)}财务数据"><span>${escapeHtml(item.company)}</span><small>${escapeHtml(item.period)}</small></button>`).join("")}
+      </div>
       <section class="finance-revenue-hero has-data-tooltip" tabindex="0" data-source="${escapeHtml(revenue.source)}" data-tooltip="${escapeHtml(tooltipText(revenue))}">
         <div class="finance-revenue-copy"><span>${escapeHtml(revenue.label)}</span><strong>${escapeHtml(revenue.value)}<small>${escapeHtml(revenue.unit)}</small></strong><em>${escapeHtml(revenue.trend)}</em></div>
-        ${financeChart(revenue)}
+        ${financeChart(revenue, selected.company)}
       </section>
-      <div class="finance-gauge-stack">${financeMetrics.slice(1).map((metric, index) => `
+      <div class="finance-gauge-stack">${metrics.slice(1).map((metric, index) => `
         <section class="finance-gauge-card gauge-${index + 1} has-data-tooltip" tabindex="0" data-source="${escapeHtml(metric.source)}" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--gauge:${metric.gauge}">
           <div class="finance-gauge" aria-hidden="true"><i></i><span></span></div>
           ${metricCard(metric, index)}
       </section>`).join("")}</div>`;
+  }
+
+  function metricNumber(value) {
+    const text = String(value || "").replace(/,/g, "");
+    const match = text.match(/\d+(?:\.\d+)?/);
+    if (!match || /nil|n\/a|not disclosed|未披露|—/i.test(text)) return null;
+    const sign = /-\s*(?:HK\$)?\s*\d/.test(text) ? -1 : 1;
+    const number = Number(match[0]) * sign;
+    return /\bmillion\b/i.test(text) ? number / 1000 : number;
+  }
+
+  function companyKey(name) {
+    if (/^HKT$/i.test(name)) return "hkt";
+    if (/3HK|3香港|Hutchison/i.test(name)) return "three";
+    if (/SmarTone/i.test(name)) return "smartone";
+    if (/HKBN/i.test(name)) return "hkbn";
+    if (/i-CABLE/i.test(name)) return "icable";
+    return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  }
+
+  function normalizeFinancialReport(report) {
+    const definitions = [
+      ["revenue", "总收入"],
+      ["ebitda", "EBITDA"],
+      ["net_profit", "净利润"]
+    ];
+    const values = new Map((report.metrics || []).map((metric) => [metric.metric_key, metric.value]));
+    return {
+      key: companyKey(report.company),
+      company: companyKey(report.company) === "three" ? "3香港" : report.company,
+      period: report.period || "最新披露期",
+      metrics: definitions.map(([key, label], index) => {
+        const raw = values.get(key);
+        const numeric = metricNumber(raw);
+        const disclosed = Number.isFinite(numeric);
+        return {
+          label,
+          value: disclosed ? numeric.toFixed(3) : "—",
+          unit: disclosed ? "十亿港元" : "",
+          trend: disclosed ? (report.period || "最新披露期") : "未披露",
+          periods: [report.period || "最新披露期"],
+          values: [disclosed ? numeric : 0],
+          valueLabels: [disclosed ? numeric.toFixed(3) : "—"],
+          gauge: disclosed ? (index === 1 ? 74 : 72) : 0
+        };
+      })
+    };
+  }
+
+  function refreshFinancialCompanies() {
+    return fetch("/api/executive-intelligence", { cache: "no-store" })
+      .then((response) => response.json().then((data) => ({ response, data })))
+      .then(({ response, data }) => {
+        if (!response.ok || !data.ok) throw new Error(data.error || "财务数据读取失败");
+        const local = (data.domains || []).find((domain) => domain.id === "local");
+        const reports = Array.isArray(local?.latest_financial_results) ? local.latest_financial_results : [];
+        if (!reports.length) return;
+        const byKey = new Map(reports.map((report) => [companyKey(report.company), normalizeFinancialReport(report)]));
+        financeCompaniesData = financeCompanyFallbacks.map((fallback) => byKey.get(fallback.key) || fallback);
+        selectedFinanceCompany = Math.min(selectedFinanceCompany, financeCompaniesData.length - 1);
+        renderFinance();
+      })
+      .catch(() => {});
+  }
+
+  function setupFinanceCompanyTabs() {
+    const target = document.querySelector("[data-finance-content]");
+    const panel = document.querySelector(".panel-finance");
+    target.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-finance-company]");
+      if (!button) return;
+      selectedFinanceCompany = Number(button.dataset.financeCompany) || 0;
+      financeManualPauseUntil = Date.now() + 12000;
+      renderFinance();
+      target.querySelector(`[data-finance-company="${selectedFinanceCompany}"]`)?.focus();
+    });
+    financeRotationTimer = window.setInterval(() => {
+      const overviewVisible = !document.querySelector("[data-overview-view]")?.hidden;
+      if (!overviewVisible || document.hidden || Date.now() < financeManualPauseUntil) return;
+      if (panel.matches(":hover")) return;
+      selectedFinanceCompany = (selectedFinanceCompany + 1) % financeCompaniesData.length;
+      renderFinance();
+    }, 5000);
   }
 
   function comparisonRows(rows, suffix = "") {
@@ -315,6 +431,8 @@
   renderBusiness();
   renderReach();
   renderFinance();
+  setupFinanceCompanyTabs();
+  refreshFinancialCompanies();
   renderComparison();
   setupComparisonMetricTabs();
   setupViewTabs();
