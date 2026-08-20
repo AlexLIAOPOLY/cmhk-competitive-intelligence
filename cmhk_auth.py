@@ -952,6 +952,10 @@ class AuthService:
                 if role not in ROLE_LABELS:
                     self._send_json(handler, 400, {"ok": False, "message": "角色不存在"})
                     return True
+                title = str(payload.get("title") if "title" in payload else target.get("title") or "").strip()
+                if len(title) > 80:
+                    self._send_json(handler, 400, {"ok": False, "message": "员工岗位不能超过 80 个字符"})
+                    return True
                 status = "disabled" if payload.get("status") == "disabled" else "active"
                 requested = payload.get("modules") if isinstance(payload.get("modules"), dict) else self._effective_modules(target)
                 if any(not isinstance(value, bool) for key, value in requested.items() if key in MODULE_LABELS):
@@ -967,21 +971,23 @@ class AuthService:
                 if target in active_admins and len(active_admins) == 1 and (status == "disabled" or not effective_after["organization"]):
                     self._send_json(handler, 409, {"ok": False, "message": "组织中必须保留至少一名管理员"})
                     return True
-                before = {"role": target.get("role"), "status": target.get("status"), "module_overrides": target.get("module_overrides", {})}
+                before = {"role": target.get("role"), "status": target.get("status"), "title": target.get("title", ""), "module_overrides": target.get("module_overrides", {})}
                 target["role"] = role
                 target["status"] = status
+                target["title"] = title
                 target["module_overrides"] = overrides
                 target["updated_at"] = _now_iso()
                 target["updated_by"] = admin.get("id")
                 self._write(self.users_path, users)
                 audit = self._read(self.audit_path, [])
-                audit.append({"at": target["updated_at"], "by": admin.get("id"), "target": target.get("id"), "before": before, "after": {"role": role, "status": status, "module_overrides": overrides}})
+                after = {"role": role, "status": status, "title": title, "module_overrides": overrides}
+                audit.append({"at": target["updated_at"], "by": admin.get("id"), "target": target.get("id"), "before": before, "after": after})
                 self._write(self.audit_path, audit[-1000:])
                 self.record_operation(
                     actor=admin,
                     action="organization.user_update",
                     target=str(target.get("id") or ""),
-                    details={"before": before, "after": {"role": role, "status": status, "module_overrides": overrides}},
+                    details={"before": before, "after": after},
                 )
             self._send_json(handler, 200, {"ok": True, "user": self._public_user(target)})
             return True

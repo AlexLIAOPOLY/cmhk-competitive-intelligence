@@ -118,7 +118,7 @@
       return `<label class="organization-permission"><input type="checkbox" data-module="${esc(key)}"${checked ? " checked" : ""}${protectedPermission ? " disabled" : ""} /><span><strong>${esc(label)}</strong><small>${esc(key)}.view</small></span></label>`;
     }).join("");
     const enabled = Object.values(user.modules || {}).filter(Boolean).length;
-    const organization = `<dl class="organization-info-grid"><div><dt>所属部门</dt><dd>${esc(user.department || (user.authProvider === "feishu" ? "飞书未提供" : "—"))}</dd></div><div><dt>员工岗位</dt><dd>${esc(user.title || (user.authProvider === "feishu" ? "飞书未填写" : "—"))}</dd></div></dl>`;
+    const organization = `<dl class="organization-info-grid"><div><dt>所属部门</dt><dd>${esc(user.department || (user.authProvider === "feishu" ? "飞书未提供" : "—"))}</dd></div><div><dt>员工岗位</dt><dd><input class="organization-select organization-title-input" type="text" data-title maxlength="80" value="${esc(user.title || "")}" placeholder="飞书未提供，可由管理员补充" aria-label="员工岗位" /></dd></div></dl>`;
     const profile = `<dl class="organization-info-grid is-three"><div><dt>企业邮箱</dt><dd>${esc(user.email || "—")}</dd></div><div><dt>登录账号</dt><dd>${esc(user.account || "—")}</dd></div><div><dt>身份来源</dt><dd>${user.authProvider === "feishu" ? "飞书企业身份" : "本地账号"}</dd></div></dl>`;
     const account = `<div class="organization-control-grid"><label><span>角色层级</span><select class="organization-select" data-role>${roleOptions(user)}</select></label><label><span>账号状态</span><select class="organization-select" data-status${user.current ? " disabled" : ""}><option value="active"${user.status === "active" ? " selected" : ""}>启用</option><option value="disabled"${user.status === "disabled" ? " selected" : ""}>停用</option></select></label></div>`;
     const permissions = `<div class="organization-permission-grid">${checks}</div>`;
@@ -128,7 +128,7 @@
       ${detailSection({ title: "成员资料", summary: user.authProvider === "feishu" ? "飞书企业身份" : "本地账号", body: profile, open: true })}
       ${detailSection({ title: "角色与账号", summary: `${user.roleLabel || "待分配"} · ${user.status === "disabled" ? "已停用" : "启用"}`, body: account, open: true })}
       <details class="organization-detail-section"><summary class="organization-section-summary"><span class="organization-section-copy"><h3>功能权限</h3><small data-permission-count>已启用 ${enabled} / ${Object.keys(state.modules).length} 项</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-section-body">${permissions}</div></details>
-      <footer class="organization-save-bar"><span data-row-status aria-live="polite">选择角色或权限后保存</span><button type="button" data-save disabled>保存成员权限</button></footer>
+      <footer class="organization-save-bar"><span data-row-status aria-live="polite">修改岗位、角色或权限后保存</span><button type="button" data-save disabled>保存成员资料</button></footer>
       ${eventList(user)}
     </section>`;
   }
@@ -242,8 +242,8 @@
     const modules = Object.fromEntries([...detail.querySelectorAll("[data-module]")].map((input) => [input.dataset.module, input.checked]));
     button.disabled = true; button.textContent = "保存中…"; rowStatus.textContent = "正在写入权限";
     try {
-      await request(`/api/auth/admin/users/${encodeURIComponent(detail.dataset.userId)}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: detail.querySelector("[data-role]").value, status: detail.querySelector("[data-status]").value, modules }) });
-      rowStatus.textContent = "已保存并写入审计记录"; button.textContent = "保存成员权限";
+      await request(`/api/auth/admin/users/${encodeURIComponent(detail.dataset.userId)}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: detail.querySelector("[data-title]").value, role: detail.querySelector("[data-role]").value, status: detail.querySelector("[data-status]").value, modules }) });
+      rowStatus.textContent = "已保存并写入审计记录"; button.textContent = "保存成员资料";
       window.setTimeout(() => load({ force: true }), 450);
     } catch (error) { rowStatus.textContent = error.message; rowStatus.classList.add("is-error"); button.disabled = false; button.textContent = "重试"; }
   }
@@ -266,6 +266,7 @@
 
   host.addEventListener("input", (event) => {
     if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
+    if (event.target.matches("[data-title]")) { const detail = event.target.closest("[data-user-id]"); if (detail) markDirty(detail); return; }
     if (!event.target.matches("[data-search]")) return;
     state.query = event.target.value; render();
     const search = host.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);

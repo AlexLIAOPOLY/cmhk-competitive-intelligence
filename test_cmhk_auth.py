@@ -189,6 +189,21 @@ class AuthServiceTest(unittest.TestCase):
         self.service.handle(self_lock, "POST", urlparse("/api/auth/admin/users/local-admin"))
         self.assertEqual(self_lock.status, 409)
 
+    def test_admin_can_fill_missing_employee_title_and_audit_it(self):
+        _, session = self.dev_login()
+        update = FakeHandler(body={"title": "Project Manager"}, cookie=session)
+        self.service.handle(update, "POST", urlparse("/api/auth/admin/users/local-content"))
+        self.assertEqual(update.status, 200)
+        self.assertEqual(update.payload()["user"]["title"], "Project Manager")
+        stored = next(item for item in self.service._users() if item["id"] == "local-content")
+        self.assertEqual(stored["title"], "Project Manager")
+        event = self.service.operation_audit()[0]
+        self.assertEqual(event["details"]["after"]["title"], "Project Manager")
+
+        too_long = FakeHandler(body={"title": "x" * 81}, cookie=session)
+        self.service.handle(too_long, "POST", urlparse("/api/auth/admin/users/local-content"))
+        self.assertEqual(too_long.status, 400)
+
     def test_email_collision_does_not_bind_existing_admin(self):
         users = self.service._users()
         admin = users[0]

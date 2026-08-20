@@ -77,6 +77,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('highlightSearchMatch(user.name || "未命名成员", directory.query)', ORGANIZATION_SCRIPT)
         self.assertIn('highlightSearchMatch([user.department, user.email]', ORGANIZATION_SCRIPT)
         self.assertIn('.organization-search-match', ORGANIZATION_STYLE)
+        self.assertIn('data-title maxlength="80"', ORGANIZATION_SCRIPT)
+        self.assertIn('title: detail.querySelector("[data-title]").value', ORGANIZATION_SCRIPT)
+        self.assertIn('.organization-title-input', ORGANIZATION_STYLE)
 
     def test_modules_use_live_apis_and_existing_workflows(self):
         for endpoint in (
