@@ -143,15 +143,9 @@
 .workspace-nav-collapse:hover { border-color: #73d6e6; background: linear-gradient(145deg, rgba(51,111,128,.9), rgba(8,38,51,.96)); color: #f3fdff; box-shadow: 0 14px 29px rgba(0,8,14,.4), 0 3px 8px rgba(0,8,14,.3), 0 0 22px rgba(75,183,207,.2), inset 0 1px rgba(225,250,255,.18); transform: translateY(-3px) scale(1.035); }
 .workspace-nav-collapse:hover::after { opacity: .9; transform: scale(1.12); }
 .workspace-nav-collapse:focus-visible { outline: 2px solid #70d4e4; outline-offset: 3px; }
-.workspace-nav-collapse span { display: grid; width: 15px; height: 15px; place-items: center; filter: drop-shadow(0 2px 3px rgba(0,0,0,.65)) drop-shadow(0 0 5px rgba(111,224,239,.45)); transform: rotate(180deg); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
-.workspace-nav-collapse span::before { display: block; width: 11px; height: 14px; background: currentColor; clip-path: polygon(13% 5%, 30% 5%, 88% 50%, 30% 95%, 13% 95%, 69% 50%); content: ""; }
-.workspace-layout.is-nav-collapsed .workspace-nav-collapse span { transform: rotate(0deg); }
-.workspace-layout.is-nav-collapsed .workspace-nav-collapse span::before { animation: workspace-collapse-chevron-float 2.1s ease-in-out infinite; }
-
-@keyframes workspace-collapse-chevron-float {
-  0%, 100% { opacity: .78; transform: translate3d(-1px, 0, 0) scale(.96); }
-  50% { opacity: 1; transform: translate3d(1.5px, -1px, 0) scale(1.04); }
-}
+.workspace-nav-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 3px rgba(0,0,0,.62)) drop-shadow(0 0 5px rgba(111,224,239,.38)); }
+.workspace-nav-icon-arrow { transform-box: fill-box; transform-origin: center; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.workspace-layout.is-nav-collapsed .workspace-nav-icon-arrow { transform: rotate(180deg); }
 
 .workspace-tabs-scroll { height: calc(100% - 58px); padding: 8px 8px 28px; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #315567 transparent; transition: opacity .24s ease, visibility 0s linear; }
 .workspace-nav-group { padding: 13px 0 14px; border-bottom: 1px solid rgba(82,137,153,.24); }
@@ -1457,7 +1451,7 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-tabs,
   .workspace-nav-title,
   .workspace-nav-collapse,
-  .workspace-nav-collapse span,
+  .workspace-nav-icon-arrow,
   .workspace-nav-group h2,
   .workspace-tab,
   .workspace-tab::after,
@@ -1468,13 +1462,12 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-link-button,
   .fault-detail-button,
   .report-preview-actions button { transition: none !important; }
-  .workspace-nav-collapse span,
+  .workspace-nav-icon-arrow,
   .workspace-signal-dot,
   .workspace-tab.is-signal-arrival,
   .workspace-motion-card,
   .workspace-motion-card::before,
   .workspace-motion-tail::before { animation: none !important; transition: none !important; }
-  .workspace-nav-collapse span::before { animation: none !important; }
   [data-workspace-panel].is-panel-entering,
   .news-stage-dialog[open],
   .news-stage-dialog[open]::backdrop,

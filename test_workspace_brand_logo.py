@@ -31,6 +31,13 @@ class WorkspaceBrandLogoTests(unittest.TestCase):
             STYLE,
         )
 
+    def test_navigation_toggle_uses_panel_icon_instead_of_solid_chevron(self):
+        self.assertIn('class="workspace-nav-icon"', INDEX)
+        self.assertIn('class="workspace-nav-icon-arrow"', INDEX)
+        self.assertIn('<rect x="3" y="3" width="18" height="18" rx="2"></rect>', INDEX)
+        self.assertIn(".workspace-layout.is-nav-collapsed .workspace-nav-icon-arrow { transform: rotate(180deg); }", STYLE)
+        self.assertNotIn("clip-path: polygon(13% 5%", STYLE)
+
 
 if __name__ == "__main__":
     unittest.main()
