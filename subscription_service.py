@@ -193,7 +193,9 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     return {
         "schema": "2.0",
         "config": {
-            "update_multi": True,
+            # Each operator receives an independent post-submit view. This is
+            # required when one entry card is published to a group chat.
+            "update_multi": False,
             "width_mode": "default",
             "summary": {"content": "订阅战略情报 · 新闻每日 06:00 / 13:30 扫描"},
         },
@@ -1492,6 +1494,44 @@ class SubscriptionService:
             ),
         )[:max(1, min(int(limit), 50))]
 
+    def resolve_chat_target(self, chat_id: str) -> dict[str, Any]:
+        """Resolve one live group from the delivery bot's current visible-chat scope."""
+        if not CHAT_ID_RE.fullmatch(str(chat_id)):
+            raise ValueError("目标群ID无效")
+        page_token = ""
+        for _ in range(20):
+            params: dict[str, Any] = {"page_size": 100}
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._lark([
+                "lark-cli", "api", "GET", "/open-apis/im/v1/chats",
+                "--params", json.dumps(params, ensure_ascii=False),
+                "--as", "bot", "--profile", self.delivery_profile, "--format", "json",
+            ], timeout=60)
+            data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+            for item in data.get("items") or []:
+                if not isinstance(item, dict) or str(item.get("chat_id") or "") != chat_id:
+                    continue
+                name = str(item.get("name") or "").strip()[:160]
+                if (
+                    str(item.get("chat_mode") or "") != "group"
+                    or str(item.get("chat_status") or "") != "normal"
+                    or not name
+                ):
+                    raise ValueError("目标群当前不可用")
+                return {
+                    "chat_id": chat_id,
+                    "name": name,
+                    "description": str(item.get("description") or "").strip()[:300],
+                    "external": bool(item.get("external")),
+                }
+            if not data.get("has_more"):
+                break
+            page_token = str(data.get("page_token") or "")
+            if not page_token:
+                break
+        raise ValueError("目标群不在推送应用当前可见范围")
+
     def avatar_source_url(self, open_id: str) -> str:
         if not OPEN_ID_RE.fullmatch(str(open_id)):
             raise ValueError("飞书头像身份无效")
@@ -1700,6 +1740,46 @@ class SubscriptionService:
             "sent_count": sum(1 for item in results if item["status"] == "pending"),
             "failed_count": sum(1 for item in results if item["status"] == "failed"),
             "results": results,
+        }
+
+    def invite_target(
+        self,
+        target_id: str,
+        *,
+        target_type: str = "",
+        confirm_invite: bool = False,
+    ) -> dict[str, Any]:
+        """Send an invitation after deriving person/group mode from the target ID."""
+        if not confirm_invite:
+            raise ValueError("发送订阅邀请需要管理员二次确认")
+        normalized_id = str(target_id or "").strip()
+        inferred_type = str(target_type or "").strip()
+        if not inferred_type:
+            if CHAT_ID_RE.fullmatch(normalized_id):
+                inferred_type = "chat"
+            elif OPEN_ID_RE.fullmatch(normalized_id):
+                inferred_type = "user"
+        if inferred_type == "user":
+            result = self.invite_users(
+                [normalized_id],
+                confirm_invite=True,
+                invited_by="local_admin",
+            )
+            return {"target_type": "user", "target_id": normalized_id, **result}
+        if inferred_type != "chat":
+            raise ValueError("无法判断邀请目标是个人还是群聊")
+        chat = self.resolve_chat_target(normalized_id)
+        sent = self._send_entry_card(
+            target_id=normalized_id,
+            target_type="chat",
+            key_context="invite-group",
+            profile=self.delivery_profile,
+        )
+        return {
+            **sent,
+            "target_name": chat["name"],
+            "external": chat["external"],
+            "status": "pending",
         }
 
     def update_subscriber(

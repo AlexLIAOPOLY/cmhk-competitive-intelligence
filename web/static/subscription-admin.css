@@ -133,6 +133,8 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .result-section-label { padding: 7px 8px; border-bottom: 1px solid rgba(41,73,86,.72); color: #78949e; background: rgba(6,27,37,.72); font-size: 8px; font-weight: 650; }
 .chat-avatar { border-radius: 8px; color: #ffe68a; background: rgba(119,91,24,.32); }
 .result-type { padding: 2px 6px; border: 1px solid rgba(206,173,68,.25); border-radius: 8px; color: #d8c16a; background: rgba(128,99,25,.14); font-size: 8px; white-space: nowrap; }
+.compact-send { min-width: 92px; justify-content: center; white-space: nowrap; }
+.compact-send svg { width: 14px; height: 14px; }
 .invite-meta { display: grid; justify-items: end; gap: 2px; }
 .empty { padding: 24px 12px; color: #67838d; text-align: center; }
 .empty.compact { margin: 0; padding: 24px 10px; font-size: 9px; }
@@ -212,6 +214,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .push-actions { align-items: stretch; flex-direction: column; }
   .push-actions .button { width: 100%; }
   .management-drawer, .people-picker { width: 100vw; }
+  .compact-send { min-width: 36px; padding: 0 9px; }
+  .compact-send span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; }

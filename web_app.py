@@ -4746,6 +4746,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         confirm_invite=payload.get("confirmInvite") is True,
                         invited_by="local_admin",
                     )
+                elif action == "inviteTarget":
+                    result = service.invite_target(
+                        str(payload.get("targetId") or ""),
+                        target_type=str(payload.get("targetType") or ""),
+                        confirm_invite=payload.get("confirmInvite") is True,
+                    )
                 elif action == "pushLatest":
                     result = push_latest_subscription_content(
                         service,

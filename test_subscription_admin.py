@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=12', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=18', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=19', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -106,6 +106,9 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("搜索姓名或群聊", SCRIPT)
         self.assertIn('class="search-highlight"', SCRIPT)
         self.assertIn(".search-highlight", STYLE)
+        self.assertIn("data-invite-chat=", SCRIPT)
+        self.assertIn('action: "inviteTarget"', SCRIPT)
+        self.assertIn("群内每个人的选择会分别保存", SCRIPT)
 
     def test_admin_keeps_three_primary_blocks_and_moves_secondary_views_to_icons(self):
         self.assertIn('class="three-block-layout"', SCRIPT)

@@ -94,6 +94,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             recipient_name="Alex LIAO Wang",
         )
         self.assertEqual(card["schema"], "2.0")
+        self.assertFalse(card["config"]["update_multi"])
         self.assertEqual(card["header"]["title"]["content"], "订阅战略情报")
         self.assertNotIn("subtitle", card["header"])
         self.assertNotIn("icon", card["header"])
@@ -266,6 +267,77 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual([item["name"] for item in results], ["战略情报群"])
         self.assertEqual(results[0]["chat_id"], "oc_strategy123")
         self.assertEqual(self.service.search_chat_directory("不存在"), [])
+
+    def test_admin_invite_target_auto_detects_group_and_sends_independent_card(self):
+        with self.assertRaisesRegex(ValueError, "二次确认"):
+            self.service.invite_target("oc_strategy123")
+        sent = self.service.invite_target("oc_strategy123", confirm_invite=True)
+        self.assertEqual(sent["target_type"], "chat")
+        self.assertEqual(sent["target_id"], "oc_strategy123")
+        self.assertEqual(sent["target_name"], "战略情报群")
+        send_call = next(call for call in self.lark.calls if "+messages-send" in call)
+        self.assertEqual(send_call[send_call.index("--chat-id") + 1], "oc_strategy123")
+        card = json.loads(send_call[send_call.index("--content") + 1])
+        self.assertFalse(card["config"]["update_multi"])
+
+    def test_two_people_can_save_different_preferences_from_one_group_card(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+
+        def identity(open_id, *, source_profile=""):
+            return {
+                "display_name": open_id,
+                "callback_open_id": open_id,
+                "union_id": f"on_{open_id[3:]}",
+                "open_id": open_id,
+                "source_profile": source_profile,
+                "avatar_url": "",
+                "job_title": "",
+            }
+        with mock.patch.object(self.service, "resolve_user", side_effect=identity):
+            for index, (operator_id, categories, item_limit) in enumerate((
+                ("ou_persona123", ["竞对动态"], "5"),
+                ("ou_personb123", ["政策监管"], "20"),
+            ), start=1):
+                self.service.handle_card_event({
+                    "type": "card.action.trigger",
+                    "action_tag": "button",
+                    "event_id": f"event-group-{index}",
+                    "operator_id": operator_id,
+                    "chat_id": "oc_test123",
+                    "message_id": "om_test123",
+                    "form_value": json.dumps({
+                        "services": ["news"],
+                        "news_frequency": "once_daily",
+                        "report_mode": "pdf",
+                        "news_item_limit": item_limit,
+                        "news_categories": categories,
+                    }),
+                })
+        subscribers = {item["open_id"]: item for item in self.service.list_summary()["subscribers"]}
+        self.assertEqual(set(subscribers), {"ou_persona123", "ou_personb123"})
+        self.assertEqual(subscribers["ou_persona123"]["news_categories"], ["竞对动态"])
+        self.assertEqual(subscribers["ou_persona123"]["news_item_limit"], 5)
+        self.assertEqual(subscribers["ou_personb123"]["news_categories"], ["政策监管"])
+        self.assertEqual(subscribers["ou_personb123"]["news_item_limit"], 20)
+
+    def test_personal_card_still_rejects_a_different_operator(self):
+        self.service._send_entry_card_to_user("ou_invited123")
+        with self.assertRaisesRegex(ValueError, "受邀人不一致"):
+            self.service.handle_card_event({
+                "type": "card.action.trigger",
+                "action_tag": "button",
+                "event_id": "event-wrong-person",
+                "operator_id": "ou_someoneelse123",
+                "chat_id": "oc_test123",
+                "message_id": "om_test123",
+                "form_value": json.dumps({
+                    "services": ["news"],
+                    "news_frequency": "once_daily",
+                    "report_mode": "pdf",
+                    "news_item_limit": "10",
+                    "news_categories": ["竞对动态"],
+                }),
+            })
 
     def test_invite_is_selected_only_and_callback_updates_result(self):
         self.service.refresh_people_directory()

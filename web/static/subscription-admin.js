@@ -112,7 +112,7 @@
     </div>`).join("");
     const chats = state.chatSearchResults.map((item) => `<div class="person-row chat-row">
       <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${highlight(item.name)}</strong><small>${highlight(item.description || (item.external ? "外部群聊" : "飞书群聊"))}</small></span>
-      <span class="result-type">群聊</span>
+      <button class="button compact-send" type="button" data-invite-chat="${esc(item.chat_id)}" data-invite-chat-name="${esc(item.name)}" aria-label="发送订阅邀请到 ${esc(item.name)}" title="发送到群聊">${icon("send")}<span>发送到群</span></button>
     </div>`).join("");
     if (!people && !chats) return `<p class="empty compact">没有找到包含“${esc(state.searchQuery)}”的人员或群聊。</p>`;
     return `${people ? `<div class="result-section-label">人员 · ${number(state.searchResults.length)}</div>${people}` : ""}${chats ? `<div class="result-section-label">群聊 · ${number(state.chatSearchResults.length)}</div>${chats}` : ""}`;
@@ -297,6 +297,18 @@
     if (addCandidate) {
       try { await post({ action: "addCandidates", directoryOpenIds: [addCandidate.dataset.addCandidate] }, "正在加入待邀请名单…"); }
       catch (error) { state.notice = `加入名单失败：${error.message}`; state.noticeKind = "error"; render(); }
+      return;
+    }
+    const inviteChat = event.target.closest("[data-invite-chat]");
+    if (inviteChat) {
+      const chatId = inviteChat.dataset.inviteChat || "";
+      const chatName = inviteChat.dataset.inviteChatName || "该群聊";
+      if (!window.confirm(`确认向“${chatName}”发送一张订阅邀请？群内每个人的选择会分别保存。`)) return;
+      try {
+        await post({ action: "inviteTarget", targetId: chatId, confirmInvite: true }, `正在向“${chatName}”发送群邀请并回读…`);
+        state.peopleOpen = false;
+        render();
+      } catch (error) { state.notice = `群邀请发送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
     if (event.target.closest("[data-send-invites]")) {
