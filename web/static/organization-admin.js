@@ -83,10 +83,15 @@
     return date.toLocaleString("zh-CN", { hour12: false, timeZone: "Asia/Hong_Kong" });
   }
 
+  function detailSection({ title, summary, body, open = false, className = "" }) {
+    const chevron = '<span class="organization-section-chevron" aria-hidden="true"></span>';
+    return `<details class="organization-detail-section ${className}"${open ? " open" : ""}><summary class="organization-section-summary"><span class="organization-section-copy"><h3>${esc(title)}</h3>${summary ? `<small>${esc(summary)}</small>` : ""}</span>${chevron}</summary><div class="organization-section-body">${body}</div></details>`;
+  }
+
   function eventList(user) {
     const events = memberEvents(user);
     const rows = events.map((event) => `<li><span class="organization-event-dot ${event.result === "failure" ? "is-failure" : ""}"></span><span><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")} · ${esc(auditTime(event.at))}</small></span><em>${String(event.actor_id || "") === String(user.id) ? "本人操作" : "成员变更"}</em></li>`).join("");
-    return `<section class="organization-detail-section organization-member-events"><header><div><h3>个人行动记录</h3><p>来自独立操作审计日志，按当前成员身份或成员对象筛选。</p></div><strong>${events.length} 条</strong></header><ul>${rows || '<li class="organization-detail-empty">暂无可审计行动记录</li>'}</ul></section>`;
+    return detailSection({ title: "个人行动记录", summary: `${events.length} 条可审计记录`, className: "organization-member-events", body: `<ul>${rows || '<li class="organization-detail-empty">暂无可审计行动记录</li>'}</ul>` });
   }
 
   function memberDetail(user) {
@@ -97,12 +102,16 @@
       return `<label class="organization-permission"><input type="checkbox" data-module="${esc(key)}"${checked ? " checked" : ""}${protectedPermission ? " disabled" : ""} /><span><strong>${esc(label)}</strong><small>${esc(key)}.view</small></span></label>`;
     }).join("");
     const enabled = Object.values(user.modules || {}).filter(Boolean).length;
+    const organization = `<dl class="organization-info-grid"><div><dt>所属部门</dt><dd>${esc(user.department || (user.authProvider === "feishu" ? "飞书未提供" : "—"))}</dd></div><div><dt>员工岗位</dt><dd>${esc(user.title || (user.authProvider === "feishu" ? "飞书未填写" : "—"))}</dd></div></dl>`;
+    const profile = `<dl class="organization-info-grid is-three"><div><dt>企业邮箱</dt><dd>${esc(user.email || "—")}</dd></div><div><dt>登录账号</dt><dd>${esc(user.account || "—")}</dd></div><div><dt>身份来源</dt><dd>${user.authProvider === "feishu" ? "飞书企业身份" : "本地账号"}</dd></div></dl>`;
+    const account = `<div class="organization-control-grid"><label><span>角色层级</span><select class="organization-select" data-role>${roleOptions(user)}</select></label><label><span>账号状态</span><select class="organization-select" data-status${user.current ? " disabled" : ""}><option value="active"${user.status === "active" ? " selected" : ""}>启用</option><option value="disabled"${user.status === "disabled" ? " selected" : ""}>停用</option></select></label></div>`;
+    const permissions = `<div class="organization-permission-grid">${checks}</div>`;
     return `<section class="organization-member-detail" data-user-id="${esc(user.id)}">
       <header class="organization-profile-heading">${avatar(user, "is-profile")}<div><h2>${esc(user.name || user.account || "未命名成员")}</h2><p>${esc(user.account || user.email || "—")}</p></div><span class="organization-account-state ${user.status === "disabled" ? "is-disabled" : ""}">${user.status === "disabled" ? "已停用" : "启用"}</span></header>
-      <section class="organization-detail-section"><h3>组织信息</h3><dl class="organization-info-grid"><div><dt>所属部门</dt><dd>${esc(user.department || (user.authProvider === "feishu" ? "飞书未提供" : "—"))}</dd></div><div><dt>员工岗位</dt><dd>${esc(user.title || (user.authProvider === "feishu" ? "飞书未填写" : "—"))}</dd></div></dl></section>
-      <section class="organization-detail-section"><h3>成员资料</h3><dl class="organization-info-grid is-three"><div><dt>企业邮箱</dt><dd>${esc(user.email || "—")}</dd></div><div><dt>登录账号</dt><dd>${esc(user.account || "—")}</dd></div><div><dt>身份来源</dt><dd>${user.authProvider === "feishu" ? "飞书企业身份" : "本地账号"}</dd></div></dl></section>
-      <section class="organization-detail-section"><h3>角色与账号</h3><div class="organization-control-grid"><label><span>角色层级</span><select class="organization-select" data-role>${roleOptions(user)}</select></label><label><span>账号状态</span><select class="organization-select" data-status${user.current ? " disabled" : ""}><option value="active"${user.status === "active" ? " selected" : ""}>启用</option><option value="disabled"${user.status === "disabled" ? " selected" : ""}>停用</option></select></label></div></section>
-      <section class="organization-detail-section"><header><div><h3>功能权限</h3><p>控制该成员可查看和使用的工作页签。</p></div><strong data-permission-count>已启用 ${enabled} / ${Object.keys(state.modules).length} 项</strong></header><div class="organization-permission-grid">${checks}</div></section>
+      ${detailSection({ title: "组织信息", summary: user.department || "部门资料未填写", body: organization })}
+      ${detailSection({ title: "成员资料", summary: user.authProvider === "feishu" ? "飞书企业身份" : "本地账号", body: profile })}
+      ${detailSection({ title: "角色与账号", summary: `${user.roleLabel || "待分配"} · ${user.status === "disabled" ? "已停用" : "启用"}`, body: account, open: true })}
+      <details class="organization-detail-section"><summary class="organization-section-summary"><span class="organization-section-copy"><h3>功能权限</h3><small data-permission-count>已启用 ${enabled} / ${Object.keys(state.modules).length} 项</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-section-body">${permissions}</div></details>
       <footer class="organization-save-bar"><span data-row-status aria-live="polite">选择角色或权限后保存</span><button type="button" data-save disabled>保存成员权限</button></footer>
       ${eventList(user)}
     </section>`;
@@ -110,7 +119,7 @@
 
   function auditSurface() {
     const rows = state.audit.map((event) => `<tr><td><div class="organization-member">${avatar({ name: event.actor_name, avatar_url: event.actor_avatar_url }, "is-audit")}<span><strong>${esc(event.actor_name || "未知用户")}</strong><small>${esc(event.actor_id || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`).join("");
-    return `<section class="organization-surface organization-audit-surface"><header><div><span>OPERATION AUDIT</span><h2>可审计操作记录</h2><p>独立记录告警处理、新闻复核与成员权限变更，管理员可按登录身份追踪操作人。</p></div><strong>${state.audit.length} 条</strong></header><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></section>`;
+    return `<details class="organization-surface organization-audit-surface"><summary class="organization-audit-summary"><span><strong>可审计操作记录</strong><small>管理员操作追踪 · ${state.audit.length} 条</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></details>`;
   }
 
   function directoryResults() {
@@ -265,6 +274,15 @@
     if (event.target.closest("[data-refresh]")) { load({ force: true }); return; }
     const saveButton = event.target.closest("[data-save]");
     if (saveButton) save(saveButton.closest("[data-user-id]"));
+  });
+  host.addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key)) return;
+    const summary = event.target.closest(".organization-section-summary, .organization-audit-summary");
+    if (!summary) return;
+    const disclosure = summary.closest("details");
+    if (!disclosure) return;
+    event.preventDefault();
+    disclosure.open = !disclosure.open;
   });
 
   window.addEventListener("workspace-tab-change", (event) => { if (event.detail?.tab === "organization") load(); });
