@@ -172,7 +172,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('announceDeliveredMessage(payload.action, evidence)', SUBSCRIPTION_SCRIPT)
         self.assertIn("strategic_news_schedule", SUBSCRIPTION_SCRIPT)
         self.assertIn("战略新闻定时推送", SUBSCRIPTION_SCRIPT)
-        self.assertIn("06:00 / 13:30", SUBSCRIPTION_SCRIPT)
+        self.assertIn("09:00 / 14:00", SUBSCRIPTION_SCRIPT)
         self.assertIn("推送记录", SUBSCRIPTION_SCRIPT)
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
         self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
@@ -383,7 +383,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_module_exposes_clickable_live_lineage_with_detailed_dialog(self):
         for label in (
-            "06:00 / 13:30 战略新闻",
+            "09:00 / 14:00 战略新闻",
             "线索补缺",
             "AI审核",
             "历史去重",
@@ -436,7 +436,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "06:00 / 13:30 战略新闻",
+            "09:00 / 14:00 战略新闻",
             "线索补缺",
             "AI审核",
             "历史去重",

@@ -468,7 +468,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             "strategic-briefs.json": {
                 "ok": True,
                 "items": [{"id": "NEWS-1", "title": "公开新闻"}],
-                "monitor": {"status": "snapshot", "scan_times": ["06:00", "13:30"]},
+                "monitor": {"status": "snapshot", "scan_times": ["09:00", "14:00"]},
             },
         }
         with tempfile.TemporaryDirectory() as temp, mock.patch.object(

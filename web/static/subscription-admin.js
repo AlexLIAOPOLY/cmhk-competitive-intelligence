@@ -165,7 +165,7 @@
     const inviteCount = (data.invite_candidates || []).length;
     const groupInviteCount = (data.group_invitations || []).length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
-    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "06:00 / 13:30", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
+    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "09:00 / 14:00", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">

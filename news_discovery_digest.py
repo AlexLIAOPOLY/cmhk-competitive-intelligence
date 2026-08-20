@@ -38,7 +38,7 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 SCAN_TIMES = tuple(
     clock_time(int(item.split(":", 1)[0]), int(item.split(":", 1)[1]))
-    for item in os.environ.get("CMHK_NEWS_DIGEST_SCAN_TIMES", "06:00,13:30").split(",")
+    for item in os.environ.get("CMHK_NEWS_DIGEST_SCAN_TIMES", "09:00,14:00").split(",")
     if re.fullmatch(r"\s*\d{1,2}:\d{2}\s*", item)
 )
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_NEWS_DIGEST_POLL_SECONDS", "60")))
@@ -1389,7 +1389,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         base_plans = strategic_briefing._query_plans(
             spec,
             strategic_briefing._load_state(),
-            # The 06:00/13:30 discovery crawl is the comprehensive layer:
+            # The 09:00/14:00 discovery crawl is the comprehensive layer:
             # every configured monitoring keyword is searched on every run.
             # The lightweight strategic monitor keeps its rotating limit.
             max_queries=None,
@@ -1624,7 +1624,7 @@ def _latest_timed_crawl() -> dict[str, Any]:
 
 def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    first_scan = min(SCAN_TIMES, default=clock_time(6, 0))
+    first_scan = min(SCAN_TIMES, default=clock_time(9, 0))
     overlap_start = today.replace(hour=first_scan.hour, minute=first_scan.minute) - timedelta(hours=1)
     if not morning:
         # Retain one hour of overlap for articles indexed shortly after the morning run.

@@ -599,7 +599,7 @@ class ProjectMonitor:
                 "保留抓取结果，只恢复审核阶段，不重新触发已完成抓取。",
             ],
             "strategic_news": [
-                "检查对应 06:00/13:30 归档、进程锁、候选队列与飞书回读。",
+                "检查对应 09:00/14:00 归档、进程锁、候选队列与飞书回读。",
                 "先确认是否已经完成或发送，禁止直接补跑造成重复消息。",
             ],
             "executive_intelligence_refresh": [
@@ -836,7 +836,7 @@ class ProjectMonitor:
                     severity="P1",
                     summary="战略新闻监视器状态文件不存在或不可读",
                     error=f"无法读取 {path}",
-                    impact="06:00/13:30 扫描及群消息回读监视可能已经停止。",
+                    impact="09:00/14:00 扫描及群消息回读监视可能已经停止。",
                     suggestions=[
                         "检查主Web服务和 strategic-briefing-monitor 后台线程日志。",
                         "确认没有战略新闻任务在执行后，再恢复主Web服务。",

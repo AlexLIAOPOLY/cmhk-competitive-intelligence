@@ -2215,7 +2215,7 @@ def start_scheduler_with_backend() -> None:
 
         # News discovery runs inside strategic_briefing._run_scan so discovery,
         # review-sheet synchronization and group reporting form one ordered task.
-        # A second 06:00/13:30 worker would race the Feishu write and report stale counts.
+        # A second 09:00/14:00 worker would race the Feishu write and report stale counts.
         print("Strategic briefing monitor started with APP backend", flush=True)
 
 

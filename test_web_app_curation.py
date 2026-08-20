@@ -469,7 +469,7 @@ class ReportFileNameTests(unittest.TestCase):
     def test_strategic_news_process_items_expose_per_item_ai_and_dedupe_reasons(self) -> None:
         run = {
             "task_kind": "strategic-news",
-            "operational_summary": {"slot": "2026-08-19@13:30"},
+            "operational_summary": {"slot": "2026-08-19@14:00"},
         }
         with mock.patch.object(
             web_app,
