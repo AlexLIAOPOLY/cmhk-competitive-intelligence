@@ -1944,6 +1944,13 @@ def main() -> None:
         time.sleep(POLL_SECONDS)
 
 
+def _slot_for_digest_label(slot_label: str) -> clock_time:
+    ordered = sorted(SCAN_TIMES)
+    if not ordered:
+        ordered = [clock_time(9, 0), clock_time(14, 0)]
+    return ordered[0] if slot_label == "上午全量" else ordered[-1]
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CMHK 全量新闻发现与飞书推送")
     parser.add_argument("--send-now", action="store_true", help="立即检索并发送")
@@ -1955,7 +1962,7 @@ if __name__ == "__main__":
         output = send_digest(morning=selected)
         now = datetime.now(HKT)
         state = _read_json(STATE_PATH, {"sent_slots": {}})
-        slot = clock_time(9, 0) if output["slot_label"] == "上午全量" else clock_time(15, 0)
+        slot = _slot_for_digest_label(output["slot_label"])
         state.setdefault("sent_slots", {})[_slot_key(now, slot)] = {
             "sent_at": now.isoformat(timespec="seconds"),
             "result_count": output["result_count"],

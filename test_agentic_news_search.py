@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, time
 from unittest import mock
 from zoneinfo import ZoneInfo
 
@@ -15,6 +15,21 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 
 class AgenticNewsSearchTests(unittest.TestCase):
+    def test_digest_slot_label_uses_configured_scan_times(self):
+        with mock.patch.object(
+            digest,
+            "SCAN_TIMES",
+            (time(9, 0), time(14, 0)),
+        ):
+            self.assertEqual(
+                digest._slot_for_digest_label("上午全量"),
+                time(9, 0),
+            )
+            self.assertEqual(
+                digest._slot_for_digest_label("下午全量"),
+                time(14, 0),
+            )
+
     def test_morning_window_rechecks_previous_afternoon_for_late_indexing(self):
         start_at, end_at = digest._window(
             datetime(2026, 8, 16, 9, 0, tzinfo=HKT),
