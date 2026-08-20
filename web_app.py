@@ -392,11 +392,21 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
             stream_callback({"type": "status", "stage": "queue", "message": "请求已进入内网 AI 前台队列"})
         wait_for_internal_ai_slot(
             "competitor-insight",
-            deadline_monotonic=time.monotonic() + 15 if stream_callback else None,
+            wait_callback=(
+                lambda remaining: stream_callback(
+                    {
+                        "type": "status",
+                        "stage": "queue",
+                        "message": f"内网 AI 繁忙，已为本次洞察保留队列（约 {max(1, round(remaining))} 秒）",
+                    }
+                )
+                if stream_callback
+                else None
+            ),
         )
         if stream_callback:
             stream_callback({"type": "status", "stage": "generating", "message": "内网 AI 已连接，正在生成真实结果"})
-        with urllib.request.urlopen(request, timeout=55 if stream_callback else 45) as response:
+        with urllib.request.urlopen(request, timeout=90 if stream_callback else 60) as response:
             if stream_callback:
                 content_parts = []
                 reasoning_started = False

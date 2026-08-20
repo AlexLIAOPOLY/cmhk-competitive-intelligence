@@ -10,7 +10,7 @@ import time
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 
 from langchain_deepseek import ChatDeepSeek as _ChatDeepSeek
 
@@ -72,6 +72,7 @@ def wait_for_internal_ai_slot(
     operation: str = "internal-model",
     *,
     deadline_monotonic: float | None = None,
+    wait_callback: Callable[[float], None] | None = None,
 ) -> float:
     """Reserve one request in the gateway's shared UTC calendar-minute bucket."""
     total_wait = 0.0
@@ -116,8 +117,14 @@ def wait_for_internal_ai_slot(
             and time.monotonic() + wait_seconds >= deadline_monotonic
         ):
             raise TimeoutError(f"{operation} exceeded its time budget while rate limited")
-        time.sleep(wait_seconds)
-        total_wait += wait_seconds
+        remaining = wait_seconds
+        while remaining > 0:
+            sleep_seconds = min(5.0, remaining) if wait_callback else remaining
+            time.sleep(sleep_seconds)
+            total_wait += sleep_seconds
+            remaining -= sleep_seconds
+            if wait_callback and remaining > 0:
+                wait_callback(remaining)
 
 
 @contextmanager
