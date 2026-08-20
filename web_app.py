@@ -4619,6 +4619,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 result = CardActionHandler(runtime_root=ROOT).mark_incident_handled_from_web(
                     incident_id,
                     str(actor.get("feishuOpenId") or ""),
+                    str(actor.get("feishuUnionId") or ""),
                 )
                 AUTH.record_operation(
                     actor=actor,

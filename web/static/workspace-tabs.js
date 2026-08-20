@@ -31,6 +31,7 @@
     faultSort: { key: "time", direction: "desc" },
     faultPage: 1,
     faultPageSize: 100,
+    faultFeedback: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
@@ -1480,6 +1481,7 @@
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
       </div></header>
+      <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
       <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>解决</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-footer"><nav class="fault-pagination" id="faultPagination" aria-label="报警记录分页"></nav><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
@@ -1487,6 +1489,18 @@
     panel.querySelector('[data-fault-filter="kind"]').value = state.faultFilters.kind;
     panel.querySelector('[data-fault-filter="query"]').value = state.faultFilters.query;
     renderFaultRows();
+    renderFaultFeedback();
+  }
+
+  function renderFaultFeedback() {
+    const feedback = document.querySelector("#faultActionFeedback");
+    if (!feedback) return;
+    const current = state.faultFeedback;
+    feedback.hidden = !current;
+    feedback.className = `fault-action-feedback${current ? ` is-${current.tone || "info"}` : ""}`;
+    feedback.setAttribute("role", current?.tone === "error" ? "alert" : "status");
+    feedback.setAttribute("aria-live", current?.tone === "error" ? "assertive" : "polite");
+    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span>` : "";
   }
 
   function faultStatus(task) {
@@ -1576,8 +1590,9 @@
       const severity = faultSeverity(task);
       const canResolve = task.source === "project-monitor" && task.incident_id && window.CMHKAuth?.user?.authProvider === "feishu";
       const checked = Boolean(task.handler_name);
-      const resolveTitle = checked ? `已由${faultHandler(task)}处理并同步飞书` : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
-      return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked ? "checked" : ""} ${checked || !canResolve ? "disabled" : ""}></td><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
+      const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
+      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : checked ? `已由${faultHandler(task)}处理并同步飞书` : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
+      return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
     }).join("") : '<tr><td colspan="8" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
     if (pagination) {
@@ -1613,8 +1628,12 @@
     }
   }
 
-  async function refreshFaultData({ quiet = false } = {}) {
+  async function refreshFaultData({ quiet = false, preserveFeedback = false } = {}) {
     const status = document.querySelector("#faultMonitorStatus");
+    if (!quiet && !preserveFeedback) {
+      state.faultFeedback = null;
+      renderFaultFeedback();
+    }
     if (status && !quiet) status.textContent = "正在刷新故障与心跳状态…";
     try {
       const response = await fetch("/api/project-incidents?limit=500", { cache: "no-store" });
@@ -1627,7 +1646,8 @@
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         if (!quiet) state.faultPage = 1;
         renderFaultMonitor();
-        document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+        const nextStatus = document.querySelector("#faultMonitorStatus");
+        if (nextStatus) nextStatus.textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
       }
     } catch (error) {
       if (status && !quiet) status.textContent = `状态刷新失败：${error.message}`;
@@ -1636,9 +1656,15 @@
 
   async function resolveFault(input) {
     const incidentId = String(input.dataset.faultResolve || "");
-    const status = document.querySelector("#faultMonitorStatus");
+    const taskIndex = state.tasks.findIndex((task) => task.incident_id === incidentId);
+    const task = state.tasks[taskIndex];
+    const taskTitle = task?.title || taskLabel(task?.kind) || "该报警";
     input.disabled = true;
-    if (status) status.textContent = "正在匹配登录身份并同步飞书…";
+    input.setAttribute("aria-busy", "true");
+    input.closest(".fault-row")?.classList.add("is-resolving");
+    state.faultFeedback = { incidentId, tone: "progress", title: "正在处理报警", detail: `${taskTitle} · 正在匹配登录身份并同步飞书` };
+    renderFaultRows();
+    renderFaultFeedback();
     try {
       const response = await fetch("/api/project-incidents/resolve", {
         method: "POST",
@@ -1648,12 +1674,23 @@
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
-      if (status) status.textContent = `已由 ${payload.result?.operator_name || "当前用户"} 处理 · 飞书回读已确认`;
-      await refreshFaultData({ quiet: true });
+      const operatorName = payload.result?.operator_name || "当前用户";
+      if (taskIndex >= 0) {
+        state.tasks[taskIndex] = {
+          ...state.tasks[taskIndex],
+          ...(payload.incident || {}),
+          incident_status: "resolved",
+          handler_name: operatorName,
+        };
+      }
+      state.faultFeedback = { incidentId, tone: "success", title: "报警已处理", detail: `${taskTitle} · ${operatorName} · 飞书回读已确认` };
+      renderFaultRows();
+      renderFaultFeedback();
+      await refreshFaultData({ quiet: true, preserveFeedback: true });
     } catch (error) {
-      input.checked = false;
-      input.disabled = false;
-      if (status) status.textContent = `处理失败：${error.message}`;
+      state.faultFeedback = { incidentId, tone: "error", title: "处理失败，未改变报警状态", detail: `${taskTitle} · ${error.message}` };
+      renderFaultRows();
+      renderFaultFeedback();
     }
   }
 

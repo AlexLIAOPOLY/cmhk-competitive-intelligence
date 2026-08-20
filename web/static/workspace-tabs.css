@@ -1043,9 +1043,12 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-row { cursor: pointer; transition: background .16s ease; }
 .fault-row:hover { background: rgba(51,126,145,.14); }
 .fault-row:focus { outline: 2px solid #5fc4d7; outline-offset: -2px; }
+.fault-row.is-resolving { background: rgba(65,166,187,.13); box-shadow: inset 3px 0 #63c8dc; }
 .fault-resolve-cell { text-align:center; }
 .fault-resolve-cell input { width:16px; height:16px; margin:0; accent-color:#55c9ac; cursor:pointer; }
 .fault-resolve-cell input:disabled { cursor:default; opacity:.52; }
+.fault-resolve-cell input[aria-busy="true"] { opacity:1; filter:drop-shadow(0 0 5px rgba(99,200,220,.72)); animation:fault-resolve-pulse .8s ease-in-out infinite alternate; }
+@keyframes fault-resolve-pulse { to { transform:scale(.88); filter:drop-shadow(0 0 9px rgba(99,200,220,.9)); } }
 .fault-cause { display: -webkit-box; overflow: hidden; color: #c4d9de; font-size: 11px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .fault-open-label { color: #71c8d8; font-size: 10px; }
 .fault-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; color: #9db6c0; background: rgba(71,108,121,.18); font-size: 9px; white-space: nowrap; }
@@ -1115,6 +1118,17 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-pagination em { margin-left: 5px; color: #6f929f; font-size: 9px; font-style: normal; white-space: nowrap; }
 .fault-monitor-note:empty { display: none; }
 .fault-monitor-note { margin-left: auto; color: #6f929f; font-size: 9px; text-align: right; }
+.fault-action-feedback { position:fixed; top:76px; right:24px; z-index:40; display:flex; width:min(460px,calc(100vw - 48px)); align-items:flex-start; gap:11px; padding:12px 14px; border:1px solid rgba(100,190,208,.48); border-radius:10px; color:#dcecef; background:rgba(8,34,46,.97); box-shadow:0 16px 38px rgba(0,8,14,.42); }
+.fault-action-feedback[hidden] { display:none; }
+.fault-action-feedback > i { flex:0 0 auto; width:9px; height:9px; margin-top:4px; border-radius:50%; background:#69c6d8; box-shadow:0 0 10px rgba(105,198,216,.6); }
+.fault-action-feedback span,.fault-action-feedback strong,.fault-action-feedback small { display:block; }
+.fault-action-feedback strong { color:#edf8fa; font-size:12px; line-height:1.25; }
+.fault-action-feedback small { margin-top:4px; color:#9dbac3; font-size:10px; line-height:1.45; }
+.fault-action-feedback.is-progress > i { animation:fault-resolve-pulse .8s ease-in-out infinite alternate; }
+.fault-action-feedback.is-success { border-color:rgba(89,201,170,.48); }
+.fault-action-feedback.is-success > i { background:#68d0af; box-shadow:0 0 10px rgba(104,208,175,.58); }
+.fault-action-feedback.is-error { border-color:rgba(225,139,120,.58); }
+.fault-action-feedback.is-error > i { background:#ed9a88; box-shadow:0 0 10px rgba(237,154,136,.55); }
 
 /* Embedded Feishu review uses the product's dark CMHK palette and paints
    cached rows immediately while the network refresh continues. */
@@ -1471,6 +1485,8 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .news-lineage-pulse { animation: none !important; stroke-dasharray: 3 17 !important; opacity: .7; }
   .news-lineage-canvas { transition: none !important; }
   .news-flow-stage,.news-stage-retention::after { transition: none !important; }
+  .fault-resolve-cell input[aria-busy="true"],
+  .fault-action-feedback.is-progress > i { animation: none !important; }
   .competitor-insight::before,.competitor-insight-loading span,.competitor-insight:is(.is-loading,.is-streaming) .competitor-insight-identity svg path,.competitor-insight.is-streaming .competitor-insight-badge::after,.competitor-option-group label.is-appearing { animation: none !important; }
   .competitor-option-group,.competitor-option-group label { transition: none !important; }
 }

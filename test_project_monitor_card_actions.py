@@ -20,6 +20,7 @@ INCIDENT_ID = "1234567890abcdef12345678"
 CHAT_ID = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
 MESSAGE_ID = "om_card_action_test"
 OPERATOR_ID = "ou_clicker1234567890abcdef12345678"
+OPERATOR_UNION_ID = "on_clicker1234567890abcdef12345678"
 
 
 class CardActionRunner(FakeCommandRunner):
@@ -32,7 +33,8 @@ class CardActionRunner(FakeCommandRunner):
         if len(args) >= 3 and args[1:3] == ["contact", "+get-user"]:
             self.calls.append(args)
             user_id = args[args.index("--user-id") + 1]
-            name = "陳四" if user_id == OPERATOR_ID else "廖望 Alex LIAO Wang"
+            user_id_type = args[args.index("--user-id-type") + 1]
+            name = "陳四" if user_id in {OPERATOR_ID, OPERATOR_UNION_ID} else "廖望 Alex LIAO Wang"
             return subprocess.CompletedProcess(
                 args,
                 0,
@@ -40,7 +42,12 @@ class CardActionRunner(FakeCommandRunner):
                     {
                         "ok": True,
                         "identity": "bot",
-                        "data": {"user": {"open_id": user_id, "name": name, "en_name": name}},
+                        "data": {"user": {
+                            "open_id": OPERATOR_ID if user_id_type == "union_id" else user_id,
+                            "union_id": OPERATOR_UNION_ID,
+                            "name": name,
+                            "en_name": name,
+                        }},
                     },
                     ensure_ascii=False,
                 ),
@@ -227,7 +234,7 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(len(self.runner.card_updates), updates_after_first)
 
     def test_dashboard_resolution_matches_feishu_identity_and_persists_separate_action(self):
-        result = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID)
+        result = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID, OPERATOR_UNION_ID)
         self.assertEqual(result["operator_name"], "陈四")
         self.assertEqual(result["feishu_sync"], "readback_verified")
         self.assertTrue(result["newly_handled"])
@@ -236,13 +243,21 @@ class CardActionHandlerTests(unittest.TestCase):
         saved = json.loads(lines[-1])
         self.assertEqual(saved["incident_id"], INCIDENT_ID)
         self.assertEqual(saved["operator_id"], OPERATOR_ID)
-        repeated = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID)
+        self.assertEqual(saved["operator_union_id"], OPERATOR_UNION_ID)
+        identity_call = next(call for call in self.runner.calls if "+get-user" in call)
+        self.assertEqual(identity_call[identity_call.index("--user-id") + 1], OPERATOR_UNION_ID)
+        self.assertEqual(identity_call[identity_call.index("--user-id-type") + 1], "union_id")
+        repeated = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID, OPERATOR_UNION_ID)
         self.assertFalse(repeated["newly_handled"])
         self.assertEqual(len(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()), 1)
 
     def test_dashboard_resolution_rejects_non_feishu_login(self):
         with self.assertRaisesRegex(ValueError, "飞书身份"):
             self.handler.mark_incident_handled_from_web(INCIDENT_ID, "local-admin")
+
+    def test_dashboard_resolution_requires_cross_app_union_identity(self):
+        with self.assertRaisesRegex(ValueError, "跨应用飞书身份"):
+            self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID)
 
     def test_existing_handler_is_never_overwritten_by_later_clicker(self):
         self.runner.ledger_rows[0][12] = "王五"

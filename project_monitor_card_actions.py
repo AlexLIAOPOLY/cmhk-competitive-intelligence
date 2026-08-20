@@ -150,7 +150,9 @@ class CardActionHandler:
         if str(target_delivery.get("state") or "") not in {"sent_pending_readback", "verified"}:
             raise RuntimeError("原告警消息未处于可处理状态")
 
-    def _resolve_operator(self, operator_id: str) -> str:
+    def _resolve_operator(self, operator_id: str, *, user_id_type: str = "open_id") -> str:
+        if user_id_type not in {"open_id", "union_id"}:
+            raise ValueError("不支持的飞书用户ID类型")
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
         payload = self.monitor._json_from_process(
@@ -162,7 +164,7 @@ class CardActionHandler:
                     "--user-id",
                     operator_id,
                     "--user-id-type",
-                    "open_id",
+                    user_id_type,
                     "--as",
                     "bot",
                     "--profile",
@@ -175,7 +177,7 @@ class CardActionHandler:
         )
         data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
         user = data.get("user") if isinstance(data.get("user"), dict) else {}
-        if str(user.get("open_id") or "") != operator_id:
+        if str(user.get(user_id_type) or "") != operator_id:
             raise RuntimeError("按钮点击者身份回读不一致")
         name = _to_simplified(_redact(user.get("name") or user.get("en_name") or "", 120))
         if not name:
@@ -244,14 +246,27 @@ class CardActionHandler:
             raise RuntimeError("错误台账处理人或处理状态写入后回读不一致")
         return {"row": row_number, "handler_name": operator_name, "newly_handled": True}
 
-    def mark_incident_handled_from_web(self, incident_id: str, operator_open_id: str) -> dict[str, Any]:
-        """Resolve a dashboard checkbox using the authenticated Feishu identity."""
+    def mark_incident_handled_from_web(
+        self,
+        incident_id: str,
+        operator_open_id: str,
+        operator_union_id: str = "",
+    ) -> dict[str, Any]:
+        """Resolve a dashboard checkbox using the authenticated Feishu identity.
+
+        OAuth and monitoring bots are different Feishu apps, so their open_ids
+        cannot be mixed. The session union_id is stable across apps and is
+        resolved again through the monitoring bot before the sheet is written.
+        """
         incident_id = str(incident_id or "").strip()
         operator_open_id = str(operator_open_id or "").strip()
+        operator_union_id = str(operator_union_id or "").strip()
         if not INCIDENT_ID_RE.fullmatch(incident_id):
             raise ValueError("告警ID格式无效")
         if not operator_open_id.startswith("ou_"):
             raise ValueError("当前登录账号没有可匹配的飞书身份")
+        if not operator_union_id.startswith("on_"):
+            raise ValueError("当前登录会话缺少跨应用飞书身份，请退出后重新登录")
         monitor_state = _read_json(self.monitor_state_path, {})
         incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
         if not isinstance(incidents, dict) or not isinstance(incidents.get(incident_id), dict):
@@ -279,7 +294,7 @@ class CardActionHandler:
                 return {**previous, "newly_handled": False}
 
             self.monitor._verify_bot_identity()
-            operator_name = self._resolve_operator(operator_open_id)
+            operator_name = self._resolve_operator(operator_union_id, user_id_type="union_id")
             sheet_result = self._write_handler_to_sheet(incident_id, operator_name)
             effective_name = str(sheet_result.get("handler_name") or operator_name)
             if effective_name != operator_name:
@@ -289,6 +304,7 @@ class CardActionHandler:
                 "source": "web",
                 "incident_id": incident_id,
                 "operator_id": operator_open_id,
+                "operator_union_id": operator_union_id,
                 "operator_name": operator_name,
                 "sheet_row": sheet_result.get("row"),
                 "newly_handled": bool(sheet_result.get("newly_handled")),
