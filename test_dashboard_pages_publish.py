@@ -25,6 +25,65 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_snapshot_publisher_authenticates_loopback_session_without_exposing_credentials(self):
+        with tempfile.TemporaryDirectory() as temp:
+            cookie_jar = Path(temp) / "cookies.txt"
+            responses = [
+                mock.Mock(
+                    stdout=json.dumps(
+                        {
+                            "ok": True,
+                            "requireLogin": True,
+                            "devAccounts": [
+                                {
+                                    "account": "local-admin",
+                                    "role": "ADMIN",
+                                    "status": "active",
+                                }
+                            ],
+                        }
+                    )
+                ),
+                mock.Mock(stdout=json.dumps({"ok": True})),
+            ]
+
+            def fake_run(command, **kwargs):
+                if "--cookie-jar" in command:
+                    cookie_jar.write_text("# Netscape HTTP Cookie File\n", encoding="utf-8")
+                return responses.pop(0)
+
+            with mock.patch.object(publisher, "_run", side_effect=fake_run) as run:
+                publisher._open_local_snapshot_session(
+                    "http://127.0.0.1:8765/",
+                    cookie_jar,
+                )
+
+        self.assertEqual(run.call_args_list[0].args[0][-1], "http://127.0.0.1:8765/api/auth/config")
+        login = run.call_args_list[1].args[0]
+        self.assertIn("--cookie-jar", login)
+        self.assertIn(json.dumps({"account": "local-admin"}, ensure_ascii=False), login)
+        self.assertNotIn("password", " ".join(login).lower())
+
+    def test_authenticated_fetch_uses_cookie_and_health_endpoint(self):
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn('live_status = fetch("/api/health")', source)
+        self.assertNotIn('live_status = _fetch_local_json(source_url, "/api/status")', source)
+        with tempfile.TemporaryDirectory() as temp, mock.patch.object(
+            publisher,
+            "_run",
+            return_value=mock.Mock(stdout=json.dumps({"ok": True})),
+        ) as run:
+            cookie_jar = Path(temp) / "cookies.txt"
+            publisher._fetch_local_json(
+                "http://127.0.0.1:8765/",
+                "/api/status",
+                cookie_jar=cookie_jar,
+            )
+
+        command = run.call_args.args[0]
+        self.assertEqual(command[-1], "http://127.0.0.1:8765/api/status")
+        self.assertEqual(command[command.index("--cookie") + 1], str(cookie_jar))
+
     def test_static_javascript_paths_include_template_literals(self):
         source = 'const pdf = `/static/report-previews/${key}.pdf`;'
         self.assertEqual(

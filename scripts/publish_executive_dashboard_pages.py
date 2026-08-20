@@ -303,7 +303,49 @@ def _local_source_url() -> str:
     return source_url.rstrip("/") + "/"
 
 
-def _fetch_local_json(source_url: str, endpoint: str) -> dict[str, Any]:
+def _fetch_local_json(
+    source_url: str,
+    endpoint: str,
+    *,
+    cookie_jar: Path | None = None,
+) -> dict[str, Any]:
+    command = [
+        "curl",
+        "--fail",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "30",
+    ]
+    if cookie_jar is not None:
+        command.extend(["--cookie", str(cookie_jar)])
+    command.append(source_url.rstrip("/") + endpoint)
+    response = _run(command)
+    payload = json.loads(response.stdout)
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"snapshot endpoint did not return an object: {endpoint}")
+    return payload
+
+
+def _open_local_snapshot_session(source_url: str, cookie_jar: Path) -> None:
+    """Authenticate the unattended loopback publisher when runtime login is enabled."""
+    config = _fetch_local_json(source_url, "/api/auth/config")
+    if not config.get("requireLogin"):
+        return
+    accounts = [item for item in config.get("devAccounts") or [] if isinstance(item, dict)]
+    admin = next(
+        (
+            item
+            for item in accounts
+            if item.get("role") == "ADMIN" and item.get("status") == "active"
+        ),
+        None,
+    )
+    account = str((admin or {}).get("account") or "").strip()
+    if not account:
+        raise RuntimeError(
+            "local snapshot publisher requires an active loopback ADMIN development account"
+        )
     response = _run(
         [
             "curl",
@@ -312,13 +354,18 @@ def _fetch_local_json(source_url: str, endpoint: str) -> dict[str, Any]:
             "--show-error",
             "--max-time",
             "30",
-            source_url.rstrip("/") + endpoint,
+            "--cookie-jar",
+            str(cookie_jar),
+            "--header",
+            "Content-Type: application/json; charset=utf-8",
+            "--data",
+            json.dumps({"account": account}, ensure_ascii=False),
+            source_url.rstrip("/") + "/api/auth/dev-login",
         ]
     )
     payload = json.loads(response.stdout)
-    if not isinstance(payload, dict):
-        raise RuntimeError(f"snapshot endpoint did not return an object: {endpoint}")
-    return payload
+    if not isinstance(payload, dict) or not payload.get("ok") or not cookie_jar.is_file():
+        raise RuntimeError("local snapshot publisher could not establish its runtime session")
 
 
 def _scrub_public_value(value: Any, *, key: str = "") -> Any:
@@ -371,8 +418,16 @@ def _scrub_public_value(value: Any, *, key: str = "") -> Any:
 
 
 def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]]:
-    live_status = _fetch_local_json(source_url, "/api/status").get("status") or {}
-    live_briefs = _fetch_local_json(source_url, "/api/strategic-briefs")
+    cookie_dir = tempfile.TemporaryDirectory(prefix="cmhk-public-snapshot-session-")
+    cookie_jar = Path(cookie_dir.name) / "cookies.txt"
+    _open_local_snapshot_session(source_url, cookie_jar)
+    fetch = lambda endpoint: _fetch_local_json(
+        source_url,
+        endpoint,
+        cookie_jar=cookie_jar,
+    )
+    live_status = fetch("/api/health").get("status") or {}
+    live_briefs = fetch("/api/strategic-briefs")
     public_briefs = dict(_public_news_payload())
     monitor = live_briefs.get("monitor") if isinstance(live_briefs, dict) else {}
     if isinstance(monitor, dict):
@@ -396,7 +451,7 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
             ],
         },
     }
-    all_crawl_runs_payload = _fetch_local_json(source_url, "/api/crawl-runs?limit=500")
+    all_crawl_runs_payload = fetch("/api/crawl-runs?limit=500")
     public_crawl_runs = [
         _public_crawl_run(item)
         for item in (all_crawl_runs_payload.get("runs") or [])
@@ -411,7 +466,7 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         if not run_id:
             continue
         try:
-            detail = _fetch_local_json(source_url, f"/api/crawl-run-log?id={run_id}")
+            detail = fetch(f"/api/crawl-run-log?id={run_id}")
         except Exception:
             continue
         public_detail = _public_crawl_run_detail(detail)
@@ -419,7 +474,7 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         if public_detail.get("newsItems"):
             news_run_items[run_id] = public_detail["newsItems"]
 
-    task_runs_payload = _fetch_local_json(source_url, "/api/task-runs?limit=80")
+    task_runs_payload = fetch("/api/task-runs?limit=80")
     public_task_runs = [
         _public_task_run(item)
         for item in (task_runs_payload.get("tasks") or [])
@@ -435,12 +490,12 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         if item.get("task_id") or item.get("task_run_id")
     }
     review_sheet = _public_news_review_sheet(
-        _fetch_local_json(source_url, "/api/news-review-sheet")
+        fetch("/api/news-review-sheet")
     )
     subscriptions = _public_subscriptions(
-        _fetch_local_json(source_url, "/api/subscriptions")
+        fetch("/api/subscriptions")
     )
-    incidents_payload = _fetch_local_json(source_url, "/api/project-incidents?limit=500")
+    incidents_payload = fetch("/api/project-incidents?limit=500")
     public_incidents = [
         _public_incident(item)
         for item in (incidents_payload.get("incidents") or [])
@@ -450,10 +505,10 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
     return {
         "status.json": public_status,
         "company-metrics.json": _scrub_public_value(
-            _fetch_local_json(source_url, "/api/company-metrics")
+            fetch("/api/company-metrics")
         ),
         "executive-intelligence.json": _scrub_public_value(
-            _fetch_local_json(source_url, "/api/executive-intelligence")
+            fetch("/api/executive-intelligence")
         ),
         "project-incidents.json": {"ok": True, "incidents": public_incidents, "total": len(public_incidents)},
         "crawl-runs.json": {"ok": True, "runs": public_crawl_runs, "total": len(public_crawl_runs), "truncated": False},
@@ -461,11 +516,11 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         "task-runs.json": {"ok": True, "tasks": public_task_runs},
         "task-run-details.json": {"ok": True, "details": task_run_details},
         "scheduler-overview.json": _scrub_public_value(
-            _fetch_local_json(source_url, "/api/scheduler-overview")
+            fetch("/api/scheduler-overview")
         ),
         "news-review-sheet.json": review_sheet,
         "weekly-report-preview.json": _scrub_public_value(
-            _fetch_local_json(source_url, "/api/weekly-report-preview")
+            fetch("/api/weekly-report-preview")
         ),
         "subscriptions.json": subscriptions,
         "news-run-items.json": news_run_items,
