@@ -33,6 +33,16 @@ FREQUENCY_LABELS = {
 }
 VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
 VALID_NEWS_ITEM_LIMITS = frozenset({5, 10, 15, 20})
+NEWS_CATEGORY_LABELS = {
+    "公司动态": "公司动态",
+    "竞对动态": "竞对动态",
+    "政策监管": "政策监管",
+    "行业动态": "行业动态",
+    "市场/产品类": "市场与产品",
+    "基础设施/网络/技术类": "网络与技术",
+    "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观与国际",
+}
+VALID_NEWS_CATEGORIES = frozenset(NEWS_CATEGORY_LABELS)
 LEGACY_FREQUENCY_MAP = {
     "immediate": "twice_daily",
     "daily": "once_daily",
@@ -76,6 +86,56 @@ def _news_sort_timestamp(item: dict[str, Any]) -> float:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=HKT)
     return parsed.timestamp()
+
+
+def normalize_news_categories(value: Any, *, default_all: bool = True) -> list[str]:
+    """Normalize persisted/Card 2 category values in the canonical display order."""
+    raw = value
+    if isinstance(raw, str):
+        text = raw.strip()
+        if text.startswith("["):
+            try:
+                raw = json.loads(text)
+            except (ValueError, TypeError, json.JSONDecodeError):
+                raw = []
+        else:
+            raw = [item.strip() for item in text.split(",") if item.strip()]
+    if not isinstance(raw, (list, tuple, set)):
+        raw = []
+    selected = {str(item).strip() for item in raw if str(item).strip() in VALID_NEWS_CATEGORIES}
+    if not selected and default_all:
+        selected = set(VALID_NEWS_CATEGORIES)
+    return [category for category in NEWS_CATEGORY_LABELS if category in selected]
+
+
+def filter_news_by_categories(
+    items: list[dict[str, Any]],
+    categories: Any,
+    *,
+    limit: int | None = None,
+) -> list[dict[str, Any]]:
+    """Return the globally newest items matching one recipient's interest profile."""
+    normalized = normalize_news_categories(categories)
+    selected = set(normalized)
+    ordered = sorted(
+        (item for item in items if isinstance(item, dict)),
+        key=_news_sort_timestamp,
+        reverse=True,
+    )
+    # The legacy/all profile deliberately retains an occasional historical
+    # uncategorized row so existing subscribers do not lose content on upgrade.
+    if selected != VALID_NEWS_CATEGORIES:
+        ordered = [item for item in ordered if str(item.get("category") or "").strip() in selected]
+    if limit is None:
+        return ordered
+    return ordered[:max(0, int(limit))]
+
+
+def news_category_summary(categories: Any) -> str:
+    normalized = normalize_news_categories(categories)
+    if set(normalized) == VALID_NEWS_CATEGORIES:
+        return "全部板块"
+    return "、".join(NEWS_CATEGORY_LABELS[item] for item in normalized)
 
 
 def _card_form_scalar(value: Any) -> str:
@@ -209,6 +269,18 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
                             ],
                         },
+                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（可多选）**"},
+                        {
+                            "tag": "multi_select_static",
+                            "name": "news_categories",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "选择一个或多个兴趣板块"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": label}, "value": category}
+                                for category, label in NEWS_CATEGORY_LABELS.items()
+                            ],
+                        },
                         {"tag": "markdown", "content": "**每次战略新闻条数**"},
                         {
                             "tag": "select_static",
@@ -289,25 +361,38 @@ def strategic_news_card(*, title: str, body: str, published_at: str = "") -> dic
             "tag": "markdown",
             "content": f"**今日关键信号**\n重点涉及：{top_titles}。" if top_titles else "**本轮结果**  暂无可展示新闻。",
         })
-        for index, item in enumerate(items, start=1):
-            item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
-            summary = str(item.get("summary") or "").strip()[:260]
-            category = str(item.get("category") or "战略动态").strip()[:80]
-            region = str(item.get("region") or "未分类").strip()[:40]
-            source = str(item.get("source") or "来源待核").strip()[:100]
-            published = str(item.get("published_at") or item.get("source_date") or "").strip()
-            try:
-                published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone().strftime("%m月%d日 %H:%M")
-            except ValueError:
-                published_text = published[:16] or "时间待核"
-            url = str(item.get("source_url") or item.get("url") or "").strip()
-            linked_title = f"[**{item_title}**]({url})" if url.startswith(("http://", "https://")) else f"**{item_title}**"
-            lines = [f"**{index:02d}｜{category} · {region}**", linked_title]
-            if summary:
-                lines.append(summary)
-            lines.append(f"**业务影响：** {_news_business_impact(item)}")
-            lines.append(f"<font color='grey'>{source} · {published_text}</font>")
-            elements.extend([{"tag": "hr"}, {"tag": "markdown", "content": "\n".join(lines)}])
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for item in items:
+            grouped.setdefault(str(item.get("category") or "战略动态").strip() or "战略动态", []).append(item)
+        ordered_categories = [category for category in NEWS_CATEGORY_LABELS if category in grouped]
+        ordered_categories.extend(category for category in grouped if category not in NEWS_CATEGORY_LABELS)
+        index = 0
+        for group_category in ordered_categories:
+            category_items = grouped[group_category]
+            elements.append({
+                "tag": "markdown",
+                "content": f"### {NEWS_CATEGORY_LABELS.get(group_category, group_category)} · {len(category_items)} 条",
+            })
+            for item in category_items:
+                index += 1
+                item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
+                summary = str(item.get("summary") or "").strip()[:260]
+                category = str(item.get("category") or "战略动态").strip()[:80]
+                region = str(item.get("region") or "未分类").strip()[:40]
+                source = str(item.get("source") or "来源待核").strip()[:100]
+                published = str(item.get("published_at") or item.get("source_date") or "").strip()
+                try:
+                    published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone().strftime("%m月%d日 %H:%M")
+                except ValueError:
+                    published_text = published[:16] or "时间待核"
+                url = str(item.get("source_url") or item.get("url") or "").strip()
+                linked_title = f"[**{item_title}**]({url})" if url.startswith(("http://", "https://")) else f"**{item_title}**"
+                lines = [f"**{index:02d}｜{category} · {region}**", linked_title]
+                if summary:
+                    lines.append(summary)
+                lines.append(f"**业务影响：** {_news_business_impact(item)}")
+                lines.append(f"<font color='grey'>{source} · {published_text}</font>")
+                elements.extend([{"tag": "hr"}, {"tag": "markdown", "content": "\n".join(lines)}])
         elements.extend([
             {"tag": "hr"},
             {"tag": "note", "elements": [{"tag": "plain_text", "content": f"已完整列出本批 {len(items)} 条战略新闻。"}]},
@@ -390,6 +475,7 @@ class SubscriptionService:
                     frequency TEXT NOT NULL DEFAULT 'immediate',
                     report_mode TEXT NOT NULL DEFAULT 'pdf',
                     news_item_limit INTEGER NOT NULL DEFAULT 10,
+                    news_categories TEXT NOT NULL DEFAULT '[]',
                     source_chat_id TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -542,6 +628,17 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN report_mode TEXT NOT NULL DEFAULT 'pdf'")
             if "news_item_limit" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
+            if "news_categories" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN news_categories TEXT NOT NULL DEFAULT '[]'")
+            all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
+            for row in db.execute("SELECT open_id, news_categories FROM subscribers").fetchall():
+                categories = normalize_news_categories(row["news_categories"])
+                serialized = json.dumps(categories, ensure_ascii=False, separators=(",", ":"))
+                if serialized != str(row["news_categories"] or ""):
+                    db.execute(
+                        "UPDATE subscribers SET news_categories=? WHERE open_id=?",
+                        (serialized or all_categories_json, str(row["open_id"])),
+                    )
             db.execute(
                 "UPDATE subscribers SET news_item_limit=10 WHERE news_item_limit NOT IN (5,10,15,20)"
             )
@@ -672,6 +769,7 @@ class SubscriptionService:
         frequency: str = "once_daily",
         report_mode: str = "pdf",
         news_item_limit: int = 10,
+        news_categories: Any = None,
     ) -> dict[str, Any]:
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
@@ -687,17 +785,25 @@ class SubscriptionService:
             raise ValueError("每次战略新闻条数无效") from exc
         if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
             raise ValueError("每次战略新闻条数无效")
+        normalized_categories = normalize_news_categories(
+            news_categories,
+            default_all=news_categories is None,
+        )
+        if "news" in normalized and not normalized_categories:
+            raise ValueError("至少选择一个战略新闻兴趣板块")
+        categories_json = json.dumps(normalized_categories, ensure_ascii=False, separators=(",", ":"))
         now = _now_hkt()
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, source_chat_id, created_at, updated_at)
-                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)
+                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, news_categories, source_chat_id, created_at, updated_at)
+                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(open_id) DO UPDATE SET display_name=excluded.display_name,
                    callback_open_id=excluded.callback_open_id, union_id=excluded.union_id,
                    status='active', frequency=excluded.frequency, report_mode=excluded.report_mode,
-                   news_item_limit=excluded.news_item_limit, source_chat_id=excluded.source_chat_id,
+                   news_item_limit=excluded.news_item_limit, news_categories=excluded.news_categories,
+                   source_chat_id=excluded.source_chat_id,
                    updated_at=excluded.updated_at""",
-                (open_id, callback_open_id, union_id, display_name, frequency, report_mode, news_item_limit, source_chat_id, now, now),
+                (open_id, callback_open_id, union_id, display_name, frequency, report_mode, news_item_limit, categories_json, source_chat_id, now, now),
             )
             for service in VALID_SERVICES:
                 db.execute(
@@ -714,6 +820,8 @@ class SubscriptionService:
             "news_frequency": frequency,
             "news_frequency_label": FREQUENCY_LABELS[frequency],
             "news_item_limit": news_item_limit,
+            "news_categories": normalized_categories,
+            "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in normalized_categories],
             "report_cadence": "biweekly_on_publish",
             "report_cadence_label": REPORT_CADENCE_LABEL,
             "report_mode": report_mode,
@@ -737,6 +845,7 @@ class SubscriptionService:
         frequency = "once_daily"
         report_mode = "pdf"
         news_item_limit = 10
+        news_categories = list(NEWS_CATEGORY_LABELS)
         if not is_pause:
             try:
                 form = json.loads(form_raw or "{}")
@@ -750,6 +859,15 @@ class SubscriptionService:
             if not isinstance(selected, list):
                 raise ValueError("订阅服务选择格式无效")
             services = [str(item) for item in selected]
+            selected_categories = form.get("news_categories")
+            if isinstance(selected_categories, str):
+                selected_categories = [item for item in selected_categories.split(",") if item]
+            news_categories = normalize_news_categories(
+                selected_categories,
+                default_all=selected_categories is None,
+            )
+            if "news" in services and not news_categories:
+                raise ValueError("请至少选择一个感兴趣的战略新闻板块")
             delivery_plan = _card_form_scalar(form.get("delivery_plan"))
             if delivery_plan:
                 plan_match = re.fullmatch(r"(immediate|daily|weekly|once_daily|twice_daily)_(pdf_audio|pdf|audio)", delivery_plan)
@@ -854,12 +972,14 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
             news_item_limit=news_item_limit,
+            news_categories=news_categories,
         )
         record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
+        category_labels = "、".join(saved["news_category_labels"])
         confirmation = self._send_markdown(
             identity["callback_open_id"],
-            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**\n\n每次战略新闻：**最新 {saved['news_item_limit']} 条**。以后重新提交订阅卡片即可覆盖选择。",
+            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**\n\n兴趣板块：**{category_labels}**\n\n每次战略新闻：**从兴趣板块中选取最新 {saved['news_item_limit']} 条并分类展示**。以后重新提交订阅卡片即可覆盖选择。",
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,
         )
@@ -870,7 +990,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -906,6 +1026,11 @@ class SubscriptionService:
             subscribers.append({
                 **dict(row),
                 "services": services,
+                "news_categories": normalize_news_categories(row["news_categories"]),
+                "news_category_labels": [
+                    NEWS_CATEGORY_LABELS[item]
+                    for item in normalize_news_categories(row["news_categories"])
+                ],
                 "news_frequency": str(row["frequency"]),
                 "news_frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
                 "frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
@@ -931,6 +1056,10 @@ class SubscriptionService:
             delivery_items.append(delivery)
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
+            "news_categories": [
+                {"key": key, "label": label}
+                for key, label in NEWS_CATEGORY_LABELS.items()
+            ],
             "subscribers": subscribers,
             "deliveries": delivery_items,
             "invite_candidates": self.list_invite_candidates(),
@@ -1582,12 +1711,13 @@ class SubscriptionService:
         frequency: str = "once_daily",
         report_mode: str = "pdf",
         news_item_limit: int = 10,
+        news_categories: Any = None,
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
             raise ValueError("订阅者状态只能是 active 或 paused")
         with closing(self._connect()) as db, db:
             row = db.execute(
-                "SELECT display_name, source_chat_id, callback_open_id, union_id FROM subscribers WHERE open_id=?",
+                "SELECT display_name, source_chat_id, callback_open_id, union_id, news_categories FROM subscribers WHERE open_id=?",
                 (open_id,),
             ).fetchone()
         if row is None:
@@ -1602,6 +1732,11 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
             news_item_limit=news_item_limit,
+            news_categories=(
+                news_categories
+                if news_categories is not None
+                else normalize_news_categories(row["news_categories"])
+            ),
         )
         with closing(self._connect()) as db, db:
             db.execute("UPDATE subscribers SET status=?, updated_at=? WHERE open_id=?", (status, _now_hkt(), open_id))
@@ -1859,7 +1994,7 @@ class SubscriptionService:
     def _subscribers_for(self, service: str) -> list[dict[str, str]]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
+                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit, s.news_categories FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service=? AND x.active=1 ORDER BY s.open_id""",
                 (service,),
             ).fetchall()
@@ -1871,6 +2006,7 @@ class SubscriptionService:
                 "frequency": _normalize_news_frequency(str(row["frequency"] or "once_daily")) if service == "news" else "immediate",
                 "report_mode": str(row["report_mode"] or "pdf"),
                 "news_item_limit": int(row["news_item_limit"] or 10),
+                "news_categories": normalize_news_categories(row["news_categories"]),
             }
             for row in rows
         ]
@@ -2105,7 +2241,7 @@ class SubscriptionService:
         period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.news_item_limit FROM subscribers s
+                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_categories FROM subscribers s
                    JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service='news' AND x.active=1
                    ORDER BY s.open_id"""
@@ -2119,11 +2255,17 @@ class SubscriptionService:
             news_item_limit = int(row["news_item_limit"] or 10)
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 news_item_limit = 10
-            recipient_items = clean_items[:news_item_limit]
+            news_categories = normalize_news_categories(row["news_categories"])
+            recipient_items = filter_news_by_categories(
+                clean_items,
+                news_categories,
+                limit=news_item_limit,
+            )
+            category_label = news_category_summary(news_categories)
             title = (
-                f"{period_name}｜最新{len(recipient_items)}条战略新闻"
+                f"{period_name}｜最新{len(recipient_items)}条战略新闻｜{category_label}"
                 if recipient_items
-                else f"{period_name}｜本轮无新增"
+                else f"{period_name}｜关注板块暂无新增"
             )
             body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
@@ -2204,6 +2346,8 @@ class SubscriptionService:
                 "open_id": open_id,
                 "frequency": frequency,
                 "news_item_limit": news_item_limit,
+                "news_categories": news_categories,
+                "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],
                 "status": status,
                 "message_ids": message_ids,
                 "error": error,

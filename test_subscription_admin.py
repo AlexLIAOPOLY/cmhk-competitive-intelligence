@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=11', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=17', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=12', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=18', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -49,13 +49,21 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
         self.assertIn("data-subscriber-news-limit", SCRIPT)
         self.assertIn("newsItemLimit", SCRIPT)
-        self.assertIn(".subscriber-table table { min-width: 760px; }", STYLE)
+        self.assertIn(".subscriber-table table { min-width: 1120px; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
         self.assertIn("每天两次", SCRIPT)
         self.assertNotIn("每天 18:00", SCRIPT)
         self.assertNotIn("每周五 18:00", SCRIPT)
+
+    def test_admin_edits_multi_select_news_interest_categories(self):
+        self.assertIn("data-news-category", SCRIPT)
+        self.assertIn("newsCategories", SCRIPT)
+        self.assertIn("新闻兴趣板块", SCRIPT)
+        self.assertIn("至少选择一个兴趣板块", SCRIPT)
+        self.assertIn(".news-interest-group", STYLE)
+        self.assertIn(".news-interest-check", STYLE)
 
     def test_automatic_delivery_requires_subscription_and_saved_schedule(self):
         self.assertIn('id="newsScheduleForm"', SCRIPT)

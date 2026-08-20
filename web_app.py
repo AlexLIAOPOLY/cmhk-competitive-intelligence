@@ -53,10 +53,13 @@ from tts_service import (
 )
 from subscription_service import (
     FREQUENCY_LABELS,
+    NEWS_CATEGORY_LABELS,
     REPORT_CADENCE_LABEL,
     REPORT_MODE_LABELS,
     SubscriptionService,
     encode_strategic_news_digest,
+    filter_news_by_categories,
+    news_category_summary,
 )
 from cmhk_auth import AuthService
 from project_monitor_card_actions import CardActionHandler
@@ -2696,11 +2699,9 @@ def push_latest_subscription_content(
     if "news" in selected_services:
         from strategic_briefing import latest_reviewed_news
 
-        latest_news = latest_reviewed_news(limit=max(
-            int(item.get("news_item_limit") or 10)
-            for item in active
-            if "news" in (item.get("services") or [])
-        ))
+        # Category filtering must happen before the per-recipient limit, so use
+        # the complete verified pool rather than truncating it globally first.
+        latest_news = latest_reviewed_news()
     if not content and not latest_news:
         raise ValueError("当前没有可供人工推送的最新正式内容")
 
@@ -2723,11 +2724,16 @@ def push_latest_subscription_content(
             if "news" not in (subscriber.get("services") or []):
                 continue
             item_limit = int(subscriber.get("news_item_limit") or 10)
-            news_items = latest_news[:item_limit]
+            news_categories = subscriber.get("news_categories")
+            news_items = filter_news_by_categories(
+                latest_news,
+                news_categories,
+                limit=item_limit,
+            )
             results.append(service.push(
                 service="news",
                 mode="text",
-                title=f"CMHK战略新闻｜最新{len(news_items)}条",
+                title=f"CMHK战略新闻｜最新{len(news_items)}条｜{news_category_summary(news_categories)}",
                 body=encode_strategic_news_digest(news_items),
                 target_open_id=str(subscriber.get("open_id") or ""),
             ))
@@ -4332,6 +4338,10 @@ class AppHandler(BaseHTTPRequestHandler):
                         {"key": key, "label": REPORT_MODE_LABELS[key]}
                         for key in ("pdf", "pdf_audio", "audio")
                     ],
+                    "news_categories": [
+                        {"key": key, "label": label}
+                        for key, label in NEWS_CATEGORY_LABELS.items()
+                    ],
                     "reports": reports,
                     "test_target": {
                         "callback_open_id": str(card_actions.get("primary_handler_open_id") or ""),
@@ -4700,6 +4710,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         frequency=str(payload.get("newsFrequency") or payload.get("frequency") or "once_daily"),
                         report_mode=str(payload.get("reportMode") or "pdf"),
                         news_item_limit=int(payload.get("newsItemLimit") or 10),
+                        news_categories=payload.get("newsCategories"),
                     )
                 elif action == "updateReportSchedule":
                     result = service.update_report_schedule(

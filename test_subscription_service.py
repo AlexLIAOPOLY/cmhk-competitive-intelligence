@@ -114,16 +114,19 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**每次战略新闻条数**"],
+            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**感兴趣的战略新闻板块（可多选）**", "**每次战略新闻条数**"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
         report_mode = next(item for item in form["elements"] if item.get("name") == "report_mode")
         frequency = next(item for item in form["elements"] if item.get("name") == "news_frequency")
         item_limit = next(item for item in form["elements"] if item.get("name") == "news_item_limit")
+        categories = next(item for item in form["elements"] if item.get("name") == "news_categories")
         self.assertEqual({item["value"] for item in report_mode["options"]}, {"pdf", "pdf_audio", "audio"})
         self.assertEqual({item["value"] for item in frequency["options"]}, {"once_daily", "twice_daily"})
         self.assertEqual({item["value"] for item in item_limit["options"]}, {"5", "10", "15", "20"})
+        self.assertEqual(len(categories["options"]), 7)
+        self.assertTrue(categories["required"])
         self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
@@ -161,7 +164,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["weekly", "news"], "report_mode": "pdf_audio", "news_frequency": "daily", "news_item_limit": "15"}),
+            "form_value": json.dumps({"services": ["weekly", "news"], "report_mode": "pdf_audio", "news_frequency": "daily", "news_item_limit": "15", "news_categories": ["竞对动态", "政策监管"]}),
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
@@ -170,6 +173,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(first["report_cadence"], "biweekly_on_publish")
         self.assertEqual(first["report_mode"], "pdf_audio")
         self.assertEqual(first["news_item_limit"], 15)
+        self.assertEqual(first["news_categories"], ["竞对动态", "政策监管"])
         self.service.handle_card_event({
             "type": "card.action.trigger",
             "action_tag": "button",
@@ -213,12 +217,14 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "report_mode": ["pdf_audio"],
                 "news_frequency": ["twice_daily"],
                 "news_item_limit": ["20"],
+                "news_categories": ["市场/产品类", "基础设施/网络/技术类"],
             }),
         })
         self.assertEqual(result["status"], "subscription_saved")
         self.assertEqual(result["frequency"], "twice_daily")
         self.assertEqual(result["report_mode"], "pdf_audio")
         self.assertEqual(result["news_item_limit"], 20)
+        self.assertEqual(result["news_categories"], ["市场/产品类", "基础设施/网络/技术类"])
         invitation = self.service.list_summary()["invitations"][0]
         self.assertEqual(invitation["message_id"], "om_test123")
         self.assertEqual(invitation["status"], "accepted")
@@ -516,8 +522,45 @@ class SubscriptionServiceTests(unittest.TestCase):
         body = deliver.call_args.kwargs["body"]
         delivered = json.loads(body.removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["新闻8", "新闻7", "新闻6", "新闻5", "新闻4"])
-        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶｜最新5条战略新闻")
+        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶｜最新5条战略新闻｜全部板块")
         self.assertEqual(result["results"][0]["news_item_limit"], 5)
+
+    def test_news_dispatch_filters_each_recipient_then_groups_matching_categories(self):
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"],
+            frequency="twice_daily", news_item_limit=5,
+            news_categories=["竞对动态", "政策监管"],
+        )
+        self.service.update_news_schedule(enabled=True)
+        items = [
+            {"title": "最新行业", "category": "行业动态", "published_at": "2099-01-04T12:00:00+08:00"},
+            {"title": "最新竞对", "category": "竞对动态", "published_at": "2099-01-04T11:00:00+08:00"},
+            {"title": "最新政策", "category": "政策监管", "published_at": "2099-01-04T10:00:00+08:00"},
+            {"title": "旧竞对", "category": "竞对动态", "published_at": "2099-01-04T09:00:00+08:00"},
+        ]
+        with mock.patch.object(self.service, "_deliver_one", return_value=["om_test123"]) as deliver:
+            result = self.service.dispatch_news_after_crawl(
+                crawl_slot="2099-01-04@13:30",
+                slot_label="午后扫描",
+                items=items,
+            )
+
+        delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
+        self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
+        self.assertIn("竞对动态、政策监管", deliver.call_args.kwargs["title"])
+        self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
+
+    def test_existing_subscribers_migrate_to_all_news_categories(self):
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
+        summary = self.service.list_summary()
+        self.assertEqual(len(summary["subscribers"][0]["news_categories"]), 7)
+        self.assertEqual(len(summary["news_categories"]), 7)
+
+    def test_news_subscription_rejects_empty_interest_categories(self):
+        with self.assertRaisesRegex(ValueError, "兴趣板块"):
+            self.service.save_subscriptions(
+                "ou_delivery123", "测试用户", ["news"], news_categories=[]
+            )
 
     def test_invalid_frequency_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "接收频率无效"):

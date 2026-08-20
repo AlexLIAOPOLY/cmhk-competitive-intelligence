@@ -136,11 +136,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=18', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=19', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=11', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=12', INDEX)
         self.assertNotIn('class="subtitle"', SUBSCRIPTION_SCRIPT)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)

@@ -62,6 +62,12 @@
     return [5, 10, 15, 20].map((count) => `<option value="${count}"${Number(selected) === count ? " selected" : ""}>${count} 条</option>`).join("");
   }
 
+  function newsCategoryChecks(selected = []) {
+    const categories = state.data?.news_categories || [];
+    const selectedSet = new Set(selected || []);
+    return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+  }
+
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="9" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
@@ -76,10 +82,11 @@
 
   function compactSubscriberRows() {
     const rows = state.data?.subscribers || [];
-    if (!rows.length) return '<tr><td colspan="6" class="empty">尚无订阅者</td></tr>';
+    if (!rows.length) return '<tr><td colspan="7" class="empty">尚无订阅者</td></tr>';
     return rows.map((item) => `<tr data-subscriber-row="${esc(item.open_id)}">
       <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small></span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
+      <td><div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div></td>
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
@@ -153,7 +160,7 @@
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 直接调整接收内容与方式</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
@@ -303,8 +310,10 @@
     const save = event.target.closest("[data-save-subscriber]");
     if (save) {
       const row = save.closest("[data-subscriber-row]");
-      const services = Array.from(row.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      const services = Array.from(row.querySelectorAll('.service-check input[type="checkbox"]:checked')).map((input) => input.value);
+      const newsCategories = Array.from(row.querySelectorAll('[data-news-category]:checked')).map((input) => input.value);
+      if (services.includes("news") && !newsCategories.length) { state.notice = "订阅战略新闻时，请至少选择一个兴趣板块。"; state.noticeKind = "error"; render(); return; }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, newsCategories, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });
