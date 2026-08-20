@@ -63,10 +63,85 @@
       { label: "净利润", value: "-0.490", unit: "十亿港元", trend: "FY 2025", periods: ["FY 2025"], values: [-0.490], gauge: 72 }
     ] }
   ];
+  const missingMetric = (label) => ({
+    label, value: "—", unit: "", trend: "未披露", periods: ["未披露"], values: [0], valueLabels: ["—"]
+  });
+  const operatorProfiles = [
+    { key: "hkt", company: "HKT", networkMetrics, businessGroups, reachMetrics },
+    { key: "three", company: "3香港", networkMetrics: [
+      { label: "5G客户渗透率", value: "62", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [62] },
+      { label: "移动后付客户", value: "1.289", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [1.289] },
+      missingMetric("网络节点与设施")
+    ], businessGroups: [
+      { title: "移动业务", accent: "blue", metrics: [
+        { label: "移动后付客户", value: "1.289", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [1.289] },
+        { label: "5G客户渗透率", value: "62", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [62] }
+      ] },
+      { title: "宽带业务", accent: "green", metrics: [missingMetric("住宅宽带客户"), missingMetric("FTTH连接")] },
+      { title: "企业与数据业务", accent: "amber", metrics: [missingMetric("企业客户"), missingMetric("数据业务收入")] }
+    ], reachMetrics: [
+      { label: "登记客户连接", value: "8.132", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [8.132], dial: 78, color: "#55d9ff" },
+      { label: "预付客户连接", value: "6.843", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [6.843], dial: 66, color: "#5de2b6" }
+    ] },
+    { key: "smartone", company: "SmarTone", networkMetrics: [
+      { label: "5G客户渗透率", value: "40", unit: "%", trend: "最新披露", periods: ["FY2024"], values: [40] },
+      { label: "5G家宽收入增长", value: "≥33", unit: "%", trend: "最新披露", periods: ["FY2024"], values: [33], valueLabels: ["≥33"] },
+      { label: "5G家宽EBITDA增长", value: "18", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [18] }
+    ], businessGroups: [
+      { title: "移动业务", accent: "blue", metrics: [
+        { label: "移动客户", value: "2.75", unit: "百万户", trend: "已披露口径", periods: ["FY2022"], values: [2.75] },
+        { label: "5G客户渗透率", value: "40", unit: "%", trend: "最新披露", periods: ["FY2024"], values: [40] }
+      ] },
+      { title: "宽带业务", accent: "green", metrics: [
+        { label: "5G家宽收入增长", value: "≥33", unit: "%", trend: "最新披露", periods: ["FY2024"], values: [33], valueLabels: ["≥33"] },
+        { label: "5G家宽EBITDA增长", value: "18", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [18] }
+      ] },
+      { title: "企业与数据业务", accent: "amber", metrics: [missingMetric("企业客户"), missingMetric("数据业务收入")] }
+    ], reachMetrics: [
+      { label: "移动客户", value: "2.75", unit: "百万户", trend: "已披露口径", periods: ["FY2022"], values: [2.75], dial: 70, color: "#55d9ff" },
+      { label: "移动后付期末ARPU", value: "213", unit: "港元/月", trend: "已披露口径", periods: ["FY2022"], values: [213], dial: 64, color: "#5de2b6" }
+    ] },
+    { key: "hkbn", company: "HKBN", networkMetrics: [
+      { label: "网络覆盖家庭", value: "2.646", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [2.646] },
+      { label: "商业楼宇覆盖", value: "8,220", unit: "幢", trend: "最新披露", periods: ["FY2025"], values: [8220], valueLabels: ["8,220"] },
+      missingMetric("移动通信站点")
+    ], businessGroups: [
+      { title: "移动业务", accent: "blue", metrics: [missingMetric("移动后付客户"), missingMetric("5G客户渗透率")] },
+      { title: "宽带业务", accent: "green", metrics: [
+        { label: "住宅宽带客户", value: "0.907", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [0.907] },
+        { label: "网络覆盖家庭", value: "2.646", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [2.646] }
+      ] },
+      { title: "企业与数据业务", accent: "amber", metrics: [
+        { label: "商业楼宇覆盖", value: "8,220", unit: "幢", trend: "最新披露", periods: ["FY2025"], values: [8220], valueLabels: ["8,220"] },
+        { label: "企业客户流失率", value: "1.2", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [1.2] }
+      ] }
+    ], reachMetrics: [
+      { label: "网络覆盖家庭", value: "2.646", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [2.646], dial: 82, color: "#55d9ff" },
+      { label: "商业楼宇覆盖", value: "8,220", unit: "幢", trend: "最新披露", periods: ["FY2025"], values: [8220], valueLabels: ["8,220"], dial: 68, color: "#5de2b6" }
+    ] },
+    { key: "icable", company: "i-CABLE", networkMetrics: [
+      { label: "免费电视人口覆盖率", value: "99", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [99] },
+      { label: "网络覆盖家庭", value: ">2.3", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [2.3], valueLabels: [">2.3"] },
+      missingMetric("网络节点与设施")
+    ], businessGroups: [
+      { title: "移动业务", accent: "blue", metrics: [missingMetric("移动后付客户"), missingMetric("5G客户渗透率")] },
+      { title: "宽带业务", accent: "green", metrics: [
+        { label: "住宅宽带客户", value: "0.198", unit: "百万户", trend: "已披露口径", periods: ["FY2022"], values: [0.198] },
+        { label: "网络覆盖家庭", value: ">2.3", unit: "百万户", trend: "最新披露", periods: ["FY2025"], values: [2.3], valueLabels: [">2.3"] }
+      ] },
+      { title: "电视与内容业务", accent: "amber", metrics: [
+        { label: "收费电视客户", value: "0.662", unit: "百万户", trend: "已披露口径", periods: ["FY2022"], values: [0.662] },
+        { label: "免费电视人口覆盖率", value: "99", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [99] }
+      ] }
+    ], reachMetrics: [
+      { label: "收费电视客户", value: "0.662", unit: "百万户", trend: "已披露口径", periods: ["FY2022"], values: [0.662], dial: 64, color: "#55d9ff" },
+      { label: "免费电视人口覆盖率", value: "99", unit: "%", trend: "最新披露", periods: ["FY2025"], values: [99], dial: 92, color: "#5de2b6" }
+    ] }
+  ];
   let financeCompaniesData = financeCompanyFallbacks;
-  let selectedFinanceCompany = 0;
-  let financeRotationTimer = null;
-  let financeManualPauseUntil = 0;
+  let selectedOperator = 0;
+  let operatorRotationTimer = null;
+  let operatorManualPauseUntil = 0;
 
   const COMPARISON_SOURCES = {
     hkt: SOURCES.annual2025,
@@ -130,6 +205,12 @@
   const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.fullUnit || metric.unit}`.trim()).join("\n")}`;
   const formatInteger = (value) => new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 0 }).format(value);
 
+  function renderOperatorTabs(section) {
+    return `<div class="operator-tabs" role="tablist" aria-label="本地运营商">
+      ${operatorProfiles.map((item, index) => `<button type="button" role="tab" aria-selected="${index === selectedOperator}" data-operator-index="${index}" data-operator-section="${section}" title="查看${escapeHtml(item.company)}"><span>${escapeHtml(item.company)}</span></button>`).join("")}
+    </div>`;
+  }
+
   function chartGeometry(values, width, height, padX = 4, padY = 5) {
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -150,42 +231,47 @@
   }
 
   const metricCard = (metric, index = 0) => `
-    <div class="monitor-kpi has-data-tooltip" tabindex="0" data-source="${escapeHtml(metric.source)}" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--metric-order:${index}">
+    <div class="monitor-kpi has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--metric-order:${index}">
       <span>${escapeHtml(metric.label)}</span>
       <strong>${escapeHtml(metric.value)}<small>${escapeHtml(metric.unit)}</small></strong>
       ${metric.trend ? `<em class="${metric.trend.startsWith("-") ? "is-negative" : ""}">${escapeHtml(metric.trend)}</em>` : ""}
-      ${sparkline(metric)}
+      ${metric.value === "—" ? "" : sparkline(metric)}
     </div>`;
 
   function renderNetwork() {
+    const profile = operatorProfiles[selectedOperator];
     const visual = document.querySelector("[data-network-visual]");
     const metrics = document.querySelector("[data-network-metrics]");
+    document.querySelector('[data-operator-tabs="network"]').innerHTML = renderOperatorTabs("network");
+    const [first, second, third] = profile.networkMetrics;
     visual.innerHTML = `
-      <div class="section-label"><span>HKT NETWORK</span><strong>网络与连接资源</strong></div>
-      <div class="network-architecture" role="img" aria-label="HKT网络资源：5G覆盖、Wi-Fi热点与光纤承载">
+      <div class="section-label"><span>${escapeHtml(profile.company)} NETWORK</span><strong>网络与连接资源</strong></div>
+      <div class="network-architecture" role="img" aria-label="${escapeHtml(profile.company)}网络与连接资源">
         <section class="architecture-stage stage-access">
           <span class="stage-label"><b>01</b> 移动接入层</span>
           <div class="access-stack">
-            <div class="architecture-node node-4g"><small>5G香港覆盖</small><strong>99<em>%</em></strong></div>
-            <div class="architecture-node node-5g"><small>Wi-Fi热点</small><strong>19,097<em>个</em></strong></div>
+            <div class="architecture-node node-4g"><small>${escapeHtml(first.label)}</small><strong>${escapeHtml(first.value)}<em>${escapeHtml(first.unit)}</em></strong></div>
+            <div class="architecture-node node-5g"><small>${escapeHtml(second.label)}</small><strong>${escapeHtml(second.value)}<em>${escapeHtml(second.unit)}</em></strong></div>
           </div>
         </section>
         <section class="architecture-stage stage-backbone">
           <span class="stage-label"><b>02</b> 光纤承载层</span>
-          <div class="architecture-node node-backbone"><small>移动回程网升级</small><strong>25<em>Gbps</em></strong></div>
+          <div class="architecture-node node-backbone"><small>${escapeHtml(third.label)}</small><strong>${escapeHtml(third.value)}<em>${escapeHtml(third.unit)}</em></strong></div>
         </section>
         <section class="architecture-stage stage-core">
           <span class="stage-label"><b>03</b> 融合服务层</span>
-          <div class="architecture-core"><b>HKT</b><span>FIBRE + 5G</span><small>香港融合通信网络</small></div>
+          <div class="architecture-core"><b>${escapeHtml(profile.company)}</b><span>LOCAL NETWORK</span><small>香港本地通信网络</small></div>
         </section>
-        <div class="architecture-caption"><span>5G / Wi-Fi接入</span><i>→</i><span>光纤承载</span><i>→</i><span>融合服务</span></div>
+        <div class="architecture-caption"><span>用户接入</span><i>→</i><span>网络承载</span><i>→</i><span>融合服务</span></div>
       </div>`;
-    metrics.innerHTML = networkMetrics.map(metricCard).join("");
+    metrics.innerHTML = profile.networkMetrics.map(metricCard).join("");
   }
 
   function renderBusiness() {
+    const profile = operatorProfiles[selectedOperator];
     const target = document.querySelector("[data-business-cards]");
-    target.innerHTML = businessGroups.map((group) => `
+    document.querySelector('[data-operator-tabs="business"]').innerHTML = renderOperatorTabs("business");
+    target.innerHTML = profile.businessGroups.map((group) => `
       <section class="business-card ${group.accent}">
         <header><strong>${escapeHtml(group.title)}</strong></header>
         <div class="business-pair">${group.metrics.map(metricCard).join("")}</div>
@@ -193,10 +279,11 @@
   }
 
   function renderReach() {
+    const profile = operatorProfiles[selectedOperator];
     const target = document.querySelector("[data-reach-content]");
-    target.innerHTML = reachMetrics.map((metric, index) => {
-      const max = Math.max(...metric.values);
-      return `<section class="reach-dial-card has-data-tooltip" tabindex="0" data-source="${escapeHtml(metric.source)}" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--dial:${metric.dial}; --dial-color:${metric.color}">
+    target.innerHTML = renderOperatorTabs("reach") + profile.reachMetrics.map((metric, index) => {
+      const max = Math.max(...metric.values, 1);
+      return `<section class="reach-dial-card has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--dial:${metric.dial || 0}; --dial-color:${metric.color}">
         <div class="reach-dial" aria-hidden="true"><i></i><span></span><b>0${index + 1}</b></div>
         <div class="reach-dial-copy">
           <span>${escapeHtml(metric.label)}</span>
@@ -222,19 +309,17 @@
 
   function renderFinance() {
     const target = document.querySelector("[data-finance-content]");
-    const selected = financeCompaniesData[selectedFinanceCompany] || financeCompaniesData[0];
+    const selected = financeCompaniesData[selectedOperator] || financeCompaniesData[0];
     const metrics = selected.metrics;
     const revenue = metrics[0];
     target.innerHTML = `
-      <div class="finance-company-tabs" role="tablist" aria-label="本地运营商财务数据">
-        ${financeCompaniesData.map((item, index) => `<button type="button" role="tab" aria-selected="${index === selectedFinanceCompany}" data-finance-company="${index}" title="查看${escapeHtml(item.company)}财务数据"><span>${escapeHtml(item.company)}</span><small>${escapeHtml(item.period)}</small></button>`).join("")}
-      </div>
-      <section class="finance-revenue-hero has-data-tooltip" tabindex="0" data-source="${escapeHtml(revenue.source)}" data-tooltip="${escapeHtml(tooltipText(revenue))}">
+      ${renderOperatorTabs("finance")}
+      <section class="finance-revenue-hero has-data-tooltip" tabindex="0" data-tooltip="${escapeHtml(tooltipText(revenue))}">
         <div class="finance-revenue-copy"><span>${escapeHtml(revenue.label)}</span><strong>${escapeHtml(revenue.value)}<small>${escapeHtml(revenue.unit)}</small></strong><em>${escapeHtml(revenue.trend)}</em></div>
         ${financeChart(revenue, selected.company)}
       </section>
       <div class="finance-gauge-stack">${metrics.slice(1).map((metric, index) => `
-        <section class="finance-gauge-card gauge-${index + 1} has-data-tooltip" tabindex="0" data-source="${escapeHtml(metric.source)}" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--gauge:${metric.gauge}">
+        <section class="finance-gauge-card gauge-${index + 1} has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--gauge:${metric.gauge}">
           <div class="finance-gauge" aria-hidden="true"><i></i><span></span></div>
           ${metricCard(metric, index)}
       </section>`).join("")}</div>`;
@@ -297,29 +382,54 @@
         if (!reports.length) return;
         const byKey = new Map(reports.map((report) => [companyKey(report.company), normalizeFinancialReport(report)]));
         financeCompaniesData = financeCompanyFallbacks.map((fallback) => byKey.get(fallback.key) || fallback);
-        selectedFinanceCompany = Math.min(selectedFinanceCompany, financeCompaniesData.length - 1);
+        selectedOperator = Math.min(selectedOperator, financeCompaniesData.length - 1);
         renderFinance();
       })
       .catch(() => {});
   }
 
-  function setupFinanceCompanyTabs() {
-    const target = document.querySelector("[data-finance-content]");
-    const panel = document.querySelector(".panel-finance");
-    target.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-finance-company]");
-      if (!button) return;
-      selectedFinanceCompany = Number(button.dataset.financeCompany) || 0;
-      financeManualPauseUntil = Date.now() + 12000;
-      renderFinance();
-      target.querySelector(`[data-finance-company="${selectedFinanceCompany}"]`)?.focus();
+  function renderOperatorPanels({ animate = false } = {}) {
+    renderNetwork();
+    renderBusiness();
+    renderReach();
+    renderFinance();
+    const overview = document.querySelector("[data-overview-view]");
+    overview.setAttribute("aria-label", `${operatorProfiles[selectedOperator].company}战略监控四层体系`);
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    overview.querySelectorAll(".monitor-content").forEach((content) => {
+      content.classList.remove("is-operator-switching");
+      void content.offsetWidth;
+      content.classList.add("is-operator-switching");
     });
-    financeRotationTimer = window.setInterval(() => {
+  }
+
+  function selectOperator(index, { manual = false, focusSection = "" } = {}) {
+    selectedOperator = (index + operatorProfiles.length) % operatorProfiles.length;
+    if (manual) operatorManualPauseUntil = Date.now() + 12000;
+    renderOperatorPanels({ animate: true });
+    if (focusSection) document.querySelector(`[data-operator-section="${focusSection}"][data-operator-index="${selectedOperator}"]`)?.focus();
+  }
+
+  function setupOperatorTabs() {
+    const overview = document.querySelector("[data-overview-view]");
+    overview.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-operator-index]");
+      if (!button) return;
+      selectOperator(Number(button.dataset.operatorIndex) || 0, { manual: true, focusSection: button.dataset.operatorSection });
+    });
+    overview.addEventListener("keydown", (event) => {
+      const button = event.target.closest("[data-operator-index]");
+      if (!button || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const current = Number(button.dataset.operatorIndex) || 0;
+      const next = event.key === "Home" ? 0 : event.key === "End" ? operatorProfiles.length - 1 : current + (event.key === "ArrowRight" ? 1 : -1);
+      selectOperator(next, { manual: true, focusSection: button.dataset.operatorSection });
+    });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    operatorRotationTimer = window.setInterval(() => {
       const overviewVisible = !document.querySelector("[data-overview-view]")?.hidden;
-      if (!overviewVisible || document.hidden || Date.now() < financeManualPauseUntil) return;
-      if (panel.matches(":hover")) return;
-      selectedFinanceCompany = (selectedFinanceCompany + 1) % financeCompaniesData.length;
-      renderFinance();
+      if (!overviewVisible || document.hidden || Date.now() < operatorManualPauseUntil) return;
+      selectOperator(selectedOperator + 1);
     }, 5000);
   }
 
@@ -427,11 +537,8 @@
     panels.forEach((panel) => observer.observe(panel));
   }
 
-  renderNetwork();
-  renderBusiness();
-  renderReach();
-  renderFinance();
-  setupFinanceCompanyTabs();
+  renderOperatorPanels();
+  setupOperatorTabs();
   refreshFinancialCompanies();
   renderComparison();
   setupComparisonMetricTabs();

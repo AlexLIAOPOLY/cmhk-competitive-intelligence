@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>中国移动｜战略监控体系</title>
   <script>if (new URLSearchParams(location.search).get("embedded") === "1") document.documentElement.classList.add("is-embedded");</script>
-  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=42">
+  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=43">
   <link rel="stylesheet" href="/static/executive-responsive-hardening.css?v=7">
   <style>
     html.is-embedded .topbar { display: none !important; }
@@ -34,6 +34,7 @@
           <span>01</span><h2>资源与基础设施层</h2>
         </header>
         <div class="monitor-content network-monitor" id="network-detail">
+          <div data-operator-tabs="network"></div>
           <div class="visual-stage" data-network-visual></div>
           <div class="kpi-grid" data-network-metrics></div>
         </div>
@@ -46,6 +47,7 @@
           <span>02</span><h2>客户与业务对标层</h2>
         </header>
         <div class="monitor-content business-content" id="business-detail">
+          <div data-operator-tabs="business"></div>
           <div class="business-cards" data-business-cards></div>
         </div>
       </article>
@@ -72,6 +74,6 @@
     <section class="dashboard-grid comparison-grid" aria-label="香港本地运营商同口径指标对比" data-comparison-view hidden></section>
 
   </main>
-  <script src="/static/executive-dashboard-demo.js?v=22"></script>
+  <script src="/static/executive-dashboard-demo.js?v=23"></script>
 </body>
 </html>

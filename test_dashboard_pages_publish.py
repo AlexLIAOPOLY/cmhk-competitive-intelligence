@@ -32,7 +32,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             'const pdf = `./static/report-previews/${key}.pdf`;',
         )
 
-    def test_monitoring_dashboard_uses_local_operator_financial_tabs(self):
+    def test_monitoring_dashboard_uses_synced_local_operator_tabs(self):
         html = (publisher.STATIC_DIR / "executive-dashboard-demo.html").read_text(
             encoding="utf-8"
         )
@@ -41,12 +41,18 @@ class DashboardPagesPublishTests(unittest.TestCase):
         )
 
         self.assertIn('aria-label="HKT战略监控四层体系"', html)
-        self.assertIn('src="/static/executive-dashboard-demo.js?v=22"', html)
+        self.assertIn('src="/static/executive-dashboard-demo.js?v=23"', html)
         self.assertIn("HKT经营全景", html)
         self.assertIn("本地运营商对比", html)
         self.assertIn("financeCompanyFallbacks", script)
         self.assertIn('fetch("/api/executive-intelligence"', script)
-        self.assertIn("data-finance-company", script)
+        self.assertIn("operatorProfiles", script)
+        self.assertIn("renderOperatorTabs", script)
+        self.assertIn("data-operator-index", script)
+        self.assertIn("renderOperatorPanels", script)
+        self.assertIn("is-operator-switching", script)
+        self.assertNotIn("data-finance-company", script)
+        self.assertNotIn('<small>${escapeHtml(item.period)}</small>', script)
         self.assertNotIn("来源：HKT官方公开数据", script)
         for source in (
             "2026072900430.pdf",
@@ -254,14 +260,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=42"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=43"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=22"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=23"', html)
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)
