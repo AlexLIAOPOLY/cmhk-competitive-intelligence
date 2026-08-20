@@ -2413,6 +2413,8 @@ class SubscriptionService:
             reverse=True,
         )
         crawl_date = crawl_slot[:10]
+        crawl_time = crawl_slot[11:]
+        delivery_window = "morning" if crawl_time < "12:00" else "afternoon"
         content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
         period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
         with closing(self._connect()) as db:
@@ -2445,20 +2447,42 @@ class SubscriptionService:
             )
             body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
-                f"twice_daily:{crawl_slot}"
+                f"twice_daily:{crawl_date}:{delivery_window}"
                 if frequency == "twice_daily"
                 else f"once_daily:{crawl_date}"
             )
             now = _now_hkt()
-            with closing(self._connect()) as db, db:
+            with closing(self._connect()) as db:
+                # Serialize the legacy-row check and canonical claim. Older
+                # releases keyed twice-daily sends by the exact clock time, so
+                # a same-day schedule change (for example 13:30 -> 14:00)
+                # could otherwise send the same afternoon digest twice.
+                db.execute("BEGIN IMMEDIATE")
+                legacy_claimed = False
+                if frequency == "twice_daily":
+                    legacy_claimed = db.execute(
+                        """SELECT 1 FROM news_crawl_dispatches
+                           WHERE open_id=? AND crawl_date=? AND frequency='twice_daily'
+                             AND CASE
+                                   WHEN substr(crawl_slot, 12, 5) < '12:00' THEN 'morning'
+                                   ELSE 'afternoon'
+                                 END=?
+                           LIMIT 1""",
+                        (open_id, crawl_date, delivery_window),
+                    ).fetchone() is not None
                 cursor = db.execute(
                     """INSERT OR IGNORE INTO news_crawl_dispatches(
                            open_id, dispatch_key, crawl_slot, crawl_date, frequency,
                            status, created_at, updated_at
-                       ) VALUES(?, ?, ?, ?, ?, 'sending', ?, ?)""",
-                    (open_id, dispatch_key, crawl_slot, crawl_date, frequency, now, now),
+                       ) SELECT ?, ?, ?, ?, ?, 'sending', ?, ?
+                         WHERE ?=0""",
+                    (
+                        open_id, dispatch_key, crawl_slot, crawl_date, frequency,
+                        now, now, int(legacy_claimed),
+                    ),
                 )
                 claimed = cursor.rowcount == 1
+                db.commit()
             if not claimed:
                 results.append({
                     "open_id": open_id,

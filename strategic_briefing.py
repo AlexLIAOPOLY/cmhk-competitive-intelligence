@@ -606,6 +606,40 @@ def _completed_scan_archive(slot_key: str) -> dict[str, Any]:
     return payload
 
 
+def _scan_delivery_window(slot_key: str) -> tuple[str, str]:
+    """Return the calendar day and stable morning/afternoon delivery window."""
+    match = re.fullmatch(r"(\d{4}-\d{2}-\d{2})@(\d{2}):(\d{2})", slot_key)
+    if not match:
+        return "", ""
+    return match.group(1), "morning" if match.group(2) < "12" else "afternoon"
+
+
+def _completed_scan_archive_in_window(slot_key: str) -> dict[str, Any]:
+    """Find a completed same-day scan even when its configured time changed."""
+    slot_day, delivery_window = _scan_delivery_window(slot_key)
+    if not slot_day or not RUNS_DIR.exists():
+        return {}
+    for path in sorted(RUNS_DIR.glob(f"{slot_day}@*.json"), reverse=True):
+        payload = _read_json(path, {})
+        if not isinstance(payload, dict):
+            continue
+        prior_slot = str(payload.get("slot") or "")
+        if prior_slot == slot_key:
+            continue
+        prior_day, prior_window = _scan_delivery_window(prior_slot)
+        if prior_day != slot_day or prior_window != delivery_window:
+            continue
+        if payload.get("status") != "completed":
+            continue
+        notification_status = str(payload.get("notification_status") or "")
+        if notification_status == "sent" and not payload.get("message_id"):
+            continue
+        if notification_status not in {"sent", "queued_while_paused"}:
+            continue
+        return payload
+    return {}
+
+
 def _cutoff_scan_archive(slot_key: str) -> dict[str, Any]:
     payload = _read_json(_scan_run_path(slot_key), {})
     if not isinstance(payload, dict) or payload.get("slot") != slot_key:
@@ -6194,6 +6228,32 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
             archived = _completed_scan_archive(slot_key)
             if archived:
                 _recover_completed_scan_slot(state, slot_key, archived)
+                continue
+            window_archive = _completed_scan_archive_in_window(slot_key)
+            if window_archive:
+                prior_slot = str(window_archive.get("slot") or "")
+                _recover_completed_scan_slot(state, prior_slot, window_archive)
+                scan_slots[slot_key] = {
+                    "status": "skipped",
+                    "reason": "delivery_window_already_completed",
+                    "at": _now_iso(current_now),
+                    "completed_slot": prior_slot,
+                }
+                result["scans"].append(
+                    {
+                        "slot": slot_key,
+                        "status": "skipped",
+                        "reason": "delivery_window_already_completed",
+                        "completed_slot": prior_slot,
+                    }
+                )
+                _append_event(
+                    {
+                        "type": "scan_skipped_duplicate_window",
+                        "slot": slot_key,
+                        "completed_slot": prior_slot,
+                    }
+                )
                 continue
             cutoff_archive = _cutoff_scan_archive(slot_key)
             if cutoff_archive:

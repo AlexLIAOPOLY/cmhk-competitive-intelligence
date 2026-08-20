@@ -601,6 +601,58 @@ class SubscriptionServiceTests(unittest.TestCase):
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 3)
 
+    def test_twice_daily_dispatch_blocks_same_window_after_schedule_change(self):
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"], frequency="twice_daily"
+        )
+        self.service.update_news_schedule(enabled=True)
+        item = {"title": "下午茶", "summary": "已完成审核"}
+
+        first = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@13:30",
+            slot_label="午后扫描",
+            items=[item],
+        )
+        shifted = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@14:00",
+            slot_label="午后扫描",
+            items=[item],
+        )
+
+        self.assertEqual(first["verified_count"], 1)
+        self.assertEqual(shifted["skipped_count"], 1)
+        sends = [call for call in self.lark.calls if "+messages-send" in call]
+        self.assertEqual(len(sends), 1)
+
+    def test_twice_daily_dispatch_honors_legacy_exact_slot_claim(self):
+        import sqlite3
+
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"], frequency="twice_daily"
+        )
+        self.service.update_news_schedule(enabled=True)
+        with sqlite3.connect(self.service.db_path) as db:
+            db.execute(
+                """INSERT INTO news_crawl_dispatches(
+                       open_id, dispatch_key, crawl_slot, crawl_date, frequency,
+                       status, created_at, updated_at
+                   ) VALUES(?, ?, ?, ?, ?, 'verified', ?, ?)""",
+                (
+                    "ou_delivery123", "twice_daily:2099-01-01@13:30",
+                    "2099-01-01@13:30", "2099-01-01", "twice_daily",
+                    "2099-01-01T13:31:00+08:00", "2099-01-01T13:31:00+08:00",
+                ),
+            )
+
+        result = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@14:00",
+            slot_label="午后扫描",
+            items=[{"title": "不应重发"}],
+        )
+
+        self.assertEqual(result["skipped_count"], 1)
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+
     def test_news_dispatch_sorts_globally_and_applies_subscriber_item_limit(self):
         self.service.save_subscriptions(
             "ou_delivery123", "测试用户", ["news"],

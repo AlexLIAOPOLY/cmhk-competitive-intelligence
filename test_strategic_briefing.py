@@ -777,6 +777,32 @@ class StrategicBriefingTests(unittest.TestCase):
             )
             self.assertEqual(briefing._completed_scan_archive(slot_key), {})
 
+    def test_completed_scan_window_survives_afternoon_schedule_change(self):
+        archived = {
+            "slot": "2026-08-20@13:30",
+            "slot_label": "午后扫描",
+            "status": "completed",
+            "notification_status": "sent",
+            "message_id": "om_afternoon_once",
+            "completed_at": "2026-08-20T13:37:00+08:00",
+        }
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+        ):
+            briefing._atomic_write_json(
+                briefing._scan_run_path("2026-08-20@13:30"), archived
+            )
+            found = briefing._completed_scan_archive_in_window(
+                "2026-08-20@14:00"
+            )
+            morning = briefing._completed_scan_archive_in_window(
+                "2026-08-20@09:00"
+            )
+
+        self.assertEqual(found["message_id"], "om_afternoon_once")
+        self.assertEqual(morning, {})
+
     def test_cycle_recovers_completed_archive_from_stale_state(self):
         now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
         slot_key = "2026-07-30@09:00"
