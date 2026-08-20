@@ -193,9 +193,11 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     return {
         "schema": "2.0",
         "config": {
-            # Each operator receives an independent post-submit view. This is
-            # required when one entry card is published to a group chat.
-            "update_multi": False,
+            # Feishu rejects interactive cards sent to a group when
+            # update_multi is false (300302). The shared card itself is not
+            # mutated after submission; each click is still persisted by the
+            # callback operator_id and acknowledged in that user's DM.
+            "update_multi": True,
             "width_mode": "default",
             "summary": {"content": "订阅战略情报 · 新闻每日 06:00 / 13:30 扫描"},
         },

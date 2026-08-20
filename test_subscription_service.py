@@ -94,7 +94,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             recipient_name="Alex LIAO Wang",
         )
         self.assertEqual(card["schema"], "2.0")
-        self.assertFalse(card["config"]["update_multi"])
+        self.assertTrue(card["config"]["update_multi"])
         self.assertEqual(card["header"]["title"]["content"], "订阅战略情报")
         self.assertNotIn("subtitle", card["header"])
         self.assertNotIn("icon", card["header"])
@@ -268,7 +268,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(results[0]["chat_id"], "oc_strategy123")
         self.assertEqual(self.service.search_chat_directory("不存在"), [])
 
-    def test_admin_invite_target_auto_detects_group_and_sends_independent_card(self):
+    def test_admin_invite_target_auto_detects_group_and_sends_group_compatible_card(self):
         with self.assertRaisesRegex(ValueError, "二次确认"):
             self.service.invite_target("oc_strategy123")
         sent = self.service.invite_target("oc_strategy123", confirm_invite=True)
@@ -278,7 +278,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         send_call = next(call for call in self.lark.calls if "+messages-send" in call)
         self.assertEqual(send_call[send_call.index("--chat-id") + 1], "oc_strategy123")
         card = json.loads(send_call[send_call.index("--content") + 1])
-        self.assertFalse(card["config"]["update_multi"])
+        self.assertTrue(card["config"]["update_multi"])
 
     def test_two_people_can_save_different_preferences_from_one_group_card(self):
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
