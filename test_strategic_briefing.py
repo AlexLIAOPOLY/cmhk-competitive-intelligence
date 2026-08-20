@@ -3297,6 +3297,54 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(len(result["duplicates"]), 1)
         self.assertEqual(result["duplicates"][0]["duplicate_of"], "history-1")
 
+    def test_semantic_agent_rejects_forward_reference_that_can_form_cycle(self):
+        candidates = [
+            {
+                "id": "candidate-a",
+                "order": 1,
+                "title": "事件甲的第一条报道",
+                "summary": "两条候选描述同一事件。",
+                "published_at": "2026-08-19",
+                "source": "媒体甲",
+                "url": "https://example.com/a",
+                "category": "测试",
+            },
+            {
+                "id": "candidate-b",
+                "order": 2,
+                "title": "事件甲的第二条报道",
+                "summary": "两条候选描述同一事件。",
+                "published_at": "2026-08-19",
+                "source": "媒体乙",
+                "url": "https://example.com/b",
+                "category": "测试",
+            },
+        ]
+        response = {
+            "items": [
+                {
+                    "id": "candidate-a",
+                    "is_duplicate": True,
+                    "duplicate_of": "candidate-b",
+                    "reason": "模型错误引用了本批次中排在后面的候选。",
+                },
+                {
+                    "id": "candidate-b",
+                    "is_duplicate": True,
+                    "duplicate_of": "candidate-a",
+                    "reason": "模型又把后一条指回前一条形成循环。",
+                },
+            ]
+        }
+
+        with self.assertRaisesRegex(RuntimeError, "无效重复对象 candidate-b"):
+            briefing._validated_semantic_dedupe_decisions(
+                response,
+                candidates,
+                valid_duplicate_ids=set(),
+                identity_matches={},
+            )
+
     def test_semantic_agent_independently_confirms_same_batch_events(self):
         first = {
             "news_id": "candidate-a",

@@ -5003,7 +5003,8 @@ def _validated_semantic_dedupe_decisions(
         if isinstance(entry, dict) and _clean_text(entry.get("id"), 80)
     }
     decisions: dict[str, dict[str, Any]] = {}
-    for candidate in candidates:
+    external_duplicate_ids = set(valid_duplicate_ids)
+    for candidate_index, candidate in enumerate(candidates):
         candidate_id = candidate["id"]
         raw = response_map.get(candidate_id)
         if not isinstance(raw, dict):
@@ -5022,7 +5023,17 @@ def _validated_semantic_dedupe_decisions(
         if len(reason) < 8:
             raise RuntimeError(f"Agent 未解释候选 {candidate_id} 的去重依据")
         if is_duplicate:
-            if not duplicate_of or duplicate_of not in valid_duplicate_ids:
+            # A candidate may only point to durable history, an earlier batch,
+            # or an earlier candidate in this batch.  Validating against one
+            # batch-wide union allowed a model to point backwards and forwards
+            # at once (A -> B and B -> A), which removed every representative
+            # of an event from the review sheet.
+            allowed_duplicate_ids = external_duplicate_ids | {
+                entry["id"]
+                for entry in candidates[:candidate_index]
+                if _clean_text(entry.get("id"), 80)
+            }
+            if not duplicate_of or duplicate_of not in allowed_duplicate_ids:
                 raise RuntimeError(
                     f"Agent 为候选 {candidate_id} 返回了无效重复对象 {duplicate_of}"
                 )
@@ -5057,12 +5068,6 @@ def _call_semantic_dedupe_agent(
         for entry in reference_items
         if _clean_text(entry.get("id"), 80)
     }
-    for index, candidate in enumerate(candidates):
-        valid_duplicate_ids.update(
-            entry["id"]
-            for entry in candidates[:index]
-            if _clean_text(entry.get("id"), 80)
-        )
     identity_matches: dict[str, set[str]] = {}
     for candidate in candidates:
         candidate_id = candidate["id"]
