@@ -29,7 +29,7 @@ from ai_rate_limit import (
 from langgraph.prebuilt import create_react_agent
 
 from ai_config import load_ai_config
-from ai_response_compat import deepseek_nonthinking_parameters
+from ai_response_compat import deepseek_nonthinking_parameters, load_json_response
 from agent_memory import add_memory, auto_capture_user_memory, load_memories, memory_context, search_memories
 from agent_production import (
     AgentRunRecorder,
@@ -116,8 +116,8 @@ def _extract_follow_up_suggestions(value: str) -> list[str]:
         json_candidates.append(object_match.group(0))
     for candidate in json_candidates:
         try:
-            parsed = json.loads(candidate)
-        except (json.JSONDecodeError, TypeError):
+            parsed = load_json_response(candidate, operation="小竞AI推荐追问")
+        except (ValueError, TypeError):
             continue
         if isinstance(parsed, dict):
             parsed = parsed.get("suggestions") or parsed.get("questions") or parsed.get("follow_ups")
@@ -177,7 +177,8 @@ def _ensure_ai_follow_up_suggestions(
             content=(
                 "根据用户问题和当前回答，自主生成3个自然、具体、互不重复的简体中文后续问题，"
                 "让用户可以直接点击继续对话。问题应承接回答中尚值得继续分析的内容，"
-                "不要复述答案、描述内部工具或询问是否要读取文件。只输出JSON字符串数组。"
+                "不要复述答案、描述内部工具或询问是否要读取文件。"
+                "只输出JSON对象，格式为{\"suggestions\":[\"问题1\",\"问题2\",\"问题3\"]}。"
             )
         ),
         HumanMessage(
@@ -198,7 +199,10 @@ def _ensure_ai_follow_up_suggestions(
             model=model_name,
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
-            extra_body=deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
+            extra_body={
+                **deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
+                "response_format": {"type": "json_object"},
+            },
             temperature=0.2,
             disable_streaming=True,
             max_retries=1,
