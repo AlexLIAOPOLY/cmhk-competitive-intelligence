@@ -317,6 +317,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("svg path:last-child { animation-delay: .42s; }", STYLE)
         self.assertNotIn("@keyframes competitor-insight-pulse", STYLE)
         self.assertNotIn("/static/assets/ai-insight-sparkle.png", SCRIPT)
+
         self.assertIn('setCompetitorInsightStatus(card, status || (isAi ? ""', SCRIPT)
         self.assertNotIn("内网 AI 已完成真实生成", SCRIPT)
         self.assertNotIn("AI未生成：", SCRIPT)
@@ -348,6 +349,15 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("competitor-result-overview", STYLE)
         self.assertNotIn("LOCAL DATA", SCRIPT)
         self.assertNotIn("fallbackInsight.insights", SCRIPT)
+
+    def test_competitor_selector_text_is_slightly_enlarged(self):
+        self.assertIn(".competitor-steps legend {", STYLE)
+        self.assertIn("font-size: 12px; font-weight: 700", STYLE)
+        self.assertIn("legend small { float: right; color: #6f929f; font-size: 9px", STYLE)
+        self.assertIn("label > b,.competitor-year-options span", STYLE)
+        self.assertIn("font-size: 10px; font-weight: 600", STYLE)
+        self.assertIn(".competitor-select select", STYLE)
+        self.assertIn("font-size: 11px;", STYLE)
 
     def test_review_sheet_uses_cached_snapshot_and_inline_escape_is_safe(self):
         review_script = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")
