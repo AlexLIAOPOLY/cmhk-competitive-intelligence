@@ -64,7 +64,7 @@
   }
 
   function auditAction(event) {
-    return ({ "fault.mark_handled": "处理告警", "news_review.update": "复核新闻", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员" })[event.action] || event.action || "系统操作";
+    return ({ "fault.mark_handled": "处理告警", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员" })[event.action] || event.action || "系统操作";
   }
 
   function auditTime(value) {
@@ -75,7 +75,7 @@
 
   function auditSurface() {
     const rows = state.audit.map((event) => `<tr><td><div class="organization-member">${auditAvatar(event)}<span><strong>${esc(event.actor_name || "未知用户")}</strong><small>${esc(event.actor_id || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`).join("");
-    return `<section class="organization-surface organization-audit-surface"><header><div><span>OPERATION AUDIT</span><h2>操作审计</h2><p>独立记录告警处理、新闻复核等关键操作，管理员可按登录身份追踪操作人。</p></div><strong>${state.audit.length} 条</strong></header><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></section>`;
+    return `<section class="organization-surface organization-audit-surface"><header><div><span>OPERATION AUDIT</span><h2>操作审计</h2><p>独立记录告警处理等关键操作，管理员可按登录身份追踪操作人。</p></div><strong>${state.audit.length} 条</strong></header><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></section>`;
   }
 
   function directoryResults() {

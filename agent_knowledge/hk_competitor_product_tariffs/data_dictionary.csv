@@ -1,6 +1,0 @@
-﻿field,description
-verification_count,同一品牌/品类/月费/数据或速度组合在不同来源或不同快照中出现的次数；>=2 才标为多方/多快照验证。
-verification_status,multi_source_or_multi_snapshot_verified 表示至少两次命中；single_source_needs_review 表示只有单一来源，会转入 source_gaps 而不作为正式结构化资费样本；official_price_conflict_needs_review 表示多个官方来源对同一口径披露不同金额，需人工确认适用口径。
-source_status,parsed_current、parsed_archive 或 parsed_public_official_pdf 表示已结构化；web_indexed_official_pdf_excerpt 表示官方 PDF 可公开核验但本地脚本被 403 阻断，使用公开索引摘录入库；public_product_launch_no_price 表示公开来源只披露产品发布或可用性、未披露月费；source gap 表另列不可估算缺口。
-tariff_type,monthly_plan_fee 为月费套餐；one_off_service_charge 为安装/搬迁/取消/检查等一次性服务费；product_launch_no_disclosed_monthly_fee 表示只可确认产品发布/可用性、不得估算资费；price_mentioned_needs_review 表示价格被提及但需人工判断口径。
-evidence_excerpt,短证据摘录，用于人工复核套餐金额、数据量、合约期等。

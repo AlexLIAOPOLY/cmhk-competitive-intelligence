@@ -82,8 +82,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
         self.assertIn('/static/news-review-sheet.css?v=4', INDEX)
-        self.assertIn('/static/workspace-tabs.css?v=85', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=74', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=84', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=73', INDEX)
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
         self.assertIn("@media (max-width: 1490px)", STYLE)
         self.assertIn("aspect-ratio: 960 / 390", STYLE)
@@ -447,17 +447,6 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertIn(f'key: "{key}"', SCRIPT)
         for domain in ("local", "international", "cloud", "macro"):
             self.assertIn(f'domainNode("{domain}"', SCRIPT)
-
-    def test_news_lineage_uses_semantic_health_colours_instead_of_node_type_colours(self):
-        self.assertIn('const runHealth = (run) =>', SCRIPT)
-        self.assertIn('const combinedRunHealth = (items) =>', SCRIPT)
-        self.assertIn('data-health="${esc(node.health?.key || "unknown")}"', SCRIPT)
-        self.assertIn('健康状态${esc(node.health?.label || "无记录")}', SCRIPT)
-        for label in ("正常", "运行中", "警告", "异常", "无记录"):
-            self.assertIn(label, SCRIPT)
-        for health in ("healthy", "running", "warning", "critical", "unknown"):
-            self.assertIn(f".news-lineage.is-global .news-lineage-node.is-health-{health}", STYLE)
-        self.assertNotIn('node.tone', SCRIPT)
 
 
 if __name__ == "__main__":

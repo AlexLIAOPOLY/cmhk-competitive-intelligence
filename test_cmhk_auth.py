@@ -68,6 +68,16 @@ class AuthServiceTest(unittest.TestCase):
         session = handler.header("Set-Cookie").split(";", 1)[0]
         return handler, session
 
+    def test_login_page_exposes_only_feishu_sign_in(self):
+        static_root = Path(__file__).parent / "web" / "static"
+        page = (static_root / "login.html").read_text(encoding="utf-8")
+        self.assertIn('id="feishuLogin"', page)
+        self.assertIn("login-hong-kong-network-bg-v1.webp", page)
+        self.assertTrue((static_root / "assets" / "login-hong-kong-network-bg-v1.webp").is_file())
+        self.assertNotIn("测试身份", page)
+        self.assertNotIn("/api/auth/dev-login", page)
+        self.assertNotIn("身份由服务端校验", page)
+
     def test_role_defaults_keep_leader_on_dashboard_only(self):
         self.assertEqual(ROLE_MODULES["LEADER"], ["dashboard"])
         self.assertEqual(set(ROLE_MODULES["ADMIN"]), set(MODULE_LABELS))
