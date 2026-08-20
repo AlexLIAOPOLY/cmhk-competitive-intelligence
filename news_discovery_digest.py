@@ -67,6 +67,39 @@ AGENTIC_AI_ATTEMPTS = min(
     3,
     max(1, int(os.environ.get("CMHK_NEWS_AGENTIC_AI_ATTEMPTS", "3"))),
 )
+AGENTIC_SEARCH_RESPONSE_FORMAT = strategic_briefing._strict_object_response_format(
+    "strategic_news_agentic_search",
+    {
+        "sufficient": {"type": "boolean"},
+        "assessment": {"type": "string"},
+        "queries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "module": {"type": "string"},
+                    "query": {"type": "string"},
+                    "keywords": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    "intent": {"type": "string"},
+                    "reason": {"type": "string"},
+                    "lookback_days": {"type": "integer"},
+                },
+                "required": [
+                    "module",
+                    "query",
+                    "keywords",
+                    "intent",
+                    "reason",
+                    "lookback_days",
+                ],
+                "additionalProperties": False,
+            },
+        },
+    },
+)
 LOCAL_MODULES = {"竞争对手", "政策/法规类", "香港本地新闻", "市场/产品类"}
 LOCAL_TERMS = (
     "香港", "hong kong", "hkt", "pccw", "csl", "1o1o", "hkbn", "hgc",
@@ -1103,6 +1136,7 @@ def _call_agentic_search_agent(
                 # JSON before the closing object, so leave enough room for a
                 # complete response and retry malformed output independently.
                 max_tokens=max(2600, limit * 320),
+                response_format=AGENTIC_SEARCH_RESPONSE_FORMAT,
             )
             plans = _normalize_agentic_plans(
                 response,

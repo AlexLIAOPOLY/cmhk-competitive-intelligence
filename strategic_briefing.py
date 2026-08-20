@@ -339,6 +339,112 @@ class AIInvalidStructuredResponse(RuntimeError):
         self.content = _clean_text(content, 4000)
 
 
+def _strict_object_response_format(
+    name: str,
+    properties: dict[str, Any],
+    *,
+    required: list[str] | None = None,
+) -> dict[str, Any]:
+    """Build the API-level contract used by every JSON-producing AI stage."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": name,
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": properties,
+                "required": required or list(properties),
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def _strict_items_response_format(
+    name: str,
+    item_properties: dict[str, Any],
+    *,
+    item_required: list[str] | None = None,
+) -> dict[str, Any]:
+    return _strict_object_response_format(
+        name,
+        {
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": item_properties,
+                    "required": item_required or list(item_properties),
+                    "additionalProperties": False,
+                },
+            }
+        },
+    )
+
+
+_AI_EDITOR_FIELDS: dict[str, Any] = {
+    "title": {"type": "string"},
+    "summary": {"type": "string"},
+    "should_include": {"type": "boolean"},
+    "region": {"type": "string"},
+    "category": {"type": "string"},
+    "keywords": {"type": "string"},
+    "inclusion_reason": {"type": "string"},
+    "region_reason": {"type": "string"},
+    "decision_path": {"type": "string"},
+    "signal_type": {"type": "string"},
+    "business_impact": {"type": "string"},
+    "exclusion_code": {"type": "string"},
+}
+AI_EDITOR_BATCH_RESPONSE_FORMAT = _strict_items_response_format(
+    "strategic_news_editor_batch",
+    {"id": {"type": "string"}, **_AI_EDITOR_FIELDS},
+)
+AI_EDITOR_SINGLE_RESPONSE_FORMAT = _strict_object_response_format(
+    "strategic_news_editor_single",
+    _AI_EDITOR_FIELDS,
+)
+AI_EDITOR_COMPACT_RESPONSE_FORMAT = _strict_items_response_format(
+    "strategic_news_editor_compact",
+    {
+        "id": {"type": "string"},
+        "route": {"type": "string"},
+        "signal": {"type": "string"},
+        "impact": {"type": "string"},
+        "exclude": {"type": "string"},
+        "region": {"type": "string"},
+    },
+)
+AI_CRITIC_RESPONSE_FORMAT = _strict_items_response_format(
+    "strategic_news_critic",
+    {
+        "id": {"type": "string"},
+        "keep": {"type": "boolean"},
+        "region": {"type": "string"},
+        "category": {"type": "string"},
+        "reason": {"type": "string"},
+    },
+)
+AI_POLISH_RESPONSE_FORMAT = _strict_object_response_format(
+    "strategic_news_polish",
+    {"title": {"type": "string"}, "summary": {"type": "string"}},
+)
+AI_APPROVAL_RESPONSE_FORMAT = _strict_object_response_format(
+    "strategic_news_approval",
+    {
+        "publish": {"type": "boolean"},
+        "candidate_ids": {"type": "array", "items": {"type": "string"}},
+        "title": {"type": "string"},
+        "summary": {"type": "string"},
+        "category": {"type": "string"},
+        "source_url": {"type": "string"},
+        "reason": {"type": "string"},
+        "confidence": {"type": "number"},
+    },
+)
+
+
 LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 MONITOR_SHEET_TOKEN = (
     os.environ.get("CMHK_STRATEGY_SHEET_TOKEN") or "NB6Gsi9tChARfGtBDpFc6QfOnmb"
@@ -2738,6 +2844,14 @@ def _call_internal_ai(
     response_format: dict[str, Any] | None = None,
     deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
+    if response_format:
+        # Reasoning models may spend most of a small allowance before emitting
+        # the final structured answer.  The limit is a ceiling, not guaranteed
+        # usage, so give every strict-JSON stage enough room to finish.
+        max_tokens = max(
+            max_tokens,
+            int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "4000")),
+        )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     configured_keys = config.get("strategy_api_keys")
@@ -2918,10 +3032,20 @@ def _call_internal_ai(
         if switch_key:
             continue
         break
-    message = ((payload.get("choices") or [{}])[0].get("message") or {})
-    content = str(
-        message.get("content") or message.get("reasoning_content") or ""
-    ).strip()
+    choice = (payload.get("choices") or [{}])[0]
+    message = choice.get("message") or {}
+    final_content = str(message.get("content") or "").strip()
+    reasoning_content = str(message.get("reasoning_content") or "").strip()
+    # A structured request must parse only the provider's final answer.  Using
+    # reasoning_content as if it were the answer creates false JSON alarms and
+    # can accidentally accept an intermediate object from the chain of thought.
+    content = final_content or ("" if response_format else reasoning_content)
+    if response_format and not content:
+        finish_reason = _clean_text(choice.get("finish_reason"), 80)
+        detail = "结构化最终输出为空"
+        if finish_reason in {"length", "max_tokens"}:
+            detail += "（输出在JSON完成前被截断）"
+        raise AIInvalidStructuredResponse(reasoning_content, detail)
     content = content.replace(chr(96) * 3 + "json", "").replace(chr(96) * 3, "").strip()
     try:
         parsed = json.loads(content)
@@ -4004,6 +4128,7 @@ def _critic_review_included(
                     ).strip()
                     or configured_model
                 ),
+                response_format=AI_CRITIC_RESPONSE_FORMAT,
             )
             response_items = (
                 response.get("items") if isinstance(response, dict) else []
@@ -4273,6 +4398,7 @@ def polish_candidates_before_review(
                 ),
                 json.dumps({"items": request_items}, ensure_ascii=False),
                 max_tokens=max(2600, len(batch) * 700),
+                response_format=AI_EDITOR_BATCH_RESPONSE_FORMAT,
             )
         except Exception as exc:
             logging.error(
@@ -4357,6 +4483,7 @@ def polish_candidates_before_review(
                     ),
                     json.dumps({"items": missing_from_verbose}, ensure_ascii=False),
                     max_tokens=max(1600, len(missing_from_verbose) * 500),
+                    response_format=AI_EDITOR_COMPACT_RESPONSE_FORMAT,
                 )
                 compact_items = (
                     compact_response.get("items")
@@ -4504,6 +4631,7 @@ def polish_candidates_before_review(
                         single_system_prompt,
                         single_user_prompt,
                         max_tokens=1200,
+                        response_format=AI_EDITOR_SINGLE_RESPONSE_FORMAT,
                         deadline_monotonic=single_retry_deadline_monotonic,
                     )
                 except Exception as primary_exc:
@@ -4546,6 +4674,7 @@ def polish_candidates_before_review(
                                 single_user_prompt,
                                 max_tokens=1200,
                                 model_override=rescue_model,
+                                response_format=AI_EDITOR_SINGLE_RESPONSE_FORMAT,
                                 deadline_monotonic=single_retry_deadline_monotonic,
                             )
                             rescue_retry_resolved_count += 1
@@ -5661,6 +5790,7 @@ def _polish_approved_brief(brief: dict[str, Any]) -> dict[str, Any]:
             ensure_ascii=False,
         ),
         max_tokens=2400,
+        response_format=AI_POLISH_RESPONSE_FORMAT,
     )
     edited = _validated_ai_copy(polished)
     return {
@@ -5732,6 +5862,7 @@ def _classify_approval(
                 },
                 ensure_ascii=False,
             ),
+            response_format=AI_APPROVAL_RESPONSE_FORMAT,
         )
     except Exception as exc:
         logging.warning("战略快讯群消息 AI 审核失败，使用保守规则：%s", exc)

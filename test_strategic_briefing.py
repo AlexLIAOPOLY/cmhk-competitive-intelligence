@@ -1653,6 +1653,79 @@ class StrategicBriefingTests(unittest.TestCase):
         request_body = json.loads(opener.open.call_args.args[0].data)
         self.assertEqual(request_body["response_format"], response_format)
 
+    def test_structured_ai_never_parses_reasoning_as_final_json(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {
+                        "finish_reason": "length",
+                        "message": {
+                            "content": "",
+                            "reasoning_content": '{"items": []}',
+                        },
+                    }
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://10.0.62.177:4000/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            with self.assertRaises(briefing.AIInvalidStructuredResponse) as raised:
+                briefing._call_internal_ai(
+                    "system",
+                    "user",
+                    max_tokens=800,
+                    response_format=briefing.AI_POLISH_RESPONSE_FORMAT,
+                )
+
+        request_body = json.loads(opener.open.call_args.args[0].data)
+        self.assertGreaterEqual(request_body["max_tokens"], 4000)
+        self.assertIn("JSON完成前被截断", str(raised.exception))
+
+    def test_all_strategic_json_stages_define_strict_api_contracts(self):
+        formats = (
+            briefing.AI_EDITOR_BATCH_RESPONSE_FORMAT,
+            briefing.AI_EDITOR_SINGLE_RESPONSE_FORMAT,
+            briefing.AI_EDITOR_COMPACT_RESPONSE_FORMAT,
+            briefing.AI_CRITIC_RESPONSE_FORMAT,
+            briefing.AI_POLISH_RESPONSE_FORMAT,
+            briefing.AI_APPROVAL_RESPONSE_FORMAT,
+        )
+        for response_format in formats:
+            self.assertEqual(response_format["type"], "json_schema")
+            contract = response_format["json_schema"]
+            self.assertTrue(contract["strict"])
+            self.assertFalse(contract["schema"]["additionalProperties"])
+
+    def test_approved_brief_polish_uses_strict_schema(self):
+        with mock.patch.object(
+            briefing,
+            "_call_internal_ai",
+            return_value={
+                "title": "香港电讯推出企业人工智能服务",
+                "summary": "香港电讯面向企业客户推出人工智能服务，扩展数字化解决方案。",
+            },
+        ) as ai_call:
+            briefing._polish_approved_brief(self._approved_brief())
+
+        self.assertEqual(
+            ai_call.call_args.kwargs["response_format"],
+            briefing.AI_POLISH_RESPONSE_FORMAT,
+        )
+
     def _approved_brief(self) -> dict:
         return {
             "id": "NEWS-TEST",

@@ -211,6 +211,10 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(trace["status"], "completed")
         self.assertEqual(digest.AGENTIC_AI_ATTEMPTS, 3)
         self.assertGreaterEqual(call.call_args.kwargs["max_tokens"], 2600)
+        self.assertEqual(
+            call.call_args.kwargs["response_format"],
+            digest.AGENTIC_SEARCH_RESPONSE_FORMAT,
+        )
         self.assertIn("query最多180个字符", call.call_args.args[0])
         self.assertIn("香港监管政策和本地数字产业政策同列最高优先级", call.call_args.args[0])
         self.assertIn("自动驾驶测试与商业化", call.call_args.args[0])
