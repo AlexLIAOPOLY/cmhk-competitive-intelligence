@@ -600,9 +600,10 @@
     const list = card.querySelector("[data-competitor-insight-list]");
     if (isAi) {
       const li = document.createElement("li");
-      const copy = document.createElement("span");
+      const copy = document.createElement("div");
       li.className = "is-raw-ai-output";
-      copy.textContent = String(insight ?? "");
+      copy.className = "competitor-insight-markdown markdown-body";
+      renderCompetitorInsightMarkdown(copy, insight);
       li.append(copy);
       list.replaceChildren(li);
       return;
@@ -618,6 +619,16 @@
       li.append(label, copy);
       return li;
     }));
+  }
+
+  function renderCompetitorInsightMarkdown(target, content) {
+    const markdown = String(content ?? "");
+    target.dataset.rawMarkdown = markdown;
+    if (typeof window.markdownToHtml === "function") {
+      target.innerHTML = window.markdownToHtml(markdown);
+      return;
+    }
+    target.textContent = markdown;
   }
 
   function setCompetitorInsightStatus(card, message = "") {
@@ -643,9 +654,10 @@
     setCompetitorInsightStatus(card, `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
     const li = document.createElement("li");
-    const copy = document.createElement("span");
+    const copy = document.createElement("div");
     li.className = "is-raw-ai-output";
-    copy.textContent = String(text);
+    copy.className = "competitor-insight-markdown markdown-body";
+    renderCompetitorInsightMarkdown(copy, text);
     li.append(copy);
     card.querySelector("[data-competitor-insight-list]").replaceChildren(li);
   }
