@@ -417,7 +417,37 @@ class AgenticNewsSearchTests(unittest.TestCase):
         )
         self.assertEqual(len(semantic_items), 1)
         self.assertFalse(semantic_items[0]["literal_keyword_match"])
-        self.assertEqual(semantic_items[0]["keywords"], ["T-Mobile"])
+        self.assertEqual(semantic_items[0]["keywords"], [])
+        self.assertEqual(semantic_items[0]["query_keywords"], ["T-Mobile"])
+
+    def test_local_semantic_result_without_literal_keyword_is_still_forwarded(self):
+        raw = """<?xml version="1.0" encoding="UTF-8"?>
+        <rss><channel><item>
+          <title>香港智慧交通计划公布新一轮安排</title>
+          <link>https://example.hk/news/smart-transport</link>
+          <description>政府公布本地数字基础设施及公共服务安排。</description>
+          <pubDate>Sat, 25 Jul 2026 09:00:00 +0800</pubDate>
+          <source>香港新闻</source>
+        </item></channel></rss>""".encode("utf-8")
+
+        items = digest._parse_news_feed(
+            raw,
+            provider="google",
+            module="香港政策与科技",
+            keywords=["皇岗口岸"],
+            base_query='"皇岗口岸" 数字基础设施',
+            start_at=datetime(2026, 7, 25, 0, 0, tzinfo=HKT),
+            end_at=datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+            semantic_relevance=True,
+            search_origin="agentic_expansion",
+        )
+
+        self.assertEqual(len(items), 1)
+        self.assertTrue(items[0]["is_hong_kong"])
+        self.assertTrue(items[0]["semantic_relevance"])
+        self.assertFalse(items[0]["literal_keyword_match"])
+        self.assertEqual(items[0]["keywords"], [])
+        self.assertEqual(items[0]["query_keywords"], ["皇岗口岸"])
 
     def test_agentic_plan_is_additive_and_deduplicates_existing_queries(self):
         existing = {'"hkt" earnings'}

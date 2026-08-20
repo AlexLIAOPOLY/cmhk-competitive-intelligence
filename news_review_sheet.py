@@ -1354,6 +1354,12 @@ def sync_candidates(
             if isinstance(ai_review_audit.get("review_items"), list)
             else []
         )
+        ai_deferred_count = sum(
+            1
+            for review_item in ai_review_items
+            if isinstance(review_item, dict)
+            and review_item.get("status") == "deferred"
+        )
         ai_included_count = len(prepared_items)
         semantic_search_day, semantic_history_items = _recent_semantic_history(
             existing_history_items,
@@ -1714,6 +1720,7 @@ def sync_candidates(
                 "last_new_region_counts": dict(new_region_counts),
                 "last_new_source_count": len(new_sources),
                 "last_ai_included_count": ai_included_count,
+                "last_ai_deferred_count": ai_deferred_count,
                 "last_ai_processed_count": len(prepared_items),
                 "last_semantic_duplicate_count": len(semantic_result["duplicates"]),
                 "last_semantic_deferred_count": len(semantic_result["deferred"]),
@@ -1735,6 +1742,7 @@ def sync_candidates(
             "candidate_count": candidate_count,
             "batch_count": len(items),
             "ai_included_count": ai_included_count,
+            "ai_deferred_count": ai_deferred_count,
             "ai_review_items": ai_review_items,
             "archived_count": archived_count,
             "gate_filtered_count": len(items) - len(curated_items),
@@ -1753,10 +1761,14 @@ def sync_candidates(
             "semantic_duplicate_count": len(semantic_result["duplicates"]),
             "semantic_review_items": semantic_review_items,
             "semantic_deferred_count": len(semantic_result["deferred"]),
+            "deferred_count": (
+                ai_deferred_count + len(semantic_result["deferred"])
+            ),
             "semantic_history_count": semantic_result["history_count"],
             "semantic_history_shards": semantic_result["history_shards"],
             "semantic_history_scope": "hkt_search_day_and_previous_2_days",
             "semantic_search_day": semantic_search_day,
+            "semantic_audit_id": semantic_result.get("audit_id", ""),
             "deferred_delivery_ack": deferred_ack,
         }
 

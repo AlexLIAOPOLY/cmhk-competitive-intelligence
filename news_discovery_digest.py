@@ -215,11 +215,13 @@ def _parse_news_feed(
             item for item in keywords if _term_matches(searchable, item)
         ][:5]
         literal_keyword_match = bool(literal_keywords)
-        matched_keywords = literal_keywords or list(dict.fromkeys(keywords))[:5]
-        if canonical_competitor:
-            matched_keywords = list(
-                dict.fromkeys([canonical_competitor, *matched_keywords])
-            )[:6]
+        # Keep retrieval context separate from evidence found in the article.
+        # A query term explains why a result was discovered, but must not be
+        # presented to the reviewing Agent as a literal content match.  The
+        # candidate is still forwarded unchanged, so this correction cannot
+        # reduce recall (including Hong Kong-local semantic discoveries).
+        query_keywords = list(dict.fromkeys(keywords))[:6]
+        matched_keywords = literal_keywords
         candidate = {
             "news_id": f"NEWS-{published_at:%Y%m%d}-{digest}",
             "title": title,
@@ -242,6 +244,7 @@ def _parse_news_feed(
             "retrieved_at": end_at.astimezone(HKT).isoformat(timespec="seconds"),
             "module": module,
             "keywords": matched_keywords,
+            "query_keywords": query_keywords,
             "snippet": snippet,
             "is_hong_kong": bool(canonical_competitor)
             or any(term in lowered for term in LOCAL_TERMS),

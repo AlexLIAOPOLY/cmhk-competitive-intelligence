@@ -1638,7 +1638,7 @@ class StrategicBriefingTests(unittest.TestCase):
             ["Bearer v4-key", "Bearer free-key"],
         )
 
-    def test_strategic_ai_sends_api_level_structured_output_contract(self):
+    def test_strategic_ai_adapts_deepseek_schema_to_json_object(self):
         response = mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps(
             {
@@ -1677,7 +1677,74 @@ class StrategicBriefingTests(unittest.TestCase):
             )
 
         request_body = json.loads(opener.open.call_args.args[0].data)
+        self.assertEqual(request_body["response_format"], {"type": "json_object"})
+        self.assertEqual(request_body["thinking"], {"type": "disabled"})
+
+    def test_strategic_ai_keeps_json_schema_for_compatible_model(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "gpt-4o-mini",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+            mock.patch.object(briefing, "DEFAULT_STRATEGY_AI_MODEL", ""),
+        ):
+            briefing._call_internal_ai(
+                "system",
+                "user",
+                response_format=response_format,
+            )
+
+        request_body = json.loads(opener.open.call_args.args[0].data)
         self.assertEqual(request_body["response_format"], response_format)
+        self.assertNotIn("thinking", request_body)
+
+    def test_structured_ai_enforces_schema_locally(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": '{"ok":"yes"}'}}]}
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "deepseek-v4-pro",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            with self.assertRaises(briefing.AIInvalidStructuredResponse):
+                briefing._call_internal_ai(
+                    "system",
+                    "user",
+                    response_format=response_format,
+                )
 
     def test_structured_ai_never_parses_reasoning_as_final_json(self):
         response = mock.MagicMock()
@@ -4052,6 +4119,44 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(state["pending_briefs"], [])
         self.assertEqual(state["last_group_error"], "")
         save.assert_called_once()
+
+    def test_candidate_editor_input_separates_semantic_query_context(self):
+        item = {
+            "title": "铜锣湾将引入人工智能交通灯",
+            "summary": "运输署计划在铜锣湾繁忙路口引入人工智能交通灯。",
+            "keywords": [],
+            "query_keywords": ["皇岗口岸"],
+            "semantic_relevance": True,
+        }
+
+        payload = briefing._candidate_editor_input("a" * 64, item)
+
+        self.assertEqual(payload["matched_keywords"], "")
+        self.assertTrue(payload["semantic_relevance"])
+        self.assertEqual(payload["retrieval_query_context"], "['皇岗口岸']")
+
+    def test_source_summary_for_ai_removes_publisher_disclaimer(self):
+        title = "中金：服务器液冷泵开启新增长极"
+        summary = (
+            "前述内容由大模型智能生成，相关AI内容力求但不保证准确性、时效性、完整性等。"
+            "请用户注意甄别，平台不承担由此产生的任何责任。如您有疑问或需要更多信息，"
+            "请联系我们 editor@example.com "
+            "中金：服务器液冷泵开启新增长极 中金指出，数据中心正向液冷架构演进。"
+        )
+
+        cleaned = briefing._source_summary_for_ai(summary, title)
+
+        self.assertTrue(cleaned.startswith(title))
+        self.assertNotIn("不保证准确性", cleaned)
+        self.assertNotIn("联系我们", cleaned)
+
+    def test_summary_copy_marks_hard_truncation(self):
+        summary = "这是一个没有句号的很长摘要" * 20
+
+        cleaned = briefing._summary_copy(summary, 96)
+
+        self.assertLessEqual(len(cleaned), 96)
+        self.assertTrue(cleaned.endswith("…"))
 
 
 if __name__ == "__main__":

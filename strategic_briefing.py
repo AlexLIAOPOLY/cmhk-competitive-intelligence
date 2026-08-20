@@ -48,6 +48,7 @@ AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
+SEMANTIC_DEDUPE_AUDITS_DIR = DATA_DIR / "semantic_dedupe_audits"
 DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
 AI_EDITOR_VERSION = 24
 AI_EDITOR_CRITIC_ENABLED = (
@@ -304,6 +305,10 @@ _SOFT_PRIORITY_GUIDANCE = (
     "普通海外AI与芯片消息若有具体变化可保留为较低优先级；只有明显误命中或无事件内容才排除。"
     "CMHK及其品牌是本公司，必须走战略信号通道，"
     "不得走竞对直通、不得归为竞对动态。"
+    "当semantic_relevance=true时，这是Agent为覆盖缺口主动发现的语义候选；"
+    "retrieval_query_context只解释发现路径，不是正文命中证据。即使matched_keywords为空，"
+    "也必须直接依据标题和source_summary判断是否存在上述具体战略事件；确认相关时可以纳入且"
+    "keywords留空，不得把retrieval_query_context伪装成正文命中词。"
     "i-CABLE、HOY等名称若只出现在来源媒体或网址，而标题摘要中的事件主体是房协、数码港、政府、"
     "其他企业或一般社会事件，绝不是竞对事件；只有新闻本身描述有线宽频、HOY或其集团的经营动作"
     "才是竞对直通。台湾的数位发展部（数发部）与台湾环保署事件属于国际/行业，不是香港本地。"
@@ -381,6 +386,66 @@ def _strict_items_response_format(
             }
         },
     )
+
+
+def _structured_transport_options(
+    model: str,
+    response_format: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Adapt our strict local contract to the selected provider's API surface."""
+    if "deepseek" in model.casefold():
+        # DeepSeek's Chat Completions API supports JSON Object mode, not
+        # OpenAI's response_format=json_schema dialect.  Structured review is
+        # a formatting task, so disable the default thinking mode to keep the
+        # final JSON from being crowded out by reasoning tokens.  The original
+        # schema is still enforced locally after parsing.
+        return {"type": "json_object"}, {"thinking": {"type": "disabled"}}
+    return response_format, {}
+
+
+def _validate_local_json_schema(
+    value: Any,
+    schema: dict[str, Any],
+    *,
+    path: str = "$",
+) -> None:
+    """Validate the small JSON-Schema subset used by strategic-news stages."""
+    expected = schema.get("type")
+    type_ok = {
+        "object": isinstance(value, dict),
+        "array": isinstance(value, list),
+        "string": isinstance(value, str),
+        "boolean": isinstance(value, bool),
+        "number": isinstance(value, (int, float)) and not isinstance(value, bool),
+        "integer": isinstance(value, int) and not isinstance(value, bool),
+    }.get(expected, True)
+    if not type_ok:
+        raise ValueError(f"{path} 应为 {expected}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise ValueError(f"{path} 不在允许值中")
+    if expected == "object":
+        properties = schema.get("properties") or {}
+        missing = [key for key in schema.get("required") or [] if key not in value]
+        if missing:
+            raise ValueError(f"{path} 缺少字段：{', '.join(missing)}")
+        if schema.get("additionalProperties") is False:
+            extras = [key for key in value if key not in properties]
+            if extras:
+                raise ValueError(f"{path} 包含额外字段：{', '.join(extras)}")
+        for key, child_schema in properties.items():
+            if key in value and isinstance(child_schema, dict):
+                _validate_local_json_schema(
+                    value[key],
+                    child_schema,
+                    path=f"{path}.{key}",
+                )
+    elif expected == "array" and isinstance(schema.get("items"), dict):
+        for index, item in enumerate(value):
+            _validate_local_json_schema(
+                item,
+                schema["items"],
+                path=f"{path}[{index}]",
+            )
 
 
 _AI_EDITOR_FIELDS: dict[str, Any] = {
@@ -2950,7 +3015,12 @@ def _call_internal_ai(
             "max_tokens": max_tokens,
         }
         if response_format:
-            request_body["response_format"] = response_format
+            transport_format, structured_options = _structured_transport_options(
+                route_model,
+                response_format,
+            )
+            request_body["response_format"] = transport_format
+            request_body.update(structured_options)
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
@@ -3070,12 +3140,27 @@ def _call_internal_ai(
     message = choice.get("message") or {}
     final_content = str(message.get("content") or "").strip()
     reasoning_content = str(message.get("reasoning_content") or "").strip()
+    finish_reason = _clean_text(choice.get("finish_reason"), 80)
+    if response_format:
+        usage = payload.get("usage") if isinstance(payload.get("usage"), dict) else {}
+        details = (
+            usage.get("completion_tokens_details")
+            if isinstance(usage.get("completion_tokens_details"), dict)
+            else {}
+        )
+        logging.info(
+            "战略新闻结构化AI响应：model=%s format=%s finish=%s completion_tokens=%s reasoning_tokens=%s",
+            _clean_text(payload.get("model") or route_model, 120),
+            (request_body.get("response_format") or {}).get("type"),
+            finish_reason or "unknown",
+            usage.get("completion_tokens", "unknown"),
+            details.get("reasoning_tokens", "unknown"),
+        )
     # A structured request must parse only the provider's final answer.  Using
     # reasoning_content as if it were the answer creates false JSON alarms and
     # can accidentally accept an intermediate object from the chain of thought.
     content = final_content or ("" if response_format else reasoning_content)
     if response_format and not content:
-        finish_reason = _clean_text(choice.get("finish_reason"), 80)
         detail = "结构化最终输出为空"
         if finish_reason in {"length", "max_tokens"}:
             detail += "（输出在JSON完成前被截断）"
@@ -3084,6 +3169,11 @@ def _call_internal_ai(
     try:
         parsed = json.loads(content)
     except json.JSONDecodeError:
+        if response_format and finish_reason in {"length", "max_tokens"}:
+            raise AIInvalidStructuredResponse(
+                content,
+                "结构化输出在JSON完成前被截断",
+            )
         match = re.search(r"\{.*\}", content, flags=re.S)
         if not match:
             if allow_plain_text and content:
@@ -3093,7 +3183,15 @@ def _call_internal_ai(
             parsed = json.loads(match.group(0))
         except json.JSONDecodeError as exc:
             raise AIUnstructuredResponse(content) from exc
-    return parsed if isinstance(parsed, dict) else {}
+    parsed = parsed if isinstance(parsed, dict) else {}
+    if response_format and response_format.get("type") == "json_schema":
+        schema = (response_format.get("json_schema") or {}).get("schema")
+        if isinstance(schema, dict):
+            try:
+                _validate_local_json_schema(parsed, schema)
+            except ValueError as exc:
+                raise AIInvalidStructuredResponse(content, str(exc)) from exc
+    return parsed
 
 
 _META_SUMMARY_PREFIX = re.compile(
@@ -3111,6 +3209,9 @@ _MODEL_ARTIFACT_MARKERS = (
     "不要markdown",
     "字段为title",
     "我们需要回答",
+    "不保证准确性、时效性、完整性",
+    "不承担由此产生的任何责任",
+    "如您有疑问或需要更多信息",
 )
 _MODEL_ARTIFACT_PREFIX_RE = re.compile(
     r"^(?:我们需要回答)?合法JSON[。.\s]*需要判断[。.\s]*输入新闻[：:]\s*"
@@ -3142,6 +3243,52 @@ def _strip_model_artifact_prefix(value: Any) -> str:
     return _clean_text(_MODEL_ARTIFACT_PREFIX_RE.sub("", str(value or "")), 240)
 
 
+def _source_summary_for_ai(value: Any, title: Any = "") -> str:
+    """Remove publisher boilerplate while retaining the article's factual lead."""
+    text = _clean_text(value, 1800)
+    lowered = text.casefold()
+    disclaimer = any(
+        marker in lowered
+        for marker in (
+            "不保证准确性、时效性、完整性",
+            "不承担由此产生的任何责任",
+            "如您有疑问或需要更多信息",
+        )
+    )
+    if not disclaimer:
+        return text
+    candidates: list[str] = []
+    email_matches = list(
+        re.finditer(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", text)
+    )
+    if email_matches:
+        candidates.append(text[email_matches[-1].end() :].strip(" ：:，,。"))
+    normalized_title = _clean_text(title, 500)
+    if normalized_title:
+        title_positions = [
+            match.start()
+            for match in re.finditer(re.escape(normalized_title), text)
+        ]
+        if title_positions:
+            candidates.append(text[title_positions[-1] :].strip())
+    return next((candidate for candidate in candidates if len(candidate) >= 16), text)
+
+
+def _summary_copy(value: Any, limit: int = 96) -> str:
+    """Normalize summary copy and make any unavoidable truncation explicit."""
+    text = _clean_text(
+        _SIMPLIFIED_CHINESE_CONVERTER.convert(str(value or "")),
+        1800,
+    )
+    if len(text) <= limit:
+        return text
+    prefix = text[: limit - 1].rstrip("，、；：,. ")
+    sentence_end = max(prefix.rfind(mark) for mark in "。！？!?")
+    if sentence_end >= 16:
+        return prefix[: sentence_end + 1]
+    return prefix + "…"
+
+
 def _recover_publishable_copy(
     title: str,
     summary: str,
@@ -3151,12 +3298,15 @@ def _recover_publishable_copy(
     source_title = _to_simplified_chinese(
         source.get("source_title") or source.get("title"), 48
     )
-    source_summary = _to_simplified_chinese(
-        source.get("source_summary")
-        or source.get("snippet")
-        or source.get("summary")
-        or source.get("description")
-        or source.get("why"),
+    source_summary = _summary_copy(
+        _source_summary_for_ai(
+            source.get("source_summary")
+            or source.get("snippet")
+            or source.get("summary")
+            or source.get("description")
+            or source.get("why"),
+            source.get("source_title") or source.get("title"),
+        ),
         96,
     )
 
@@ -3735,7 +3885,7 @@ def _validated_ai_copy(
             or source_item.get("why")
         )
     title = _to_simplified_chinese(title_value, 48)
-    summary = _to_simplified_chinese(summary_value, 96)
+    summary = _summary_copy(summary_value, 96)
     if not title or not re.search(r"[\u4e00-\u9fff]", title):
         raise RuntimeError("公司内部 AI 未返回中文快讯标题")
     if len(summary) < 16 or not re.search(r"[\u4e00-\u9fff]", summary):
@@ -3743,13 +3893,13 @@ def _validated_ai_copy(
     if _META_SUMMARY_PREFIX.search(summary):
         raise RuntimeError("公司内部 AI 内容简介仍使用元话术，未直接陈述内容")
     if isinstance(source_item, dict):
-        source_summary = _clean_text(
+        source_summary = _source_summary_for_ai(
             source_item.get("source_summary")
             or source_item.get("snippet")
             or source_item.get("summary")
             or source_item.get("description")
             or source_item.get("why"),
-            1800,
+            source_item.get("source_title") or source_item.get("title"),
         )
         _validate_temporal_fidelity(source_summary, summary)
     if not require_review_fields:
@@ -3854,7 +4004,14 @@ def _validated_ai_copy(
         raise RuntimeError("公司内部 AI 未返回有效地域")
     if category not in _ALLOWED_NEWS_CATEGORIES:
         raise RuntimeError("公司内部 AI 未返回分类")
-    if should_include and not keywords:
+    if (
+        should_include
+        and not keywords
+        and not (
+            isinstance(source_item, dict)
+            and source_item.get("semantic_relevance")
+        )
+    ):
         raise RuntimeError("公司内部 AI 未返回命中关键词")
     if should_include and len(inclusion_reason) < 8:
         raise RuntimeError("公司内部 AI 未返回有效入池理由")
@@ -4059,13 +4216,13 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": key[:16],
         "title": _clean_text(item.get("source_title") or item.get("title"), 500),
-        "source_summary": _clean_text(
+        "source_summary": _source_summary_for_ai(
             item.get("source_summary")
             or item.get("snippet")
             or item.get("summary")
             or item.get("description")
             or item.get("why"),
-            1800,
+            item.get("source_title") or item.get("title"),
         ),
         "monitoring_module": _clean_text(item.get("module"), 120),
         "upstream_category_hint": _clean_text(
@@ -4079,6 +4236,8 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
         ),
         "reviewed_at_hkt": _now_iso(),
         "matched_keywords": _clean_text(item.get("keywords"), 800),
+        "semantic_relevance": bool(item.get("semantic_relevance")),
+        "retrieval_query_context": _clean_text(item.get("query_keywords"), 800),
         "configured_competitor_hint": _clean_text(
             item.get("canonical_competitor"), 120
         ),
@@ -5764,8 +5923,10 @@ def agent_semantic_deduplicate_candidates(
             )
         else:
             kept.append(source_item)
+    audit_id = f"{datetime.now(HKT):%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:8]}"
     audit = {
         "version": 2,
+        "audit_id": audit_id,
         "generated_at": _now_iso(),
         "history_count": len(history),
         "history_shards": history_shards,
@@ -5783,6 +5944,13 @@ def agent_semantic_deduplicate_candidates(
         "deferred_count": len(deferred),
         "decisions": list(aggregate.values()),
     }
+    # Keep an immutable copy for each invocation.  The conventional path below
+    # remains a latest pointer for existing dashboards, but can no longer erase
+    # the evidence for the scheduled run that just completed.
+    _atomic_write_json(
+        SEMANTIC_DEDUPE_AUDITS_DIR / f"{audit_id}.json",
+        audit,
+    )
     _atomic_write_json(SEMANTIC_DEDUPE_AUDIT_PATH, audit)
     _emit_progress(
         progress_callback,
@@ -5803,6 +5971,7 @@ def agent_semantic_deduplicate_candidates(
         "history_shards": history_shards,
         "llm_call_count": llm_call_count,
         "llm_call_limit": SEMANTIC_DEDUPE_MAX_LLM_CALLS,
+        "audit_id": audit_id,
     }
 
 
