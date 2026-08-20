@@ -77,6 +77,10 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "directory_profile": "org_test",
                 "delivery_profile": "org_test",
                 "primary_delivery_open_id": "ou_delivery123",
+                "confirmation_image_keys": {
+                    "cli_test": "img_v3_confirmation_test",
+                    "org_test": "img_v3_confirmation_test",
+                },
             },
             "card_actions": {
                 "primary_handler_open_id": "ou_test123",
@@ -158,6 +162,7 @@ class SubscriptionServiceTests(unittest.TestCase):
 
     def test_subscription_confirmation_is_compact_card_2_receipt(self):
         card = subscription_confirmation_card(
+            image_key="img_v3_confirmation_test",
             display_name="Alex LIAO Wang",
             service_labels="战略双周报、战略新闻",
             report_mode_label="PDF + 单独语音",
@@ -169,6 +174,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["template"], "green")
         self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
         self.assertEqual(card["header"]["text_tag_list"][0]["text"]["content"], "已开启")
+        self.assertEqual(card["body"]["elements"][0]["tag"], "img")
+        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_confirmation_test")
         text = json.dumps(card, ensure_ascii=False)
         self.assertIn("Alex LIAO Wang，设置完成", text)
         self.assertIn("战略双周报、战略新闻", text)
@@ -199,6 +206,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         card = json.loads(send_call[send_call.index("--content") + 1])
         self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
+        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_confirmation_test")
         self.assertIn("每天两次 · 最新 15 条", json.dumps(card, ensure_ascii=False))
 
     def test_news_schedule_is_paused_by_default_and_can_be_enabled(self):

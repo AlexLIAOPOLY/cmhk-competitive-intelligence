@@ -146,6 +146,10 @@
     "poster_image_keys": {
       "cli_a9575e70ae799cb2": "img_v3_0214m_eed56d10-66fa-4891-84e7-da4de0193cdg",
       "cmhk-innovation-digital": "img_v3_0214m_005b2a54-0800-4789-bb79-56a832c9e08g"
+    },
+    "confirmation_image_keys": {
+      "cli_a9575e70ae799cb2": "img_v3_0214o_b1c4553c-184b-45ec-bbe9-504db0634b8g",
+      "cmhk-innovation-digital": "img_v3_0214o_f7688d2a-94c9-4bf7-bebc-93662859928g"
     }
   },
   "error_ledger": {

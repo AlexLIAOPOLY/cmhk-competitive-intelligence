@@ -332,6 +332,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
 
 def subscription_confirmation_card(
     *,
+    image_key: str = "",
     display_name: str,
     service_labels: str,
     report_mode_label: str,
@@ -379,6 +380,20 @@ def subscription_confirmation_card(
             "padding": "12px 12px 16px 12px",
             "vertical_spacing": "10px",
             "elements": [
+                *(
+                    [
+                        {
+                            "tag": "img",
+                            "img_key": image_key,
+                            "alt": {"tag": "plain_text", "content": "订阅成功庆祝图"},
+                            "scale_type": "fit_horizontal",
+                            "corner_radius": "8px",
+                            "preview": False,
+                        }
+                    ]
+                    if IMAGE_KEY_RE.fullmatch(image_key)
+                    else []
+                ),
                 {
                     "tag": "markdown",
                     "content": f"**{name}，设置完成**\n后续内容将按以下偏好发送给你。",
@@ -1132,9 +1147,23 @@ class SubscriptionService:
         record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         category_labels = "、".join(saved["news_category_labels"])
+        subscriptions_config = (
+            self.config.get("subscriptions")
+            if isinstance(self.config.get("subscriptions"), dict)
+            else {}
+        )
+        confirmation_keys = (
+            subscriptions_config.get("confirmation_image_keys")
+            if isinstance(subscriptions_config.get("confirmation_image_keys"), dict)
+            else {}
+        )
+        confirmation_image_key = str(
+            confirmation_keys.get(source_profile) or confirmation_keys.get("default") or ""
+        )
         confirmation = self._send_interactive_card(
             identity["callback_open_id"],
             subscription_confirmation_card(
+                image_key=confirmation_image_key,
                 display_name=identity["display_name"],
                 service_labels=labels,
                 report_mode_label=saved["report_mode_label"],
