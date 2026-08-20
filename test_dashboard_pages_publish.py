@@ -41,7 +41,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         )
 
         self.assertIn('aria-label="HKT战略监控四层体系"', html)
-        self.assertIn('src="/static/executive-dashboard-demo.js?v=23"', html)
+        self.assertIn('src="/static/executive-dashboard-demo.js?v=24"', html)
         self.assertIn("HKT经营全景", html)
         self.assertIn("本地运营商对比", html)
         self.assertIn("financeCompanyFallbacks", script)
@@ -61,40 +61,45 @@ class DashboardPagesPublishTests(unittest.TestCase):
         ):
             self.assertIn(source, script)
         for metric in (
-            "5G网络香港覆盖率",
-            "Wi-Fi热点",
-            "2025年新增流动通信站点",
-            "移动用户数",
-            "5G用户数",
-            "零售住宅宽带线路",
-            "FTTH光纤到户连接",
-            "新签企业项目金额",
-            "本地数据服务收入",
-            "The Club会员",
-            "Now TV已安装用户",
-            "总收入",
-            "EBITDA",
-            "股份合订单位持有人应占溢利",
+            "基站总数（4G）",
+            "基站总数（5G）",
+            "智算能力 PFLOPS",
+            "总移动用户数",
+            "移动综合ARPU",
+            "家庭宽带用户数",
+            "家庭户均收益（ARPU）",
+            "客户数（大中型企业/中小企业-参考政府公布的分类）",
+            "项目签约额",
+            "全港实体门市数量",
+            "官方手机应用程式 (如MyLink) 活跃用户数",
+            "营运收入",
+            "EBITDA率",
+            "净利润",
         ):
             self.assertIn(metric, script)
-        for stale_value in (
+        for removed_metric in (
             "chinamobileltd.com",
             "CHINA MOBILE NETWORK",
             "CMCC",
-            "4G基站总数",
-            "5G基站总数",
             "互联网骨干带宽",
+            "5G网络香港覆盖率",
+            "Wi-Fi热点",
+            "移动后付客户",
+            "住宅宽带客户",
+            "The Club会员",
+            "Now TV已安装用户",
+            "资本开支",
             "[263.7, 283.0, 244.8, 249.3, 263.8, 280.0, 250.9]",
         ):
-            self.assertNotIn(stale_value, script)
+            self.assertNotIn(removed_metric, script)
         self.assertNotIn("来源：HKT官方公开数据", script)
         self.assertIn("[17.322, 19.231, 18.685]", script)
         for company in ("3香港", "SmarTone", "HKBN", "i-CABLE"):
             self.assertIn(company, script)
-        for comparable_value in ("3.494", "1.289", "1.488", "0.907", "14234", "1508", "2445", "2451"):
+        for comparable_value in ("8.132", "2.75", "0.916", "186", "0.198", "26.8", "20.8"):
             self.assertIn(comparable_value, script)
-        self.assertIn("未披露同口径", script)
-        self.assertIn("各公司财年截止日不同", script)
+        self.assertIn("未披露同口径数据时显示", script)
+        self.assertNotIn("打开官方来源", script)
 
     def test_intelligence_snapshot_removes_runtime_source_metadata(self):
         source = INTELLIGENCE_BUILDER_PATH.read_text(encoding="utf-8")
@@ -260,22 +265,22 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=43"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=44"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=23"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=24"', html)
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)
             self.assertIn("metric-sparkline", script)
             self.assertIn("network-architecture", script)
-            self.assertIn("移动接入层", script)
-            self.assertIn("光纤承载层", script)
-            self.assertIn("融合服务层", script)
+            self.assertIn("移动网络基础设施", script)
+            self.assertIn("数据与云基础设施", script)
+            self.assertIn("本地运营商", script)
             self.assertNotIn("topology-orbit", script)
             for network_background in (
                 "network-4g-bg-v1.jpg",
@@ -324,20 +329,20 @@ class DashboardPagesPublishTests(unittest.TestCase):
             for company in ("HKT", "3香港", "SmarTone", "HKBN"):
                 self.assertIn(company, script)
             selected_metrics = (
-                "5G网络香港覆盖率",
-                "Wi-Fi热点",
-                "2025年新增流动通信站点",
-                "移动用户数",
-                "5G用户数",
-                "零售住宅宽带线路",
-                "FTTH光纤到户连接",
-                "新签企业项目金额",
-                "本地数据服务收入",
-                "The Club会员",
-                "Now TV已安装用户",
-                "总收入",
-                "EBITDA",
-                "股份合订单位持有人应占溢利",
+                "基站总数（4G）",
+                "基站总数（5G）",
+                "智算能力 PFLOPS",
+                "总移动用户数",
+                "移动综合ARPU",
+                "家庭宽带用户数",
+                "家庭户均收益（ARPU）",
+                "客户数（大中型企业/中小企业-参考政府公布的分类）",
+                "项目签约额",
+                "全港实体门市数量",
+                "官方手机应用程式 (如MyLink) 活跃用户数",
+                "营运收入",
+                "EBITDA率",
+                "净利润",
             )
             for metric in selected_metrics:
                 self.assertIn(metric, script)
@@ -347,6 +352,11 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 "品牌认知度",
                 "客户满意度",
                 "资本开支",
+                "5G网络香港覆盖率",
+                "Wi-Fi热点",
+                "移动后付客户",
+                "The Club会员",
+                "Now TV已安装用户",
             ):
                 self.assertNotIn(removed_metric, script)
             self.assertNotIn("setupTabs", script)
@@ -354,7 +364,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("IntersectionObserver", script)
             self.assertIn("2026年6月", script)
             self.assertIn("data-tooltip", script)
-            self.assertIn("data-source", script)
+            self.assertNotIn("data-source", script)
             self.assertNotIn("来源：HKT官方公开数据", script)
             self.assertIn("[17.322, 19.231, 18.685]", script)
             self.assertNotIn("chinamobileltd.com", script)

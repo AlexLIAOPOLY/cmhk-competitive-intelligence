@@ -251,10 +251,10 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-row.is-negative .comparison-meter i { background: linear-gradient(90deg, rgba(185, 103, 69, .72), rgba(239, 179, 84, .96)); }
 .comparison-finance-panel .comparison-content { grid-template-rows: auto minmax(0, 1fr) auto; }
 .comparison-finance-toolbar { align-items: center; }
-.comparison-metric-tabs { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid rgba(100, 205, 244, .16); border-radius: 4px; background: rgba(2, 13, 23, .46); }
+.comparison-metric-tabs { display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid rgba(100, 205, 244, .16); border-radius: 4px; background: rgba(2, 13, 23, .46); }
 .comparison-metric-tabs button { min-height: 27px; padding: 0 9px; font-size: clamp(10px, .6vw, 21px); }
-[data-finance-comparison-rows] { min-height: 0; }
-[data-finance-comparison-rows] .comparison-table { height: 100%; }
+[data-comparison-rows] { min-height: 0; }
+[data-comparison-rows] .comparison-table { height: 100%; }
 .comparison-scope-note { margin: 0; color: #6f929f; font-size: clamp(9px, .54vw, 19px); line-height: 1.4; }
 
 /* Typography hierarchy: readable CJK UI text plus condensed instrument numerals. */
