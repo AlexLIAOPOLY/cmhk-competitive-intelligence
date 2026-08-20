@@ -330,6 +330,109 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     }
 
 
+def subscription_confirmation_card(
+    *,
+    display_name: str,
+    service_labels: str,
+    report_mode_label: str,
+    frequency_label: str,
+    category_labels: str,
+    news_item_limit: int,
+) -> dict[str, Any]:
+    """Compact Card 2.0 receipt sent after a subscription is saved."""
+    name = re.sub(r"\s+", " ", str(display_name or "").strip())[:80] or "您好"
+    services = str(service_labels or "-").strip()[:180] or "-"
+    report_mode = str(report_mode_label or "-").strip()[:80] or "-"
+    frequency = str(frequency_label or "-").strip()[:80] or "-"
+    categories = str(category_labels or "-").strip()[:300] or "-"
+    try:
+        item_limit = int(news_item_limit)
+    except (TypeError, ValueError):
+        item_limit = 10
+    return {
+        "schema": "2.0",
+        "config": {
+            "update_multi": True,
+            "width_mode": "default",
+            "summary": {"content": f"订阅已生效 · {services}"},
+            "style": {
+                "text_size": {
+                    "body": {"default": "normal", "pc": "normal", "mobile": "normal"},
+                    "caption": {"default": "notation", "pc": "notation", "mobile": "notation"},
+                }
+            },
+        },
+        "header": {
+            "title": {"tag": "plain_text", "content": "订阅已生效"},
+            "subtitle": {"tag": "plain_text", "content": "战略情报偏好已保存"},
+            "template": "green",
+            "text_tag_list": [
+                {
+                    "tag": "text_tag",
+                    "text": {"tag": "plain_text", "content": "已开启"},
+                    "color": "green",
+                }
+            ],
+        },
+        "body": {
+            "direction": "vertical",
+            "padding": "12px 12px 16px 12px",
+            "vertical_spacing": "10px",
+            "elements": [
+                {
+                    "tag": "markdown",
+                    "content": f"**{name}，设置完成**\n后续内容将按以下偏好发送给你。",
+                },
+                {
+                    "tag": "column_set",
+                    "flex_mode": "none",
+                    "columns": [
+                        {
+                            "tag": "column",
+                            "width": "weighted",
+                            "weight": 1,
+                            "background_style": "green-50",
+                            "padding": "12px",
+                            "vertical_spacing": "10px",
+                            "elements": [
+                                {"tag": "markdown", "content": f"**订阅内容**\n{services}"},
+                                {
+                                    "tag": "div",
+                                    "fields": [
+                                        {
+                                            "is_short": True,
+                                            "text": {
+                                                "tag": "lark_md",
+                                                "content": f"**报告形式**\n{report_mode}",
+                                            },
+                                        },
+                                        {
+                                            "is_short": True,
+                                            "text": {
+                                                "tag": "lark_md",
+                                                "content": f"**战略新闻**\n{frequency} · 最新 {item_limit} 条",
+                                            },
+                                        },
+                                    ],
+                                },
+                                {"tag": "markdown", "content": f"**兴趣板块**\n{categories}"},
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "tag": "markdown",
+                    "content": (
+                        f"<font color='grey'>报告节奏：{REPORT_CADENCE_LABEL}。"
+                        "需要调整时，重新提交订阅卡片即可覆盖当前选择。</font>"
+                    ),
+                    "text_size": "notation",
+                },
+            ],
+        },
+    }
+
+
 def encode_strategic_news_digest(items: list[dict[str, Any]]) -> str:
     """Persist a structured digest through the existing text queue column."""
     return NEWS_DIGEST_PREFIX + json.dumps(items, ensure_ascii=False, separators=(",", ":"))
@@ -1029,9 +1132,16 @@ class SubscriptionService:
         record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         category_labels = "、".join(saved["news_category_labels"])
-        confirmation = self._send_markdown(
+        confirmation = self._send_interactive_card(
             identity["callback_open_id"],
-            f"#### 订阅已生效\n\n{identity['display_name']}，你当前订阅：**{labels}**。\n\n报告形式：**{saved['report_mode_label']}**\n\n报告节奏：**{REPORT_CADENCE_LABEL}**\n\n战略新闻频率：**{saved['frequency_label']}**\n\n兴趣板块：**{category_labels}**\n\n每次战略新闻：**从兴趣板块中选取最新 {saved['news_item_limit']} 条并分类展示**。以后重新提交订阅卡片即可覆盖选择。",
+            subscription_confirmation_card(
+                display_name=identity["display_name"],
+                service_labels=labels,
+                report_mode_label=saved["report_mode_label"],
+                frequency_label=saved["frequency_label"],
+                category_labels=category_labels,
+                news_item_limit=saved["news_item_limit"],
+            ),
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,
         )

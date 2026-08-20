@@ -10,6 +10,7 @@ from subscription_service import (
     SubscriptionService,
     encode_strategic_news_digest,
     strategic_news_card,
+    subscription_confirmation_card,
     subscription_entry_card,
 )
 
@@ -154,6 +155,51 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "updated_at": self.service.strategic_news_schedule_snapshot()["updated_at"],
             },
         )
+
+    def test_subscription_confirmation_is_compact_card_2_receipt(self):
+        card = subscription_confirmation_card(
+            display_name="Alex LIAO Wang",
+            service_labels="战略双周报、战略新闻",
+            report_mode_label="PDF + 单独语音",
+            frequency_label="每天两次",
+            category_labels="竞对动态、政策监管",
+            news_item_limit=15,
+        )
+        self.assertEqual(card["schema"], "2.0")
+        self.assertEqual(card["header"]["template"], "green")
+        self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
+        self.assertEqual(card["header"]["text_tag_list"][0]["text"]["content"], "已开启")
+        text = json.dumps(card, ensure_ascii=False)
+        self.assertIn("Alex LIAO Wang，设置完成", text)
+        self.assertIn("战略双周报、战略新闻", text)
+        self.assertIn("每天两次 · 最新 15 条", text)
+        self.assertIn("竞对动态、政策监管", text)
+
+    def test_success_callback_sends_interactive_confirmation_card(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        self.lark.calls.clear()
+        self.service.handle_card_event({
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "event_id": "event-card-confirmation",
+            "operator_id": "ou_callback123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+            "form_value": json.dumps({
+                "services": ["weekly", "news"],
+                "report_mode": "pdf_audio",
+                "news_frequency": "twice_daily",
+                "news_item_limit": "15",
+                "news_categories": ["竞对动态", "政策监管"],
+            }),
+        })
+        send_call = next(call for call in self.lark.calls if "+messages-send" in call)
+        self.assertEqual(send_call[send_call.index("--msg-type") + 1], "interactive")
+        self.assertNotIn("--markdown", send_call)
+        card = json.loads(send_call[send_call.index("--content") + 1])
+        self.assertEqual(card["schema"], "2.0")
+        self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
+        self.assertIn("每天两次 · 最新 15 条", json.dumps(card, ensure_ascii=False))
 
     def test_news_schedule_is_paused_by_default_and_can_be_enabled(self):
         self.assertFalse(self.service.strategic_news_schedule_snapshot()["enabled"])
