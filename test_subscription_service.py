@@ -15,20 +15,23 @@ from subscription_service import (
 
 
 class FakeLark:
-    def __init__(self):
+    def __init__(self, *, job_title="经理", leader_open_id=""):
         self.calls = []
+        self.job_title = job_title
+        self.leader_open_id = leader_open_id
 
     def __call__(self, argv, timeout=45):
         self.calls.append(list(argv))
         if "api" in argv and "/open-apis/contact/v3/departments/0/children" in argv:
             payload = {"ok": True, "data": {"has_more": False, "items": [{
                 "open_department_id": "od-test123", "name": "战略部", "member_count": 1,
+                "leader_user_id": self.leader_open_id,
                 "status": {"is_deleted": False},
             }]}}
         elif "api" in argv and "/open-apis/contact/v3/users/find_by_department" in argv:
             payload = {"ok": True, "data": {"has_more": False, "items": [{
                 "open_id": "ou_delivery123", "union_id": "on_test123",
-                "name": "测试用户", "en_name": "测试用户 Test User", "job_title": "经理",
+                "name": "测试用户", "en_name": "测试用户 Test User", "job_title": self.job_title,
                 "avatar": {"avatar_72": "https://example.test/avatar.png"},
             }]}}
         elif "api" in argv and "/open-apis/im/v1/chats" in argv:
@@ -262,6 +265,15 @@ class SubscriptionServiceTests(unittest.TestCase):
         added = self.service.add_directory_candidates(["ou_delivery123"])
         self.assertEqual(added["added_count"], 1)
         self.assertEqual(added["candidates"][0]["display_name"], "测试用户")
+
+    def test_directory_refresh_derives_nonblank_position_from_real_org_relationship(self):
+        self.service.command_runner = FakeLark(job_title="", leader_open_id="ou_delivery123")
+        self.service.refresh_people_directory()
+        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "负责人")
+
+        self.service.command_runner = FakeLark(job_title="", leader_open_id="ou_someone_else")
+        self.service.refresh_people_directory()
+        self.assertEqual(self.service.search_people_directory("测试")[0]["job_title"], "成员")
 
     def test_chat_search_returns_only_visible_normal_group_matches(self):
         results = self.service.search_chat_directory("战略")
