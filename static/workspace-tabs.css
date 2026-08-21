@@ -19,8 +19,8 @@
 .dashboard-page:not(.workspace-dashboard-active) .workspace-inline-surface .floating-chat,
 .dashboard-page:not(.workspace-dashboard-active) #logModal.workspace-inline-surface .log-modal { height: 100% !important; }
 
-.dashboard-page.workspace-ai-active .brand-bar { display: flex !important; }
-.dashboard-page.workspace-ai-active .workspace-layout { height: calc(100dvh - 60px); }
+.dashboard-page.workspace-ai-active .brand-bar { display: none !important; }
+.dashboard-page.workspace-ai-active .workspace-layout { height: 100dvh; }
 
 .workspace-layout {
   position: relative;
@@ -1041,6 +1041,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-resolve-cell { text-align:center; }
 .fault-resolve-cell input { width:16px; height:16px; margin:0; accent-color:#55c9ac; cursor:pointer; }
 .fault-resolve-cell input:disabled { cursor:default; opacity:.52; }
+.fault-resolve-cell input:disabled:checked { opacity:1; }
 .fault-resolve-cell input[aria-busy="true"] { opacity:1; filter:drop-shadow(0 0 5px rgba(99,200,220,.72)); animation:fault-resolve-pulse .8s ease-in-out infinite alternate; }
 @keyframes fault-resolve-pulse { to { transform:scale(.88); filter:drop-shadow(0 0 9px rgba(99,200,220,.9)); } }
 .fault-cause { display: -webkit-box; overflow: hidden; color: #c4d9de; font-size: 11px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
@@ -1102,6 +1103,8 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-handler { color: #c7dbe0; text-align:center; white-space: nowrap; }
 .fault-handler-avatar { display:inline-grid; width:30px; height:30px; place-items:center; overflow:hidden; border:1px solid rgba(94,203,203,.34); border-radius:50%; color:#bff5f1; background:rgba(46,144,161,.24); font-size:11px; font-weight:700; }
 .fault-handler-avatar img { width:100%; height:100%; object-fit:cover; }
+.fault-handler-avatar.is-system { border-color:rgba(106,203,173,.5); color:#8ce3c8; background:linear-gradient(145deg,rgba(39,137,131,.48),rgba(18,73,88,.9)); box-shadow:0 0 0 3px rgba(83,194,166,.07); }
+.fault-handler-avatar.is-system svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .fault-empty { color: #7899a6 !important; text-align: center; }
 .fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
 .fault-pagination { display: flex; align-items: center; gap: 5px; }
@@ -1489,6 +1492,46 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-motion-card { min-height: 78px; grid-template-columns: 44px minmax(0,1fr) 18px; gap: 10px; padding: 11px; border-radius: 19px; }
   .workspace-motion-icon { width: 44px; height: 44px; border-radius: 15px; font-size: 20px; }
   .workspace-motion-copy strong { font-size: 13px; }
+}
+
+/* AI opens as a true full-viewport workspace. Its collapsed project-nav
+   handle stays separate from the chat history and new-thread controls. */
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 60;
+  width: 44px;
+  height: 48px;
+  margin: 0;
+  overflow: visible;
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  pointer-events: none;
+}
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs::before,
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs::after { display: none; }
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-nav-topline {
+  display: flex;
+  min-height: 48px;
+  justify-content: center;
+  padding: 0 2px;
+  border-bottom-color: transparent;
+}
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-tabs-scroll { display: none; }
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed .chat-nav-controls { margin-left: 48px; }
+body.dashboard-page.workspace-ai-active #workspace-panel-ai { padding: 0; }
+body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-surface.modal-backdrop.chat-backdrop { height: 100dvh; }
+body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-surface .floating-chat {
+  height: 100dvh !important;
+  min-height: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 @media (max-width: 1490px) {

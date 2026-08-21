@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 155
+          "value": 156
         },
         {
           "label": "cache:httpx",
@@ -104,7 +104,7 @@
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 5
+          "value": 4
         },
         {
           "label": "cache:curl_direct_chrome_ua",
@@ -136,96 +136,190 @@
         "completedAt": "2026-08-20T03:36:34+08:00"
       },
       "newsFunnel": {
-        "scope": "午后扫描（2026-08-20@14:00）",
-        "label": "8月20日 14:00",
-        "completedAt": "2026-08-20T16:03:54+08:00",
-        "historyDuplicates": 2,
+        "scope": "晨间扫描（2026-08-21@09:00）",
+        "label": "8月21日 09:00",
+        "completedAt": "2026-08-21T10:21:39+08:00",
+        "historyDuplicates": 25,
         "summary": {
-          "discovered": 41,
-          "confirmed": 10,
-          "newCount": 8,
-          "sourceCount": 8
+          "discovered": 294,
+          "confirmed": 69,
+          "newCount": 37,
+          "sourceCount": 33
         },
         "categories": [
           {
+            "label": "行业动态",
+            "value": 11
+          },
+          {
             "label": "网络与技术",
-            "value": 4
+            "value": 10
           },
           {
             "label": "竞对动态",
-            "value": 1
-          },
-          {
-            "label": "政策监管",
-            "value": 1
+            "value": 8
           },
           {
             "label": "其他",
-            "value": 2
+            "value": 8
           }
         ],
         "impacts": [
           {
             "label": "合规与牌照",
-            "value": 2
+            "value": 7
           },
           {
-            "label": "客户与渠道",
-            "value": 2
+            "label": "收入与需求",
+            "value": 7
           },
           {
-            "label": "成本与效率",
-            "value": 2
-          },
-          {
-            "label": "产品与定价",
-            "value": 1
+            "label": "资本配置",
+            "value": 7
           },
           {
             "label": "网络与运营",
-            "value": 1
+            "value": 5
+          },
+          {
+            "label": "产品与定价",
+            "value": 4
+          },
+          {
+            "label": "供应韧性",
+            "value": 4
+          },
+          {
+            "label": "成本与效率",
+            "value": 3
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 41,
+            "value": 294,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 41 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 294 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 10,
-            "removed": 31,
-            "rate": 24,
-            "note": "保留 24%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 10 条，未确认 31 条。"
+            "value": 69,
+            "removed": 225,
+            "rate": 23,
+            "note": "保留 23%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 69 条，未确认 225 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 8,
-            "removed": 2,
-            "rate": 80,
-            "note": "排除 2 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 2 条重复事件，剩余 8 条。"
+            "value": 44,
+            "removed": 25,
+            "rate": 64,
+            "note": "排除 25 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 25 条重复事件，剩余 44 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 8,
-            "removed": 0,
-            "rate": 100,
+            "value": 37,
+            "removed": 7,
+            "rate": 84,
             "note": "已写入飞书",
-            "detail": "最终 8 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 37 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
-      "todayNewsRounds": [],
+      "todayNewsRounds": [
+        {
+          "key": "2026-08-21-09",
+          "label": "上午",
+          "time": "09:00",
+          "status": "已完成",
+          "discovered": 294,
+          "confirmed": 280,
+          "historyDuplicates": 25,
+          "newCount": 37,
+          "note": "",
+          "categories": [
+            {
+              "label": "行业动态",
+              "value": 11
+            },
+            {
+              "label": "网络与技术",
+              "value": 10
+            },
+            {
+              "label": "竞对动态",
+              "value": 8
+            },
+            {
+              "label": "其他",
+              "value": 8
+            }
+          ],
+          "impacts": [
+            {
+              "label": "合规与牌照",
+              "value": 7
+            },
+            {
+              "label": "收入与需求",
+              "value": 7
+            },
+            {
+              "label": "资本配置",
+              "value": 7
+            },
+            {
+              "label": "网络与运营",
+              "value": 5
+            },
+            {
+              "label": "产品与定价",
+              "value": 4
+            },
+            {
+              "label": "供应韧性",
+              "value": 4
+            },
+            {
+              "label": "成本与效率",
+              "value": 3
+            }
+          ],
+          "stages": [
+            {
+              "key": "discovered",
+              "label": "检索发现",
+              "value": 294,
+              "detail": "固定监控与 Agentic Search 汇总的候选新闻。"
+            },
+            {
+              "key": "confirmed",
+              "label": "AI确认",
+              "value": 280,
+              "detail": "AI 结合竞对、政策及战略相关性完成审核。"
+            },
+            {
+              "key": "deduplicated",
+              "label": "历史去重",
+              "value": 255,
+              "detail": "与历史记录比对，排除 25 条重复事件。"
+            },
+            {
+              "key": "new",
+              "label": "新增入库",
+              "value": 37,
+              "detail": "已写入飞书、纳入今日信息资产的新增记录。"
+            }
+          ]
+        }
+      ],
       "entities": [
         {
           "label": "HKBN",
@@ -321,7 +415,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-20 03:23:01",
+    "latestOutputText": "2026-08-21 10:24:15",
     "outputs": [
       {
         "name": "8月19日周报.docx",
