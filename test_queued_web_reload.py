@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -47,11 +48,97 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
         self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
-        self.assertIn('$RUNTIME/task_runs/index.json', worker)
+        self.assertIn(
+            '$RUNTIME/agent_knowledge/crawl_run_logs/index.json', worker
+        )
+        self.assertIn('task.get("task_kind") or task.get("kind")', worker)
         self.assertLess(
             worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
             worker.index('bootstrap "$DOMAIN" "$WEB_PLIST"'),
         )
+
+    def test_worker_fallback_counts_running_strategic_crawl(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            runtime = Path(temporary_directory)
+            registry = runtime / "agent_knowledge" / "crawl_run_logs" / "index.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(
+                '['
+                '{"task_kind": "strategic-news", "run_status": "running"},'
+                '{"task_kind": "strategic-news", "run_status": "completed"},'
+                '{"task_kind": "main-crawl", "run_status": "running"}'
+                ']',
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [
+                    "bash",
+                    "scripts/queued_web_app_reload_worker.sh",
+                    "--count-running-strategic",
+                ],
+                cwd=ROOT,
+                env={
+                    "HOME": temporary_directory,
+                    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                    "CMHK_WEB_RUNTIME": temporary_directory,
+                    "CMHK_RELOAD_FORCE_INDEX_FALLBACK": "1",
+                },
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.strip(), "1")
+
+    def test_worker_fallback_fails_closed_for_missing_registry(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = subprocess.run(
+                [
+                    "bash",
+                    "scripts/queued_web_app_reload_worker.sh",
+                    "--count-running-strategic",
+                ],
+                cwd=ROOT,
+                env={
+                    "HOME": temporary_directory,
+                    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                    "CMHK_WEB_RUNTIME": temporary_directory,
+                    "CMHK_RELOAD_FORCE_INDEX_FALLBACK": "1",
+                },
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_worker_fallback_accepts_object_registry(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            runtime = Path(temporary_directory)
+            registry = runtime / "agent_knowledge" / "crawl_run_logs" / "index.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(
+                '{"tasks": ['
+                '{"kind": "strategic-news", "run_status": "running"}'
+                ']}',
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [
+                    "bash",
+                    "scripts/queued_web_app_reload_worker.sh",
+                    "--count-running-strategic",
+                ],
+                cwd=ROOT,
+                env={
+                    "HOME": temporary_directory,
+                    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                    "CMHK_WEB_RUNTIME": temporary_directory,
+                    "CMHK_RELOAD_FORCE_INDEX_FALLBACK": "1",
+                },
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.strip(), "1")
 
 
 if __name__ == "__main__":

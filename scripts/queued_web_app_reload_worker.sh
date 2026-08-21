@@ -10,7 +10,7 @@ STATE_DIR="$HOME/Library/Application Support/CMHK"
 REQUEST_FILE="$STATE_DIR/web-reload-requested"
 INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
-RUNTIME="/Users/liaowang/cmhk_public_crawl_app"
+RUNTIME="${CMHK_WEB_RUNTIME:-/Users/liaowang/cmhk_public_crawl_app}"
 WEB_PLIST="$HOME/Library/LaunchAgents/$WEB_LABEL.plist"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
 
@@ -22,7 +22,8 @@ log() {
 
 running_strategic_tasks() {
   local payload
-  if payload="$(/usr/bin/curl -fsS --max-time 3 "$TASKS_URL" 2>/dev/null)"; then
+  if [[ "${CMHK_RELOAD_FORCE_INDEX_FALLBACK:-0}" != "1" ]] \
+    && payload="$(/usr/bin/curl -fsS --max-time 3 "$TASKS_URL" 2>/dev/null)"; then
     printf '%s' "$payload" | /usr/bin/python3 -c '
 import json
 import sys
@@ -39,22 +40,35 @@ print(sum(
     return
   fi
   # Once login is required, the local queue worker cannot anonymously call the
-  # task API. Read the same persistent task index instead of weakening API auth.
-  /usr/bin/python3 - "$RUNTIME/task_runs/index.json" <<'PY'
+  # task API. Strategic crawls live in the crawl-run registry, not the general
+  # task index. A missing or malformed registry returns non-zero so the caller
+  # fails closed and preserves the current Web process.
+  /usr/bin/python3 - "$RUNTIME/agent_knowledge/crawl_run_logs/index.json" <<'PY'
 import json
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
 payload = json.loads(path.read_text(encoding="utf-8"))
+if isinstance(payload, dict):
+    tasks = payload.get("tasks") or []
+elif isinstance(payload, list):
+    tasks = payload
+else:
+    raise TypeError("crawl-run registry must be a list or object")
 print(sum(
     1
-    for task in payload.get("tasks", [])
-    if task.get("kind") == "strategic-news"
+    for task in tasks
+    if (task.get("task_kind") or task.get("kind")) == "strategic-news"
     and task.get("run_status") == "running"
 ))
 PY
 }
+
+if [[ "${1:-}" == "--count-running-strategic" ]]; then
+  running_strategic_tasks
+  exit
+fi
 
 next_midnight_epoch() {
   TZ=Asia/Hong_Kong /usr/bin/python3 -c '
