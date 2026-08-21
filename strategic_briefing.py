@@ -372,20 +372,22 @@ def _strict_items_response_format(
     item_properties: dict[str, Any],
     *,
     item_required: list[str] | None = None,
+    max_items: int | None = None,
 ) -> dict[str, Any]:
+    items_schema: dict[str, Any] = {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": item_properties,
+            "required": item_required or list(item_properties),
+            "additionalProperties": False,
+        },
+    }
+    if max_items is not None:
+        items_schema["maxItems"] = max_items
     return _strict_object_response_format(
         name,
-        {
-            "items": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": item_properties,
-                    "required": item_required or list(item_properties),
-                    "additionalProperties": False,
-                },
-            }
-        },
+        {"items": items_schema},
     )
 
 
@@ -462,6 +464,8 @@ def _validate_local_json_schema(
                     path=f"{path}.{key}",
                 )
     elif expected == "array" and isinstance(schema.get("items"), dict):
+        if isinstance(schema.get("maxItems"), int) and len(value) > schema["maxItems"]:
+            raise ValueError(f"{path} 最多允许 {schema['maxItems']} 条")
         for index, item in enumerate(value):
             _validate_local_json_schema(
                 item,
@@ -487,6 +491,7 @@ _AI_EDITOR_FIELDS: dict[str, Any] = {
 AI_EDITOR_BATCH_RESPONSE_FORMAT = _strict_items_response_format(
     "strategic_news_editor_batch",
     {"id": {"type": "string"}, **_AI_EDITOR_FIELDS},
+    max_items=4,
 )
 AI_EDITOR_SINGLE_RESPONSE_FORMAT = _strict_object_response_format(
     "strategic_news_editor_single",
@@ -502,6 +507,7 @@ AI_EDITOR_COMPACT_RESPONSE_FORMAT = _strict_items_response_format(
         "exclude": {"type": "string"},
         "region": {"type": "string"},
     },
+    max_items=4,
 )
 AI_CRITIC_RESPONSE_FORMAT = _strict_items_response_format(
     "strategic_news_critic",
@@ -512,6 +518,7 @@ AI_CRITIC_RESPONSE_FORMAT = _strict_items_response_format(
         "category": {"type": "string"},
         "reason": {"type": "string"},
     },
+    max_items=4,
 )
 AI_POLISH_RESPONSE_FORMAT = _strict_object_response_format(
     "strategic_news_polish",

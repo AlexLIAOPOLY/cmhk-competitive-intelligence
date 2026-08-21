@@ -74,6 +74,7 @@ AGENTIC_SEARCH_RESPONSE_FORMAT = strategic_briefing._strict_object_response_form
         "assessment": {"type": "string"},
         "queries": {
             "type": "array",
+            "maxItems": AGENTIC_EXPANSION_LIMIT,
             "items": {
                 "type": "object",
                 "properties": {
@@ -81,6 +82,7 @@ AGENTIC_SEARCH_RESPONSE_FORMAT = strategic_briefing._strict_object_response_form
                     "query": {"type": "string"},
                     "keywords": {
                         "type": "array",
+                        "maxItems": 8,
                         "items": {"type": "string"},
                     },
                     "intent": {"type": "string"},

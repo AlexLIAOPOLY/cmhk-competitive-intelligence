@@ -2031,6 +2031,16 @@ class StrategicBriefingTests(unittest.TestCase):
             contract = response_format["json_schema"]
             self.assertTrue(contract["strict"])
             self.assertFalse(contract["schema"]["additionalProperties"])
+        self.assertEqual(
+            briefing.AI_EDITOR_BATCH_RESPONSE_FORMAT["json_schema"]["schema"]
+            ["properties"]["items"]["maxItems"],
+            4,
+        )
+        self.assertEqual(
+            briefing.AI_EDITOR_COMPACT_RESPONSE_FORMAT["json_schema"]["schema"]
+            ["properties"]["items"]["maxItems"],
+            4,
+        )
 
     def test_approved_brief_polish_uses_strict_schema(self):
         with mock.patch.object(

@@ -15,6 +15,13 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 
 class AgenticNewsSearchTests(unittest.TestCase):
+    def test_agentic_schema_bounds_generated_query_arrays(self):
+        schema = digest.AGENTIC_SEARCH_RESPONSE_FORMAT["json_schema"]["schema"]
+        queries = schema["properties"]["queries"]
+
+        self.assertEqual(queries["maxItems"], digest.AGENTIC_EXPANSION_LIMIT)
+        self.assertEqual(queries["items"]["properties"]["keywords"]["maxItems"], 8)
+
     def test_digest_slot_label_uses_configured_scan_times(self):
         with mock.patch.object(
             digest,
