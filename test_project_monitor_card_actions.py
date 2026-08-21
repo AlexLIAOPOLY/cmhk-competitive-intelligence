@@ -261,6 +261,7 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(len(self.runner.resolution_update_calls()), 1)
         updated = json.loads(self.runner.updated_messages[MESSAGE_ID])
         self.assertIn("已人工修复", updated["header"]["title"]["content"])
+        self.assertEqual(updated["header"]["icon"]["token"], "done_outlined")
         self.assertIn("人工修复时间", json.dumps(updated, ensure_ascii=False))
         lines = self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()
         saved = json.loads(lines[-1])

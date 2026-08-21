@@ -2165,7 +2165,7 @@ class ProjectMonitor:
                 "content": f"{resolved_at_plain} · 告警 ID {incident_id}",
             },
             "template": "green",
-            "icon": {"tag": "standard_icon", "token": "success_outlined"},
+            "icon": {"tag": "standard_icon", "token": "done_outlined"},
             "text_tag_list": [
                 {
                     "tag": "text_tag",
@@ -2291,7 +2291,7 @@ class ProjectMonitor:
             "content": f"{handled_at_plain} · 告警 ID {incident_id}",
         }
         header["template"] = "green"
-        header["icon"] = {"tag": "standard_icon", "token": "success_outlined"}
+        header["icon"] = {"tag": "standard_icon", "token": "done_outlined"}
         tags = [
             {
                 "tag": "text_tag",

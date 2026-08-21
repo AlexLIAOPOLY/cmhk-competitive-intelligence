@@ -1233,6 +1233,7 @@ class ProjectMonitorTests(unittest.TestCase):
         updated_card = json.loads(self.runner.updated_messages[message_id])
         self.assertEqual(updated_card["header"]["template"], "green")
         self.assertIn("已自动恢复", updated_card["header"]["title"]["content"])
+        self.assertEqual(updated_card["header"]["icon"]["token"], "done_outlined")
         self.assertNotIn(
             "resolveButton",
             json.dumps(updated_card, ensure_ascii=False),
