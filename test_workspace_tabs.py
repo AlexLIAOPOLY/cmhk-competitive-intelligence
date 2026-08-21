@@ -41,7 +41,7 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=15', INDEX)
-        self.assertIn('/static/organization-admin.css?v=15', INDEX)
+        self.assertIn('/static/organization-admin.css?v=16', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -54,6 +54,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('document.addEventListener("pointerdown"', AUTH_SCRIPT)
         self.assertIn('event.key === "Escape"', AUTH_SCRIPT)
         self.assertIn('打开账户菜单', AUTH_SCRIPT)
+        self.assertIn('.auth-user-copy{display:none;', ORGANIZATION_STYLE)
+        self.assertNotIn('.auth-user-copy,.auth-user-chevron{display:none}', ORGANIZATION_STYLE)
         self.assertIn('request("/api/auth/admin/users")', ORGANIZATION_SCRIPT)
         self.assertIn('/api/auth/admin/users/${encodeURIComponent(detail.dataset.userId)}', ORGANIZATION_SCRIPT)
         self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)

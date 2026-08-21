@@ -11,7 +11,7 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
         self.assertIn('/static/organization-admin.js?v=15', INDEX)
-        self.assertIn('/static/organization-admin.css?v=15', INDEX)
+        self.assertIn('/static/organization-admin.css?v=16', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)
@@ -19,6 +19,12 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn("grid-template-columns:44px minmax(0,1fr)", STYLE)
         self.assertIn("overflow-wrap:anywhere", STYLE)
         self.assertIn("width:min(420px,calc(100vw - 16px))", STYLE)
+
+    def test_collapsed_account_trigger_only_shows_avatar_and_chevron(self):
+        self.assertIn('.auth-user-copy{display:none;', STYLE)
+        self.assertIn('class="auth-user-avatar"', INDEX)
+        self.assertIn('class="auth-user-chevron"', INDEX)
+        self.assertNotIn('.auth-user-copy,.auth-user-chevron{display:none}', STYLE)
 
     def test_member_sections_have_compact_native_disclosures(self):
         self.assertIn("function detailSection(", SCRIPT)
