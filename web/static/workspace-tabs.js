@@ -760,6 +760,17 @@
     return String(run?.started_at_hkt || "").slice(0, 10);
   }
 
+  function runCompletedDate(run) {
+    return String(run?.completed_at_hkt || "").slice(0, 10);
+  }
+
+  function mainRunForDate(date) {
+    const mainRuns = state.crawlRuns.filter((run) => String(run.trigger || "") === "定时爬虫");
+    return mainRuns.find((run) => newsRunDate(run) === date)
+      || mainRuns.find((run) => runCompletedDate(run) === date)
+      || {};
+  }
+
   function newsRunTime(run) {
     return String(run?.started_at_hkt || "").slice(11, 16) || "--:--";
   }
@@ -913,8 +924,7 @@
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
     const selectedDate = state.newsSelectedDate || newsRunDate(runs[0]);
-    const dateRuns = state.crawlRuns.filter((run) => newsRunDate(run) === selectedDate);
-    const mainRun = dateRuns.find((run) => String(run.trigger || "") === "定时爬虫") || {};
+    const mainRun = mainRunForDate(selectedDate);
     const newsRun = runs[0] || latest.strategic_news || {};
     const intelligenceRun = state.crawlRuns.find((run) => (
       run.task_kind === "executive-intelligence-refresh"
@@ -964,9 +974,11 @@
     const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
     const mainValue = mainRowsProcessed ? number(mainRowsProcessed) : mainRun.run_status === "failed" ? "已中断" : mainRun.run_status === "running" ? "运行中" : "—";
     const mainUnit = mainRowsProcessed ? "行实际处理" : "";
+    const mainCrossedDate = mainRun.crawl_run_id && newsRunDate(mainRun) !== selectedDate;
     const mainDetails = mainRun.crawl_run_id ? [
       `运行 ${mainRun.crawl_run_id}`,
       `状态 ${mainRun.run_status || "未记录"}`,
+      ...(mainCrossedDate ? [`跨日任务：${newsRunDate(mainRun)} 启动，${selectedDate} 完成`] : []),
       `开始 ${String(mainRun.started_at_hkt || "未记录").replace("T", " ")}`,
       `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
       ...(mainRowsProcessed ? [`实际处理 ${number(mainRowsProcessed)} 行`, `URL成功 ${number(mainRun.run_log?.success_urls)} 个·失败 ${number(mainRun.run_log?.failed_urls)} 个`] : []),
@@ -983,7 +995,7 @@
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
       { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
       { key: "database-hub", label: "四库分流", value: "4", unit: "个库", note: "按业务域分别更新", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["同一批已审核证据按业务域分流", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下四库分流记录" },
       domainNode("local", "本地运营商", [630, 342], "database-local"),
@@ -1075,11 +1087,13 @@
 
   function lineageRunsForNode(nodeKey) {
     const date = state.newsSelectedDate;
-    const sameDay = state.crawlRuns.filter((run) => newsRunDate(run) === date);
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
-    if (["main", "agent"].includes(nodeKey)) return sameDay.filter((run) => String(run.trigger || "") === "定时爬虫");
-    const mainRun = sameDay.find((run) => String(run.trigger || "") === "定时爬虫") || {};
+    if (["main", "agent"].includes(nodeKey)) {
+      const mainRun = mainRunForDate(date);
+      return mainRun.crawl_run_id ? [mainRun] : [];
+    }
+    const mainRun = mainRunForDate(date);
     return state.crawlRuns.filter((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
