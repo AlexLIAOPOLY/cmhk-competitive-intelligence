@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 31,
-      "partial": 2
+      "ok": 32,
+      "partial": 1
     },
     "visuals": {
       "crawl": {
@@ -16,12 +16,12 @@
         "completedAt": "2026-08-21 10:28:55"
       },
       "quality": {
-        "ok": 31,
-        "partial": 2,
+        "ok": 32,
+        "partial": 1,
         "failed": 0,
         "fieldTotal": 205,
         "missingFields": 0,
-        "rawSources": 217
+        "rawSources": 213
       },
       "blocks": [
         {
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 22
+          "value": 18
         },
         {
           "label": "government_statistics",
@@ -66,11 +66,11 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 113
+          "value": 111
         },
         {
           "label": "US",
-          "value": 22
+          "value": 20
         },
         {
           "label": "EU",
@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 158
+          "value": 156
         },
         {
           "label": "cache:httpx",
@@ -100,7 +100,7 @@
         },
         {
           "label": "curl_chrome_ua",
-          "value": 20
+          "value": 18
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -317,7 +317,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-21 10:48:26",
+    "latestOutputText": "2026-08-22 03:03:01",
     "outputs": [
       {
         "name": "8月19日周报.docx",
