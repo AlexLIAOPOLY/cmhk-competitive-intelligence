@@ -27,6 +27,8 @@ class FakeCommandRunner:
         self.message_targets: dict[str, str] = {}
         self.fail_send_chats: set[str] = set()
         self.fail_readback = False
+        self.fail_resolution_update = False
+        self.updated_messages: dict[str, str] = {}
         self.fail_ledger = False
         self.fail_ledger_styles = False
         self.ledger_append_row_shift = 0
@@ -285,6 +287,7 @@ class FakeCommandRunner:
                 )
             message_id = args[args.index("--message-ids") + 1]
             chat_id = self.message_targets[message_id]
+            content = self.updated_messages.get(message_id, "")
             return subprocess.CompletedProcess(
                 args,
                 0,
@@ -297,6 +300,8 @@ class FakeCommandRunner:
                                     "message_id": message_id,
                                     "chat_id": chat_id,
                                     "msg_type": "interactive",
+                                    "content": content,
+                                    "updated": bool(content),
                                     "sender": {
                                         "id": self.bot_app_id,
                                         "name": "Alex的狂热粉丝",
@@ -309,6 +314,23 @@ class FakeCommandRunner:
                 ),
                 "",
             )
+        if len(args) >= 4 and args[1:4] == ["api", "PATCH", args[3]]:
+            if self.fail_resolution_update:
+                return subprocess.CompletedProcess(
+                    args,
+                    1,
+                    "",
+                    json.dumps({"ok": False, "error": {"message": "simulated update failure"}}),
+                )
+            message_id = args[3].rsplit("/", 1)[-1]
+            payload = json.loads(args[args.index("--data") + 1])
+            self.updated_messages[message_id] = payload["content"]
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                json.dumps({"ok": True, "identity": "bot", "data": {}}),
+                "",
+            )
         raise AssertionError(f"unexpected command: {args}")
 
     def send_calls(self) -> list[list[str]]:
@@ -319,6 +341,13 @@ class FakeCommandRunner:
             call
             for call in self.calls
             if any(command in call for command in ("+table-put", "+cells-set"))
+        ]
+
+    def resolution_update_calls(self) -> list[list[str]]:
+        return [
+            call
+            for call in self.calls
+            if len(call) >= 4 and call[1:3] == ["api", "PATCH"]
         ]
 
 
@@ -422,6 +451,9 @@ class ProjectMonitorTests(unittest.TestCase):
         if not respect_route_cutover:
             for target in monitor.configured_targets:
                 target.pop("notify_from_hkt", None)
+        resolution_updates = monitor.config.get("resolution_message_updates")
+        if isinstance(resolution_updates, dict):
+            resolution_updates.pop("backfill_from_hkt", None)
         return monitor
 
     def _issue(self, monitor, key="test-error"):
@@ -1185,7 +1217,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(states[REQUIREMENTS_CHAT_ID], "failed_before_verification")
         self.assertEqual(states[PROJECT_CHAT_ID], "verified")
 
-    def test_resolved_condition_is_local_only_and_never_sends_recovery(self):
+    def test_resolved_condition_updates_original_card_without_sending_recovery(self):
         monitor = self._monitor(enabled=True)
         issues = [self._issue(monitor)]
         issues[0]["terminal"] = False
@@ -1196,8 +1228,40 @@ class ProjectMonitorTests(unittest.TestCase):
         result = monitor.run_cycle()
         self.assertEqual(result["active_incidents"], [])
         self.assertEqual(len(self.runner.send_calls()), 1)
+        self.assertEqual(len(self.runner.resolution_update_calls()), 1)
+        message_id = next(iter(self.runner.updated_messages))
+        updated_card = json.loads(self.runner.updated_messages[message_id])
+        self.assertEqual(updated_card["header"]["template"], "green")
+        self.assertIn("已自动恢复", updated_card["header"]["title"]["content"])
+        self.assertNotIn(
+            "resolveButton",
+            json.dumps(updated_card, ensure_ascii=False),
+        )
+        incident = next(iter(monitor.state["incidents"].values()))
+        delivery = incident["delivery"][INCIDENT_CHAT_ID]
+        self.assertEqual(delivery["resolution_update"]["state"], "verified")
+        self.assertEqual(result["recovery_messages_sent"], 0)
+        self.assertEqual(result["recovery_messages_updated"], 1)
         events = self.state_dir.joinpath("events.jsonl").read_text()
         self.assertIn("incident_resolved_local_only", events)
+        self.assertIn("alert_resolution_update_verified", events)
+
+    def test_failed_resolution_update_retries_without_sending_new_message(self):
+        monitor = self._monitor(enabled=True)
+        issues = [self._issue(monitor)]
+        issues[0]["terminal"] = False
+        monitor.collect_issues = lambda: list(issues)
+        monitor.run_cycle()
+        self.runner.fail_resolution_update = True
+        issues.clear()
+        monitor.run_cycle()
+        self.assertEqual(len(self.runner.send_calls()), 1)
+        self.assertEqual(len(self.runner.resolution_update_calls()), 1)
+        incident = next(iter(monitor.state["incidents"].values()))
+        delivery = incident["delivery"][INCIDENT_CHAT_ID]
+        self.assertEqual(delivery["resolution_update"]["state"], "failed_waiting_retry")
+        monitor.run_cycle()
+        self.assertEqual(len(self.runner.resolution_update_calls()), 1)
 
     def test_error_ledger_records_errors_in_shadow_without_ai_or_group_messages(self):
         monitor = self._monitor(enabled=False, enable_ledger=True)

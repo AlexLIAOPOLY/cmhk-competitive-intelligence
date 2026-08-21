@@ -78,6 +78,7 @@ class CardActionHandlerTests(unittest.TestCase):
         self.state_dir.mkdir(parents=True)
         self.now = datetime(2026, 8, 16, 20, 0, tzinfo=HKT)
         self.runner = CardActionRunner()
+        self.runner.message_targets[MESSAGE_ID] = CHAT_ID
         self.runner.ledger_rows = [
             [
                 INCIDENT_ID,
@@ -106,6 +107,22 @@ class CardActionHandlerTests(unittest.TestCase):
                     "incidents": {
                         INCIDENT_ID: {
                             "incident_id": INCIDENT_ID,
+                            "condition_key": "test-error",
+                            "status": "open",
+                            "severity": "P1",
+                            "task_name": "定时主爬虫",
+                            "error": "crawl returned 1",
+                            "diagnosis": {
+                                "ok": True,
+                                "model": "deepseek-v4",
+                                "severity": "P1",
+                                "severity_reason": "关键定时任务已失败，需要立即处理。",
+                                "fault_cause": "爬虫进程以非零状态退出。",
+                                "fault_impact": "本轮数据未完成更新。",
+                                "fault_time_hkt": "2026-08-16T19:55:00+08:00",
+                                "recommended_solutions": ["读取完整日志。"],
+                                "needs_human": True,
+                            },
                             "delivery": {
                                 CHAT_ID: {
                                     "state": "verified",
@@ -213,8 +230,9 @@ class CardActionHandlerTests(unittest.TestCase):
         button = self._find_element(card, "resolveButton")
         prompt = self._find_element(card, "handlerPrompt")
         self.assertTrue(button["disabled"])
-        self.assertEqual(button["text"]["content"], "已处理")
+        self.assertEqual(button["text"]["content"], "已人工修复")
         self.assertIn(f"<at id={OPERATOR_ID}></at>", prompt["content"])
+        self.assertIn("人工修复时间", prompt["content"])
         self.assertEqual(card["header"]["template"], "green")
         audit = self.handler.auth_service.operation_audit()
         self.assertEqual(audit[0]["action"], "fault.mark_handled")
@@ -237,8 +255,13 @@ class CardActionHandlerTests(unittest.TestCase):
         result = self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID, OPERATOR_UNION_ID)
         self.assertEqual(result["operator_name"], "陈四")
         self.assertEqual(result["feishu_sync"], "readback_verified")
+        self.assertEqual(result["card_status"], "updated_and_readback_verified")
         self.assertTrue(result["newly_handled"])
         self.assertEqual(self.runner.ledger_rows[0][12:14], ["陈四", "已处理"])
+        self.assertEqual(len(self.runner.resolution_update_calls()), 1)
+        updated = json.loads(self.runner.updated_messages[MESSAGE_ID])
+        self.assertIn("已人工修复", updated["header"]["title"]["content"])
+        self.assertIn("人工修复时间", json.dumps(updated, ensure_ascii=False))
         lines = self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()
         saved = json.loads(lines[-1])
         self.assertEqual(saved["incident_id"], INCIDENT_ID)

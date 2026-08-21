@@ -10,8 +10,9 @@ An incident may be delivered only when all of these gates pass:
 4. The configured lark-cli profile resolves to the expected bot app id.
 5. Both live chat names/modes/statuses match the checked-in allowlist.
 
-Healthy, recovery and heartbeat messages are never sent to a chat.  They are
-kept only in local status/state files.
+Healthy and heartbeat messages are never sent to a chat.  When a delivered
+incident later clears, the original shared card may be edited in place to show
+the recovery; no additional recovery message is sent.
 """
 from __future__ import annotations
 
@@ -381,6 +382,11 @@ class ProjectMonitor:
         configured = isinstance(config, dict) and bool(config.get("enabled"))
         value = self.environ.get("CMHK_ERROR_LEDGER_ENABLED")
         return configured and (True if value is None else _env_true(value))
+
+    @property
+    def resolution_message_updates_enabled(self) -> bool:
+        config = self.config.get("resolution_message_updates")
+        return isinstance(config, dict) and bool(config.get("enabled"))
 
     def _run(self, argv: list[str], timeout: float = 20) -> subprocess.CompletedProcess[str]:
         return self.command_runner(
@@ -2129,6 +2135,367 @@ class ProjectMonitor:
     def render_alert(self, incident: dict[str, Any]) -> str:
         return json.dumps(self.render_alert_card(incident), ensure_ascii=False, separators=(",", ":"))
 
+    def _resolution_reason_text(self, incident: dict[str, Any]) -> str:
+        reason = str(incident.get("resolution_reason") or "")
+        messages = {
+            "log_condition_cleared": "后续巡检未再发现同一类新增错误。",
+            "condition_no_longer_current": "后续任务归档或状态记录已不再显示该故障。",
+            "service_restarted_after_error": "相关服务在故障后已重新启动，后续巡检未再命中该错误。",
+            "superseded_by_stable_log_condition": "旧版重复日志告警已由稳定的同类故障状态取代。",
+        }
+        return messages.get(reason, "后续巡检确认该故障条件已不再成立。")
+
+    def render_resolved_card(self, incident: dict[str, Any]) -> dict[str, Any]:
+        card = self.render_alert_card(incident)
+        task_name_plain = _to_simplified(
+            _alert_plain(incident.get("task_name") or "-", 100)
+        ).replace("\n", " ")
+        incident_id = _alert_plain(incident.get("incident_id"), 80)
+        severity = str((incident.get("diagnosis") or {}).get("severity") or incident.get("severity") or "P2")
+        severity_label = SEVERITY_LABELS.get(severity, "高")
+        resolved_at_plain = _alert_plain(incident.get("resolved_at_hkt") or _iso(self.now()), 100)
+        resolved_at = self._card_markdown_text(resolved_at_plain, 100)
+        reason = self._card_markdown_text(self._resolution_reason_text(incident), 500)
+
+        card["config"]["summary"] = {"content": f"已自动恢复 · {task_name_plain}"}
+        card["header"] = {
+            "title": {"tag": "plain_text", "content": f"已自动恢复｜{task_name_plain}"},
+            "subtitle": {
+                "tag": "plain_text",
+                "content": f"{resolved_at_plain} · 告警 ID {incident_id}",
+            },
+            "template": "green",
+            "icon": {"tag": "standard_icon", "token": "success_outlined"},
+            "text_tag_list": [
+                {
+                    "tag": "text_tag",
+                    "text": {"tag": "plain_text", "content": "自动恢复"},
+                    "color": "green",
+                },
+                {
+                    "tag": "text_tag",
+                    "text": {"tag": "plain_text", "content": f"原 {severity} {severity_label}"},
+                    "color": "grey",
+                },
+            ],
+        }
+        body = card.get("body") if isinstance(card.get("body"), dict) else {}
+        elements = body.get("elements") if isinstance(body.get("elements"), list) else []
+        elements = [
+            {
+                "tag": "column_set",
+                "element_id": "resolutionBlock",
+                "flex_mode": "none",
+                "columns": [
+                    {
+                        "tag": "column",
+                        "width": "weighted",
+                        "weight": 1,
+                        "background_style": "green-50",
+                        "padding": "12px",
+                        "vertical_spacing": "8px",
+                        "elements": [
+                            {
+                                "tag": "markdown",
+                                "content": (
+                                    f"**自动修复时间**\n{resolved_at}\n\n"
+                                    f"**恢复依据**\n{reason}\n\n"
+                                    "监控自动判定的是故障条件已消失，不等同于确认发生过人工改码。"
+                                ),
+                            }
+                        ],
+                    }
+                ],
+            },
+            *[
+                element
+                for element in elements
+                if not (isinstance(element, dict) and element.get("element_id") == "actionBlock")
+            ],
+        ]
+        body["elements"] = elements
+        card["body"] = body
+        return card
+
+    def render_manually_repaired_card(
+        self,
+        incident: dict[str, Any],
+        *,
+        handler_name: str,
+        handled_at_hkt: str,
+        handler_open_id: str = "",
+    ) -> dict[str, Any]:
+        card = (
+            self.render_resolved_card(incident)
+            if incident.get("status") == "resolved"
+            else self.render_alert_card(incident)
+        )
+        task_name_plain = _to_simplified(
+            _alert_plain(incident.get("task_name") or "-", 100)
+        ).replace("\n", " ")
+        incident_id = _alert_plain(incident.get("incident_id"), 80)
+        handled_at_plain = _alert_plain(handled_at_hkt, 100)
+        handled_at = self._card_markdown_text(handled_at_plain, 100)
+        safe_name = self._card_markdown_text(handler_name, 120)
+        handler = (
+            f"<at id={handler_open_id}></at>"
+            if str(handler_open_id).startswith("ou_")
+            else safe_name
+        )
+        body = card.get("body") if isinstance(card.get("body"), dict) else {}
+        elements = body.get("elements") if isinstance(body.get("elements"), list) else []
+        elements = [
+            element
+            for element in elements
+            if not (
+                isinstance(element, dict)
+                and element.get("element_id") in {"actionBlock", "manualRepairBlock"}
+            )
+        ]
+        elements.insert(
+            0,
+            {
+                "tag": "column_set",
+                "element_id": "manualRepairBlock",
+                "flex_mode": "none",
+                "columns": [
+                    {
+                        "tag": "column",
+                        "width": "weighted",
+                        "weight": 1,
+                        "background_style": "green-50",
+                        "padding": "12px",
+                        "vertical_spacing": "8px",
+                        "elements": [
+                            {
+                                "tag": "markdown",
+                                "content": (
+                                    f"**人工修复时间**\n{handled_at}\n\n"
+                                    f"**修复人员**\n{handler}"
+                                ),
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        body["elements"] = elements
+        card["body"] = body
+        header = card.get("header") if isinstance(card.get("header"), dict) else {}
+        header["title"] = {
+            "tag": "plain_text",
+            "content": f"已人工修复｜{task_name_plain}",
+        }
+        header["subtitle"] = {
+            "tag": "plain_text",
+            "content": f"{handled_at_plain} · 告警 ID {incident_id}",
+        }
+        header["template"] = "green"
+        header["icon"] = {"tag": "standard_icon", "token": "success_outlined"}
+        tags = [
+            {
+                "tag": "text_tag",
+                "text": {"tag": "plain_text", "content": "人工修复"},
+                "color": "green",
+            }
+        ]
+        if incident.get("status") == "resolved":
+            tags.append(
+                {
+                    "tag": "text_tag",
+                    "text": {"tag": "plain_text", "content": "自动恢复已确认"},
+                    "color": "turquoise",
+                }
+            )
+        header["text_tag_list"] = tags
+        card["header"] = header
+        config = card.get("config") if isinstance(card.get("config"), dict) else {}
+        config["summary"] = {"content": f"已人工修复 · {handler_name} · {task_name_plain}"}
+        card["config"] = config
+        return card
+
+    def _readback_resolution_update(
+        self,
+        incident: dict[str, Any],
+        delivery: dict[str, Any],
+        target: dict[str, Any],
+        *,
+        expected_marker: str = "已恢复",
+    ) -> None:
+        bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
+        profile = str(bot.get("profile") or "")
+        message_id = str(delivery.get("message_id") or "")
+        proc = self._run(
+            [
+                "lark-cli", "im", "+messages-mget", "--as", "bot", "--profile", profile,
+                "--message-ids", message_id, "--no-reactions", "--format", "json",
+            ],
+            timeout=20,
+        )
+        payload = self._json_from_process(proc)
+        data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
+        messages = data.get("messages") if isinstance(data, dict) else []
+        messages = messages if isinstance(messages, list) else []
+        message = next(
+            (item for item in messages if str(item.get("message_id") or "") == message_id),
+            None,
+        )
+        if not isinstance(message, dict):
+            raise RuntimeError("恢复卡片更新后未能回读")
+        sender = message.get("sender") if isinstance(message.get("sender"), dict) else {}
+        content = str(message.get("content") or "")
+        if (
+            str(message.get("chat_id") or "") != str(target.get("chat_id") or "")
+            or str(sender.get("id") or sender.get("sender_id") or "") != str(bot.get("app_id") or "")
+            or str(message.get("msg_type") or "") != "interactive"
+            or expected_marker not in content
+            or str(incident.get("incident_id") or "") not in content
+        ):
+            raise RuntimeError("恢复卡片更新后的群、发送者或内容回读不一致")
+
+    def _manual_repair_record(self, incident_id: str) -> dict[str, Any]:
+        candidates: list[dict[str, Any]] = []
+        action_state = _read_json(self.state_dir / "card_actions.json", {})
+        handled_messages = (
+            action_state.get("handled_messages") if isinstance(action_state, dict) else {}
+        )
+        if isinstance(handled_messages, dict):
+            candidates.extend(
+                item for item in handled_messages.values() if isinstance(item, dict)
+            )
+        try:
+            lines = (self.state_dir / "web_actions.jsonl").read_text(encoding="utf-8").splitlines()
+        except OSError:
+            lines = []
+        for line in lines:
+            try:
+                item = json.loads(line)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                continue
+            if isinstance(item, dict):
+                candidates.append(item)
+        matching = [
+            item for item in candidates if str(item.get("incident_id") or "") == incident_id
+        ]
+        return max(
+            matching,
+            key=lambda item: str(item.get("handled_at_hkt") or item.get("completed_at_hkt") or ""),
+            default={},
+        )
+
+    def _update_resolved_deliveries(self) -> int:
+        if not self.resolution_message_updates_enabled:
+            return 0
+        config = self.config.get("resolution_message_updates") or {}
+        backfill_from = _parse_datetime(config.get("backfill_from_hkt"))
+        updated_count = 0
+        targets = {
+            str(item.get("chat_id") or ""): item
+            for item in self.alert_targets
+            if str(item.get("chat_id") or "")
+        }
+        records = [
+            item
+            for item in (self.state.get("incidents") or {}).values()
+            if isinstance(item, dict) and item.get("status") == "resolved"
+        ]
+        records.sort(key=lambda item: str(item.get("resolved_at_hkt") or ""))
+        for incident in records:
+            resolved_at = _parse_datetime(incident.get("resolved_at_hkt"))
+            if backfill_from and (not resolved_at or resolved_at < backfill_from):
+                continue
+            deliveries = incident.get("delivery") if isinstance(incident.get("delivery"), dict) else {}
+            for chat_id, delivery in deliveries.items():
+                if not isinstance(delivery, dict) or delivery.get("state") != "verified":
+                    continue
+                target = targets.get(str(chat_id))
+                message_id = str(delivery.get("message_id") or "")
+                if not target or not message_id.startswith("om_"):
+                    continue
+                resolution_update = delivery.get("resolution_update")
+                resolution_update = resolution_update if isinstance(resolution_update, dict) else {}
+                if resolution_update.get("state") == "verified":
+                    continue
+                retry_after = _parse_datetime(resolution_update.get("retry_after_hkt"))
+                if retry_after and self.now() < retry_after:
+                    continue
+                try:
+                    self._verify_bot_identity()
+                    self._verify_target(target)
+                    manual = self._manual_repair_record(str(incident.get("incident_id") or ""))
+                    card = (
+                        self.render_manually_repaired_card(
+                            incident,
+                            handler_name=str(manual.get("operator_name") or "已记录人员"),
+                            handled_at_hkt=str(
+                                manual.get("handled_at_hkt")
+                                or manual.get("completed_at_hkt")
+                                or ""
+                            ),
+                            handler_open_id=str(manual.get("operator_id") or ""),
+                        )
+                        if manual
+                        else self.render_resolved_card(incident)
+                    )
+                    content = json.dumps(
+                        card,
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    )
+                    proc = self._run(
+                        [
+                            "lark-cli", "api", "PATCH",
+                            f"/open-apis/im/v1/messages/{message_id}",
+                            "--as", "bot", "--profile",
+                            str((self.config.get("bot") or {}).get("profile") or ""),
+                            "--data", json.dumps({"content": content}, ensure_ascii=False),
+                            "--format", "json",
+                        ],
+                        timeout=30,
+                    )
+                    self._json_from_process(proc)
+                    self._readback_resolution_update(
+                        incident,
+                        delivery,
+                        target,
+                        expected_marker="已人工修复" if manual else "已自动恢复",
+                    )
+                    delivery["resolution_update"] = {
+                        "state": "verified",
+                        "updated_at_hkt": _iso(self.now()),
+                        "message_id": message_id,
+                    }
+                    updated_count += 1
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "alert_resolution_update_verified",
+                            "at_hkt": _iso(self.now()),
+                            "incident_id": incident.get("incident_id"),
+                            "chat_id": chat_id,
+                            "message_id": message_id,
+                        },
+                    )
+                except Exception as exc:
+                    delivery["resolution_update"] = {
+                        "state": "failed_waiting_retry",
+                        "attempted_at_hkt": _iso(self.now()),
+                        "retry_after_hkt": _iso(self.now() + timedelta(minutes=5)),
+                        "error": _redact(f"{type(exc).__name__}: {exc}", 700),
+                    }
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "alert_resolution_update_failed_local_only",
+                            "at_hkt": _iso(self.now()),
+                            "incident_id": incident.get("incident_id"),
+                            "chat_id": chat_id,
+                            "message_id": message_id,
+                            "error": delivery["resolution_update"]["error"],
+                        },
+                    )
+        return updated_count
+
     def _json_from_process(self, proc: subprocess.CompletedProcess[str]) -> dict[str, Any]:
         raw = proc.stdout if proc.returncode == 0 else (proc.stderr or proc.stdout)
         try:
@@ -2679,6 +3046,15 @@ class ProjectMonitor:
         target_count = len(routed)
         verified = sum(1 for state in states if state == "verified")
         if target_count and verified == target_count:
+            resolution_states = [
+                str((deliveries[chat_id].get("resolution_update") or {}).get("state") or "")
+                for chat_id in routed
+                if isinstance(deliveries.get(chat_id), dict)
+            ]
+            if incident.get("status") == "resolved" and resolution_states and all(
+                state == "verified" for state in resolution_states
+            ):
+                return f"原消息已更新为恢复（{verified}/{target_count}）"
             return f"已发送并回读（{verified}/{target_count}）"
         if any(state == "sent_pending_readback" for state in states):
             return "已发送，等待回读"
@@ -3109,9 +3485,10 @@ class ProjectMonitor:
             "ok": not any(item.get("severity") == "P1" for item in ordered),
             "mode": "enabled" if self.notifications_enabled else "shadow_no_send",
             "notifications_enabled": self.notifications_enabled,
-            "message_policy": "errors_only_after_ai",
+            "message_policy": "errors_only_after_ai_update_original_on_resolution",
             "normal_messages_sent": 0,
             "recovery_messages_sent": 0,
+            "recovery_messages_updated": int(self.state.get("recovery_messages_updated") or 0),
             "checked_at_hkt": _iso(self.now()),
             "poll_seconds": int(self.config.get("poll_seconds") or 30),
             "bot": {
@@ -3169,7 +3546,7 @@ class ProjectMonitor:
             "# CMHK主项目监控本地预览",
             "",
             f"- 模式：{'告警已启用' if self.notifications_enabled else '影子监控，不发送'}",
-            "- 群消息政策：仅错误；必须先完成一轮AI分析；不发送正常、恢复或心跳消息",
+            "- 群消息政策：仅错误；必须先完成一轮AI分析；恢复时原地更新原告警，不另发消息",
             "- 报障目标群："
             + (
                 "、".join(
@@ -3212,8 +3589,9 @@ class ProjectMonitor:
         # callback can be clicked immediately, so syncing after delivery leaves
         # a race where the click cannot resolve the incident ID.
         self._sync_error_ledger()
-        # The user explicitly requires errors only and AI-before-send.  There is
-        # no delivery path for healthy or resolved records.
+        # The user explicitly requires errors only and AI-before-send. Healthy
+        # cycles never send messages; resolved incidents only edit a previously
+        # verified shared card in place.
         for incident in active:
             ledger_rows = (self.state.get("error_ledger") or {}).get("rows") or {}
             ledger_row = ledger_rows.get(str(incident.get("incident_id") or ""))
@@ -3223,6 +3601,10 @@ class ProjectMonitor:
                 incident["delivery_suppressed"] = "awaiting_error_ledger_sync"
                 continue
             self._deliver_incident(incident)
+        updated = self._update_resolved_deliveries()
+        self.state["recovery_messages_updated"] = int(
+            self.state.get("recovery_messages_updated") or 0
+        ) + updated
         # Sync again so notification status is reflected after successful sends.
         # M/N (处理人员/处理状态) are never touched by this path after append.
         self._sync_error_ledger()

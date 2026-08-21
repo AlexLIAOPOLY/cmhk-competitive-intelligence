@@ -3666,6 +3666,7 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
         "handler_name": str(handled.get("operator_name") or user.get("name") or ""),
         "handler_avatar_url": str(user.get("avatarUrl") or ""),
         "handled_at_hkt": str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or ""),
+        "manual_repaired_at_hkt": str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or ""),
     }
 
 
@@ -3790,11 +3791,12 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "impact": str(diagnosis.get("fault_impact") or incident.get("impact") or ""),
             "suggestions": [str(item) for item in suggestions if str(item).strip()],
             "evidence": [str(item) for item in evidence if str(item).strip()],
-            "phase": "已处理" if handled else ("待处理" if status == "open" else "已恢复"),
+            "phase": "人工修复" if handled else ("待处理" if status == "open" else "自动恢复"),
             "occurred_at_hkt": str(incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or ""),
             "started_at_hkt": str(incident.get("first_seen_at_hkt") or incident.get("occurred_at_hkt") or ""),
             "heartbeat_at_hkt": str(incident.get("last_seen_at_hkt") or ""),
             "completed_at_hkt": str(incident.get("resolved_at_hkt") or ""),
+            "auto_repaired_at_hkt": str(incident.get("resolved_at_hkt") or ""),
             "source": "project-monitor",
         })
     records.sort(

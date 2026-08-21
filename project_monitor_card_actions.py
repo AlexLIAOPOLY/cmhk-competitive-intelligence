@@ -271,6 +271,7 @@ class CardActionHandler:
         incidents = monitor_state.get("incidents") if isinstance(monitor_state, dict) else {}
         if not isinstance(incidents, dict) or not isinstance(incidents.get(incident_id), dict):
             raise ValueError("告警不在本地监控账本中")
+        incident = incidents[incident_id]
 
         self.web_actions_lock_path.parent.mkdir(parents=True, exist_ok=True)
         with self.web_actions_lock_path.open("a+", encoding="utf-8") as lock:
@@ -311,6 +312,65 @@ class CardActionHandler:
                 "feishu_sync": "readback_verified",
                 "handled_at_hkt": _iso(self.now()),
             }
+            delivery = incident.get("delivery") if isinstance(incident.get("delivery"), dict) else {}
+            verified_deliveries = [
+                item
+                for item in delivery.values()
+                if isinstance(item, dict)
+                and item.get("state") == "verified"
+                and str(item.get("message_id") or "").startswith("om_")
+                and str(item.get("chat_id") or "").startswith("oc_")
+            ]
+            if not verified_deliveries:
+                raise RuntimeError("告警没有可原地更新的已回读飞书消息")
+            for target_delivery in verified_deliveries:
+                target = next(
+                    (
+                        item
+                        for item in self.config.get("targets") or []
+                        if str(item.get("chat_id") or "") == str(target_delivery.get("chat_id") or "")
+                    ),
+                    None,
+                )
+                if not isinstance(target, dict):
+                    raise RuntimeError("原告警群不在受控白名单中")
+                self.monitor._verify_target(target)
+                card = self.monitor.render_manually_repaired_card(
+                    incident,
+                    handler_name=operator_name,
+                    handled_at_hkt=result["handled_at_hkt"],
+                    handler_open_id="",
+                )
+                message_id = str(target_delivery.get("message_id") or "")
+                profile = str((self.config.get("bot") or {}).get("profile") or "")
+                self.monitor._json_from_process(
+                    self._run(
+                        [
+                            "lark-cli", "api", "PATCH",
+                            f"/open-apis/im/v1/messages/{message_id}",
+                            "--as", "bot", "--profile", profile,
+                            "--data", json.dumps(
+                                {
+                                    "content": json.dumps(
+                                        card,
+                                        ensure_ascii=False,
+                                        separators=(",", ":"),
+                                    )
+                                },
+                                ensure_ascii=False,
+                            ),
+                            "--format", "json",
+                        ],
+                        timeout=30,
+                    )
+                )
+                self.monitor._readback_resolution_update(
+                    incident,
+                    target_delivery,
+                    target,
+                    expected_marker="已人工修复",
+                )
+            result["card_status"] = "updated_and_readback_verified"
             _append_jsonl(self.web_actions_path, {"type": "incident_marked_handled_from_web", **result})
             return result
 
@@ -367,12 +427,12 @@ class CardActionHandler:
             handler_text = f"<at id={handler_open_id}></at>"
         else:
             handler_text = self.monitor._card_markdown_text(handler_name, 120)
-        prompt["content"] = f"**处理状态**　已由 {handler_text} 于 {handled_at} 标记为已处理。"
+        prompt["content"] = f"**人工修复时间**　{handled_at}\n\n**修复人员**　{handler_text}"
         button.update(
             {
-                "text": {"tag": "plain_text", "content": "已处理"},
+                "text": {"tag": "plain_text", "content": "已人工修复"},
                 "disabled": True,
-                "disabled_tips": {"tag": "plain_text", "content": f"已由 {handler_name} 处理"},
+                "disabled_tips": {"tag": "plain_text", "content": f"已由 {handler_name} 人工修复"},
             }
         )
         if isinstance(action_block, dict):
@@ -386,14 +446,14 @@ class CardActionHandler:
         if len(tags) >= 2 and isinstance(tags[1], dict):
             tags[1] = {
                 "tag": "text_tag",
-                "text": {"tag": "plain_text", "content": "已处理"},
+                "text": {"tag": "plain_text", "content": "人工修复"},
                 "color": "green",
             }
         else:
             tags.append(
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": "已处理"},
+                    "text": {"tag": "plain_text", "content": "人工修复"},
                     "color": "green",
                 }
             )
@@ -401,7 +461,7 @@ class CardActionHandler:
         card["header"] = header
         config = card.get("config") if isinstance(card.get("config"), dict) else {}
         summary = config.get("summary") if isinstance(config.get("summary"), dict) else {}
-        summary["content"] = f"已处理 · {handler_name} · 告警 {incident_id}"
+        summary["content"] = f"已人工修复 · {handler_name} · 告警 {incident_id}"
         config["summary"] = summary
         card["config"] = config
         return card

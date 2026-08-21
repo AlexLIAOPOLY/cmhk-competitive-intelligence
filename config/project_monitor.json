@@ -103,6 +103,11 @@
     "reason": "故障通知只发战略竞对故障处理群；原项目总群和需求沟通群不再接收新报障卡片",
     "env_override": "CMHK_ALERT_TARGET_ROLES"
   },
+  "resolution_message_updates": {
+    "enabled": true,
+    "backfill_from_hkt": "2026-08-21T00:00:00+08:00",
+    "policy": "edit_original_shared_card_without_sending_a_new_recovery_message"
+  },
   "targets": [
     {
       "role": "requirements",

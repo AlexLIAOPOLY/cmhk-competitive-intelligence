@@ -18,6 +18,7 @@ class FaultIncidentApiTests(unittest.TestCase):
                     "severity": severity,
                     "task_name": f"{severity} fault",
                     "occurred_at_hkt": f"2026-08-19T0{4-index}:00:00+08:00",
+                    "resolved_at_hkt": "2026-08-19T09:15:00+08:00" if severity != "P1" else "",
                 }
                 for index, severity in enumerate(("P1", "P2", "P3"), start=1)
             }
@@ -60,6 +61,8 @@ class FaultIncidentApiTests(unittest.TestCase):
         web_record = next(record for record in records if record["severity"] == "P2")
         self.assertEqual(web_record["handler_name"], "Web Handler")
         self.assertEqual(web_record["handler_avatar_url"], "https://example.com/avatar.png")
+        self.assertEqual(web_record["auto_repaired_at_hkt"], "2026-08-19T09:15:00+08:00")
+        self.assertEqual(web_record["manual_repaired_at_hkt"], "2026-08-19T10:00:00+08:00")
         self.assertEqual(total, 3)
 
 

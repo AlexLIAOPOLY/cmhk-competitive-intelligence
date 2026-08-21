@@ -1014,15 +1014,16 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-filter-row input { min-width: 240px; }
 .fault-filter-row select:focus,.fault-filter-row input:focus { border-color: #5fc4d7; box-shadow: 0 0 0 2px rgba(95,196,215,.12); }
 .fault-table-wrap { min-height: 0; overflow-x: auto; overflow-y: visible; }
-.fault-table { min-width: 1040px; table-layout: fixed; }
-.fault-table th:nth-child(1) { width: 54px; text-align:center; }
+.fault-table { min-width: 1180px; table-layout: fixed; }
+.fault-table th:nth-child(1) { width: 72px; text-align:center; }
 .fault-table th:nth-child(2) { width: 78px; }
 .fault-table th:nth-child(3) { width: 84px; }
 .fault-table th:nth-child(4) { width: 21%; }
 .fault-table th:nth-child(5) { width: auto; }
 .fault-table th:nth-child(6) { width: 66px; text-align:center; }
 .fault-table th:nth-child(7) { width: 142px; }
-.fault-table th:nth-child(8) { width: 52px; }
+.fault-table th:nth-child(8) { width: 185px; }
+.fault-table th:nth-child(9) { width: 52px; }
 .fault-table th { position: sticky; top: 0; z-index: 2; background: #0d2835; }
 .fault-sort-button { display: inline-flex; align-items: center; gap: 6px; margin: -6px; padding: 6px; border: 0; color: inherit; background: transparent; font: inherit; cursor: default; }
 .fault-sort-button:hover,.fault-sort-button:focus-visible { color: #dcecef; }
@@ -1105,6 +1106,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-handler-avatar img { width:100%; height:100%; object-fit:cover; }
 .fault-handler-avatar.is-system { border-color:rgba(106,203,173,.5); color:#8ce3c8; background:linear-gradient(145deg,rgba(39,137,131,.48),rgba(18,73,88,.9)); box-shadow:0 0 0 3px rgba(83,194,166,.07); }
 .fault-handler-avatar.is-system svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.fault-repair-times small { display:block; margin:0; color:#8aa8b2; font-size:9px; line-height:1.55; white-space:nowrap; }
 .fault-empty { color: #7899a6 !important; text-align: center; }
 .fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
 .fault-pagination { display: flex; align-items: center; gap: 5px; }
@@ -1676,9 +1678,10 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .fault-table .fault-row td:nth-child(2) { grid-column: 2; }
   .fault-table .fault-row td:nth-child(3) { grid-column: 2; }
   .fault-table .fault-row td:nth-child(4) { grid-column: 1 / -1; padding-top: 8px; }
-  .fault-table .fault-row td:nth-child(5),.fault-table .fault-row td:nth-child(6),.fault-table .fault-row td:nth-child(8) { grid-column: 1 / -1; color: #7899a6; font-size: 9px; }
+  .fault-table .fault-row td:nth-child(5),.fault-table .fault-row td:nth-child(6),.fault-table .fault-row td:nth-child(8),.fault-table .fault-row td:nth-child(9) { grid-column: 1 / -1; color: #7899a6; font-size: 9px; }
   .fault-table .fault-row td:nth-child(6)::before { content: "处理人员 · "; }
   .fault-table .fault-row td:nth-child(7) { position: absolute; top: 15px; right: 14px; }
+  .fault-table .fault-row td:nth-child(8)::before { content: "修复时间 · "; }
   .fault-cause { -webkit-line-clamp: 3; }
   .fault-detail { width: calc(100vw - 16px); max-height: calc(100vh - 16px); }
   .news-stage-dialog { width: calc(100vw - 16px); max-height: calc(100vh - 16px); }
