@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-21T10:30:20+08:00",
+  "checked_at_hkt": "2026-08-21T10:34:32+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 33,
   "frequency_counts": {
@@ -46,9 +46,9 @@
       "run_status": "running",
       "backend_pid": 84947,
       "worker_pid": 0,
-      "phase": "任务启动",
-      "progress_detail": "后台已接收爬虫任务，正在准备执行。",
-      "heartbeat_at_hkt": "2026-08-21T10:22:55+08:00",
+      "phase": "Agent审核",
+      "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
+      "heartbeat_at_hkt": "2026-08-21T10:34:32+08:00",
       "started_at_hkt": "2026-08-21T10:22:55+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -56,8 +56,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260821_102255_012916.jsonl"
       },
       "stream_log": {
-        "bytes": 0,
-        "lines": 0
+        "bytes": 34060,
+        "lines": 462
       },
       "final_audit": {},
       "run_log": {},

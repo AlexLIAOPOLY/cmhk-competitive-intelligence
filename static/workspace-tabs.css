@@ -1518,6 +1518,7 @@ body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .wo
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-nav-topline {
   display: flex;
   min-height: 48px;
+  align-items: flex-start;
   justify-content: center;
   padding: 0 2px;
   border-bottom-color: transparent;
@@ -1532,6 +1533,12 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+}
+
+@media (max-width: 900px) {
+  body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs {
+    top: max(10px, env(safe-area-inset-top));
+  }
 }
 
 @media (max-width: 1490px) {
