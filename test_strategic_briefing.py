@@ -1638,12 +1638,24 @@ class StrategicBriefingTests(unittest.TestCase):
             ["Bearer v4-key", "Bearer free-key"],
         )
 
-    def test_strategic_ai_adapts_deepseek_schema_to_json_object(self):
+    def test_strategic_ai_forces_deepseek_strict_tool_call(self):
         response = mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps(
             {
                 "choices": [
-                    {"message": {"content": json.dumps({"items": []})}}
+                    {
+                        "finish_reason": "tool_calls",
+                        "message": {
+                            "content": "",
+                            "tool_calls": [{
+                                "type": "function",
+                                "function": {
+                                    "name": "test_schema",
+                                    "arguments": json.dumps({"items": []}),
+                                },
+                            }],
+                        },
+                    }
                 ]
             }
         ).encode()
@@ -1677,8 +1689,58 @@ class StrategicBriefingTests(unittest.TestCase):
             )
 
         request_body = json.loads(opener.open.call_args.args[0].data)
-        self.assertEqual(request_body["response_format"], {"type": "json_object"})
+        self.assertNotIn("response_format", request_body)
         self.assertEqual(request_body["thinking"], {"type": "disabled"})
+        self.assertTrue(request_body["tools"][0]["function"]["strict"])
+        self.assertEqual(
+            request_body["tools"][0]["function"]["parameters"],
+            response_format["json_schema"]["schema"],
+        )
+        self.assertEqual(
+            request_body["tool_choice"]["function"]["name"],
+            "test_schema",
+        )
+
+    def test_strategic_ai_falls_back_when_gateway_rejects_strict_tools(self):
+        tool_error = briefing.HTTPError(
+            "http://internal/chat/completions",
+            400,
+            "Bad Request",
+            {},
+            io.BytesIO(json.dumps({"error": {"message": "tools unsupported"}}).encode()),
+        )
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.side_effect = [tool_error, response]
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            self.assertEqual(
+                briefing._call_internal_ai("system", "user", response_format=response_format),
+                {"ok": True},
+            )
+
+        requests = [json.loads(call.args[0].data) for call in opener.open.call_args_list]
+        self.assertIn("tools", requests[0])
+        self.assertNotIn("tools", requests[1])
+        self.assertEqual(requests[1]["response_format"], {"type": "json_object"})
 
     def test_strategic_ai_keeps_json_schema_for_compatible_model(self):
         response = mock.MagicMock()
@@ -1743,6 +1805,70 @@ class StrategicBriefingTests(unittest.TestCase):
                 briefing._call_internal_ai(
                     "system",
                     "user",
+                    response_format=response_format,
+                )
+
+    def test_structured_ai_removes_only_exact_echoed_single_item_id(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": '{"id":"source-1","ok":true}'}}]}
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            self.assertEqual(
+                briefing._call_internal_ai(
+                    "system",
+                    '{"id":"source-1"}',
+                    response_format=response_format,
+                ),
+                {"ok": True},
+            )
+
+    def test_structured_ai_rejects_mismatched_echoed_single_item_id(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": '{"id":"invented","ok":true}'}}]}
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            with self.assertRaises(briefing.AIInvalidStructuredResponse):
+                briefing._call_internal_ai(
+                    "system",
+                    '{"id":"source-1"}',
                     response_format=response_format,
                 )
 

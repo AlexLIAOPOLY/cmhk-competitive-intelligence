@@ -392,14 +392,35 @@ def _strict_items_response_format(
 def _structured_transport_options(
     model: str,
     response_format: dict[str, Any],
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
     """Adapt our strict local contract to the selected provider's API surface."""
     if "deepseek" in model.casefold():
-        # DeepSeek's Chat Completions API supports JSON Object mode, not
-        # OpenAI's response_format=json_schema dialect.  Structured review is
-        # a formatting task, so disable the default thinking mode to keep the
-        # final JSON from being crowded out by reasoning tokens.  The original
-        # schema is still enforced locally after parsing.
+        contract = response_format.get("json_schema") or {}
+        schema = contract.get("schema") if isinstance(contract, dict) else None
+        name = _clean_text(contract.get("name"), 64) if isinstance(contract, dict) else ""
+        if isinstance(schema, dict) and name:
+            # JSON Object mode guarantees only JSON syntax and can still omit
+            # required fields or invent extras. A forced strict function call
+            # moves the same schema to the provider-side decoder. The local
+            # validator below remains the final trust boundary.
+            return None, {
+                "thinking": {"type": "disabled"},
+                "tools": [
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": name,
+                            "description": "Return the complete structured result for this request.",
+                            "strict": True,
+                            "parameters": schema,
+                        },
+                    }
+                ],
+                "tool_choice": {
+                    "type": "function",
+                    "function": {"name": name},
+                },
+            }
         return {"type": "json_object"}, {"thinking": {"type": "disabled"}}
     return response_format, {}
 
@@ -2950,7 +2971,7 @@ def _call_internal_ai(
         # usage, so give every strict-JSON stage enough room to finish.
         max_tokens = max(
             max_tokens,
-            int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "4000")),
+            int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "8000")),
         )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
@@ -3020,7 +3041,8 @@ def _call_internal_ai(
                 route_model,
                 response_format,
             )
-            request_body["response_format"] = transport_format
+            if transport_format:
+                request_body["response_format"] = transport_format
             request_body.update(structured_options)
         headers = {"Content-Type": "application/json"}
         if api_key:
@@ -3077,6 +3099,29 @@ def _call_internal_ai(
                     or "not allowed to access model" in error_message
                     or "can only access models" in error_message
                 )
+                strict_tool_rejected = (
+                    "tools" in request_body
+                    and exc.code in {400, 404, 422}
+                    and not key_unavailable
+                )
+                if strict_tool_rejected:
+                    # Some internal OpenAI-compatible gateways have not enabled
+                    # DeepSeek strict tool calls yet. Fall back once to JSON
+                    # Object mode while keeping the local schema validator.
+                    logging.warning(
+                        "战略新闻AI网关不支持strict tool call，当前路由降级为JSON Object：%s",
+                        _clean_text(error.get("message") or raw_error, 240),
+                    )
+                    request_body.pop("tools", None)
+                    request_body.pop("tool_choice", None)
+                    request_body["response_format"] = {"type": "json_object"}
+                    request = Request(
+                        f"{base_url}/chat/completions",
+                        data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
+                        headers=headers,
+                        method="POST",
+                    )
+                    continue
                 if key_unavailable and route_index < len(routes):
                     logging.warning(
                         "战略新闻AI路由 %s/%s（%s）额度耗尽或无模型权限，"
@@ -3139,7 +3184,17 @@ def _call_internal_ai(
         break
     choice = (payload.get("choices") or [{}])[0]
     message = choice.get("message") or {}
-    final_content = str(message.get("content") or "").strip()
+    tool_calls = message.get("tool_calls") if isinstance(message.get("tool_calls"), list) else []
+    tool_arguments = ""
+    if response_format and tool_calls:
+        function = tool_calls[0].get("function") if isinstance(tool_calls[0], dict) else {}
+        function = function if isinstance(function, dict) else {}
+        arguments = function.get("arguments")
+        if isinstance(arguments, str):
+            tool_arguments = arguments.strip()
+        elif isinstance(arguments, dict):
+            tool_arguments = json.dumps(arguments, ensure_ascii=False)
+    final_content = tool_arguments or str(message.get("content") or "").strip()
     reasoning_content = str(message.get("reasoning_content") or "").strip()
     finish_reason = _clean_text(choice.get("finish_reason"), 80)
     if response_format:
@@ -3152,7 +3207,7 @@ def _call_internal_ai(
         logging.info(
             "战略新闻结构化AI响应：model=%s format=%s finish=%s completion_tokens=%s reasoning_tokens=%s",
             _clean_text(payload.get("model") or route_model, 120),
-            (request_body.get("response_format") or {}).get("type"),
+            "strict_tool" if tool_arguments else (request_body.get("response_format") or {}).get("type"),
             finish_reason or "unknown",
             usage.get("completion_tokens", "unknown"),
             details.get("reasoning_tokens", "unknown"),
@@ -3192,6 +3247,20 @@ def _call_internal_ai(
     if response_format and response_format.get("type") == "json_schema":
         schema = (response_format.get("json_schema") or {}).get("schema")
         if isinstance(schema, dict):
+            properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+            extras = set(parsed) - set(properties)
+            if extras == {"id"} and "id" not in properties:
+                # Single-item review input includes its correlation id, and a
+                # JSON-only provider may harmlessly echo it even though the
+                # output schema intentionally omits it. Remove only an exact
+                # echo; any invented or mismatched id still fails closed.
+                try:
+                    input_value = json.loads(user_prompt)
+                except (TypeError, json.JSONDecodeError):
+                    input_value = {}
+                expected_id = input_value.get("id") if isinstance(input_value, dict) else None
+                if expected_id is not None and str(parsed.get("id")) == str(expected_id):
+                    parsed = {key: value for key, value in parsed.items() if key != "id"}
             try:
                 _validate_local_json_schema(parsed, schema)
             except ValueError as exc:
