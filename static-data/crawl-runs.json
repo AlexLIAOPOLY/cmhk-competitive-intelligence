@@ -2,6 +2,20 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260821_123645_106271",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 20260821_103052_64683d83 · 父任务 20260821_102255_012916 · 守护补跑",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对17个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-21T12:37:37+08:00",
+      "started_at_hkt": "2026-08-21T12:36:45+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260821_110643_757557",
       "trigger": "四库与观察结论自动更新",
       "scope": "Agent审核 20260821_103052_64683d83 · 父任务 20260821_102255_012916",
@@ -10304,6 +10318,6 @@
       }
     }
   ],
-  "total": 208,
+  "total": 209,
   "truncated": false
 }
