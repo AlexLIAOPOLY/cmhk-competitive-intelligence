@@ -478,7 +478,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.js?v=84', INDEX)
-        self.assertIn('workspace-tabs.css?v=96', INDEX)
+        self.assertIn('workspace-tabs.css?v=97', INDEX)
         self.assertIn("const mainRun = mainRunForDate(date)", SCRIPT)
         self.assertIn("跨日完成", SCRIPT)
         self.assertIn("linkedParentRunId(run) === mainRun.crawl_run_id", SCRIPT)
