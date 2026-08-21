@@ -200,9 +200,9 @@
       "kind": "frequency-scheduler",
       "kind_label": "飞书频率调度器",
       "scope": "frequency-scheduler",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "频率调度器超过5分钟没有轮询心跳",
@@ -214,6 +214,30 @@
       "occurred_at_hkt": "2026-08-21T10:27:55+08:00",
       "started_at_hkt": "2026-08-21T10:28:07+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:05:38+08:00",
+      "completed_at_hkt": "2026-08-21T11:06:08+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "d0d4e724c5e823ed97c9858d",
+      "task_id": "incident:d0d4e724c5e823ed97c9858d",
+      "title": "定时爬虫续跑状态",
+      "kind": "frequency-scheduler",
+      "kind_label": "定时爬虫续跑状态",
+      "scope": "frequency-scheduler",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "定时爬虫待恢复状态长时间未推进",
+      "impact": "本轮任务可能卡在抓取、同步或Agent审核阶段，后续到期任务可能被阻塞。",
+      "suggestions": [
+        "交叉检查 pending 状态、crawl_run_id 完整日志和实际进程。",
+        "确认最后成功阶段后，只恢复后续阶段；不要删除状态后直接全量重跑。"
+      ],
+      "occurred_at_hkt": "2026-08-21T10:22:55+08:00",
+      "started_at_hkt": "2026-08-21T11:06:08+08:00",
+      "heartbeat_at_hkt": "2026-08-21T11:06:08+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11891,5 +11915,5 @@
       "handled_at_hkt": ""
     }
   ],
-  "total": 495
+  "total": 496
 }

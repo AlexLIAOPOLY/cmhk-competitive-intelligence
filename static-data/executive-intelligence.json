@@ -2044,7 +2044,7 @@
           "quality_score": 0.996,
           "confidence": 0.96,
           "row_ref": "row_2",
-          "evidence_hash": "2dd8ed570bf307920a88dc47cf6eb44deef9a8c144c8428abcca1662a352537a"
+          "evidence_hash": "e6ed687776387943935082fadd00c101e28709b54da8fa511817764dff447a2a"
         },
         {
           "company": "HKT",
@@ -2056,48 +2056,48 @@
           "quality_score": 0.996,
           "confidence": 0.96,
           "row_ref": "row_3",
-          "evidence_hash": "ffa352c0683bdb9e1d183102244d9e8c41d9a8c23a47aae195747be32d200f30"
-        },
-        {
-          "company": "HKT",
-          "metric": "资费",
-          "analysis": "NETVIGATOR 1000M光纤家宽月费低至108港元，5G家居宽频月费低至168港元，均为36个月合约",
-          "basis": "1000M Fibre-to-the-Home Free Home Wi-Fi Service From HK$ 108 /month 36 -month commitment；5G Home Internet From HK$ 168 /month 36 -month commitment",
-          "source_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
-          "source_tier": "official",
-          "quality_score": 0.996,
-          "confidence": 0.96,
-          "row_ref": "row_3",
-          "evidence_hash": "c812e1334da50ef0238a225a3ea3ff9572ad6a2748b87aa83ae2d30d8789ed86"
+          "evidence_hash": "422cd030392ca9842fddd320617ac374804a3d51ea055f60ae7805605cbc2df0"
         },
         {
           "company": "HKT",
           "metric": "增值服务",
-          "analysis": "NETVIGATOR增值服务包括Home Wi-Fi、Cyber Security Service、Gamer Pack、Now TV",
-          "basis": "Home Wi-Fi；Cyber Security Service；Gamer Pack；Now TV",
+          "analysis": "NETVIGATOR增值服务包括Home Wi-Fi、NETVIGATOR SHiELD、Cyber Security Service、Surfshark ONE、Gamer Pack、Microsoft 365、Now TV",
+          "basis": "Home Wi-Fi；NETVIGATOR SHiELD；Cyber Security Service；Surfshark ONE；Gamer Pack；Microsoft 365；Now TV",
           "source_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
           "source_tier": "official",
           "quality_score": 0.996,
           "confidence": 0.96,
           "row_ref": "row_3",
-          "evidence_hash": "7a91f61fd46d7367b07705b510ee380a0d1d1a121df2c1940af9089971a6440b"
+          "evidence_hash": "cf5fb0b78bd099bd3663016c55633a85bb2d4576e48e36e97436873fba58300f"
         },
         {
-          "company": "HKT",
-          "metric": "家宽套餐",
-          "analysis": "HKT旗下NETVIGATOR家宽用户可选1G至10G光纤入屋产品",
-          "basis": "Choose from 1G to 10G",
-          "source_url": "https://www.netvigator.com/eng/index.html",
+          "company": "Hutchison",
+          "metric": "客户数/用户数",
+          "analysis": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+          "basis": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+          "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf",
           "source_tier": "official",
           "quality_score": 0.996,
           "confidence": 0.96,
-          "row_ref": "row_3",
-          "evidence_hash": "3f7d6d6d3392bfa9e020e3f04d809dc3b0b944aea0ac8cb79285060fe6f29f47"
+          "row_ref": "row_5",
+          "evidence_hash": "8ce3087762f5df605f03abbce4930354ba0398680d20de49da9572047dfd05cf"
+        },
+        {
+          "company": "Hutchison",
+          "metric": "5G用户数",
+          "analysis": "5G渗透率62%",
+          "basis": "5G渗透率62%",
+          "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf",
+          "source_tier": "official",
+          "quality_score": 0.996,
+          "confidence": 0.96,
+          "row_ref": "row_5",
+          "evidence_hash": "da2583fcf87ff2eb17fa1370d137066932ed295546d45cb3491f5d391d9c83cb"
         }
       ],
       "ai_summary": {},
-      "ai_updated_at": "2026-08-21T08:02:54+08:00",
-      "ai_run_id": "20260820_030645_db4db3a2"
+      "ai_updated_at": "2026-08-21T11:06:44+08:00",
+      "ai_run_id": "20260821_103052_64683d83"
     },
     {
       "id": "international",
@@ -2846,8 +2846,8 @@
         }
       ],
       "ai_summary": {},
-      "ai_updated_at": "2026-08-21T08:02:54+08:00",
-      "ai_run_id": "20260820_030645_db4db3a2"
+      "ai_updated_at": "2026-08-21T11:06:44+08:00",
+      "ai_run_id": "20260821_103052_64683d83"
     },
     {
       "id": "cloud",
@@ -3871,47 +3871,10 @@
           "url": "https://www.huawei.com/en/annual-report/2025"
         }
       ],
-      "ai_analysis": [
-        {
-          "company": "Microsoft Azure",
-          "metric": "Intelligent Cloud收入",
-          "analysis": "106,265百万美元（2025财年）",
-          "basis": "片段中Intelligent Cloud Revenue 2025年为106,265百万美元",
-          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-          "source_tier": "official",
-          "quality_score": 0.995,
-          "confidence": 0.95,
-          "row_ref": "row_53",
-          "evidence_hash": "175f733b9d94d694e8fe0eafd8191794dd863ee69de1375e72adc093a01bd60d"
-        },
-        {
-          "company": "Microsoft Azure",
-          "metric": "Intelligent Cloud经营利润",
-          "analysis": "44,589百万美元（2025财年）",
-          "basis": "片段中Intelligent Cloud Operating Income为44,589百万美元",
-          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-          "source_tier": "official",
-          "quality_score": 0.995,
-          "confidence": 0.95,
-          "row_ref": "row_53",
-          "evidence_hash": "2677ac32cee3924b5478b123af77f6e813709a12f555d23ddaa685443ad28e5d"
-        },
-        {
-          "company": "Microsoft Azure",
-          "metric": "Azure及其他云服务增速",
-          "analysis": "34%",
-          "basis": "片段中Azure and other cloud services revenue growth of 34%",
-          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-          "source_tier": "official",
-          "quality_score": 0.995,
-          "confidence": 0.95,
-          "row_ref": "row_53",
-          "evidence_hash": "4b6de53b5a1509ca29d4b16637918c997cc21738b34022d2012fac795babf99a"
-        }
-      ],
+      "ai_analysis": [],
       "ai_summary": {},
-      "ai_updated_at": "2026-08-21T08:02:54+08:00",
-      "ai_run_id": "20260820_030645_db4db3a2"
+      "ai_updated_at": "2026-08-21T11:06:44+08:00",
+      "ai_run_id": "20260821_103052_64683d83"
     },
     {
       "id": "macro",
@@ -4626,8 +4589,8 @@
         }
       ],
       "ai_summary": {},
-      "ai_updated_at": "2026-08-21T08:02:54+08:00",
-      "ai_run_id": "20260820_030645_db4db3a2"
+      "ai_updated_at": "2026-08-21T11:06:44+08:00",
+      "ai_run_id": "20260821_103052_64683d83"
     }
   ],
   "relations": [
@@ -4662,155 +4625,26 @@
   ],
   "method": "页面只使用通过质量检查的数据库记录；不同期间、代理分部口径和不可直接比较的数据均单独说明。",
   "refresh": {
-    "ok": true,
-    "status": "completed",
-    "started_at_hkt": "2026-08-21T08:02:53+08:00",
-    "agent_run_id": "20260820_030645_db4db3a2",
+    "ok": false,
+    "status": "running",
+    "started_at_hkt": "2026-08-21T11:06:43+08:00",
+    "agent_run_id": "20260821_103052_64683d83",
     "dry_run": false,
-    "task_run_id": "20260821_080253_565658",
+    "task_run_id": "20260821_110643_757557",
     "attempt": 1,
-    "domains": {
-      "local": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 161,
-          "path": "",
-          "latest_period": "",
-          "quality": "passed",
-          "verified_rows": 161,
-          "financial_reports": 5,
-          "latest_financial_period": "H1 2026",
-          "latest_financial_publication_date": "2026-08-10"
-        },
-        "note": "本地竞对数据库已由本轮 crawl.py 更新；发布桥只复核，不重复抓取。"
-      },
-      "international": {
-        "ok": true,
-        "changed": true,
-        "promoted": true,
-        "validation": {
-          "rows": 3038,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-cbgcrog3/dataset/quarterly_metrics.json",
-          "latest_period": "2026-05-31",
-          "quality": "passed",
-          "verified_rows": 2634
-        },
-        "merge": {
-          "strategy": "preserve_existing_verified_rows_and_add_new_builder_rows",
-          "current_rows": 3036,
-          "builder_rows": 2841,
-          "added_rows": 2,
-          "upgraded_rows": 1,
-          "published_rows": 3038
-        },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-cbgcrog3/dataset\nRows: 2841\n"
-      },
-      "cloud": {
-        "ok": true,
-        "changed": false,
-        "promoted": false,
-        "validation": {
-          "rows": 83,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-3nr_5j99/dataset/cloud_vendor_metrics_2023_2025.json",
-          "latest_period": "2025",
-          "quality": "passed",
-          "verified_rows": 81
-        },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-3nr_5j99/dataset\nRows: 83\n"
-      },
-      "macro": {
-        "ok": true,
-        "changed": true,
-        "promoted": true,
-        "validation": {
-          "rows": 7746,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-8yfsaf7v/dataset/macro_policy_metrics.json",
-          "latest_period": "2026-07-31",
-          "quality": "passed",
-          "verified_rows": 7743
-        },
-        "stdout_tail": "wrote 7746 rows to /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-8yfsaf7v/dataset\n"
-      }
-    },
-    "ai_analysis": {
-      "ok": true,
-      "changed": true,
-      "domain_counts": {
-        "local": 8,
-        "international": 8,
-        "cloud": 3,
-        "macro": 4
-      },
-      "path": ""
-    },
-    "domain_fact_sidecars": {
-      "local": {
-        "path": "",
-        "facts": 8,
-        "changed": true,
-        "published": true
-      },
-      "international": {
-        "path": "",
-        "facts": 8,
-        "changed": true,
-        "published": true
-      },
-      "cloud": {
-        "path": "",
-        "facts": 3,
-        "changed": true,
-        "published": true
-      },
-      "macro": {
-        "path": "",
-        "facts": 4,
-        "changed": true,
-        "published": true
-      }
-    },
-    "model_analysis": {
-      "ok": true,
-      "generated_at_hkt": "2026-08-21T08:06:02+08:00",
-      "model": "Qwen3-30B-A3B-Instruct-2507",
-      "domains": 4,
-      "focuses_expected": 17,
-      "focuses_passed": 17,
-      "reused": false,
-      "fallback_used": false,
-      "fallback_reason": "",
-      "evidence_hash": "3bd25ffa4b118fd72248bd40dafa27d081d7e782a7f48803fb86d7cc1c01a715",
-      "discovery_model": "deterministic-evidence-fallback",
-      "discovery_fallback_used": true,
-      "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：AI跨库发现出现输入之外的数字：['-1.8']"
-    },
-    "pages_publish": {
-      "ok": true,
-      "attempts": 1,
-      "status": "published",
-      "site_version": "58b79205ab3772996837985295865988bfa400b41580eb9e355c7af100b07312",
-      "item_count": 8,
-      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-      "commit": "632df5b904fc873915bb4c70256d391478933888",
-      "snapshot_source_url": ""
-    },
-    "failed_domains": [],
-    "completed_at_hkt": "2026-08-21T08:06:38+08:00",
-    "duration_ms": 225264,
-    "fallback_preserved": false
+    "domains": {}
   },
   "ai": {
-    "agent_run_id": "20260820_030645_db4db3a2",
-    "updated_at": "2026-08-21T08:02:54+08:00",
+    "agent_run_id": "20260821_103052_64683d83",
+    "updated_at": "2026-08-21T11:06:44+08:00",
     "domain_counts": {
       "local": 8,
       "international": 8,
-      "cloud": 3,
+      "cloud": 0,
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "df4bcb06f9a52f53a510df2b8c233d522feee075c6baae7e9b533fe265b743ce",
+    "evidence_hash": "36a4b4c2a557c34eb9328bd03145f2433fe65ee8df1571f73c70cb579bb72183",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
