@@ -590,15 +590,16 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         )
 
     def test_completed_ledger_is_restored_from_successful_run_archive(self) -> None:
-        state = {"last_completed": {}}
+        state = {"last_completed": {}, "last_scheduled_for": {}}
         with mock.patch.object(
             scheduler,
-            "load_crawl_run_index",
+            "load_crawl_run_history",
             return_value=[
                 {
                     "trigger": "定时爬虫",
                     "run_status": "completed",
                     "scope": "定时指定行（第2行、第3行）",
+                    "started_at_hkt": "2026-07-29T03:00:00+08:00",
                     "completed_at_hkt": "2026-07-30T11:06:15+08:00",
                 },
                 {
@@ -618,6 +619,59 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 "3": "2026-07-30T11:06:15+08:00",
             },
         )
+        self.assertEqual(
+            state["last_scheduled_for"],
+            {
+                "2": "2026-07-29T03:00:00+08:00",
+                "3": "2026-07-29T03:00:00+08:00",
+            },
+        )
+
+    def test_cross_day_completion_does_not_consume_next_daily_slot(self) -> None:
+        now = scheduler.datetime(2026, 8, 21, 8, 3, tzinfo=scheduler.HKT)
+        with (
+            mock.patch.object(
+                scheduler,
+                "read_live_schedule",
+                return_value=[{"row": 3, "frequency": "每天 03:00"}],
+            ),
+            mock.patch.object(
+                scheduler,
+                "last_success",
+                return_value=scheduler.datetime(2026, 8, 21, 8, 2, tzinfo=scheduler.HKT),
+            ),
+        ):
+            due, audit = scheduler.due_rows(
+                now,
+                {
+                    "attempts": {},
+                    "last_completed": {"3": "2026-08-21T08:02:53+08:00"},
+                    "last_scheduled_for": {"3": "2026-08-20T03:00:22+08:00"},
+                },
+            )
+
+        self.assertEqual(due, [3])
+        self.assertEqual(audit[0]["status"], "due")
+        self.assertEqual(audit[0]["last_success_hkt"], "2026-08-20T03:00:22+08:00")
+
+    def test_mark_rows_completed_preserves_schedule_occurrence_across_midnight(self) -> None:
+        state = {"attempts": {"3": "2026-08-20T03:00:22+08:00"}}
+        with (
+            mock.patch.object(
+                scheduler,
+                "read_live_schedule",
+                return_value=[{"row": 3, "frequency": "每天 03:00"}],
+            ),
+            mock.patch.object(scheduler, "save_state"),
+        ):
+            scheduler._mark_rows_completed(
+                state,
+                [3],
+                scheduled_for_hkt="2026-08-20T03:00:22+08:00",
+            )
+
+        self.assertEqual(state["last_scheduled_for"]["3"], "2026-08-20T03:00:22+08:00")
+        self.assertNotIn("3", state["attempts"])
 
     def test_interrupted_pending_resume_bypasses_retry_backoff(self) -> None:
         pending = {

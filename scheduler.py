@@ -18,6 +18,7 @@ from crawl_run_registry import (
     append_crawl_run_event,
     heartbeat_crawl_run,
     load_index as load_crawl_run_index,
+    load_run_history as load_crawl_run_history,
     register_crawl_run,
     resume_crawl_run,
     start_crawl_run,
@@ -254,6 +255,7 @@ def load_state() -> dict[str, object]:
     state.setdefault("attempts", {})
     state.setdefault("completed_once", {})
     state.setdefault("last_completed", {})
+    state.setdefault("last_scheduled_for", {})
     _restore_completed_rows_from_run_archive(state)
     return state
 
@@ -302,11 +304,16 @@ def _restore_completed_rows_from_run_archive(state: dict[str, object]) -> None:
         else {}
     )
     try:
-        records = load_crawl_run_index()
+        records = load_crawl_run_history()
     except Exception:
         logging.exception("无法从任务归档恢复定时爬虫完成时间")
         state["last_completed"] = last_completed
         return
+    last_scheduled_for = (
+        state.get("last_scheduled_for")
+        if isinstance(state.get("last_scheduled_for"), dict)
+        else {}
+    )
     for record in records:
         if not isinstance(record, dict):
             continue
@@ -315,10 +322,11 @@ def _restore_completed_rows_from_run_archive(state: dict[str, object]) -> None:
             or record.get("run_status") != "completed"
         ):
             continue
-        completed_at = parse_datetime(
-            record.get("completed_at_hkt") or record.get("started_at_hkt")
+        completed_at = parse_datetime(record.get("completed_at_hkt"))
+        scheduled_for = parse_datetime(
+            record.get("scheduled_for_hkt") or record.get("started_at_hkt")
         )
-        if completed_at is None:
+        if completed_at is None or scheduled_for is None:
             continue
         for row in _scope_rows(str(record.get("scope") or "")):
             previous = parse_datetime(last_completed.get(str(row)))
@@ -326,14 +334,30 @@ def _restore_completed_rows_from_run_archive(state: dict[str, object]) -> None:
                 last_completed[str(row)] = completed_at.isoformat(
                     timespec="seconds"
                 )
+            previous_schedule = parse_datetime(last_scheduled_for.get(str(row)))
+            if previous_schedule is None or scheduled_for > previous_schedule:
+                last_scheduled_for[str(row)] = scheduled_for.isoformat(
+                    timespec="seconds"
+                )
     state["last_completed"] = last_completed
+    state["last_scheduled_for"] = last_scheduled_for
 
 
-def _mark_rows_completed(state: dict[str, object], rows: list[int]) -> None:
+def _mark_rows_completed(
+    state: dict[str, object],
+    rows: list[int],
+    *,
+    scheduled_for_hkt: object = None,
+) -> None:
     attempts = state.get("attempts") if isinstance(state.get("attempts"), dict) else {}
     last_completed = (
         state.get("last_completed")
         if isinstance(state.get("last_completed"), dict)
+        else {}
+    )
+    last_scheduled_for = (
+        state.get("last_scheduled_for")
+        if isinstance(state.get("last_scheduled_for"), dict)
         else {}
     )
     completed_once = (
@@ -342,19 +366,28 @@ def _mark_rows_completed(state: dict[str, object], rows: list[int]) -> None:
         else {}
     )
     completed_at = datetime.now(HKT).isoformat(timespec="seconds")
+    explicit_schedule = parse_datetime(scheduled_for_hkt)
     frequencies = {
         int(item["row"]): str(item.get("frequency") or "")
         for item in read_live_schedule()
     }
     for row in rows:
+        row_schedule = (
+            explicit_schedule
+            or parse_datetime(attempts.get(str(row)))
+            or parse_datetime(completed_at)
+        )
         attempts.pop(str(row), None)
         last_completed[str(row)] = completed_at
+        if row_schedule:
+            last_scheduled_for[str(row)] = row_schedule.isoformat(timespec="seconds")
         frequency = frequencies.get(row, "")
         schedule = canonical_schedule(frequency)
         if schedule and schedule[0] == "once":
             completed_once[str(row)] = frequency
     state["attempts"] = attempts
     state["last_completed"] = last_completed
+    state["last_scheduled_for"] = last_scheduled_for
     state["completed_once"] = completed_once
     save_state(state)
 
@@ -451,6 +484,11 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
         if isinstance(state.get("last_completed"), dict)
         else {}
     )
+    last_scheduled_for = (
+        state.get("last_scheduled_for")
+        if isinstance(state.get("last_scheduled_for"), dict)
+        else {}
+    )
     completed_once = state.get("completed_once") if isinstance(state.get("completed_once"), dict) else {}
     due: list[int] = []
     audit: list[dict[str, object]] = []
@@ -469,9 +507,12 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
             if last_attempt
             else last_success(row_no)
         )
-        ledger_success = parse_datetime(last_completed.get(str(row_no)))
-        last_run = max(
-            (value for value in (result_success, ledger_success) if value),
+        ledger_schedule = parse_datetime(last_scheduled_for.get(str(row_no)))
+        legacy_completed = parse_datetime(last_completed.get(str(row_no)))
+        # Scheduled occurrences are authoritative once available. Fetch and
+        # completion times may cross midnight and must not consume tomorrow's slot.
+        last_run = ledger_schedule or max(
+            (value for value in (result_success, legacy_completed) if value),
             default=None,
         )
         next_run = next_run_time(frequency, last_run, now)
@@ -874,6 +915,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         "rows": list(rows),
         "scope": env["CMHK_CRAWL_SCOPE"],
         "started_at_hkt": now.isoformat(timespec="seconds"),
+        "scheduled_for_hkt": now.isoformat(timespec="seconds"),
         "stream_log_path": str(stream_log_path),
         "last_attempt_at_hkt": now.isoformat(timespec="seconds"),
     }
@@ -1185,7 +1227,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         },
     )
 
-    _mark_rows_completed(state, rows)
+    _mark_rows_completed(state, rows, scheduled_for_hkt=now)
     append_crawl_run_event(stream_log_path, {"type": "done", "ok": True, "returnCode": 0})
     register_crawl_run(
         crawl_return_code=0,
@@ -1495,7 +1537,11 @@ def resume_pending_run(
             "resumed": True,
         },
     )
-    _mark_rows_completed(state, rows)
+    _mark_rows_completed(
+        state,
+        rows,
+        scheduled_for_hkt=pending.get("scheduled_for_hkt") or started_at_hkt,
+    )
     append_crawl_run_event(
         stream_log_path,
         {"type": "done", "ok": True, "returnCode": 0, "resumed": True},
