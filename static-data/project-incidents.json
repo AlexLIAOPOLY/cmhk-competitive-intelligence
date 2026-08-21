@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "42c97a93437be79b052642f6",
+      "task_id": "incident:42c97a93437be79b052642f6",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-21T11:07:31+08:00",
+      "started_at_hkt": "2026-08-21T11:07:31+08:00",
+      "heartbeat_at_hkt": "2026-08-21T11:07:31+08:00",
+      "completed_at_hkt": "2026-08-21T11:08:01+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "ebffd56d4ea01ace423f6702",
       "task_id": "incident:ebffd56d4ea01ace423f6702",
       "title": "主项目后台任务",
@@ -224,9 +248,9 @@
       "kind": "frequency-scheduler",
       "kind_label": "定时爬虫续跑状态",
       "scope": "frequency-scheduler",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "定时爬虫待恢复状态长时间未推进",
@@ -238,7 +262,7 @@
       "occurred_at_hkt": "2026-08-21T10:22:55+08:00",
       "started_at_hkt": "2026-08-21T11:06:08+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:06:08+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-21T11:07:01+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -311,6 +335,54 @@
       "started_at_hkt": "2026-08-21T11:00:38+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:00:38+08:00",
       "completed_at_hkt": "2026-08-21T11:01:08+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "455d059f4df6f3acac3bfd33",
+      "task_id": "incident:455d059f4df6f3acac3bfd33",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
+      "started_at_hkt": "2026-08-21T11:07:01+08:00",
+      "heartbeat_at_hkt": "2026-08-21T11:07:01+08:00",
+      "completed_at_hkt": "2026-08-21T11:07:31+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "d359d6c09e0c9e3461d23cc3",
+      "task_id": "incident:d359d6c09e0c9e3461d23cc3",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
+      "started_at_hkt": "2026-08-21T11:11:31+08:00",
+      "heartbeat_at_hkt": "2026-08-21T11:13:31+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -11915,5 +11987,5 @@
       "handled_at_hkt": ""
     }
   ],
-  "total": 496
+  "total": 499
 }
