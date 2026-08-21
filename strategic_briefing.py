@@ -2964,6 +2964,7 @@ def _call_internal_ai(
     allow_plain_text: bool = False,
     response_format: dict[str, Any] | None = None,
     deadline_monotonic: float | None = None,
+    _structured_response_retries: int | None = None,
 ) -> dict[str, Any]:
     if response_format:
         # Reasoning models may spend most of a small allowance before emitting
@@ -2973,6 +2974,11 @@ def _call_internal_ai(
             max_tokens,
             int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "8000")),
         )
+        if _structured_response_retries is None:
+            _structured_response_retries = max(
+                0,
+                int(os.environ.get("CMHK_STRATEGY_AI_RESPONSE_RETRIES", "2")),
+            )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     configured_keys = config.get("strategy_api_keys")
@@ -3216,11 +3222,41 @@ def _call_internal_ai(
     # reasoning_content as if it were the answer creates false JSON alarms and
     # can accidentally accept an intermediate object from the chain of thought.
     content = final_content or ("" if response_format else reasoning_content)
+
+    def retry_structured_response(error: RuntimeError) -> dict[str, Any]:
+        retries_left = int(_structured_response_retries or 0)
+        if (
+            response_format
+            and retries_left > 0
+            and (
+                deadline_monotonic is None
+                or time.monotonic() < deadline_monotonic
+            )
+        ):
+            logging.warning(
+                "公司内部 AI 结构化响应不完整，重试原协议（剩余 %s 次）：%s",
+                retries_left,
+                _clean_text(error, 240),
+            )
+            return _call_internal_ai(
+                system_prompt,
+                user_prompt,
+                max_tokens=max_tokens,
+                model_override=model_override,
+                allow_plain_text=allow_plain_text,
+                response_format=response_format,
+                deadline_monotonic=deadline_monotonic,
+                _structured_response_retries=retries_left - 1,
+            )
+        raise error
+
     if response_format and not content:
         detail = "结构化最终输出为空"
         if finish_reason in {"length", "max_tokens"}:
             detail += "（输出在JSON完成前被截断）"
-        raise AIInvalidStructuredResponse(reasoning_content, detail)
+        return retry_structured_response(
+            AIInvalidStructuredResponse(reasoning_content, detail)
+        )
     content = content.replace(chr(96) * 3 + "json", "").replace(chr(96) * 3, "").strip()
     try:
         parsed = (
@@ -3230,18 +3266,24 @@ def _call_internal_ai(
         )
     except (json.JSONDecodeError, ValueError):
         if response_format and finish_reason in {"length", "max_tokens"}:
-            raise AIInvalidStructuredResponse(
-                content,
-                "结构化输出在JSON完成前被截断",
+            return retry_structured_response(
+                AIInvalidStructuredResponse(
+                    content,
+                    "结构化输出在JSON完成前被截断",
+                )
             )
         match = re.search(r"\{.*\}", content, flags=re.S)
         if not match:
             if allow_plain_text and content:
                 return {"_plain_text": content}
+            if response_format:
+                return retry_structured_response(AIUnstructuredResponse(content))
             raise AIUnstructuredResponse(content)
         try:
             parsed = json.loads(match.group(0))
         except json.JSONDecodeError as exc:
+            if response_format:
+                return retry_structured_response(AIUnstructuredResponse(content))
             raise AIUnstructuredResponse(content) from exc
     parsed = parsed if isinstance(parsed, dict) else {}
     if response_format and response_format.get("type") == "json_schema":
@@ -3264,7 +3306,9 @@ def _call_internal_ai(
             try:
                 _validate_local_json_schema(parsed, schema)
             except ValueError as exc:
-                raise AIInvalidStructuredResponse(content, str(exc)) from exc
+                return retry_structured_response(
+                    AIInvalidStructuredResponse(content, str(exc))
+                )
     return parsed
 
 

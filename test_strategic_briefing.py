@@ -1913,6 +1913,74 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertGreaterEqual(request_body["max_tokens"], 4000)
         self.assertIn("JSON完成前被截断", str(raised.exception))
 
+    def test_structured_ai_retries_truncated_response_with_same_strict_contract(self):
+        truncated = mock.MagicMock()
+        truncated.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {
+                        "finish_reason": "length",
+                        "message": {"content": "", "reasoning_content": "unfinished"},
+                    }
+                ]
+            }
+        ).encode()
+        complete = mock.MagicMock()
+        complete.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {
+                        "finish_reason": "tool_calls",
+                        "message": {
+                            "content": "",
+                            "tool_calls": [
+                                {
+                                    "type": "function",
+                                    "function": {
+                                        "name": "test_schema",
+                                        "arguments": '{"ok":true}',
+                                    },
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.side_effect = [truncated, complete]
+        response_format = briefing._strict_object_response_format(
+            "test_schema",
+            {"ok": {"type": "boolean"}},
+        )
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://internal/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "test-key",
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            self.assertEqual(
+                briefing._call_internal_ai(
+                    "system",
+                    "user",
+                    response_format=response_format,
+                ),
+                {"ok": True},
+            )
+
+        self.assertEqual(opener.open.call_count, 2)
+        for call in opener.open.call_args_list:
+            request_body = json.loads(call.args[0].data)
+            self.assertIn("tools", request_body)
+            self.assertNotIn("response_format", request_body)
+
     def test_structured_ai_safely_closes_only_terminal_delimiters(self):
         response = mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps(
