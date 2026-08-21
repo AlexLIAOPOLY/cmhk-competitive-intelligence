@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "7484d8abc00cafa86353319e",
+      "task_id": "incident:7484d8abc00cafa86353319e",
+      "title": "飞书频率调度器",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度器",
+      "scope": "frequency-scheduler",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "频率调度器超过5分钟没有轮询心跳",
+      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
+      "suggestions": [
+        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
+        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-21T10:27:55+08:00",
+      "started_at_hkt": "2026-08-21T10:28:07+08:00",
+      "heartbeat_at_hkt": "2026-08-21T10:30:08+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "8526e862b887f535381868dd",
       "task_id": "incident:8526e862b887f535381868dd",
       "title": "主项目后台任务",
@@ -1077,7 +1101,7 @@
       ],
       "occurred_at_hkt": "2026-08-21T06:15:00+08:00",
       "started_at_hkt": "2026-08-21T06:15:14+08:00",
-      "heartbeat_at_hkt": "2026-08-21T10:24:07+08:00",
+      "heartbeat_at_hkt": "2026-08-21T10:30:08+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11627,5 +11651,5 @@
       "handled_at_hkt": ""
     }
   ],
-  "total": 484
+  "total": 485
 }

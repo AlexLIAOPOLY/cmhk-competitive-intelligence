@@ -13,7 +13,7 @@
         "fallback": 0,
         "total": 213,
         "successRate": 98,
-        "completedAt": "2026-08-20 03:05:47"
+        "completedAt": "2026-08-21 10:28:55"
       },
       "quality": {
         "ok": 32,
@@ -21,7 +21,7 @@
         "failed": 0,
         "fieldTotal": 205,
         "missingFields": 0,
-        "rawSources": 214
+        "rawSources": 213
       },
       "blocks": [
         {
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 19
+          "value": 18
         },
         {
           "label": "government_statistics",
@@ -70,7 +70,7 @@
         },
         {
           "label": "US",
-          "value": 21
+          "value": 20
         },
         {
           "label": "EU",
@@ -108,10 +108,6 @@
         },
         {
           "label": "cache:curl_direct_chrome_ua",
-          "value": 1
-        },
-        {
-          "label": "curl_crawler_ua",
           "value": 1
         }
       ],
@@ -415,7 +411,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-21 10:24:15",
+    "latestOutputText": "2026-08-21 10:28:08",
     "outputs": [
       {
         "name": "8月19日周报.docx",
