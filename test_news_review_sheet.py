@@ -110,6 +110,97 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         run.assert_called_once()
         sleep.assert_not_called()
 
+    def test_insert_rows_reapplies_review_row_height(self):
+        with (
+            mock.patch.object(review_sheet, "_lark") as lark,
+            mock.patch.object(review_sheet, "_best_effort") as best_effort,
+        ):
+            review_sheet._insert_rows("sheet", 3, start_index=1)
+
+        lark.assert_called_once_with(
+            "sheets",
+            "+insert-dimension",
+            "--spreadsheet-token",
+            review_sheet.SPREADSHEET_TOKEN,
+            "--sheet-id",
+            "sheet",
+            "--dimension",
+            "ROWS",
+            "--start-index",
+            "1",
+            "--end-index",
+            "4",
+            "--inherit-style",
+            "AFTER",
+        )
+        best_effort.assert_called_once_with(
+            "sheets",
+            "+update-dimension",
+            "--spreadsheet-token",
+            review_sheet.SPREADSHEET_TOKEN,
+            "--sheet-id",
+            "sheet",
+            "--dimension",
+            "ROWS",
+            "--start-index",
+            "2",
+            "--end-index",
+            "4",
+            "--fixed-size",
+            str(review_sheet.REVIEW_ROW_HEIGHT_PX),
+            "--visible",
+        )
+
+    def test_insert_rows_formats_separator_band(self):
+        with (
+            mock.patch.object(review_sheet, "_lark"),
+            mock.patch.object(review_sheet, "_best_effort") as best_effort,
+        ):
+            review_sheet._insert_rows(
+                "sheet",
+                5,
+                start_index=1,
+                separator_count=2,
+            )
+
+        self.assertEqual(best_effort.call_count, 3)
+        self.assertEqual(
+            best_effort.call_args_list[1],
+            mock.call(
+                "sheets",
+                "+update-dimension",
+                "--spreadsheet-token",
+                review_sheet.SPREADSHEET_TOKEN,
+                "--sheet-id",
+                "sheet",
+                "--dimension",
+                "ROWS",
+                "--start-index",
+                "5",
+                "--end-index",
+                "6",
+                "--fixed-size",
+                str(review_sheet.SEPARATOR_ROW_HEIGHT_PX),
+                "--visible",
+            ),
+        )
+        self.assertEqual(
+            best_effort.call_args_list[2],
+            mock.call(
+                "sheets",
+                "+set-style",
+                "--spreadsheet-token",
+                review_sheet.SPREADSHEET_TOKEN,
+                "--range",
+                "sheet!A5:N6",
+                "--style",
+                json.dumps(
+                    {"backColor": review_sheet.SEPARATOR_ROW_COLOR},
+                    ensure_ascii=False,
+                ),
+            ),
+        )
+
     def test_canonical_news_url_preserves_article_identity_query(self):
         first = (
             "https://hkcna.hk/docDetail.jsp?id=101381240&channel=4372"
@@ -251,8 +342,21 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 if any(cell not in (None, "") for cell in row)
             ]
 
-        def insert(self, _sheet_id, count, *, start_index=1):
-            self.inserts.append({"start_index": start_index, "count": count})
+        def insert(
+            self,
+            _sheet_id,
+            count,
+            *,
+            start_index=1,
+            separator_count=0,
+        ):
+            self.inserts.append(
+                {
+                    "start_index": start_index,
+                    "count": count,
+                    "separator_count": separator_count,
+                }
+            )
             position = max(0, int(start_index) - 1)
             blanks = [[""] * len(review_sheet.HEADERS) for _ in range(count)]
             self.rows = self.rows[:position] + blanks + self.rows[position:]
@@ -386,10 +490,15 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 }
             ],
         )
-        self.assertEqual(sheet.inserts, [{"start_index": 1, "count": 1}])
+        self.assertEqual(
+            sheet.inserts,
+            [{"start_index": 1, "count": 3, "separator_count": 2}],
+        )
         self.assertEqual([cell_range for cell_range, _ in sheet.writes], ["A2:N2"])
         self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
-        self.assertEqual(sheet.rows[1], self._existing_row())
+        self.assertFalse(any(sheet.rows[1]))
+        self.assertFalse(any(sheet.rows[2]))
+        self.assertEqual(sheet.rows[3], self._existing_row())
         self.assertEqual(
             [[item["news_id"] for item in history] for history in semantic_histories],
             [["NEWS-4A3C54DE894A40"]],
@@ -471,7 +580,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             review_sheet.sync_candidates([self._new_item()])
 
         self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
-        self.assertEqual(sheet.rows[1][6], "历史新闻")
+        self.assertEqual(
+            sheet.inserts,
+            [{"start_index": 1, "count": 2, "separator_count": 1}],
+        )
+        self.assertFalse(any(sheet.rows[1]))
+        self.assertEqual(sheet.rows[2][6], "历史新闻")
 
     def test_sync_does_not_rewrite_existing_duplicate_rows(self):
         pending = self._existing_row()
@@ -549,7 +663,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         written_titles = [row[6] for _range, rows in sheet.writes for row in rows]
         self.assertNotIn("历史新闻", written_titles)
-        self.assertEqual(sheet.rows[1][:3], ["接受", "接受", "未同步"])
+        self.assertEqual(sheet.rows[3][:3], ["接受", "接受", "未同步"])
         self.assertEqual(result["rescued_decision_count"], 1)
         self.assertEqual(result["rescued_decisions"][0]["before"], "待审核 / 待审核 / 未同步")
         self.assertEqual(result["rescued_decisions"][0]["after"], "接受 / 接受 / 未同步")

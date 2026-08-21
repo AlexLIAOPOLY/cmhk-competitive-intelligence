@@ -19,23 +19,7 @@
 .dashboard-page:not(.workspace-dashboard-active) .workspace-inline-surface .floating-chat,
 .dashboard-page:not(.workspace-dashboard-active) #logModal.workspace-inline-surface .log-modal { height: 100% !important; }
 
-.dashboard-page .brand-bar {
-  transition: opacity .28s ease, transform .36s cubic-bezier(.22,1,.36,1), visibility 0s linear;
-  will-change: opacity, transform;
-}
-.dashboard-page.workspace-ai-active .brand-bar {
-  position: fixed !important;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex !important;
-  margin: 0 !important;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(-105%);
-  transition: opacity .28s ease, transform .36s cubic-bezier(.22,1,.36,1), visibility 0s linear .36s;
-}
+.dashboard-page.workspace-ai-active .brand-bar { display: none !important; }
 .dashboard-page.workspace-ai-active .workspace-layout { height: 100dvh; }
 
 .workspace-layout {
@@ -1468,7 +1452,6 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dashboard-page .brand-bar,
   .workspace-layout,
   .workspace-tabs,
   .workspace-nav-title,
@@ -1544,12 +1527,7 @@ body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .wo
 }
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-nav-collapse {
   flex-basis: 34px;
-}
-body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed:not(.is-nav-positioning):not(.is-nav-transitioning) > .workspace-tabs .workspace-nav-collapse {
   transform: translateY(0);
-}
-body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed.is-nav-transitioning > .workspace-tabs .workspace-nav-collapse {
-  transform: translate3d(0,0,0) scale(1);
 }
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-tabs-scroll { display: none; }
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed .chat-nav-controls { margin-left: 48px; }

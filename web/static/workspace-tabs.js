@@ -238,11 +238,6 @@
 
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
     const target = allowedModules.includes(name) ? name : (allowedModules[0] || "dashboard");
-    const targetIsAi = target === "ai";
-    const wasAi = document.body.classList.contains("workspace-ai-active");
-    const navLayout = document.querySelector("#workspaceLayout");
-    const navButton = document.querySelector("#workspaceNavCollapse");
-    const navTransitionStart = wasAi !== targetIsAi ? navButton?.getBoundingClientRect() : null;
     const activePanel = panels.find((panel) => panel.dataset.workspacePanel === target);
     const shouldAnimatePanel = Boolean(activePanel?.hidden);
     state.previewRequest.weekly += 1;
@@ -260,12 +255,8 @@
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
-    document.body.classList.toggle("workspace-ai-active", targetIsAi);
-    if (targetIsAi) {
-      setWorkspaceNavCollapsed?.(true, { fromRect: navTransitionStart });
-    } else if (navTransitionStart && navLayout) {
-      setWorkspaceNavCollapsed?.(navLayout.classList.contains("is-nav-collapsed"), { fromRect: navTransitionStart });
-    }
+    document.body.classList.toggle("workspace-ai-active", target === "ai");
+    if (target === "ai") setWorkspaceNavCollapsed?.(true);
     hydrateAuthorizedFrame(target);
     syncEmbeddedVisibility(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
@@ -1829,24 +1820,16 @@
     if (!layout || !button) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let motionTimer = 0;
-    const clearMotion = () => {
-      if (motionTimer) window.clearTimeout(motionTimer);
-      motionTimer = 0;
-      layout.classList.remove("is-nav-positioning", "is-nav-transitioning");
-      button.removeAttribute("aria-busy");
-      layout.style.removeProperty("--workspace-nav-motion-x");
-      layout.style.removeProperty("--workspace-nav-motion-y");
-      layout.style.removeProperty("--workspace-nav-motion-scale");
-    };
     const apply = (collapsed) => {
       layout.classList.toggle("is-nav-collapsed", collapsed);
       button.setAttribute("aria-expanded", String(!collapsed));
       button.setAttribute("aria-label", collapsed ? "展开项目导航" : "收回项目导航");
       button.title = collapsed ? "展开项目导航" : "收回项目导航";
     };
-    const animateTo = (collapsed, { fromRect = null } = {}) => {
-      const first = fromRect || button.getBoundingClientRect();
-      clearMotion();
+    setWorkspaceNavCollapsed = apply;
+    const animateTo = (collapsed) => {
+      if (motionTimer) return;
+      const first = button.getBoundingClientRect();
       apply(collapsed);
       if (reducedMotion.matches) return;
       const last = button.getBoundingClientRect();
@@ -1854,7 +1837,7 @@
       const offsetY = first.top + first.height / 2 - (last.top + last.height / 2);
       if (Math.abs(offsetX) < 1 && Math.abs(offsetY) < 1) return;
       layout.style.setProperty("--workspace-nav-motion-x", `${offsetX}px`);
-      layout.style.setProperty("--workspace-nav-motion-y", `${offsetY}px`);
+      layout.style.setProperty("--workspace-nav-motion-y", `${offsetY - 1}px`);
       layout.style.setProperty("--workspace-nav-motion-scale", String(first.width / last.width));
       layout.classList.add("is-nav-positioning");
       button.setAttribute("aria-busy", "true");
@@ -1864,15 +1847,21 @@
         layout.classList.remove("is-nav-positioning");
       });
       motionTimer = window.setTimeout(() => {
-        clearMotion();
+        layout.classList.remove("is-nav-transitioning");
+        button.removeAttribute("aria-busy");
+        layout.style.removeProperty("--workspace-nav-motion-x");
+        layout.style.removeProperty("--workspace-nav-motion-y");
+        layout.style.removeProperty("--workspace-nav-motion-scale");
+        motionTimer = 0;
       }, 540);
     };
-    setWorkspaceNavCollapsed = animateTo;
     apply(localStorage.getItem("cmhk-workspace-nav-collapsed") === "1");
     button.addEventListener("click", () => {
       const collapsed = !layout.classList.contains("is-nav-collapsed");
       animateTo(collapsed);
-      localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      if (layout.classList.contains("is-nav-collapsed") === collapsed) {
+        localStorage.setItem("cmhk-workspace-nav-collapsed", collapsed ? "1" : "0");
+      }
     });
   }
 

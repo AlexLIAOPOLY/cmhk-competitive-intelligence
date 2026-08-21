@@ -43,6 +43,11 @@ SPREADSHEET_TOKEN = (
 SHEET_TITLE = os.environ.get("CMHK_NEWS_REVIEW_SHEET_TITLE") or "滚动新闻候选池"
 POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300")))
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
+REVIEW_ROW_HEIGHT_PX = 76
+SEPARATOR_ROW_HEIGHT_PX = 18
+SAME_DAY_BATCH_SEPARATOR_ROWS = 1
+CROSS_DAY_SEPARATOR_ROWS = 2
+SEPARATOR_ROW_COLOR = "#E8EEF5"
 ROLLOVER_SOFT_LIMIT_RATIO = min(
     0.95,
     max(0.50, float(os.environ.get("CMHK_NEWS_REVIEW_ROLLOVER_RATIO", "0.90"))),
@@ -608,7 +613,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--end-index",
         str(MAX_SHEET_ROWS),
         "--fixed-size",
-        "76",
+        str(REVIEW_ROW_HEIGHT_PX),
         "--visible",
     )
     _best_effort(
@@ -652,9 +657,17 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
     )
 
 
-def _insert_rows(sheet_id: str, count: int, *, start_index: int = 1) -> None:
+def _insert_rows(
+    sheet_id: str,
+    count: int,
+    *,
+    start_index: int = 1,
+    separator_count: int = 0,
+) -> None:
     if count <= 0:
         return
+    if separator_count < 0 or separator_count > count:
+        raise ValueError("separator_count must be between zero and count")
     _lark(
         "sheets",
         "+insert-dimension",
@@ -671,6 +684,80 @@ def _insert_rows(sheet_id: str, count: int, *, start_index: int = 1) -> None:
         "--inherit-style",
         "AFTER",
     )
+    # Feishu row insertion inherits cell formatting but not row height. Reapply
+    # the review-table height so newly inserted candidates match prior rows.
+    _best_effort(
+        "sheets",
+        "+update-dimension",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--sheet-id",
+        sheet_id,
+        "--dimension",
+        "ROWS",
+        "--start-index",
+        str(start_index + 1),
+        "--end-index",
+        str(start_index + count),
+        "--fixed-size",
+        str(REVIEW_ROW_HEIGHT_PX),
+        "--visible",
+    )
+    if separator_count:
+        separator_start = start_index + count - separator_count + 1
+        separator_end = start_index + count
+        _best_effort(
+            "sheets",
+            "+update-dimension",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--sheet-id",
+            sheet_id,
+            "--dimension",
+            "ROWS",
+            "--start-index",
+            str(separator_start),
+            "--end-index",
+            str(separator_end),
+            "--fixed-size",
+            str(SEPARATOR_ROW_HEIGHT_PX),
+            "--visible",
+        )
+        _best_effort(
+            "sheets",
+            "+set-style",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--range",
+            f"{sheet_id}!A{separator_start}:N{separator_end}",
+            "--style",
+            json.dumps({"backColor": SEPARATOR_ROW_COLOR}, ensure_ascii=False),
+        )
+
+
+def _batch_separator_count(
+    new_values: list[list[Any]],
+    existing_rows: list[list[Any]],
+) -> int:
+    """Return the blank-row gap between a new batch and existing news."""
+
+    if not new_values:
+        return 0
+    existing_first = next(
+        (
+            row
+            for row in existing_rows
+            if row and any(_text(value, 80) for value in row)
+        ),
+        None,
+    )
+    if existing_first is None:
+        return 0
+    new_date = _publication_date(new_values[-1][3])
+    existing_date = _publication_date(existing_first[3])
+    if new_date and existing_date and new_date == existing_date:
+        return SAME_DAY_BATCH_SEPARATOR_ROWS
+    return CROSS_DAY_SEPARATOR_ROWS
 
 
 def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) -> list[Any]:
@@ -1321,6 +1408,7 @@ def _refresh_live_review_sheet(
             "rows": list(existing_rows_by_id.values()),
             "rows_by_id": dict(existing_rows_by_id),
             "physical_count": len(existing_rows_by_id),
+            "row_span": len(existing_rows_by_id),
         }
 
     latest_by_id = _index_review_rows(latest_rows)
@@ -1376,6 +1464,7 @@ def _refresh_live_review_sheet(
         "rows": latest_rows,
         "rows_by_id": latest_by_id,
         "physical_count": physical_count,
+        "row_span": len(latest_rows),
     }
 
 
@@ -1723,10 +1812,12 @@ def sync_candidates(
                 dropped_already_present,
             )
         candidate_count = live_sheet["physical_count"] + new_count
+        separator_count = _batch_separator_count(new_values, live_sheet["rows"])
+        incoming_row_span = new_count + separator_count
         workbook_info = _spreadsheet_info()
         decision = capacity_decision(
-            used_rows=live_sheet["physical_count"] + 1,
-            incoming_rows=new_count,
+            used_rows=live_sheet["row_span"] + 1,
+            incoming_rows=incoming_row_span,
             column_count=len(HEADERS),
             sheet_count=len(_sheet_items(workbook_info)),
             operational_max_rows=MAX_SHEET_ROWS,
@@ -1744,24 +1835,38 @@ def sync_candidates(
                 "rows": [],
                 "rows_by_id": {},
                 "physical_count": 0,
+                "row_span": 0,
             }
             candidate_count = new_count
+            separator_count = 0
+            incoming_row_span = new_count
             _progress(
                 progress_callback,
                 "飞书容量分卷",
                 f"旧候选池已达安全阈值，已切换到时间分卷 {state.get('sheet_title')}。",
             )
-        if candidate_count > MAX_SHEET_ROWS - 1:
-            raise RuntimeError(f"新分卷单批即超过 {MAX_SHEET_ROWS - 1} 条候选上限")
+        if incoming_row_span > MAX_SHEET_ROWS - 1:
+            raise RuntimeError(
+                f"新分卷单批连同分隔行即超过 {MAX_SHEET_ROWS - 1} 行上限"
+            )
         _validate_sheet_rows(new_values, context="待追加飞书审核表")
         if new_values:
             if live_sheet["physical_count"] > 0:
                 _progress(
                     progress_callback,
                     "飞书分批写入",
-                    f"在表头下插入 {len(new_values)} 行，不改动已有 {live_sheet['physical_count']} 行。",
+                    (
+                        f"在表头下插入 {len(new_values)} 条新闻和 "
+                        f"{separator_count} 行分隔，不改动已有 "
+                        f"{live_sheet['physical_count']} 条新闻。"
+                    ),
                 )
-                _insert_rows(sheet_id, len(new_values), start_index=1)
+                _insert_rows(
+                    sheet_id,
+                    incoming_row_span,
+                    start_index=1,
+                    separator_count=separator_count,
+                )
             total_chunks = (len(new_values) + 39) // 40
             for offset in range(0, len(new_values), 40):
                 chunk = new_values[offset : offset + 40]
