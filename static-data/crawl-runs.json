@@ -2,6 +2,34 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260821_140105_200986",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "午后扫描（2026-08-21@14:00）",
+      "task_kind": "strategic-news",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 6 条，AI保留 4 条，历史重复 0 条，新增 4 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 6 条，AI保留 4 条，历史重复 0 条，新增 4 条。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-21T14:05:44+08:00",
+      "started_at_hkt": "2026-08-21T14:01:05+08:00",
+      "completed_at_hkt": "2026-08-21T14:05:44+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 279112,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "slot": "2026-08-21@14:00",
+        "discovered": 6,
+        "ai_retained": 4,
+        "history_duplicates": 0,
+        "new_count": 4,
+        "readback_verified": true,
+        "notification_status": "sent",
+        "message_id": "om_x100b674ae54de4a4b48882aa592f637"
+      }
+    },
+    {
       "crawl_run_id": "20260821_123645_106271",
       "trigger": "四库与观察结论自动更新",
       "scope": "Agent审核 20260821_103052_64683d83 · 父任务 20260821_102255_012916 · 守护补跑",
@@ -10354,6 +10382,6 @@
       }
     }
   ],
-  "total": 209,
+  "total": 210,
   "truncated": false
 }

@@ -1,4 +1,54 @@
 {
+  "20260821_140105_200986": [
+    {
+      "newsId": "NEWS-594EEADBE4218E",
+      "title": "中国移动香港5G世一Plan月费138港元 首12个月双倍数据至100GB",
+      "summary": "中国移动香港推出5G世一Plan，月费138港元，首12个月双倍数据至100GB。",
+      "category": "公司动态",
+      "region": "香港本地",
+      "source": "Techritual",
+      "publishedAt": "2026-08-21T10:00:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE45TEU1cHVHVS10MkNNaGJfdzY2QWozX1RrMldnTzRjQWZRTmQxNjcxMkNPa3R3R1FhZmpSOTROSkc0LUR6cGJic002ZXBCUkhkMmZRM0xXSl8?oc=5",
+      "inclusionReason": "中国移动香港推出5G世一Plan资费，首12个月双倍数据至100GB，属本公司产品与定价动作，影响客户获取与产品竞争力。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-246912BE7D4E28",
+      "title": "香港智慧交通灯即将启用 可节省20秒",
+      "summary": "香港智慧交通灯即将启用，可节省20秒等候时间。",
+      "category": "基础设施/网络/技术类",
+      "region": "香港本地",
+      "source": "香港文匯報",
+      "publishedAt": "2026-08-21T09:09:25+08:00",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE95WlRZa2o5ckdDbzc4d0tzMEdvM3pYdzVybVVFNGIzbGRQMmxXYjJ0Q3RKam9sYzdDUlk1T0lMNDlYcG0teG12cXQxaDFHZ2hwOG1SN1pLZVNZZFQtemNuaEtrNG52S1JzME4yUC11dXJUalpTaXAw?oc=5",
+      "inclusionReason": "香港智慧交通灯部署有具体新进展，可带动本地物联网、数据连接与智慧城市基础设施需求。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-9207D0873C56EE",
+      "title": "SmarTone电脑节推5G月费优惠 送手机券及Home 5G优惠",
+      "summary": "SmarTone于电脑节推出5G月费优惠，$179计划送$1,400手机券，Home 5G月费$121起，Gen SmarT AI月费$98。",
+      "category": "竞对动态",
+      "region": "香港本地",
+      "source": "ezone.hk",
+      "publishedAt": "2026-08-21T13:14:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOZEVOZ2V6ZnZVZnAxd21RVGd3dWhvbURUYTZ5aDZXT2JQV2lhQnVESzMySGk5d1N4c2V4dUdSZ2VnVGs4SGN6MTE0UUYwUkVEX1NOemxPd0drektmU05DZW1FR1cyVjRfdXdjOEN2MVJocDMtWnhwbjFCX1lJZXl5RTFObDltUm1NaTlNLUsteVpHNThvQXZCeWJOYlFpdGdBRmh1M2Ztd2dEb2E5Um9xMk9B?oc=5",
+      "inclusionReason": "SmarTone在电脑节推出5G月费及Home 5G优惠，属竞对产品与定价动作，可用于本地市场资费对标。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-0A55632AFE982F",
+      "title": "香港支联会煽动颠覆案 高院裁定李卓人等罪名成立",
+      "summary": "香港高等法院裁定支联会李卓人、邹幸彤、何俊仁煽动颠覆罪名成立。",
+      "category": "政策监管",
+      "region": "香港本地",
+      "source": "BBC",
+      "publishedAt": "2026-08-21T10:16:10+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9zNTV4TEVsZHFpU2Z0aEdNa0pnaDktT1hTekd2eV9OdFBsVFktM1JUQnpNZVZVOWRNTm0ySHNUWFNvdkhDNTlNZ2Z3OUNiSkNzdWY1aVI5WXlwM2E2ZHdJN0M2Y3hyZ9IBa0FVX3lxTFB2MjNkRzFqVGlreTFubmZWRnNxS3NIR090NUNid3FGNnhGYU9CQkctNzl3TWFkUDJuVllRTlVreUloMlY0VTBvSTlGMTJFVDNSRmo0VGt1SDhucmxGd3Mwa1BuUUtKaVp6WVdz?oc=5",
+      "inclusionReason": "香港法院就支联会煽动颠覆案作出定罪裁决，属本地法律与合规环境变化，影响营商合规风险评估。",
+      "businessImpact": "合规与牌照"
+    }
+  ],
   "20260821_094256_491106": [
     {
       "newsId": "NEWS-06617C7203488A",
