@@ -20,6 +20,12 @@ from typing import Any, Callable
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
+from feishu_sheet_rollover import (
+    capacity_decision,
+    record_active_part,
+    timestamped_part_title,
+)
+
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "strategy_briefing"
 LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
@@ -37,6 +43,11 @@ SPREADSHEET_TOKEN = (
 SHEET_TITLE = os.environ.get("CMHK_NEWS_REVIEW_SHEET_TITLE") or "滚动新闻候选池"
 POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300")))
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
+ROLLOVER_SOFT_LIMIT_RATIO = min(
+    0.95,
+    max(0.50, float(os.environ.get("CMHK_NEWS_REVIEW_ROLLOVER_RATIO", "0.90"))),
+)
+ROLLOVER_TARGET_KEY = "news_review"
 SHEET_SOURCE = "feishu_review_sheet"
 FORMAT_VERSION = 9
 LARK_READ_MAX_ATTEMPTS = 3
@@ -317,12 +328,25 @@ def _spreadsheet_info() -> dict[str, Any]:
     )
 
 
-def _find_sheet_id(payload: dict[str, Any]) -> str:
+def _sheet_items(payload: dict[str, Any]) -> list[dict[str, Any]]:
     sheets = _walk_for_key(payload, "sheets")
     if isinstance(sheets, dict):
         sheets = sheets.get("sheets")
-    for sheet in sheets if isinstance(sheets, list) else []:
-        if isinstance(sheet, dict) and str(sheet.get("title") or "") == SHEET_TITLE:
+    return [sheet for sheet in sheets if isinstance(sheet, dict)] if isinstance(sheets, list) else []
+
+
+def _sheet_title(sheet: dict[str, Any]) -> str:
+    return str(sheet.get("title") or sheet.get("sheet_name") or "")
+
+
+def _find_sheet_id(payload: dict[str, Any], preferred_sheet_id: str = "") -> str:
+    items = _sheet_items(payload)
+    if preferred_sheet_id:
+        for sheet in items:
+            if str(sheet.get("sheet_id") or "") == preferred_sheet_id:
+                return preferred_sheet_id
+    for sheet in items:
+        if _sheet_title(sheet) == SHEET_TITLE:
             return str(sheet.get("sheet_id") or "")
     return ""
 
@@ -790,7 +814,8 @@ def ensure_sheet() -> str:
     with _LOCK:
         state = _read_json(STATE_PATH, {})
         info = _spreadsheet_info()
-        sheet_id = _find_sheet_id(info)
+        saved_sheet_id = _text(state.get("sheet_id"), 120) if isinstance(state, dict) else ""
+        sheet_id = _find_sheet_id(info, saved_sheet_id)
         created = False
         if not sheet_id:
             _lark(
@@ -845,13 +870,126 @@ def ensure_sheet() -> str:
         state.update(
             {
                 "sheet_id": sheet_id,
-                "sheet_title": SHEET_TITLE,
+                "sheet_title": next(
+                    (_sheet_title(sheet) for sheet in _sheet_items(info) if str(sheet.get("sheet_id") or "") == sheet_id),
+                    SHEET_TITLE,
+                ),
                 "sheet_url": _sheet_url(sheet_id),
                 "updated_at": _now_iso(),
             }
         )
         _write_json(STATE_PATH, state)
+        record_active_part(
+            ROOT,
+            ROLLOVER_TARGET_KEY,
+            spreadsheet_token=SPREADSHEET_TOKEN,
+            sheet_id=sheet_id,
+            sheet_title=str(state.get("sheet_title") or SHEET_TITLE),
+        )
         return sheet_id
+
+
+def _rollover_review_sheet(
+    *,
+    current_sheet_id: str,
+    current_rows_by_id: dict[str, list[Any]],
+    decision: Any,
+) -> tuple[str, dict[str, Any]]:
+    """Create and activate a dated review-sheet part before a capacity failure."""
+
+    state = _read_json(STATE_PATH, {})
+    info = _spreadsheet_info()
+    items = _sheet_items(info)
+    if len(items) >= decision.soft_sheet_limit:
+        raise RuntimeError(
+            "主工作簿子表数已进入安全阈值，为避免再次触发 300 张上限，"
+            "已停止在该工作簿内继续新建分卷。"
+        )
+    titles = {_sheet_title(sheet) for sheet in items}
+    part_title = timestamped_part_title(SHEET_TITLE, existing_titles=titles)
+    _lark(
+        "sheets",
+        "+create-sheet",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--title",
+        part_title,
+        "--index",
+        str(len(items)),
+    )
+    refreshed = _spreadsheet_info()
+    new_sheet_id = next(
+        (
+            str(sheet.get("sheet_id") or "")
+            for sheet in _sheet_items(refreshed)
+            if _sheet_title(sheet) == part_title
+        ),
+        "",
+    )
+    if not new_sheet_id:
+        raise RuntimeError("新闻审核表分卷已请求创建，但回读未找到新子表")
+    row_count = _sheet_row_count(refreshed, new_sheet_id)
+    if row_count < MAX_SHEET_ROWS:
+        _lark(
+            "sheets",
+            "+add-dimension",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--sheet-id",
+            new_sheet_id,
+            "--dimension",
+            "ROWS",
+            "--length",
+            str(MAX_SHEET_ROWS - row_count),
+        )
+    _write(new_sheet_id, "A1:N1", [HEADERS])
+    _format_sheet(new_sheet_id)
+
+    archived_ids = {
+        _text(value, 80)
+        for value in (state.get("archived_news_ids") or [])
+        if _text(value, 80)
+    }
+    archived_ids.update(current_rows_by_id)
+    archived_parts = list(state.get("archive_parts") or [])
+    previous_title = str(state.get("sheet_title") or SHEET_TITLE)
+    previous = {
+        "spreadsheet_token": SPREADSHEET_TOKEN,
+        "sheet_id": current_sheet_id,
+        "sheet_title": previous_title,
+        "sheet_url": _sheet_url(current_sheet_id),
+    }
+    archived_parts.append(
+        {
+            **previous,
+            "archived_at_hkt": _now_iso(),
+            "candidate_count": len(current_rows_by_id),
+        }
+    )
+    state.update(
+        {
+            "sheet_id": new_sheet_id,
+            "sheet_title": part_title,
+            "sheet_url": _sheet_url(new_sheet_id),
+            "last_candidate_count": 0,
+            "archive_parts": archived_parts,
+            "archived_news_ids": sorted(archived_ids),
+            "last_rollover_at_hkt": _now_iso(),
+            "last_rollover_reason": decision.reason,
+            "updated_at": _now_iso(),
+        }
+    )
+    _write_json(STATE_PATH, state)
+    record_active_part(
+        ROOT,
+        ROLLOVER_TARGET_KEY,
+        spreadsheet_token=SPREADSHEET_TOKEN,
+        sheet_id=new_sheet_id,
+        sheet_title=part_title,
+        decision=decision,
+        previous=previous,
+    )
+    return new_sheet_id, state
 
 
 def _keywords(value: Any) -> str:
@@ -1293,6 +1431,11 @@ def sync_candidates(
             ),
         )
         state = _read_json(STATE_PATH, {})
+        archived_news_ids = {
+            _text(value, 80)
+            for value in (state.get("archived_news_ids") or [])
+            if _text(value, 80)
+        }
         try:
             previous_candidate_count = int(state.get("last_candidate_count") or 0)
         except (TypeError, ValueError):
@@ -1505,7 +1648,7 @@ def sync_candidates(
                     item.get("url") or item.get("source_url"),
                     item.get("ai_title") or item.get("title"),
                 )
-            if news_id in existing_rows_by_id:
+            if news_id in existing_rows_by_id or news_id in archived_news_ids:
                 continue
             value = _candidate_row(item, generated_at)
             new_count += 1
@@ -1580,8 +1723,36 @@ def sync_candidates(
                 dropped_already_present,
             )
         candidate_count = live_sheet["physical_count"] + new_count
+        workbook_info = _spreadsheet_info()
+        decision = capacity_decision(
+            used_rows=live_sheet["physical_count"] + 1,
+            incoming_rows=new_count,
+            column_count=len(HEADERS),
+            sheet_count=len(_sheet_items(workbook_info)),
+            operational_max_rows=MAX_SHEET_ROWS,
+            soft_limit_ratio=ROLLOVER_SOFT_LIMIT_RATIO,
+        )
+        if decision.should_rollover:
+            sheet_id, state = _rollover_review_sheet(
+                current_sheet_id=sheet_id,
+                current_rows_by_id=live_sheet["rows_by_id"],
+                decision=decision,
+            )
+            archived_news_ids.update(live_sheet["rows_by_id"])
+            live_sheet = {
+                "rescued": rescued_decisions,
+                "rows": [],
+                "rows_by_id": {},
+                "physical_count": 0,
+            }
+            candidate_count = new_count
+            _progress(
+                progress_callback,
+                "飞书容量分卷",
+                f"旧候选池已达安全阈值，已切换到时间分卷 {state.get('sheet_title')}。",
+            )
         if candidate_count > MAX_SHEET_ROWS - 1:
-            raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
+            raise RuntimeError(f"新分卷单批即超过 {MAX_SHEET_ROWS - 1} 条候选上限")
         _validate_sheet_rows(new_values, context="待追加飞书审核表")
         if new_values:
             if live_sheet["physical_count"] > 0:
@@ -1830,9 +2001,10 @@ def review_sheet_snapshot(*, sheet_id: str | None = None) -> dict[str, Any]:
     try:
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
         rows = _read_rows(resolved_sheet_id)
+        state = _read_json(STATE_PATH, {})
         return {
             "sheetId": resolved_sheet_id,
-            "sheetTitle": SHEET_TITLE,
+            "sheetTitle": _text(state.get("sheet_title"), 100) or SHEET_TITLE,
             "sheetUrl": _sheet_url(resolved_sheet_id),
             "headers": list(HEADERS),
             "editableColumns": list(REVIEW_SHEET_EDITABLE_COLUMNS),

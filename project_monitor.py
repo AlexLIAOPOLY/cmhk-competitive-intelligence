@@ -32,6 +32,13 @@ from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+from feishu_sheet_rollover import (
+    active_part,
+    capacity_decision,
+    record_active_part,
+    sheet_url,
+    timestamped_part_title,
+)
 
 try:
     from opencc import OpenCC
@@ -103,6 +110,11 @@ ERROR_LEDGER_COLUMNS = (
 # M/N are deliberately absent: 处理人员 and 处理状态 belong to operators.
 # O is a write timestamp and therefore is also excluded from content hashing.
 ERROR_LEDGER_HASH_INDEXES = tuple(range(12)) + (15, 16)
+ERROR_LEDGER_TARGET_KEY = "error_ledger"
+ERROR_LEDGER_OPERATIONAL_MAX_ROWS = max(
+    1000,
+    int(os.environ.get("CMHK_ERROR_LEDGER_MAX_ROWS", "200000")),
+)
 TERMINAL_STATUSES = {"completed", "failed"}
 SENSITIVE_RE = re.compile(
     r"(?i)(authorization\s*[:=]\s*bearer\s+|api[_-]?key\s*[:=]\s*|app[_-]?secret\s*[:=]\s*)[^\s,;\"']+"
@@ -2395,6 +2407,17 @@ class ProjectMonitor:
         config = self.config.get("error_ledger")
         if not isinstance(config, dict):
             raise RuntimeError("错误台账配置缺失")
+        config = dict(config)
+        runtime_part = active_part(ROOT, ERROR_LEDGER_TARGET_KEY)
+        if runtime_part.get("sheet_id") and runtime_part.get("spreadsheet_token"):
+            config.update(
+                {
+                    "spreadsheet_token": runtime_part["spreadsheet_token"],
+                    "sheet_id": runtime_part["sheet_id"],
+                    "sheet_name": runtime_part.get("sheet_title") or config.get("sheet_name"),
+                    "sheet_url": runtime_part.get("sheet_url"),
+                }
+            )
         columns = tuple(str(item) for item in config.get("columns") or [])
         if columns != ERROR_LEDGER_COLUMNS:
             raise RuntimeError("错误台账列定义与监控程序不一致")
@@ -2402,6 +2425,122 @@ class ProjectMonitor:
             if not str(config.get(field) or "").strip():
                 raise RuntimeError(f"错误台账配置缺少 {field}")
         return config
+
+    def _maybe_rollover_error_ledger(self, *, used_rows: int, incoming_rows: int) -> bool:
+        config = self._error_ledger_config()
+        bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
+        profile = str(bot.get("profile") or "")
+        token = str(config.get("spreadsheet_token") or "")
+        workbook = self._json_from_process(
+            self._run(
+                [
+                    "lark-cli",
+                    "sheets",
+                    "+workbook-info",
+                    "--spreadsheet-token",
+                    token,
+                    "--as",
+                    "bot",
+                    "--profile",
+                    profile,
+                    "--format",
+                    "json",
+                ],
+                timeout=25,
+            )
+        )
+        workbook_data = workbook.get("data") if isinstance(workbook.get("data"), dict) else {}
+        sheets = workbook_data.get("sheets") if isinstance(workbook_data.get("sheets"), list) else []
+        decision = capacity_decision(
+            used_rows=used_rows,
+            incoming_rows=incoming_rows,
+            column_count=len(ERROR_LEDGER_COLUMNS),
+            sheet_count=len(sheets),
+            operational_max_rows=ERROR_LEDGER_OPERATIONAL_MAX_ROWS,
+        )
+        if not decision.should_rollover:
+            return False
+        if decision.reason == "workbook_sheet_limit_near":
+            raise RuntimeError("错误台账所在工作簿已接近 300 张子表上限，已阻止继续建表")
+        titles = {str(item.get("sheet_name") or item.get("title") or "") for item in sheets}
+        title = timestamped_part_title("项目错误告警", existing_titles=titles)
+        created = self._json_from_process(
+            self._run(
+                [
+                    "lark-cli",
+                    "sheets",
+                    "+sheet-create",
+                    "--spreadsheet-token",
+                    token,
+                    "--title",
+                    title,
+                    "--row-count",
+                    "1000",
+                    "--col-count",
+                    str(len(ERROR_LEDGER_COLUMNS)),
+                    "--as",
+                    "bot",
+                    "--profile",
+                    profile,
+                    "--format",
+                    "json",
+                ],
+                timeout=45,
+            )
+        )
+        data = created.get("data") if isinstance(created.get("data"), dict) else {}
+        new_sheet_id = str(data.get("sheet_id") or data.get("sheetId") or "")
+        if not new_sheet_id:
+            refreshed = self._json_from_process(
+                self._run(
+                    [
+                        "lark-cli", "sheets", "+workbook-info",
+                        "--spreadsheet-token", token,
+                        "--as", "bot", "--profile", profile, "--format", "json",
+                    ],
+                    timeout=25,
+                )
+            )
+            refreshed_data = refreshed.get("data") if isinstance(refreshed.get("data"), dict) else {}
+            new_sheet_id = next(
+                (
+                    str(item.get("sheet_id") or "")
+                    for item in (refreshed_data.get("sheets") or [])
+                    if str(item.get("sheet_name") or item.get("title") or "") == title
+                ),
+                "",
+            )
+        if not new_sheet_id:
+            raise RuntimeError("错误台账新分卷创建后未能回读 sheet_id")
+        writes = [{"sheet_id": new_sheet_id, "range": "A1:Q1", "cells": [[{"value": value} for value in ERROR_LEDGER_COLUMNS]]}]
+        self._json_from_process(
+            self._run(
+                [
+                    "lark-cli", "sheets", "+cells-set",
+                    "--spreadsheet-token", token,
+                    "--writes", json.dumps(writes, ensure_ascii=False),
+                    "--as", "bot", "--profile", profile, "--format", "json",
+                ],
+                timeout=45,
+            )
+        )
+        previous = {
+            "spreadsheet_token": token,
+            "sheet_id": str(config.get("sheet_id") or ""),
+            "sheet_title": str(config.get("sheet_name") or ""),
+            "sheet_url": str(config.get("sheet_url") or sheet_url(token, str(config.get("sheet_id") or ""))),
+        }
+        record_active_part(
+            ROOT,
+            ERROR_LEDGER_TARGET_KEY,
+            spreadsheet_token=token,
+            sheet_id=new_sheet_id,
+            sheet_title=title,
+            decision=decision,
+            previous=previous,
+        )
+        self._ledger_verified_this_process = False
+        return True
 
     def _read_error_ledger(self) -> tuple[list[list[str]], dict[str, int]]:
         config = self._error_ledger_config()
@@ -2840,6 +2979,21 @@ class ProjectMonitor:
 
             remote_rows, row_by_incident = self._read_error_ledger()
             missing_ids = [incident_id for incident_id in desired if incident_id not in row_by_incident]
+            if self._maybe_rollover_error_ledger(
+                used_rows=len(remote_rows) + 1,
+                incoming_rows=len(missing_ids),
+            ):
+                config = self._error_ledger_config()
+                ledger_state.update(
+                    {
+                        "sheet_id": config.get("sheet_id"),
+                        "sheet_name": config.get("sheet_name"),
+                        "sheet_url": config.get("sheet_url"),
+                        "last_rollover_at_hkt": synced_at,
+                    }
+                )
+                remote_rows, row_by_incident = self._read_error_ledger()
+                missing_ids = [incident_id for incident_id in desired if incident_id not in row_by_incident]
             if missing_ids:
                 append_values = [desired[incident_id] for incident_id in missing_ids]
                 start_row, end_row = self._append_error_ledger_rows(append_values)
@@ -2989,8 +3143,13 @@ class ProjectMonitor:
             "excluded_components": list(self.config.get("excluded_components") or []),
             "error_ledger": {
                 "enabled": self.error_ledger_enabled,
-                "sheet_id": ((self.config.get("error_ledger") or {}).get("sheet_id")),
-                "sheet_name": ((self.config.get("error_ledger") or {}).get("sheet_name")),
+                "sheet_id": self._error_ledger_config().get("sheet_id"),
+                "sheet_name": self._error_ledger_config().get("sheet_name"),
+                "sheet_url": self._error_ledger_config().get("sheet_url")
+                or sheet_url(
+                    str(self._error_ledger_config().get("spreadsheet_token") or ""),
+                    str(self._error_ledger_config().get("sheet_id") or ""),
+                ),
                 "synced_incidents": int(
                     ((self.state.get("error_ledger") or {}).get("synced_incidents") or 0)
                 ),

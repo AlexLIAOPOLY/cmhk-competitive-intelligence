@@ -13,6 +13,13 @@ from zoneinfo import ZoneInfo
 
 import crawl
 from crawl_log_formatter import write_and_format_crawl_log_sheet
+from feishu_sheet_rollover import (
+    active_part,
+    capacity_decision,
+    record_active_part,
+    sheet_url,
+    timestamped_part_title,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -24,6 +31,7 @@ PERFORMANCE_SYNC_SCRIPT = ROOT / "sync_carrier_performance_feishu.py"
 AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
 LOG_INDEX_SHEET_TITLE = "爬虫历史记录链接"
+LOG_INDEX_TARGET_KEY = "crawl_log_index"
 INPUT_SOURCE_HEADERS = ("待爬链接", "来源/系统", "可能来源/系统", "可能来源")
 SUCCESS_SOURCE_HEADER = "本轮成功来源"
 AGENT_TRACE_HEADERS = [
@@ -605,7 +613,12 @@ def append_log_index(log_target: dict[str, str]) -> dict:
         )
     )["data"]
     sheets = info.get("sheets", {}).get("sheets", [])
-    index_sheet = next((sheet for sheet in sheets if sheet.get("title") == LOG_INDEX_SHEET_TITLE), None)
+    saved_part = active_part(ROOT, LOG_INDEX_TARGET_KEY)
+    saved_sheet_id = str(saved_part.get("sheet_id") or "")
+    index_sheet = next(
+        (sheet for sheet in sheets if str(sheet.get("sheet_id") or "") == saved_sheet_id),
+        None,
+    ) or next((sheet for sheet in sheets if sheet.get("title") == LOG_INDEX_SHEET_TITLE), None)
     if not index_sheet:
         created = json_from_output(
             run_cmd(
@@ -626,6 +639,13 @@ def append_log_index(log_target: dict[str, str]) -> dict:
             f"{created['sheet_id']}!A1:F1",
             [["执行时间（香港）", "触发方式", "日志名称", "存储位置", "打开日志", "爬取范围"]],
         )
+        record_active_part(
+            ROOT,
+            LOG_INDEX_TARGET_KEY,
+            spreadsheet_token=SPREADSHEET_TOKEN,
+            sheet_id=str(created["sheet_id"]),
+            sheet_title=LOG_INDEX_SHEET_TITLE,
+        )
 
     sheet_id = str(index_sheet["sheet_id"])
     rows = read_range(f"{sheet_id}!A1:F1000")
@@ -637,6 +657,52 @@ def append_log_index(log_target: dict[str, str]) -> dict:
     log_url = log_target["spreadsheet_url"]
     if any(log_url in cell_text(cell) for row in rows for cell in row):
         return {"ok": True, "sheet_id": sheet_id, "url": log_url, "inserted": False}
+
+    nonempty_rows = sum(1 for row in rows if any(cell_text(cell).strip() for cell in row))
+    decision = capacity_decision(
+        used_rows=nonempty_rows,
+        incoming_rows=1,
+        column_count=6,
+        sheet_count=len(sheets),
+    )
+    if decision.should_rollover and decision.reason != "workbook_sheet_limit_near":
+        titles = {str(sheet.get("title") or "") for sheet in sheets}
+        part_title = timestamped_part_title(LOG_INDEX_SHEET_TITLE, existing_titles=titles)
+        created = json_from_output(
+            run_cmd(
+                [
+                    LARK_CLI,
+                    "sheets",
+                    "+create-sheet",
+                    "--spreadsheet-token",
+                    SPREADSHEET_TOKEN,
+                    "--title",
+                    part_title,
+                ],
+                timeout=120,
+            )
+        )["data"]
+        previous = {
+            "spreadsheet_token": SPREADSHEET_TOKEN,
+            "sheet_id": sheet_id,
+            "sheet_title": str(index_sheet.get("title") or saved_part.get("sheet_title") or LOG_INDEX_SHEET_TITLE),
+            "sheet_url": sheet_url(SPREADSHEET_TOKEN, sheet_id),
+        }
+        sheet_id = str(created["sheet_id"])
+        write_range(
+            f"{sheet_id}!A1:F1",
+            [["执行时间（香港）", "触发方式", "日志名称", "存储位置", "打开日志", "爬取范围"]],
+        )
+        record_active_part(
+            ROOT,
+            LOG_INDEX_TARGET_KEY,
+            spreadsheet_token=SPREADSHEET_TOKEN,
+            sheet_id=sheet_id,
+            sheet_title=part_title,
+            decision=decision,
+            previous=previous,
+        )
+        rows = read_range(f"{sheet_id}!A1:F10")
 
     run_cmd(
         [
