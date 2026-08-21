@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-21T11:19:06+08:00",
+  "generated_at": "2026-08-21T11:26:12+08:00",
   "items": [
+    {
+      "id": "NEWS-C0478CC374E9EB",
+      "title": "香港7月通胀放缓至1.7%",
+      "summary": "香港7月消费者价格通胀如预期放缓至三个月低位，统计处数据显示同比升幅为1.7%。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.finanzen.at/nachrichten/zinsen/hong-kong-inflation-eases-to-1-7percent-1036478278",
+      "published_at": "2026-08-20T14:01:00+08:00"
+    },
     {
       "id": "NEWS-6B1134F856EB3F",
       "title": "世界机器人大会开幕，逾10%参展商为粤企",
@@ -57,14 +65,6 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBuczZacHNGNkEwb1dNNHRYS1lHc2QwQlRmYlAydFdVeVJYRllNNUtKMFU3dzhhd1lOMjU3QndrbnV5U0RtNXVwYThScnRZbU84dTFhVXd2NW1ZWVo4WmZIWExXcUVTVGtFSHRz?oc=5",
       "published_at": "2026-08-16T17:59:00+08:00"
-    },
-    {
-      "id": "NEWS-72585C23887F29",
-      "title": "陈茂波形容上半年香港经济表现不俗，对下半年情况审慎乐观",
-      "summary": "香港第二季经济增长4.3%，全年增长预测上调至3.5%至4.5%。财政司司长陈茂波表示上半年表现不错，对下半年审慎乐观。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.rthk.hk/rthk/ch/component/k2/1866325-20260816.htm",
-      "published_at": "2026-08-16T10:53:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "bce23dcd7f138cf8d7678e9c87b11104e64c6404b64ce451cd1ff656a16b09d3"
+  "site_version": "350f4a462efc174f64591d6d40746186436143412dd04b146d4ae119bffc4244"
 }
