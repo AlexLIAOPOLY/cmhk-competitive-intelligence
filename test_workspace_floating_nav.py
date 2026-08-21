@@ -22,6 +22,8 @@ class WorkspaceFloatingNavTests(unittest.TestCase):
         self.assertIn("top: max(12px, env(safe-area-inset-top));", STYLE)
         self.assertIn("left: max(12px, env(safe-area-inset-left));", STYLE)
         self.assertIn("align-items: flex-start;", STYLE)
+        self.assertIn("flex-basis: 34px;", STYLE)
+        self.assertIn("transform: translateY(0);", STYLE)
         self.assertIn("top: max(10px, env(safe-area-inset-top));", STYLE)
         self.assertIn(".workspace-layout.is-nav-collapsed .chat-nav-controls { margin-left: 48px; }", STYLE)
         self.assertIn(".workspace-tabs .workspace-tabs-scroll { display: none; }", STYLE)

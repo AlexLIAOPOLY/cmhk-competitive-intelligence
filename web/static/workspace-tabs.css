@@ -1523,6 +1523,10 @@ body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .wo
   padding: 0 2px;
   border-bottom-color: transparent;
 }
+body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-nav-collapse {
+  flex-basis: 34px;
+  transform: translateY(0);
+}
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs .workspace-tabs-scroll { display: none; }
 body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed .chat-nav-controls { margin-left: 48px; }
 body.dashboard-page.workspace-ai-active #workspace-panel-ai { padding: 0; }
