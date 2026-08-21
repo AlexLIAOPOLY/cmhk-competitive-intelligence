@@ -13,7 +13,7 @@
         "fallback": 0,
         "total": 213,
         "successRate": 98,
-        "completedAt": "2026-08-21 10:28:55"
+        "completedAt": "2026-08-22 03:06:48"
       },
       "quality": {
         "ok": 32,
@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 156
+          "value": 154
         },
         {
           "label": "cache:httpx",
@@ -104,10 +104,14 @@
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 4
+          "value": 5
         },
         {
           "label": "cache:curl_direct_chrome_ua",
+          "value": 1
+        },
+        {
+          "label": "curl_crawler_ua",
           "value": 1
         }
       ],
@@ -317,7 +321,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-22 03:03:01",
+    "latestOutputText": "2026-08-22 03:06:04",
     "outputs": [
       {
         "name": "8月19日周报.docx",
