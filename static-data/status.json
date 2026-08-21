@@ -112,24 +112,32 @@
         }
       ],
       "rejection": {
-        "accepted": 117,
-        "rejected": 2,
-        "qualityRejected": 2,
-        "evidenceGaps": 91,
-        "reportedRejected": 93,
-        "review": 22,
-        "total": 232,
-        "qualityTotal": 141,
-        "rejectRate": 1,
-        "passRate": 83,
+        "accepted": 74,
+        "rejected": 84,
+        "qualityRejected": 84,
+        "evidenceGaps": 49,
+        "reportedRejected": 133,
+        "review": 12,
+        "total": 219,
+        "qualityTotal": 170,
+        "rejectRate": 49,
+        "passRate": 44,
         "reasons": [
           {
-            "label": "置信度低于80%",
-            "value": 2
+            "label": "在线模型不可用，离线结果不直接发布",
+            "value": 84
+          },
+          {
+            "label": "定性指标为截断网页片段",
+            "value": 1
+          },
+          {
+            "label": "未通过指标格式与单位门禁",
+            "value": 1
           }
         ],
-        "runId": "20260820_030645_db4db3a2",
-        "completedAt": "2026-08-20T03:36:34+08:00"
+        "runId": "20260821_103052_64683d83",
+        "completedAt": "2026-08-21T11:05:21+08:00"
       },
       "newsFunnel": {
         "scope": "晨间扫描（2026-08-21@09:00）",
