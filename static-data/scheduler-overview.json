@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-21T11:19:11+08:00",
+  "checked_at_hkt": "2026-08-21T11:22:06+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 33,
   "frequency_counts": {
@@ -632,9 +632,9 @@
       "run_status": "running",
       "backend_pid": 25883,
       "worker_pid": 25883,
-      "phase": "后备重试",
-      "progress_detail": "第 2 次未完成（completed_with_fallback），300 秒后执行第 3 次。旧数据继续保留。",
-      "heartbeat_at_hkt": "2026-08-21T11:15:43+08:00",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与17个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-08-21T11:22:01+08:00",
       "started_at_hkt": "2026-08-21T11:06:43+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -642,8 +642,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260821_110643_757557.jsonl"
       },
       "stream_log": {
-        "bytes": 5554,
-        "lines": 27
+        "bytes": 7298,
+        "lines": 38
       },
       "final_audit": {},
       "run_log": {},
