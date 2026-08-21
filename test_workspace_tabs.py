@@ -40,8 +40,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=14', INDEX)
-        self.assertIn('/static/organization-admin.css?v=14', INDEX)
+        self.assertIn('/static/organization-admin.js?v=15', INDEX)
+        self.assertIn('/static/organization-admin.css?v=15', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -68,6 +68,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('method: "DELETE"', ORGANIZATION_SCRIPT)
         self.assertIn('data-directory-open aria-label="添加成员"', ORGANIZATION_SCRIPT)
         self.assertNotIn('>添加飞书成员</button>', ORGANIZATION_SCRIPT)
+        self.assertIn('class="organization-add-member-icon"', ORGANIZATION_SCRIPT)
+        self.assertNotIn('title="添加成员">＋</button>', ORGANIZATION_SCRIPT)
+        self.assertIn('.organization-add-member-icon{width:22px;height:22px', ORGANIZATION_STYLE)
         self.assertNotIn('>刷新成员</button>', ORGANIZATION_SCRIPT)
         self.assertNotIn('class="organization-heading"', ORGANIZATION_SCRIPT)
         self.assertNotIn('ORGANIZATION &amp; ACCESS', ORGANIZATION_SCRIPT)

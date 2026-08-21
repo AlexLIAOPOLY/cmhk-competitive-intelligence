@@ -75,6 +75,10 @@
     return `<option value="">${esc(allLabel)}</option>${values.map((value) => `<option value="${esc(value)}"${value === current ? " selected" : ""}>${esc(value)}</option>`).join("")}`;
   }
 
+  function addMemberIcon() {
+    return '<svg class="organization-add-member-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3.25" /><path d="M3.5 19.5c.2-3.7 2.3-5.8 5.5-5.8s5.3 2.1 5.5 5.8M18.25 7.75v6.5M15 11h6.5" /></svg>';
+  }
+
   function memberList(users, selected) {
     const trashIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" /></svg>';
     const items = users.map((user) => `<li class="organization-member-entry"><button type="button" class="organization-member-row${selected?.id === user.id ? " is-selected" : ""}" data-select-user="${esc(user.id)}" aria-pressed="${selected?.id === user.id}">
@@ -158,7 +162,7 @@
     const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
     host.innerHTML = `${directoryPanel()}
       <section class="organization-surface organization-access-surface">
-        <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">＋</button></div>
+        <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">${addMemberIcon()}</button></div>
         <div class="organization-access-layout">${memberList(users, selected)}${memberDetail(selected)}</div>
       </section>${auditSurface()}`;
   }
