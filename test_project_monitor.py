@@ -667,6 +667,35 @@ class ProjectMonitorTests(unittest.TestCase):
 
         self.assertNotIn("crawl-task-failed:failed-old", keys)
 
+    def test_fully_gated_intelligence_fallback_is_not_reported_as_failure(self):
+        path = self.root / "agent_knowledge" / "crawl_run_logs" / "index.json"
+        path.write_text(
+            json.dumps(
+                [
+                    {
+                        "crawl_run_id": "refresh-fallback",
+                        "task_kind": "executive-intelligence-refresh",
+                        "trigger": "四库与AI观察结论刷新",
+                        "run_status": "failed",
+                        "completed_at_hkt": "2026-08-16T12:20:00+08:00",
+                        "operational_summary": {
+                            "status": "completed_with_fallback",
+                            "model_analysis": {
+                                "fallback_used": True,
+                                "focuses_expected": 17,
+                                "focuses_passed": 17,
+                            },
+                            "pages_publish": {"ok": True, "status": "verified"},
+                        },
+                    }
+                ]
+            )
+        )
+
+        keys = {item["condition_key"] for item in self._monitor().collect_issues()}
+
+        self.assertNotIn("crawl-task-failed:refresh-fallback", keys)
+
     def test_failed_report_and_stale_report_are_covered(self):
         path = self.root / "task_runs" / "index.json"
         path.write_text(

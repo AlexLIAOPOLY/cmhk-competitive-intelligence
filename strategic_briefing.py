@@ -51,7 +51,7 @@ AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 SEMANTIC_DEDUPE_AUDITS_DIR = DATA_DIR / "semantic_dedupe_audits"
 DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
-AI_EDITOR_VERSION = 24
+AI_EDITOR_VERSION = 25
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -3511,6 +3511,8 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
         ),
         "category": _clean_text(item.get("category") or item.get("module"), 120),
         "keywords": _clean_text(item.get("keywords"), 800),
+        "query_keywords": _clean_text(item.get("query_keywords"), 800),
+        "canonical_competitor": _clean_text(item.get("canonical_competitor"), 120),
         "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
         "published_at": _clean_text(
@@ -4129,13 +4131,18 @@ def _validated_ai_copy(
         raise RuntimeError("公司内部 AI 未返回有效地域")
     if category not in _ALLOWED_NEWS_CATEGORIES:
         raise RuntimeError("公司内部 AI 未返回分类")
+    has_semantic_query_context = bool(
+        isinstance(source_item, dict)
+        and (
+            source_item.get("semantic_relevance")
+            or _clean_text(source_item.get("query_keywords"), 800)
+            or _clean_text(source_item.get("canonical_competitor"), 120)
+        )
+    )
     if (
         should_include
         and not keywords
-        and not (
-            isinstance(source_item, dict)
-            and source_item.get("semantic_relevance")
-        )
+        and not has_semantic_query_context
     ):
         raise RuntimeError("公司内部 AI 未返回命中关键词")
     if should_include and len(inclusion_reason) < 8:
@@ -4457,7 +4464,7 @@ def _critic_review_included(
                 if isinstance(entry, dict)
             }
         except Exception as exc:
-            logging.error(
+            logging.warning(
                 "公司内部 AI 入选终审失败，本批保留原判断：%s",
                 _clean_text(exc, 240),
             )
@@ -4710,6 +4717,8 @@ def polish_candidates_before_review(
                     f"{_AI_EDITOR_FEW_SHOT_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
+                    "如果matched_keywords为空但retrieval_query_context或configured_competitor_hint非空，"
+                    "必须依据标题摘要独立判断语义相关性；确认相关时keywords保持空字符串，不得编造字面命中。"
                     "入选时inclusion_reason必须写明‘具体事件事实→具体业务影响’；"
                     "排除时该历史字段必须写具体排除依据，不得只写‘无’。"
                     "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
@@ -4939,7 +4948,9 @@ def polish_candidates_before_review(
                         f"{_SOFT_PRIORITY_GUIDANCE}"
                         f"{_TEMPORAL_FIDELITY_GUIDANCE}"
                         f"{_AI_EDITOR_FEW_SHOT_GUIDANCE}"
-                        "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
+                        "keywords只能逐字选自输入matched_keywords，禁止新增或改写；"
+                        "matched_keywords为空但存在retrieval_query_context或configured_competitor_hint时，"
+                        "确认语义相关即可将keywords保持为空，严禁编造字面命中，"
                         "并用顿号分隔；入选时inclusion_reason写明具体事件事实到具体业务影响，"
                         "排除时该历史字段改写具体排除依据，不得只写无；"
                         "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
@@ -4996,9 +5007,10 @@ def polish_candidates_before_review(
                                 deadline_monotonic=single_retry_deadline_monotonic,
                             )
                             rescue_retry_resolved_count += 1
-                        except AIUnstructuredResponse as rescue_exc:
+                        except (AIUnstructuredResponse, AIInvalidStructuredResponse) as rescue_exc:
                             if (
-                                compact_decision
+                                isinstance(rescue_exc, AIUnstructuredResponse)
+                                and compact_decision
                                 and decision_fields
                                 and re.search(r"[\u4e00-\u9fff]", rescue_exc.content)
                                 and len(rescue_exc.content) >= 16
@@ -5983,8 +5995,9 @@ def agent_semantic_deduplicate_candidates(
             batch_error = _clean_text(exc, 240)
             decisions = {}
         if batch_error:
-            logging.error(
-                "语义去重第 %s/%s 轮失败；为控制问询次数，本批暂缓且不写入审核表：%s",
+            logging.warning(
+                "语义去重第 %s/%s 轮失败；确定性身份去重已完成，"
+                "本批按保守召回策略保留并记录格式异常：%s",
                 batch_number,
                 batch_total,
                 batch_error,
@@ -5992,8 +6005,12 @@ def agent_semantic_deduplicate_candidates(
             for candidate in batch:
                 aggregate[candidate["id"]].update(
                     {
-                        "is_deferred": True,
-                        "reason": "语义去重批次异常，本轮暂缓且不写入审核表。",
+                        "is_deferred": False,
+                        "reason": (
+                            "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，"
+                            "为避免漏报按保守召回策略保留。"
+                        ),
+                        "recovered_open": True,
                     }
                 )
                 aggregate[candidate["id"]]["errors"].append(
@@ -6020,7 +6037,8 @@ def agent_semantic_deduplicate_candidates(
             (
                 f"完成第 {batch_number}/{batch_total} 轮；累计判定重复 "
                 f"{sum(1 for record in aggregate.values() if record['is_duplicate'])} 条，"
-                f"失败暂缓 {sum(1 for record in aggregate.values() if record['errors'])} 条。"
+                f"格式异常后保守保留 "
+                f"{sum(1 for record in aggregate.values() if record.get('recovered_open'))} 条。"
             ),
         )
 
@@ -6061,7 +6079,9 @@ def agent_semantic_deduplicate_candidates(
         "repair_call_count": repair_call_count,
         "repair_resolved_count": repair_resolved_count,
         "malformed_responses": malformed_responses,
-        "failed_open_count": 0,
+        "failed_open_count": sum(
+            1 for record in aggregate.values() if record.get("recovered_open")
+        ),
         "failed_deferred_count": len(deferred),
         "candidate_count": len(items),
         "kept_count": len(kept),
@@ -6083,8 +6103,9 @@ def agent_semantic_deduplicate_candidates(
         (
             f"候选 {len(items)} 条、历史 {len(history)} 条；LLM 问询 "
             f"{llm_call_count}/{SEMANTIC_DEDUPE_MAX_LLM_CALLS} 轮，"
-            f"重复 {len(duplicates)} 条，失败暂缓 "
-            f"{audit['failed_deferred_count']} 条，总保留 {len(kept)} 条。"
+            f"重复 {len(duplicates)} 条，格式异常后保守保留 "
+            f"{audit['failed_open_count']} 条，延期 {audit['failed_deferred_count']} 条，"
+            f"总保留 {len(kept)} 条。"
         ),
     )
     return {

@@ -644,6 +644,27 @@ class ProjectMonitor:
             "修复后只恢复未完成阶段，避免重复执行已经成功的外部写入。",
         ]
 
+    @staticmethod
+    def _is_verified_intelligence_fallback(run: dict[str, Any]) -> bool:
+        """Recognize archives whose deterministic fallback passed every gate."""
+        if str(run.get("task_kind") or "") != "executive-intelligence-refresh":
+            return False
+        summary = run.get("operational_summary")
+        summary = summary if isinstance(summary, dict) else {}
+        analysis = summary.get("model_analysis")
+        analysis = analysis if isinstance(analysis, dict) else {}
+        pages = summary.get("pages_publish")
+        pages = pages if isinstance(pages, dict) else {}
+        expected = int(analysis.get("focuses_expected") or 0)
+        passed = int(analysis.get("focuses_passed") or 0)
+        return bool(
+            summary.get("status") == "completed_with_fallback"
+            and analysis.get("fallback_used")
+            and expected > 0
+            and passed == expected
+            and pages.get("ok")
+        )
+
     def _detect_crawl_runs(self) -> list[dict[str, Any]]:
         path = self.runtime_root / "agent_knowledge" / "crawl_run_logs" / "index.json"
         payload = _read_json(path, [])
@@ -651,7 +672,10 @@ class ProjectMonitor:
         cutoff = self._lookback_cutoff()
         latest_success_by_kind: dict[str, datetime] = {}
         for run in runs:
-            if not isinstance(run, dict) or str(run.get("run_status") or "") != "completed":
+            if not isinstance(run, dict) or (
+                str(run.get("run_status") or "") != "completed"
+                and not self._is_verified_intelligence_fallback(run)
+            ):
                 continue
             kind = str(run.get("task_kind") or "crawl")
             completed = _parse_datetime(run.get("completed_at_hkt")) or _parse_datetime(
@@ -674,6 +698,8 @@ class ProjectMonitor:
             stage = str(run.get("failure_stage") or "")
             detail = str(run.get("progress_detail") or run.get("status_detail") or "")
             if status == "failed":
+                if self._is_verified_intelligence_fallback(run):
+                    continue
                 if timestamp and latest_success_by_kind.get(kind) and timestamp < latest_success_by_kind[kind]:
                     continue
                 issues.append(

@@ -3055,6 +3055,9 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "model": str(config.get("model") or "deepseek-v4"),
         "messages": messages,
         "temperature": 0.0,
+        # Four compact discoveries still need enough room for compatible
+        # gateways that reserve part of the allowance before final JSON.
+        "max_tokens": 4000,
     })
     discoveries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
@@ -4216,6 +4219,24 @@ def _retry_delays() -> list[int]:
     return delays or [60, 300]
 
 
+def _validated_fallback_complete(result: dict[str, Any]) -> bool:
+    """Accept only a fully gated deterministic fallback after AI retries end."""
+    analysis = result.get("model_analysis")
+    pages = result.get("pages_publish")
+    if not isinstance(analysis, dict) or not isinstance(pages, dict):
+        return False
+    expected = int(analysis.get("focuses_expected") or 0)
+    passed = int(analysis.get("focuses_passed") or 0)
+    return bool(
+        result.get("status") == "completed_with_fallback"
+        and not result.get("failed_domains")
+        and analysis.get("fallback_used")
+        and expected > 0
+        and passed == expected
+        and pages.get("ok")
+    )
+
+
 def run_pipeline_with_recovery(
     *,
     agent_run_id: str,
@@ -4261,10 +4282,24 @@ def run_pipeline_with_recovery(
     result["total_duration_ms"] = round((time.monotonic() - overall_started) * 1000)
     result["attempts"] = attempts
     result["agent_run_id"] = agent_run_id
+    fallback_complete = _validated_fallback_complete(result)
+    if fallback_complete:
+        # The online model path was exhausted, but every deterministic insight
+        # passed the same evidence/focus gates and the public artifact was read
+        # back. Preserve the degraded status without misreporting the entire
+        # morning crawler as failed or retrying it forever.
+        result["ok"] = True
+        result["degraded"] = True
+        result["recovery_exhausted"] = True
     ok = bool(result.get("ok") or result.get("skipped"))
     if ok:
         if result.get("skipped"):
             detail = "已有另一条四库任务执行，本次已安全合并。"
+        elif fallback_complete:
+            detail = (
+                f"在线AI连续 {attempts} 次未通过后，已使用通过全部证据门禁的确定性回退；"
+                f"{int((result.get('model_analysis') or {}).get('focuses_passed') or 0)}个洞察及公开页面回读完整。"
+            )
         elif (result.get("pages_publish") or {}).get("ok"):
             focus_count = int((result.get("model_analysis") or {}).get("focuses_passed") or 0)
             detail = f"四库、{focus_count}个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"

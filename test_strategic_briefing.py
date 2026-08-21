@@ -1502,11 +1502,11 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(audit["repair_resolved_count"], 1)
         self.assertEqual(audit["malformed_responses"][0]["stage"], "primary")
 
-    def test_semantic_dedupe_batch_failure_defers_candidates_without_retry(self):
+    def test_semantic_dedupe_batch_failure_keeps_candidates_by_conservative_recall(self):
         item = {
             "news_id": "candidate-fail-open",
             "ai_title": "一条需要语义判断的新闻",
-            "ai_summary": "模型暂时不可用时应暂缓该候选。",
+            "ai_summary": "模型暂时不可用时应保留该候选避免漏报。",
             "source_date": "2026-08-19",
             "url": "https://example.com/fail-open",
         }
@@ -1521,11 +1521,11 @@ class StrategicBriefingTests(unittest.TestCase):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
         agent_call.assert_called_once()
-        self.assertEqual(result["kept"], [])
-        self.assertEqual(result["deferred"][0]["item"], item)
+        self.assertEqual(result["kept"], [item])
+        self.assertEqual(result["deferred"], [])
         audit = write_audit.call_args.args[1]
-        self.assertEqual(audit["failed_open_count"], 0)
-        self.assertEqual(audit["failed_deferred_count"], 1)
+        self.assertEqual(audit["failed_open_count"], 1)
+        self.assertEqual(audit["failed_deferred_count"], 0)
 
     def test_strategic_news_review_defaults_to_deepseek_v4_pro(self):
         self.assertEqual(briefing.DEFAULT_STRATEGY_AI_MODEL, "DeepSeek-V4-Pro")
@@ -2964,6 +2964,50 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["category"], "竞对动态")
         self.assertEqual(result["region"], "国际/行业")
 
+    def test_invalid_structured_responses_reach_plain_text_rescue(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "Vodafone Qatar reports half-year results",
+            "snippet": "Vodafone Qatar announced its consolidated half-year results.",
+            "keywords": ["Vodafone"],
+            "source": "Example",
+            "url": "https://example.com/vodafone-results-rescue",
+        }
+        broken = briefing.AIInvalidStructuredResponse("", "输出在JSON完成前被截断")
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[
+                    broken,
+                    broken,
+                    broken,
+                    broken,
+                    {
+                        "_plain_text": (
+                            "C|I|C|R|0|沃达丰卡塔尔公布中期业绩|"
+                            "沃达丰卡塔尔公布中期经营业绩及主要财务表现。"
+                        )
+                    },
+                ],
+            ) as ai_call,
+            mock.patch.dict(
+                "os.environ",
+                {
+                    "CMHK_STRATEGY_AI_MODEL": "DeepSeek-V4-Pro",
+                    "CMHK_STRATEGY_AI_RESCUE_MODEL": "deepseek-v4",
+                },
+            ),
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_decision_path"], "竞对直通")
+        self.assertEqual(ai_call.call_count, 5)
+
     def test_candidate_editor_input_includes_publication_and_review_time(self):
         item = {
             "title": "李家超：冀9月公布首份五年规划",
@@ -3868,7 +3912,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(decisions["candidate-b"]["is_duplicate"])
         self.assertEqual(decisions["candidate-b"]["duplicate_of"], "candidate-a")
 
-    def test_deferred_candidate_is_not_a_reference_for_later_batches(self):
+    def test_conservatively_kept_candidate_can_be_reference_for_later_batches(self):
         items = [
             {
                 "news_id": "candidate-a",
@@ -3912,9 +3956,9 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates(items, [])
 
-        self.assertEqual(seen_earlier, [])
-        self.assertEqual(result["kept"], [items[1]])
-        self.assertEqual(result["deferred"][0]["item"], items[0])
+        self.assertEqual([item["id"] for item in seen_earlier], ["candidate-a"])
+        self.assertEqual(result["kept"], items)
+        self.assertEqual(result["deferred"], [])
 
     def test_semantic_agent_independently_confirms_same_batch_events(self):
         first = {
@@ -4132,7 +4176,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["kept"], [item])
         self.assertEqual(result["duplicates"], [])
 
-    def test_semantic_agent_failure_defers_candidate_without_retry(self):
+    def test_semantic_agent_failure_keeps_candidate_after_deterministic_checks(self):
         item = {
             "news_id": "candidate-3",
             "ai_title": "香港宽频推出企业服务",
@@ -4151,9 +4195,9 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
-        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["kept"], [item])
         self.assertEqual(result["duplicates"], [])
-        self.assertEqual(result["deferred"][0]["item"], item)
+        self.assertEqual(result["deferred"], [])
 
     def test_semantic_agent_cannot_deny_same_id_or_url_identity_match(self):
         item = {
@@ -4373,6 +4417,37 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(payload["matched_keywords"], "")
         self.assertTrue(payload["semantic_relevance"])
         self.assertEqual(payload["retrieval_query_context"], "['皇岗口岸']")
+
+    def test_semantic_query_candidate_can_be_included_without_fabricated_keyword(self):
+        source_item = {
+            "title": "香港运输署公布AI交通灯项目",
+            "snippet": "运输署公布人工智能交通灯项目，将用于繁忙路口。",
+            "keywords": [],
+            "query_keywords": ["人工智能", "智慧城市"],
+        }
+        result = briefing._validated_ai_copy(
+            {
+                "title": "香港运输署公布AI交通灯项目",
+                "summary": "香港运输署公布人工智能交通灯项目，计划用于繁忙路口调节交通。",
+                "should_include": True,
+                "region": "香港本地",
+                "category": "基础设施/网络/技术类",
+                "keywords": "",
+                "inclusion_reason": "项目形成智慧城市连接需求，影响收入与需求。",
+                "region_reason": "事件由香港运输署公布并在香港实施。",
+                "decision_path": "战略信号",
+                "signal_type": "基础设施",
+                "business_impact": "收入与需求",
+                "exclusion_code": "无",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords=[],
+            source_item=source_item,
+        )
+
+        self.assertTrue(result["should_include"])
+        self.assertEqual(result["keywords"], "")
 
     def test_source_summary_for_ai_removes_publisher_disclaimer(self):
         title = "中金：服务器液冷泵开启新增长极"

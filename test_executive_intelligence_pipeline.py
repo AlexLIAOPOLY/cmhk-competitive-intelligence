@@ -918,6 +918,41 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["notification_policy"], "local_log_only")
         self.assertFalse(finalize.call_args.kwargs["ok"])
 
+    def test_scheduled_refresh_accepts_fully_gated_fallback_after_retries(self):
+        fallback = {
+            "ok": False,
+            "status": "completed_with_fallback",
+            "agent_run_id": "agent-test",
+            "failed_domains": [],
+            "duration_ms": 10,
+            "model_analysis": {
+                "fallback_used": True,
+                "focuses_expected": 17,
+                "focuses_passed": 17,
+            },
+            "pages_publish": {"ok": True, "status": "verified"},
+        }
+        with (
+            patch("executive_intelligence_pipeline.run_pipeline", return_value=fallback) as run,
+            patch("executive_intelligence_pipeline.time.sleep"),
+            patch("executive_intelligence_pipeline._task_event"),
+            patch("executive_intelligence_pipeline._finalize_refresh_task") as finalize,
+            patch.dict("os.environ", {"CMHK_INTELLIGENCE_RETRY_DELAYS": "0,0"}),
+        ):
+            result = pipeline.run_pipeline_with_recovery(
+                agent_run_id="agent-test",
+                task_run_id="refresh-test",
+                parent_crawl_run_id="crawl-test",
+                max_attempts=3,
+            )
+
+        self.assertEqual(run.call_count, 3)
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["degraded"])
+        self.assertTrue(result["recovery_exhausted"])
+        self.assertEqual(result["status"], "completed_with_fallback")
+        self.assertTrue(finalize.call_args.kwargs["ok"])
+
     def test_refresh_task_persists_parent_crawl_run_id(self):
         with (
             patch("crawl_run_registry.start_crawl_run", return_value={

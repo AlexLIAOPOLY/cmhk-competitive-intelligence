@@ -47,8 +47,6 @@ def final_chat_message_text(payload: dict[str, Any], *, operation: str = "结构
     choices = payload.get("choices") or []
     choice = choices[0] if choices and isinstance(choices[0], dict) else {}
     finish_reason = str(choice.get("finish_reason") or "").strip().lower()
-    if finish_reason in {"length", "max_tokens"}:
-        raise StructuredAIResponseError(f"{operation}最终输出被长度截断")
     message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
     content = message.get("content")
     if isinstance(content, str):
@@ -63,6 +61,21 @@ def final_chat_message_text(payload: dict[str, Any], *, operation: str = "结构
         ).strip()
     else:
         text = ""
+    if text and finish_reason in {"length", "max_tokens"}:
+        # Some compatible gateways report ``length`` after they have already
+        # emitted a complete JSON value (for example when hidden reasoning used
+        # the remaining allowance).  Accept only a value that the strict parser
+        # can prove complete; partial strings and containers still fail closed.
+        strict_text = text
+        if strict_text.startswith("```"):
+            strict_text = strict_text.split("\n", 1)[-1]
+            if strict_text.endswith("```"):
+                strict_text = strict_text[:-3].rstrip()
+        try:
+            json.loads(strict_text)
+        except (json.JSONDecodeError, TypeError) as exc:
+            raise StructuredAIResponseError(f"{operation}最终输出被长度截断") from exc
+        return text
     if text:
         return text
     if message.get("reasoning_content"):
@@ -96,6 +109,42 @@ def load_json_response(text: str, *, operation: str = "结构化AI") -> Any:
         return json.loads(value)
     except json.JSONDecodeError as exc:
         parse_error = exc
+
+    # A few OpenAI-compatible gateways wrap an otherwise complete JSON answer
+    # in a short prose prefix/suffix even in JSON mode. Extract only a balanced,
+    # independently parseable top-level value; never guess inside an unfinished
+    # string or repair arbitrary prose.
+    for start, opener in (
+        (index, value[index])
+        for index in range(len(value))
+        if value[index] in "[{"
+    ):
+        stack = [opener]
+        in_string = False
+        escaped = False
+        for end in range(start + 1, len(value)):
+            char = value[end]
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if char == '"':
+                in_string = True
+            elif char in "[{":
+                stack.append(char)
+            elif char in "]}":
+                expected = "[" if char == "]" else "{"
+                if not stack or stack.pop() != expected:
+                    break
+                if not stack:
+                    try:
+                        return json.loads(value[start : end + 1])
+                    except json.JSONDecodeError:
+                        break
     stack: list[str] = []
     in_string = False
     escaped = False
