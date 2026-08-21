@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-19T18:58:31+08:00",
+  "checked_at_hkt": "2026-08-21T08:02:10+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 33,
   "frequency_counts": {
@@ -38,24 +38,23 @@
   ],
   "latest": {
     "main_crawl": {
-      "crawl_run_id": "20260819_030016_213569",
+      "crawl_run_id": "20260820_030022_196463",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "completed",
-      "backend_pid": 52250,
+      "run_status": "running",
+      "backend_pid": 64255,
       "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "爬虫、审核与结果归档已全部完成。",
+      "phase": "恢复未完成任务",
+      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-19T03:29:27+08:00",
-      "started_at_hkt": "2026-08-19T03:00:16+08:00",
-      "completed_at_hkt": "2026-08-19T03:29:27+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 1751365,
+      "heartbeat_at_hkt": "2026-08-21T08:02:06+08:00",
+      "started_at_hkt": "2026-08-20T03:00:22+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 103714417,
       "feishu": {
         "main_sheet_id": "9c638d",
-        "log_sheet_id": "b4f80f",
-        "log_sheet_title": "爬虫日志_20260819_031139",
+        "log_sheet_id": "489122",
+        "log_sheet_title": "爬虫日志_20260820_030543",
         "url": "",
         "sync_ok": true,
         "compliance_gaps": [
@@ -73,7 +72,7 @@
         ]
       },
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260819_030016_213569.jsonl",
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260820_030022_196463.jsonl",
         "final_audit": "final_audit.md",
         "coverage_report": "coverage_report.tsv",
         "run_log_tsv": "run_log.tsv",
@@ -82,7 +81,7 @@
         "curation_latest": "curation_data/latest.json"
       },
       "final_audit": {
-        "generated_at": "2026-08-19T03:11:42.896972",
+        "generated_at": "2026-08-20T03:05:47.723135",
         "rows_crawled": "33",
         "ok_rows": "32",
         "partial_rows": "1",
@@ -99,32 +98,30 @@
         "fallback_urls": 0
       },
       "curation": {
-        "agent_run_id": "20260819_031241_0a62fe9d",
-        "started_at": "2026-08-19T03:12:41+08:00",
-        "completed_at": "2026-08-19T03:28:25+08:00",
-        "tasks": 236,
-        "accepted": 55,
-        "rejected": 167,
-        "review": 14,
-        "gaps": 172,
+        "agent_run_id": "20260820_030645_db4db3a2",
+        "started_at": "2026-08-20T03:06:45+08:00",
+        "completed_at": "2026-08-20T03:36:34+08:00",
+        "tasks": 232,
+        "accepted": 117,
+        "rejected": 93,
+        "review": 22,
+        "gaps": 115,
         "recrawl_rows": [
-          5,
-          8,
-          11
+          19
         ],
         "search_verification": {
-          "checked": 131,
-          "corrected": 1,
-          "review": 14,
-          "conflicts": 39,
+          "checked": 230,
+          "corrected": 2,
+          "review": 25,
+          "conflicts": 62,
           "workers": 4,
           "online_search": true,
-          "online_checked": 131,
-          "online_votes": 122
+          "online_checked": 230,
+          "online_votes": 136
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-19T03:28:43+08:00",
+          "generated_at_hkt": "2026-08-21T07:48:56+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -176,7 +173,7 @@
                 }
               ],
               "core_metric_count": 5,
-              "fetched_at_hkt": "2026-08-19T03:02:01.458764+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:02.225101+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -216,7 +213,7 @@
                 }
               ],
               "core_metric_count": 4,
-              "fetched_at_hkt": "2026-08-19T03:20:02.581912+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:02.150403+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -250,7 +247,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:20:00.997321+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:03.697436+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -284,7 +281,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:20:01.734536+08:00",
+              "fetched_at_hkt": "2026-08-20T03:02:00.903746+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -318,7 +315,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:05:01.219489+08:00",
+              "fetched_at_hkt": "2026-08-20T03:03:01.509778+08:00",
               "verification_status": "official_document_extracted"
             }
           ],
@@ -372,7 +369,7 @@
                 }
               ],
               "core_metric_count": 5,
-              "fetched_at_hkt": "2026-08-19T03:02:01.458764+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:02.225101+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -412,7 +409,7 @@
                 }
               ],
               "core_metric_count": 4,
-              "fetched_at_hkt": "2026-08-19T03:20:02.581912+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:02.150403+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -446,7 +443,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:20:00.997321+08:00",
+              "fetched_at_hkt": "2026-08-20T03:01:03.697436+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -480,7 +477,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:20:01.734536+08:00",
+              "fetched_at_hkt": "2026-08-20T03:02:00.903746+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -519,7 +516,7 @@
                 }
               ],
               "core_metric_count": 3,
-              "fetched_at_hkt": "2026-08-19T03:05:01.219489+08:00",
+              "fetched_at_hkt": "2026-08-20T03:03:01.509778+08:00",
               "verification_status": "official_document_extracted"
             }
           ],
@@ -535,92 +532,67 @@
             ],
             "failures": []
           },
-          "database_changed": true,
+          "database_changed": false,
           "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
         },
         "financial_frontend_publish": {
-          "ok": true,
-          "returnCode": 0,
-          "status": "published",
-          "site_version": "0255a18f8a82d17dd3a8627a54b94296ffc4b2bbfd15aaeab3eaad215a47ec98",
-          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-          "commit": "a33aac80f2250da51827c1c6c628b2948c9a210f",
+          "ok": false,
+          "returnCode": 1,
+          "status": "failed",
+          "site_version": "",
+          "public_url": "",
+          "commit": "",
           "error": ""
-        },
-        "news_bridge": {
-          "crawl_run_id": "20260819_030016_213569",
-          "bootstrap": false,
-          "page_count": 147,
-          "signal_count": 36,
-          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260819_030016_213569.json"
-        },
-        "executive_intelligence_refresh": {
-          "ok": true,
-          "launched": true,
-          "pid": 13271,
-          "agent_run_id": "20260819_031241_0a62fe9d",
-          "task_run_id": "20260819_032927_550465",
-          "task_id": "crawl:20260819_032927_550465",
-          "domains": [
-            "local",
-            "international",
-            "cloud",
-            "macro"
-          ],
-          "stages": [
-            "database_refresh",
-            "quality_gate",
-            "17_focus_analysis",
-            "homepage_ui_refresh",
-            "public_frontend_publish"
-          ]
         }
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 92407,
-        "lines": 589
-      }
+        "bytes": 506728,
+        "lines": 2781
+      },
+      "status_detail": "",
+      "interrupted": false,
+      "resumed_at_hkt": "2026-08-21T08:02:06+08:00"
     },
     "strategic_news": {
-      "crawl_run_id": "20260819_133028_229145",
+      "crawl_run_id": "20260820_154943_333677",
       "trigger": "战略新闻定时爬虫",
-      "scope": "午后扫描（2026-08-19@13:30）",
+      "scope": "午后扫描（2026-08-20@14:00）",
       "task_kind": "strategic-news",
       "run_status": "completed",
-      "backend_pid": 21583,
+      "backend_pid": 45871,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 42 条，AI保留 17 条，历史重复 4 条，新增 13 条。",
-      "heartbeat_at_hkt": "2026-08-19T13:37:23+08:00",
-      "started_at_hkt": "2026-08-19T13:30:28+08:00",
-      "completed_at_hkt": "2026-08-19T13:37:23+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
+      "heartbeat_at_hkt": "2026-08-20T16:03:54+08:00",
+      "started_at_hkt": "2026-08-20T15:49:43+08:00",
+      "completed_at_hkt": "2026-08-20T16:03:54+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 415748,
+      "duration_ms": 850727,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260819_133028_229145.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260820_154943_333677.jsonl"
       },
       "stream_log": {
-        "bytes": 15349,
-        "lines": 90
+        "bytes": 16628,
+        "lines": 99
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 42 条，AI保留 17 条，历史重复 4 条，新增 13 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-08-19@13:30",
-        "discovered": 42,
-        "ai_retained": 17,
-        "history_duplicates": 4,
-        "new_count": 13,
+        "slot": "2026-08-20@14:00",
+        "discovered": 41,
+        "ai_retained": 10,
+        "history_duplicates": 2,
+        "new_count": 8,
         "readback_verified": true,
         "notification_status": "sent",
-        "message_id": "om_x100b67605ff76ca0b2a3f2cdf4b9805"
+        "message_id": "om_x100b675f0056e0acb11634af3a27a06"
       }
     },
     "four_database_refresh": {

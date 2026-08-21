@@ -221,6 +221,11 @@ function showTaskOperationNotice(message) {
   state.taskBusyNoticeTimer = setTimeout(() => notice.classList.remove("is-visible"), 3600);
 }
 
+function announceTaskCreated(title, detail) {
+  state.motionTaskAnnouncedAt = Date.now();
+  window.CMHKMotion?.announce({ kind: "task", target: "log", title, detail });
+}
+
 function ensureTaskBusyInteraction() {
   if (state.taskBusyInteractionReady) return;
   state.taskBusyInteractionReady = true;
@@ -259,15 +264,30 @@ function renderLogButtonActivity() {
   // The unified workspace navigation is rendered independently from the
   // legacy log launcher. Keep its live task indicator on the same state path
   // so a task that starts after page load is visible immediately.
-  const workspaceRunningDot = document.querySelector("[data-workspace-running]");
-  if (workspaceRunningDot) workspaceRunningDot.hidden = !active;
   const workspaceLogTab = document.querySelector('[data-workspace-tab="log"]');
   if (workspaceLogTab) {
+    setWorkspaceTabIndicator(workspaceLogTab, "indicatorRunning", active);
     workspaceLogTab.classList.toggle("has-running-task", active);
     workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false");
     workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
     workspaceLogTab.title = active ? "有任务正在运行，点击查看日志" : "日志";
   }
+}
+
+function setWorkspaceTabIndicator(tab, reason, visible) {
+  if (!tab) return;
+  let indicator = tab.querySelector("[data-workspace-indicator]");
+  if (!indicator) {
+    indicator = document.createElement("i");
+    indicator.className = "workspace-signal-dot";
+    indicator.dataset.workspaceIndicator = "";
+    indicator.hidden = true;
+    tab.appendChild(indicator);
+  }
+  if (visible) indicator.dataset[reason] = "true";
+  else delete indicator.dataset[reason];
+  indicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+    .some((key) => indicator.dataset[key] === "true");
 }
 
 function setBusy(value, label = "运行中", action = "all") {
@@ -2030,15 +2050,7 @@ function setWorkspaceReportTabNewState(reportType, visible) {
   tab.setAttribute("aria-label", visible ? `${label}，有未读新报告` : label);
   tab.title = visible ? "有未读新报告，点击查看" : label;
 
-  let dot = tab.querySelector("[data-workspace-report-unread]");
-  if (!dot) {
-    dot = document.createElement("i");
-    dot.className = "workspace-running-dot";
-    dot.dataset.workspaceReportUnread = "";
-    dot.setAttribute("aria-hidden", "true");
-    tab.appendChild(dot);
-  }
-  dot.hidden = !visible;
+  setWorkspaceTabIndicator(tab, "indicatorReport", visible);
 }
 
 function setReportCategoryNewDots(unreadByType) {
@@ -2151,10 +2163,15 @@ function updateReportLibraryNewIndicator(files) {
 }
 
 function renderStatus(status) {
+  const hadRunningTasks = Boolean(state.hasRunningTasks);
   state.status = status;
   state.hasRunningTasks = Boolean(
     status.tasks?.hasRunning || Number(status.tasks?.runningCount || 0) > 0
   );
+  if (state.runningTaskBaselineReady && !hadRunningTasks && state.hasRunningTasks && Date.now() - Number(state.motionTaskAnnouncedAt || 0) > 5000) {
+    announceTaskCreated("后台任务已创建", "已进入运行队列，可在日志中查看进度");
+  }
+  state.runningTaskBaselineReady = true;
   renderLogButtonActivity();
   els.statusSummary.textContent = `数据 ${status.results.count} 个 · 范围 ${status.settings.enabledRows}/${status.settings.totalRows} 行 · 输出 ${status.latestOutputText}`;
   if (status.ai && els.aiConfigStatus) {
@@ -3952,6 +3969,7 @@ async function generateAudio(pathStr, button = null) {
     const submitMessage = data.alreadyRunning
       ? "该文件的音频任务已在运行，继续跟踪现有任务。"
       : "音频生成任务已启动，可在任务与审核记录中查看。";
+    if (!data.alreadyRunning) announceTaskCreated("音频摘要生成", "任务已创建，已收进任务日志");
     appendLog(`${submitMessage}\n`);
     showTaskOperationNotice(submitMessage);
     await loadCrawlRuns({ selectRunId: taskId });
@@ -4367,6 +4385,7 @@ async function runCrawl(source = "按钮") {
       const payload = await res.json().catch(() => ({}));
       throw new Error(payload.error || `请求失败（HTTP ${res.status}）`);
     }
+    announceTaskCreated("定期数据爬虫", "任务已创建，运行过程将持续写入日志");
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -4465,6 +4484,7 @@ async function generateReport(source = "按钮") {
   try {
     const res = await fetch("/api/generate-stream", { method: "POST" });
     if (!res.ok) throw new Error("网络请求失败");
+    announceTaskCreated("战略周报生成", "任务已创建，完成后可在报告与日志中查看");
     loadCrawlRuns();
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -4513,6 +4533,7 @@ async function generateCarrierPerformanceReport(source = "按钮") {
   try {
     const response = await fetch(`/api/generate-carrier-performance-stream`, { method: "POST" });
     if (!response.ok) throw new Error("网络请求失败");
+    announceTaskCreated("业绩摘要生成", "任务已创建，完成后可在报告与日志中查看");
     loadCrawlRuns();
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -7313,7 +7334,9 @@ if (els.webSearchToggle) {
 
 if (els.skillToggle) {
   renderSkillToggle();
-  loadAgentSkills();
+  window.CMHKAuth?.ready.then(() => {
+    if (window.CMHKAuth.hasModule("ai")) loadAgentSkills();
+  });
   els.skillToggle.addEventListener("click", () => {
     if (!els.skillMenu) return;
     const willOpen = els.skillMenu.hidden;
@@ -7334,7 +7357,9 @@ if (els.skillToggle) {
 
 if (els.databaseToggle) {
   renderDatabaseToggle();
-  loadAgentDatasets();
+  window.CMHKAuth?.ready.then(() => {
+    if (window.CMHKAuth.hasModule("ai")) loadAgentDatasets();
+  });
   els.databaseToggle.addEventListener("click", () => {
     if (!els.databaseMenu) return;
     const willOpen = els.databaseMenu.hidden;
@@ -7436,9 +7461,12 @@ if (els.chatModelSelect) {
       els.chatModelSelect.disabled = false;
     }
   });
-  loadChatModelOptions().catch((error) => {
-    console.warn(error);
-    renderChatModelControls();
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("ai")) return;
+    loadChatModelOptions().catch((error) => {
+      console.warn(error);
+      renderChatModelControls();
+    });
   });
 }
 
@@ -7650,12 +7678,16 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
-loadChatStarters({ render: true });
-loadChatThreads();
-fetchStatus().catch((error) => {
-  setLog(`初始化失败：${error.message}`);
+window.CMHKAuth?.ready.then(() => {
+  if (window.CMHKAuth.hasModule("ai")) {
+    loadChatStarters({ render: true });
+    loadChatThreads();
+  }
+  if (window.CMHKAuth.hasModule("dashboard")) {
+    fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
+    setInterval(() => fetchStatus().catch(console.error), 10000);
+  }
 });
-setInterval(() => fetchStatus().catch(console.error), 10000);
 
 // Citation Popover Logic
 let citationPopover = document.createElement("div");
@@ -8908,8 +8940,11 @@ document.addEventListener("keydown", (event) => {
       });
   }
 
-  refreshIntelligencePayload(true);
-  window.setInterval(() => refreshIntelligencePayload(false), 60000);
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("dashboard")) return;
+    refreshIntelligencePayload(true);
+    window.setInterval(() => refreshIntelligencePayload(false), 60000);
+  });
 })();
 
 /* Strategic briefing ticker: only group-approved items are rendered. */
@@ -9143,6 +9178,9 @@ document.addEventListener("keydown", (event) => {
       window.requestAnimationFrame(restartScroll);
     });
   });
-  fetchStrategicBriefs();
-  window.setInterval(fetchStrategicBriefs, 60000);
+  window.CMHKAuth?.ready.then(() => {
+    if (!window.CMHKAuth.hasModule("dashboard")) return;
+    fetchStrategicBriefs();
+    window.setInterval(fetchStrategicBriefs, 60000);
+  });
 })();

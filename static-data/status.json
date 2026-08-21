@@ -2,9 +2,9 @@
   "ok": true,
   "status": {
     "results": {
-      "count": 40,
-      "ok": 33,
-      "partial": 3
+      "count": 33,
+      "ok": 32,
+      "partial": 1
     },
     "visuals": {
       "crawl": {
@@ -13,15 +13,15 @@
         "fallback": 0,
         "total": 213,
         "successRate": 98,
-        "completedAt": "2026-08-19 03:11:42"
+        "completedAt": "2026-08-20 03:05:47"
       },
       "quality": {
-        "ok": 33,
-        "partial": 3,
-        "failed": 4,
-        "fieldTotal": 243,
-        "missingFields": 24,
-        "rawSources": 233
+        "ok": 32,
+        "partial": 1,
+        "failed": 0,
+        "fieldTotal": 205,
+        "missingFields": 0,
+        "rawSources": 214
       },
       "blocks": [
         {
@@ -29,12 +29,12 @@
           "value": 20
         },
         {
-          "label": "经营指标",
-          "value": 12
-        },
-        {
           "label": "产品资费",
           "value": 8
+        },
+        {
+          "label": "经营指标",
+          "value": 5
         }
       ],
       "sourceTypes": [
@@ -48,11 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 18
-        },
-        {
-          "label": "company_official_investor_relations",
-          "value": 13
+          "value": 19
         },
         {
           "label": "government_statistics",
@@ -61,6 +57,10 @@
         {
           "label": "regulator_public_info",
           "value": 7
+        },
+        {
+          "label": "listed_company_public_disclosure_mirror",
+          "value": 4
         }
       ],
       "jurisdictions": [
@@ -70,15 +70,11 @@
         },
         {
           "label": "US",
-          "value": 30
+          "value": 21
         },
         {
           "label": "EU",
           "value": 13
-        },
-        {
-          "label": "CN",
-          "value": 10
         },
         {
           "label": "international",
@@ -87,12 +83,16 @@
         {
           "label": "UK",
           "value": 7
+        },
+        {
+          "label": "ES",
+          "value": 7
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 175
+          "value": 155
         },
         {
           "label": "cache:httpx",
@@ -109,72 +109,68 @@
         {
           "label": "cache:curl_direct_chrome_ua",
           "value": 1
+        },
+        {
+          "label": "curl_crawler_ua",
+          "value": 1
         }
       ],
       "rejection": {
-        "accepted": 55,
-        "rejected": 105,
-        "qualityRejected": 105,
-        "evidenceGaps": 62,
-        "reportedRejected": 167,
-        "review": 14,
-        "total": 236,
-        "qualityTotal": 174,
-        "rejectRate": 60,
-        "passRate": 32,
+        "accepted": 117,
+        "rejected": 2,
+        "qualityRejected": 2,
+        "evidenceGaps": 91,
+        "reportedRejected": 93,
+        "review": 22,
+        "total": 232,
+        "qualityTotal": 141,
+        "rejectRate": 1,
+        "passRate": 83,
         "reasons": [
           {
-            "label": "在线模型不可用，离线结果不直接发布",
-            "value": 105
-          },
-          {
-            "label": "定性指标为截断网页片段",
+            "label": "置信度低于80%",
             "value": 2
-          },
-          {
-            "label": "未通过指标格式与单位门禁",
-            "value": 1
           }
         ],
-        "runId": "20260819_031241_0a62fe9d",
-        "completedAt": "2026-08-19T03:28:25+08:00"
+        "runId": "20260820_030645_db4db3a2",
+        "completedAt": "2026-08-20T03:36:34+08:00"
       },
       "newsFunnel": {
-        "scope": "午后扫描（2026-08-19@13:30）",
-        "label": "8月19日 13:30",
-        "completedAt": "2026-08-19T13:37:23+08:00",
-        "historyDuplicates": 4,
+        "scope": "午后扫描（2026-08-20@14:00）",
+        "label": "8月20日 14:00",
+        "completedAt": "2026-08-20T16:03:54+08:00",
+        "historyDuplicates": 2,
         "summary": {
-          "discovered": 42,
-          "confirmed": 17,
-          "newCount": 13,
-          "sourceCount": 13
+          "discovered": 41,
+          "confirmed": 10,
+          "newCount": 8,
+          "sourceCount": 8
         },
         "categories": [
           {
             "label": "网络与技术",
-            "value": 5
+            "value": 4
           },
           {
             "label": "竞对动态",
-            "value": 4
+            "value": 1
           },
           {
-            "label": "行业动态",
-            "value": 4
+            "label": "政策监管",
+            "value": 1
+          },
+          {
+            "label": "其他",
+            "value": 2
           }
         ],
         "impacts": [
           {
-            "label": "产品与定价",
-            "value": 3
-          },
-          {
-            "label": "网络与运营",
-            "value": 3
-          },
-          {
             "label": "合规与牌照",
+            "value": 2
+          },
+          {
+            "label": "客户与渠道",
             "value": 2
           },
           {
@@ -182,15 +178,11 @@
             "value": 2
           },
           {
-            "label": "收入与需求",
+            "label": "产品与定价",
             "value": 1
           },
           {
-            "label": "竞争格局",
-            "value": 1
-          },
-          {
-            "label": "资本配置",
+            "label": "网络与运营",
             "value": 1
           }
         ],
@@ -198,38 +190,38 @@
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 42,
+            "value": 41,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 42 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 41 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 17,
-            "removed": 25,
-            "rate": 40,
-            "note": "保留 40%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 17 条，未确认 25 条。"
+            "value": 10,
+            "removed": 31,
+            "rate": 24,
+            "note": "保留 24%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 10 条，未确认 31 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 13,
-            "removed": 4,
-            "rate": 76,
-            "note": "排除 4 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 4 条重复事件，剩余 13 条。"
+            "value": 8,
+            "removed": 2,
+            "rate": 80,
+            "note": "排除 2 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 2 条重复事件，剩余 8 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 13,
+            "value": 8,
             "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 13 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 8 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
@@ -329,7 +321,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-19 03:20:02",
+    "latestOutputText": "2026-08-20 03:23:01",
     "outputs": [
       {
         "name": "8月19日周报.docx",

@@ -55,24 +55,31 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .invite-surface, .subscriber-surface { min-height: 410px; }
 .invite-surface .invite-list-main { flex: 1; max-height: 350px; padding: 4px 12px 12px; }
 .subscriber-table { max-height: 350px; flex: 1; border: 0; border-radius: 0; }
-.subscriber-table table { min-width: 0; table-layout: fixed; }
-.subscriber-table th:nth-child(1) { width: 21%; }
-.subscriber-table th:nth-child(2) { width: 24%; }
-.subscriber-table th:nth-child(3), .subscriber-table th:nth-child(4) { width: 14%; }
+.subscriber-table table { min-width: 1120px; table-layout: fixed; }
+.subscriber-table th:nth-child(1) { width: 16%; }
+.subscriber-table th:nth-child(2) { width: 15%; }
+.subscriber-table th:nth-child(3) { width: 28%; }
+.subscriber-table th:nth-child(4) { width: 10%; }
 .subscriber-table th:nth-child(5) { width: 12%; }
-.subscriber-table th:nth-child(6) { width: 15%; }
+.subscriber-table th:nth-child(6) { width: 8%; }
+.subscriber-table th:nth-child(7) { width: 11%; }
 .subscriber-table td select { min-width: 0; }
 .table-person { display: flex; min-width: 0; align-items: center; gap: 9px; }
 .table-person-copy { min-width: 0; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
 .table-person-name { overflow: hidden; color: #edf5f7; font-size: 9px; text-overflow: ellipsis; }
 .table-person-id { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
+.preference-source { margin-top: 3px; color: #72c7ad; font-size: 7px; font-weight: 600; }
 .delivery-table table { min-width: 880px; }
 .delivery-recipient { display: block; min-width: 116px; }
 .delivery-recipient strong, .delivery-recipient small { display: block; white-space: nowrap; }
 .delivery-recipient strong { color: #edf5f7; font-size: 9px; font-weight: 600; }
 .delivery-recipient small { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
 .service-group { display: flex; gap: 4px; white-space: nowrap; }
+.news-interest-group { display: flex; flex-wrap: wrap; gap: 5px; }
+.news-interest-check { display: inline-flex; min-height: 24px; align-items: center; gap: 4px; padding: 3px 6px; border: 1px solid rgba(91,157,177,.24); border-radius: 999px; color: #8faab3; background: rgba(7,28,38,.58); white-space: nowrap; }
+.news-interest-check:has(input:checked) { border-color: rgba(92,190,194,.5); color: #cce9e9; background: rgba(41,112,116,.22); }
+.news-interest-check input { width: 12px; height: 12px; margin: 0; padding: 0; accent-color: #58b4c7; }
 .subscriber-actions { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
 .row-send { width: 28px; height: 28px; flex-basis: 28px; border-color: rgba(91,177,198,.28); background: rgba(18,55,68,.7); }
 .row-send svg { width: 14px; height: 14px; }
@@ -115,6 +122,16 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .person-row, .invite-row { display: grid; min-width: 0; align-items: center; gap: 9px; padding: 10px 8px; border-bottom: 1px solid rgba(41,73,86,.72); }
 .person-row { grid-template-columns: auto minmax(0, 1fr) auto; padding-right: 3px; }
 .invite-row { grid-template-columns: auto auto minmax(0,1fr) auto; }
+.group-invite-record { min-width: 0; }
+.group-invite-record > summary { list-style: none; cursor: pointer; }
+.group-invite-record > summary::-webkit-details-marker { display: none; }
+.group-invite-row { grid-template-columns: auto minmax(0,1fr) auto; }
+.group-response-list { display: grid; gap: 7px; padding: 8px 12px 10px 47px; border-bottom: 1px solid rgba(41,73,86,.72); background: rgba(7,28,38,.44); }
+.group-response-list > span { display: flex; min-width: 0; align-items: center; gap: 8px; }
+.group-response-list .avatar, .group-response-list .avatar-stack { width: 24px; height: 24px; flex-basis: 24px; }
+.group-response-list strong, .group-response-list small { display: block; }
+.group-response-list strong { color: #dcebed; font-size: 9px; }
+.group-response-list small, .group-response-list p { margin: 2px 0 0; color: #6d8993; font-size: 8px; }
 .person-row:hover, .invite-row:hover { background: rgba(45,91,106,.11); }
 .avatar { width: 30px; height: 30px; flex: 0 0 30px; border: 1px solid #3a5b68; border-radius: 50%; object-fit: cover; background: #112e39; }
 .avatar-stack { position: relative; display: block; width: 30px; height: 30px; flex: 0 0 30px; }
@@ -127,6 +144,8 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .result-section-label { padding: 7px 8px; border-bottom: 1px solid rgba(41,73,86,.72); color: #78949e; background: rgba(6,27,37,.72); font-size: 8px; font-weight: 650; }
 .chat-avatar { border-radius: 8px; color: #ffe68a; background: rgba(119,91,24,.32); }
 .result-type { padding: 2px 6px; border: 1px solid rgba(206,173,68,.25); border-radius: 8px; color: #d8c16a; background: rgba(128,99,25,.14); font-size: 8px; white-space: nowrap; }
+.compact-send { min-width: 92px; justify-content: center; white-space: nowrap; }
+.compact-send svg { width: 14px; height: 14px; }
 .invite-meta { display: grid; justify-items: end; gap: 2px; }
 .empty { padding: 24px 12px; color: #67838d; text-align: center; }
 .empty.compact { margin: 0; padding: 24px 10px; font-size: 9px; }
@@ -191,7 +210,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .workbench-actions .button span { display: none; }
   .surface-header { min-height: 56px; padding: 11px 12px; }
   .invite-surface, .subscriber-surface { min-height: 0; }
-  .subscriber-table table { min-width: 760px; }
+  .subscriber-table table { min-width: 1120px; }
   .subscriber-table td select { min-width: 88px; }
   .surface-actions .button span { display: none; }
   .push-surface .surface-body { padding: 12px; }
@@ -201,11 +220,16 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }
   .invite-row { grid-template-columns: auto auto minmax(0,1fr); }
+  .group-invite-row { grid-template-columns: auto minmax(0,1fr); }
+  .group-invite-row .invite-meta { grid-column: 2; }
+  .group-response-list { padding-left: 46px; }
   .invite-meta { grid-column: 3; justify-items: start; }
   .push-workbench { padding: 0 14px; }
   .push-actions { align-items: stretch; flex-direction: column; }
   .push-actions .button { width: 100%; }
   .management-drawer, .people-picker { width: 100vw; }
+  .compact-send { min-width: 36px; padding: 0 9px; }
+  .compact-send span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; }

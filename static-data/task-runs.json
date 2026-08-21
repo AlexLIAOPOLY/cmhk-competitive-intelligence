@@ -2,6 +2,142 @@
   "ok": true,
   "tasks": [
     {
+      "task_id": "crawl:20260820_154943_333677",
+      "task_run_id": "20260820_154943_333677",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "午后扫描（2026-08-20@14:00）",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
+      "started_at_hkt": "2026-08-20T15:49:43+08:00",
+      "heartbeat_at_hkt": "2026-08-20T16:03:54+08:00",
+      "completed_at_hkt": "2026-08-20T16:03:54+08:00",
+      "duration_ms": 850727,
+      "retry_index": 2
+    },
+    {
+      "task_id": "crawl:20260820_154743_965736",
+      "task_run_id": "20260820_154743_965736",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "午后扫描（2026-08-20@14:00）",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:44+08:00；最后进度：[2026-08-20 15:47:44] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:44+08:00；最后进度：[2026-08-20 15:47:44] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
+      "started_at_hkt": "2026-08-20T15:47:43+08:00",
+      "heartbeat_at_hkt": "2026-08-20T15:47:44+08:00",
+      "completed_at_hkt": "2026-08-20T15:47:44+08:00",
+      "duration_ms": 1607,
+      "retry_index": 1
+    },
+    {
+      "task_id": "crawl:20260820_154539_674650",
+      "task_run_id": "20260820_154539_674650",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "午后扫描（2026-08-20@14:00）",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:40+08:00；最后进度：[2026-08-20 15:47:40] AI紧凑补审：第 1/28 批对 4 条执行紧凑协议补审。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:40+08:00；最后进度：[2026-08-20 15:47:40] AI紧凑补审：第 1/28 批对 4 条执行紧凑协议补审。",
+      "started_at_hkt": "2026-08-20T15:45:39+08:00",
+      "heartbeat_at_hkt": "2026-08-20T15:47:40+08:00",
+      "completed_at_hkt": "2026-08-20T15:47:40+08:00",
+      "duration_ms": 121453,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260820_133057_090156",
+      "task_run_id": "20260820_133057_090156",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "午后扫描（2026-08-20@13:30）",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 48 条，AI保留 24 条，历史重复 4 条，新增 5 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 48 条，AI保留 24 条，历史重复 4 条，新增 5 条。",
+      "started_at_hkt": "2026-08-20T13:30:57+08:00",
+      "heartbeat_at_hkt": "2026-08-20T13:37:23+08:00",
+      "completed_at_hkt": "2026-08-20T13:37:23+08:00",
+      "duration_ms": 385988,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260820_094425_610657",
+      "task_run_id": "20260820_094425_610657",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "今日新闻重跑（近三日去重）（2026-08-20@manual-three-day-dedupe-rerun-094425）",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T09:49:13+08:00；最后进度：[2026-08-20 09:49:13] 新闻索引延迟复查：当前仅发现 1 条，低于 3 条可靠完成线；等待 5 分钟后执行第 2 次检索。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T09:49:13+08:00；最后进度：[2026-08-20 09:49:13] 新闻索引延迟复查：当前仅发现 1 条，低于 3 条可靠完成线；等待 5 分钟后执行第 2 次检索。",
+      "started_at_hkt": "2026-08-20T09:44:25+08:00",
+      "heartbeat_at_hkt": "2026-08-20T09:49:13+08:00",
+      "completed_at_hkt": "2026-08-20T09:49:13+08:00",
+      "duration_ms": 288067,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260820_094005_541868",
+      "task_run_id": "20260820_094005_541868",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "今日新闻重跑（近三日去重）（2026-08-20@manual-three-day-dedupe-rerun-094005）",
+      "run_status": "failed",
+      "phase": "失败",
+      "progress_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：审核表现有候选数少于上次同步记录，已停止追加以防止历史数据被覆盖：当前 2016 条，上次 2056 条；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
+      "status_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：审核表现有候选数少于上次同步记录，已停止追加以防止历史数据被覆盖：当前 2016 条，上次 2056 条；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
+      "started_at_hkt": "2026-08-20T09:40:05+08:00",
+      "heartbeat_at_hkt": "2026-08-20T09:43:22+08:00",
+      "completed_at_hkt": "2026-08-20T09:43:22+08:00",
+      "duration_ms": 196462,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260820_060010_129187",
+      "task_run_id": "20260820_060010_129187",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "晨间扫描（2026-08-20@06:00）",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 601 条，AI保留 209 条，历史重复 41 条，新增 163 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 601 条，AI保留 209 条，历史重复 41 条，新增 163 条。",
+      "started_at_hkt": "2026-08-20T06:00:10+08:00",
+      "heartbeat_at_hkt": "2026-08-20T06:55:57+08:00",
+      "completed_at_hkt": "2026-08-20T06:55:57+08:00",
+      "duration_ms": 3347253,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260820_030022_196463",
+      "task_run_id": "20260820_030022_196463",
+      "title": "定时爬虫",
+      "kind": "crawl",
+      "kind_label": "爬虫",
+      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
+      "run_status": "running",
+      "phase": "恢复未完成任务",
+      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
+      "status_detail": "",
+      "started_at_hkt": "2026-08-20T03:00:22+08:00",
+      "heartbeat_at_hkt": "2026-08-21T08:02:06+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 103714417,
+      "retry_index": 0
+    },
+    {
       "task_id": "task:20260819_151216_2a3abacf",
       "task_run_id": "20260819_151216_2a3abacf",
       "title": "生成周报",
@@ -562,7 +698,7 @@
       "heartbeat_at_hkt": "2026-08-15T11:00:03+08:00",
       "completed_at_hkt": "2026-08-15T11:00:03+08:00",
       "duration_ms": 65744,
-      "retry_index": 12
+      "retry_index": 10
     },
     {
       "task_id": "crawl:20260815_104739_720632",
@@ -579,7 +715,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:58:03+08:00",
       "completed_at_hkt": "2026-08-15T10:58:03+08:00",
       "duration_ms": 624599,
-      "retry_index": 11
+      "retry_index": 9
     },
     {
       "task_id": "crawl:20260815_104708_726959",
@@ -596,7 +732,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:47:11+08:00",
       "completed_at_hkt": "2026-08-15T10:47:11+08:00",
       "duration_ms": 3222,
-      "retry_index": 10
+      "retry_index": 8
     },
     {
       "task_id": "crawl:20260815_104501_360367",
@@ -613,7 +749,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:46:02+08:00",
       "completed_at_hkt": "2026-08-15T10:46:02+08:00",
       "duration_ms": 61933,
-      "retry_index": 9
+      "retry_index": 7
     },
     {
       "task_id": "crawl:20260815_104230_037690",
@@ -630,7 +766,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:44:02+08:00",
       "completed_at_hkt": "2026-08-15T10:44:02+08:00",
       "duration_ms": 92763,
-      "retry_index": 8
+      "retry_index": 6
     },
     {
       "task_id": "crawl:20260815_103937_246527",
@@ -647,7 +783,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:42:02+08:00",
       "completed_at_hkt": "2026-08-15T10:42:02+08:00",
       "duration_ms": 145088,
-      "retry_index": 7
+      "retry_index": 5
     },
     {
       "task_id": "crawl:20260815_103707_311318",
@@ -664,7 +800,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:39:03+08:00",
       "completed_at_hkt": "2026-08-15T10:39:03+08:00",
       "duration_ms": 116090,
-      "retry_index": 6
+      "retry_index": 4
     },
     {
       "task_id": "crawl:20260815_101850_006833",
@@ -681,7 +817,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:36:15+08:00",
       "completed_at_hkt": "2026-08-15T10:36:15+08:00",
       "duration_ms": 1045389,
-      "retry_index": 5
+      "retry_index": 3
     },
     {
       "task_id": "crawl:20260815_101713_721856",
@@ -698,7 +834,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:18:08+08:00",
       "completed_at_hkt": "2026-08-15T10:18:08+08:00",
       "duration_ms": 55140,
-      "retry_index": 4
+      "retry_index": 2
     },
     {
       "task_id": "crawl:20260815_095827_220653",
@@ -715,7 +851,7 @@
       "heartbeat_at_hkt": "2026-08-15T10:16:26+08:00",
       "completed_at_hkt": "2026-08-15T10:16:26+08:00",
       "duration_ms": 1079253,
-      "retry_index": 3
+      "retry_index": 1
     },
     {
       "task_id": "crawl:20260815_095003_251148",
@@ -732,142 +868,6 @@
       "heartbeat_at_hkt": "2026-08-15T09:58:21+08:00",
       "completed_at_hkt": "2026-08-15T09:58:21+08:00",
       "duration_ms": 498966,
-      "retry_index": 2
-    },
-    {
-      "task_id": "crawl:20260815_094329_908765",
-      "task_run_id": "20260815_094329_908765",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "晨间扫描（2026-08-15@09:00）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-15T09:49:27+08:00；最后进度：[2026-08-15 09:49:27] AI紧凑补审：第 11/107 批对 4 条执行紧凑协议补审。",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-15T09:49:27+08:00；最后进度：[2026-08-15 09:49:27] AI紧凑补审：第 11/107 批对 4 条执行紧凑协议补审。",
-      "started_at_hkt": "2026-08-15T09:43:29+08:00",
-      "heartbeat_at_hkt": "2026-08-15T09:49:27+08:00",
-      "completed_at_hkt": "2026-08-15T09:49:27+08:00",
-      "duration_ms": 358050,
-      "retry_index": 1
-    },
-    {
-      "task_id": "crawl:20260815_090009_424138",
-      "task_run_id": "20260815_090009_424138",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "晨间扫描（2026-08-15@09:00）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-15T09:43:12+08:00；最后进度：[2026-08-15 09:43:12] AI紧凑补审：第 13/104 批对 4 条执行紧凑协议补审。",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-15T09:43:12+08:00；最后进度：[2026-08-15 09:43:12] AI紧凑补审：第 13/104 批对 4 条执行紧凑协议补审。",
-      "started_at_hkt": "2026-08-15T09:00:09+08:00",
-      "heartbeat_at_hkt": "2026-08-15T09:43:12+08:00",
-      "completed_at_hkt": "2026-08-15T09:43:12+08:00",
-      "duration_ms": 2583092,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260815_033553_042661",
-      "task_run_id": "20260815_033553_042661",
-      "title": "四库与观察结论自动更新",
-      "kind": "executive-intelligence-refresh",
-      "kind_label": "四库刷新",
-      "scope": "Agent审核 20260815_030832_7b047a5f · 父任务 20260815_030055_440033",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "四库、17个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "status_detail": "四库、17个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "started_at_hkt": "2026-08-15T03:35:53+08:00",
-      "heartbeat_at_hkt": "2026-08-15T03:41:46+08:00",
-      "completed_at_hkt": "2026-08-15T03:41:46+08:00",
-      "duration_ms": 353409,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260815_030055_440033",
-      "task_run_id": "20260815_030055_440033",
-      "title": "定时爬虫",
-      "kind": "crawl",
-      "kind_label": "爬虫",
-      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "爬虫、审核与结果归档已全部完成。",
-      "status_detail": "",
-      "started_at_hkt": "2026-08-15T03:00:55+08:00",
-      "heartbeat_at_hkt": "2026-08-15T03:35:53+08:00",
-      "completed_at_hkt": "2026-08-15T03:35:53+08:00",
-      "duration_ms": 2097621,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260814_171729_391467",
-      "task_run_id": "20260814_171729_391467",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "人工完整复核扫描（永久不发群消息）（2026-08-14@manual-no-group-171729）",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 189 条，AI保留 15 条，历史重复 2 条，新增 13 条。",
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 189 条，AI保留 15 条，历史重复 2 条，新增 13 条。",
-      "started_at_hkt": "2026-08-14T17:17:29+08:00",
-      "heartbeat_at_hkt": "2026-08-14T17:33:33+08:00",
-      "completed_at_hkt": "2026-08-14T17:33:33+08:00",
-      "duration_ms": 964360,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260814_150038_003362",
-      "task_run_id": "20260814_150038_003362",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "午后扫描（2026-08-14@15:00）",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 10 条，AI保留 4 条，历史重复 0 条，新增 4 条。",
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 10 条，AI保留 4 条，历史重复 0 条，新增 4 条。",
-      "started_at_hkt": "2026-08-14T15:00:38+08:00",
-      "heartbeat_at_hkt": "2026-08-14T15:18:13+08:00",
-      "completed_at_hkt": "2026-08-14T15:18:13+08:00",
-      "duration_ms": 1055522,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260814_103355_709504",
-      "task_run_id": "20260814_103355_709504",
-      "title": "四库与观察结论自动更新",
-      "kind": "executive-intelligence-refresh",
-      "kind_label": "四库刷新",
-      "scope": "Agent审核 20260814_095908_6f709784 · 父任务 20260814_095554_209081",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "四库、16个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "status_detail": "四库、16个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "started_at_hkt": "2026-08-14T10:33:55+08:00",
-      "heartbeat_at_hkt": "2026-08-14T10:37:45+08:00",
-      "completed_at_hkt": "2026-08-14T10:37:45+08:00",
-      "duration_ms": 230180,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260814_095554_209081",
-      "task_run_id": "20260814_095554_209081",
-      "title": "定时爬虫",
-      "kind": "crawl",
-      "kind_label": "爬虫",
-      "scope": "定时指定行（第2行、第5行、第11行、第15行）",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
-      "status_detail": "",
-      "started_at_hkt": "2026-08-14T09:55:54+08:00",
-      "heartbeat_at_hkt": "2026-08-14T10:33:55+08:00",
-      "completed_at_hkt": "2026-08-14T10:33:55+08:00",
-      "duration_ms": 2281728,
       "retry_index": 0
     },
     {

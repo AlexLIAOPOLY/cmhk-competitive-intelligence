@@ -22,7 +22,7 @@
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
   const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
-  const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败" }[value] || value);
+  const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已发送并回读", responded: "已有人选择" }[value] || value);
   const icon = (name) => ({
     add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>',
@@ -62,6 +62,12 @@
     return [5, 10, 15, 20].map((count) => `<option value="${count}"${Number(selected) === count ? " selected" : ""}>${count} 条</option>`).join("");
   }
 
+  function newsCategoryChecks(selected = []) {
+    const categories = state.data?.news_categories || [];
+    const selectedSet = new Set(selected || []);
+    return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+  }
+
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="9" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
@@ -76,10 +82,11 @@
 
   function compactSubscriberRows() {
     const rows = state.data?.subscribers || [];
-    if (!rows.length) return '<tr><td colspan="6" class="empty">尚无订阅者</td></tr>';
+    if (!rows.length) return '<tr><td colspan="7" class="empty">尚无订阅者</td></tr>';
     return rows.map((item) => `<tr data-subscriber-row="${esc(item.open_id)}">
-      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small></span></div></td>
+      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
+      <td><div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div></td>
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
@@ -105,7 +112,7 @@
     </div>`).join("");
     const chats = state.chatSearchResults.map((item) => `<div class="person-row chat-row">
       <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${highlight(item.name)}</strong><small>${highlight(item.description || (item.external ? "外部群聊" : "飞书群聊"))}</small></span>
-      <span class="result-type">群聊</span>
+      <button class="button compact-send" type="button" data-invite-chat="${esc(item.chat_id)}" data-invite-chat-name="${esc(item.name)}" aria-label="发送订阅邀请到 ${esc(item.name)}" title="发送到群聊">${icon("send")}<span>发送到群</span></button>
     </div>`).join("");
     if (!people && !chats) return `<p class="empty compact">没有找到包含“${esc(state.searchQuery)}”的人员或群聊。</p>`;
     return `${people ? `<div class="result-section-label">人员 · ${number(state.searchResults.length)}</div>${people}` : ""}${chats ? `<div class="result-section-label">群聊 · ${number(state.chatSearchResults.length)}</div>${chats}` : ""}`;
@@ -113,12 +120,22 @@
 
   function candidateRows() {
     const rows = state.data?.invite_candidates || [];
-    if (!rows.length) return '<p class="empty compact">尚无待邀请人员</p>';
-    return rows.map((item) => `<label class="invite-row">
+    const groups = state.data?.group_invitations || [];
+    if (!rows.length && !groups.length) return '<p class="empty compact">尚无待邀请人员或已发送的群邀请</p>';
+    const groupRows = groups.map((item) => {
+      const responses = item.responses || [];
+      const responseCount = Number(item.response_count || responses.length || 0);
+      return `<details class="group-invite-record"><summary class="invite-row group-invite-row">
+        <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
+        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已发送并回读"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
+      </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
+    }).join("");
+    const personRows = rows.map((item) => `<label class="invite-row">
       <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate>
       ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc((item.department_names || []).join(" / ") || item.job_title || "已验证飞书用户")}</small></span>
       <span class="invite-meta"><span class="status ${esc(item.latest_invitation?.status || "pending")}">${esc(invitationStatus(item.latest_invitation?.status || "未邀请"))}</span><small>${esc(item.latest_invitation?.sent_at || "未发送")}</small></span>
     </label>`).join("");
+    return groupRows + personRows;
   }
 
   function invitationRows() {
@@ -146,14 +163,15 @@
     const data = state.data;
     if (!data) return;
     const inviteCount = (data.invite_candidates || []).length;
+    const groupInviteCount = (data.group_invitations || []).length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
-    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "06:00 / 13:30", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
+    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "09:00 / 14:00", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
         <div class="upper-grid">
-          <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 直接调整接收内容与方式</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions"><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
@@ -198,6 +216,20 @@
     render();
   }
 
+  function announceDeliveredMessage(action, evidence) {
+    const messages = {
+      pushLatest: ["订阅消息已送达", "正式内容已发送并完成回读"],
+      invite: ["订阅邀请已送达", "邀请消息已发送并完成回读"],
+      publish: ["订阅卡片已送达", "卡片已发送并完成回读"],
+    };
+    const copy = messages[action];
+    if (!copy || window.parent === window) return;
+    window.parent.postMessage({
+      type: "cmhk-workspace-motion",
+      event: { kind: "subscription", target: "subscriptions", title: copy[0], detail: evidence ? `${copy[1]} · ${evidence}` : copy[1] },
+    }, location.origin);
+  }
+
   async function post(payload, pendingText) {
     state.notice = pendingText;
     state.noticeKind = "";
@@ -210,6 +242,7 @@
     state.notice = `操作成功：${evidence}`;
     state.noticeKind = "success";
     await loadData({ keepNotice: true });
+    announceDeliveredMessage(payload.action, evidence);
   }
 
   document.addEventListener("click", async (event) => {
@@ -277,6 +310,18 @@
       catch (error) { state.notice = `加入名单失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
+    const inviteChat = event.target.closest("[data-invite-chat]");
+    if (inviteChat) {
+      const chatId = inviteChat.dataset.inviteChat || "";
+      const chatName = inviteChat.dataset.inviteChatName || "该群聊";
+      if (!window.confirm(`确认向“${chatName}”发送一张订阅邀请？群内每个人的选择会分别保存。`)) return;
+      try {
+        await post({ action: "inviteTarget", targetId: chatId, confirmInvite: true }, `正在向“${chatName}”发送群邀请并回读…`);
+        state.peopleOpen = false;
+        render();
+      } catch (error) { state.notice = `群邀请发送失败：${error.message}`; state.noticeKind = "error"; render(); }
+      return;
+    }
     if (event.target.closest("[data-send-invites]")) {
       const ids = Array.from(document.querySelectorAll("[data-invite-candidate]:checked")).map((item) => item.value);
       if (!ids.length) { state.notice = "请先勾选要邀请的人员。"; state.noticeKind = "error"; render(); return; }
@@ -288,8 +333,10 @@
     const save = event.target.closest("[data-save-subscriber]");
     if (save) {
       const row = save.closest("[data-subscriber-row]");
-      const services = Array.from(row.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      const services = Array.from(row.querySelectorAll('.service-check input[type="checkbox"]:checked')).map((input) => input.value);
+      const newsCategories = Array.from(row.querySelectorAll('[data-news-category]:checked')).map((input) => input.value);
+      if (services.includes("news") && !newsCategories.length) { state.notice = "订阅战略新闻时，请至少选择一个兴趣板块。"; state.noticeKind = "error"; render(); return; }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, newsCategories, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });
@@ -346,4 +393,7 @@
   loadData().catch((error) => {
     root.innerHTML = `<div class="loading">订阅后台加载失败：${esc(error.message)}</div>`;
   });
+  window.setInterval(() => {
+    if (!document.hidden) loadData({ keepNotice: true }).catch(() => {});
+  }, 15000);
 })();

@@ -4,41 +4,92 @@
     {
       "key": "weekly",
       "label": "战略双周报",
-      "subscriber_count": 2
+      "subscriber_count": 3
     },
     {
       "key": "performance",
       "label": "运营商业绩摘要",
-      "subscriber_count": 1
+      "subscriber_count": 2
     },
     {
       "key": "news",
       "label": "战略新闻",
-      "subscriber_count": 1
+      "subscriber_count": 3
+    }
+  ],
+  "news_categories": [
+    {
+      "key": "公司动态",
+      "label": "公司动态"
+    },
+    {
+      "key": "竞对动态",
+      "label": "竞对动态"
+    },
+    {
+      "key": "政策监管",
+      "label": "政策监管"
+    },
+    {
+      "key": "行业动态",
+      "label": "行业动态"
+    },
+    {
+      "key": "市场/产品类",
+      "label": "市场与产品"
+    },
+    {
+      "key": "基础设施/网络/技术类",
+      "label": "网络与技术"
+    },
+    {
+      "key": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "label": "宏观与国际"
     }
   ],
   "subscribers": [
     {
-      "open_id": "ou_12819803e67cbb3cbdd0730a98048cd2",
-      "callback_open_id": "ou_12819803e67cbb3cbdd0730a98048cd2",
-      "union_id": "on_9d54b50cedc44c116b440bf54150a5b6",
-      "display_name": "彭泽鑫 Justin PENG Zexin",
+      "open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "callback_open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "union_id": "on_b46beac1c03014a6b903b4c7948c0292",
+      "display_name": "王锐 Edward WANG Rui",
       "status": "active",
       "frequency": "once_daily",
-      "report_mode": "pdf_audio",
+      "report_mode": "pdf",
       "news_item_limit": 10,
-      "source_chat_id": "oc_41956eb6500bfe80467d1382871b8520",
-      "created_at": "2026-08-19T10:38:00+08:00",
-      "updated_at": "2026-08-19T10:38:00+08:00",
+      "news_categories": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场/产品类",
+        "基础设施/网络/技术类",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇"
+      ],
+      "source_chat_id": "oc_c5ea1b62e949f16556a02ef2ea99663a",
+      "created_at": "2026-08-20T17:28:34+08:00",
+      "updated_at": "2026-08-20T17:28:34+08:00",
       "services": [
-        "weekly"
+        "news"
+      ],
+      "news_category_labels": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场与产品",
+        "网络与技术",
+        "宏观与国际"
       ],
       "news_frequency": "once_daily",
       "news_frequency_label": "每天一次",
       "frequency_label": "每天一次",
-      "report_mode_label": "PDF + 单独语音",
+      "report_mode_label": "仅 PDF",
       "report_cadence": "biweekly_on_publish",
-      "report_cadence_label": "按后台月度排期自动生成并推送"
+      "report_cadence_label": "按后台月度排期自动生成并推送",
+      "preference_source": "current_config",
+      "preference_source_label": "当前配置",
+      "preference_message_id": ""
     },
     {
       "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
@@ -49,23 +100,210 @@
       "frequency": "twice_daily",
       "report_mode": "pdf_audio",
       "news_item_limit": 10,
-      "source_chat_id": "oc_9393b29c93e29cda95d17a0e50addd26",
+      "news_categories": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场/产品类",
+        "基础设施/网络/技术类",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇"
+      ],
+      "source_chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
       "created_at": "2026-08-18T19:04:45+08:00",
-      "updated_at": "2026-08-19T10:23:01+08:00",
+      "updated_at": "2026-08-20T09:55:14+08:00",
       "services": [
         "news",
         "performance",
         "weekly"
+      ],
+      "news_category_labels": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场与产品",
+        "网络与技术",
+        "宏观与国际"
       ],
       "news_frequency": "twice_daily",
       "news_frequency_label": "每天两次",
       "frequency_label": "每天两次",
       "report_mode_label": "PDF + 单独语音",
       "report_cadence": "biweekly_on_publish",
-      "report_cadence_label": "按后台月度排期自动生成并推送"
+      "report_cadence_label": "按后台月度排期自动生成并推送",
+      "preference_source": "group_card",
+      "preference_source_label": "群卡本人提交",
+      "preference_message_id": "om_x100b6751984fe4b8b2a70e71909ff78"
+    },
+    {
+      "open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "callback_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "union_id": "on_1e9aacfabf424e6bf8e99975abe18d6a",
+      "display_name": "徐亮 Alan XU Liang",
+      "status": "active",
+      "frequency": "twice_daily",
+      "report_mode": "pdf_audio",
+      "news_item_limit": 10,
+      "news_categories": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场/产品类",
+        "基础设施/网络/技术类",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇"
+      ],
+      "source_chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
+      "created_at": "2026-08-20T09:54:00+08:00",
+      "updated_at": "2026-08-20T09:54:00+08:00",
+      "services": [
+        "news",
+        "performance",
+        "weekly"
+      ],
+      "news_category_labels": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场与产品",
+        "网络与技术",
+        "宏观与国际"
+      ],
+      "news_frequency": "twice_daily",
+      "news_frequency_label": "每天两次",
+      "frequency_label": "每天两次",
+      "report_mode_label": "PDF + 单独语音",
+      "report_cadence": "biweekly_on_publish",
+      "report_cadence_label": "按后台月度排期自动生成并推送",
+      "preference_source": "group_card",
+      "preference_source_label": "群卡本人提交",
+      "preference_message_id": "om_x100b6751984fe4b8b2a70e71909ff78"
+    },
+    {
+      "open_id": "ou_12819803e67cbb3cbdd0730a98048cd2",
+      "callback_open_id": "ou_12819803e67cbb3cbdd0730a98048cd2",
+      "union_id": "on_9d54b50cedc44c116b440bf54150a5b6",
+      "display_name": "彭泽鑫 Justin PENG Zexin",
+      "status": "active",
+      "frequency": "once_daily",
+      "report_mode": "pdf_audio",
+      "news_item_limit": 10,
+      "news_categories": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场/产品类",
+        "基础设施/网络/技术类",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇"
+      ],
+      "source_chat_id": "oc_41956eb6500bfe80467d1382871b8520",
+      "created_at": "2026-08-19T10:38:00+08:00",
+      "updated_at": "2026-08-19T10:38:00+08:00",
+      "services": [
+        "weekly"
+      ],
+      "news_category_labels": [
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场与产品",
+        "网络与技术",
+        "宏观与国际"
+      ],
+      "news_frequency": "once_daily",
+      "news_frequency_label": "每天一次",
+      "frequency_label": "每天一次",
+      "report_mode_label": "PDF + 单独语音",
+      "report_cadence": "biweekly_on_publish",
+      "report_cadence_label": "按后台月度排期自动生成并推送",
+      "preference_source": "current_config",
+      "preference_source_label": "当前配置",
+      "preference_message_id": ""
     }
   ],
   "deliveries": [
+    {
+      "id": 23,
+      "batch_id": "101989d38c07c716c8878feb",
+      "open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-20@14:00",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b675f00b53cb0b34fc5cb6834e58"
+      ],
+      "error": "",
+      "created_at": "2026-08-20T16:03:50+08:00",
+      "recipient_name": "徐亮 Alan XU Liang",
+      "recipient_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d"
+    },
+    {
+      "id": 22,
+      "batch_id": "dcf623d9ef12008bdcdf6d23",
+      "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-20@14:00",
+      "status": "superseded",
+      "message_ids": [],
+      "error": "已改为战略爬虫完成后推送",
+      "created_at": "2026-08-20T16:03:49+08:00",
+      "recipient_name": "廖望 Alex LIAO Wang",
+      "recipient_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    },
+    {
+      "id": 21,
+      "batch_id": "a132ebb4f138f459ec1d4d34",
+      "open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-20@13:30",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b675d67c134b0b17933194cd9c22"
+      ],
+      "error": "",
+      "created_at": "2026-08-20T13:37:19+08:00",
+      "recipient_name": "徐亮 Alan XU Liang",
+      "recipient_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d"
+    },
+    {
+      "id": 20,
+      "batch_id": "6ee8975f3c1337c0ff6436ff",
+      "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-20@13:30",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b675d6627c4acb3bea02d0f3f687"
+      ],
+      "error": "",
+      "created_at": "2026-08-20T13:37:17+08:00",
+      "recipient_name": "廖望 Alex LIAO Wang",
+      "recipient_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    },
+    {
+      "id": 19,
+      "batch_id": "19aa68b4243c8f9eb1f8f3f8",
+      "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-20@06:00",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b6757097e48a4b03f0b38b7e4d3d"
+      ],
+      "error": "",
+      "created_at": "2026-08-20T06:55:54+08:00",
+      "recipient_name": "廖望 Alex LIAO Wang",
+      "recipient_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    },
     {
       "id": 18,
       "batch_id": "728ff92d223b527007d2626b",
@@ -392,9 +630,125 @@
         "responded_at": "2026-08-19T10:38:00+08:00",
         "message_id": "om_x100b676520adb4acb2ee82e42740666"
       }
+    },
+    {
+      "callback_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "delivery_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "union_id": "on_1e9aacfabf424e6bf8e99975abe18d6a",
+      "display_name": "徐亮 Alan XU Liang",
+      "source_profile": "cmhk-innovation-digital",
+      "avatar_url": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_005n_02afedbd-7d4f-4104-b351-46fd32fae54g~?image_size=72x72&cut_type=&quality=&format=png&sticker_format=.webp",
+      "department_names": [
+        "Technology & Innovation Management"
+      ],
+      "job_title": "",
+      "source": "directory",
+      "created_at": "2026-08-20T09:49:27+08:00",
+      "updated_at": "2026-08-20T09:49:27+08:00",
+      "latest_invitation": {
+        "status": "pending",
+        "sent_at": "2026-08-20T09:50:49+08:00",
+        "responded_at": "",
+        "message_id": "om_x100b6751994d20acb4b5983dc2c452a"
+      }
+    },
+    {
+      "callback_open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "delivery_open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "union_id": "on_b46beac1c03014a6b903b4c7948c0292",
+      "display_name": "王锐 Edward WANG Rui",
+      "source_profile": "cmhk-innovation-digital",
+      "avatar_url": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_0014f_7cef165a-7186-4cf6-a25c-377b8469502g~?image_size=72x72&cut_type=&quality=&format=png&sticker_format=.webp",
+      "department_names": [
+        "Technology & Innovation Management"
+      ],
+      "job_title": "成员",
+      "source": "directory",
+      "created_at": "2026-08-20T17:24:49+08:00",
+      "updated_at": "2026-08-20T17:24:49+08:00",
+      "latest_invitation": {
+        "status": "accepted",
+        "sent_at": "2026-08-20T17:25:00+08:00",
+        "responded_at": "2026-08-20T17:28:34+08:00",
+        "message_id": "om_x100b67583066c4acb151bca3f82d4f1"
+      }
+    }
+  ],
+  "group_invitations": [
+    {
+      "message_id": "om_x100b6751984fe4b8b2a70e71909ff78",
+      "target_type": "chat",
+      "target_id": "oc_f86adbf0010f3e648400c377bf26179b",
+      "chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
+      "created_at": "2026-08-20T09:50:40+08:00",
+      "source_profile": "cmhk-innovation-digital",
+      "target_name": "揭榜-竞争对手与行业情报监测AI应用",
+      "response_count": 2,
+      "accepted_count": 2,
+      "paused_count": 0,
+      "latest_response_at": "2026-08-20T09:55:14+08:00",
+      "status": "responded",
+      "responses": [
+        {
+          "message_id": "om_x100b6751984fe4b8b2a70e71909ff78",
+          "chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
+          "callback_open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+          "delivery_open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+          "display_name": "廖望 Alex LIAO Wang",
+          "avatar_url": "",
+          "status": "accepted",
+          "responded_at": "2026-08-20T09:55:14+08:00",
+          "updated_at": "2026-08-20T09:55:14+08:00"
+        },
+        {
+          "message_id": "om_x100b6751984fe4b8b2a70e71909ff78",
+          "chat_id": "oc_f86adbf0010f3e648400c377bf26179b",
+          "callback_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+          "delivery_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+          "display_name": "徐亮 Alan XU Liang",
+          "avatar_url": "",
+          "status": "accepted",
+          "responded_at": "2026-08-20T09:54:00+08:00",
+          "updated_at": "2026-08-20T09:54:00+08:00"
+        }
+      ]
     }
   ],
   "invitations": [
+    {
+      "id": 14,
+      "callback_open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "delivery_open_id": "ou_1dbd3bde8558021873b7f9802551b902",
+      "union_id": "on_b46beac1c03014a6b903b4c7948c0292",
+      "display_name": "王锐 Edward WANG Rui",
+      "source_profile": "cmhk-innovation-digital",
+      "avatar_url": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_0014f_7cef165a-7186-4cf6-a25c-377b8469502g~?image_size=72x72&cut_type=&quality=&format=png&sticker_format=.webp",
+      "message_id": "om_x100b67583066c4acb151bca3f82d4f1",
+      "chat_id": "oc_c5ea1b62e949f16556a02ef2ea99663a",
+      "status": "accepted",
+      "invited_by": "local_admin",
+      "sent_at": "2026-08-20T17:25:00+08:00",
+      "responded_at": "2026-08-20T17:28:34+08:00",
+      "last_error": "",
+      "updated_at": "2026-08-20T17:28:34+08:00"
+    },
+    {
+      "id": 13,
+      "callback_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "delivery_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "union_id": "on_1e9aacfabf424e6bf8e99975abe18d6a",
+      "display_name": "徐亮 Alan XU Liang",
+      "source_profile": "cmhk-innovation-digital",
+      "avatar_url": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_005n_02afedbd-7d4f-4104-b351-46fd32fae54g~?image_size=72x72&cut_type=&quality=&format=png&sticker_format=.webp",
+      "message_id": "om_x100b6751994d20acb4b5983dc2c452a",
+      "chat_id": "oc_82f64b372510a2906bc8ee85151f0d37",
+      "status": "pending",
+      "invited_by": "local_admin",
+      "sent_at": "2026-08-20T09:50:49+08:00",
+      "responded_at": "",
+      "last_error": "",
+      "updated_at": "2026-08-20T09:50:49+08:00"
+    },
     {
       "id": 12,
       "callback_open_id": "ou_975cb75f3d70195cdf77a32979a59471",
@@ -601,8 +955,8 @@
     }
   ],
   "invitation_counts": {
-    "pending": 10,
-    "accepted": 2,
+    "pending": 11,
+    "accepted": 3,
     "paused": 0,
     "failed": 0
   },
@@ -633,12 +987,12 @@
     ],
     "availability_note": "应用可用范围与通讯录权限范围都必须包含受邀人；后台不会越过任一范围。",
     "directory_profile": "cmhk-innovation-digital",
-    "people_count": 2026,
-    "synced_at": "2026-08-18T19:30:31+08:00",
+    "people_count": 2025,
+    "synced_at": "2026-08-20T11:58:32+08:00",
     "console_url": "https://open.feishu.cn/app/cli_a9575e70ae799cb2/permission",
-    "updated_at": "2026-08-19T18:58:31+08:00"
+    "updated_at": "2026-08-21T08:02:09+08:00"
   },
-  "active_subscriber_count": 2,
+  "active_subscriber_count": 4,
   "report_schedule": {
     "service": "weekly",
     "enabled": true,
@@ -662,16 +1016,16 @@
     "service": "news",
     "enabled": true,
     "times": [
-      "06:00",
-      "13:30"
+      "09:00",
+      "14:00"
     ],
-    "times_text": "06:00 / 13:30",
+    "times_text": "09:00 / 14:00",
     "timezone": "Asia/Hong_Kong",
     "timezone_label": "香港时间",
     "dispatch_rule": "爬虫完成审核后推送",
-    "updated_at": "2026-08-19T14:32:24+08:00"
+    "updated_at": "2026-08-20T09:31:06+08:00"
   },
-  "updated_at": "2026-08-19T18:58:31+08:00",
+  "updated_at": "2026-08-21T08:02:09+08:00",
   "targets": [
     {
       "chat_id": "oc_22bf3c7febc4bab295fedfb0b8e6c176",

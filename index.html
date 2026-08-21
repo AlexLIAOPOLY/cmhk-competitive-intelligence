@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="./static/styles.css?v=274" />
   <link rel="stylesheet" href="./static/responsive-layout-hardening.css?v=6" />
   <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
-  <link rel="stylesheet" href="./static/news-review-sheet.css?v=1" />
-  <link rel="stylesheet" href="./static/workspace-tabs.css?v=80" />
+  <link rel="stylesheet" href="./static/news-review-sheet.css?v=4" />
+  <link rel="stylesheet" href="./static/workspace-tabs.css?v=93" />
+  <link rel="stylesheet" href="./static/organization-admin.css?v=14" />
   </head>
   <body class="dashboard-page">
     <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
@@ -44,13 +45,42 @@
           <strong id="runState" role="status">准备就绪</strong>
           <span id="statusSummary">数据源 - · 范围 - · 最近输出 -</span>
         </div>
+        <div class="auth-user" id="authUser" hidden>
+          <button class="auth-user-trigger" id="authUserMenuButton" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="authUserMenu">
+            <span class="auth-user-avatar" aria-hidden="true">
+              <img id="authUserAvatarImage" alt="" hidden />
+              <span id="authUserAvatarInitial">用</span>
+            </span>
+            <span class="auth-user-copy">
+              <strong id="authUserName">当前用户</strong>
+              <small class="auth-user-summary">
+                <span id="authUserDepartment">—</span>
+                <span class="auth-user-summary-separator" aria-hidden="true">·</span>
+                <span class="auth-user-role" id="authUserRole">—</span>
+              </small>
+            </span>
+            <span class="auth-user-chevron" aria-hidden="true"></span>
+          </button>
+          <div class="auth-user-menu" id="authUserMenu" role="menu" hidden>
+            <div class="auth-user-menu-profile">
+              <strong id="authMenuUserName">当前用户</strong>
+              <span id="authMenuUserAccount">—</span>
+            </div>
+            <dl>
+              <div><dt>部门</dt><dd id="authMenuDepartment">—</dd></div>
+              <div><dt>角色</dt><dd id="authMenuRole">—</dd></div>
+            </dl>
+            <a id="authSwitchAccount" role="menuitem" href="./static/login.html?switch=1&amp;next=%2F">切换登录身份</a>
+            <button class="auth-logout" id="authLogoutButton" role="menuitem" type="button">退出登录</button>
+          </div>
+        </div>
       </header>
 
       <div class="workspace-layout" id="workspaceLayout">
         <nav class="workspace-tabs" aria-label="项目能力模块">
           <div class="workspace-nav-topline">
             <strong class="workspace-nav-title">CMHK战略竞对中心</strong>
-            <button class="workspace-nav-collapse" id="workspaceNavCollapse" type="button" aria-label="收回项目导航" aria-expanded="true" aria-controls="workspaceTabList"><span aria-hidden="true"></span></button>
+            <button class="workspace-nav-collapse" id="workspaceNavCollapse" type="button" aria-label="收回项目导航" aria-expanded="true" aria-controls="workspaceTabList"><svg class="workspace-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path><path class="workspace-nav-icon-arrow" d="m16 15-3-3 3-3"></path></svg></button>
           </div>
           <div class="workspace-tabs-scroll" id="workspaceTabList" role="tablist" aria-label="项目能力模块">
             <section class="workspace-nav-group" aria-labelledby="workspace-group-overview">
@@ -73,8 +103,12 @@
             </section>
             <section class="workspace-nav-group" aria-labelledby="workspace-group-tools">
               <h2 id="workspace-group-tools">运维系统</h2>
-              <button class="workspace-tab" id="workspace-tab-log" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-log" tabindex="-1" data-workspace-tab="log"><span class="workspace-tab-index">08</span><span class="workspace-tab-label">日志</span><i class="workspace-running-dot" data-workspace-running hidden></i></button>
+              <button class="workspace-tab" id="workspace-tab-log" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-log" tabindex="-1" data-workspace-tab="log"><span class="workspace-tab-index">08</span><span class="workspace-tab-label">日志</span><i class="workspace-signal-dot" data-workspace-indicator hidden></i></button>
               <button class="workspace-tab" id="workspace-tab-fault" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-fault" tabindex="-1" data-workspace-tab="fault"><span class="workspace-tab-index">09</span><span class="workspace-tab-label">故障报警监控系统</span></button>
+            </section>
+            <section class="workspace-nav-group" aria-labelledby="workspace-group-organization">
+              <h2 id="workspace-group-organization">组织与权限</h2>
+              <button class="workspace-tab" id="workspace-tab-organization" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-organization" tabindex="-1" data-workspace-tab="organization"><span class="workspace-tab-index">10</span><span class="workspace-tab-label">组织管理</span></button>
             </section>
           </div>
         </nav>
@@ -100,7 +134,7 @@
                 </div>
               </div>
               <footer class="strategy-ticker-footer">
-                <span id="strategyScheduleText">每日 06:00 / 13:30 扫描</span>
+                <span id="strategyScheduleText">每日 09:00 / 14:00 扫描</span>
                 <span class="public-snapshot-label">公开快照</span>
               </footer>
             </aside>
@@ -233,16 +267,21 @@
 
       <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
       <section class="workspace-module-shell workspace-monitoring-shell" id="workspace-panel-monitoring" role="tabpanel" aria-labelledby="workspace-tab-monitoring" data-workspace-panel="monitoring" hidden>
-        <iframe class="workspace-monitoring-frame" src="./executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
+        <iframe class="workspace-monitoring-frame" data-src="./executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
       </section>
       <section class="workspace-module-shell" id="workspace-panel-news" role="tabpanel" aria-labelledby="workspace-tab-news" data-workspace-panel="news" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-review" role="tabpanel" aria-labelledby="workspace-tab-review" data-workspace-panel="review" hidden></section>
-      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe src="./static/subscription-admin.html?v=11" title="订阅与推送管理" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
+      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe data-src="./static/subscription-admin.html?v=12" title="订阅与推送管理" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
       <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-log" role="tabpanel" aria-labelledby="workspace-tab-log" data-workspace-panel="log" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-fault" role="tabpanel" aria-labelledby="workspace-tab-fault" data-workspace-panel="fault" hidden></section>
+      <section class="workspace-module-shell organization-admin-shell" id="workspace-panel-organization" role="tabpanel" aria-labelledby="workspace-tab-organization" data-workspace-panel="organization" hidden>
+        <div class="organization-admin" id="organizationAdmin">
+          <div class="organization-loading" role="status">正在读取组织成员与权限…</div>
+        </div>
+      </section>
         </div>
       </div>
 
@@ -524,8 +563,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="./static/app.js?v=287"></script>
-    <script src="./static/news-review-sheet.js?v=5"></script>
+    <script src="./static/auth-client.js?v=3"></script>
+    <script src="./static/app.js?v=290"></script>
+    <script src="./static/news-review-sheet.js?v=6"></script>
+    <script src="./static/organization-admin.js?v=14"></script>
     <script src="./static/workspace-tabs.js?v=public-4"></script>
   </body>
 </html>

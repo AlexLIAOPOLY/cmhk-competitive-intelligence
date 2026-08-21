@@ -1,7 +1,8 @@
 (() => {
   "use strict";
 
-  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault"];
+  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization"];
+  let allowedModules = [];
   const state = {
     status: null,
     metrics: null,
@@ -30,6 +31,7 @@
     faultSort: { key: "time", direction: "desc" },
     faultPage: 1,
     faultPageSize: 100,
+    faultFeedback: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
@@ -45,15 +47,198 @@
 
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
+  const can = (module) => allowedModules.includes(module);
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
+  const MOTION_TYPES = {
+    task: { target: "log", kicker: "NEW TASK", icon: "↗", tone: "cyan" },
+    fault: { target: "fault", kicker: "ALERT", icon: "!", tone: "red" },
+    subscription: { target: "subscriptions", kicker: "DELIVERED", icon: "✓", tone: "mint" },
+  };
+
+  const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
+
+  function workspaceSignalDot(tab) {
+    let dot = tab?.querySelector("[data-workspace-indicator]");
+    if (!dot && tab) {
+      dot = document.createElement("i");
+      dot.className = "workspace-signal-dot";
+      dot.dataset.workspaceIndicator = "";
+      dot.hidden = true;
+      tab.appendChild(dot);
+    }
+    return dot;
+  }
+
+  function clearWorkspaceSignal(module) {
+    const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
+    const dot = tab?.querySelector("[data-workspace-indicator]");
+    if (!tab || !dot) return;
+    delete dot.dataset.indicatorSignal;
+    dot.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+      .some((key) => dot.dataset[key] === "true");
+    tab.classList.remove("has-unread-signal");
+    delete tab.dataset.signalTone;
+  }
+
+  function markWorkspaceSignal(module, tone) {
+    const tab = document.querySelector(`[data-workspace-tab="${module}"]`);
+    if (!tab || tab.classList.contains("is-active")) return;
+    const dot = workspaceSignalDot(tab);
+    dot.dataset.indicatorSignal = "true";
+    dot.hidden = false;
+    tab.dataset.signalTone = tone;
+    tab.classList.add("has-unread-signal");
+  }
+
+  function ensureMotionStage() {
+    let stage = document.querySelector("#workspaceMotionStage");
+    if (stage) return stage;
+    stage = document.createElement("div");
+    stage.id = "workspaceMotionStage";
+    stage.className = "workspace-motion-stage";
+    stage.setAttribute("aria-live", "polite");
+    stage.setAttribute("aria-atomic", "true");
+    document.body.appendChild(stage);
+    return stage;
+  }
+
+  async function playWorkspaceMotion(event) {
+    const type = MOTION_TYPES[event.kind] || MOTION_TYPES.task;
+    const targetName = can(event.target || type.target) ? (event.target || type.target) : type.target;
+    const target = document.querySelector(`[data-workspace-tab="${targetName}"]`);
+    const stage = ensureMotionStage();
+    const card = document.createElement("div");
+    const tone = event.tone || type.tone;
+    card.className = "workspace-motion-card";
+    card.dataset.tone = tone;
+    card.setAttribute("role", event.kind === "fault" ? "alert" : "status");
+    card.innerHTML = `<span class="workspace-motion-icon" aria-hidden="true">${esc(type.icon)}</span><span class="workspace-motion-copy"><small>${esc(event.kicker || type.kicker)}</small><strong>${esc(event.title || "任务已创建")}</strong><em>${esc(event.detail || "已写入系统记录")}</em></span><span class="workspace-motion-tail" aria-hidden="true"></span>`;
+    stage.appendChild(card);
+    markWorkspaceSignal(targetName, tone);
+
+    if (motionPreference.matches || !card.animate) {
+      card.classList.add("is-static");
+      await wait(1100);
+      card.remove();
+      return;
+    }
+
+    await card.animate([
+      { opacity: 0, transform: "translate3d(18px,-18px,0) scale(.62)", offset: 0 },
+      { opacity: 1, transform: "translate3d(-2px,2px,0) scale(1.075)", offset: .42 },
+      { opacity: 1, transform: "translate3d(0,0,0) scale(.975)", offset: .7 },
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", offset: 1 },
+    ], { duration: 620, easing: "linear", fill: "forwards" }).finished;
+    await wait(event.kind === "fault" ? 1050 : 820);
+    card.classList.add("is-compacting");
+    await wait(210);
+
+    if (target && !motionPreference.matches) {
+      target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      await wait(260);
+    }
+    const cardRect = card.getBoundingClientRect();
+    const targetRect = target?.getBoundingClientRect();
+    const hasTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
+    const dx = hasTarget ? targetRect.left + targetRect.width / 2 - (cardRect.left + cardRect.width / 2) : 0;
+    const dy = hasTarget ? targetRect.top + targetRect.height / 2 - (cardRect.top + cardRect.height / 2) : -34;
+    await card.animate([
+      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", borderRadius: "22px", offset: 0 },
+      { opacity: 1, transform: `translate3d(${dx * .16}px,${dy * .08}px,0) scale(.88)`, borderRadius: "24px", offset: .2 },
+      { opacity: .88, transform: `translate3d(${dx * .78}px,${dy * .7}px,0) scale(.34)`, borderRadius: "50%", offset: .72 },
+      { opacity: 0, transform: `translate3d(${dx}px,${dy}px,0) scale(.12)`, borderRadius: "50%", offset: 1 },
+    ], { duration: 720, easing: "cubic-bezier(.32,.72,0,1)", fill: "forwards" }).finished;
+    card.remove();
+    if (target) {
+      target.classList.remove("is-signal-arrival");
+      target.getBoundingClientRect();
+      target.classList.add("is-signal-arrival");
+      window.setTimeout(() => target.classList.remove("is-signal-arrival"), 760);
+    }
+  }
+
+  function announceWorkspaceEvent(event = {}) {
+    motionState.queue = motionState.queue.catch(() => {}).then(() => playWorkspaceMotion(event)).catch((error) => console.warn("Workspace motion unavailable", error));
+    return motionState.queue;
+  }
+
+  function faultSignalKey(task) {
+    return String(task.incident_id || task.alert_id || task.task_id || task.task_run_id || `${task.kind || "task"}:${task.occurred_at_hkt || task.started_at_hkt || task.error || "unknown"}`);
+  }
+
+  function observeFaultSignals(tasks, { baseline = false } = {}) {
+    const next = Array.isArray(tasks) ? tasks : [];
+    if (baseline || !motionState.faultBaselineReady) {
+      motionState.knownFaults = new Set(next.map(faultSignalKey));
+      motionState.faultBaselineReady = true;
+      return;
+    }
+    const unseen = next.filter((task) => !motionState.knownFaults.has(faultSignalKey(task)) && faultStatus(task).key === "attention");
+    next.forEach((task) => motionState.knownFaults.add(faultSignalKey(task)));
+    unseen.slice(0, 3).forEach((task) => {
+      const severity = faultSeverity(task);
+      announceWorkspaceEvent({
+        kind: "fault",
+        target: "fault",
+        tone: severity.code === "P3" ? "amber" : "red",
+        kicker: severity.code ? `${severity.code} ${severity.label}` : "SYSTEM ALERT",
+        title: task.title || taskLabel(task.kind),
+        detail: faultCause(task),
+      });
+    });
+  }
+
+  window.CMHKMotion = { announce: announceWorkspaceEvent };
+  window.addEventListener("message", (event) => {
+    if (event.origin !== location.origin || event.data?.type !== "cmhk-workspace-motion") return;
+    announceWorkspaceEvent(event.data.event || {});
+  });
+
+  function applyModulePermissions() {
+    allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(module));
+    tabs.forEach((tab) => {
+      const allowed = can(tab.dataset.workspaceTab);
+      tab.hidden = !allowed;
+      tab.disabled = !allowed;
+      tab.setAttribute("aria-hidden", String(!allowed));
+    });
+    panels.forEach((panel) => {
+      const allowed = can(panel.dataset.workspacePanel);
+      panel.hidden = true;
+      panel.toggleAttribute("inert", !allowed);
+    });
+    document.querySelectorAll(".workspace-nav-group").forEach((group) => {
+      group.hidden = !group.querySelector("[data-workspace-tab]:not([hidden])");
+    });
+  }
+
+  function hydrateAuthorizedFrame(module) {
+    const frame = document.querySelector(`[data-workspace-panel="${module}"] iframe[data-src]`);
+    if (frame && can(module)) {
+      frame.src = frame.dataset.src;
+      frame.removeAttribute("data-src");
+    }
+  }
 
   function moduleFromLocation() {
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     const requested = params.get("workspace");
-    return MODULES.includes(requested) ? requested : "dashboard";
+    return allowedModules.includes(requested) ? requested : (allowedModules[0] || "dashboard");
+  }
+
+  function animateActivatedPanel(panel) {
+    if (!panel || motionPreference.matches) return;
+    panel.classList.remove("is-panel-entering");
+    void panel.offsetWidth;
+    panel.classList.add("is-panel-entering");
+    window.setTimeout(() => panel.classList.remove("is-panel-entering"), 220);
   }
 
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
-    const target = MODULES.includes(name) ? name : "dashboard";
+    const target = allowedModules.includes(name) ? name : (allowedModules[0] || "dashboard");
+    const activePanel = panels.find((panel) => panel.dataset.workspacePanel === target);
+    const shouldAnimatePanel = Boolean(activePanel?.hidden);
     state.previewRequest.weekly += 1;
     state.previewRequest.performance += 1;
     tabs.forEach((tab) => {
@@ -63,29 +248,35 @@
       tab.tabIndex = selected ? 0 : -1;
       if (selected && focus) tab.focus();
     });
+    clearWorkspaceSignal(target);
     panels.forEach((panel) => { panel.hidden = panel.dataset.workspacePanel !== target; });
+    if (shouldAnimatePanel) animateActivatedPanel(activePanel);
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
     document.body.classList.toggle("workspace-ai-active", target === "ai");
+    hydrateAuthorizedFrame(target);
     syncEmbeddedVisibility(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
     window.dispatchEvent(new CustomEvent("workspace-tab-change", { detail: { tab: target } }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: motionPreference.matches ? "auto" : "smooth" });
   }
 
-  tabs.forEach((tab, index) => {
+  tabs.forEach((tab) => {
     tab.addEventListener("click", () => activateModule(tab.dataset.workspaceTab));
     tab.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
+      const availableTabs = tabs.filter((item) => !item.hidden);
+      const index = availableTabs.indexOf(tab);
+      if (index < 0 || !availableTabs.length) return;
       let next = index;
-      if (["ArrowRight", "ArrowDown"].includes(event.key)) next = (index + 1) % tabs.length;
-      if (["ArrowLeft", "ArrowUp"].includes(event.key)) next = (index - 1 + tabs.length) % tabs.length;
+      if (["ArrowRight", "ArrowDown"].includes(event.key)) next = (index + 1) % availableTabs.length;
+      if (["ArrowLeft", "ArrowUp"].includes(event.key)) next = (index - 1 + availableTabs.length) % availableTabs.length;
       if (event.key === "Home") next = 0;
-      if (event.key === "End") next = tabs.length - 1;
-      activateModule(tabs[next].dataset.workspaceTab, { focus: true });
+      if (event.key === "End") next = availableTabs.length - 1;
+      activateModule(availableTabs[next].dataset.workspaceTab, { focus: true });
     });
   });
   window.addEventListener("hashchange", () => activateModule(moduleFromLocation(), { updateUrl: false }));
@@ -222,25 +413,23 @@
     const unitLabel = metricMeta.unitLabels?.[comparison.unit] || comparison.unit;
     const chartLegend = companies.map((company, index) => `<span><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}</span>`).join("");
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
-    const fallbackInsight = buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
-    const fallbackItems = fallbackInsight.insights.map((item, index) => `<li><b>${["竞争格局", "公司定位", "业务含义"][index]}</b><span>${esc(item.replace(/^(竞争格局|公司定位|业务含义)[：|｜]\s*/, ""))}</span></li>`).join("");
     host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
       <div class="competitor-result-overview">
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>当前显示本地数据总结</small></div></div>
-          <span class="competitor-insight-badge" data-competitor-insight-badge>LOCAL DATA</span>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在连接内网 AI</small></div></div>
+          <span class="competitor-insight-badge" data-competitor-insight-badge>CONNECTING</span>
         </header>
         <div class="competitor-insight-body">
           <div class="competitor-insight-loading" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-          <ol class="competitor-insight-list" data-competitor-insight-list>${fallbackItems}</ol>
+          <ol class="competitor-insight-list" data-competitor-insight-list></ol>
         </div>
       </section></div>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     bindCompetitorChartTooltip(host);
-    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId, fallbackInsight);
+    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
   }
 
   function competitorComparator(value) {
@@ -397,17 +586,18 @@
     });
   }
 
-  function settleCompetitorInsight(card, { mode, insights, status = "" }) {
+  function settleCompetitorInsight(card, { mode, insight = "", insights = [], status = "" }) {
     if (!card) return;
     const isAi = mode === "ai";
-    const items = (Array.isArray(insights) ? insights : [insights]).map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     card.classList.remove("is-loading", "is-streaming");
     card.classList.toggle("is-ai", isAi);
     card.setAttribute("aria-busy", "false");
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
-    setCompetitorInsightStatus(card, isAi ? "" : (status || "AI未生成；当前显示本地数据总结"));
-    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "LOCAL DATA";
+    setCompetitorInsightStatus(card, status || (isAi ? "" : "AI暂未完成"));
+    card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "RETRY";
     const list = card.querySelector("[data-competitor-insight-list]");
+    const sourceItems = Array.isArray(insights) && insights.length ? insights : parseCompetitorInsightItems(insight);
+    const items = sourceItems.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     list.replaceChildren(...items.map((item, index) => {
       const labels = ["竞争格局", "公司定位", "业务含义"];
       const li = document.createElement("li");
@@ -418,6 +608,43 @@
       li.append(label, copy);
       return li;
     }));
+  }
+
+  function parseCompetitorInsightItems(content) {
+    const text = String(content || "").replace(/^```(?:json|text|markdown)?\s*|\s*```$/gi, "").trim();
+    if (!text) return [];
+    const labelled = new Map();
+    const candidates = [];
+    text.split(/\n+/).forEach((rawLine) => {
+      const line = rawLine
+        .replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "")
+        .replace(/^\*\*(.*?)\**$/, "$1")
+        .trim();
+      if (!line || /^\|?\s*:?-{2,}[-| :]*$/.test(line)) return;
+      const match = line.match(/^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$/);
+      if (match) {
+        const index = match[1] === "竞争格局" ? 0 : match[1] === "业务含义" ? 2 : 1;
+        if (!labelled.has(index)) labelled.set(index, match[2].trim());
+      } else if (line.length < 12 && !/[\d。！？!?；;，,]/.test(line)) {
+        return;
+      } else if (!(line.startsWith("|") && line.endsWith("|"))) {
+        candidates.push(line);
+      }
+    });
+    if (candidates.length < 3) {
+      const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
+      if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
+    }
+    const labels = ["竞争格局", "公司定位", "业务含义"];
+    let candidateIndex = 0;
+    return labels.flatMap((label, index) => {
+      let value = labelled.get(index) || "";
+      if (!value) value = candidates[candidateIndex++] || "";
+      value = value.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "").trim();
+      if (!value) return [];
+      if (value.length > 180) value = `${value.slice(0, 179).replace(/[，,；;\s]+$/, "")}…`;
+      return [`${label}｜${value}`];
+    });
   }
 
   function setCompetitorInsightStatus(card, message = "") {
@@ -437,7 +664,7 @@
   }
 
   function renderCompetitorInsightDraft(card, text) {
-    const drafts = String(text || "").split(/\n+/).map((item) => item.trim()).filter(Boolean).slice(0, 3);
+    const drafts = parseCompetitorInsightItems(text);
     if (!card || !drafts.length) return;
     card.classList.remove("is-loading");
     card.classList.add("is-streaming");
@@ -464,15 +691,16 @@
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.ok) throw new Error(result.error || `AI兼容接口 HTTP ${response.status}`);
     if (requestId !== state.competitorInsightRequest) return false;
-    settleCompetitorInsight(card, { mode: "ai", insights: result.insights });
+    settleCompetitorInsight(card, { mode: "ai", insight: result.insight, insights: result.insights });
     return true;
   }
 
-  async function requestCompetitorInsight(payload, requestId, fallbackInsight) {
+  async function requestCompetitorInsight(payload, requestId) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
     const card = document.querySelector("#competitorInsight");
     beginCompetitorInsightStream(card);
+    let generated = "";
     try {
       const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
       if (response.status === 404) {
@@ -483,7 +711,6 @@
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-      let generated = "";
       let completed = false;
       while (true) {
         const { value, done } = await reader.read();
@@ -503,7 +730,7 @@
             renderCompetitorInsightDraft(card, generated);
           } else if (event.type === "done" && event.ok) {
             completed = true;
-            settleCompetitorInsight(card, { mode: "ai", insights: event.insights });
+            settleCompetitorInsight(card, { mode: "ai", insight: event.insight, insights: event.insights });
           } else if (event.type === "error") {
             throw new Error(event.error || "AI生成失败");
           }
@@ -514,7 +741,13 @@
     } catch (error) {
       if (error.name === "AbortError") return;
       if (requestId === state.competitorInsightRequest && card) {
-        settleCompetitorInsight(card, { mode: "data", insights: fallbackInsight.insights, status: `AI未生成：${error.message || "服务不可用"}；当前显示本地数据总结` });
+        const partial = parseCompetitorInsightItems(generated);
+        settleCompetitorInsight(card, {
+          mode: partial.length ? "ai" : "unavailable",
+          insight: generated,
+          insights: partial,
+          status: partial.length ? "本次生成提前结束，已保留 AI 返回内容" : "本次 AI 暂未完成，请稍后重试",
+        });
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;
@@ -676,6 +909,26 @@
     const mainRun = dateRuns.find((run) => String(run.trigger || "") === "定时爬虫") || {};
     const newsRun = runs[0] || latest.strategic_news || {};
     const intelligenceRun = dateRuns.find((run) => run.task_kind === "executive-intelligence-refresh") || {};
+    const runHealth = (run) => {
+      if (!run || !Object.keys(run).length) return { key: "unknown", label: "无记录" };
+      const status = String(run.run_status || run.status || "").toLowerCase();
+      if (run.interrupted || ["failed", "error", "errored"].includes(status)) return { key: "critical", label: "异常" };
+      if (["partial", "warning", "degraded", "cutoff"].includes(status)) return { key: "warning", label: "警告" };
+      if (["running", "queued", "pending"].includes(status)) return { key: "running", label: "运行中" };
+      if (["completed", "complete", "success", "succeeded", "done"].includes(status)) return { key: "healthy", label: "正常" };
+      return { key: "warning", label: "待确认" };
+    };
+    const combinedRunHealth = (items) => {
+      const healthItems = items.map(runHealth);
+      return healthItems.find((item) => item.key === "critical")
+        || healthItems.find((item) => item.key === "running")
+        || healthItems.find((item) => item.key === "warning")
+        || healthItems.find((item) => item.key === "healthy")
+        || { key: "unknown", label: "无记录" };
+    };
+    const strategicHealth = combinedRunHealth(runs);
+    const mainHealth = runHealth(mainRun);
+    const intelligenceHealth = runHealth(intelligenceRun);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const domainNode = (key, fallbackLabel, position, variant) => {
       const domain = domains.get(key) || {};
@@ -685,7 +938,7 @@
         value: intelligenceRun.crawl_run_id ? "已更新" : "—",
         unit: "",
         note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未留下四库刷新归档",
-        tone: "mint",
+        health: intelligenceHealth,
         variant,
         compact: true,
         position,
@@ -709,22 +962,22 @@
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
     const nodes = [
-      { key: "strategic", label: "06:00 / 13:30 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", tone: "cyan", variant: "crawler", position: [18, 52], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, tone: "cyan", variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, tone: "cyan", variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, tone: "mint", variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, tone: "focus", variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
-      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", tone: "mint", variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
-      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", tone: "amber", variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", tone: "focus", variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", tone: "cyan", variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "四库分流", value: "4", unit: "个库", note: "按业务域分别更新", tone: "cyan", variant: "database-hub", compact: true, position: [445, 411], details: ["同一批已审核证据按业务域分流", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下四库分流记录" },
+      { key: "strategic", label: "09:00 / 14:00 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
+      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, health: strategicHealth, variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
+      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
+      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
+      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
+      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
+      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
+      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "database-hub", label: "四库分流", value: "4", unit: "个库", note: "按业务域分别更新", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["同一批已审核证据按业务域分流", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下四库分流记录" },
       domainNode("local", "本地运营商", [630, 342], "database-local"),
       domainNode("international", "内地电讯企业", [812, 342], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
       domainNode("macro", "香港电讯市场", [812, 480], "database-macro"),
-      { key: "insights", label: "17项AI洞察", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", tone: "cyan", variant: "insight", position: [1035, 390], details: intelligenceRun.crawl_run_id ? [`模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
-      { key: "consumers", label: "情报进入业务入口", value: intelligenceRun.operational_summary?.pages_publish?.ok ? "2" : "—", unit: intelligenceRun.operational_summary?.pages_publish?.ok ? "项已验证" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页" : "当天未留下发布记录", tone: "mint", variant: "delivery", position: [1280, 390], details: intelligenceRun.operational_summary?.pages_publish?.ok ? [`站点版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}`, `公开地址 ${intelligenceRun.operational_summary.pages_publish.public_url || "未记录"}`] : ["所选日期没有可核对的交付记录"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "当天未留下业务入口发布证据" },
+      { key: "insights", label: "17项AI洞察", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1035, 390], details: intelligenceRun.crawl_run_id ? [`模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
+      { key: "consumers", label: "情报进入业务入口", value: intelligenceRun.operational_summary?.pages_publish?.ok ? "2" : "—", unit: intelligenceRun.operational_summary?.pages_publish?.ok ? "项已验证" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页" : "当天未留下发布记录", health: intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "delivery", position: [1280, 390], details: intelligenceRun.operational_summary?.pages_publish?.ok ? [`站点版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}`, `公开地址 ${intelligenceRun.operational_summary.pages_publish.public_url || "未记录"}`] : ["所选日期没有可核对的交付记录"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "当天未留下业务入口发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
@@ -874,6 +1127,79 @@
     return selected.map((line, index) => ({ ...actualEventMeta(line, index), run }));
   }
 
+  const newsErrorStageLabels = {
+    strategic_news: "战略新闻任务",
+    scheduled_cutoff: "战略新闻调度截止",
+    financial_frontend_publish: "情报进入业务入口 / 前端发布",
+    executive_intelligence_refresh: "四库更新",
+  };
+
+  function newsErrorLocation(nodeKey, run, event, message) {
+    const text = `${event?.stage || ""}\n${message || ""}`;
+    if (/后台服务已重新启动|原爬虫进程已不存在|任务中断/.test(text)) return { label: "运行进程 / 服务重启", nodeKey: "news-search" };
+    if (/飞书审核表|逐格回读|写入后|群通知/.test(text)) return { label: "新增新闻 / 飞书写入回读", nodeKey: "news-output" };
+    if (/新闻索引|搜索|检索|查询/.test(text)) return { label: "线索补缺 / 检索", nodeKey: "news-search" };
+    if (/AI审核|AI 审核|模型调用|模型返回/.test(text)) return { label: "AI审核", nodeKey: "news-ai" };
+    if (/语义去重|历史去重|重复判定/.test(text)) return { label: "历史去重", nodeKey: "news-dedupe" };
+    if (/financial_frontend_publish|前端发布|publish_executive_dashboard_pages|\/api\/status/.test(text)) return { label: "情报进入业务入口 / 前端发布", nodeKey: "consumers" };
+    const rowMatch = text.match(/第\s*(\d+)\s*行失败/);
+    if (rowMatch) return { label: `03:00 主爬虫 / 第 ${rowMatch[1]} 行网页抓取`, nodeKey: "main" };
+    if (/AGENT_TRACE|数据整理|Agent/.test(text)) return { label: "Agent 证据审核", nodeKey: "agent" };
+    const stage = String(event?.stage || run?.failure_stage || "").trim();
+    return { label: newsErrorStageLabels[stage] || stage || "运行登记 / 未细分阶段", nodeKey: nodeKey === "strategic" ? "strategic" : "" };
+  }
+
+  function newsErrorMessage(event) {
+    const raw = event?.error || event?.message || event?.text || "";
+    return String(raw).replace(/^\[[^\]]+\]\s*/, "").replace(/^失败[:：]\s*/, "").trim();
+  }
+
+  function newsRunErrors(nodeKey, run, detail) {
+    const diagnostics = [];
+    let lastTime = String(run?.started_at_hkt || "").replace("T", " ").slice(0, 19) || "未记录时间";
+    const add = (event, source) => {
+      const message = newsErrorMessage(event);
+      if (!message) return;
+      const time = String(event?.timestamp || event?.ts || event?.at || lastTime || "未记录时间").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+      const location = newsErrorLocation(nodeKey, run, event, message);
+      const signature = `${run.crawl_run_id}|${location.label}|${time}|${message}`;
+      if (diagnostics.some((item) => item.signature === signature)) return;
+      diagnostics.push({ signature, run, time, location, message, source });
+    };
+    String(detail?.raw || "").split("\n").forEach((line) => {
+      const value = String(line || "").trim();
+      if (!value) return;
+      try {
+        const event = JSON.parse(value);
+        lastTime = String(event.timestamp || event.ts || event.at || event.startedAt || lastTime);
+        const status = String(event.status || "").toLowerCase();
+        const explicitLogFailure = event.type === "log" && /(?:^|\])\s*(?:失败[:：]|\[任务中断\])/.test(String(event.text || ""));
+        if (event.ok === false || event.interrupted === true || ["failed", "error", "errored"].includes(status) || explicitLogFailure) add(event, "原始运行日志");
+      } catch (_error) { /* unstructured traceback is retained by the structured failure event that follows it */ }
+    });
+    const runStatus = String(run?.run_status || run?.status || "").toLowerCase();
+    if (run.interrupted || ["failed", "error", "errored"].includes(runStatus) || detail?.error) {
+      const registeredMessage = String(detail?.error || run.status_detail || run.progress_detail || "运行登记为失败，但没有保存错误正文。").trim();
+      const alreadyCovered = diagnostics.some((item) => item.message === newsErrorMessage({ message: registeredMessage }));
+      if (!alreadyCovered) add({ stage: run.failure_stage, message: registeredMessage, timestamp: run.completed_at_hkt || run.heartbeat_at_hkt || lastTime }, detail?.error ? "日志读取失败" : "运行状态登记");
+    }
+    return diagnostics;
+  }
+
+  function renderNewsErrors(nodeKey, relatedRuns) {
+    const diagnostics = relatedRuns.flatMap((run) => newsRunErrors(nodeKey, run, state.newsRunDetails[run.crawl_run_id] || {}));
+    const directCount = diagnostics.filter((item) => item.location.nodeKey === nodeKey || nodeKey === "strategic").length;
+    if (!diagnostics.length) {
+      return `<section class="news-lineage-dialog-section is-error-details is-clear"><header><h3>错误定位与完整明细</h3><span>0 条</span></header><div class="news-lineage-error-empty"><strong>该节点关联运行没有记录错误</strong><p>如果节点仍显示异常，说明当天归档只保留了汇总状态，没有留下可逐条定位的错误正文。</p></div></section>`;
+    }
+    const relation = directCount ? `本节点直接错误 ${number(directCount)} 条` : "本节点无直接错误；异常来自关联运行的其他环节";
+    return `<section class="news-lineage-dialog-section is-error-details"><header><h3>错误定位与完整明细</h3><span>${number(diagnostics.length)} 条 · ${esc(relation)}</span></header><ol class="news-lineage-error-list">${diagnostics.map((item, index) => {
+      const facts = item.message.split(/；|\n+/).map((part) => part.trim()).filter(Boolean);
+      const relationLabel = item.location.nodeKey === nodeKey || nodeKey === "strategic" ? "本节点直接错误" : `异常位置：${item.location.label}`;
+      return `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><strong>${esc(item.location.label)}</strong><em>${esc(relationLabel)}</em></div></header><dl><div><dt>所属运行</dt><dd>${esc(item.run.crawl_run_id || "未记录运行ID")} · ${esc(newsRunTime(item.run))}</dd></div><div><dt>失败阶段</dt><dd>${esc(item.run.failure_stage || item.location.label)}</dd></div><div><dt>记录时间</dt><dd>${esc(item.time)}</dd></div><div><dt>证据来源</dt><dd>${esc(item.source)}</dd></div></dl><div class="news-lineage-error-facts"><strong>具体错误</strong><ol>${facts.map((fact) => `<li>${esc(fact)}</li>`).join("")}</ol></div><details><summary>查看完整错误原文</summary><pre>${esc(item.message)}</pre></details></article></li>`;
+    }).join("")}</ol></section>`;
+  }
+
   function executiveNodeRecords(nodeKey) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
@@ -995,6 +1321,7 @@
     const reviewItemDetails = (node.reviewRows || []).length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天选用明细</h3><span>${number(node.reviewRows.length)} 条审核表记录</span></header><div class="news-lineage-detail-items">${node.reviewRows.map((item) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(item.publishedAt || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title || "未命名新闻")}</a>` : esc(item.title || "未命名新闻")}</h4><p>${esc(item.summary || "审核表未保存内容简介。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>APP状态</dt><dd>${esc(item.rollingStatus || "未记录")} · ${esc(item.syncStatus || "未记录同步状态")}</dd></div><div><dt>周报状态</dt><dd>${esc(item.weeklyStatus || "未记录")}</dd></div><div><dt>入池理由</dt><dd>${esc(item.reason || "审核表未记录入池理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
+      ${renderNewsErrors(nodeKey, relatedRuns)}
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
       ${renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
@@ -1046,7 +1373,7 @@
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2>
+        <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
           <div class="news-run-controls"><label><span>日期</span><select data-news-date-select aria-label="选择要查看的日期">${dates.map((date) => `<option value="${esc(date)}"${date === state.newsSelectedDate ? " selected" : ""}>${esc(date)}</option>`).join("")}</select></label></div>
         </header>
         ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
@@ -1056,7 +1383,7 @@
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-${esc(node.tone)}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health"><i aria-hidden="true"></i>${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
           </div>
         </section>
@@ -1196,17 +1523,31 @@
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
       </div></header>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>解决</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "处理人员")}${faultSortableHeader("time", "发生时间")}<th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-footer"><nav class="fault-pagination" id="faultPagination" aria-label="报警记录分页"></nav><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
     panel.querySelector('[data-fault-filter="kind"]').value = state.faultFilters.kind;
     panel.querySelector('[data-fault-filter="query"]').value = state.faultFilters.query;
     renderFaultRows();
+    renderFaultFeedback();
+  }
+
+  function renderFaultFeedback() {
+    const feedback = document.querySelector("#faultActionFeedback");
+    if (!feedback) return;
+    const current = state.faultFeedback;
+    feedback.hidden = !current;
+    feedback.className = `fault-action-feedback${current ? ` is-${current.tone || "info"}` : ""}`;
+    feedback.setAttribute("role", current?.tone === "error" ? "alert" : "status");
+    feedback.setAttribute("aria-live", current?.tone === "error" ? "assertive" : "polite");
+    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span>` : "";
   }
 
   function faultStatus(task) {
-    if (task.incident_status === "open") return task.handler_name ? { key: "attention", label: "处理中", tone: "is-running" } : { key: "attention", label: "待处理", tone: "is-alert" };
+    if (task.handler_name) return { key: "completed", label: "已处理", tone: "is-ok" };
+    if (task.incident_status === "open") return { key: "attention", label: "待处理", tone: "is-alert" };
     if (task.incident_status === "resolved") return { key: "completed", label: "已恢复", tone: "is-ok" };
     if (task.interrupted) return { key: "attention", label: "中断", tone: "is-alert" };
     if (task.run_status === "failed") return { key: "attention", label: "失败", tone: "is-alert" };
@@ -1231,6 +1572,18 @@
 
   function faultHandler(task) {
     return task.handler_name || (task.incident_status === "open" ? "待认领" : "—");
+  }
+
+  function faultHandlerAvatar(task) {
+    if (!task.handler_name) return "—";
+    const raw = String(task.handler_avatar_url || "").trim();
+    let image = "";
+    try {
+      if (!raw) throw new Error("missing avatar URL");
+      const url = new URL(raw, location.origin);
+      if (["http:", "https:"].includes(url.protocol)) image = `<img src="${esc(url.href)}" alt="" />`;
+    } catch (_error) { image = ""; }
+    return `<span class="fault-handler-avatar" title="${esc(task.handler_name)}" aria-label="处理人：${esc(task.handler_name)}">${image || esc(String(task.handler_name).slice(0, 1))}</span>`;
   }
 
   function faultSortValue(row, key) {
@@ -1277,8 +1630,12 @@
     document.querySelector("#faultResultCount").textContent = number(filtersActive ? rows.length : state.faultTotal || rows.length);
     body.innerHTML = visibleRows.length ? visibleRows.map(({ task, index, status }) => {
       const severity = faultSeverity(task);
-      return `<tr class="fault-row" tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td><span class="fault-status ${status.tone}"><i></i>${status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${esc(faultHandler(task))}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
-    }).join("") : '<tr><td colspan="7" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
+      const canResolve = task.source === "project-monitor" && task.incident_id && window.CMHKAuth?.user?.authProvider === "feishu";
+      const checked = Boolean(task.handler_name);
+      const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
+      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : checked ? `已由${faultHandler(task)}处理并同步飞书` : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
+      return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
+    }).join("") : '<tr><td colspan="8" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
     if (pagination) {
       const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
@@ -1313,20 +1670,69 @@
     }
   }
 
-  async function refreshFaultData() {
+  async function refreshFaultData({ quiet = false, preserveFeedback = false } = {}) {
     const status = document.querySelector("#faultMonitorStatus");
-    if (status) status.textContent = "正在刷新故障与心跳状态…";
+    if (!quiet && !preserveFeedback) {
+      state.faultFeedback = null;
+      renderFaultFeedback();
+    }
+    if (status && !quiet) status.textContent = "正在刷新故障与心跳状态…";
     try {
       const response = await fetch("/api/project-incidents?limit=500", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
-      state.tasks = Array.isArray(data.incidents) ? data.incidents : [];
+      const nextTasks = Array.isArray(data.incidents) ? data.incidents : [];
+      observeFaultSignals(nextTasks);
+      state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      state.faultPage = 1;
-      renderFaultMonitor();
-      document.querySelector("#faultMonitorStatus").textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+      if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
+        if (!quiet) state.faultPage = 1;
+        renderFaultMonitor();
+        const nextStatus = document.querySelector("#faultMonitorStatus");
+        if (nextStatus) nextStatus.textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+      }
     } catch (error) {
-      if (status) status.textContent = `状态刷新失败：${error.message}`;
+      if (status && !quiet) status.textContent = `状态刷新失败：${error.message}`;
+    }
+  }
+
+  async function resolveFault(input) {
+    const incidentId = String(input.dataset.faultResolve || "");
+    const taskIndex = state.tasks.findIndex((task) => task.incident_id === incidentId);
+    const task = state.tasks[taskIndex];
+    const taskTitle = task?.title || taskLabel(task?.kind) || "该报警";
+    input.disabled = true;
+    input.setAttribute("aria-busy", "true");
+    input.closest(".fault-row")?.classList.add("is-resolving");
+    state.faultFeedback = { incidentId, tone: "progress", title: "正在处理报警", detail: `${taskTitle} · 正在匹配登录身份并同步飞书` };
+    renderFaultRows();
+    renderFaultFeedback();
+    try {
+      const response = await fetch("/api/project-incidents/resolve", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ incidentId }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      const operatorName = payload.result?.operator_name || "当前用户";
+      if (taskIndex >= 0) {
+        state.tasks[taskIndex] = {
+          ...state.tasks[taskIndex],
+          ...(payload.incident || {}),
+          incident_status: "resolved",
+          handler_name: operatorName,
+        };
+      }
+      state.faultFeedback = { incidentId, tone: "success", title: "报警已处理", detail: `${taskTitle} · ${operatorName} · 飞书回读已确认` };
+      renderFaultRows();
+      renderFaultFeedback();
+      await refreshFaultData({ quiet: true, preserveFeedback: true });
+    } catch (error) {
+      state.faultFeedback = { incidentId, tone: "error", title: "处理失败，未改变报警状态", detail: `${taskTitle} · ${error.message}` };
+      renderFaultRows();
+      renderFaultFeedback();
     }
   }
 
@@ -1450,7 +1856,7 @@
       renderFaultMonitor();
     }
     const faultDetail = event.target.closest("[data-fault-detail]");
-    if (faultDetail) openFaultDetail(Number(faultDetail.dataset.faultDetail));
+    if (faultDetail && !event.target.closest("input,button,a,select")) openFaultDetail(Number(faultDetail.dataset.faultDetail));
     if (event.target.closest("[data-open-task-log]")) activateModule("log");
     const jump = event.target.closest("[data-jump-dashboard]");
     if (jump) activateModule("dashboard");
@@ -1463,7 +1869,7 @@
 
   document.addEventListener("keydown", (event) => {
     const faultRow = event.target.closest?.(".fault-row[data-fault-detail]");
-    if (faultRow && ["Enter", " "].includes(event.key)) {
+    if (faultRow && !event.target.closest("input,button,a,select") && ["Enter", " "].includes(event.key)) {
       event.preventDefault();
       openFaultDetail(Number(faultRow.dataset.faultDetail));
       return;
@@ -1495,6 +1901,11 @@
   });
   reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {
+    const faultResolve = event.target.closest("[data-fault-resolve]");
+    if (faultResolve) {
+      if (faultResolve.checked) resolveFault(faultResolve);
+      return;
+    }
     const newsDate = event.target.closest("[data-news-date-select]");
     if (newsDate) {
       state.newsSelectedDate = newsDate.value;
@@ -1524,26 +1935,41 @@
   }
 
   async function loadWorkspaceData() {
-    const requests = await Promise.allSettled([
-      fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))),
-      fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`))),
-      fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`))),
-      fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`))),
-      fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`))),
-      fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`))),
-      fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`))),
-      fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`))),
-      fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`))),
-      fetch("./static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {}),
-      fetch("./static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))
-    ]);
-    const [statusResult, metricsResult, briefsResult, tasksResult, newsRunsResult, crawlRunsResult, schedulerOverviewResult, executiveIntelligenceResult, newsReviewSheetResult, newsFallbackResult, workbenchResult] = requests;
+    const definitions = [
+      ["status", "dashboard", () => fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`)))],
+      ["metrics", "competitor", () => fetch("/api/company-metrics").then((response) => response.ok ? response.json() : Promise.reject(new Error(`metrics ${response.status}`)))],
+      ["briefs", "dashboard", () => fetch("/api/strategic-briefs").then((response) => response.ok ? response.json() : Promise.reject(new Error(`briefs ${response.status}`)))],
+      ["tasks", "fault", () => fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`)))],
+      ["newsRuns", "news", () => fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`)))],
+      ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
+      ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
+      ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
+      ["reviewSheet", "review", () => fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`)))],
+      ["newsFallback", "news", () => fetch("./static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {})],
+      ["workbench", "competitor", () => fetch("./static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
+    ];
+    const activeDefinitions = definitions.filter(([, module]) => can(module));
+    const requests = await Promise.allSettled(activeDefinitions.map(([, , request]) => request()));
+    const results = Object.fromEntries(activeDefinitions.map(([key], index) => [key, requests[index]]));
+    const unavailable = { status: "skipped" };
+    const statusResult = results.status || unavailable;
+    const metricsResult = results.metrics || unavailable;
+    const briefsResult = results.briefs || unavailable;
+    const tasksResult = results.tasks || unavailable;
+    const newsRunsResult = results.newsRuns || unavailable;
+    const crawlRunsResult = results.crawlRuns || unavailable;
+    const schedulerOverviewResult = results.scheduler || unavailable;
+    const executiveIntelligenceResult = results.intelligence || unavailable;
+    const newsReviewSheetResult = results.reviewSheet || unavailable;
+    const newsFallbackResult = results.newsFallback || unavailable;
+    const workbenchResult = results.workbench || unavailable;
     if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};
     if (metricsResult.status === "fulfilled") state.metrics = metricsResult.value.data || {};
     if (briefsResult.status === "fulfilled") state.briefs = briefsResult.value.items || [];
     if (tasksResult.status === "fulfilled") {
       state.tasks = tasksResult.value.incidents || [];
       state.faultTotal = Number(tasksResult.value.total || state.tasks.length);
+      observeFaultSignals(state.tasks, { baseline: true });
     }
     if (newsRunsResult.status === "fulfilled") {
       state.newsRuns = (newsRunsResult.value.runs || []).filter((run) => run.task_kind === "strategic-news");
@@ -1555,23 +1981,46 @@
     if (newsFallbackResult.status === "fulfilled") state.newsItemFallback = newsFallbackResult.value || {};
     if (workbenchResult.status === "fulfilled") state.competitorData = workbenchResult.value;
 
-    state.competitorData ? renderCompetitor() : renderLoadError("competitor", "竞对");
-    (state.status || newsRunsResult.status === "fulfilled") ? renderNews() : renderLoadError("news", "新闻");
-    if (state.status) { renderReports("weekly"); renderReports("performance"); }
-    else { renderLoadError("weekly", "周报"); renderLoadError("performance", "业绩摘要"); }
-    tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
+    if (can("competitor")) state.competitorData ? renderCompetitor() : renderLoadError("competitor", "竞对");
+    if (can("news")) (state.status || newsRunsResult.status === "fulfilled") ? renderNews() : renderLoadError("news", "新闻");
+    if (can("weekly")) state.status ? renderReports("weekly") : renderLoadError("weekly", "周报");
+    if (can("performance")) state.status ? renderReports("performance") : renderLoadError("performance", "业绩摘要");
+    if (can("fault")) tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
     const running = Boolean(state.status?.tasks?.hasRunning);
-    const runningDot = document.querySelector("[data-workspace-running]");
-    if (runningDot) runningDot.hidden = !running;
-    const initialNewsRuns = selectedNewsRuns();
+    const logTab = document.querySelector('[data-workspace-tab="log"]');
+    const runningIndicator = workspaceSignalDot(logTab);
+    if (runningIndicator) {
+      if (running) runningIndicator.dataset.indicatorRunning = "true";
+      else delete runningIndicator.dataset.indicatorRunning;
+      runningIndicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+        .some((key) => runningIndicator.dataset[key] === "true");
+    }
+    const initialNewsRuns = can("news") ? selectedNewsRuns() : [];
     if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
+    if (can("fault") && !motionState.pollingTimer) {
+      motionState.pollingTimer = window.setInterval(() => {
+        if (document.visibilityState === "visible") refreshFaultData({ quiet: true });
+      }, 30000);
+    }
     requests.filter((result) => result.status === "rejected").forEach((result) => console.warn("Workspace module data unavailable", result.reason));
   }
 
-  renderAi();
-  renderEmbeddedShells();
-  setupEmbeddedSurfaces();
-  setupNavCollapse();
-  activateModule(moduleFromLocation(), { updateUrl: false });
-  loadWorkspaceData();
+  async function initializeWorkspace() {
+    try {
+      await window.CMHKAuth?.ready;
+    } catch (_error) {
+      return;
+    }
+    applyModulePermissions();
+    if (can("ai")) renderAi();
+    if (can("log") || can("review") || can("ai")) {
+      renderEmbeddedShells();
+      setupEmbeddedSurfaces();
+    }
+    setupNavCollapse();
+    activateModule(moduleFromLocation(), { updateUrl: false });
+    loadWorkspaceData();
+  }
+
+  initializeWorkspace();
 })();
