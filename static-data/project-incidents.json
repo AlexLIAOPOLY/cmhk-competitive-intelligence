@@ -410,6 +410,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "490537584968a528308a6d81",
+      "task_id": "incident:490537584968a528308a6d81",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
+      "started_at_hkt": "2026-08-21T11:18:32+08:00",
+      "heartbeat_at_hkt": "2026-08-21T11:18:32+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "49f640d74c1a8f83ed87ecc2",
       "task_id": "incident:49f640d74c1a8f83ed87ecc2",
       "title": "主项目后台任务",
@@ -11984,30 +12008,6 @@
       "started_at_hkt": "2026-08-16T19:21:09+08:00",
       "heartbeat_at_hkt": "2026-08-17T09:49:09+08:00",
       "completed_at_hkt": "2026-08-17T09:49:39+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "795f95aae9f9bf6ff926a720",
-      "task_id": "incident:795f95aae9f9bf6ff926a720",
-      "title": "09:00/15:00战略新闻爬虫",
-      "kind": "strategic-news",
-      "kind_label": "09:00/15:00战略新闻爬虫",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：战略新闻定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "读取该任务完整日志和最后心跳，确认实际失败阶段。",
-        "修复后只恢复未完成阶段，避免重复执行已经成功的外部写入。"
-      ],
-      "occurred_at_hkt": "2026-08-15T09:43:12+08:00",
-      "started_at_hkt": "2026-08-16T19:21:09+08:00",
-      "heartbeat_at_hkt": "2026-08-17T09:42:44+08:00",
-      "completed_at_hkt": "2026-08-17T09:43:14+08:00",
       "handled_at_hkt": ""
     }
   ],
