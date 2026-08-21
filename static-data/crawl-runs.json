@@ -9,7 +9,7 @@
       "run_status": "running",
       "phase": "更新主页UI",
       "progress_detail": "四库与17个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-      "heartbeat_at_hkt": "2026-08-21T12:39:02+08:00",
+      "heartbeat_at_hkt": "2026-08-21T12:42:01+08:00",
       "started_at_hkt": "2026-08-21T12:36:45+08:00",
       "completed_at_hkt": "",
       "final_audit": {},
