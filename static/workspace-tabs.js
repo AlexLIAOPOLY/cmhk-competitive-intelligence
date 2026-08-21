@@ -1077,7 +1077,14 @@
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
     if (["main", "agent"].includes(nodeKey)) return sameDay.filter((run) => String(run.trigger || "") === "定时爬虫");
-    return sameDay.filter((run) => run.task_kind === "executive-intelligence-refresh");
+    const mainRun = sameDay.find((run) => String(run.trigger || "") === "定时爬虫") || {};
+    return state.crawlRuns.filter((run) => (
+      run.task_kind === "executive-intelligence-refresh"
+      && (
+        newsRunDate(run) === date
+        || (mainRun.crawl_run_id && linkedParentRunId(run) === mainRun.crawl_run_id)
+      )
+    ));
   }
 
   const actualNodeLogPatterns = {
