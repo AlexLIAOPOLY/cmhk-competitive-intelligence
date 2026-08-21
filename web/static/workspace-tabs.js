@@ -1590,10 +1590,15 @@
   }
 
   function faultHandler(task) {
-    return task.handler_name || (task.incident_status === "open" ? "待认领" : "—");
+    if (task.handler_name) return task.handler_name;
+    if (task.incident_status === "resolved") return "监控机器人";
+    return task.incident_status === "open" ? "待认领" : "—";
   }
 
   function faultHandlerAvatar(task) {
+    if (!task.handler_name && task.incident_status === "resolved") {
+      return `<span class="fault-handler-avatar is-system" title="监控机器人·自动恢复" aria-label="处理人：监控机器人，自动恢复"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M8 3h8M6.5 7.5h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8.5 15.5h7"/></svg></span>`;
+    }
     if (!task.handler_name) return "—";
     const raw = String(task.handler_avatar_url || "").trim();
     let image = "";
@@ -1650,9 +1655,9 @@
     body.innerHTML = visibleRows.length ? visibleRows.map(({ task, index, status }) => {
       const severity = faultSeverity(task);
       const canResolve = task.source === "project-monitor" && task.incident_id && window.CMHKAuth?.user?.authProvider === "feishu";
-      const checked = Boolean(task.handler_name);
+      const checked = Boolean(task.handler_name) || task.incident_status === "resolved";
       const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
-      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : checked ? `已由${faultHandler(task)}处理并同步飞书` : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
+      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}处理并同步飞书` : task.incident_status === "resolved" ? "已由监控机器人自动确认恢复" : canResolve ? "标记为已处理并同步飞书" : "请使用飞书账号登录后处理";
       return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td><span class="fault-open-label">查看</span></td></tr>`;
     }).join("") : '<tr><td colspan="8" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
