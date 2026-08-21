@@ -13,19 +13,27 @@ class WorkspaceFloatingNavTests(unittest.TestCase):
         self.assertIn(".workspace-layout.is-nav-collapsed { grid-template-columns: minmax(0, 1fr);", STYLE)
         self.assertIn(".workspace-layout.is-nav-collapsed .workspace-content { grid-column: 1; }", STYLE)
         self.assertIn(".workspace-layout.is-nav-collapsed .workspace-tabs { position: absolute;", STYLE)
-        self.assertIn("position: absolute; top: -54px; left: 10px;", STYLE)
+        self.assertIn("position: absolute; top: -54px; left: 180px;", STYLE)
         self.assertIn("pointer-events: none;", STYLE)
         self.assertIn("pointer-events: auto; }", STYLE)
 
-    def test_collapsed_navigation_uses_the_same_header_clearance_on_ai(self):
-        self.assertNotIn(".dashboard-page:not(.workspace-ai-active) .workspace-layout.is-nav-collapsed .workspace-tabs", STYLE)
-        self.assertIn(".dashboard-page.workspace-dashboard-active .workspace-layout.is-nav-collapsed .workspace-tabs { left: 180px; }", STYLE)
+    def test_ai_navigation_handle_has_dedicated_non_overlapping_position(self):
+        self.assertIn("body.dashboard-page.workspace-ai-active .workspace-layout.is-nav-collapsed > .workspace-tabs", STYLE)
+        self.assertIn("top: max(12px, env(safe-area-inset-top));", STYLE)
+        self.assertIn("left: max(12px, env(safe-area-inset-left));", STYLE)
+        self.assertIn(".workspace-layout.is-nav-collapsed .chat-nav-controls { margin-left: 48px; }", STYLE)
+        self.assertIn(".workspace-tabs .workspace-tabs-scroll { display: none; }", STYLE)
 
-    def test_ai_workspace_hides_brand_bar_and_uses_full_viewport_height(self):
+    def test_ai_workspace_auto_collapses_hides_brand_bar_and_uses_full_viewport_height(self):
         self.assertIn('classList.toggle("workspace-ai-active", target === "ai")', SCRIPT)
+        self.assertIn('if (target === "ai") setWorkspaceNavCollapsed?.(true);', SCRIPT)
         self.assertIn('if (workspace === "ai") document.body.classList.add("workspace-ai-active")', INDEX)
-        self.assertIn(".dashboard-page.workspace-ai-active .brand-bar { display: flex !important; }", STYLE)
-        self.assertIn(".dashboard-page.workspace-ai-active .workspace-layout { height: calc(100dvh - 60px); }", STYLE)
+        self.assertIn(".dashboard-page.workspace-ai-active .brand-bar { display: none !important; }", STYLE)
+        self.assertIn(".dashboard-page.workspace-ai-active .workspace-layout { height: 100dvh; }", STYLE)
+        self.assertIn("#workspace-panel-ai { padding: 0; }", STYLE)
+        self.assertIn("#workspace-panel-ai .workspace-inline-surface .floating-chat", STYLE)
+        self.assertIn("height: 100dvh !important;", STYLE)
+        self.assertIn("border-radius: 0 !important;", STYLE)
 
 
 if __name__ == "__main__":

@@ -47,6 +47,7 @@
 
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
+  let setWorkspaceNavCollapsed = null;
   const can = (module) => allowedModules.includes(module);
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
@@ -255,6 +256,7 @@
     document.body.classList.remove("has-maximized-report-preview");
     document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
     document.body.classList.toggle("workspace-ai-active", target === "ai");
+    if (target === "ai") setWorkspaceNavCollapsed?.(true);
     hydrateAuthorizedFrame(target);
     syncEmbeddedVisibility(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
@@ -1809,6 +1811,7 @@
       button.setAttribute("aria-label", collapsed ? "展开项目导航" : "收回项目导航");
       button.title = collapsed ? "展开项目导航" : "收回项目导航";
     };
+    setWorkspaceNavCollapsed = apply;
     const animateTo = (collapsed) => {
       if (motionTimer) return;
       const first = button.getBoundingClientRect();
