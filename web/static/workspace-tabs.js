@@ -871,6 +871,12 @@
       .replace("T", " ").replace(/\+\d{2}:\d{2}$/, "").slice(0, 16) || "暂无完成记录";
   }
 
+  function linkedParentRunId(run) {
+    const explicit = String(run?.parent_crawl_run_id || "").trim();
+    if (explicit) return explicit;
+    return String(run?.scope || "").match(/父任务\s+([A-Za-z0-9_.-]+)/)?.[1] || "";
+  }
+
   function dailyNewsReviewResults(date) {
     const sheet = state.newsReviewSheet;
     if (!sheet || !Array.isArray(sheet.headers) || !Array.isArray(sheet.rows)) {
@@ -908,7 +914,13 @@
     const dateRuns = state.crawlRuns.filter((run) => newsRunDate(run) === selectedDate);
     const mainRun = dateRuns.find((run) => String(run.trigger || "") === "定时爬虫") || {};
     const newsRun = runs[0] || latest.strategic_news || {};
-    const intelligenceRun = dateRuns.find((run) => run.task_kind === "executive-intelligence-refresh") || {};
+    const intelligenceRun = state.crawlRuns.find((run) => (
+      run.task_kind === "executive-intelligence-refresh"
+      && (
+        newsRunDate(run) === selectedDate
+        || (mainRun.crawl_run_id && linkedParentRunId(run) === mainRun.crawl_run_id)
+      )
+    )) || {};
     const runHealth = (run) => {
       if (!run || !Object.keys(run).length) return { key: "unknown", label: "无记录" };
       const status = String(run.run_status || run.status || "").toLowerCase();

@@ -301,6 +301,7 @@ def start_crawl_run(
     trigger: str,
     scope: str = "",
     task_kind: str = "crawl",
+    parent_crawl_run_id: str = "",
     phase: str = "任务启动",
     progress_detail: str = "后台已接收爬虫任务，正在准备执行。",
 ) -> dict[str, Any]:
@@ -315,6 +316,7 @@ def start_crawl_run(
         "trigger": trigger,
         "scope": scope,
         "task_kind": task_kind,
+        "parent_crawl_run_id": str(parent_crawl_run_id or ""),
         "run_status": "running",
         "backend_pid": os.getpid(),
         "worker_pid": 0,

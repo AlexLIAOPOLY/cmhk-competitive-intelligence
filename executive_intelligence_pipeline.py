@@ -180,6 +180,7 @@ def _start_refresh_task(
         trigger="四库与观察结论自动更新",
         scope=scope,
         task_kind=TASK_KIND,
+        parent_crawl_run_id=parent_crawl_run_id,
         phase="等待刷新进程",
         progress_detail="任务已归档，正在启动本地竞对、国际竞对、云厂商和宏观政策更新。",
     )

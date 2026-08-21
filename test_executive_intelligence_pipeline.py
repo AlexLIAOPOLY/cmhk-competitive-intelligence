@@ -918,6 +918,22 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["notification_policy"], "local_log_only")
         self.assertFalse(finalize.call_args.kwargs["ok"])
 
+    def test_refresh_task_persists_parent_crawl_run_id(self):
+        with (
+            patch("crawl_run_registry.start_crawl_run", return_value={
+                "crawl_run_id": "refresh-test",
+                "stream_log_path": "/tmp/refresh-test.jsonl",
+            }) as start,
+            patch("crawl_run_registry.append_crawl_run_event"),
+        ):
+            task = pipeline._start_refresh_task(
+                agent_run_id="agent-test",
+                parent_crawl_run_id="crawl-parent",
+            )
+
+        self.assertEqual(task["crawl_run_id"], "refresh-test")
+        self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "crawl-parent")
+
     def test_watchdog_launches_one_recovery_for_unmatched_daily_crawl(self):
         scheduled = {
             "crawl_run_id": "crawl-0300",
