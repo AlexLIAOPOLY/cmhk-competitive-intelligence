@@ -13,7 +13,7 @@
         "fallback": 0,
         "total": 213,
         "successRate": 98,
-        "completedAt": "2026-08-22 03:06:48"
+        "completedAt": "2026-08-23 03:05:43"
       },
       "quality": {
         "ok": 32,
@@ -297,7 +297,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-23 03:04:03",
+    "latestOutputText": "2026-08-23 03:05:05",
     "outputs": [
       {
         "name": "8月19日周报.docx",
