@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "18db00f9d40bcce7b7a957e2",
+      "task_id": "incident:18db00f9d40bcce7b7a957e2",
+      "title": "主爬虫与定时爬虫",
+      "kind": "crawl",
+      "kind_label": "主爬虫与定时爬虫",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "任务失败：定时爬虫",
+      "impact": "本轮爬虫任务未能完成前端发布，用户可能无法看到最新财报数据，但已有成功阶段和旧数据仍可正常访问。",
+      "suggestions": [
+        "检查 GitHub Pages 发布结果、site_version、HTTPS和关键资源状态。",
+        "不要把数据库成功误报为完整前端发布成功。"
+      ],
+      "occurred_at_hkt": "2026-08-23T04:15:19+08:00",
+      "started_at_hkt": "2026-08-23T03:45:39+08:00",
+      "heartbeat_at_hkt": "2026-08-23T04:20:14+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "1bbd65c3d194edede21a409a",
       "task_id": "incident:1bbd65c3d194edede21a409a",
       "title": "飞书频率调度器",
@@ -21,31 +45,7 @@
       ],
       "occurred_at_hkt": "2026-08-23T03:50:14+08:00",
       "started_at_hkt": "2026-08-23T03:50:40+08:00",
-      "heartbeat_at_hkt": "2026-08-23T04:15:13+08:00",
-      "completed_at_hkt": "",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "18db00f9d40bcce7b7a957e2",
-      "task_id": "incident:18db00f9d40bcce7b7a957e2",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮爬虫任务未能完成前端发布，用户可能无法看到最新财报数据，但已有成功阶段和旧数据仍可正常访问。",
-      "suggestions": [
-        "检查 GitHub Pages 发布结果、site_version、HTTPS和关键资源状态。",
-        "不要把数据库成功误报为完整前端发布成功。"
-      ],
-      "occurred_at_hkt": "2026-08-23T03:45:14+08:00",
-      "started_at_hkt": "2026-08-23T03:45:39+08:00",
-      "heartbeat_at_hkt": "2026-08-23T04:15:13+08:00",
+      "heartbeat_at_hkt": "2026-08-23T04:20:14+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
