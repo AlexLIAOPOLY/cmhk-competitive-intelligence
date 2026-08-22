@@ -19,9 +19,9 @@
         "检查 GitHub Pages 发布结果、site_version、HTTPS和关键资源状态。",
         "不要把数据库成功误报为完整前端发布成功。"
       ],
-      "occurred_at_hkt": "2026-08-23T04:15:19+08:00",
+      "occurred_at_hkt": "2026-08-23T04:45:23+08:00",
       "started_at_hkt": "2026-08-23T03:45:39+08:00",
-      "heartbeat_at_hkt": "2026-08-23T04:45:19+08:00",
+      "heartbeat_at_hkt": "2026-08-23T04:50:20+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -45,7 +45,7 @@
       ],
       "occurred_at_hkt": "2026-08-23T03:50:14+08:00",
       "started_at_hkt": "2026-08-23T03:50:40+08:00",
-      "heartbeat_at_hkt": "2026-08-23T04:45:19+08:00",
+      "heartbeat_at_hkt": "2026-08-23T04:50:20+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
