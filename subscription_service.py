@@ -505,10 +505,14 @@ def strategic_news_card(
         index = 0
         for group_category in ordered_categories:
             category_items = grouped[group_category]
-            elements.append({
-                "tag": "markdown",
-                "content": f"**{NEWS_CATEGORY_LABELS.get(group_category, group_category)} · {len(category_items)} 条**",
-            })
+            category_label = NEWS_CATEGORY_LABELS.get(group_category, group_category)
+            elements.extend([
+                {"tag": "hr"},
+                {
+                    "tag": "markdown",
+                    "content": f"<font color='blue'>**▌ {category_label} · {len(category_items)} 条**</font>",
+                },
+            ])
             for item in category_items:
                 index += 1
                 item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
@@ -2592,7 +2596,8 @@ class SubscriptionService:
                 news_categories,
                 limit=news_item_limit,
             )
-            title = f"{period_name}订阅"
+            year, month, day = crawl_date.split("-")
+            title = f"{period_name}订阅｜{year}年{month}月{day}日"
             body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
                 f"twice_daily:{crawl_date}:{delivery_window}"

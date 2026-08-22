@@ -82,8 +82,8 @@ class SubscriptionServiceTests(unittest.TestCase):
                     "org_test": "img_v3_confirmation_test",
                 },
                 "news_image_keys": {
-                    "morning": "img_v3_morning_tea",
-                    "afternoon": "img_v3_afternoon_tea",
+                    "morning": "img_v3_morning_tea_v2",
+                    "afternoon": "img_v3_afternoon_tea_v2",
                 },
             },
             "card_actions": {
@@ -493,17 +493,34 @@ class SubscriptionServiceTests(unittest.TestCase):
             title="  CMHK战略订阅｜6条新闻  ",
             body=encode_strategic_news_digest(items),
             published_at="2026-08-19T10:00:00+08:00",
-            image_key="img_v3_morning_tea",
+            image_key="img_v3_morning_tea_v2",
         )
         self.assertEqual(card["header"]["subtitle"]["content"], "截至 2026-08-19 10:00 · 香港时间")
-        self.assertEqual(card["elements"][0]["img_key"], "img_v3_morning_tea")
+        self.assertEqual(card["elements"][0]["img_key"], "img_v3_morning_tea_v2")
         text = "\n".join(str(item.get("content") or "") for item in card["elements"])
         self.assertIn("**今日关键信号**", text)
-        self.assertIn("**竞对动态 · 6 条**", text)
+        self.assertIn("**▌ 竞对动态 · 6 条**", text)
         self.assertIn("**01｜竞对动态 · 香港本地**", text)
         self.assertIn("**06｜竞对动态 · 香港本地**", text)
         self.assertNotIn("###", text)
         self.assertNotIn("已完整列出", json.dumps(card, ensure_ascii=False))
+
+    def test_strategic_news_card_separates_each_category_on_both_sides(self):
+        card = strategic_news_card(
+            title="CMHK战略下午茶订阅｜2026年08月22日",
+            body=encode_strategic_news_digest([
+                {"title": "竞对新闻", "category": "竞对动态", "region": "香港本地"},
+                {"title": "政策新闻", "category": "政策监管", "region": "香港本地"},
+            ]),
+        )
+        category_indexes = [
+            index for index, element in enumerate(card["elements"])
+            if element.get("tag") == "markdown" and "**▌ " in str(element.get("content") or "")
+        ]
+        self.assertEqual(len(category_indexes), 2)
+        for index in category_indexes:
+            self.assertEqual(card["elements"][index - 1]["tag"], "hr")
+            self.assertEqual(card["elements"][index + 1]["tag"], "hr")
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from report_pdf_preview import pdf_preview_path
@@ -686,8 +703,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 1)
         card = json.loads(sends[0][sends[0].index("--content") + 1])
-        self.assertEqual(card["header"]["title"]["content"], "CMHK战略下午茶订阅")
-        self.assertEqual(card["elements"][0]["img_key"], "img_v3_afternoon_tea")
+        self.assertEqual(card["header"]["title"]["content"], "CMHK战略下午茶订阅｜2099年01月01日")
+        self.assertEqual(card["elements"][0]["img_key"], "img_v3_afternoon_tea_v2")
 
     def test_twice_daily_dispatch_honors_legacy_exact_slot_claim(self):
         import sqlite3
@@ -742,7 +759,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         body = deliver.call_args.kwargs["body"]
         delivered = json.loads(body.removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["新闻8", "新闻7", "新闻6", "新闻5", "新闻4"])
-        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶订阅")
+        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶订阅｜2099年01月03日")
         self.assertEqual(result["results"][0]["news_item_limit"], 5)
 
     def test_news_dispatch_filters_each_recipient_then_groups_matching_categories(self):
@@ -767,7 +784,7 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
-        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅")
+        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅｜2099年01月04日")
         self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
 
     def test_existing_subscribers_migrate_to_all_news_categories(self):
