@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-23T04:40:26+08:00",
+  "checked_at_hkt": "2026-08-23T04:45:27+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 33,
   "frequency_counts": {
@@ -47,11 +47,11 @@
       "phase": "失败",
       "progress_detail": "续跑财报数据库已更新，但前端发布验证失败：{\"status\": \"busy\"}\n。",
       "failure_stage": "financial_frontend_publish",
-      "heartbeat_at_hkt": "2026-08-23T04:15:19+08:00",
+      "heartbeat_at_hkt": "2026-08-23T04:45:23+08:00",
       "started_at_hkt": "2026-08-23T03:00:20+08:00",
-      "completed_at_hkt": "2026-08-23T04:15:19+08:00",
+      "completed_at_hkt": "2026-08-23T04:45:23+08:00",
       "crawl_return_code": 1,
-      "duration_ms": 4499245,
+      "duration_ms": 6303050,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "7cb0ca",
@@ -127,7 +127,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-23T04:15:19+08:00",
+          "generated_at_hkt": "2026-08-23T04:45:22+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -554,8 +554,8 @@
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 101083,
-        "lines": 574
+        "bytes": 105259,
+        "lines": 579
       }
     },
     "strategic_news": {
