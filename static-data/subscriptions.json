@@ -227,6 +227,22 @@
   ],
   "deliveries": [
     {
+      "id": 35,
+      "batch_id": "ed100a440d159f6c889835d2",
+      "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "CMHK战略下午茶订阅｜2026年08月22日",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b67af84ba74a8b111438eb66762a"
+      ],
+      "error": "",
+      "created_at": "2026-08-22T23:13:42+08:00",
+      "recipient_name": "廖望 Alex LIAO Wang",
+      "recipient_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    },
+    {
       "id": 34,
       "batch_id": "76de79d8c7102847f531b49a",
       "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
@@ -1166,7 +1182,7 @@
     "people_count": 2025,
     "synced_at": "2026-08-20T11:58:32+08:00",
     "console_url": "https://open.feishu.cn/app/cli_a9575e70ae799cb2/permission",
-    "updated_at": "2026-08-22T23:11:54+08:00"
+    "updated_at": "2026-08-22T23:16:55+08:00"
   },
   "active_subscriber_count": 4,
   "report_schedule": {
@@ -1201,7 +1217,7 @@
     "dispatch_rule": "爬虫完成审核后推送",
     "updated_at": "2026-08-20T09:31:06+08:00"
   },
-  "updated_at": "2026-08-22T23:11:54+08:00",
+  "updated_at": "2026-08-22T23:16:55+08:00",
   "targets": [
     {
       "chat_id": "oc_22bf3c7febc4bab295fedfb0b8e6c176",
