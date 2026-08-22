@@ -2,15 +2,39 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "18db00f9d40bcce7b7a957e2",
+      "task_id": "incident:18db00f9d40bcce7b7a957e2",
+      "title": "主爬虫与定时爬虫",
+      "kind": "crawl",
+      "kind_label": "主爬虫与定时爬虫",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "任务失败：定时爬虫",
+      "impact": "本轮爬虫任务未能完成前端发布，用户可能无法看到最新财报数据，但已有成功阶段和旧数据仍可正常访问。",
+      "suggestions": [
+        "检查 GitHub Pages 发布结果、site_version、HTTPS和关键资源状态。",
+        "不要把数据库成功误报为完整前端发布成功。"
+      ],
+      "occurred_at_hkt": "2026-08-23T03:45:14+08:00",
+      "started_at_hkt": "2026-08-23T03:45:39+08:00",
+      "heartbeat_at_hkt": "2026-08-23T03:49:40+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "b4b538e0b474ad718a95ab64",
       "task_id": "incident:b4b538e0b474ad718a95ab64",
       "title": "飞书频率调度器",
       "kind": "frequency-scheduler",
       "kind_label": "飞书频率调度器",
       "scope": "frequency-scheduler",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "频率调度器超过5分钟没有轮询心跳",
@@ -21,8 +45,8 @@
       ],
       "occurred_at_hkt": "2026-08-23T03:05:20+08:00",
       "started_at_hkt": "2026-08-23T03:05:33+08:00",
-      "heartbeat_at_hkt": "2026-08-23T03:44:39+08:00",
-      "completed_at_hkt": "",
+      "heartbeat_at_hkt": "2026-08-23T03:45:09+08:00",
+      "completed_at_hkt": "2026-08-23T03:45:39+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -11983,30 +12007,6 @@
       "occurred_at_hkt": "2026-08-17T10:28:05+08:00",
       "started_at_hkt": "2026-08-17T10:28:05+08:00",
       "heartbeat_at_hkt": "2026-08-17T10:28:05+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "91ee9bee72fc4d8bc864a21b",
-      "task_id": "incident:91ee9bee72fc4d8bc864a21b",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T10:25:38+08:00",
-      "started_at_hkt": "2026-08-17T10:25:38+08:00",
-      "heartbeat_at_hkt": "2026-08-17T10:25:38+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
