@@ -467,11 +467,25 @@ def _news_business_impact(item: dict[str, Any]) -> str:
     return "反映行业技术、投资或商业化方向变化，需关注对网络、算力与产品布局的影响。"
 
 
-def strategic_news_card(*, title: str, body: str, published_at: str = "") -> dict[str, Any]:
-    """Strategic-news card matching the established CMHK group digest format."""
+def strategic_news_card(
+    *,
+    title: str,
+    body: str,
+    published_at: str = "",
+    image_key: str = "",
+) -> dict[str, Any]:
+    """Build the direct-message card used for personal strategic-news subscriptions."""
     clean_title = re.sub(r"\s+", " ", str(title or "CMHK战略订阅")).strip()[:120] or "CMHK战略订阅"
     date_label = str(published_at or _now_hkt())[:16].replace("T", " ")
     elements: list[dict[str, Any]] = []
+    if IMAGE_KEY_RE.fullmatch(str(image_key or "")):
+        elements.append({
+            "tag": "img",
+            "img_key": image_key,
+            "alt": {"tag": "plain_text", "content": f"{clean_title}配图"},
+            "mode": "fit_horizontal",
+            "preview": False,
+        })
     if str(body).startswith(NEWS_DIGEST_PREFIX):
         try:
             parsed = json.loads(str(body)[len(NEWS_DIGEST_PREFIX):])
@@ -493,7 +507,7 @@ def strategic_news_card(*, title: str, body: str, published_at: str = "") -> dic
             category_items = grouped[group_category]
             elements.append({
                 "tag": "markdown",
-                "content": f"### {NEWS_CATEGORY_LABELS.get(group_category, group_category)} · {len(category_items)} 条",
+                "content": f"**{NEWS_CATEGORY_LABELS.get(group_category, group_category)} · {len(category_items)} 条**",
             })
             for item in category_items:
                 index += 1
@@ -515,10 +529,6 @@ def strategic_news_card(*, title: str, body: str, published_at: str = "") -> dic
                 lines.append(f"**业务影响：** {_news_business_impact(item)}")
                 lines.append(f"<font color='grey'>{source} · {published_text}</font>")
                 elements.extend([{"tag": "hr"}, {"tag": "markdown", "content": "\n".join(lines)}])
-        elements.extend([
-            {"tag": "hr"},
-            {"tag": "note", "elements": [{"tag": "plain_text", "content": f"已完整列出本批 {len(items)} 条战略新闻。"}]},
-        ])
     else:
         clean_body = str(body or "").strip()
         if len(clean_body) > 12000:
@@ -2357,9 +2367,13 @@ class SubscriptionService:
         message_ids: list[str] = []
         if mode in {"text", "both"}:
             if service == "news":
+                subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
+                news_image_keys = subscriptions.get("news_image_keys") if isinstance(subscriptions.get("news_image_keys"), dict) else {}
+                period_key = "afternoon" if "下午茶" in title else "morning" if "早茶" in title else ""
+                image_key = str(news_image_keys.get(period_key) or "") if period_key else ""
                 message_ids.append(self._send_interactive_card(
                     open_id,
-                    strategic_news_card(title=title, body=body),
+                    strategic_news_card(title=title, body=body, image_key=image_key),
                     idempotency_key=f"{batch_id}-n-{open_id[-6:]}",
                     profile=profile,
                 ))
@@ -2578,12 +2592,7 @@ class SubscriptionService:
                 news_categories,
                 limit=news_item_limit,
             )
-            category_label = news_category_summary(news_categories)
-            title = (
-                f"{period_name}｜最新{len(recipient_items)}条战略新闻｜{category_label}"
-                if recipient_items
-                else f"{period_name}｜关注板块暂无新增"
-            )
+            title = f"{period_name}订阅"
             body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
                 f"twice_daily:{crawl_date}:{delivery_window}"

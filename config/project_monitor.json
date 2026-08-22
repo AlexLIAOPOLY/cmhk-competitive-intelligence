@@ -155,6 +155,10 @@
     "confirmation_image_keys": {
       "cli_a9575e70ae799cb2": "img_v3_0214o_b1c4553c-184b-45ec-bbe9-504db0634b8g",
       "cmhk-innovation-digital": "img_v3_0214o_f7688d2a-94c9-4bf7-bebc-93662859928g"
+    },
+    "news_image_keys": {
+      "morning": "img_v3_0214q_e728ecc0-21fe-4bfb-81d2-f853ba858b0g",
+      "afternoon": "img_v3_0214q_cac4c55b-3205-454c-bcaf-874148755b6g"
     }
   },
   "error_ledger": {

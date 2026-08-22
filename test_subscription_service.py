@@ -81,6 +81,10 @@ class SubscriptionServiceTests(unittest.TestCase):
                     "cli_test": "img_v3_confirmation_test",
                     "org_test": "img_v3_confirmation_test",
                 },
+                "news_image_keys": {
+                    "morning": "img_v3_morning_tea",
+                    "afternoon": "img_v3_afternoon_tea",
+                },
             },
             "card_actions": {
                 "primary_handler_open_id": "ou_test123",
@@ -479,7 +483,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["title"]["content"], "真实新闻")
         self.assertIn("经审核的新闻正文", card["elements"][0]["content"])
 
-    def test_strategic_news_card_matches_group_format_and_lists_every_item(self):
+    def test_strategic_news_card_uses_clean_personal_subscription_format(self):
         items = [{
             "title": f"新闻 {index}", "summary": f"摘要 {index}", "category": "竞对动态",
             "region": "香港本地", "source": "测试来源", "published_at": "2026-08-19T09:00:00+08:00",
@@ -489,13 +493,17 @@ class SubscriptionServiceTests(unittest.TestCase):
             title="  CMHK战略订阅｜6条新闻  ",
             body=encode_strategic_news_digest(items),
             published_at="2026-08-19T10:00:00+08:00",
+            image_key="img_v3_morning_tea",
         )
         self.assertEqual(card["header"]["subtitle"]["content"], "截至 2026-08-19 10:00 · 香港时间")
+        self.assertEqual(card["elements"][0]["img_key"], "img_v3_morning_tea")
         text = "\n".join(str(item.get("content") or "") for item in card["elements"])
         self.assertIn("**今日关键信号**", text)
+        self.assertIn("**竞对动态 · 6 条**", text)
         self.assertIn("**01｜竞对动态 · 香港本地**", text)
         self.assertIn("**06｜竞对动态 · 香港本地**", text)
-        self.assertIn("已完整列出本批 6 条战略新闻", json.dumps(card, ensure_ascii=False))
+        self.assertNotIn("###", text)
+        self.assertNotIn("已完整列出", json.dumps(card, ensure_ascii=False))
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from report_pdf_preview import pdf_preview_path
@@ -677,6 +685,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(shifted["skipped_count"], 1)
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 1)
+        card = json.loads(sends[0][sends[0].index("--content") + 1])
+        self.assertEqual(card["header"]["title"]["content"], "CMHK战略下午茶订阅")
+        self.assertEqual(card["elements"][0]["img_key"], "img_v3_afternoon_tea")
 
     def test_twice_daily_dispatch_honors_legacy_exact_slot_claim(self):
         import sqlite3
@@ -731,7 +742,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         body = deliver.call_args.kwargs["body"]
         delivered = json.loads(body.removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["新闻8", "新闻7", "新闻6", "新闻5", "新闻4"])
-        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶｜最新5条战略新闻｜全部板块")
+        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略早茶订阅")
         self.assertEqual(result["results"][0]["news_item_limit"], 5)
 
     def test_news_dispatch_filters_each_recipient_then_groups_matching_categories(self):
@@ -756,7 +767,7 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
-        self.assertIn("竞对动态、政策监管", deliver.call_args.kwargs["title"])
+        self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅")
         self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
 
     def test_existing_subscribers_migrate_to_all_news_categories(self):
