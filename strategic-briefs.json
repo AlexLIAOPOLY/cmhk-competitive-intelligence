@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-22T19:44:53+08:00",
+  "generated_at": "2026-08-22T19:49:55+08:00",
   "items": [
     {
       "id": "NEWS-C0478CC374E9EB",
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "ce79c38b411a4da9ac45054fd52394e6a58a6b593c0c893e509fe7dc378efca2"
+  "site_version": "6c72b9d2974aa15664f45af5ba8191e5f0047aed3dae6d558d5f3ad965157b29"
 }
