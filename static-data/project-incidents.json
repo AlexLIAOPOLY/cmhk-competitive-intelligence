@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "3adb7ed6dc9139a80e187f89",
+      "task_id": "incident:3adb7ed6dc9139a80e187f89",
+      "title": "战略新闻定时扫描 09:00",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻定时扫描 09:00",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "战略新闻定时扫描未完整成功",
+      "impact": "已确认：09:00战略新闻定时扫描的完整流程未成功完成。推断：决策层可能未收到当日关键战略资讯，影响战略决策时效性；若飞书消息已部分写入但未回读确认，存在数据不一致风险；后续14:00扫描可能受进程锁或队列残留影响。",
+      "suggestions": [
+        "检查对应 09:00/14:00 归档、进程锁、候选队列与飞书回读。",
+        "先确认是否已经完成或发送，禁止直接补跑造成重复消息。"
+      ],
+      "occurred_at_hkt": "2026-08-23T09:48:06+08:00",
+      "started_at_hkt": "2026-08-23T09:48:07+08:00",
+      "heartbeat_at_hkt": "2026-08-23T09:48:07+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "2e67f1f714a14b13d85e9165",
       "task_id": "incident:2e67f1f714a14b13d85e9165",
       "title": "主项目后台任务",
@@ -239,6 +263,30 @@
       "started_at_hkt": "2026-08-23T09:06:31+08:00",
       "heartbeat_at_hkt": "2026-08-23T09:06:31+08:00",
       "completed_at_hkt": "2026-08-23T09:07:01+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "ecb7cb569aaac2a1977ba484",
+      "task_id": "incident:ecb7cb569aaac2a1977ba484",
+      "title": "战略新闻常驻监视器",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻常驻监视器",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "战略新闻监视器超过5分钟没有心跳",
+      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
+      "suggestions": [
+        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
+        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
+      ],
+      "occurred_at_hkt": "2026-08-23T09:05:47+08:00",
+      "started_at_hkt": "2026-08-23T09:48:37+08:00",
+      "heartbeat_at_hkt": "2026-08-23T09:49:07+08:00",
+      "completed_at_hkt": "2026-08-23T09:49:37+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -11959,54 +12007,6 @@
       "occurred_at_hkt": "2026-08-17T10:53:36+08:00",
       "started_at_hkt": "2026-08-17T10:53:36+08:00",
       "heartbeat_at_hkt": "2026-08-17T10:53:36+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "478ee67ff9fb61bdf1914239",
-      "task_id": "incident:478ee67ff9fb61bdf1914239",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T10:52:32+08:00",
-      "started_at_hkt": "2026-08-17T10:52:32+08:00",
-      "heartbeat_at_hkt": "2026-08-17T10:52:32+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0e78a5c7b73814dc8fd02e10",
-      "task_id": "incident:0e78a5c7b73814dc8fd02e10",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T10:51:02+08:00",
-      "started_at_hkt": "2026-08-17T10:51:02+08:00",
-      "heartbeat_at_hkt": "2026-08-17T10:51:02+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
