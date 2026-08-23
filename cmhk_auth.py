@@ -84,6 +84,8 @@ _API_MODULE_PREFIXES = (
     ("/api/rag", "ai"),
     ("/api/task", "log"),
     ("/api/crawl", "log"),
+    ("/api/log-report.pdf", "log"),
+    ("/api/alert-report.pdf", "fault"),
     ("/api/fault", "fault"),
     ("/api/project-incidents", "fault"),
 )

@@ -64,6 +64,7 @@ from subscription_service import (
 )
 from cmhk_auth import AuthService
 from project_monitor_card_actions import CardActionHandler
+from operational_report_pdf import generate_operational_report_pdf, report_filename
 
 
 ROOT = Path(__file__).resolve().parent
@@ -3803,7 +3804,7 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
         key=lambda item: str(item.get("occurred_at_hkt") or item.get("started_at_hkt") or ""),
         reverse=True,
     )
-    return records[: max(1, min(500, int(limit or 100)))]
+    return records[: max(1, min(100_000, int(limit or 100)))]
 
 
 def count_project_incidents() -> int:
@@ -4463,6 +4464,29 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = 100
             incidents = load_project_incident_index(limit)
             json_response(self, {"ok": True, "incidents": incidents, "total": count_project_incidents()})
+            return
+        if path in {"/api/alert-report.pdf", "/api/log-report.pdf"}:
+            report_type = "alert" if path == "/api/alert-report.pdf" else "log"
+            period = str((parse_qs(parsed.query).get("period") or ["daily"])[0]).lower()
+            try:
+                records = load_project_incident_index(100_000) if report_type == "alert" else load_unified_task_index(100_000)
+                body, _model = generate_operational_report_pdf(report_type, period, records)
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=400)
+                return
+            except Exception as exc:
+                logging.exception("operational report PDF generation failed")
+                json_response(self, {"ok": False, "error": f"PDF 生成失败：{exc}"}, status=500)
+                return
+            filename = report_filename(report_type, period)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers()
+            self.wfile.write(body)
             return
         if path == "/api/task-run-log":
             query = parse_qs(parsed.query)

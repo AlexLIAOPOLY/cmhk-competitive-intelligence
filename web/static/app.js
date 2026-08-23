@@ -132,6 +132,8 @@ const els = {
   refreshAgentMemory: document.querySelector("#refreshAgentMemory"),
   clearLogButton: document.querySelector("#clearLogButton"),
   refreshCrawlRunsButton: document.querySelector("#refreshCrawlRunsButton"),
+  logReportPeriod: document.querySelector("#logReportPeriod"),
+  downloadLogReportButton: document.querySelector("#downloadLogReportButton"),
   crawlRunList: document.querySelector("#crawlRunList"),
   crawlRunFilter: document.querySelector("#crawlRunFilter"),
   crawlRunFilterCount: document.querySelector("#crawlRunFilterCount"),
@@ -7126,6 +7128,13 @@ els.logButton.addEventListener("click", () => {
 if (els.refreshCrawlRunsButton) {
   els.refreshCrawlRunsButton.addEventListener("click", () => {
     loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
+  });
+}
+
+if (els.downloadLogReportButton) {
+  els.downloadLogReportButton.addEventListener("click", () => {
+    const period = els.logReportPeriod?.value || "daily";
+    window.location.assign(`/api/log-report.pdf?period=${encodeURIComponent(period)}`);
   });
 }
 

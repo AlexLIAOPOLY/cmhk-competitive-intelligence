@@ -1029,6 +1029,13 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-filter-row select,.fault-filter-row input { height: 36px; min-width: 150px; padding: 0 10px; border: 1px solid #395f70; border-radius: 8px; outline: 0; color: #dcecef; background: #071d28; font: 11px inherit; }
 .fault-filter-row input { min-width: 240px; }
 .fault-filter-row select:focus,.fault-filter-row input:focus { border-color: #5fc4d7; box-shadow: 0 0 0 2px rgba(95,196,215,.12); }
+.operational-report-control { display: inline-flex; align-items: flex-end; gap: 6px; padding-left: 10px; border-left: 1px solid rgba(83,129,145,.48); }
+.operational-report-control > label { display: grid !important; gap: 4px; color: #7899a6; font-size: 9px; white-space: nowrap; }
+.operational-report-control select { height: 32px; min-width: 82px; padding: 0 25px 0 9px; border: 1px solid #426879; border-radius: 5px; outline: 0; color: #dcecef; background: #0b2633; font: 10px inherit; }
+.operational-report-control select:focus-visible { border-color: #63c8dc; box-shadow: 0 0 0 2px rgba(99,200,220,.14); }
+.operational-report-control button { white-space: nowrap; }
+.operational-report-control.is-fault { padding-left: 8px; }
+.operational-report-control.is-fault label select { height: 36px; }
 .fault-table-wrap { min-height: 0; overflow-x: auto; overflow-y: visible; }
 .fault-table { min-width: 1180px; table-layout: fixed; }
 .fault-table th:nth-child(1) { width: 72px; text-align:center; }
@@ -1690,6 +1697,11 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .fault-filter-row { display: grid; width: 100%; grid-template-columns: repeat(2,minmax(0,1fr)); }
   .fault-filter-row .fault-search { grid-column: 1 / -1; }
   .fault-filter-row .workspace-button { grid-column: 1 / -1; }
+  .fault-filter-row .operational-report-control { grid-column: 1 / -1; width: 100%; padding: 10px 0 0; border-top: 1px solid rgba(83,129,145,.36); border-left: 0; }
+  .fault-filter-row .operational-report-control label { flex: 1 1 auto; }
+  .fault-filter-row .operational-report-control .workspace-button { width: auto; }
+  #logModal .log-modal > header > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
+  #logModal .operational-report-control { order: 3; width: 100%; justify-content: flex-end; padding: 8px 0 0; border-top: 1px solid rgba(83,129,145,.36); border-left: 0; }
   .fault-table-wrap { overflow-x: hidden; }
   .fault-table { display: block; min-width: 0; }
   .fault-table thead { display: none; }

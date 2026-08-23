@@ -102,6 +102,16 @@ class WorkspaceTabsTests(unittest.TestCase):
         ):
             self.assertIn(existing_action, SCRIPT)
 
+    def test_alert_and_log_surfaces_export_all_operational_report_periods(self):
+        for label, value in (("日报", "daily"), ("周报", "weekly"), ("月报", "monthly"), ("年报", "annual")):
+            self.assertIn(f'<option value="{value}">{label}</option>', INDEX)
+            self.assertIn(f'<option value="{value}">{label}</option>', SCRIPT)
+        self.assertIn('id="downloadLogReportButton"', INDEX)
+        self.assertIn('/api/log-report.pdf?period=', (ROOT / "web" / "static" / "app.js").read_text(encoding="utf-8"))
+        self.assertIn('data-download-alert-report', SCRIPT)
+        self.assertIn('/api/alert-report.pdf?period=', SCRIPT)
+        self.assertIn('.operational-report-control', STYLE)
+
     def test_navigation_is_linkable_responsive_and_keyboard_accessible(self):
         self.assertIn('params.get("workspace")', SCRIPT)
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
@@ -479,8 +489,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=87', INDEX)
-        self.assertIn('workspace-tabs.css?v=99', INDEX)
+        self.assertIn('workspace-tabs.js?v=88', INDEX)
+        self.assertIn('workspace-tabs.css?v=100', INDEX)
         self.assertIn("const mainRun = mainRunForDate(date)", SCRIPT)
         self.assertIn("跨日完成", SCRIPT)
         self.assertIn("linkedParentRunId(run) === mainRun.crawl_run_id", SCRIPT)

@@ -87,6 +87,10 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(set(ROLE_MODULES["ADMIN"]), set(MODULE_LABELS))
         self.assertNotIn("organization", ROLE_MODULES["ANALYST"])
 
+    def test_operational_pdf_reports_follow_alert_and_log_permissions(self):
+        self.assertEqual(self.service.module_for_api("/api/alert-report.pdf"), "fault")
+        self.assertEqual(self.service.module_for_api("/api/log-report.pdf"), "log")
+
     def test_unauthenticated_api_and_page_are_blocked(self):
         api = FakeHandler(origin="")
         self.assertFalse(self.service.authorize_api(api, "/api/status"))

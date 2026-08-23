@@ -15,6 +15,7 @@ RUN apt-get update \
         ffmpeg \
         fonts-noto-cjk \
         fonts-noto-cjk-extra \
+        fonts-wqy-zenhei \
         libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
