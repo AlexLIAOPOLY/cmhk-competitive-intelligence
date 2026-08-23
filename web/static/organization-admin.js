@@ -6,6 +6,7 @@
   const state = {
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [],
+    view: "control", profileKey: "",
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -62,9 +63,18 @@
     return next;
   }
 
+  function profileKey(person) {
+    return String(person.id || person.actor_id || person.email || person.account || person.name || person.actor_name || "unknown");
+  }
+
+  function profileButton(person, size = "is-member") {
+    const name = String(person.name || person.actor_name || person.account || "用户");
+    return `<button type="button" class="organization-avatar-button" data-profile-key="${esc(profileKey(person))}" aria-label="查看 ${esc(name)} 的详情" aria-haspopup="dialog">${avatar(person, size)}</button>`;
+  }
+
   function memberIdentity(user) {
     const secondary = user.account || user.email || "—";
-    return `<span class="organization-member">${avatar(user, "is-member")}<span><strong>${esc(user.name || user.account || "未命名成员")}${user.current ? '<em>当前管理员</em>' : ""}</strong><small>${esc(secondary)}</small></span></span>`;
+    return `<span class="organization-member"><span><strong>${esc(user.name || user.account || "未命名成员")}${user.current ? '<em>当前管理员</em>' : ""}</strong><small>${esc(secondary)}</small></span></span>`;
   }
 
   function roleOptions(user) {
@@ -81,16 +91,11 @@
 
   function memberList(users, selected) {
     const trashIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" /></svg>';
-    const items = users.map((user) => `<li class="organization-member-entry"><button type="button" class="organization-member-row${selected?.id === user.id ? " is-selected" : ""}" data-select-user="${esc(user.id)}" aria-pressed="${selected?.id === user.id}">
+    const items = users.map((user) => `<li class="organization-member-entry">${profileButton(user)}<button type="button" class="organization-member-row${selected?.id === user.id ? " is-selected" : ""}" data-select-user="${esc(user.id)}" aria-pressed="${selected?.id === user.id}">
       ${memberIdentity(user)}
       <span class="organization-member-meta"><strong>${esc(user.department || "未填写部门")}</strong><small>${esc(user.roleLabel || "待分配")} · ${user.status === "disabled" ? "已停用" : "启用"}</small></span>
     </button><button type="button" class="organization-delete-user" data-delete-user="${esc(user.id)}" aria-label="删除成员 ${esc(user.name || user.account || "未命名成员")}" title="删除成员"${user.current ? " disabled" : ""}>${trashIcon}</button></li>`).join("");
     return `<aside class="organization-member-list" aria-label="成员列表"><header><strong>成员（${users.length}）</strong><span>部门与角色</span></header><ul>${items || '<li class="organization-empty">没有符合条件的成员</li>'}</ul></aside>`;
-  }
-
-  function memberEvents(user) {
-    if (!user) return [];
-    return state.audit.filter((event) => String(event.actor_id || "") === String(user.id) || String(event.target || "") === String(user.id));
   }
 
   function auditAction(event) {
@@ -106,12 +111,6 @@
   function detailSection({ title, summary, body, open = false, className = "" }) {
     const chevron = '<span class="organization-section-chevron" aria-hidden="true"></span>';
     return `<details class="organization-detail-section ${className}"${open ? " open" : ""}><summary class="organization-section-summary"><span class="organization-section-copy"><h3>${esc(title)}</h3>${summary ? `<small>${esc(summary)}</small>` : ""}</span>${chevron}</summary><div class="organization-section-body">${body}</div></details>`;
-  }
-
-  function eventList(user) {
-    const events = memberEvents(user);
-    const rows = events.map((event) => `<li><span class="organization-event-dot ${event.result === "failure" ? "is-failure" : ""}"></span><span><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")} · ${esc(auditTime(event.at))}</small></span><em>${String(event.actor_id || "") === String(user.id) ? "本人操作" : "成员变更"}</em></li>`).join("");
-    return detailSection({ title: "个人行动记录", summary: `${events.length} 条可审计记录`, className: "organization-member-events", body: `<ul>${rows || '<li class="organization-detail-empty">暂无可审计行动记录</li>'}</ul>` });
   }
 
   function memberDetail(user) {
@@ -133,13 +132,52 @@
       ${detailSection({ title: "角色与账号", summary: `${user.roleLabel || "待分配"} · ${user.status === "disabled" ? "已停用" : "启用"}`, body: account, open: true })}
       <details class="organization-detail-section"><summary class="organization-section-summary"><span class="organization-section-copy"><h3>功能权限</h3><small data-permission-count>已启用 ${enabled} / ${Object.keys(state.modules).length} 项</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-section-body">${permissions}</div></details>
       <footer class="organization-save-bar"><span data-row-status aria-live="polite">修改角色或权限后保存</span><button type="button" data-save disabled>保存成员资料</button></footer>
-      ${eventList(user)}
     </section>`;
   }
 
-  function auditSurface() {
-    const rows = state.audit.map((event) => `<tr><td><div class="organization-member">${avatar({ name: event.actor_name, avatar_url: event.actor_avatar_url }, "is-audit")}<span><strong>${esc(event.actor_name || "未知用户")}</strong><small>${esc(event.actor_id || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`).join("");
-    return `<details class="organization-surface organization-audit-surface"><summary class="organization-audit-summary"><span><strong>可审计操作记录</strong><small>管理员操作追踪 · ${state.audit.length} 条</small></span><span class="organization-section-chevron" aria-hidden="true"></span></summary><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>操作人</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无操作审计记录</div></td></tr>'}</tbody></table></div></details>`;
+  function eventPerson(event) {
+    return state.users.find((user) => String(user.id) === String(event.actor_id)) || {
+      id: event.actor_id,
+      name: event.actor_name || "未知用户",
+      avatar_url: event.actor_avatar_url,
+    };
+  }
+
+  function footprintSurface() {
+    const rows = state.audit.map((event) => {
+      const person = eventPerson(event);
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+    }).join("");
+    return `<section class="organization-surface organization-footprint-surface" id="organization-footprint-panel" role="tabpanel" aria-labelledby="organization-view-footprint"><div class="organization-footprint-bar"><strong>团队足迹</strong><span>${state.audit.length} 条</span></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无团队足迹</div></td></tr>'}</tbody></table></div></section>`;
+  }
+
+  function profilePerson() {
+    if (!state.profileKey) return null;
+    return state.users.find((user) => profileKey(user) === state.profileKey)
+      || state.audit.map(eventPerson).find((person) => profileKey(person) === state.profileKey)
+      || null;
+  }
+
+  function profileCard() {
+    const person = profilePerson();
+    if (!person) return "";
+    const status = person.status === "disabled" ? "已停用" : "启用";
+    return `<section class="organization-profile-card" role="dialog" aria-modal="false" aria-label="${esc(person.name || "成员")}的成员详情" tabindex="-1">
+      <button type="button" class="organization-profile-close" data-profile-close aria-label="关闭成员详情">×</button>
+      <header>${avatar(person, "is-profile-card")}<div><h2>${esc(person.name || person.account || "未命名成员")}</h2><span>${esc(person.title || person.roleLabel || "团队成员")}</span></div><em class="organization-account-state ${person.status === "disabled" ? "is-disabled" : ""}">${status}</em></header>
+      <dl><div><dt>部门</dt><dd>${esc(person.department || "—")}</dd></div><div><dt>岗位</dt><dd>${esc(person.title || "—")}</dd></div><div><dt>邮箱</dt><dd>${esc(person.email || "—")}</dd></div><div><dt>账号</dt><dd>${esc(person.account || person.actor_id || "—")}</dd></div></dl>
+    </section>`;
+  }
+
+  function viewTabs() {
+    return `<div class="organization-view-tabs" role="tablist" aria-label="团队管理"><button id="organization-view-control" type="button" role="tab" data-organization-view="control" aria-selected="${state.view === "control"}" aria-controls="organization-control-panel" class="${state.view === "control" ? "is-active" : ""}">团队控制</button><button id="organization-view-footprint" type="button" role="tab" data-organization-view="footprint" aria-selected="${state.view === "footprint"}" aria-controls="organization-footprint-panel" class="${state.view === "footprint" ? "is-active" : ""}">团队足迹</button></div>`;
+  }
+
+  function controlSurface(users, selected, roleFilter) {
+    return `${directoryPanel()}<section class="organization-surface organization-access-surface" id="organization-control-panel" role="tabpanel" aria-labelledby="organization-view-control">
+      <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">${addMemberIcon()}</button></div>
+      <div class="organization-access-layout">${memberList(users, selected)}${memberDetail(selected)}</div>
+    </section>`;
   }
 
   function directoryResults() {
@@ -160,11 +198,8 @@
     const users = filteredUsers();
     const selected = selectedUser(users);
     const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
-    host.innerHTML = `${directoryPanel()}
-      <section class="organization-surface organization-access-surface">
-        <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">${addMemberIcon()}</button></div>
-        <div class="organization-access-layout">${memberList(users, selected)}${memberDetail(selected)}</div>
-      </section>${auditSurface()}`;
+    host.innerHTML = `${viewTabs()}${state.view === "control" ? controlSurface(users, selected, roleFilter) : footprintSurface()}${profileCard()}`;
+    if (state.profileKey) window.requestAnimationFrame(() => host.querySelector(".organization-profile-card")?.focus());
   }
 
   function renderError(message) {
@@ -256,7 +291,14 @@
     const userId = button.dataset.deleteUser;
     const user = state.users.find((item) => String(item.id) === String(userId));
     if (!userId || !user) return;
-    if (!window.confirm(`确认从组织中删除“${user.name || user.account}”？该成员的现有登录会话会同时失效。`)) return;
+    const confirmed = await window.CMHKDialog.confirm({
+      tone: "danger",
+      title: `从组织中删除“${user.name || user.account}”？`,
+      message: "该成员将失去项目访问权限，现有登录会话会同时失效。",
+      detail: "删除动作会绑定当前管理员身份并写入团队足迹。",
+      confirmLabel: "确认删除成员",
+    });
+    if (!confirmed) return;
     button.disabled = true;
     try {
       await request(`/api/auth/admin/users/${encodeURIComponent(userId)}`, { method: "DELETE" });
@@ -264,7 +306,7 @@
       await load({ force: true });
     } catch (error) {
       button.disabled = false;
-      window.alert(error.message);
+      await window.CMHKDialog.alert({ tone: "danger", title: "成员删除失败", message: error.message });
     }
   }
 
@@ -283,6 +325,11 @@
     else if (event.target.matches("[data-status], [data-module]")) markDirty(detail);
   });
   host.addEventListener("click", (event) => {
+    const view = event.target.closest("[data-organization-view]");
+    if (view) { state.view = view.dataset.organizationView; state.profileKey = ""; render(); return; }
+    const profile = event.target.closest("[data-profile-key]");
+    if (profile) { state.profileKey = profile.dataset.profileKey; render(); return; }
+    if (event.target.closest("[data-profile-close]")) { state.profileKey = ""; render(); return; }
     const deleteButton = event.target.closest("[data-delete-user]");
     if (deleteButton) { removeUser(deleteButton); return; }
     const select = event.target.closest("[data-select-user]");
@@ -293,9 +340,20 @@
     if (importButton) { importDirectoryUser(importButton); return; }
     if (event.target.closest("[data-refresh]")) { load({ force: true }); return; }
     const saveButton = event.target.closest("[data-save]");
-    if (saveButton) save(saveButton.closest("[data-user-id]"));
+    if (saveButton) { save(saveButton.closest("[data-user-id]")); return; }
+    if (state.profileKey && !event.target.closest(".organization-profile-card")) { state.profileKey = ""; render(); }
   });
   host.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.profileKey) { state.profileKey = ""; render(); return; }
+    const activeView = event.target.closest("[data-organization-view]");
+    if (activeView && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
+      event.preventDefault();
+      state.view = state.view === "control" ? "footprint" : "control";
+      state.profileKey = "";
+      render();
+      host.querySelector(`[data-organization-view="${state.view}"]`)?.focus();
+      return;
+    }
     if (!["Enter", " "].includes(event.key)) return;
     const summary = event.target.closest(".organization-section-summary, .organization-audit-summary");
     if (!summary) return;

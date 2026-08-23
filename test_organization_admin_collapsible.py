@@ -10,8 +10,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=15', INDEX)
-        self.assertIn('/static/organization-admin.css?v=16', INDEX)
+        self.assertIn('/static/organization-admin.js?v=16', INDEX)
+        self.assertIn('/static/organization-admin.css?v=17', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)
@@ -34,9 +34,27 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn('body: organization, open: true', SCRIPT)
         self.assertIn('body: profile, open: true', SCRIPT)
         self.assertIn("data-permission-count", SCRIPT)
-        self.assertIn('class="organization-surface organization-audit-surface"', SCRIPT)
         self.assertIn('["Enter", " "].includes(event.key)', SCRIPT)
         self.assertIn("disclosure.open = !disclosure.open", SCRIPT)
+
+    def test_team_footprint_is_a_separate_accessible_tab(self):
+        self.assertIn('role="tablist" aria-label="团队管理"', SCRIPT)
+        self.assertIn('data-organization-view="control"', SCRIPT)
+        self.assertIn('data-organization-view="footprint"', SCRIPT)
+        self.assertIn('id="organization-footprint-panel" role="tabpanel"', SCRIPT)
+        self.assertIn('function footprintSurface()', SCRIPT)
+        self.assertNotIn('title: "个人行动记录"', SCRIPT)
+        self.assertIn('.organization-view-tabs button.is-active:after', STYLE)
+
+    def test_member_avatars_open_a_feishu_style_profile_card(self):
+        self.assertIn('data-profile-key=', SCRIPT)
+        self.assertIn('aria-haspopup="dialog"', SCRIPT)
+        self.assertIn('class="organization-profile-card" role="dialog"', SCRIPT)
+        self.assertIn('data-profile-close', SCRIPT)
+        self.assertIn('event.key === "Escape"', SCRIPT)
+        self.assertIn('.organization-avatar-button:focus-visible', STYLE)
+        self.assertIn('.organization-profile-card dl', STYLE)
+        self.assertIn('@keyframes organization-profile-mobile-enter', STYLE)
 
     def test_disclosure_controls_have_focus_motion_and_mobile_rules(self):
         self.assertIn(".organization-section-summary:focus-visible", STYLE)

@@ -40,8 +40,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=15', INDEX)
-        self.assertIn('/static/organization-admin.css?v=16', INDEX)
+        self.assertIn('/static/organization-admin.js?v=16', INDEX)
+        self.assertIn('/static/organization-admin.css?v=17', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -61,8 +61,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/users/import"', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/audit?limit=200")', ORGANIZATION_SCRIPT)
-        self.assertIn("可审计操作记录", ORGANIZATION_SCRIPT)
-        self.assertIn("个人行动记录", ORGANIZATION_SCRIPT)
+        self.assertIn("团队控制", ORGANIZATION_SCRIPT)
+        self.assertIn("团队足迹", ORGANIZATION_SCRIPT)
+        self.assertIn('class="organization-profile-card" role="dialog"', ORGANIZATION_SCRIPT)
         self.assertIn("data-select-user", ORGANIZATION_SCRIPT)
         self.assertIn("person.avatarUrl", ORGANIZATION_SCRIPT)
         self.assertIn("!user.developmentAccount", ORGANIZATION_SCRIPT)
