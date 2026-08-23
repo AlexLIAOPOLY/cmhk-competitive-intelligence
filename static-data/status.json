@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 30,
-      "partial": 3
+      "ok": 31,
+      "partial": 2
     },
     "visuals": {
       "crawl": {
@@ -16,8 +16,8 @@
         "completedAt": "2026-08-23 03:05:43"
       },
       "quality": {
-        "ok": 30,
-        "partial": 3,
+        "ok": 31,
+        "partial": 2,
         "failed": 0,
         "fieldTotal": 205,
         "missingFields": 0,
@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 154
+          "value": 155
         },
         {
           "label": "cache:httpx",
@@ -107,11 +107,11 @@
           "value": 4
         },
         {
-          "label": "curl_crawler_ua",
-          "value": 2
+          "label": "cache:curl_direct_chrome_ua",
+          "value": 1
         },
         {
-          "label": "cache:curl_direct_chrome_ua",
+          "label": "curl_crawler_ua",
           "value": 1
         }
       ],
@@ -301,7 +301,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-23 03:23:01",
+    "latestOutputText": "2026-08-24 03:02:11",
     "outputs": [
       {
         "name": "8月19日周报.docx",
