@@ -1,4 +1,30 @@
 {
+  "20260823_140057_479947": [
+    {
+      "newsId": "NEWS-E279793F4EEF49",
+      "title": "陈茂波：国家AI迅速发展对香港经济和金融市场发挥显著助力",
+      "summary": "财政司司长陈茂波表示国家在人工智能方面的迅速发展对香港经济和金融市场发挥显著助力。",
+      "category": "政策监管",
+      "region": "香港本地",
+      "source": "香港文匯報",
+      "publishedAt": "2026-08-23T11:17:01+08:00",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5HS203MjdFUnNyX0tTN1RLQ0VLYWVVaHgxN2hoT2duTTFNOVRiZHgwT3V5ZHBQZWw1Ym0zRDQwMWZ4eWlla3M1NG40cDBwcnNwOExjM09tZVhUT1ByeWJ6NVYzd3VXa0RXVXpqaTRrckVvTlRuNG04?oc=5",
+      "inclusionReason": "香港财政司司长就国家AI发展对香港经济金融市场的助力发表具体观点，涉及香港本地AI产业政策方向与市场需求信号。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-987C2C8B82A137",
+      "title": "香港AI贸易出现井喷式增长",
+      "summary": "香港AI相关贸易出现井喷式增长，反映本地人工智能产业需求快速扩张。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "紫荊網",
+      "publishedAt": "2026-08-23T11:36:43+08:00",
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNMlM3d2wyY0Npc04wUVlTbkVMaVZrUV9HUEtUV0toSHZ6SjZrU2ZoeWJpZ3NIY2NCdmNIaThBN2NaczRxZWF0T1RUMnZfU3A2d0tmZnoyVWMzWk9XU042T2ZtelktTVRqSkhuc1ZxNXVGQnNvWUthSWJubUk4SFNXZXZmQTlMbV9kT01zWkJnRUY?oc=5",
+      "inclusionReason": "香港AI贸易出现井喷式增长，反映本地AI产业需求快速扩张，可能影响数据中心、算力和网络基础设施需求。",
+      "businessImpact": "收入与需求"
+    }
+  ],
   "20260823_090047_962333": [
     {
       "newsId": "NEWS-5D782005DE802C",
@@ -8224,44 +8250,6 @@
       "publishedAt": "2026-08-13T08:19:00+08:00",
       "url": "https://www.sohu.com/a/1062150161_116132",
       "inclusionReason": "央行发布二季度货币政策报告，提出加大逆周期调节力度扩大内需，与监控词香港经济、消费、通胀存在宏观政策对市场需求及通胀预期的实质语义关联。",
-      "businessImpact": "收入与需求"
-    }
-  ],
-  "20260813_090528_881143": [
-    {
-      "newsId": "NEWS-0C01DB278AE777",
-      "title": "面壁智能启动IPO",
-      "summary": "估值超200亿元的大模型独角兽面壁智能启动IPO，成为2026年AI上市潮最新入场者。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "腾讯网",
-      "publishedAt": "2026-08-12T22:51:00+08:00",
-      "url": "https://news.qq.com/rain/a/20260812A0E2NG00",
-      "inclusionReason": "面壁智能启动IPO属于AI基础设施与算力生态的具体资本动作，与物联网关键词存在实质语义关联，反映AI基础设施领域的市场变化。",
-      "businessImpact": "资本配置"
-    },
-    {
-      "newsId": "NEWS-FBDE7352861703",
-      "title": "荣耀发布Robot Phone整合阿里千问大模型",
-      "summary": "荣耀发布Robot Phone手机，定价人民币9999元起，搭载Agentic OS并首发YOYO Pro模式，深度整合阿里千问大模型以实现跨生态联动。",
-      "category": "市场/产品类",
-      "region": "国际/行业",
-      "source": "聯合新聞網",
-      "publishedAt": "2026-08-12T22:41:00+08:00",
-      "url": "https://udn.com/news/story/7333/9687863",
-      "inclusionReason": "新闻提及荣耀发布整合阿里大模型的新产品，属于市场/产品类监控范围，具体描述了产品定价与技术功能变化。",
-      "businessImpact": "产品与定价"
-    },
-    {
-      "newsId": "NEWS-9D9EE104FDDCB0",
-      "title": "学者警告AI算力需求推高表外融资与债务达48兆",
-      "summary": "学者警告AI算力需求持续强劲，推高表外融资与债务高达48兆，并指出AI渗透率仅5%至8%，未来2至3年内才会普及到20%。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "region": "国际/行业",
-      "source": "風傳媒",
-      "publishedAt": "2026-08-12T23:33:00+08:00",
-      "url": "https://www.storm.mg/article/11156066",
-      "inclusionReason": "新闻提及AI算力需求持续强劲及表外融资与债务高达48兆，与监控词「数据中心」在AI基础设施投资与成本结构上存在实质语义关联，描述了具体的市场趋势与风险证据。",
       "businessImpact": "收入与需求"
     }
   ]

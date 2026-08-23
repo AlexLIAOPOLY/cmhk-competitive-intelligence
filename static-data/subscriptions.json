@@ -227,6 +227,38 @@
   ],
   "deliveries": [
     {
+      "id": 40,
+      "batch_id": "0ff346e1fef378ccbcb53b5f",
+      "open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-23@14:00",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b679c9f44fcacb0309b848355748"
+      ],
+      "error": "",
+      "created_at": "2026-08-23T14:03:03+08:00",
+      "recipient_name": "徐亮 Alan XU Liang",
+      "recipient_open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d"
+    },
+    {
+      "id": 39,
+      "batch_id": "096806905c96a3470b2a5313",
+      "open_id": "ou_975cb75f3d70195cdf77a32979a59471",
+      "service": "news",
+      "mode": "text",
+      "content_ref": "strategic-crawl:2026-08-23@14:00",
+      "status": "verified",
+      "message_ids": [
+        "om_x100b679c9fa9acb0b22909e3d5ce13e"
+      ],
+      "error": "",
+      "created_at": "2026-08-23T14:03:01+08:00",
+      "recipient_name": "廖望 Alex LIAO Wang",
+      "recipient_open_id": "ou_975cb75f3d70195cdf77a32979a59471"
+    },
+    {
       "id": 38,
       "batch_id": "878dc4f53fab286c79887dce",
       "open_id": "ou_fca7e30b191f3dd82d9ccd342fbc2f3d",
@@ -1230,7 +1262,7 @@
     "people_count": 2025,
     "synced_at": "2026-08-20T11:58:32+08:00",
     "console_url": "https://open.feishu.cn/app/cli_a9575e70ae799cb2/permission",
-    "updated_at": "2026-08-23T13:56:02+08:00"
+    "updated_at": "2026-08-23T14:07:15+08:00"
   },
   "active_subscriber_count": 4,
   "report_schedule": {
@@ -1265,7 +1297,7 @@
     "dispatch_rule": "爬虫完成审核后推送",
     "updated_at": "2026-08-20T09:31:06+08:00"
   },
-  "updated_at": "2026-08-23T13:56:02+08:00",
+  "updated_at": "2026-08-23T14:07:15+08:00",
   "targets": [
     {
       "chat_id": "oc_22bf3c7febc4bab295fedfb0b8e6c176",
