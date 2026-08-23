@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=4" />
   <link rel="stylesheet" href="/static/workspace-tabs.css?v=100" />
-  <link rel="stylesheet" href="/static/organization-admin.css?v=17" />
+  <link rel="stylesheet" href="/static/organization-admin.css?v=18" />
   </head>
   <body class="dashboard-page">
     <script>{ const workspace = new URLSearchParams(location.hash.replace(/^#/, "")).get("workspace"); if (!workspace || workspace === "dashboard") document.body.classList.add("workspace-dashboard-active"); if (workspace === "ai") document.body.classList.add("workspace-ai-active"); }</script>
@@ -108,7 +108,8 @@
             </section>
             <section class="workspace-nav-group" aria-labelledby="workspace-group-organization">
               <h2 id="workspace-group-organization">组织与权限</h2>
-              <button class="workspace-tab" id="workspace-tab-organization" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-organization" tabindex="-1" data-workspace-tab="organization"><span class="workspace-tab-index">10</span><span class="workspace-tab-label">组织管理</span></button>
+              <button class="workspace-tab" id="workspace-tab-organization" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-organization" tabindex="-1" data-workspace-tab="organization"><span class="workspace-tab-index">10</span><span class="workspace-tab-label">团队管理</span></button>
+              <button class="workspace-tab" id="workspace-tab-footprint" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-footprint" tabindex="-1" data-workspace-tab="footprint"><span class="workspace-tab-index">11</span><span class="workspace-tab-label">团队足迹</span></button>
             </section>
           </div>
         </nav>
@@ -280,6 +281,11 @@
       <section class="workspace-module-shell organization-admin-shell" id="workspace-panel-organization" role="tabpanel" aria-labelledby="workspace-tab-organization" data-workspace-panel="organization" hidden>
         <div class="organization-admin" id="organizationAdmin">
           <div class="organization-loading" role="status">正在读取组织成员与权限…</div>
+        </div>
+      </section>
+      <section class="workspace-module-shell organization-admin-shell" id="workspace-panel-footprint" role="tabpanel" aria-labelledby="workspace-tab-footprint" data-workspace-panel="footprint" hidden>
+        <div class="organization-admin" id="organizationFootprint">
+          <div class="organization-loading" role="status">正在读取团队足迹…</div>
         </div>
       </section>
         </div>
@@ -576,7 +582,7 @@
     <script src="/static/confirm-dialog.js?v=3"></script>
     <script src="/static/app.js?v=292"></script>
     <script src="/static/news-review-sheet.js?v=6"></script>
-    <script src="/static/organization-admin.js?v=16"></script>
-    <script src="/static/workspace-tabs.js?v=88"></script>
+    <script src="/static/organization-admin.js?v=17"></script>
+    <script src="/static/workspace-tabs.js?v=90"></script>
   </body>
 </html>

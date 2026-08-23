@@ -29,6 +29,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "log",
             "fault",
             "organization",
+            "footprint",
         )
         for module in modules:
             self.assertIn(f'id="workspace-tab-{module}"', INDEX)
@@ -40,10 +41,11 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=16', INDEX)
-        self.assertIn('/static/organization-admin.css?v=17', INDEX)
+        self.assertIn('/static/organization-admin.js?v=17', INDEX)
+        self.assertIn('/static/organization-admin.css?v=18', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=90', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
-        self.assertIn('window.CMHKAuth?.hasModule(module)', SCRIPT)
+        self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
         self.assertIn('iframe[data-src]', SCRIPT)
         self.assertIn('fetch("/api/auth/me"', AUTH_SCRIPT)
@@ -61,8 +63,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/api/auth/admin/directory/search?q=${encodeURIComponent(query)}', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/users/import"', ORGANIZATION_SCRIPT)
         self.assertIn('request("/api/auth/admin/audit?limit=200")', ORGANIZATION_SCRIPT)
-        self.assertIn("团队控制", ORGANIZATION_SCRIPT)
         self.assertIn("团队足迹", ORGANIZATION_SCRIPT)
+        self.assertIn('data-workspace-tab="footprint"', INDEX)
+        self.assertIn('module === "footprint" ? "organization" : module', SCRIPT)
         self.assertIn('class="organization-profile-card" role="dialog"', ORGANIZATION_SCRIPT)
         self.assertIn("data-select-user", ORGANIZATION_SCRIPT)
         self.assertIn("person.avatarUrl", ORGANIZATION_SCRIPT)
@@ -490,7 +493,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=88', INDEX)
+        self.assertIn('workspace-tabs.js?v=90', INDEX)
+        self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=100', INDEX)
         self.assertIn("const mainRun = mainRunForDate(date)", SCRIPT)
         self.assertIn("跨日完成", SCRIPT)

@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization"];
+  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization", "footprint"];
   let allowedModules = [];
   const state = {
     status: null,
@@ -48,6 +48,7 @@
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
   let setWorkspaceNavCollapsed = null;
+  const permissionModule = (module) => module === "footprint" ? "organization" : module;
   const can = (module) => allowedModules.includes(module);
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
@@ -197,7 +198,7 @@
   });
 
   function applyModulePermissions() {
-    allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(module));
+    allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(permissionModule(module)));
     tabs.forEach((tab) => {
       const allowed = can(tab.dataset.workspaceTab);
       tab.hidden = !allowed;
@@ -254,6 +255,10 @@
       tab.tabIndex = selected ? 0 : -1;
       if (selected && focus) tab.focus();
     });
+    const selectedTab = tabs.find((tab) => tab.dataset.workspaceTab === target);
+    if (selectedTab && window.matchMedia("(max-width: 720px)").matches) {
+      selectedTab.scrollIntoView({ block: "nearest", inline: "center", behavior: motionPreference.matches ? "auto" : "smooth" });
+    }
     clearWorkspaceSignal(target);
     panels.forEach((panel) => { panel.hidden = panel.dataset.workspacePanel !== target; });
     if (shouldAnimatePanel) animateActivatedPanel(activePanel);

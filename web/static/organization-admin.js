@@ -1,12 +1,14 @@
 (() => {
   "use strict";
 
-  const host = document.getElementById("organizationAdmin");
-  if (!host) return;
+  const controlHost = document.getElementById("organizationAdmin");
+  const footprintHost = document.getElementById("organizationFootprint");
+  const hosts = [controlHost, footprintHost].filter(Boolean);
+  if (!hosts.length) return;
   const state = {
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [],
-    view: "control", profileKey: "",
+    view: "control", profileKey: "", eventKey: "",
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -146,9 +148,9 @@
   function footprintSurface() {
     const rows = state.audit.map((event) => {
       const person = eventPerson(event);
-      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button" data-event-key="${esc(event.id)}" aria-label="查看 ${esc(auditAction(event))} 的足迹详情" aria-haspopup="dialog"><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></button></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
     }).join("");
-    return `<section class="organization-surface organization-footprint-surface" id="organization-footprint-panel" role="tabpanel" aria-labelledby="organization-view-footprint"><div class="organization-footprint-bar"><strong>团队足迹</strong><span>${state.audit.length} 条</span></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无团队足迹</div></td></tr>'}</tbody></table></div></section>`;
+    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span>${state.audit.length} 条</span></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无团队足迹</div></td></tr>'}</tbody></table></div></section>`;
   }
 
   function profilePerson() {
@@ -169,12 +171,21 @@
     </section>`;
   }
 
-  function viewTabs() {
-    return `<div class="organization-view-tabs" role="tablist" aria-label="团队管理"><button id="organization-view-control" type="button" role="tab" data-organization-view="control" aria-selected="${state.view === "control"}" aria-controls="organization-control-panel" class="${state.view === "control" ? "is-active" : ""}">团队控制</button><button id="organization-view-footprint" type="button" role="tab" data-organization-view="footprint" aria-selected="${state.view === "footprint"}" aria-controls="organization-footprint-panel" class="${state.view === "footprint" ? "is-active" : ""}">团队足迹</button></div>`;
+  function eventCard() {
+    const event = state.audit.find((item) => String(item.id) === state.eventKey);
+    if (!event) return "";
+    const person = eventPerson(event);
+    const labels = { email: "成员邮箱", name: "成员姓名", handler_name: "处理人", feishu_sync: "飞书同步", sheet_row: "表格行", error: "失败原因" };
+    const details = Object.entries(event.details || {}).map(([key, value]) => `<div><dt>${esc(labels[key] || key)}</dt><dd>${esc(typeof value === "object" ? JSON.stringify(value) : value || "—")}</dd></div>`).join("");
+    return `<section class="organization-event-card" role="dialog" aria-modal="false" aria-label="足迹详情" tabindex="-1">
+      <button type="button" class="organization-profile-close" data-event-close aria-label="关闭足迹详情">×</button>
+      <header><span>${avatar(person, "is-audit")}</span><div><small>团队足迹</small><h2>${esc(auditAction(event))}</h2><p>${esc(event.target || "—")}</p></div><em class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</em></header>
+      <dl><div><dt>操作成员</dt><dd>${esc(person.name || "未知用户")}</dd></div><div><dt>发生时间</dt><dd>${esc(auditTime(event.at))}</dd></div>${details}</dl>
+    </section>`;
   }
 
   function controlSurface(users, selected, roleFilter) {
-    return `${directoryPanel()}<section class="organization-surface organization-access-surface" id="organization-control-panel" role="tabpanel" aria-labelledby="organization-view-control">
+    return `${directoryPanel()}<section class="organization-surface organization-access-surface" aria-label="团队管理">
       <div class="organization-toolbar"><label><span class="sr-only">搜索成员</span><input type="search" data-search value="${esc(state.query)}" placeholder="搜索姓名、账号或部门" /></label><label><span class="sr-only">筛选部门</span><select data-department-filter>${selectOptions(state.departments, state.department, "全部部门")}</select></label><label><span class="sr-only">筛选角色</span><select data-role-filter>${roleFilter}</select></label><button type="button" class="organization-add-member" data-directory-open aria-label="添加成员" title="添加成员">${addMemberIcon()}</button></div>
       <div class="organization-access-layout">${memberList(users, selected)}${memberDetail(selected)}</div>
     </section>`;
@@ -198,18 +209,23 @@
     const users = filteredUsers();
     const selected = selectedUser(users);
     const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
-    host.innerHTML = `${viewTabs()}${state.view === "control" ? controlSurface(users, selected, roleFilter) : footprintSurface()}${profileCard()}`;
-    if (state.profileKey) window.requestAnimationFrame(() => host.querySelector(".organization-profile-card")?.focus());
+    if (controlHost) controlHost.innerHTML = `${controlSurface(users, selected, roleFilter)}${state.view === "control" ? profileCard() : ""}`;
+    if (footprintHost) footprintHost.innerHTML = `${footprintSurface()}${state.view === "footprint" ? profileCard() + eventCard() : ""}`;
+    if (state.profileKey || state.eventKey) window.requestAnimationFrame(() => activeHost()?.querySelector(".organization-profile-card, .organization-event-card")?.focus());
+  }
+
+  function activeHost() {
+    return state.view === "footprint" ? footprintHost : controlHost;
   }
 
   function renderError(message) {
-    host.innerHTML = `<div class="organization-error" role="alert"><strong>组织信息读取失败</strong><p>${esc(message)}</p><button type="button" data-refresh>重新读取</button></div>`;
+    hosts.forEach((host) => { host.innerHTML = `<div class="organization-error" role="alert"><strong>组织信息读取失败</strong><p>${esc(message)}</p><button type="button" data-refresh>重新读取</button></div>`; });
   }
 
   async function load({ force = false } = {}) {
     if (state.loading || (state.loaded && !force)) return;
     state.loading = true;
-    if (!state.loaded) host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>';
+    if (!state.loaded) hosts.forEach((host) => { host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>'; });
     try {
       const [payload, auditPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200")]);
       const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
@@ -228,7 +244,7 @@
   }
 
   function renderDirectoryResults() {
-    const results = host.querySelector("[data-directory-results]");
+    const results = controlHost?.querySelector("[data-directory-results]");
     if (results) results.innerHTML = directoryResults();
   }
 
@@ -310,59 +326,59 @@
     }
   }
 
-  host.addEventListener("input", (event) => {
-    if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
-    if (!event.target.matches("[data-search]")) return;
-    state.query = event.target.value; render();
-    const search = host.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);
-  });
-  host.addEventListener("change", (event) => {
-    if (event.target.matches("[data-department-filter]")) { state.department = event.target.value; render(); return; }
-    if (event.target.matches("[data-role-filter]")) { state.role = event.target.value; render(); return; }
-    const detail = event.target.closest("[data-user-id]");
-    if (!detail) return;
-    if (event.target.matches("[data-role]")) applyRoleDefaults(detail, event.target.value);
-    else if (event.target.matches("[data-status], [data-module]")) markDirty(detail);
-  });
-  host.addEventListener("click", (event) => {
-    const view = event.target.closest("[data-organization-view]");
-    if (view) { state.view = view.dataset.organizationView; state.profileKey = ""; render(); return; }
-    const profile = event.target.closest("[data-profile-key]");
-    if (profile) { state.profileKey = profile.dataset.profileKey; render(); return; }
-    if (event.target.closest("[data-profile-close]")) { state.profileKey = ""; render(); return; }
-    const deleteButton = event.target.closest("[data-delete-user]");
-    if (deleteButton) { removeUser(deleteButton); return; }
-    const select = event.target.closest("[data-select-user]");
-    if (select) { state.selectedUserId = select.dataset.selectUser; render(); return; }
-    if (event.target.closest("[data-directory-open]")) { state.directory.open = true; render(); host.querySelector("[data-directory-search]")?.focus(); return; }
-    if (event.target.closest("[data-directory-close]")) { state.directory.open = false; render(); return; }
-    const importButton = event.target.closest("[data-import-email]");
-    if (importButton) { importDirectoryUser(importButton); return; }
-    if (event.target.closest("[data-refresh]")) { load({ force: true }); return; }
-    const saveButton = event.target.closest("[data-save]");
-    if (saveButton) { save(saveButton.closest("[data-user-id]")); return; }
-    if (state.profileKey && !event.target.closest(".organization-profile-card")) { state.profileKey = ""; render(); }
-  });
-  host.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.profileKey) { state.profileKey = ""; render(); return; }
-    const activeView = event.target.closest("[data-organization-view]");
-    if (activeView && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
+  hosts.forEach((host) => {
+    host.addEventListener("input", (event) => {
+      if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
+      if (!event.target.matches("[data-search]")) return;
+      state.query = event.target.value; render();
+      const search = controlHost?.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);
+    });
+    host.addEventListener("change", (event) => {
+      if (event.target.matches("[data-department-filter]")) { state.department = event.target.value; render(); return; }
+      if (event.target.matches("[data-role-filter]")) { state.role = event.target.value; render(); return; }
+      const detail = event.target.closest("[data-user-id]");
+      if (!detail) return;
+      if (event.target.matches("[data-role]")) applyRoleDefaults(detail, event.target.value);
+      else if (event.target.matches("[data-status], [data-module]")) markDirty(detail);
+    });
+    host.addEventListener("click", (event) => {
+      const profile = event.target.closest("[data-profile-key]");
+      if (profile) { state.profileKey = profile.dataset.profileKey; state.eventKey = ""; render(); return; }
+      if (event.target.closest("[data-profile-close]")) { state.profileKey = ""; render(); return; }
+      const eventButton = event.target.closest("[data-event-key]");
+      if (eventButton) { state.eventKey = eventButton.dataset.eventKey; state.profileKey = ""; render(); return; }
+      if (event.target.closest("[data-event-close]")) { state.eventKey = ""; render(); return; }
+      const deleteButton = event.target.closest("[data-delete-user]");
+      if (deleteButton) { removeUser(deleteButton); return; }
+      const select = event.target.closest("[data-select-user]");
+      if (select) { state.selectedUserId = select.dataset.selectUser; render(); return; }
+      if (event.target.closest("[data-directory-open]")) { state.directory.open = true; render(); controlHost?.querySelector("[data-directory-search]")?.focus(); return; }
+      if (event.target.closest("[data-directory-close]")) { state.directory.open = false; render(); return; }
+      const importButton = event.target.closest("[data-import-email]");
+      if (importButton) { importDirectoryUser(importButton); return; }
+      if (event.target.closest("[data-refresh]")) { load({ force: true }); return; }
+      const saveButton = event.target.closest("[data-save]");
+      if (saveButton) { save(saveButton.closest("[data-user-id]")); return; }
+      if ((state.profileKey || state.eventKey) && !event.target.closest(".organization-profile-card, .organization-event-card")) { state.profileKey = ""; state.eventKey = ""; render(); }
+    });
+    host.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && (state.profileKey || state.eventKey)) { state.profileKey = ""; state.eventKey = ""; render(); return; }
+      if (!["Enter", " "].includes(event.key)) return;
+      const summary = event.target.closest(".organization-section-summary, .organization-audit-summary");
+      if (!summary) return;
+      const disclosure = summary.closest("details");
+      if (!disclosure) return;
       event.preventDefault();
-      state.view = state.view === "control" ? "footprint" : "control";
-      state.profileKey = "";
-      render();
-      host.querySelector(`[data-organization-view="${state.view}"]`)?.focus();
-      return;
-    }
-    if (!["Enter", " "].includes(event.key)) return;
-    const summary = event.target.closest(".organization-section-summary, .organization-audit-summary");
-    if (!summary) return;
-    const disclosure = summary.closest("details");
-    if (!disclosure) return;
-    event.preventDefault();
-    disclosure.open = !disclosure.open;
+      disclosure.open = !disclosure.open;
+    });
   });
 
-  window.addEventListener("workspace-tab-change", (event) => { if (event.detail?.tab === "organization") load(); });
+  window.addEventListener("workspace-tab-change", (event) => {
+    if (!["organization", "footprint"].includes(event.detail?.tab)) return;
+    state.view = event.detail.tab === "footprint" ? "footprint" : "control";
+    state.profileKey = "";
+    state.eventKey = "";
+    if (state.loaded) render(); else load();
+  });
   window.CMHKOrganizationAdmin = { load };
 })();
