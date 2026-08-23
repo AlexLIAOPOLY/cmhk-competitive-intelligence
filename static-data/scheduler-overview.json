@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-24T03:12:41+08:00",
+  "checked_at_hkt": "2026-08-24T03:17:42+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 33,
   "frequency_counts": {
@@ -47,7 +47,7 @@
       "worker_pid": 0,
       "phase": "Agent审核",
       "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
-      "heartbeat_at_hkt": "2026-08-24T03:12:28+08:00",
+      "heartbeat_at_hkt": "2026-08-24T03:17:30+08:00",
       "started_at_hkt": "2026-08-24T03:01:05+08:00",
       "completed_at_hkt": "",
       "feishu": {},
