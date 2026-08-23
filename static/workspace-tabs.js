@@ -1566,6 +1566,7 @@
         <label>任务类型<select data-fault-filter="kind"><option value="all">全部任务</option>${kinds.map((kind) => `<option value="${esc(kind)}">${esc(taskLabel(kind))}</option>`).join("")}</select></label>
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
+        <div class="operational-report-control is-fault" aria-label="导出报警统计报告"><label>PDF 报告<select data-alert-report-period><option value="daily">日报</option><option value="weekly">周报</option><option value="monthly">月报</option><option value="annual">年报</option></select></label><button class="workspace-button" type="button" data-download-alert-report>导出 PDF</button></div>
       </div></header>
       <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
       <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
@@ -1896,6 +1897,10 @@
       expandPreview.title = expanded ? "还原预览" : "放大预览";
     }
     if (event.target.closest("[data-refresh-fault]")) refreshFaultData();
+    if (event.target.closest("[data-download-alert-report]")) {
+      const period = document.querySelector("[data-alert-report-period]")?.value || "daily";
+      window.location.assign(`/api/alert-report.pdf?period=${encodeURIComponent(period)}`);
+    }
     const faultPage = event.target.closest("[data-fault-page]");
     if (faultPage && !faultPage.disabled) {
       state.faultPage = Number(faultPage.dataset.faultPage) || 1;

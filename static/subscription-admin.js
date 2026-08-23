@@ -257,7 +257,8 @@
       return;
     }
     if (event.target.closest("[data-manual-push-all]")) {
-      if (!window.confirm("确认按每位订阅者当前设置，一键推送最新正式内容？发送后无法撤回。")) return;
+      const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: "系统将按每位订阅者当前设置，推送最新正式内容。", detail: "消息发送后无法撤回，系统会逐条回读发送结果。", confirmLabel: "确认全部推送" });
+      if (!confirmed) return;
       try { await post({ action: "pushLatest", confirmBulk: true }, "正在向全部有效订阅者推送最新正式内容并逐条回读…"); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
@@ -267,7 +268,8 @@
       const row = manualPerson.closest("[data-subscriber-row]");
       const targetOpenId = row?.dataset.subscriberRow || "";
       const targetName = row?.querySelector(".table-person-name")?.textContent?.trim() || "当前订阅者";
-      if (!window.confirm(`确认按 ${targetName} 当前订阅设置推送最新正式内容？发送后无法撤回。`)) return;
+      const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: `系统将按 ${targetName} 当前订阅设置推送最新正式内容。`, detail: "消息发送后无法撤回，完成后会回读发送结果。", confirmLabel: "确认推送" });
+      if (!confirmed) return;
       try { await post({ action: "pushLatest", targetOpenId }, `正在推送给 ${targetName} 并回读…`); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
@@ -314,7 +316,8 @@
     if (inviteChat) {
       const chatId = inviteChat.dataset.inviteChat || "";
       const chatName = inviteChat.dataset.inviteChatName || "该群聊";
-      if (!window.confirm(`确认向“${chatName}”发送一张订阅邀请？群内每个人的选择会分别保存。`)) return;
+      const confirmed = await window.CMHKDialog.confirm({ title: `向“${chatName}”发送邀请？`, message: "系统将向该群发送一张订阅邀请卡片。", detail: "群内每个人的选择会分别保存，并保留发送与回读记录。", confirmLabel: "发送群邀请" });
+      if (!confirmed) return;
       try {
         await post({ action: "inviteTarget", targetId: chatId, confirmInvite: true }, `正在向“${chatName}”发送群邀请并回读…`);
         state.peopleOpen = false;
@@ -325,7 +328,8 @@
     if (event.target.closest("[data-send-invites]")) {
       const ids = Array.from(document.querySelectorAll("[data-invite-candidate]:checked")).map((item) => item.value);
       if (!ids.length) { state.notice = "请先勾选要邀请的人员。"; state.noticeKind = "error"; render(); return; }
-      if (!window.confirm(`确认只向选中的 ${ids.length} 人发送订阅邀请？`)) return;
+      const confirmed = await window.CMHKDialog.confirm({ title: `向选中的 ${ids.length} 人发送邀请？`, message: `系统将只向当前选中的 ${ids.length} 人发送订阅邀请。`, detail: "发送后将逐人回读消息状态，未选中的成员不会收到邀请。", confirmLabel: `发送给 ${ids.length} 人` });
+      if (!confirmed) return;
       try { await post({ action: "invite", callbackOpenIds: ids, confirmInvite: true }, "正在逐人发送邀请并回读消息…"); }
       catch (error) { state.notice = `邀请发送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;

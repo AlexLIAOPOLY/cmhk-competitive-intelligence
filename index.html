@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CMHK市场竞争全景</title>
     <link rel="stylesheet" href="./static/styles.css?v=274" />
+  <link rel="stylesheet" href="./static/confirm-dialog.css?v=1" />
   <link rel="stylesheet" href="./static/responsive-layout-hardening.css?v=6" />
   <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="./static/news-review-sheet.css?v=4" />
-  <link rel="stylesheet" href="./static/workspace-tabs.css?v=99" />
+  <link rel="stylesheet" href="./static/workspace-tabs.css?v=100" />
   <link rel="stylesheet" href="./static/organization-admin.css?v=17" />
   </head>
   <body class="dashboard-page">
@@ -416,6 +417,16 @@
               <span id="logRunTitle">选择一条任务，查看执行状态、审核过程、结果与日志</span>
             </div>
             <div>
+              <div class="operational-report-control" aria-label="导出日志统计报告">
+                <label for="logReportPeriod">PDF 报告</label>
+                <select id="logReportPeriod">
+                  <option value="daily">日报</option>
+                  <option value="weekly">周报</option>
+                  <option value="monthly">月报</option>
+                  <option value="annual">年报</option>
+                </select>
+                <button class="quiet-button small" id="downloadLogReportButton" type="button">导出 PDF</button>
+              </div>
               <button class="quiet-button small" id="refreshCrawlRunsButton" type="button">刷新任务</button>
               <button class="quiet-button small" id="clearLogButton" type="button">清空显示</button>
               <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
@@ -564,7 +575,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="./static/auth-client.js?v=3"></script>
-    <script src="./static/app.js?v=290"></script>
+    <script src="./static/confirm-dialog.js?v=1"></script>
+    <script src="./static/app.js?v=292"></script>
     <script src="./static/news-review-sheet.js?v=6"></script>
     <script src="./static/organization-admin.js?v=16"></script>
     <script src="./static/workspace-tabs.js?v=public-4"></script>

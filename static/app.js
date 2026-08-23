@@ -132,6 +132,8 @@ const els = {
   refreshAgentMemory: document.querySelector("#refreshAgentMemory"),
   clearLogButton: document.querySelector("#clearLogButton"),
   refreshCrawlRunsButton: document.querySelector("#refreshCrawlRunsButton"),
+  logReportPeriod: document.querySelector("#logReportPeriod"),
+  downloadLogReportButton: document.querySelector("#downloadLogReportButton"),
   crawlRunList: document.querySelector("#crawlRunList"),
   crawlRunFilter: document.querySelector("#crawlRunFilter"),
   crawlRunFilterCount: document.querySelector("#crawlRunFilterCount"),
@@ -3933,7 +3935,14 @@ async function saveFileEdit() {
 async function deleteFiles(paths) {
   const list = paths.filter(Boolean);
   if (!list.length) return;
-  if (!confirm(`确定删除选中的 ${list.length} 个周报文件吗？此操作不可恢复。`)) return;
+  const confirmed = await window.CMHKDialog.confirm({
+    tone: "danger",
+    title: "删除选中的报告？",
+    message: `即将永久删除选中的 ${list.length} 个报告文件。`,
+    detail: "此操作不可恢复，请确认这些文件不再需要。",
+    confirmLabel: `删除 ${list.length} 个文件`,
+  });
+  if (!confirmed) return;
   const response = await fetch("/api/delete-files", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -3941,7 +3950,7 @@ async function deleteFiles(paths) {
   });
   const data = await response.json();
   if (!data.ok) {
-    alert(data.error || "删除失败");
+    await window.CMHKDialog.alert({ tone: "danger", title: "删除未完成", message: data.error || "删除失败" });
     return;
   }
   list.forEach((path) => state.selectedFiles.delete(path));
@@ -3997,7 +4006,7 @@ async function generateAudio(pathStr, button = null) {
     throw new Error("音频任务仍在后台运行，请在任务与审核记录中继续查看。");
   } catch (error) {
     appendLog(`音频生成失败：${error.message}\n`);
-    alert(error.message);
+    await window.CMHKDialog.alert({ tone: "danger", title: "音频生成失败", message: error.message });
   } finally {
     if (button) {
       button.disabled = false;
@@ -7126,6 +7135,13 @@ els.logButton.addEventListener("click", () => {
 if (els.refreshCrawlRunsButton) {
   els.refreshCrawlRunsButton.addEventListener("click", () => {
     loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
+  });
+}
+
+if (els.downloadLogReportButton) {
+  els.downloadLogReportButton.addEventListener("click", () => {
+    const period = els.logReportPeriod?.value || "daily";
+    window.location.assign(`/api/log-report.pdf?period=${encodeURIComponent(period)}`);
   });
 }
 
