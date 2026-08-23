@@ -255,6 +255,10 @@
       tab.tabIndex = selected ? 0 : -1;
       if (selected && focus) tab.focus();
     });
+    const selectedTab = tabs.find((tab) => tab.dataset.workspaceTab === target);
+    if (selectedTab && window.matchMedia("(max-width: 720px)").matches) {
+      selectedTab.scrollIntoView({ block: "nearest", inline: "center", behavior: motionPreference.matches ? "auto" : "smooth" });
+    }
     clearWorkspaceSignal(target);
     panels.forEach((panel) => { panel.hidden = panel.dataset.workspacePanel !== target; });
     if (shouldAnimatePanel) animateActivatedPanel(activePanel);
