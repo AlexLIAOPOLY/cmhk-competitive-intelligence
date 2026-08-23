@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 31,
-      "partial": 2
+      "ok": 32,
+      "partial": 1
     },
     "visuals": {
       "crawl": {
@@ -16,12 +16,12 @@
         "completedAt": "2026-08-23 03:05:43"
       },
       "quality": {
-        "ok": 31,
-        "partial": 2,
+        "ok": 32,
+        "partial": 1,
         "failed": 0,
         "fieldTotal": 205,
         "missingFields": 0,
-        "rawSources": 215
+        "rawSources": 213
       },
       "blocks": [
         {
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 20
+          "value": 18
         },
         {
           "label": "government_statistics",
@@ -66,11 +66,11 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 112
+          "value": 111
         },
         {
           "label": "US",
-          "value": 21
+          "value": 20
         },
         {
           "label": "EU",
@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 155
+          "value": 156
         },
         {
           "label": "cache:httpx",
@@ -100,7 +100,7 @@
         },
         {
           "label": "curl_chrome_ua",
-          "value": 20
+          "value": 18
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -108,10 +108,6 @@
         },
         {
           "label": "cache:curl_direct_chrome_ua",
-          "value": 1
-        },
-        {
-          "label": "curl_crawler_ua",
           "value": 1
         }
       ],
@@ -301,7 +297,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-24 03:02:11",
+    "latestOutputText": "2026-08-24 03:07:01",
     "outputs": [
       {
         "name": "8月19日周报.docx",

@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "2b6c172d44031f25f06c6003",
+      "task_id": "incident:2b6c172d44031f25f06c6003",
+      "title": "飞书频率调度器",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度器",
+      "scope": "frequency-scheduler",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "频率调度器超过5分钟没有轮询心跳",
+      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
+      "suggestions": [
+        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
+        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-24T03:06:05+08:00",
+      "started_at_hkt": "2026-08-24T03:06:22+08:00",
+      "heartbeat_at_hkt": "2026-08-24T03:07:31+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "3adb7ed6dc9139a80e187f89",
       "task_id": "incident:3adb7ed6dc9139a80e187f89",
       "title": "战略新闻定时扫描 09:00",
@@ -11983,30 +12007,6 @@
       "occurred_at_hkt": "2026-08-17T10:56:06+08:00",
       "started_at_hkt": "2026-08-17T10:56:06+08:00",
       "heartbeat_at_hkt": "2026-08-17T10:56:06+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "c86e026ce6aae8ce8b91206f",
-      "task_id": "incident:c86e026ce6aae8ce8b91206f",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T10:53:36+08:00",
-      "started_at_hkt": "2026-08-17T10:53:36+08:00",
-      "heartbeat_at_hkt": "2026-08-17T10:53:36+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
