@@ -2140,7 +2140,7 @@
             }
           ],
           "component_count": 3,
-          "source_url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf",
+          "source_url": "https://report.telekom.com/annual-report-2025/",
           "verification_count": 3,
           "trend": [
             {
@@ -2185,7 +2185,7 @@
             }
           ],
           "component_count": 3,
-          "source_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
           "verification_count": 3,
           "trend": [
             {
@@ -2230,7 +2230,7 @@
             }
           ],
           "component_count": 3,
-          "source_url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
           "verification_count": 3,
           "trend": [
             {
@@ -2275,7 +2275,7 @@
             }
           ],
           "component_count": 3,
-          "source_url": "https://group.ntt/en/ir/library/annual/",
+          "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
           "verification_count": 3,
           "trend": [
             {
@@ -2305,7 +2305,7 @@
             "label": "Deutsche Telekom FY2025披露规模"
           },
           "context": "四家运营商FY2025官方披露口径",
-          "insight": "各公司移动连接口径不同，只比较披露规模；财务变化在各自本币内计算，不比较绝对金额。",
+          "insight": "Deutsche Telekom为273.20百万连接，NTT Group为93.06百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
           "items": [
             {
               "name": "Deutsche Telekom",
@@ -2335,7 +2335,7 @@
                 }
               ],
               "component_count": 3,
-              "source_url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf",
+              "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "trend": [
                 {
@@ -2381,7 +2381,7 @@
                 }
               ],
               "component_count": 3,
-              "source_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "trend": [
                 {
@@ -2427,7 +2427,7 @@
                 }
               ],
               "component_count": 3,
-              "source_url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "trend": [
                 {
@@ -2473,7 +2473,7 @@
                 }
               ],
               "component_count": 3,
-              "source_url": "https://group.ntt/en/ir/library/annual/",
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "trend": [
                 {
@@ -2505,7 +2505,7 @@
             "label": "Deutsche Telekom FY2025同比"
           },
           "context": "同公司FY2025对FY2024",
-          "insight": "四家公司均以自身连续年度披露口径计算；不同公司的用户、设备及批发连接范围不混用。",
+          "insight": "四家均增长，Deutsche Telekom为4.51%，Verizon为0.56%；这说明连接扩张同向但强弱分化。",
           "items": [
             {
               "name": "Deutsche Telekom",
@@ -2523,7 +2523,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf",
+              "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2543,7 +2543,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2563,7 +2563,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://group.ntt/en/ir/library/annual/",
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2583,7 +2583,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "ai_summary": {}
             }
@@ -2601,7 +2601,7 @@
             "label": "NTT Group FY2025原币营收同比"
           },
           "context": "同公司原币FY2025对FY2024",
-          "insight": "增长率只在同一公司、同一原币口径内计算，避免汇率换算扭曲。",
+          "insight": "四家原币营收均增长，NTT Group为5.14%，Verizon为2.52%；这表明收入扩张同向但增速分层。",
           "items": [
             {
               "name": "NTT Group",
@@ -2619,7 +2619,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://group.ntt/en/ir/library/annual/",
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2639,7 +2639,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf",
+              "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2659,7 +2659,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2679,7 +2679,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "ai_summary": {}
             }
@@ -2697,7 +2697,7 @@
             "label": "AT&T FY2025归母净利率"
           },
           "context": "FY2025归母净利润除以同年营收",
-          "insight": "比例来自同公司同币种数据；仍需结合一次性项目和业务组合理解。",
+          "insight": "AT&T归母净利率为17.47%，NTT Group为7.20%；差距说明盈利缓冲分层，但不代表绝对利润高低。",
           "items": [
             {
               "name": "AT&T",
@@ -2715,7 +2715,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2735,7 +2735,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2755,7 +2755,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf",
+              "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "ai_summary": {}
             },
@@ -2775,7 +2775,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://group.ntt/en/ir/library/annual/",
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "ai_summary": {}
             }
@@ -2808,19 +2808,19 @@
       "sources": [
         {
           "label": "Deutsche Telekom",
-          "url": "https://report.telekom.com/annual-report-2025/_assets/downloads/entire-dtag-ar25.pdf"
+          "url": "https://report.telekom.com/annual-report-2025/"
         },
         {
           "label": "AT&T",
-          "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/annual-reports/2025/2025-annual-report-complete.pdf"
+          "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
         },
         {
           "label": "Verizon",
-          "url": "https://www.verizon.com/about/sites/default/files/2025-Annual-Report-on-Form-10-K.pdf"
+          "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
         },
         {
           "label": "NTT Group",
-          "url": "https://group.ntt/en/ir/library/annual/"
+          "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
         }
       ],
       "ai_analysis": [
@@ -3584,299 +3584,131 @@
           "ai_summary": {}
         },
         {
-          "id": "margin_change",
-          "label": "利润率变化",
-          "visual": "trends",
+          "id": "investment",
+          "label": "集团资本开支",
+          "visual": "rows",
           "metric": {
-            "value": 9.6,
-            "unit": "%",
-            "label": "同口径利润率变化"
+            "value": 0,
+            "unit": "家",
+            "label": "已通过三来源入库"
           },
-          "context": "同一厂商、同一利润率口径连续两年",
-          "insight": "Google同口径利润率提高 +9.6%，AWS下降 1.6%；差距说明收入增长不等于利润转化同步改善。",
+          "context": "母公司集团口径 · 保留原币 · 不跨币种排名",
+          "insight": "当前 0/7 家已有三份独立官方文件核验的集团CAPEX；该指标只表示母公司整体投入，不表示云业务单独投入。",
           "items": [
             {
-              "name": "Google",
-              "value": 9.6,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 经营利润率",
-              "analysis": "经营利润率由 14.1% 变为 23.7%，变化 +9.6%；利润转化改善。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 5.2
-                },
-                {
-                  "label": "FY2024",
-                  "value": 14.1
-                },
-                {
-                  "label": "FY2025",
-                  "value": 23.7
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 5.2,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 14.1,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 23.7,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
-              "ai_summary": {}
-            },
-            {
               "name": "腾讯",
-              "value": 4.0,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 代理分部毛利率",
-              "analysis": "代理分部毛利率由 47.0% 变为 51.0%，变化 +4.0%；利润转化改善。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 40.0
-                },
-                {
-                  "label": "FY2024",
-                  "value": 47.0
-                },
-                {
-                  "label": "FY2025",
-                  "value": 51.0
-                }
-              ],
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
               "components": [
                 {
-                  "label": "FY2023",
-                  "value": 40.0,
-                  "unit": "%",
-                  "detail": "代理分部毛利率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 47.0,
-                  "unit": "%",
-                  "detail": "代理分部毛利率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 51.0,
-                  "unit": "%",
-                  "detail": "代理分部毛利率"
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
                 }
               ],
-              "component_count": 3,
+              "component_count": 1,
               "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
               "ai_summary": {}
             },
             {
-              "name": "Alibaba",
-              "value": 3.1,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 调整后EBITA率",
-              "analysis": "调整后EBITA率由 5.8% 变为 8.9%，变化 +3.1%；利润转化改善。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 4.0
-                },
-                {
-                  "label": "FY2024",
-                  "value": 5.8
-                },
-                {
-                  "label": "FY2025",
-                  "value": 8.9
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 4.0,
-                  "unit": "%",
-                  "detail": "调整后EBITA率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 5.8,
-                  "unit": "%",
-                  "detail": "调整后EBITA率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 8.9,
-                  "unit": "%",
-                  "detail": "调整后EBITA率"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "Azure",
-              "value": -1.2,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 经营利润率",
-              "analysis": "经营利润率由 43.2% 变为 42.0%，变化 -1.2%；利润转化减弱。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 38.9
-                },
-                {
-                  "label": "FY2024",
-                  "value": 43.2
-                },
-                {
-                  "label": "FY2025",
-                  "value": 42.0
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 38.9,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 43.2,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 42.0,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-              "ai_summary": {}
-            },
-            {
               "name": "Oracle",
-              "value": -1.3,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 经营利润率",
-              "analysis": "经营利润率由 64.1% 变为 62.8%，变化 -1.3%；利润转化减弱。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 63.6
-                },
-                {
-                  "label": "FY2024",
-                  "value": 64.1
-                },
-                {
-                  "label": "FY2025",
-                  "value": 62.8
-                }
-              ],
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
               "components": [
                 {
-                  "label": "FY2023",
-                  "value": 63.6,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 64.1,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 62.8,
-                  "unit": "%",
-                  "detail": "经营利润率"
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
                 }
               ],
-              "component_count": 3,
+              "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "AWS",
-              "value": -1.6,
-              "unit": "%",
-              "detail": "FY2024→FY2025 · 经营利润率",
-              "analysis": "经营利润率由 37.0% 变为 35.4%，变化 -1.6%；利润转化减弱。",
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 27.1
-                },
-                {
-                  "label": "FY2024",
-                  "value": 37.0
-                },
-                {
-                  "label": "FY2025",
-                  "value": 35.4
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 27.1,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 37.0,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 35.4,
-                  "unit": "%",
-                  "detail": "经营利润率"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
               "ai_summary": {}
             },
             {
               "name": "Huawei",
               "unit": "",
-              "detail": "缺少同口径上一财年",
-              "analysis": "缺少同一利润率口径的连续两年数据。",
-              "trend": [],
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
               "components": [
                 {
-                  "label": "未披露利润率",
-                  "detail": "未披露连续两年"
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
                 }
               ],
-              "component_count": 0,
+              "component_count": 1,
               "source_url": "https://www.huawei.com/en/annual-report/2025",
+              "ai_summary": {}
+            },
+            {
+              "name": "Google",
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
+              "components": [
+                {
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+              "ai_summary": {}
+            },
+            {
+              "name": "Azure",
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
+              "components": [
+                {
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+              "ai_summary": {}
+            },
+            {
+              "name": "Alibaba",
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
+              "components": [
+                {
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+              "ai_summary": {}
+            },
+            {
+              "name": "AWS",
+              "unit": "",
+              "period": "",
+              "detail": "原表尚未收录集团资本开支",
+              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
+              "components": [
+                {
+                  "label": "集团资本开支",
+                  "detail": "三来源数据待补"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
               "ai_summary": {}
             }
           ],
-          "headline": "利润改善方向分化",
+          "headline": "集团投入口径正在补齐",
           "ai_summary": {}
         }
       ],
@@ -4922,7 +4754,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "c79a0526e512730586bf9c71a8fbf781aa82191e06969e242fdc1e7ebd67d1b7",
+    "evidence_hash": "cf813679392fb765a9871b8c5458c4ea43accf5db2b93c4227d9ff3042abdc23",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
