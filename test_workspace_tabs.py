@@ -121,6 +121,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('.operational-report-control', STYLE)
 
     def test_navigation_is_linkable_responsive_and_keyboard_accessible(self):
+        responsive_style = (
+            ROOT / "web" / "static" / "responsive-layout-hardening.css"
+        ).read_text(encoding="utf-8")
+
         self.assertIn('params.get("workspace")', SCRIPT)
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
@@ -143,6 +147,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("clearWorkspaceSignal(target);", SCRIPT)
         self.assertIn('window.CMHKMotion = { announce: announceWorkspaceEvent }', SCRIPT)
         self.assertIn('event.data?.type !== "cmhk-workspace-motion"', SCRIPT)
+        self.assertIn("calc(100vh / 1044px)", responsive_style)
+        self.assertIn("calc((100vh - 8px) / 1096px)", responsive_style)
+        self.assertIn("height: 146px; gap: 4px; padding: 12px 15px 10px", STYLE)
         self.assertIn('refreshFaultData({ quiet: true })', SCRIPT)
         self.assertNotIn("workspace-running-dot", STYLE)
         self.assertIn('class="workspace-nav-icon"', INDEX)
@@ -184,7 +191,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=21', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=22', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
@@ -204,6 +211,16 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("workspace-bg-content-v1.png", SUBSCRIPTION_STYLE)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
         self.assertNotIn('localStorage.setItem("cmhk-weekly-subscription"', SCRIPT)
+
+    def test_company_data_failure_state_tolerates_optional_stats_host(self):
+        script = (ROOT / "web" / "static" / "company-data.js").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            'if (els.stats) els.stats.innerHTML = `<span>加载失败</span>`;',
+            script,
+        )
 
     def test_external_links_are_protocol_checked_and_api_failures_are_isolated(self):
         self.assertIn('const safeUrl =', SCRIPT)
@@ -521,7 +538,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.js?v=92', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=103', INDEX)
+        self.assertIn('workspace-tabs.css?v=104', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)

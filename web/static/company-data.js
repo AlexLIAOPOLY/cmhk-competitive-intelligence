@@ -534,6 +534,6 @@ setClock();
 setInterval(setClock, 30000);
 loadCompanyMetrics().catch((error) => {
   els.body.innerHTML = `<tr><td colspan="5" class="empty-company-data">${escapeHtml(error.message)}</td></tr>`;
-  els.stats.innerHTML = `<span>加载失败</span>`;
+  if (els.stats) els.stats.innerHTML = `<span>加载失败</span>`;
 });
 setInterval(refreshCompanyMetrics, 30000);

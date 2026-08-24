@@ -458,6 +458,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
+            hardening_style = (
+                first / "executive-responsive-hardening.css"
+            ).read_text(encoding="utf-8")
             self.assertRegex(html, r'href="\./executive-dashboard-demo\.css\?v=\d+"')
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
@@ -472,6 +475,16 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('font: 680 clamp(12px, .7vw, 24px)/1', style)
             self.assertIn('font-size: clamp(14px, .82vw, 30px)', style)
             self.assertIn('background: rgba(5, 18, 30, .5)', style)
+            self.assertIn("(max-height: 899px)", hardening_style)
+            self.assertIn(".monitor-kpi { padding: 6px 8px; }", hardening_style)
+            self.assertIn("position: fixed", hardening_style)
+            self.assertIn(
+                "height: calc(100vh / var(--fit-scale))",
+                hardening_style,
+            )
+            self.assertIn("min-height: 0", hardening_style)
+            self.assertIn("@media (min-width: 2200px)", hardening_style)
+            self.assertIn(".kpi-grid .monitor-kpi > em", hardening_style)
             self.assertIn("metric-sparkline", script)
             self.assertIn("network-architecture", script)
             self.assertIn("移动网络基础设施", script)
@@ -583,7 +596,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(
-                'href="./responsive-layout-hardening.css?v=6"',
+                'href="./responsive-layout-hardening.css?v=7"',
                 intelligence_html,
             )
             self.assertTrue(
