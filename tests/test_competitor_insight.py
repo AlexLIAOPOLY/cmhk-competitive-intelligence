@@ -245,6 +245,19 @@ class CompetitorInsightTests(unittest.TestCase):
         content = "竞争格局｜数值持续增长。\n公司定位｜两家趋势接近。\n业务含义｜竞争重心转向使用体验。"
         self.assertEqual(len(web_app._parse_competitor_insight_items(content)), 3)
 
+    def test_partial_labelled_stream_does_not_repeat_an_earlier_paragraph(self):
+        content = (
+            "竞争格局｜第一段已完整生成。这里还有第二句。\n"
+            "公司定位｜第二段仍在流式生成"
+        )
+
+        items = web_app._parse_competitor_insight_items(content)
+
+        self.assertEqual(len(items), 2)
+        self.assertTrue(items[0].startswith("竞争格局｜"))
+        self.assertTrue(items[1].startswith("公司定位｜"))
+        self.assertEqual(sum("第一段已完整生成" in item for item in items), 1)
+
     def test_only_empty_model_content_is_rejected(self):
         with self.assertRaisesRegex(RuntimeError, "未返回可用洞察"):
             web_app._competitor_insight_content(" \n ")

@@ -630,19 +630,36 @@
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
     setCompetitorInsightStatus(card, status || (isAi ? "" : "AI暂未完成"));
     card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "RETRY";
-    const list = card.querySelector("[data-competitor-insight-list]");
     const sourceItems = Array.isArray(insights) && insights.length ? insights : parseCompetitorInsightItems(insight);
     const items = sourceItems.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
-    list.replaceChildren(...items.map((item, index) => {
-      const labels = ["竞争格局", "公司定位", "业务含义"];
-      const li = document.createElement("li");
-      const label = document.createElement("b");
-      const copy = document.createElement("span");
-      label.textContent = labels[index] || "观察";
-      copy.textContent = item.replace(/^(竞争格局|公司分化|公司定位|业务含义|数据格局|共同年度|解读边界)[：|｜]\s*/, "");
-      li.append(label, copy);
-      return li;
-    }));
+    syncCompetitorInsightRows(card, items);
+  }
+
+  function syncCompetitorInsightRows(card, items) {
+    const list = card?.querySelector("[data-competitor-insight-list]");
+    if (!list) return;
+    const body = card.querySelector(".competitor-insight-body");
+    const shouldFollow = body && body.scrollHeight - body.scrollTop - body.clientHeight <= 24;
+    const labels = ["竞争格局", "公司定位", "业务含义"];
+    items.slice(0, 3).forEach((item, index) => {
+      let li = list.children[index];
+      if (!li) {
+        li = document.createElement("li");
+        const label = document.createElement("b");
+        const copy = document.createElement("span");
+        li.append(label, copy);
+        list.append(li);
+      }
+      const label = li.querySelector("b");
+      const copy = li.querySelector("span");
+      const nextCopy = String(item || "").replace(/^(竞争格局|公司分化|公司定位|业务含义|数据格局|共同年度|解读边界)[：|｜]\s*/, "");
+      if (label.textContent !== labels[index]) label.textContent = labels[index];
+      if (copy.textContent !== nextCopy) copy.textContent = nextCopy;
+    });
+    while (list.children.length > items.length) list.lastElementChild.remove();
+    if (body && shouldFollow) {
+      window.requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
+    }
   }
 
   function parseCompetitorInsightItems(content) {
@@ -666,7 +683,7 @@
         candidates.push(line);
       }
     });
-    if (candidates.length < 3) {
+    if (candidates.length < 3 && labelled.size === 0) {
       const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
       if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
     }
@@ -696,6 +713,7 @@
     card.setAttribute("aria-busy", "true");
     setCompetitorInsightStatus(card, "正在连接 AI");
     card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
+    card.querySelector("[data-competitor-insight-list]").replaceChildren();
   }
 
   function renderCompetitorInsightDraft(card, text) {
@@ -705,16 +723,7 @@
     card.classList.add("is-streaming");
     setCompetitorInsightStatus(card, `AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
-    const labels = ["竞争格局", "公司定位", "业务含义"];
-    card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
-      const li = document.createElement("li");
-      const label = document.createElement("b");
-      const copy = document.createElement("span");
-      label.textContent = labels[index];
-      copy.textContent = item.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "");
-      li.append(label, copy);
-      return li;
-    }));
+    syncCompetitorInsightRows(card, drafts);
   }
 
   function scheduleCompetitorInsightRecovery(payload, requestId, card, error) {

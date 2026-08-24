@@ -292,7 +292,7 @@ def _parse_competitor_insight_items(content: object) -> list[str]:
             continue
         if not (line.startswith("|") and line.endswith("|")):
             candidates.append(line)
-    if len(candidates) < 3:
+    if len(candidates) < 3 and not labelled:
         sentences = [part.strip() for part in re.split(r"(?<=[。！？!?])\s*", " ".join(candidates) or text) if part.strip()]
         if len(sentences) > len(candidates):
             candidates = sentences
