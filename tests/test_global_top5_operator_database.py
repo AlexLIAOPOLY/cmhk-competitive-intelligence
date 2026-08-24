@@ -36,8 +36,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
+                "AT&T": 23,
                 "Bharti Airtel": 98,
+                "Deutsche Telekom": 23,
+                "NTT Group": 23,
                 "Reliance Jio": 27,
+                "Verizon": 23,
                 "中国广电": 6,
                 "中国电信": 64,
                 "中国移动": 80,
@@ -48,6 +52,33 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("## 全库核验等级", audit_text)
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
         self.assertIn("- Bharti Airtel: 98", audit_text)
+
+    def test_requested_international_operators_are_complete_and_three_source_verified(self):
+        requested = {"verizon", "deutsche_telekom", "att", "ntt_group"}
+        rows = [row for row in self.rows if row["operator_id"] in requested]
+        self.assertEqual(len(rows), 92)
+        self.assertEqual({row["operator_id"] for row in rows}, requested)
+        self.assertEqual({row["metric_key"] for row in rows}, {"revenue", "net_profit", "reported_mobile_connections"})
+        self.assertTrue(all(row["verification_status"] == "official_three_distinct_sources_verified" for row in rows))
+        self.assertTrue(all(row["distinct_source_document_count"] >= 3 for row in rows))
+        self.assertFalse(any("comcast" in str(row).lower() for row in self.rows))
+
+    def test_xiaojing_exact_retrieval_recognizes_requested_operators(self):
+        cases = {
+            "Verizon FY2025营收是多少？": ("operator=Verizon", "official_value=138191 USD_million"),
+            "德国电信 FY2025移动连接数是多少？": ("operator=Deutsche Telekom", "official_value=273.2 million_connections"),
+            "AT&T FY2025净利润是多少？": ("operator=AT&T", "official_value=21953 USD_million"),
+            "NTT Group FY2025营收是多少？": ("operator=NTT Group", "official_value=14409.1 JPY_billion"),
+        }
+        for question, expected in cases.items():
+            chunks = rag_llm._global_operator_exact_metric_chunks(
+                question, dataset_ids={"global_top5_operators_2016_2025"}
+            )
+            combined = "\n".join(chunk["text"] for chunk in chunks)
+            self.assertIn(expected[0], combined)
+            self.assertIn(expected[1], combined)
+            self.assertIn("distinct_source_document_count=3", combined)
+            self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
 
     def test_china_broadnet_2024_5g_users_have_exact_metric_evidence(self):
         row = self.index[("china_broadnet", 2024, "5g_network_subscribers")]

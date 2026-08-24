@@ -622,6 +622,10 @@ def _global_operator_exact_metric_chunks(
         "china_broadnet": ["中国广电", "中广电", "china broadnet", "china broadcasting network", "cbn"],
         "bharti_airtel": ["bharti airtel", "airtel"],
         "reliance_jio": ["reliance jio", "jio"],
+        "verizon": ["verizon", "美国电话电报之外的美国运营商", "威瑞森"],
+        "deutsche_telekom": ["deutsche telekom", "德国电信"],
+        "att": ["at&t", "at＆t", "at and t", "美国电话电报"],
+        "ntt_group": ["ntt group", "ntt", "日本电报电话公司", "日本电报电话"],
     }
     matched_subjects = {
         operator_id
@@ -675,7 +679,7 @@ def _global_operator_exact_metric_chunks(
         "hd_uhd_cable_tv_users": ["高清超高清有线用户", "高清和超高清用户", "hd uhd cable users"],
         "uhd_cable_tv_users": ["超高清有线用户", "uhd cable users"],
         "cable_network_industry_revenue": ["有线电视网络收入", "有线网络行业收入", "cable network industry revenue"],
-        "revenue": ["营业收入", "总收入", "revenue"],
+        "revenue": ["营业收入", "营收", "总收入", "revenue"],
         "value_of_sales_and_services": ["销售及服务价值", "value of sales and services"],
         "revenue_from_operations": ["经营收入", "revenue from operations"],
         "ebitda": ["ebitda"],
@@ -685,6 +689,7 @@ def _global_operator_exact_metric_chunks(
         "capex": ["资本开支", "capex"],
         "net_debt": ["净债务", "net debt"],
         "shareholders_equity": ["股东权益", "shareholders equity", "shareholder's equity"],
+        "reported_mobile_connections": ["披露口径移动连接", "移动连接", "移动连接数", "移动用户规模", "reported mobile connections", "mobile connections"],
     }
     matched_metrics = {
         metric_key

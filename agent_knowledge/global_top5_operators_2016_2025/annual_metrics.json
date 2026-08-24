@@ -39,6 +39,31 @@
       "legal_name": "China Broadcasting Network Group Corporation Ltd. / China Broadnet",
       "fiscal_year_end": "12-31",
       "existing_financial_reference": ""
+    },
+    "verizon": {
+      "name": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "fiscal_year_end": "12-31",
+      "existing_financial_reference": ""
+    },
+    "deutsche_telekom": {
+      "name": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "fiscal_year_end": "12-31",
+      "existing_financial_reference": ""
+    },
+    "att": {
+      "name": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "fiscal_year_end": "12-31",
+      "existing_financial_reference": ""
+    },
+    "ntt_group": {
+      "name": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "fiscal_year_end": "03-31",
+      "period_end_year_offset": 1,
+      "existing_financial_reference": ""
     }
   },
   "metrics": {
@@ -265,9 +290,910 @@
     "shareholders_equity": {
       "metric_zh": "股东权益",
       "default_unit": "INR_million"
+    },
+    "reported_mobile_connections": {
+      "metric_zh": "披露口径移动连接/用户数",
+      "default_unit": "million_connections"
     }
   },
   "rows": [
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 12976,
+      "official_value": 12976,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2016",
+        "att:annual:2017",
+        "att:annual:2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2016_for_2016",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271717000021/0000732717-17-000021-index.html",
+      "verification_sources": [
+        "att_annual_2016_for_2016",
+        "att_annual_2017_for_2016",
+        "att_annual_2018_for_2016"
+      ],
+      "candidate_sources": [
+        "att_annual_2016_for_2016",
+        "att_annual_2017_for_2016",
+        "att_annual_2018_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 163786,
+      "official_value": 163786,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2016",
+        "att:annual:2017",
+        "att:annual:2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2016_for_2016",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271717000021/0000732717-17-000021-index.html",
+      "verification_sources": [
+        "att_annual_2016_for_2016",
+        "att_annual_2017_for_2016",
+        "att_annual_2018_for_2016"
+      ],
+      "candidate_sources": [
+        "att_annual_2016_for_2016",
+        "att_annual_2017_for_2016",
+        "att_annual_2018_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 29450,
+      "official_value": 29450,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2017",
+        "att:annual:2018",
+        "att:annual:2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2017_for_2017",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+      "verification_sources": [
+        "att_annual_2017_for_2017",
+        "att_annual_2018_for_2017",
+        "att_annual_2019_for_2017"
+      ],
+      "candidate_sources": [
+        "att_annual_2017_for_2017",
+        "att_annual_2018_for_2017",
+        "att_annual_2019_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 160546,
+      "official_value": 160546,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2017",
+        "att:annual:2018",
+        "att:annual:2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2017_for_2017",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+      "verification_sources": [
+        "att_annual_2017_for_2017",
+        "att_annual_2018_for_2017",
+        "att_annual_2019_for_2017"
+      ],
+      "candidate_sources": [
+        "att_annual_2017_for_2017",
+        "att_annual_2018_for_2017",
+        "att_annual_2019_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 19370,
+      "official_value": 19370,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2018",
+        "att:annual:2019",
+        "att:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2018_for_2018",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+      "verification_sources": [
+        "att_annual_2018_for_2018",
+        "att_annual_2019_for_2018",
+        "att_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "att_annual_2018_for_2018",
+        "att_annual_2019_for_2018",
+        "att_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 170756,
+      "official_value": 170756,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2018",
+        "att:annual:2019",
+        "att:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2018_for_2018",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+      "verification_sources": [
+        "att_annual_2018_for_2018",
+        "att_annual_2019_for_2018",
+        "att_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "att_annual_2018_for_2018",
+        "att_annual_2019_for_2018",
+        "att_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 13903,
+      "official_value": 13903,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2019",
+        "att:annual:2020",
+        "att:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2019_for_2019",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+      "verification_sources": [
+        "att_annual_2019_for_2019",
+        "att_annual_2020_for_2019",
+        "att_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "att_annual_2019_for_2019",
+        "att_annual_2020_for_2019",
+        "att_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 181193,
+      "official_value": 181193,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2019",
+        "att:annual:2020",
+        "att:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2019_for_2019",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+      "verification_sources": [
+        "att_annual_2019_for_2019",
+        "att_annual_2020_for_2019",
+        "att_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "att_annual_2019_for_2019",
+        "att_annual_2020_for_2019",
+        "att_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": -5176,
+      "official_value": -5176,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2020",
+        "att:annual:2021",
+        "att:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2020_for_2020",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+      "verification_sources": [
+        "att_annual_2020_for_2020",
+        "att_annual_2021_for_2020",
+        "att_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "att_annual_2020_for_2020",
+        "att_annual_2021_for_2020",
+        "att_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 143050,
+      "official_value": 143050,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2020",
+        "att:annual:2021",
+        "att:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2020_for_2020",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+      "verification_sources": [
+        "att_annual_2020_for_2020",
+        "att_annual_2021_for_2020",
+        "att_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "att_annual_2020_for_2020",
+        "att_annual_2021_for_2020",
+        "att_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 20081,
+      "official_value": 20081,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2021",
+        "att:annual:2022",
+        "att:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2021_for_2021",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+      "verification_sources": [
+        "att_annual_2021_for_2021",
+        "att_annual_2022_for_2021",
+        "att_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "att_annual_2021_for_2021",
+        "att_annual_2022_for_2021",
+        "att_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 134038,
+      "official_value": 134038,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2021",
+        "att:annual:2022",
+        "att:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2021_for_2021",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+      "verification_sources": [
+        "att_annual_2021_for_2021",
+        "att_annual_2022_for_2021",
+        "att_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "att_annual_2021_for_2021",
+        "att_annual_2022_for_2021",
+        "att_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": -8524,
+      "official_value": -8524,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2022",
+        "att:annual:2023",
+        "att:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2022_for_2022",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+      "verification_sources": [
+        "att_annual_2022_for_2022",
+        "att_annual_2023_for_2022",
+        "att_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "att_annual_2022_for_2022",
+        "att_annual_2023_for_2022",
+        "att_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 120741,
+      "official_value": 120741,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2022",
+        "att:annual:2023",
+        "att:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2022_for_2022",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+      "verification_sources": [
+        "att_annual_2022_for_2022",
+        "att_annual_2023_for_2022",
+        "att_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "att_annual_2022_for_2022",
+        "att_annual_2023_for_2022",
+        "att_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 14400,
+      "official_value": 14400,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2023",
+        "att:annual:2024",
+        "att:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "verification_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 113.808,
+      "official_value": 113.808,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2023",
+        "att:annual:2024",
+        "att:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "verification_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 122428,
+      "official_value": 122428,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2023",
+        "att:annual:2024",
+        "att:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "verification_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "att_annual_2023_for_2023",
+        "att_annual_2024_for_2023",
+        "att_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 10948,
+      "official_value": 10948,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2024",
+        "att:annual:2025",
+        "att:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "verification_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 117.851,
+      "official_value": 117.851,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2024",
+        "att:annual:2025",
+        "att:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "verification_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 122336,
+      "official_value": 122336,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2024",
+        "att:annual:2025",
+        "att:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "verification_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "att_annual_2024_for_2024",
+        "att_annual_2025_for_2024",
+        "att_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 21953,
+      "official_value": 21953,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2025",
+        "att:presentation:2025",
+        "att:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "verification_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 120.105,
+      "official_value": 120.105,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2025",
+        "att:presentation:2025",
+        "att:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "verification_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "att",
+      "operator": "AT&T",
+      "legal_name": "AT&T Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 125648,
+      "official_value": 125648,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "att:annual:2025",
+        "att:presentation:2025",
+        "att:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "att_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "verification_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "att_annual_2025_for_2025",
+        "att_release_2025_for_2025",
+        "att_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
     {
       "operator_id": "bharti_airtel",
       "operator": "Bharti Airtel",
@@ -20103,6 +21029,1800 @@
       "quality_note": ""
     },
     {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 2.7,
+      "official_value": 2.7,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2016",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2016",
+        "deutsche_telekom_annual_2019_for_2016",
+        "deutsche_telekom_annual_2020_for_2016"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2016",
+        "deutsche_telekom_annual_2019_for_2016",
+        "deutsche_telekom_annual_2020_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 73.1,
+      "official_value": 73.1,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2016",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2016",
+        "deutsche_telekom_annual_2019_for_2016",
+        "deutsche_telekom_annual_2020_for_2016"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2016",
+        "deutsche_telekom_annual_2019_for_2016",
+        "deutsche_telekom_annual_2020_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 3.5,
+      "official_value": 3.5,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2017",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2017",
+        "deutsche_telekom_annual_2019_for_2017",
+        "deutsche_telekom_annual_2020_for_2017"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2017",
+        "deutsche_telekom_annual_2019_for_2017",
+        "deutsche_telekom_annual_2020_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 74.9,
+      "official_value": 74.9,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2017",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2017",
+        "deutsche_telekom_annual_2019_for_2017",
+        "deutsche_telekom_annual_2020_for_2017"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2017",
+        "deutsche_telekom_annual_2019_for_2017",
+        "deutsche_telekom_annual_2020_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 2.2,
+      "official_value": 2.2,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2018",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2018",
+        "deutsche_telekom_annual_2019_for_2018",
+        "deutsche_telekom_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2018",
+        "deutsche_telekom_annual_2019_for_2018",
+        "deutsche_telekom_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 75.7,
+      "official_value": 75.7,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2018",
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2018_for_2018",
+      "primary_source_url": "https://report.telekom.com/annual-report-2018/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2018_for_2018",
+        "deutsche_telekom_annual_2019_for_2018",
+        "deutsche_telekom_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2018_for_2018",
+        "deutsche_telekom_annual_2019_for_2018",
+        "deutsche_telekom_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 3.9,
+      "official_value": 3.9,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020",
+        "deutsche_telekom:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2019_for_2019",
+      "primary_source_url": "https://report.telekom.com/annual-report-2019/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2019_for_2019",
+        "deutsche_telekom_annual_2020_for_2019",
+        "deutsche_telekom_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2019_for_2019",
+        "deutsche_telekom_annual_2020_for_2019",
+        "deutsche_telekom_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 80.5,
+      "official_value": 80.5,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2019",
+        "deutsche_telekom:annual:2020",
+        "deutsche_telekom:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2019_for_2019",
+      "primary_source_url": "https://report.telekom.com/annual-report-2019/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2019_for_2019",
+        "deutsche_telekom_annual_2020_for_2019",
+        "deutsche_telekom_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2019_for_2019",
+        "deutsche_telekom_annual_2020_for_2019",
+        "deutsche_telekom_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 4.2,
+      "official_value": 4.2,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2020",
+        "deutsche_telekom:annual:2021",
+        "deutsche_telekom:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2020_for_2020",
+      "primary_source_url": "https://report.telekom.com/annual-report-2020/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2020_for_2020",
+        "deutsche_telekom_annual_2021_for_2020",
+        "deutsche_telekom_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2020_for_2020",
+        "deutsche_telekom_annual_2021_for_2020",
+        "deutsche_telekom_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 100.1,
+      "official_value": 100.1,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2020",
+        "deutsche_telekom:annual:2021",
+        "deutsche_telekom:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2020_for_2020",
+      "primary_source_url": "https://report.telekom.com/annual-report-2020/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2020_for_2020",
+        "deutsche_telekom_annual_2021_for_2020",
+        "deutsche_telekom_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2020_for_2020",
+        "deutsche_telekom_annual_2021_for_2020",
+        "deutsche_telekom_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 4.2,
+      "official_value": 4.2,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2021",
+        "deutsche_telekom:annual:2022",
+        "deutsche_telekom:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2021_for_2021",
+      "primary_source_url": "https://report.telekom.com/annual-report-2021/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2021_for_2021",
+        "deutsche_telekom_annual_2022_for_2021",
+        "deutsche_telekom_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2021_for_2021",
+        "deutsche_telekom_annual_2022_for_2021",
+        "deutsche_telekom_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 107.8,
+      "official_value": 107.8,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2021",
+        "deutsche_telekom:annual:2022",
+        "deutsche_telekom:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2021_for_2021",
+      "primary_source_url": "https://report.telekom.com/annual-report-2021/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2021_for_2021",
+        "deutsche_telekom_annual_2022_for_2021",
+        "deutsche_telekom_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2021_for_2021",
+        "deutsche_telekom_annual_2022_for_2021",
+        "deutsche_telekom_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 8.0,
+      "official_value": 8.0,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2022",
+        "deutsche_telekom:annual:2023",
+        "deutsche_telekom:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2022_for_2022",
+      "primary_source_url": "https://report.telekom.com/annual-report-2022/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2022_for_2022",
+        "deutsche_telekom_annual_2023_for_2022",
+        "deutsche_telekom_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2022_for_2022",
+        "deutsche_telekom_annual_2023_for_2022",
+        "deutsche_telekom_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 114.4,
+      "official_value": 114.4,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2022",
+        "deutsche_telekom:annual:2023",
+        "deutsche_telekom:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2022_for_2022",
+      "primary_source_url": "https://report.telekom.com/annual-report-2022/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2022_for_2022",
+        "deutsche_telekom_annual_2023_for_2022",
+        "deutsche_telekom_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2022_for_2022",
+        "deutsche_telekom_annual_2023_for_2022",
+        "deutsche_telekom_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 17.8,
+      "official_value": 17.8,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2023",
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2023_for_2023",
+      "primary_source_url": "https://report.telekom.com/annual-report-2023/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 252.2,
+      "official_value": 252.2,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2023",
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2023_for_2023",
+      "primary_source_url": "https://report.telekom.com/annual-report-2023/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 112.0,
+      "official_value": 112.0,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2023",
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2023_for_2023",
+      "primary_source_url": "https://report.telekom.com/annual-report-2023/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2023_for_2023",
+        "deutsche_telekom_annual_2024_for_2023",
+        "deutsche_telekom_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 11.2,
+      "official_value": 11.2,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2024_for_2024",
+      "primary_source_url": "https://report.telekom.com/annual-report-2024/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 261.4,
+      "official_value": 261.4,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2024_for_2024",
+      "primary_source_url": "https://report.telekom.com/annual-report-2024/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 115.8,
+      "official_value": 115.8,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2024",
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2024_for_2024",
+      "primary_source_url": "https://report.telekom.com/annual-report-2024/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2024_for_2024",
+        "deutsche_telekom_annual_2025_for_2024",
+        "deutsche_telekom_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 9.6,
+      "official_value": 9.6,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:presentation:2025",
+        "deutsche_telekom:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2025_for_2025",
+      "primary_source_url": "https://report.telekom.com/annual-report-2025/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 273.2,
+      "official_value": 273.2,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:presentation:2025",
+        "deutsche_telekom:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2025_for_2025",
+      "primary_source_url": "https://report.telekom.com/annual-report-2025/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "deutsche_telekom",
+      "operator": "Deutsche Telekom",
+      "legal_name": "Deutsche Telekom AG",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 119.1,
+      "official_value": 119.1,
+      "unit": "EUR_billion",
+      "comparator": "=",
+      "scope": "Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "deutsche_telekom:annual:2025",
+        "deutsche_telekom:presentation:2025",
+        "deutsche_telekom:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "deutsche_telekom_annual_2025_for_2025",
+      "primary_source_url": "https://report.telekom.com/annual-report-2025/",
+      "verification_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "deutsche_telekom_annual_2025_for_2025",
+        "deutsche_telekom_release_2025_for_2025",
+        "deutsche_telekom_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2017-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 800.1,
+      "official_value": 800.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2016",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2016",
+        "ntt_group_annual_2020_for_2016",
+        "ntt_group_annual_2021_for_2016"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2016",
+        "ntt_group_annual_2020_for_2016",
+        "ntt_group_annual_2021_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2017-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 11391.0,
+      "official_value": 11391.0,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2016",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2016",
+        "ntt_group_annual_2020_for_2016",
+        "ntt_group_annual_2021_for_2016"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2016",
+        "ntt_group_annual_2020_for_2016",
+        "ntt_group_annual_2021_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 897.9,
+      "official_value": 897.9,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2017",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2017",
+        "ntt_group_annual_2020_for_2017",
+        "ntt_group_annual_2021_for_2017"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2017",
+        "ntt_group_annual_2020_for_2017",
+        "ntt_group_annual_2021_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 11782.1,
+      "official_value": 11782.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2017",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2017",
+        "ntt_group_annual_2020_for_2017",
+        "ntt_group_annual_2021_for_2017"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2017",
+        "ntt_group_annual_2020_for_2017",
+        "ntt_group_annual_2021_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2019-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 854.6,
+      "official_value": 854.6,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2018",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2018",
+        "ntt_group_annual_2020_for_2018",
+        "ntt_group_annual_2021_for_2018"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2018",
+        "ntt_group_annual_2020_for_2018",
+        "ntt_group_annual_2021_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2019-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 11879.8,
+      "official_value": 11879.8,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2018",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2018",
+        "ntt_group_annual_2020_for_2018",
+        "ntt_group_annual_2021_for_2018"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2018",
+        "ntt_group_annual_2020_for_2018",
+        "ntt_group_annual_2021_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2020-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 855.3,
+      "official_value": 855.3,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2019",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2019",
+        "ntt_group_annual_2020_for_2019",
+        "ntt_group_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2019",
+        "ntt_group_annual_2020_for_2019",
+        "ntt_group_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2020-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 11899.4,
+      "official_value": 11899.4,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2019",
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2019_for_2019",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2019_for_2019",
+        "ntt_group_annual_2020_for_2019",
+        "ntt_group_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2019_for_2019",
+        "ntt_group_annual_2020_for_2019",
+        "ntt_group_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2021-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 916.2,
+      "official_value": 916.2,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021",
+        "ntt_group:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2020_for_2020",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2020_for_2020",
+        "ntt_group_annual_2021_for_2020",
+        "ntt_group_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2020_for_2020",
+        "ntt_group_annual_2021_for_2020",
+        "ntt_group_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2021-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 11944.0,
+      "official_value": 11944.0,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2020",
+        "ntt_group:annual:2021",
+        "ntt_group:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2020_for_2020",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2020_for_2020",
+        "ntt_group_annual_2021_for_2020",
+        "ntt_group_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2020_for_2020",
+        "ntt_group_annual_2021_for_2020",
+        "ntt_group_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2022-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 1181.1,
+      "official_value": 1181.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2021",
+        "ntt_group:annual:2022",
+        "ntt_group:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2021_for_2021",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2021_for_2021",
+        "ntt_group_annual_2022_for_2021",
+        "ntt_group_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2021_for_2021",
+        "ntt_group_annual_2022_for_2021",
+        "ntt_group_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2022-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 12156.4,
+      "official_value": 12156.4,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2021",
+        "ntt_group:annual:2022",
+        "ntt_group:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2021_for_2021",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2021_for_2021",
+        "ntt_group_annual_2022_for_2021",
+        "ntt_group_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2021_for_2021",
+        "ntt_group_annual_2022_for_2021",
+        "ntt_group_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2023-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 1213.1,
+      "official_value": 1213.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2022",
+        "ntt_group:annual:2023",
+        "ntt_group:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2022_for_2022",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2022_for_2022",
+        "ntt_group_annual_2023_for_2022",
+        "ntt_group_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2022_for_2022",
+        "ntt_group_annual_2023_for_2022",
+        "ntt_group_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2023-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 13136.2,
+      "official_value": 13136.2,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2022",
+        "ntt_group:annual:2023",
+        "ntt_group:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2022_for_2022",
+      "primary_source_url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2022_for_2022",
+        "ntt_group_annual_2023_for_2022",
+        "ntt_group_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2022_for_2022",
+        "ntt_group_annual_2023_for_2022",
+        "ntt_group_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2024-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 1279.5,
+      "official_value": 1279.5,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2023",
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2023_for_2023",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2024-03-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 89.94,
+      "official_value": 89.94,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2023",
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2023_for_2023",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2024-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 13374.6,
+      "official_value": 13374.6,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2023",
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2023_for_2023",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2023_for_2023",
+        "ntt_group_annual_2024_for_2023",
+        "ntt_group_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 1000.0,
+      "official_value": 1000.0,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025",
+        "ntt_group:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2024_for_2024",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 91.407,
+      "official_value": 91.407,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025",
+        "ntt_group:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2024_for_2024",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 13704.7,
+      "official_value": 13704.7,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2024",
+        "ntt_group:annual:2025",
+        "ntt_group:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2024_for_2024",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2024_for_2024",
+        "ntt_group_annual_2025_for_2024",
+        "ntt_group_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2026-03-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 1037.0,
+      "official_value": 1037.0,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2025",
+        "ntt_group:presentation:2025",
+        "ntt_group:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2025_for_2025",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2026-03-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 93.065,
+      "official_value": 93.065,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2025",
+        "ntt_group:presentation:2025",
+        "ntt_group:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2025_for_2025",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2026-03-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 14409.1,
+      "official_value": 14409.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "ntt_group:annual:2025",
+        "ntt_group:presentation:2025",
+        "ntt_group:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "ntt_group_annual_2025_for_2025",
+      "primary_source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "verification_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_annual_2025_for_2025",
+        "ntt_group_release_2025_for_2025",
+        "ntt_group_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
       "operator_id": "reliance_jio",
       "operator": "Reliance Jio",
       "legal_name": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
@@ -23593,6 +26313,903 @@
         "jio_q2_2026_integrated_filing"
       ],
       "quality_note": "FY2019 excludes the later INR48,660 crore presentation basis; only documents stating INR46,506 crore are counted. FY2020 excludes the contemporaneous INR68,462 crore basis and retains the later exact INR69,605 crore comparative repeated in the FY2021 and FY2022 annual reports. FY2021 is repeated exactly in the FY2021, FY2022 and FY2023 annual reports. FY2022 keeps the latest official comparative/restated value of INR100,166 crore; the FY2022 annual report and results release state the earlier INR100,161 crore and are excluded from the exact-source count. FY2024-25 use the RIL Digital Services segment basis consistently. JPL consolidated gross revenue is a different scope and is excluded."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 13127,
+      "official_value": 13127,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2016",
+        "verizon:annual:2017",
+        "verizon:annual:2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2016_for_2016",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000119312517050292/0001193125-17-050292-index.html",
+      "verification_sources": [
+        "verizon_annual_2016_for_2016",
+        "verizon_annual_2017_for_2016",
+        "verizon_annual_2018_for_2016"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2016_for_2016",
+        "verizon_annual_2017_for_2016",
+        "verizon_annual_2018_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2016-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 125980,
+      "official_value": 125980,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2016",
+        "verizon:annual:2017",
+        "verizon:annual:2018"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2016_for_2016",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000119312517050292/0001193125-17-050292-index.html",
+      "verification_sources": [
+        "verizon_annual_2016_for_2016",
+        "verizon_annual_2017_for_2016",
+        "verizon_annual_2018_for_2016"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2016_for_2016",
+        "verizon_annual_2017_for_2016",
+        "verizon_annual_2018_for_2016"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 30101,
+      "official_value": 30101,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2017",
+        "verizon:annual:2018",
+        "verizon:annual:2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2017_for_2017",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+      "verification_sources": [
+        "verizon_annual_2017_for_2017",
+        "verizon_annual_2018_for_2017",
+        "verizon_annual_2019_for_2017"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2017_for_2017",
+        "verizon_annual_2018_for_2017",
+        "verizon_annual_2019_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2017-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 126034,
+      "official_value": 126034,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2017",
+        "verizon:annual:2018",
+        "verizon:annual:2019"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2017_for_2017",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+      "verification_sources": [
+        "verizon_annual_2017_for_2017",
+        "verizon_annual_2018_for_2017",
+        "verizon_annual_2019_for_2017"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2017_for_2017",
+        "verizon_annual_2018_for_2017",
+        "verizon_annual_2019_for_2017"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 15528,
+      "official_value": 15528,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2018",
+        "verizon:annual:2019",
+        "verizon:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2018_for_2018",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2018_for_2018",
+        "verizon_annual_2019_for_2018",
+        "verizon_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2018_for_2018",
+        "verizon_annual_2019_for_2018",
+        "verizon_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2018-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 130863,
+      "official_value": 130863,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2018",
+        "verizon:annual:2019",
+        "verizon:annual:2020"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2018_for_2018",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2018_for_2018",
+        "verizon_annual_2019_for_2018",
+        "verizon_annual_2020_for_2018"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2018_for_2018",
+        "verizon_annual_2019_for_2018",
+        "verizon_annual_2020_for_2018"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 19265,
+      "official_value": 19265,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2019",
+        "verizon:annual:2020",
+        "verizon:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2019_for_2019",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+      "verification_sources": [
+        "verizon_annual_2019_for_2019",
+        "verizon_annual_2020_for_2019",
+        "verizon_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2019_for_2019",
+        "verizon_annual_2020_for_2019",
+        "verizon_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2019-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 131868,
+      "official_value": 131868,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2019",
+        "verizon:annual:2020",
+        "verizon:annual:2021"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2019_for_2019",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+      "verification_sources": [
+        "verizon_annual_2019_for_2019",
+        "verizon_annual_2020_for_2019",
+        "verizon_annual_2021_for_2019"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2019_for_2019",
+        "verizon_annual_2020_for_2019",
+        "verizon_annual_2021_for_2019"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 17801,
+      "official_value": 17801,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2020",
+        "verizon:annual:2021",
+        "verizon:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2020_for_2020",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2020_for_2020",
+        "verizon_annual_2021_for_2020",
+        "verizon_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2020_for_2020",
+        "verizon_annual_2021_for_2020",
+        "verizon_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2020-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 128292,
+      "official_value": 128292,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2020",
+        "verizon:annual:2021",
+        "verizon:annual:2022"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2020_for_2020",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2020_for_2020",
+        "verizon_annual_2021_for_2020",
+        "verizon_annual_2022_for_2020"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2020_for_2020",
+        "verizon_annual_2021_for_2020",
+        "verizon_annual_2022_for_2020"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 22065,
+      "official_value": 22065,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2021",
+        "verizon:annual:2022",
+        "verizon:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2021_for_2021",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+      "verification_sources": [
+        "verizon_annual_2021_for_2021",
+        "verizon_annual_2022_for_2021",
+        "verizon_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2021_for_2021",
+        "verizon_annual_2022_for_2021",
+        "verizon_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2021-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 133613,
+      "official_value": 133613,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2021",
+        "verizon:annual:2022",
+        "verizon:annual:2023"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2021_for_2021",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+      "verification_sources": [
+        "verizon_annual_2021_for_2021",
+        "verizon_annual_2022_for_2021",
+        "verizon_annual_2023_for_2021"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2021_for_2021",
+        "verizon_annual_2022_for_2021",
+        "verizon_annual_2023_for_2021"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 21256,
+      "official_value": 21256,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2022",
+        "verizon:annual:2023",
+        "verizon:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2022_for_2022",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2022_for_2022",
+        "verizon_annual_2023_for_2022",
+        "verizon_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2022_for_2022",
+        "verizon_annual_2023_for_2022",
+        "verizon_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2022-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 136835,
+      "official_value": 136835,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2022",
+        "verizon:annual:2023",
+        "verizon:annual:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2022_for_2022",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+      "verification_sources": [
+        "verizon_annual_2022_for_2022",
+        "verizon_annual_2023_for_2022",
+        "verizon_annual_2024_for_2022"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2022_for_2022",
+        "verizon_annual_2023_for_2022",
+        "verizon_annual_2024_for_2022"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 11614,
+      "official_value": 11614,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2023",
+        "verizon:annual:2024",
+        "verizon:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "verification_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 114.972,
+      "official_value": 114.972,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2023",
+        "verizon:annual:2024",
+        "verizon:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "verification_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 133974,
+      "official_value": 133974,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2023",
+        "verizon:annual:2024",
+        "verizon:annual:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2023_for_2023",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "verification_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2023_for_2023",
+        "verizon_annual_2024_for_2023",
+        "verizon_annual_2025_for_2023"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 17506,
+      "official_value": 17506,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2024",
+        "verizon:annual:2025",
+        "verizon:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "verification_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 115.256,
+      "official_value": 115.256,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2024",
+        "verizon:annual:2025",
+        "verizon:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "verification_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2024-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 134788,
+      "official_value": 134788,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2024",
+        "verizon:annual:2025",
+        "verizon:release:2024"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2024_for_2024",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "verification_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2024_for_2024",
+        "verizon_annual_2025_for_2024",
+        "verizon_release_2024_for_2024"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "net_profit",
+      "metric_zh": "净利润",
+      "value": 17174,
+      "official_value": 17174,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2025",
+        "verizon:presentation:2025",
+        "verizon:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "verification_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "reported_mobile_connections",
+      "metric_zh": "披露口径移动连接/用户数",
+      "value": 115.903,
+      "official_value": 115.903,
+      "unit": "million_connections",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2025",
+        "verizon:presentation:2025",
+        "verizon:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "verification_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "verizon",
+      "operator": "Verizon",
+      "legal_name": "Verizon Communications Inc.",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-12-31",
+      "grain": "annual",
+      "metric_key": "revenue",
+      "metric_zh": "营业收入",
+      "value": 138191,
+      "official_value": 138191,
+      "unit": "USD_million",
+      "comparator": "=",
+      "scope": "Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only",
+      "basis": "year_end",
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "distinct_source_document_count": 3,
+      "distinct_source_document_ids": [
+        "verizon:annual:2025",
+        "verizon:presentation:2025",
+        "verizon:release:2025"
+      ],
+      "triple_source_status": "three_distinct_sources_verified",
+      "primary_source_id": "verizon_annual_2025_for_2025",
+      "primary_source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "verification_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "candidate_sources": [
+        "verizon_annual_2025_for_2025",
+        "verizon_release_2025_for_2025",
+        "verizon_presentation_2025_for_2025"
+      ],
+      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     }
   ]
 }

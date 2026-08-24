@@ -9249,6 +9249,3066 @@
       "source_type": "official_national_statistical_bulletin",
       "publisher": "国家统计局",
       "source_document_id": "china_broadnet_nbs_2025"
+    },
+    {
+      "source_id": "verizon_annual_2016_for_2016",
+      "source_document_id": "verizon:annual:2016",
+      "operator_id": "verizon",
+      "year": 2016,
+      "label": "Verizon Communications Inc. FY2016 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000119312517050292/0001193125-17-050292-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 125980,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13127,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2017_for_2016",
+      "source_document_id": "verizon:annual:2017",
+      "operator_id": "verizon",
+      "year": 2017,
+      "label": "Verizon Communications Inc. FY2017 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 125980,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13127,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2018_for_2016",
+      "source_document_id": "verizon:annual:2018",
+      "operator_id": "verizon",
+      "year": 2018,
+      "label": "Verizon Communications Inc. FY2018 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 125980,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13127,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2017_for_2017",
+      "source_document_id": "verizon:annual:2017",
+      "operator_id": "verizon",
+      "year": 2017,
+      "label": "Verizon Communications Inc. FY2017 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 126034,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 30101,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2018_for_2017",
+      "source_document_id": "verizon:annual:2018",
+      "operator_id": "verizon",
+      "year": 2018,
+      "label": "Verizon Communications Inc. FY2018 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 126034,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 30101,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2019_for_2017",
+      "source_document_id": "verizon:annual:2019",
+      "operator_id": "verizon",
+      "year": 2019,
+      "label": "Verizon Communications Inc. FY2019 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 126034,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 30101,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2018_for_2018",
+      "source_document_id": "verizon:annual:2018",
+      "operator_id": "verizon",
+      "year": 2018,
+      "label": "Verizon Communications Inc. FY2018 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 130863,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 15528,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2019_for_2018",
+      "source_document_id": "verizon:annual:2019",
+      "operator_id": "verizon",
+      "year": 2019,
+      "label": "Verizon Communications Inc. FY2019 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 130863,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 15528,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2020_for_2018",
+      "source_document_id": "verizon:annual:2020",
+      "operator_id": "verizon",
+      "year": 2020,
+      "label": "Verizon Communications Inc. FY2020 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 130863,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 15528,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2019_for_2019",
+      "source_document_id": "verizon:annual:2019",
+      "operator_id": "verizon",
+      "year": 2019,
+      "label": "Verizon Communications Inc. FY2019 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 131868,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19265,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2020_for_2019",
+      "source_document_id": "verizon:annual:2020",
+      "operator_id": "verizon",
+      "year": 2020,
+      "label": "Verizon Communications Inc. FY2020 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 131868,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19265,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2021_for_2019",
+      "source_document_id": "verizon:annual:2021",
+      "operator_id": "verizon",
+      "year": 2021,
+      "label": "Verizon Communications Inc. FY2021 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 131868,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19265,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2020_for_2020",
+      "source_document_id": "verizon:annual:2020",
+      "operator_id": "verizon",
+      "year": 2020,
+      "label": "Verizon Communications Inc. FY2020 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 128292,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17801,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2021_for_2020",
+      "source_document_id": "verizon:annual:2021",
+      "operator_id": "verizon",
+      "year": 2021,
+      "label": "Verizon Communications Inc. FY2021 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 128292,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17801,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2022_for_2020",
+      "source_document_id": "verizon:annual:2022",
+      "operator_id": "verizon",
+      "year": 2022,
+      "label": "Verizon Communications Inc. FY2022 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 128292,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17801,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2021_for_2021",
+      "source_document_id": "verizon:annual:2021",
+      "operator_id": "verizon",
+      "year": 2021,
+      "label": "Verizon Communications Inc. FY2021 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 133613,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 22065,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2022_for_2021",
+      "source_document_id": "verizon:annual:2022",
+      "operator_id": "verizon",
+      "year": 2022,
+      "label": "Verizon Communications Inc. FY2022 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 133613,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 22065,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2023_for_2021",
+      "source_document_id": "verizon:annual:2023",
+      "operator_id": "verizon",
+      "year": 2023,
+      "label": "Verizon Communications Inc. FY2023 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 133613,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 22065,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2022_for_2022",
+      "source_document_id": "verizon:annual:2022",
+      "operator_id": "verizon",
+      "year": 2022,
+      "label": "Verizon Communications Inc. FY2022 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 136835,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21256,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2023_for_2022",
+      "source_document_id": "verizon:annual:2023",
+      "operator_id": "verizon",
+      "year": 2023,
+      "label": "Verizon Communications Inc. FY2023 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 136835,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21256,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2024_for_2022",
+      "source_document_id": "verizon:annual:2024",
+      "operator_id": "verizon",
+      "year": 2024,
+      "label": "Verizon Communications Inc. FY2024 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 136835,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21256,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2023_for_2023",
+      "source_document_id": "verizon:annual:2023",
+      "operator_id": "verizon",
+      "year": 2023,
+      "label": "Verizon Communications Inc. FY2023 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 133974,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11614,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 114.972,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2024_for_2023",
+      "source_document_id": "verizon:annual:2024",
+      "operator_id": "verizon",
+      "year": 2024,
+      "label": "Verizon Communications Inc. FY2024 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 133974,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11614,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 114.972,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2025_for_2023",
+      "source_document_id": "verizon:annual:2025",
+      "operator_id": "verizon",
+      "year": 2025,
+      "label": "Verizon Communications Inc. FY2025 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 133974,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11614,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 114.972,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2024_for_2024",
+      "source_document_id": "verizon:annual:2024",
+      "operator_id": "verizon",
+      "year": 2024,
+      "label": "Verizon Communications Inc. FY2024 annual document with FY2024 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 134788,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17506,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.256,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2025_for_2024",
+      "source_document_id": "verizon:annual:2025",
+      "operator_id": "verizon",
+      "year": 2025,
+      "label": "Verizon Communications Inc. FY2025 annual document with FY2024 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 134788,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17506,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.256,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_release_2024_for_2024",
+      "source_document_id": "verizon:release:2024",
+      "operator_id": "verizon",
+      "year": 2024,
+      "label": "Verizon Communications Inc. FY2024 release document with FY2024 evidence",
+      "url": "https://www.verizon.com/about/investors/quarterly-reports/4q-2024-earnings-business-update",
+      "source_type": "official_release_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 134788,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17506,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.256,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_annual_2025_for_2025",
+      "source_document_id": "verizon:annual:2025",
+      "operator_id": "verizon",
+      "year": 2025,
+      "label": "Verizon Communications Inc. FY2025 annual document with FY2025 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 138191,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17174,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.903,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_release_2025_for_2025",
+      "source_document_id": "verizon:release:2025",
+      "operator_id": "verizon",
+      "year": 2025,
+      "label": "Verizon Communications Inc. FY2025 release document with FY2025 evidence",
+      "url": "https://www.verizon.com/about/investors/quarterly-reports/4q-2025-earnings-conference-call-webcast",
+      "source_type": "official_release_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 138191,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17174,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.903,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "verizon_presentation_2025_for_2025",
+      "source_document_id": "verizon:presentation:2025",
+      "operator_id": "verizon",
+      "year": 2025,
+      "label": "Verizon Communications Inc. FY2025 presentation document with FY2025 evidence",
+      "url": "https://www.verizon.com/about/sites/default/files/2026-01/vz_4q25_foi_013026.pdf",
+      "source_type": "official_presentation_document",
+      "publisher": "Verizon Communications Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 138191,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17174,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 115.903,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2018_for_2016",
+      "source_document_id": "deutsche_telekom:annual:2018",
+      "operator_id": "deutsche_telekom",
+      "year": 2018,
+      "label": "Deutsche Telekom AG FY2018 annual document with FY2016 evidence",
+      "url": "https://report.telekom.com/annual-report-2018/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 73.1,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.7,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2019_for_2016",
+      "source_document_id": "deutsche_telekom:annual:2019",
+      "operator_id": "deutsche_telekom",
+      "year": 2019,
+      "label": "Deutsche Telekom AG FY2019 annual document with FY2016 evidence",
+      "url": "https://report.telekom.com/annual-report-2019/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 73.1,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.7,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2020_for_2016",
+      "source_document_id": "deutsche_telekom:annual:2020",
+      "operator_id": "deutsche_telekom",
+      "year": 2020,
+      "label": "Deutsche Telekom AG FY2020 annual document with FY2016 evidence",
+      "url": "https://report.telekom.com/annual-report-2020/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 73.1,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.7,
+            "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2018_for_2017",
+      "source_document_id": "deutsche_telekom:annual:2018",
+      "operator_id": "deutsche_telekom",
+      "year": 2018,
+      "label": "Deutsche Telekom AG FY2018 annual document with FY2017 evidence",
+      "url": "https://report.telekom.com/annual-report-2018/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 74.9,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.5,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2019_for_2017",
+      "source_document_id": "deutsche_telekom:annual:2019",
+      "operator_id": "deutsche_telekom",
+      "year": 2019,
+      "label": "Deutsche Telekom AG FY2019 annual document with FY2017 evidence",
+      "url": "https://report.telekom.com/annual-report-2019/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 74.9,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.5,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2020_for_2017",
+      "source_document_id": "deutsche_telekom:annual:2020",
+      "operator_id": "deutsche_telekom",
+      "year": 2020,
+      "label": "Deutsche Telekom AG FY2020 annual document with FY2017 evidence",
+      "url": "https://report.telekom.com/annual-report-2020/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 74.9,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.5,
+            "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2018_for_2018",
+      "source_document_id": "deutsche_telekom:annual:2018",
+      "operator_id": "deutsche_telekom",
+      "year": 2018,
+      "label": "Deutsche Telekom AG FY2018 annual document with FY2018 evidence",
+      "url": "https://report.telekom.com/annual-report-2018/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 75.7,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.2,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2019_for_2018",
+      "source_document_id": "deutsche_telekom:annual:2019",
+      "operator_id": "deutsche_telekom",
+      "year": 2019,
+      "label": "Deutsche Telekom AG FY2019 annual document with FY2018 evidence",
+      "url": "https://report.telekom.com/annual-report-2019/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 75.7,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.2,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2020_for_2018",
+      "source_document_id": "deutsche_telekom:annual:2020",
+      "operator_id": "deutsche_telekom",
+      "year": 2020,
+      "label": "Deutsche Telekom AG FY2020 annual document with FY2018 evidence",
+      "url": "https://report.telekom.com/annual-report-2020/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 75.7,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 2.2,
+            "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2019_for_2019",
+      "source_document_id": "deutsche_telekom:annual:2019",
+      "operator_id": "deutsche_telekom",
+      "year": 2019,
+      "label": "Deutsche Telekom AG FY2019 annual document with FY2019 evidence",
+      "url": "https://report.telekom.com/annual-report-2019/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 80.5,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.9,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2020_for_2019",
+      "source_document_id": "deutsche_telekom:annual:2020",
+      "operator_id": "deutsche_telekom",
+      "year": 2020,
+      "label": "Deutsche Telekom AG FY2020 annual document with FY2019 evidence",
+      "url": "https://report.telekom.com/annual-report-2020/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 80.5,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.9,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2021_for_2019",
+      "source_document_id": "deutsche_telekom:annual:2021",
+      "operator_id": "deutsche_telekom",
+      "year": 2021,
+      "label": "Deutsche Telekom AG FY2021 annual document with FY2019 evidence",
+      "url": "https://report.telekom.com/annual-report-2021/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 80.5,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 3.9,
+            "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2020_for_2020",
+      "source_document_id": "deutsche_telekom:annual:2020",
+      "operator_id": "deutsche_telekom",
+      "year": 2020,
+      "label": "Deutsche Telekom AG FY2020 annual document with FY2020 evidence",
+      "url": "https://report.telekom.com/annual-report-2020/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 100.1,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2021_for_2020",
+      "source_document_id": "deutsche_telekom:annual:2021",
+      "operator_id": "deutsche_telekom",
+      "year": 2021,
+      "label": "Deutsche Telekom AG FY2021 annual document with FY2020 evidence",
+      "url": "https://report.telekom.com/annual-report-2021/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 100.1,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2022_for_2020",
+      "source_document_id": "deutsche_telekom:annual:2022",
+      "operator_id": "deutsche_telekom",
+      "year": 2022,
+      "label": "Deutsche Telekom AG FY2022 annual document with FY2020 evidence",
+      "url": "https://report.telekom.com/annual-report-2022/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 100.1,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2021_for_2021",
+      "source_document_id": "deutsche_telekom:annual:2021",
+      "operator_id": "deutsche_telekom",
+      "year": 2021,
+      "label": "Deutsche Telekom AG FY2021 annual document with FY2021 evidence",
+      "url": "https://report.telekom.com/annual-report-2021/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 107.8,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2022_for_2021",
+      "source_document_id": "deutsche_telekom:annual:2022",
+      "operator_id": "deutsche_telekom",
+      "year": 2022,
+      "label": "Deutsche Telekom AG FY2022 annual document with FY2021 evidence",
+      "url": "https://report.telekom.com/annual-report-2022/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 107.8,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2023_for_2021",
+      "source_document_id": "deutsche_telekom:annual:2023",
+      "operator_id": "deutsche_telekom",
+      "year": 2023,
+      "label": "Deutsche Telekom AG FY2023 annual document with FY2021 evidence",
+      "url": "https://report.telekom.com/annual-report-2023/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 107.8,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 4.2,
+            "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2022_for_2022",
+      "source_document_id": "deutsche_telekom:annual:2022",
+      "operator_id": "deutsche_telekom",
+      "year": 2022,
+      "label": "Deutsche Telekom AG FY2022 annual document with FY2022 evidence",
+      "url": "https://report.telekom.com/annual-report-2022/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 114.4,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 8.0,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2023_for_2022",
+      "source_document_id": "deutsche_telekom:annual:2023",
+      "operator_id": "deutsche_telekom",
+      "year": 2023,
+      "label": "Deutsche Telekom AG FY2023 annual document with FY2022 evidence",
+      "url": "https://report.telekom.com/annual-report-2023/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 114.4,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 8.0,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2024_for_2022",
+      "source_document_id": "deutsche_telekom:annual:2024",
+      "operator_id": "deutsche_telekom",
+      "year": 2024,
+      "label": "Deutsche Telekom AG FY2024 annual document with FY2022 evidence",
+      "url": "https://report.telekom.com/annual-report-2024/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 114.4,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 8.0,
+            "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2023_for_2023",
+      "source_document_id": "deutsche_telekom:annual:2023",
+      "operator_id": "deutsche_telekom",
+      "year": 2023,
+      "label": "Deutsche Telekom AG FY2023 annual document with FY2023 evidence",
+      "url": "https://report.telekom.com/annual-report-2023/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 112.0,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17.8,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 252.2,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2024_for_2023",
+      "source_document_id": "deutsche_telekom:annual:2024",
+      "operator_id": "deutsche_telekom",
+      "year": 2024,
+      "label": "Deutsche Telekom AG FY2024 annual document with FY2023 evidence",
+      "url": "https://report.telekom.com/annual-report-2024/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 112.0,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17.8,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 252.2,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2025_for_2023",
+      "source_document_id": "deutsche_telekom:annual:2025",
+      "operator_id": "deutsche_telekom",
+      "year": 2025,
+      "label": "Deutsche Telekom AG FY2025 annual document with FY2023 evidence",
+      "url": "https://report.telekom.com/annual-report-2025/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 112.0,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 17.8,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 252.2,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2024_for_2024",
+      "source_document_id": "deutsche_telekom:annual:2024",
+      "operator_id": "deutsche_telekom",
+      "year": 2024,
+      "label": "Deutsche Telekom AG FY2024 annual document with FY2024 evidence",
+      "url": "https://report.telekom.com/annual-report-2024/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 115.8,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11.2,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 261.4,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2025_for_2024",
+      "source_document_id": "deutsche_telekom:annual:2025",
+      "operator_id": "deutsche_telekom",
+      "year": 2025,
+      "label": "Deutsche Telekom AG FY2025 annual document with FY2024 evidence",
+      "url": "https://report.telekom.com/annual-report-2025/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 115.8,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11.2,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 261.4,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_release_2024_for_2024",
+      "source_document_id": "deutsche_telekom:release:2024",
+      "operator_id": "deutsche_telekom",
+      "year": 2024,
+      "label": "Deutsche Telekom AG FY2024 release document with FY2024 evidence",
+      "url": "https://www.telekom.com/en/investor-relations/publications/downloads",
+      "source_type": "official_release_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 115.8,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 11.2,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 261.4,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_annual_2025_for_2025",
+      "source_document_id": "deutsche_telekom:annual:2025",
+      "operator_id": "deutsche_telekom",
+      "year": 2025,
+      "label": "Deutsche Telekom AG FY2025 annual document with FY2025 evidence",
+      "url": "https://report.telekom.com/annual-report-2025/",
+      "source_type": "official_annual_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 119.1,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 9.6,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 273.2,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_release_2025_for_2025",
+      "source_document_id": "deutsche_telekom:release:2025",
+      "operator_id": "deutsche_telekom",
+      "year": 2025,
+      "label": "Deutsche Telekom AG FY2025 release document with FY2025 evidence",
+      "url": "https://www.telekom.com/en/investor-relations/publications/downloads",
+      "source_type": "official_release_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 119.1,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 9.6,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 273.2,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "deutsche_telekom_presentation_2025_for_2025",
+      "source_document_id": "deutsche_telekom:presentation:2025",
+      "operator_id": "deutsche_telekom",
+      "year": 2025,
+      "label": "Deutsche Telekom AG FY2025 presentation document with FY2025 evidence",
+      "url": "https://www.telekom.com/en/investor-relations/publications/downloads",
+      "source_type": "official_presentation_document",
+      "publisher": "Deutsche Telekom AG",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 119.1,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 9.6,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 273.2,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2016_for_2016",
+      "source_document_id": "att:annual:2016",
+      "operator_id": "att",
+      "year": 2016,
+      "label": "AT&T Inc. FY2016 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271717000021/0000732717-17-000021-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 163786,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 12976,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2017_for_2016",
+      "source_document_id": "att:annual:2017",
+      "operator_id": "att",
+      "year": 2017,
+      "label": "AT&T Inc. FY2017 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 163786,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 12976,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2018_for_2016",
+      "source_document_id": "att:annual:2018",
+      "operator_id": "att",
+      "year": 2018,
+      "label": "AT&T Inc. FY2018 annual document with FY2016 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 163786,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 12976,
+            "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2017_for_2017",
+      "source_document_id": "att:annual:2017",
+      "operator_id": "att",
+      "year": 2017,
+      "label": "AT&T Inc. FY2017 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 160546,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 29450,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2018_for_2017",
+      "source_document_id": "att:annual:2018",
+      "operator_id": "att",
+      "year": 2018,
+      "label": "AT&T Inc. FY2018 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 160546,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 29450,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2019_for_2017",
+      "source_document_id": "att:annual:2019",
+      "operator_id": "att",
+      "year": 2019,
+      "label": "AT&T Inc. FY2019 annual document with FY2017 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 160546,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 29450,
+            "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2018_for_2018",
+      "source_document_id": "att:annual:2018",
+      "operator_id": "att",
+      "year": 2018,
+      "label": "AT&T Inc. FY2018 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 170756,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19370,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2019_for_2018",
+      "source_document_id": "att:annual:2019",
+      "operator_id": "att",
+      "year": 2019,
+      "label": "AT&T Inc. FY2019 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 170756,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19370,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2020_for_2018",
+      "source_document_id": "att:annual:2020",
+      "operator_id": "att",
+      "year": 2020,
+      "label": "AT&T Inc. FY2020 annual document with FY2018 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 170756,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 19370,
+            "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2019_for_2019",
+      "source_document_id": "att:annual:2019",
+      "operator_id": "att",
+      "year": 2019,
+      "label": "AT&T Inc. FY2019 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 181193,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13903,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2020_for_2019",
+      "source_document_id": "att:annual:2020",
+      "operator_id": "att",
+      "year": 2020,
+      "label": "AT&T Inc. FY2020 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 181193,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13903,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2021_for_2019",
+      "source_document_id": "att:annual:2021",
+      "operator_id": "att",
+      "year": 2021,
+      "label": "AT&T Inc. FY2021 annual document with FY2019 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 181193,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 13903,
+            "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2020_for_2020",
+      "source_document_id": "att:annual:2020",
+      "operator_id": "att",
+      "year": 2020,
+      "label": "AT&T Inc. FY2020 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 143050,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -5176,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2021_for_2020",
+      "source_document_id": "att:annual:2021",
+      "operator_id": "att",
+      "year": 2021,
+      "label": "AT&T Inc. FY2021 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 143050,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -5176,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2022_for_2020",
+      "source_document_id": "att:annual:2022",
+      "operator_id": "att",
+      "year": 2022,
+      "label": "AT&T Inc. FY2022 annual document with FY2020 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 143050,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -5176,
+            "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2021_for_2021",
+      "source_document_id": "att:annual:2021",
+      "operator_id": "att",
+      "year": 2021,
+      "label": "AT&T Inc. FY2021 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 134038,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 20081,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2022_for_2021",
+      "source_document_id": "att:annual:2022",
+      "operator_id": "att",
+      "year": 2022,
+      "label": "AT&T Inc. FY2022 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 134038,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 20081,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2023_for_2021",
+      "source_document_id": "att:annual:2023",
+      "operator_id": "att",
+      "year": 2023,
+      "label": "AT&T Inc. FY2023 annual document with FY2021 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 134038,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 20081,
+            "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2022_for_2022",
+      "source_document_id": "att:annual:2022",
+      "operator_id": "att",
+      "year": 2022,
+      "label": "AT&T Inc. FY2022 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 120741,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -8524,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2023_for_2022",
+      "source_document_id": "att:annual:2023",
+      "operator_id": "att",
+      "year": 2023,
+      "label": "AT&T Inc. FY2023 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 120741,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -8524,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2024_for_2022",
+      "source_document_id": "att:annual:2024",
+      "operator_id": "att",
+      "year": 2024,
+      "label": "AT&T Inc. FY2024 annual document with FY2022 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 120741,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": -8524,
+            "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2023_for_2023",
+      "source_document_id": "att:annual:2023",
+      "operator_id": "att",
+      "year": 2023,
+      "label": "AT&T Inc. FY2023 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 122428,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 14400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 113.808,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2024_for_2023",
+      "source_document_id": "att:annual:2024",
+      "operator_id": "att",
+      "year": 2024,
+      "label": "AT&T Inc. FY2024 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 122428,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 14400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 113.808,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2025_for_2023",
+      "source_document_id": "att:annual:2025",
+      "operator_id": "att",
+      "year": 2025,
+      "label": "AT&T Inc. FY2025 annual document with FY2023 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 122428,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 14400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 113.808,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2024_for_2024",
+      "source_document_id": "att:annual:2024",
+      "operator_id": "att",
+      "year": 2024,
+      "label": "AT&T Inc. FY2024 annual document with FY2024 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 122336,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 10948,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 117.851,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2025_for_2024",
+      "source_document_id": "att:annual:2025",
+      "operator_id": "att",
+      "year": 2025,
+      "label": "AT&T Inc. FY2025 annual document with FY2024 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 122336,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 10948,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 117.851,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_release_2024_for_2024",
+      "source_document_id": "att:release:2024",
+      "operator_id": "att",
+      "year": 2024,
+      "label": "AT&T Inc. FY2024 release document with FY2024 evidence",
+      "url": "https://investors.att.com/financial-reports/quarterly-earnings/2024",
+      "source_type": "official_release_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 122336,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 10948,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 117.851,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_annual_2025_for_2025",
+      "source_document_id": "att:annual:2025",
+      "operator_id": "att",
+      "year": 2025,
+      "label": "AT&T Inc. FY2025 annual document with FY2025 evidence",
+      "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+      "source_type": "official_annual_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 125648,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21953,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 120.105,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_release_2025_for_2025",
+      "source_document_id": "att:release:2025",
+      "operator_id": "att",
+      "year": 2025,
+      "label": "AT&T Inc. FY2025 release document with FY2025 evidence",
+      "url": "https://investors.att.com/financial-reports/quarterly-earnings/2025",
+      "source_type": "official_release_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 125648,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21953,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 120.105,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "att_presentation_2025_for_2025",
+      "source_document_id": "att:presentation:2025",
+      "operator_id": "att",
+      "year": 2025,
+      "label": "AT&T Inc. FY2025 presentation document with FY2025 evidence",
+      "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2025/4Q-2025/4Q25_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf",
+      "source_type": "official_presentation_document",
+      "publisher": "AT&T Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 125648,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 21953,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 120.105,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2019_for_2016",
+      "source_document_id": "ntt_group:annual:2019",
+      "operator_id": "ntt_group",
+      "year": 2019,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2019 annual document with FY2016 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 11391.0,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 800.1,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2020_for_2016",
+      "source_document_id": "ntt_group:annual:2020",
+      "operator_id": "ntt_group",
+      "year": 2020,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2020 annual document with FY2016 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 11391.0,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 800.1,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2016",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2016 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 11391.0,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 800.1,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2019_for_2017",
+      "source_document_id": "ntt_group:annual:2019",
+      "operator_id": "ntt_group",
+      "year": 2019,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2019 annual document with FY2017 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 11782.1,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 897.9,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2020_for_2017",
+      "source_document_id": "ntt_group:annual:2020",
+      "operator_id": "ntt_group",
+      "year": 2020,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2020 annual document with FY2017 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 11782.1,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 897.9,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2017",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2017 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 11782.1,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 897.9,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2019_for_2018",
+      "source_document_id": "ntt_group:annual:2019",
+      "operator_id": "ntt_group",
+      "year": 2019,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2019 annual document with FY2018 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 11879.8,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 854.6,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2020_for_2018",
+      "source_document_id": "ntt_group:annual:2020",
+      "operator_id": "ntt_group",
+      "year": 2020,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2020 annual document with FY2018 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 11879.8,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 854.6,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2018",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2018 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 11879.8,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 854.6,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2019_for_2019",
+      "source_document_id": "ntt_group:annual:2019",
+      "operator_id": "ntt_group",
+      "year": 2019,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2019 annual document with FY2019 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 11899.4,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 855.3,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2020_for_2019",
+      "source_document_id": "ntt_group:annual:2020",
+      "operator_id": "ntt_group",
+      "year": 2020,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2020 annual document with FY2019 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 11899.4,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 855.3,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2019",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2019 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2019": {
+          "revenue": {
+            "value": 11899.4,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 855.3,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2020_for_2020",
+      "source_document_id": "ntt_group:annual:2020",
+      "operator_id": "ntt_group",
+      "year": 2020,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2020 annual document with FY2020 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 11944.0,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 916.2,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2020",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2020 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 11944.0,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 916.2,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2022_for_2020",
+      "source_document_id": "ntt_group:annual:2022",
+      "operator_id": "ntt_group",
+      "year": 2022,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2022 annual document with FY2020 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 11944.0,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 916.2,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2021_for_2021",
+      "source_document_id": "ntt_group:annual:2021",
+      "operator_id": "ntt_group",
+      "year": 2021,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2021 annual document with FY2021 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 12156.4,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1181.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2022_for_2021",
+      "source_document_id": "ntt_group:annual:2022",
+      "operator_id": "ntt_group",
+      "year": 2022,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2022 annual document with FY2021 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 12156.4,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1181.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2023_for_2021",
+      "source_document_id": "ntt_group:annual:2023",
+      "operator_id": "ntt_group",
+      "year": 2023,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2023 annual document with FY2021 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 12156.4,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1181.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2022_for_2022",
+      "source_document_id": "ntt_group:annual:2022",
+      "operator_id": "ntt_group",
+      "year": 2022,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2022 annual document with FY2022 evidence",
+      "url": "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 13136.2,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1213.1,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2023_for_2022",
+      "source_document_id": "ntt_group:annual:2023",
+      "operator_id": "ntt_group",
+      "year": 2023,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2023 annual document with FY2022 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 13136.2,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1213.1,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2024_for_2022",
+      "source_document_id": "ntt_group:annual:2024",
+      "operator_id": "ntt_group",
+      "year": 2024,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2024 annual document with FY2022 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 13136.2,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1213.1,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2023_for_2023",
+      "source_document_id": "ntt_group:annual:2023",
+      "operator_id": "ntt_group",
+      "year": 2023,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2023 annual document with FY2023 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 13374.6,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1279.5,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 89.94,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2024_for_2023",
+      "source_document_id": "ntt_group:annual:2024",
+      "operator_id": "ntt_group",
+      "year": 2024,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2024 annual document with FY2023 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 13374.6,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1279.5,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 89.94,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2025_for_2023",
+      "source_document_id": "ntt_group:annual:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2025 annual document with FY2023 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 13374.6,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1279.5,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 89.94,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2024_for_2024",
+      "source_document_id": "ntt_group:annual:2024",
+      "operator_id": "ntt_group",
+      "year": 2024,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2024 annual document with FY2024 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 13704.7,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1000.0,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 91.407,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2025_for_2024",
+      "source_document_id": "ntt_group:annual:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2025 annual document with FY2024 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 13704.7,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1000.0,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 91.407,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_release_2024_for_2024",
+      "source_document_id": "ntt_group:release:2024",
+      "operator_id": "ntt_group",
+      "year": 2024,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2024 release document with FY2024 evidence",
+      "url": "https://group.ntt/en/ir/library/results/2024/",
+      "source_type": "official_release_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 13704.7,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1000.0,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 91.407,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_annual_2025_for_2025",
+      "source_document_id": "ntt_group:annual:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2025 annual document with FY2025 evidence",
+      "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "source_type": "official_annual_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 14409.1,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1037.0,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 93.065,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_release_2025_for_2025",
+      "source_document_id": "ntt_group:release:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2025 release document with FY2025 evidence",
+      "url": "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+      "source_type": "official_release_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 14409.1,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1037.0,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 93.065,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_presentation_2025_for_2025",
+      "source_document_id": "ntt_group:presentation:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation) FY2025 presentation document with FY2025 evidence",
+      "url": "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf",
+      "source_type": "official_presentation_document",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 14409.1,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "net_profit": {
+            "value": 1037.0,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "reported_mobile_connections": {
+            "value": 93.065,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
     }
   ]
 }

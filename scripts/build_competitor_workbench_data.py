@@ -23,7 +23,7 @@ KNOWLEDGE_BASE_META = {
     GLOBAL_OPERATOR_SOURCE: {
         "label": "全球重点运营商年度知识库",
         "type": "财务 + 运营指标",
-        "scope": "内地四家 + 印度两家 · 2016–2025",
+        "scope": "内地四家 + 印度两家 + 国际四家 · 2016–2025",
     },
     LOCAL_HK_SOURCE: {
         "label": "香港本地运营商年度知识库",
@@ -40,6 +40,10 @@ COMPANY_GROUPS = {
     "中国广电": "内地运营商",
     "Bharti Airtel": "印度运营商",
     "Reliance Jio": "印度运营商",
+    "Verizon": "国际运营商",
+    "Deutsche Telekom": "国际运营商",
+    "AT&T": "国际运营商",
+    "NTT Group": "国际运营商",
 }
 UNIT_LABELS = {
     "percent": "%",
@@ -55,6 +59,10 @@ UNIT_LABELS = {
     "INR_million": "百万印度卢比",
     "INR_crore": "千万印度卢比",
     "billion_GB": "十亿GB",
+    "million_connections": "百万连接",
+    "USD_million": "百万美元",
+    "EUR_billion": "十亿欧元",
+    "JPY_billion": "十亿日元",
 }
 SIMPLIFIED_TITLE_REPLACEMENTS = (
     ("寬頻", "宽带"),

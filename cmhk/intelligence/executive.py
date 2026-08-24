@@ -13,19 +13,21 @@ ROOT = Path(__file__).resolve().parents[2]
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"
+GLOBAL_OPERATOR_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
 CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
 INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
 
-DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
     "official_only",
     "official_derived_from_verified_rows",
     "multi_source_or_multi_snapshot_verified",
+    "official_three_distinct_sources_verified",
 }
 
 
@@ -845,6 +847,154 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
+    """Build domain 02 from the four explicitly requested international carriers."""
+    requested = ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
+    rows = [
+        row for row in (payload.get("rows") or [])
+        if row.get("operator") in requested
+        and row.get("verification_status") == "official_three_distinct_sources_verified"
+        and int(row.get("distinct_source_document_count") or 0) >= 3
+    ]
+
+    def row_for(operator: str, metric: str, year: int) -> dict[str, Any] | None:
+        return next((
+            row for row in rows
+            if row.get("operator") == operator
+            and row.get("metric_key") == metric
+            and int(row.get("year") or 0) == year
+        ), None)
+
+    def item(operator: str, metric: str, year: int, *, value: float, unit: str, detail: str, analysis: str, trend: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        row = row_for(operator, metric, year) or {}
+        result = {
+            "name": operator,
+            "value": round(value, 2),
+            "unit": unit,
+            "period": f"FY{year}",
+            "detail": detail,
+            "analysis": analysis,
+            "components": [_component(row.get("metric_zh") or metric, round(value, 2), unit, f"FY{year}")],
+            "component_count": 1,
+            "source_url": str(row.get("primary_source_url") or ""),
+            "verification_count": int(row.get("distinct_source_document_count") or 0),
+        }
+        if trend:
+            result["trend"] = trend
+            result["components"] = [_component(point["label"], point["value"], unit, metric) for point in trend]
+            result["component_count"] = len(trend)
+        return result
+
+    connections: list[dict[str, Any]] = []
+    connection_growth: list[dict[str, Any]] = []
+    revenue_growth: list[dict[str, Any]] = []
+    profit_margin: list[dict[str, Any]] = []
+    for operator in requested:
+        connection_rows = [row_for(operator, "reported_mobile_connections", year) for year in (2023, 2024, 2025)]
+        connection_values = [_verified_number(row) for row in connection_rows]
+        latest_connections = connection_values[-1]
+        if latest_connections is not None:
+            scope = str((connection_rows[-1] or {}).get("scope") or "")
+            connections.append(item(
+                operator, "reported_mobile_connections", 2025,
+                value=latest_connections, unit="百万连接",
+                detail="FY2025官方披露口径；三份底层文件核验",
+                analysis=f"FY2025披露口径移动连接/用户数为{latest_connections:.3f}百万；{scope}。",
+                trend=[{"label": f"FY{year}", "value": value} for year, value in zip((2023, 2024, 2025), connection_values) if value is not None],
+            ))
+        if connection_values[-2] not in (None, 0) and connection_values[-1] is not None:
+            growth = (connection_values[-1] / connection_values[-2] - 1) * 100
+            connection_growth.append(item(
+                operator, "reported_mobile_connections", 2025,
+                value=growth, unit="%",
+                detail="FY2025较FY2024连接规模变化",
+                analysis=f"按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比{growth:+.2f}%；跨公司客户定义不完全相同。",
+            ))
+        revenues = [_verified_number(row_for(operator, "revenue", year)) for year in (2024, 2025)]
+        if revenues[0] not in (None, 0) and revenues[1] is not None:
+            growth = (revenues[1] / revenues[0] - 1) * 100
+            revenue_growth.append(item(
+                operator, "revenue", 2025,
+                value=growth, unit="%",
+                detail="FY2025较FY2024原币营收变化",
+                analysis=f"在公司本币和原披露口径内，FY2025营收同比{growth:+.2f}%；未做汇率换算。",
+            ))
+        revenue = revenues[-1]
+        profit = _verified_number(row_for(operator, "net_profit", 2025))
+        if revenue not in (None, 0) and profit is not None:
+            margin = profit / revenue * 100
+            profit_margin.append(item(
+                operator, "net_profit", 2025,
+                value=margin, unit="%",
+                detail="FY2025归母净利润/营收",
+                analysis=f"按同公司同年度原币数据计算，FY2025归母净利润率为{margin:.2f}%。",
+            ))
+
+    connections.sort(key=lambda value: float(value["value"]), reverse=True)
+    connection_growth.sort(key=lambda value: float(value["value"]), reverse=True)
+    revenue_growth.sort(key=lambda value: float(value["value"]), reverse=True)
+    profit_margin.sort(key=lambda value: float(value["value"]), reverse=True)
+    leader = connections[0] if connections else {"name": "-", "value": 0}
+    revenue_leader = revenue_growth[0] if revenue_growth else {"name": "-", "value": 0}
+    margin_leader = profit_margin[0] if profit_margin else {"name": "-", "value": 0}
+    connection_growth_leader = connection_growth[0] if connection_growth else {"name": "-", "value": 0}
+    connection_low = connections[-1] if connections else {"name": "-", "value": 0}
+    connection_growth_low = connection_growth[-1] if connection_growth else {"name": "-", "value": 0}
+    revenue_low = revenue_growth[-1] if revenue_growth else {"name": "-", "value": 0}
+    margin_low = profit_margin[-1] if profit_margin else {"name": "-", "value": 0}
+    scope_warning = "各公司移动连接口径不同，只比较披露规模；财务变化在各自本币内计算，不比较绝对金额。"
+    focuses = [
+        {
+            "id": "scale", "label": "移动连接规模", "visual": "columns",
+            "headline": "德国电信披露规模居前",
+            "metric": {"value": leader["value"], "unit": "百万连接", "label": f"{leader['name']} FY2025披露规模"},
+            "context": "四家运营商FY2025官方披露口径",
+            "insight": f"{leader['name']}为{leader['value']:.2f}百万连接，{connection_low['name']}为{connection_low['value']:.2f}百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
+            "items": connections,
+        },
+        {
+            "id": "connection_growth", "label": "连接规模变化", "visual": "diverging",
+            "headline": "四家连接规模均保持增长",
+            "metric": {"value": connection_growth_leader["value"], "unit": "%", "label": f"{connection_growth_leader['name']} FY2025同比"},
+            "context": "同公司FY2025对FY2024",
+            "insight": f"四家均增长，{connection_growth_leader['name']}为{connection_growth_leader['value']:.2f}%，{connection_growth_low['name']}为{connection_growth_low['value']:.2f}%；这说明连接扩张同向但强弱分化。",
+            "items": connection_growth,
+        },
+        {
+            "id": "revenue_growth", "label": "营收变化", "visual": "diverging",
+            "headline": "原币营收均实现增长",
+            "metric": {"value": revenue_leader["value"], "unit": "%", "label": f"{revenue_leader['name']} FY2025原币营收同比"},
+            "context": "同公司原币FY2025对FY2024",
+            "insight": f"四家原币营收均增长，{revenue_leader['name']}为{revenue_leader['value']:.2f}%，{revenue_low['name']}为{revenue_low['value']:.2f}%；这表明收入扩张同向但增速分层。",
+            "items": revenue_growth,
+        },
+        {
+            "id": "profit_margin", "label": "归母净利率", "visual": "rows",
+            "headline": "盈利缓冲存在明显分层",
+            "metric": {"value": margin_leader["value"], "unit": "%", "label": f"{margin_leader['name']} FY2025归母净利率"},
+            "context": "FY2025归母净利润除以同年营收",
+            "insight": f"{margin_leader['name']}归母净利率为{margin_leader['value']:.2f}%，{margin_low['name']}为{margin_low['value']:.2f}%；差距说明盈利缓冲分层，但不代表绝对利润高低。",
+            "items": profit_margin,
+        },
+    ]
+    return {
+        "id": "international",
+        "index": "02",
+        "title": "国际运营商",
+        "kicker": "连接规模、增长与盈利",
+        "metric": {"value": leader["value"], "unit": "百万连接", "label": f"{leader['name']} FY2025披露规模"},
+        "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
+        "insight": scope_warning,
+        "entities": connections,
+        "focuses": focuses,
+        "relations": [
+            {"title": value["name"], "detail": f"FY2025披露规模 {value['value']:.2f} 百万连接", "kind": "三来源认证"}
+            for value in connections
+        ],
+        "sources": _dedupe_sources([_source(value["name"], value["source_url"]) for value in connections]),
+    }
+
+
 def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
     vendors = [str(vendor.get("vendor") or "") for vendor in payload.get("vendors") or []]
@@ -852,6 +1002,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     trend_items: list[dict[str, Any]] = []
     profit_items: list[dict[str, Any]] = []
     margin_change_items: list[dict[str, Any]] = []
+    capex_items: list[dict[str, Any]] = []
     profit_keys = ("operating_margin", "adjusted_ebita_margin", "proxy_segment_gross_margin")
     for vendor in vendors:
         row = _latest_metric(rows, "vendor", vendor, "revenue_yoy")
@@ -862,6 +1013,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             continue
         name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
         name = {
+            "China Mobile Cloud": "中国移动云",
             "Google Cloud": "Google",
             "Microsoft Azure": "Azure",
             "Alibaba Cloud": "Alibaba",
@@ -951,10 +1103,36 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "components": [_component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", profit_label) for item in profit_history[-3:]] or [_component(profit_label, detail="未披露连续两年")],
             "component_count": len(profit_history[-3:]), "source_url": str((profit_row or row).get("primary_source_url") or ""),
         })
+        capex_row = _latest_metric(rows, "vendor", vendor, "group_capex")
+        capex_value = _verified_number(capex_row)
+        capex_currency = str((capex_row or {}).get("currency") or "")
+        capex_unit = f"百万{capex_currency}" if capex_value is not None and capex_currency else ""
+        capex_items.append({
+            "name": name,
+            "value": round(capex_value, 1) if capex_value is not None else None,
+            "unit": capex_unit,
+            "period": f"FY{capex_row.get('fiscal_year')}" if capex_row else "",
+            "detail": (
+                f"FY{capex_row.get('fiscal_year')} · 母公司集团口径 · {capex_currency}"
+                if capex_value is not None and capex_row else "原表尚未收录集团资本开支"
+            ),
+            "analysis": (
+                f"FY{capex_row.get('fiscal_year')}集团资本开支为 {capex_value:,.1f} 百万{capex_currency}；"
+                "该值是母公司集团投入，不是云业务单独CAPEX，且不跨币种排名。"
+                if capex_value is not None and capex_row else "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。"
+            ),
+            "components": (
+                [_component("集团资本开支", round(capex_value, 1), capex_unit, f"FY{capex_row.get('fiscal_year')}")]
+                if capex_value is not None and capex_row else [_component("集团资本开支", detail="三来源数据待补")]
+            ),
+            "component_count": 1,
+            "source_url": str((capex_row or row).get("primary_source_url") or ""),
+        })
     growth_items.sort(key=lambda item: item["value"], reverse=True)
     trend_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     profit_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     margin_change_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    capex_items.sort(key=lambda item: (_number(item.get("value")) is not None, item["name"]), reverse=True)
     leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
     direct_growth = [item for item in growth_items if "直接披露" in str(item.get("detail") or "")]
     short_cloud_name = lambda name: str(name).replace(" Cloud", "").replace("Microsoft Azure", "Azure").replace("Tencent", "腾讯")
@@ -979,6 +1157,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         if len(comparable_margin_changes) >= 2 else "缺少同口径连续两年利润率，不判断增长质量变化。"
     )
     comparable_trends = [item for item in trend_items if _number(item.get("value")) is not None]
+    disclosed_capex = [item for item in capex_items if _number(item.get("value")) is not None]
     accelerating = [item for item in comparable_trends if float(item["value"]) > 0]
     slowing = [item for item in comparable_trends if float(item["value"]) < 0]
     trend_insight = (
@@ -1015,17 +1194,20 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "items": profit_items,
         },
         {
-            "id": "margin_change", "label": "利润率变化", "visual": "trends",
-            "metric": {"value": next((item["value"] for item in margin_change_items if _number(item.get("value")) is not None), "-"), "unit": "个百分点", "label": "同口径利润率变化"},
-            "context": "同一厂商、同一利润率口径连续两年",
-            "insight": margin_change_insight,
-            "items": margin_change_items,
+            "id": "investment", "label": "集团资本开支", "visual": "rows",
+            "metric": {"value": len(disclosed_capex), "unit": "家", "label": "已通过三来源入库"},
+            "context": "母公司集团口径 · 保留原币 · 不跨币种排名",
+            "insight": (
+                f"当前 {len(disclosed_capex)}/{len(capex_items)} 家已有三份独立官方文件核验的集团CAPEX；"
+                "该指标只表示母公司整体投入，不表示云业务单独投入。"
+            ),
+            "items": capex_items,
         },
     ]
     for focus in focuses:
         focus["headline"] = {
             "growth": "直接披露仍有分层", "trend": "收入提速并非少数",
-            "profit": "利润率不能跨厂商排名", "margin_change": "利润改善方向分化",
+            "profit": "利润率不能跨厂商排名", "investment": "集团投入口径正在补齐",
         }[focus["id"]]
     return {
         "id": "cloud",
@@ -1265,6 +1447,8 @@ def _reader_facing_copy(value: Any) -> Any:
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
     local = _local_domain(_read_json(LOCAL_PATH))
+    # 本轮战略总览按用户指定范围保留内地运营商；国际运营商数据库继续存在，
+    # 但不进入该页面，避免把未要求的国际扩展混入正式发布。
     international = _international_domain(_read_json(INTERNATIONAL_PATH))
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     macro = _macro_domain(_read_json(MACRO_PATH))
@@ -1318,10 +1502,10 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "international",
             "to": "cloud",
-            "title": "云厂商与电讯企业披露口径不同",
+            "title": "云厂商与国际运营商披露口径不同",
             "detail": (
-                f"云厂商页面最高值为 {cloud['metric']['value']}%，中国内地电讯企业页面最高值为 {international['metric']['value']}%；"
-                "报告期间和业务范围不同，不作高低排名。"
+                f"云厂商页面展示收入增速，国际运营商页面最高披露连接规模为 {international['metric']['value']} 百万；"
+                "指标、报告期间和业务范围不同，不作高低排名。"
             ),
             "kind": "不可直接比较",
         },
@@ -1335,8 +1519,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "macro",
             "to": "international",
-            "title": "香港行业投资与公司资本开支分别统计",
-            "detail": "香港页面展示全行业电信业投资；内地电讯企业页面展示各公司资本开支占营收比例。统计范围不同，不直接比较。",
+            "title": "香港行业数据与国际公司披露分别统计",
+            "detail": "香港页面展示全行业连接、流量与投资；国际运营商页面展示四家公司的连接规模、原币营收变化和净利率。统计范围不同，不直接比较。",
             "kind": "数据边界",
         },
     ]

@@ -72,13 +72,13 @@ china_mobile,中国移动,2025,5g_base_stations,available
 china_telecom,中国电信,2016,mobile_subscribers,available
 china_telecom,中国电信,2016,5g_network_subscribers,not_collected
 china_telecom,中国电信,2016,fixed_broadband_subscribers,available
-china_telecom,中国电信,2016,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2016,mobile_arpu,available
 china_telecom,中国电信,2016,handset_data_traffic,available
 china_telecom,中国电信,2016,5g_base_stations,not_collected
 china_telecom,中国电信,2017,mobile_subscribers,available
 china_telecom,中国电信,2017,5g_network_subscribers,not_collected
 china_telecom,中国电信,2017,fixed_broadband_subscribers,available
-china_telecom,中国电信,2017,mobile_arpu,source_gap_confirmed
+china_telecom,中国电信,2017,mobile_arpu,available
 china_telecom,中国电信,2017,handset_data_traffic,available
 china_telecom,中国电信,2017,5g_base_stations,not_collected
 china_telecom,中国电信,2018,mobile_subscribers,available
@@ -115,7 +115,7 @@ china_telecom,中国电信,2023,mobile_subscribers,available
 china_telecom,中国电信,2023,5g_network_subscribers,not_collected
 china_telecom,中国电信,2023,fixed_broadband_subscribers,available
 china_telecom,中国电信,2023,mobile_arpu,available
-china_telecom,中国电信,2023,handset_data_traffic,source_gap_confirmed
+china_telecom,中国电信,2023,handset_data_traffic,available
 china_telecom,中国电信,2023,5g_base_stations,available
 china_telecom,中国电信,2024,mobile_subscribers,available
 china_telecom,中国电信,2024,5g_network_subscribers,available
@@ -132,62 +132,82 @@ china_telecom,中国电信,2025,5g_base_stations,available
 china_unicom,中国联通,2016,mobile_subscribers,available
 china_unicom,中国联通,2016,5g_network_subscribers,not_collected
 china_unicom,中国联通,2016,fixed_broadband_subscribers,available
+china_unicom,中国联通,2016,fixed_broadband_access_ports,source_gap_confirmed
 china_unicom,中国联通,2016,mobile_arpu,available
 china_unicom,中国联通,2016,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2016,4g_base_stations,available
 china_unicom,中国联通,2016,5g_base_stations,not_collected
 china_unicom,中国联通,2017,mobile_subscribers,available
 china_unicom,中国联通,2017,5g_network_subscribers,not_collected
 china_unicom,中国联通,2017,fixed_broadband_subscribers,available
+china_unicom,中国联通,2017,fixed_broadband_access_ports,source_gap_confirmed
 china_unicom,中国联通,2017,mobile_arpu,available
-china_unicom,中国联通,2017,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2017,mobile_dou,available
+china_unicom,中国联通,2017,4g_base_stations,available
 china_unicom,中国联通,2017,5g_base_stations,not_collected
 china_unicom,中国联通,2018,mobile_subscribers,available
 china_unicom,中国联通,2018,5g_network_subscribers,not_collected
 china_unicom,中国联通,2018,fixed_broadband_subscribers,available
+china_unicom,中国联通,2018,fixed_broadband_access_ports,available
 china_unicom,中国联通,2018,mobile_arpu,available
 china_unicom,中国联通,2018,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2018,4g_base_stations,available
 china_unicom,中国联通,2018,5g_base_stations,not_collected
 china_unicom,中国联通,2019,mobile_subscribers,available
 china_unicom,中国联通,2019,5g_network_subscribers,not_collected
 china_unicom,中国联通,2019,fixed_broadband_subscribers,available
+china_unicom,中国联通,2019,fixed_broadband_access_ports,available
 china_unicom,中国联通,2019,mobile_arpu,available
-china_unicom,中国联通,2019,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2019,mobile_dou,available
+china_unicom,中国联通,2019,4g_base_stations,source_gap_confirmed
 china_unicom,中国联通,2019,5g_base_stations,not_collected
 china_unicom,中国联通,2020,mobile_subscribers,available
 china_unicom,中国联通,2020,5g_network_subscribers,not_collected
 china_unicom,中国联通,2020,fixed_broadband_subscribers,available
+china_unicom,中国联通,2020,fixed_broadband_access_ports,available
 china_unicom,中国联通,2020,mobile_arpu,available
 china_unicom,中国联通,2020,mobile_dou,available
+china_unicom,中国联通,2020,4g_base_stations,available
 china_unicom,中国联通,2020,5g_base_stations,available
 china_unicom,中国联通,2021,mobile_subscribers,available
 china_unicom,中国联通,2021,5g_network_subscribers,not_collected
 china_unicom,中国联通,2021,fixed_broadband_subscribers,available
+china_unicom,中国联通,2021,fixed_broadband_access_ports,available
 china_unicom,中国联通,2021,mobile_arpu,available
 china_unicom,中国联通,2021,mobile_dou,available
+china_unicom,中国联通,2021,4g_base_stations,available
 china_unicom,中国联通,2021,5g_base_stations,available
 china_unicom,中国联通,2022,mobile_subscribers,available
 china_unicom,中国联通,2022,5g_network_subscribers,not_collected
 china_unicom,中国联通,2022,fixed_broadband_subscribers,available
+china_unicom,中国联通,2022,fixed_broadband_access_ports,available
 china_unicom,中国联通,2022,mobile_arpu,available
 china_unicom,中国联通,2022,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2022,4g_base_stations,source_gap_confirmed
 china_unicom,中国联通,2022,5g_base_stations,available
 china_unicom,中国联通,2023,mobile_subscribers,available
 china_unicom,中国联通,2023,5g_network_subscribers,not_collected
 china_unicom,中国联通,2023,fixed_broadband_subscribers,available
+china_unicom,中国联通,2023,fixed_broadband_access_ports,available
 china_unicom,中国联通,2023,mobile_arpu,source_gap_confirmed
 china_unicom,中国联通,2023,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2023,4g_base_stations,source_gap_confirmed
 china_unicom,中国联通,2023,5g_base_stations,available
 china_unicom,中国联通,2024,mobile_subscribers,available
 china_unicom,中国联通,2024,5g_network_subscribers,not_collected
 china_unicom,中国联通,2024,fixed_broadband_subscribers,available
+china_unicom,中国联通,2024,fixed_broadband_access_ports,source_gap_confirmed
 china_unicom,中国联通,2024,mobile_arpu,source_gap_confirmed
 china_unicom,中国联通,2024,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2024,4g_base_stations,source_gap_confirmed
 china_unicom,中国联通,2024,5g_base_stations,available
 china_unicom,中国联通,2025,mobile_subscribers,available
 china_unicom,中国联通,2025,5g_network_subscribers,available
 china_unicom,中国联通,2025,fixed_broadband_subscribers,available
+china_unicom,中国联通,2025,fixed_broadband_access_ports,source_gap_confirmed
 china_unicom,中国联通,2025,mobile_arpu,source_gap_confirmed
 china_unicom,中国联通,2025,mobile_dou,source_gap_confirmed
+china_unicom,中国联通,2025,4g_base_stations,source_gap_confirmed
 china_unicom,中国联通,2025,5g_base_stations,available
 china_broadnet,中国广电,2016,mobile_subscribers,not_applicable_precommercial
 china_broadnet,中国广电,2016,5g_network_subscribers,not_applicable_precommercial
@@ -489,3 +509,123 @@ reliance_jio,Reliance Jio,2025,total_data_traffic,available
 reliance_jio,Reliance Jio,2025,5g_network_subscribers,available
 reliance_jio,Reliance Jio,2025,connected_homes,available
 reliance_jio,Reliance Jio,2025,5g_base_stations,available
+verizon,Verizon,2016,revenue,available
+verizon,Verizon,2016,net_profit,available
+verizon,Verizon,2016,reported_mobile_connections,not_collected
+verizon,Verizon,2017,revenue,available
+verizon,Verizon,2017,net_profit,available
+verizon,Verizon,2017,reported_mobile_connections,not_collected
+verizon,Verizon,2018,revenue,available
+verizon,Verizon,2018,net_profit,available
+verizon,Verizon,2018,reported_mobile_connections,not_collected
+verizon,Verizon,2019,revenue,available
+verizon,Verizon,2019,net_profit,available
+verizon,Verizon,2019,reported_mobile_connections,not_collected
+verizon,Verizon,2020,revenue,available
+verizon,Verizon,2020,net_profit,available
+verizon,Verizon,2020,reported_mobile_connections,not_collected
+verizon,Verizon,2021,revenue,available
+verizon,Verizon,2021,net_profit,available
+verizon,Verizon,2021,reported_mobile_connections,not_collected
+verizon,Verizon,2022,revenue,available
+verizon,Verizon,2022,net_profit,available
+verizon,Verizon,2022,reported_mobile_connections,not_collected
+verizon,Verizon,2023,revenue,available
+verizon,Verizon,2023,net_profit,available
+verizon,Verizon,2023,reported_mobile_connections,available
+verizon,Verizon,2024,revenue,available
+verizon,Verizon,2024,net_profit,available
+verizon,Verizon,2024,reported_mobile_connections,available
+verizon,Verizon,2025,revenue,available
+verizon,Verizon,2025,net_profit,available
+verizon,Verizon,2025,reported_mobile_connections,available
+deutsche_telekom,Deutsche Telekom,2016,revenue,available
+deutsche_telekom,Deutsche Telekom,2016,net_profit,available
+deutsche_telekom,Deutsche Telekom,2016,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2017,revenue,available
+deutsche_telekom,Deutsche Telekom,2017,net_profit,available
+deutsche_telekom,Deutsche Telekom,2017,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2018,revenue,available
+deutsche_telekom,Deutsche Telekom,2018,net_profit,available
+deutsche_telekom,Deutsche Telekom,2018,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2019,revenue,available
+deutsche_telekom,Deutsche Telekom,2019,net_profit,available
+deutsche_telekom,Deutsche Telekom,2019,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2020,revenue,available
+deutsche_telekom,Deutsche Telekom,2020,net_profit,available
+deutsche_telekom,Deutsche Telekom,2020,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2021,revenue,available
+deutsche_telekom,Deutsche Telekom,2021,net_profit,available
+deutsche_telekom,Deutsche Telekom,2021,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2022,revenue,available
+deutsche_telekom,Deutsche Telekom,2022,net_profit,available
+deutsche_telekom,Deutsche Telekom,2022,reported_mobile_connections,not_collected
+deutsche_telekom,Deutsche Telekom,2023,revenue,available
+deutsche_telekom,Deutsche Telekom,2023,net_profit,available
+deutsche_telekom,Deutsche Telekom,2023,reported_mobile_connections,available
+deutsche_telekom,Deutsche Telekom,2024,revenue,available
+deutsche_telekom,Deutsche Telekom,2024,net_profit,available
+deutsche_telekom,Deutsche Telekom,2024,reported_mobile_connections,available
+deutsche_telekom,Deutsche Telekom,2025,revenue,available
+deutsche_telekom,Deutsche Telekom,2025,net_profit,available
+deutsche_telekom,Deutsche Telekom,2025,reported_mobile_connections,available
+att,AT&T,2016,revenue,available
+att,AT&T,2016,net_profit,available
+att,AT&T,2016,reported_mobile_connections,not_collected
+att,AT&T,2017,revenue,available
+att,AT&T,2017,net_profit,available
+att,AT&T,2017,reported_mobile_connections,not_collected
+att,AT&T,2018,revenue,available
+att,AT&T,2018,net_profit,available
+att,AT&T,2018,reported_mobile_connections,not_collected
+att,AT&T,2019,revenue,available
+att,AT&T,2019,net_profit,available
+att,AT&T,2019,reported_mobile_connections,not_collected
+att,AT&T,2020,revenue,available
+att,AT&T,2020,net_profit,available
+att,AT&T,2020,reported_mobile_connections,not_collected
+att,AT&T,2021,revenue,available
+att,AT&T,2021,net_profit,available
+att,AT&T,2021,reported_mobile_connections,not_collected
+att,AT&T,2022,revenue,available
+att,AT&T,2022,net_profit,available
+att,AT&T,2022,reported_mobile_connections,not_collected
+att,AT&T,2023,revenue,available
+att,AT&T,2023,net_profit,available
+att,AT&T,2023,reported_mobile_connections,available
+att,AT&T,2024,revenue,available
+att,AT&T,2024,net_profit,available
+att,AT&T,2024,reported_mobile_connections,available
+att,AT&T,2025,revenue,available
+att,AT&T,2025,net_profit,available
+att,AT&T,2025,reported_mobile_connections,available
+ntt_group,NTT Group,2016,revenue,available
+ntt_group,NTT Group,2016,net_profit,available
+ntt_group,NTT Group,2016,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2017,revenue,available
+ntt_group,NTT Group,2017,net_profit,available
+ntt_group,NTT Group,2017,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2018,revenue,available
+ntt_group,NTT Group,2018,net_profit,available
+ntt_group,NTT Group,2018,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2019,revenue,available
+ntt_group,NTT Group,2019,net_profit,available
+ntt_group,NTT Group,2019,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2020,revenue,available
+ntt_group,NTT Group,2020,net_profit,available
+ntt_group,NTT Group,2020,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2021,revenue,available
+ntt_group,NTT Group,2021,net_profit,available
+ntt_group,NTT Group,2021,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2022,revenue,available
+ntt_group,NTT Group,2022,net_profit,available
+ntt_group,NTT Group,2022,reported_mobile_connections,not_collected
+ntt_group,NTT Group,2023,revenue,available
+ntt_group,NTT Group,2023,net_profit,available
+ntt_group,NTT Group,2023,reported_mobile_connections,available
+ntt_group,NTT Group,2024,revenue,available
+ntt_group,NTT Group,2024,net_profit,available
+ntt_group,NTT Group,2024,reported_mobile_connections,available
+ntt_group,NTT Group,2025,revenue,available
+ntt_group,NTT Group,2025,net_profit,available
+ntt_group,NTT Group,2025,reported_mobile_connections,available
