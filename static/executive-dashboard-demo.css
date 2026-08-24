@@ -370,21 +370,35 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-chart .chart-donut-count { fill: #91b3c2; font-size: 12px; }
 .comparison-chart .chart-direct-value { fill: #f2fbff; font-size: 12px; font-weight: 780; paint-order: stroke; stroke: #06121e; stroke-width: 2.5px; stroke-linejoin: round; }
 .comparison-chart .chart-empty-label { fill: #9ab9c5; font-size: 13px; font-weight: 700; }
-.chart-interactive-mark { cursor: pointer; outline: none; opacity: 1; transition: opacity 160ms ease, filter 160ms ease; }
-.chart-hit-area { fill: transparent; pointer-events: all; }
-.chart-ring-hit-area { fill: none; stroke: rgba(255, 255, 255, .001); stroke-width: 36; pointer-events: stroke; }
-.chart-interactive-mark.is-muted { opacity: .24; }
-.chart-interactive-mark.is-related { filter: brightness(1.12); }
-.chart-interactive-mark.is-active { filter: brightness(1.25) drop-shadow(0 0 5px rgba(116, 218, 255, .48)); }
-.chart-interactive-mark > rect,
-.chart-interactive-mark > circle,
-.chart-interactive-mark > line { transition: filter 150ms ease, opacity 150ms ease; }
-.chart-interactive-mark:hover > rect,
-.chart-interactive-mark:hover > circle,
-.chart-interactive-mark:hover > line,
-.chart-interactive-mark:focus > rect,
-.chart-interactive-mark:focus > circle,
-.chart-interactive-mark:focus > line { filter: brightness(1.22) drop-shadow(0 0 4px rgba(116, 218, 255, .42)); }
+.chart-interactive-mark { outline: none; pointer-events: none; }
+.chart-interactive-mark .chart-column-mark,
+.chart-interactive-mark .chart-bar-mark,
+.chart-interactive-mark .chart-point { cursor: pointer; pointer-events: visiblePainted; }
+.chart-interactive-mark .chart-lollipop-line,
+.chart-interactive-mark .chart-donut-segment,
+.chart-interactive-mark .chart-missing-line { cursor: pointer; pointer-events: visibleStroke; }
+.chart-track,
+.chart-track-ring,
+.chart-axis,
+.chart-line { pointer-events: none; }
+.chart-interactive-mark .chart-column-mark,
+.chart-interactive-mark .chart-bar-mark,
+.chart-interactive-mark .chart-point,
+.chart-interactive-mark .chart-lollipop-line,
+.chart-interactive-mark .chart-donut-segment,
+.chart-interactive-mark .chart-missing-line { transition: filter 120ms ease; }
+.chart-interactive-mark.is-active .chart-column-mark,
+.chart-interactive-mark.is-active .chart-bar-mark,
+.chart-interactive-mark.is-active .chart-point,
+.chart-interactive-mark.is-active .chart-lollipop-line,
+.chart-interactive-mark.is-active .chart-donut-segment,
+.chart-interactive-mark.is-active .chart-missing-line,
+.chart-interactive-mark:focus .chart-column-mark,
+.chart-interactive-mark:focus .chart-bar-mark,
+.chart-interactive-mark:focus .chart-point,
+.chart-interactive-mark:focus .chart-lollipop-line,
+.chart-interactive-mark:focus .chart-donut-segment,
+.chart-interactive-mark:focus .chart-missing-line { filter: brightness(1.18) drop-shadow(0 0 3px rgba(116, 218, 255, .38)); }
 .comparison-chart-tooltip { position: fixed; z-index: 1000; min-width: 220px; max-width: min(380px, calc(100vw - 16px)); padding: 12px 15px; border: 1px solid rgba(114, 210, 244, .56); border-radius: 7px; background: rgba(3, 15, 25, .97); box-shadow: 0 12px 34px rgba(0, 5, 12, .48), inset 0 0 20px rgba(91, 189, 229, .06); color: #edfaff; font-size: 15px; font-weight: 650; line-height: 1.5; pointer-events: none; white-space: normal; }
 .comparison-chart-tooltip[hidden] { display: none; }
 .comparison-chart-tooltip strong,
