@@ -38,6 +38,9 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertIn(f'data-workspace-panel="{module}"', INDEX)
         self.assertEqual(INDEX.count('role="tab"'), len(modules))
         self.assertEqual(INDEX.count('role="tabpanel"'), len(modules))
+        dashboard_tab = INDEX[INDEX.index('id="workspace-tab-dashboard"'):INDEX.index('id="workspace-tab-monitoring"')]
+        self.assertIn('<span class="workspace-tab-label">战略总览</span>', dashboard_tab)
+        self.assertNotIn("驾驶舱", dashboard_tab)
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)

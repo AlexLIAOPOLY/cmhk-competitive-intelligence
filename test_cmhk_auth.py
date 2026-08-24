@@ -84,6 +84,7 @@ class AuthServiceTest(unittest.TestCase):
 
     def test_role_defaults_keep_leader_on_dashboard_only(self):
         self.assertEqual(ROLE_MODULES["LEADER"], ["dashboard"])
+        self.assertEqual(MODULE_LABELS["dashboard"], "战略总览")
         self.assertEqual(set(ROLE_MODULES["ADMIN"]), set(MODULE_LABELS))
         self.assertNotIn("organization", ROLE_MODULES["ANALYST"])
 
@@ -154,6 +155,7 @@ class AuthServiceTest(unittest.TestCase):
         mutation = FakeHandler(cookie=leader_session, origin="")
         self.assertFalse(self.service.authorize_api(mutation, "/api/status", "POST"))
         self.assertEqual(mutation.status, 403)
+        self.assertEqual(mutation.payload()["message"], "领导账号仅可查看战略总览")
 
     def test_direct_business_resources_follow_module_permissions(self):
         _, leader_session = self.dev_login("local-leader")

@@ -32,7 +32,7 @@ ROLE_LABELS = {
 }
 
 MODULE_LABELS = {
-    "dashboard": "驾驶舱",
+    "dashboard": "战略总览",
     "monitoring": "战略监控体系",
     "news": "新闻检索系统",
     "review": "新闻人工筛选",
@@ -1112,7 +1112,7 @@ class AuthService:
             self._send_json(handler, 401, {"ok": False, "message": "登录状态已失效，请重新登录"})
             return False
         if user.get("role") == "LEADER" and method != "GET":
-            self._send_json(handler, 403, {"ok": False, "message": "领导账号仅可查看驾驶舱"})
+            self._send_json(handler, 403, {"ok": False, "message": "领导账号仅可查看战略总览"})
             return False
         if method == "GET" and path.startswith(("/api/crawl-runs", "/api/crawl-run-log")):
             modules = user["permissions"]["modules"]
