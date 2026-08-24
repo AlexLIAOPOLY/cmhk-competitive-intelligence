@@ -219,7 +219,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("font-weight: 650; letter-spacing: 0", style)
         self.assertIn("Balance chart typography after each SVG viewBox", style)
         self.assertIn(".panel-network .comparison-metric-card:first-child .comparison-chart text { font-size: 7px; }", style)
-        self.assertIn(".panel-reach .comparison-chart text,", style)
+        self.assertIn(".panel-reach .comparison-chart text { font-size: 18.5px; }", style)
         self.assertIn(".panel-finance .comparison-metric-card:nth-child(2) h3", style)
         self.assertNotIn(".comparison-page .cockpit", hardening_style)
         self.assertNotIn("function comparisonValues", script)
