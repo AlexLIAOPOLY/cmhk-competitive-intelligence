@@ -104,6 +104,14 @@
     return ({ "fault.mark_handled": "处理告警", "news_review.update": "复核新闻", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员", "organization.user_delete": "删除组织成员" })[event.action] || event.action || "系统操作";
   }
 
+  function actionIcon(action) {
+    if (action === "organization.user_import") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.5" cy="7" r="3"/><path d="M3.5 19c.2-3.5 2-5.4 5-5.4 1.7 0 3 .6 3.9 1.7M17.5 8.5v7M14 12h7"/></svg>';
+    if (action === "fault.mark_handled") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 8.5v5M12 16.8v.2"/></svg>';
+    if (action === "news_review.update") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h10l4 4V20H5V3.5Z"/><path d="M15 3.5v4h4M8 13l2.2 2.2L16 9.8"/></svg>';
+    if (action === "organization.user_delete") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 7l1 13h6l1-13M10.5 11v5M13.5 11v5"/></svg>';
+    return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8 12h8"/></svg>';
+  }
+
   function auditTime(value) {
     const date = new Date(String(value || ""));
     if (Number.isNaN(date.getTime())) return String(value || "—");
@@ -188,7 +196,7 @@
     const rows = events.map((event) => {
       const person = eventPerson(event);
       const action = auditAction(event);
-      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${esc(action)}</button></td><td>${targetCell(event)}</td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${actionIcon(event.action)}<span>${esc(action)}</span></button></td><td>${targetCell(event)}</td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
     }).join("");
     const count = events.length === state.audit.length ? `${state.audit.length} 条` : `${events.length} / ${state.audit.length} 条`;
     return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="5"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
