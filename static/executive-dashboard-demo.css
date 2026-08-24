@@ -192,7 +192,7 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 
 .finance-content > div { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(235px, .82fr); grid-template-rows: auto minmax(0, 1fr); gap: clamp(8px, .65vw, 24px); }
 .finance-content .operator-tabs { grid-column: 1 / -1; }
-.operator-tabs { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; min-width: 0; padding: 3px; border: 1px solid rgba(100, 205, 244, .16); border-radius: 4px; background: rgba(2, 13, 23, .54); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .018); }
+.operator-tabs { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; min-width: 0; padding: 3px; border: 1px solid rgba(100, 205, 244, .16); border-radius: 4px; background: rgba(2, 13, 23, .54); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .018); }
 .operator-tabs button { position: relative; min-width: 0; min-height: 34px; display: grid; place-items: center; padding: 0 clamp(6px, .55vw, 16px); overflow: hidden; border: 0; border-radius: 2px; color: #82a2b0; background: transparent; font: 680 clamp(12px, .7vw, 24px)/1 var(--font-ui); cursor: pointer; transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
 .operator-tabs button::after { content: ""; position: absolute; right: 12%; bottom: 0; left: 12%; height: 2px; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); box-shadow: 0 0 10px rgba(100, 205, 244, .58); transform: scaleX(0); transition: transform 220ms cubic-bezier(.2, .8, .2, 1); }
 .operator-tabs button:hover { color: #e8f7fb; background: rgba(92, 156, 255, .1); transform: translateY(-1px); }
@@ -235,7 +235,7 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-toolbar { min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 2px; color: #b5ccd6; font-size: clamp(11px, .67vw, 24px); }
 .comparison-toolbar > span { font-weight: 650; }
 .comparison-toolbar > em { flex: 0 0 auto; color: #6f98aa; font-style: normal; font-weight: 600; white-space: nowrap; }
-.comparison-table { min-height: 0; display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 3px; background: rgba(3, 14, 24, .4); overflow: hidden; }
+.comparison-table { min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 3px; background: rgba(3, 14, 24, .4); overflow: hidden; }
 .comparison-row { min-width: 0; display: grid; grid-template-columns: minmax(72px, .7fr) minmax(80px, 1.7fr) minmax(58px, .6fr) minmax(100px, 1fr); align-items: center; gap: clamp(8px, .7vw, 26px); padding: 0 clamp(12px, .9vw, 34px); border-bottom: 1px solid rgba(133, 182, 207, .14); color: inherit; text-decoration: none; transition: background 130ms ease; }
 .comparison-row:last-child { border-bottom: 0; }
 .comparison-row:hover { background: rgba(87, 161, 199, .09); }

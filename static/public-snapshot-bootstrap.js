@@ -152,6 +152,13 @@
       }
     });
   }
-  document.addEventListener("DOMContentLoaded", lockPrivateControls);
-  new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
+  function startPrivateControlLock() {
+    lockPrivateControls();
+    new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startPrivateControlLock, { once: true });
+  } else {
+    startPrivateControlLock();
+  }
 })();
