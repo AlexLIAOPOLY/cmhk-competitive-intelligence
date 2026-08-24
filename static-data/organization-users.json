@@ -414,7 +414,7 @@
     "OPERATIONS": "系统运维"
   },
   "modules": {
-    "dashboard": "驾驶舱",
+    "dashboard": "战略总览",
     "monitoring": "战略监控体系",
     "news": "新闻检索系统",
     "review": "新闻人工筛选",
