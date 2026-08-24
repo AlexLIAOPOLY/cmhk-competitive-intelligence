@@ -60,9 +60,8 @@
   function selectedUser(users = filteredUsers()) {
     const selected = state.users.find((user) => String(user.id) === String(state.selectedUserId));
     if (selected && users.includes(selected)) return selected;
-    const next = users[0] || null;
-    state.selectedUserId = next ? String(next.id) : "";
-    return next;
+    state.selectedUserId = "";
+    return null;
   }
 
   function profileKey(person) {
@@ -124,7 +123,9 @@
   }
 
   function memberDetail(user) {
-    if (!user) return '<section class="organization-member-detail"><div class="organization-detail-empty">请选择一名成员查看资料与权限</div></section>';
+    if (!user) return `<section class="organization-member-detail is-empty" aria-label="成员详情未选择">
+      <div class="organization-detail-empty"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="25" cy="22" r="9"/><path d="M9 49c1-11 6.5-17 16-17 6.2 0 10.8 2.6 13.5 7.6"/><path d="m39 31 16 7-7 3-3 8-6-18Z"/></svg><strong>选择成员查看详情</strong><span>点击左侧成员，查看资料、角色与功能权限</span></div>
+    </section>`;
     const checks = Object.entries(state.modules).map(([key, label]) => {
       const checked = user.modules?.[key] === true;
       const protectedPermission = user.current && key === "organization";
@@ -287,7 +288,6 @@
       state.roleModules = payload.roleModules || {};
       state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
       state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
-      if (!state.selectedUserId && state.users.length) state.selectedUserId = String(state.users[0].id);
       state.loaded = true;
       render();
     } catch (error) { renderError(error.message); }
