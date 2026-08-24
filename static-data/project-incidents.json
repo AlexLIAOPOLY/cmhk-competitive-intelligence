@@ -2,6 +2,54 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "17984bfe30bf481868f6aa67",
+      "task_id": "incident:17984bfe30bf481868f6aa67",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-24T09:36:27+08:00",
+      "started_at_hkt": "2026-08-24T09:36:27+08:00",
+      "heartbeat_at_hkt": "2026-08-24T09:36:27+08:00",
+      "completed_at_hkt": "2026-08-24T09:36:57+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "39ccdd7bd0479590e852a7c9",
+      "task_id": "incident:39ccdd7bd0479590e852a7c9",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-24T09:35:27+08:00",
+      "started_at_hkt": "2026-08-24T09:35:27+08:00",
+      "heartbeat_at_hkt": "2026-08-24T09:35:27+08:00",
+      "completed_at_hkt": "2026-08-24T09:35:57+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f407e6f2fa99e7eefd1171fb",
       "task_id": "incident:f407e6f2fa99e7eefd1171fb",
       "title": "主项目后台任务",
@@ -11959,54 +12007,6 @@
       "occurred_at_hkt": "2026-08-17T11:31:32+08:00",
       "started_at_hkt": "2026-08-17T11:31:32+08:00",
       "heartbeat_at_hkt": "2026-08-17T11:31:32+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "48e770f7e151b4da5189fd5c",
-      "task_id": "incident:48e770f7e151b4da5189fd5c",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-17T11:27:35+08:00",
-      "started_at_hkt": "2026-08-17T11:28:02+08:00",
-      "heartbeat_at_hkt": "2026-08-17T11:36:07+08:00",
-      "completed_at_hkt": "2026-08-17T11:36:33+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "813f18299a7f64bbb2b2d347",
-      "task_id": "incident:813f18299a7f64bbb2b2d347",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T11:26:02+08:00",
-      "started_at_hkt": "2026-08-17T11:26:02+08:00",
-      "heartbeat_at_hkt": "2026-08-17T11:26:02+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }

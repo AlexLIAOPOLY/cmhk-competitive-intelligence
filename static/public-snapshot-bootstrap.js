@@ -20,6 +20,20 @@
     ["/api/task-run-log", ["static-data/task-run-details.json", "details"]],
   ]);
   const inlineRoutes = new Map([
+    ["/api/auth/me", {
+      ok: true,
+      authenticated: true,
+      user: {
+        name: "公开快照",
+        role: "VIEWER",
+        roleLabel: "只读",
+        permissions: { modules: {
+          dashboard: true, monitoring: true, competitor: true, news: true,
+          weekly: true, performance: true, review: true, log: true, fault: true,
+          subscriptions: false, ai: false, organization: false,
+        } },
+      },
+    }],
     ["/api/agent-datasets", { ok: true, datasets: [] }],
     ["/api/agent-memory", { ok: true, memories: [] }],
     ["/api/agent-skills", { ok: true, skills: [] }],
