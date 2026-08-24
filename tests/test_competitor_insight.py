@@ -47,6 +47,13 @@ class _IgnoredStreamingResponse(_Response):
         yield self.read()
 
 
+class _ReasoningOnlyStreamingResponse(_Response):
+    def __iter__(self):
+        event = {"choices": [{"delta": {"reasoning_content": "分析中"}}]}
+        yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode()
+        yield b"data: [DONE]\n\n"
+
+
 class CompetitorInsightTests(unittest.TestCase):
     def payload(self):
         data = json.loads(web_app.COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
@@ -156,6 +163,29 @@ class CompetitorInsightTests(unittest.TestCase):
         ), patch("web_app.time.sleep"):
             result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
 
+        deltas = [event["text"] for event in events if event["type"] == "delta"]
+        self.assertGreater(len(deltas), 3)
+        self.assertEqual("".join(deltas), MODEL_CONTENT)
+        self.assertEqual(result["insight"], MODEL_CONTENT)
+
+    def test_reasoning_only_stream_fetches_final_answer_and_replays_visible_deltas(self):
+        events = []
+        request_bodies = []
+
+        def open_request(request, timeout):
+            request_bodies.append(json.loads(request.data.decode()))
+            if len(request_bodies) == 1:
+                return _ReasoningOnlyStreamingResponse()
+            return _Response()
+
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", side_effect=open_request
+        ), patch("web_app.time.sleep"):
+            result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
+
+        self.assertEqual([body["stream"] for body in request_bodies], [True, False])
+        self.assertTrue(any(event.get("message") == "AI 正在整理最终结果" for event in events))
         deltas = [event["text"] for event in events if event["type"] == "delta"]
         self.assertGreater(len(deltas), 3)
         self.assertEqual("".join(deltas), MODEL_CONTENT)

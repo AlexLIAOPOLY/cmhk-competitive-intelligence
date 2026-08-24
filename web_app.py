@@ -486,6 +486,38 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                             complete_text = _competitor_insight_content(complete_text)
                             content_parts.append(complete_text)
                             emit_visible_delta(complete_text)
+                        if not content_parts:
+                            # The gateway can finish a nominal SSE response with
+                            # reasoning-only deltas and no final content. Keep the
+                            # browser on this SSE connection, fetch the final answer
+                            # once without upstream streaming, then replay it as
+                            # paced visible deltas. This replaces the removed browser
+                            # fallback without bringing back one-shot rendering.
+                            stream_callback(
+                                {
+                                    "type": "status",
+                                    "stage": "generating",
+                                    "message": "AI 正在整理最终结果",
+                                }
+                            )
+                            fallback_body = dict(body)
+                            fallback_body["stream"] = False
+                            fallback_request = urllib.request.Request(
+                                f"{base_url}/chat/completions",
+                                data=json.dumps(fallback_body, ensure_ascii=False).encode("utf-8"),
+                                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                                method="POST",
+                            )
+                            with urllib.request.urlopen(fallback_request, timeout=60) as fallback_response:
+                                fallback_result = json.loads(fallback_response.read().decode("utf-8"))
+                            from ai_response_compat import final_chat_message_text
+                            complete_text = final_chat_message_text(
+                                fallback_result,
+                                operation="竞争指标AI洞察",
+                            )
+                            complete_text = _competitor_insight_content(complete_text)
+                            content_parts.append(complete_text)
+                            emit_visible_delta(complete_text)
                         raw_content = "".join(content_parts)
                     else:
                         result = json.loads(response.read().decode("utf-8"))
