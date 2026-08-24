@@ -1447,6 +1447,152 @@ def _reader_facing_copy(value: Any) -> Any:
     return value
 
 
+def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
+    """Build strategic-overview domain 02 from the four requested carriers."""
+    requested = ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
+    rows = [
+        row for row in (payload.get("rows") or [])
+        if row.get("operator") in requested
+        and row.get("verification_status") == "official_three_distinct_sources_verified"
+        and int(row.get("distinct_source_document_count") or 0) >= 3
+    ]
+
+    def row_for(operator: str, metric: str, year: int) -> dict[str, Any] | None:
+        return next((row for row in rows if row.get("operator") == operator
+                     and row.get("metric_key") == metric and int(row.get("year") or 0) == year), None)
+
+    def history(operator: str, metric: str) -> list[dict[str, Any]]:
+        return [
+            {"label": f"FY{year}", "value": value}
+            for year in range(2016, 2026)
+            if (value := _verified_number(row_for(operator, metric, year))) is not None
+        ]
+
+    def make_item(
+        operator: str, metric: str, value: float, unit: str, detail: str, analysis: str,
+        *, trend: list[dict[str, Any]] | None = None,
+        components: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        row = row_for(operator, metric, 2025) or {}
+        result = {
+            "name": operator, "value": round(value, 2), "unit": unit, "period": "FY2025",
+            "detail": detail, "analysis": analysis,
+            "components": components or [_component(row.get("metric_zh") or metric, round(value, 2), unit, "FY2025")],
+            "component_count": len(components or [None]),
+            "source_url": str(row.get("primary_source_url") or ""),
+            "verification_count": int(row.get("distinct_source_document_count") or 0),
+        }
+        if trend:
+            result["trend"] = trend
+        return result
+
+    native_units = {
+        "Verizon": "USD million", "Deutsche Telekom": "EUR billion",
+        "AT&T": "USD million", "NTT Group": "JPY billion",
+    }
+    usd_per_native = {
+        "Verizon": 0.001, "AT&T": 0.001,
+        "Deutsche Telekom": 1.1300, "NTT Group": 1 / 149.5686,
+    }
+
+    def usd_billions(operator: str, value: float) -> float:
+        return value * usd_per_native[operator]
+
+    def usd_trend(operator: str, metric: str) -> list[dict[str, Any]]:
+        return [
+            {"label": point["label"], "value": round(usd_billions(operator, float(point["value"])), 2)}
+            for point in history(operator, metric)
+        ]
+    revenue_items: list[dict[str, Any]] = []
+    ebitda_items: list[dict[str, Any]] = []
+    profit_items: list[dict[str, Any]] = []
+    postpaid_items: list[dict[str, Any]] = []
+    for operator in requested:
+        unit = native_units[operator]
+        revenue = _verified_number(row_for(operator, "revenue", 2025))
+        if revenue is not None:
+            revenue_usd = usd_billions(operator, revenue)
+            revenue_items.append(make_item(
+                operator, "revenue", revenue_usd, "十亿美元",
+                f"FY2025约{revenue_usd:.2f}十亿美元 · 原披露{revenue:g} {unit}",
+                "金额及十年趋势均按统一汇率折算为十亿美元。",
+                trend=usd_trend(operator, "revenue"),
+            ))
+
+        ebitda = _verified_number(row_for(operator, "adjusted_ebitda", 2025))
+        if ebitda is not None:
+            ebitda_usd = usd_billions(operator, ebitda)
+            ebitda_items.append(make_item(
+                operator, "adjusted_ebitda", ebitda_usd, "十亿美元",
+                f"FY2025约{ebitda_usd:.2f}十亿美元 · 原披露{ebitda:g} {unit}",
+                "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
+                trend=usd_trend(operator, "adjusted_ebitda"),
+            ))
+
+        profit = _verified_number(row_for(operator, "net_profit", 2025))
+        if profit is not None:
+            profit_usd = usd_billions(operator, profit)
+            profit_items.append(make_item(
+                operator, "net_profit", profit_usd, "十亿美元",
+                f"FY2025约{profit_usd:.2f}十亿美元 · 原披露{profit:g} {unit}",
+                "按统一汇率折算为十亿美元，原币金额保留在明细中。",
+                trend=usd_trend(operator, "net_profit"),
+            ))
+
+        subscriber_metric = "mobile_service_subscriptions" if operator == "NTT Group" else "postpaid_connections"
+        arpu_metric = {"Verizon": "postpaid_arpa", "NTT Group": "mobile_arpu"}.get(operator, "postpaid_phone_arpu")
+        subscribers = _verified_number(row_for(operator, subscriber_metric, 2025))
+        arpu = _verified_number(row_for(operator, arpu_metric, 2025))
+        if subscribers is None or arpu is None:
+            continue
+        arpu_usd = arpu / 149.5686 if operator == "NTT Group" else arpu
+        if operator == "Verizon":
+            detail = f"后付费连接 {subscribers:.3f}百万 · ARPA ${arpu_usd:.2f}/账户/月"
+            warning = "Verizon披露的是ARPA（每账户），不写成ARPU。"
+        elif operator == "NTT Group":
+            detail = f"移动电话服务订阅 {subscribers:.3f}百万（替代口径） · 移动ARPU约${arpu_usd:.2f}/用户/月 · 原披露¥{arpu:.0f}"
+            warning = "NTT未披露后付费口径；替代值包含MVNO与通信模块合约，不与后付费用户直接等同。"
+        else:
+            detail = f"后付费用户 {subscribers:.3f}百万 · 后付费手机ARPU ${arpu:.2f}/用户/月"
+            warning = ("Deutsche Telekom用户数为T-Mobile US分部后付费总客户，ARPU为后付费手机口径。"
+                       if operator == "Deutsche Telekom" else "AT&T用户数为美国Mobility后付费总客户，ARPU为后付费手机口径。")
+        postpaid_items.append(make_item(
+            operator, subscriber_metric, subscribers, "百万", detail, warning,
+            trend=history(operator, subscriber_metric),
+                components=[_component("后付费用户数", subscribers, "百万", "FY2025"),
+                        _component("ARPU/ARPA", round(arpu_usd, 2), "美元/月", "FY2025")],
+        ))
+
+    focuses = [
+        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "十年营收序列已入库",
+         "metric": {"value": len(revenue_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
+         "context": "统一为十亿美元；原币明细保留", "insight": "4家均覆盖10年，统一折算后可比较绝对规模，但集团范围差异仍需结合原披露理解。", "items": revenue_items},
+        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "调整后EBITDA绝对值",
+         "metric": {"value": len(ebitda_items), "unit": "家", "label": "FY2025已披露"},
+         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "4家FY2025调整后EBITDA约22.89至50.00十亿美元，绝对规模形成梯队，但调整口径并不完全相同。", "items": ebitda_items},
+        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "净利润绝对值",
+         "metric": {"value": len(profit_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
+         "context": "统一为十亿美元", "insight": "4家FY2025净利润约6.93至21.95十亿美元，绝对规模存在差距，但公司财年与集团范围仍需按原披露理解。", "items": profit_items},
+        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "后付费用户数与ARPU/ARPA",
+         "metric": {"value": len(postpaid_items), "unit": "家", "label": "口径差异已明示"},
+         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "4家FY2025披露值约90.88至126.7百万，但ARPU/ARPA及NTT替代口径不同，表明客户价值不可直接混排。", "items": postpaid_items},
+    ]
+    all_items = revenue_items + ebitda_items + profit_items + postpaid_items
+    return {
+        "id": "international", "index": "02", "title": "国际运营商",
+        "kicker": "营收、EBITDA、净利润与后付费用户价值",
+        "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025财务历史"},
+        "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；展示值经三份不同底层官方文件核验",
+        "insight": "对比金额统一为十亿美元，ARPU统一为美元/月；Verizon为ARPA，NTT的用户口径已单独标注。",
+        "entities": revenue_items, "focuses": focuses,
+        "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "三来源认证"} for item in revenue_items],
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in all_items] + [
+            _source("ECB 2025年均汇率", "https://data.ecb.europa.eu/data/datasets/EXR/EXR.A.USD.EUR.SP00.A"),
+            _source("美联储/FRED 2025日元年均汇率", "https://fred.stlouisfed.org/series/AEXJPUS/"),
+        ]),
+    }
+
+
 @lru_cache(maxsize=4)
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature

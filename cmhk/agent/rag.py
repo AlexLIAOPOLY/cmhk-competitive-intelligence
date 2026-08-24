@@ -646,6 +646,8 @@ def _global_operator_exact_metric_chunks(
         "connected_homes": ["连接家庭", "已连接家庭", "connected homes", "connected premises"],
         "churn": ["用户流失率", "月度流失率", "流失率", "monthly churn", "churn"],
         "mobile_arpu": ["移动arpu", "mobile arpu", "arpu"],
+        "postpaid_phone_arpu": ["后付费手机arpu", "后付费arpu", "后付arpu", "postpaid phone arpu", "postpaid arpu"],
+        "postpaid_arpa": ["后付费arpa", "后付arpa", "postpaid arpa", "arpa"],
         "broadband_arpu": ["宽带arpu", "broadband arpu"],
         "household_customer_blended_arpu": ["家庭客户综合arpu", "家庭综合arpu", "household customer blended arpu"],
         "integrated_package_arpu": ["融合套餐arpu", "融合arpu", "integrated package arpu"],
@@ -683,6 +685,8 @@ def _global_operator_exact_metric_chunks(
         "value_of_sales_and_services": ["销售及服务价值", "value of sales and services"],
         "revenue_from_operations": ["经营收入", "revenue from operations"],
         "ebitda": ["ebitda"],
+        "adjusted_ebitda": ["调整后ebitda", "经调整ebitda", "adjusted ebitda"],
+        "adjusted_ebitda_margin": ["ebitda利润率", "调整后ebitda利润率", "adjusted ebitda margin", "利润率"],
         "ebit": ["ebit"],
         "earnings_before_tax": ["税前利润", "profit before tax", "earnings before tax"],
         "net_profit": ["净利润", "net profit", "net income"],
@@ -690,6 +694,8 @@ def _global_operator_exact_metric_chunks(
         "net_debt": ["净债务", "net debt"],
         "shareholders_equity": ["股东权益", "shareholders equity", "shareholder's equity"],
         "reported_mobile_connections": ["披露口径移动连接", "移动连接", "移动连接数", "移动用户规模", "reported mobile connections", "mobile connections"],
+        "postpaid_connections": ["后付费用户", "后付费客户", "后付费连接", "后付用户", "postpaid customers", "postpaid connections"],
+        "mobile_service_subscriptions": ["移动电话服务订阅", "手机订阅", "手机用户", "mobile phone service subscriptions"],
     }
     matched_metrics = {
         metric_key
@@ -707,6 +713,10 @@ def _global_operator_exact_metric_chunks(
         matched_metrics.discard("revenue")
     if "ebitda" in matched_metrics:
         matched_metrics.discard("ebit")
+    if "adjusted_ebitda" in matched_metrics:
+        matched_metrics.discard("ebitda")
+    if "postpaid_phone_arpu" in matched_metrics or "postpaid_arpa" in matched_metrics:
+        matched_metrics.discard("mobile_arpu")
 
     # Keep subject-to-metric associations in compound questions instead of
     # returning every metric for every named operator.

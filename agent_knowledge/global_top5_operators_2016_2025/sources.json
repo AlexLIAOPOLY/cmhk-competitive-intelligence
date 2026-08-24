@@ -9270,6 +9270,11 @@
             "value": 13127,
             "unit": "USD_million",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 108.796,
+            "unit": "million_connections",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -9293,6 +9298,11 @@
           "net_profit": {
             "value": 13127,
             "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 108.796,
+            "unit": "million_connections",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -9318,6 +9328,11 @@
             "value": 13127,
             "unit": "USD_million",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 108.796,
+            "unit": "million_connections",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -9341,6 +9356,11 @@
           "net_profit": {
             "value": 30101,
             "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 110.854,
+            "unit": "million_connections",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -9366,6 +9386,11 @@
             "value": 30101,
             "unit": "USD_million",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 110.854,
+            "unit": "million_connections",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -9389,6 +9414,11 @@
           "net_profit": {
             "value": 30101,
             "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 110.854,
+            "unit": "million_connections",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -9414,6 +9444,11 @@
             "value": 15528,
             "unit": "USD_million",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 113.353,
+            "unit": "million_connections",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -9437,6 +9472,11 @@
           "net_profit": {
             "value": 15528,
             "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 113.353,
+            "unit": "million_connections",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -9462,6 +9502,11 @@
             "value": 15528,
             "unit": "USD_million",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 113.353,
+            "unit": "million_connections",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -9485,6 +9530,11 @@
           "net_profit": {
             "value": 19265,
             "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 115.698,
+            "unit": "million_connections",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -9510,6 +9560,11 @@
             "value": 19265,
             "unit": "USD_million",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 115.698,
+            "unit": "million_connections",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -9533,6 +9588,11 @@
           "net_profit": {
             "value": 19265,
             "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 115.698,
+            "unit": "million_connections",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -9558,6 +9618,11 @@
             "value": 17801,
             "unit": "USD_million",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.853,
+            "unit": "million_connections",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -9581,6 +9646,11 @@
           "net_profit": {
             "value": 17801,
             "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.853,
+            "unit": "million_connections",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -9606,6 +9676,11 @@
             "value": 17801,
             "unit": "USD_million",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.853,
+            "unit": "million_connections",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -9629,6 +9704,11 @@
           "net_profit": {
             "value": 22065,
             "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 118.954,
+            "unit": "million_connections",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -9654,6 +9734,11 @@
             "value": 22065,
             "unit": "USD_million",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 118.954,
+            "unit": "million_connections",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -9677,6 +9762,11 @@
           "net_profit": {
             "value": 22065,
             "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 118.954,
+            "unit": "million_connections",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -9702,6 +9792,11 @@
             "value": 21256,
             "unit": "USD_million",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 120.589,
+            "unit": "million_connections",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -9726,6 +9821,11 @@
             "value": 21256,
             "unit": "USD_million",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 120.589,
+            "unit": "million_connections",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -9749,6 +9849,11 @@
           "net_profit": {
             "value": 21256,
             "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 120.589,
+            "unit": "million_connections",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -9777,6 +9882,11 @@
           },
           "reported_mobile_connections": {
             "value": 114.972,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 123.629,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
           }
@@ -9808,6 +9918,11 @@
             "value": 114.972,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 123.629,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -9835,6 +9950,11 @@
           },
           "reported_mobile_connections": {
             "value": 114.972,
+            "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 123.629,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
           }
@@ -9866,6 +9986,26 @@
             "value": 115.256,
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 48791,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 125.937,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 168.96,
+            "unit": "USD_per_account_month",
+            "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
       }
@@ -9894,6 +10034,26 @@
           "reported_mobile_connections": {
             "value": 115.256,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 48791,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 125.937,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 168.96,
+            "unit": "USD_per_account_month",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -9924,6 +10084,26 @@
             "value": 115.256,
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 48791,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 125.937,
+            "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 168.96,
+            "unit": "USD_per_account_month",
+            "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
       }
@@ -9952,6 +10132,26 @@
           "reported_mobile_connections": {
             "value": 115.903,
             "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 49997,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 126.705,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 170.61,
+            "unit": "USD_per_account_month",
             "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
@@ -9982,6 +10182,26 @@
             "value": 115.903,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 49997,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 126.705,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 170.61,
+            "unit": "USD_per_account_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -9992,7 +10212,7 @@
       "operator_id": "verizon",
       "year": 2025,
       "label": "Verizon Communications Inc. FY2025 presentation document with FY2025 evidence",
-      "url": "https://www.verizon.com/about/sites/default/files/2026-01/vz_4q25_foi_013026.pdf",
+      "url": "https://www.verizon.com/about/sites/default/files/2026-02/vz_4q25_foi_013026r.pdf",
       "source_type": "official_presentation_document",
       "publisher": "Verizon Communications Inc.",
       "comparative_evidence": {
@@ -10010,6 +10230,26 @@
           "reported_mobile_connections": {
             "value": 115.903,
             "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 49997,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 126.705,
+            "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_arpa": {
+            "value": 170.61,
+            "unit": "USD_per_account_month",
             "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
@@ -10035,6 +10275,11 @@
             "value": 2.7,
             "unit": "EUR_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 34.427,
+            "unit": "million_customers",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -10058,6 +10303,11 @@
           "net_profit": {
             "value": 2.7,
             "unit": "EUR_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 34.427,
+            "unit": "million_customers",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -10083,6 +10333,11 @@
             "value": 2.7,
             "unit": "EUR_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 34.427,
+            "unit": "million_customers",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -10106,6 +10361,11 @@
           "net_profit": {
             "value": 3.5,
             "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 38.047,
+            "unit": "million_customers",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -10131,6 +10391,11 @@
             "value": 3.5,
             "unit": "EUR_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 38.047,
+            "unit": "million_customers",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -10154,6 +10419,11 @@
           "net_profit": {
             "value": 3.5,
             "unit": "EUR_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 38.047,
+            "unit": "million_customers",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -10179,6 +10449,11 @@
             "value": 2.2,
             "unit": "EUR_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 42.519,
+            "unit": "million_customers",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -10202,6 +10477,11 @@
           "net_profit": {
             "value": 2.2,
             "unit": "EUR_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 42.519,
+            "unit": "million_customers",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -10227,6 +10507,11 @@
             "value": 2.2,
             "unit": "EUR_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 42.519,
+            "unit": "million_customers",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -10250,6 +10535,11 @@
           "net_profit": {
             "value": 3.9,
             "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 47.034,
+            "unit": "million_customers",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -10275,6 +10565,11 @@
             "value": 3.9,
             "unit": "EUR_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 47.034,
+            "unit": "million_customers",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -10298,6 +10593,11 @@
           "net_profit": {
             "value": 3.9,
             "unit": "EUR_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 47.034,
+            "unit": "million_customers",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -10323,6 +10623,11 @@
             "value": 4.2,
             "unit": "EUR_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.35,
+            "unit": "million_customers",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -10346,6 +10651,11 @@
           "net_profit": {
             "value": 4.2,
             "unit": "EUR_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.35,
+            "unit": "million_customers",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -10371,6 +10681,11 @@
             "value": 4.2,
             "unit": "EUR_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.35,
+            "unit": "million_customers",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -10394,6 +10709,11 @@
           "net_profit": {
             "value": 4.2,
             "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.663,
+            "unit": "million_customers",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -10419,6 +10739,11 @@
             "value": 4.2,
             "unit": "EUR_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.663,
+            "unit": "million_customers",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -10442,6 +10767,11 @@
           "net_profit": {
             "value": 4.2,
             "unit": "EUR_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.663,
+            "unit": "million_customers",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -10467,6 +10797,11 @@
             "value": 8.0,
             "unit": "EUR_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 92.232,
+            "unit": "million_customers",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -10491,6 +10826,11 @@
             "value": 8.0,
             "unit": "EUR_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 92.232,
+            "unit": "million_customers",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -10514,6 +10854,11 @@
           "net_profit": {
             "value": 8.0,
             "unit": "EUR_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 92.232,
+            "unit": "million_customers",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -10544,6 +10889,21 @@
             "value": 252.2,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 40.497,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 98.052,
+            "unit": "million_customers",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -10572,6 +10932,21 @@
           "reported_mobile_connections": {
             "value": 252.2,
             "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 40.497,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 98.052,
+            "unit": "million_customers",
             "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
@@ -10602,6 +10977,21 @@
             "value": 252.2,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 40.497,
+            "unit": "EUR_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.2,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 98.052,
+            "unit": "million_customers",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -10630,6 +11020,21 @@
           "reported_mobile_connections": {
             "value": 261.4,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43.021,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 104.118,
+            "unit": "million_customers",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -10660,6 +11065,21 @@
             "value": 261.4,
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43.021,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 104.118,
+            "unit": "million_customers",
+            "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
       }
@@ -10688,6 +11108,21 @@
           "reported_mobile_connections": {
             "value": 261.4,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43.021,
+            "unit": "EUR_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 104.118,
+            "unit": "million_customers",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -10718,6 +11153,26 @@
             "value": 273.2,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44.244,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.445,
+            "unit": "million_customers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 50.71,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -10746,6 +11201,26 @@
           "reported_mobile_connections": {
             "value": 273.2,
             "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44.244,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.445,
+            "unit": "million_customers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 50.71,
+            "unit": "USD_per_phone_month",
             "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
@@ -10776,6 +11251,26 @@
             "value": 273.2,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44.244,
+            "unit": "EUR_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 37.2,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 116.445,
+            "unit": "million_customers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 50.71,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -10799,6 +11294,11 @@
           "net_profit": {
             "value": 12976,
             "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.372,
+            "unit": "million_subscribers",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -10824,6 +11324,11 @@
             "value": 12976,
             "unit": "USD_million",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.372,
+            "unit": "million_subscribers",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -10847,6 +11352,11 @@
           "net_profit": {
             "value": 12976,
             "unit": "USD_million",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.372,
+            "unit": "million_subscribers",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -10872,6 +11382,11 @@
             "value": 29450,
             "unit": "USD_million",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.674,
+            "unit": "million_subscribers",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -10895,6 +11410,11 @@
           "net_profit": {
             "value": 29450,
             "unit": "USD_million",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.674,
+            "unit": "million_subscribers",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -10920,6 +11440,11 @@
             "value": 29450,
             "unit": "USD_million",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.674,
+            "unit": "million_subscribers",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -10943,6 +11468,11 @@
           "net_profit": {
             "value": 19370,
             "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.068,
+            "unit": "million_subscribers",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -10968,6 +11498,11 @@
             "value": 19370,
             "unit": "USD_million",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.068,
+            "unit": "million_subscribers",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -10991,6 +11526,11 @@
           "net_profit": {
             "value": 19370,
             "unit": "USD_million",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 76.068,
+            "unit": "million_subscribers",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -11016,6 +11556,11 @@
             "value": 13903,
             "unit": "USD_million",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 75.207,
+            "unit": "million_subscribers",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -11039,6 +11584,11 @@
           "net_profit": {
             "value": 13903,
             "unit": "USD_million",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 75.207,
+            "unit": "million_subscribers",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -11064,6 +11614,11 @@
             "value": 13903,
             "unit": "USD_million",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 75.207,
+            "unit": "million_subscribers",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -11087,6 +11642,11 @@
           "net_profit": {
             "value": -5176,
             "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.154,
+            "unit": "million_subscribers",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -11112,6 +11672,11 @@
             "value": -5176,
             "unit": "USD_million",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.154,
+            "unit": "million_subscribers",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -11135,6 +11700,11 @@
           "net_profit": {
             "value": -5176,
             "unit": "USD_million",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 77.154,
+            "unit": "million_subscribers",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -11160,6 +11730,11 @@
             "value": 20081,
             "unit": "USD_million",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.534,
+            "unit": "million_subscribers",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -11183,6 +11758,11 @@
           "net_profit": {
             "value": 20081,
             "unit": "USD_million",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.534,
+            "unit": "million_subscribers",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -11208,6 +11788,11 @@
             "value": 20081,
             "unit": "USD_million",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 81.534,
+            "unit": "million_subscribers",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -11231,6 +11816,11 @@
           "net_profit": {
             "value": -8524,
             "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 84.7,
+            "unit": "million_subscribers",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -11256,6 +11846,11 @@
             "value": -8524,
             "unit": "USD_million",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 84.7,
+            "unit": "million_subscribers",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -11279,6 +11874,11 @@
           "net_profit": {
             "value": -8524,
             "unit": "USD_million",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 84.7,
+            "unit": "million_subscribers",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -11309,6 +11909,26 @@
             "value": 113.808,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 35.5,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.104,
+            "unit": "million_subscribers",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 55.73,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -11337,6 +11957,26 @@
           "reported_mobile_connections": {
             "value": 113.808,
             "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 35.5,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.104,
+            "unit": "million_subscribers",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 55.73,
+            "unit": "USD_per_phone_month",
             "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
@@ -11367,6 +12007,26 @@
             "value": 113.808,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 43400,
+            "unit": "USD_million",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 35.5,
+            "unit": "percent",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 87.104,
+            "unit": "million_subscribers",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 55.73,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -11395,6 +12055,26 @@
           "reported_mobile_connections": {
             "value": 117.851,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44760,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.6,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 89.2,
+            "unit": "million_subscribers",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.45,
+            "unit": "USD_per_phone_month",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -11425,6 +12105,26 @@
             "value": 117.851,
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44760,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.6,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 89.2,
+            "unit": "million_subscribers",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.45,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
       }
@@ -11453,6 +12153,26 @@
           "reported_mobile_connections": {
             "value": 117.851,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 44760,
+            "unit": "USD_million",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.6,
+            "unit": "percent",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 89.2,
+            "unit": "million_subscribers",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.45,
+            "unit": "USD_per_phone_month",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -11483,6 +12203,26 @@
             "value": 120.105,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 46361,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.9,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 90.879,
+            "unit": "million_subscribers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.7,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -11511,6 +12251,26 @@
           "reported_mobile_connections": {
             "value": 120.105,
             "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 46361,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.9,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 90.879,
+            "unit": "million_subscribers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.7,
+            "unit": "USD_per_phone_month",
             "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
@@ -11541,6 +12301,26 @@
             "value": 120.105,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 46361,
+            "unit": "USD_million",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 36.9,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_connections": {
+            "value": 90.879,
+            "unit": "million_subscribers",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "postpaid_phone_arpu": {
+            "value": 56.7,
+            "unit": "USD_per_phone_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -11564,6 +12344,11 @@
           "net_profit": {
             "value": 800.1,
             "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -11589,6 +12374,11 @@
             "value": 800.1,
             "unit": "JPY_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
+            "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
       }
@@ -11612,6 +12402,11 @@
           "net_profit": {
             "value": 800.1,
             "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
             "locator": "FY2016 audited financial/KPI comparative table"
           }
         }
@@ -11637,6 +12432,11 @@
             "value": 897.9,
             "unit": "JPY_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -11660,6 +12460,11 @@
           "net_profit": {
             "value": 897.9,
             "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
             "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
@@ -11685,6 +12490,11 @@
             "value": 897.9,
             "unit": "JPY_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
+            "locator": "FY2017 audited financial/KPI comparative table"
           }
         }
       }
@@ -11708,6 +12518,11 @@
           "net_profit": {
             "value": 854.6,
             "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -11733,6 +12548,11 @@
             "value": 854.6,
             "unit": "JPY_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
+            "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
       }
@@ -11756,6 +12576,11 @@
           "net_profit": {
             "value": 854.6,
             "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
             "locator": "FY2018 audited financial/KPI comparative table"
           }
         }
@@ -11781,6 +12606,11 @@
             "value": 855.3,
             "unit": "JPY_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -11804,6 +12634,11 @@
           "net_profit": {
             "value": 855.3,
             "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
             "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
@@ -11829,6 +12664,11 @@
             "value": 855.3,
             "unit": "JPY_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
+            "locator": "FY2019 audited financial/KPI comparative table"
           }
         }
       }
@@ -11852,6 +12692,11 @@
           "net_profit": {
             "value": 916.2,
             "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -11877,6 +12722,11 @@
             "value": 916.2,
             "unit": "JPY_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
+            "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
       }
@@ -11900,6 +12750,11 @@
           "net_profit": {
             "value": 916.2,
             "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
             "locator": "FY2020 audited financial/KPI comparative table"
           }
         }
@@ -11925,6 +12780,11 @@
             "value": 1181.1,
             "unit": "JPY_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -11948,6 +12808,11 @@
           "net_profit": {
             "value": 1181.1,
             "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
             "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
@@ -11973,6 +12838,11 @@
             "value": 1181.1,
             "unit": "JPY_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
+            "locator": "FY2021 audited financial/KPI comparative table"
           }
         }
       }
@@ -11996,6 +12866,11 @@
           "net_profit": {
             "value": 1213.1,
             "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -12021,6 +12896,11 @@
             "value": 1213.1,
             "unit": "JPY_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
+            "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
       }
@@ -12044,6 +12924,11 @@
           "net_profit": {
             "value": 1213.1,
             "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
             "locator": "FY2022 audited financial/KPI comparative table"
           }
         }
@@ -12074,6 +12959,11 @@
             "value": 89.94,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -12102,6 +12992,11 @@
           "reported_mobile_connections": {
             "value": 89.94,
             "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
             "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
@@ -12132,6 +13027,11 @@
             "value": 89.94,
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
+            "locator": "FY2023 audited financial/KPI comparative table"
           }
         }
       }
@@ -12160,6 +13060,16 @@
           "reported_mobile_connections": {
             "value": 91.407,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -12190,6 +13100,16 @@
             "value": 91.407,
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
+            "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
       }
@@ -12218,6 +13138,16 @@
           "reported_mobile_connections": {
             "value": 91.407,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
             "locator": "FY2024 audited financial/KPI comparative table"
           }
         }
@@ -12248,6 +13178,26 @@
             "value": 93.065,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3423.3,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 23.8,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -12277,6 +13227,26 @@
             "value": 93.065,
             "unit": "million_connections",
             "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3423.3,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 23.8,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
+            "locator": "FY2025 audited financial/KPI comparative table"
           }
         }
       }
@@ -12305,6 +13275,26 @@
           "reported_mobile_connections": {
             "value": 93.065,
             "unit": "million_connections",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3423.3,
+            "unit": "JPY_billion",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda_margin": {
+            "value": 23.8,
+            "unit": "percent",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "FY2025 audited financial/KPI comparative table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
             "locator": "FY2025 audited financial/KPI comparative table"
           }
         }

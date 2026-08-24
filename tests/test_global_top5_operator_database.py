@@ -36,12 +36,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(
             audit["three_source_certified_rows_by_operator"],
             {
-                "AT&T": 23,
+                "AT&T": 42,
                 "Bharti Airtel": 98,
-                "Deutsche Telekom": 23,
-                "NTT Group": 23,
+                "Deutsche Telekom": 40,
+                "NTT Group": 37,
                 "Reliance Jio": 27,
-                "Verizon": 23,
+                "Verizon": 39,
                 "中国广电": 6,
                 "中国电信": 64,
                 "中国移动": 80,
@@ -56,9 +56,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
     def test_requested_international_operators_are_complete_and_three_source_verified(self):
         requested = {"verizon", "deutsche_telekom", "att", "ntt_group"}
         rows = [row for row in self.rows if row["operator_id"] in requested]
-        self.assertEqual(len(rows), 92)
+        self.assertEqual(len(rows), 158)
         self.assertEqual({row["operator_id"] for row in rows}, requested)
-        self.assertEqual({row["metric_key"] for row in rows}, {"revenue", "net_profit", "reported_mobile_connections"})
+        self.assertTrue({"revenue", "net_profit", "reported_mobile_connections", "adjusted_ebitda",
+                         "adjusted_ebitda_margin", "postpaid_connections"}.issubset(
+                            {row["metric_key"] for row in rows}
+                         ))
         self.assertTrue(all(row["verification_status"] == "official_three_distinct_sources_verified" for row in rows))
         self.assertTrue(all(row["distinct_source_document_count"] >= 3 for row in rows))
         self.assertFalse(any("comcast" in str(row).lower() for row in self.rows))

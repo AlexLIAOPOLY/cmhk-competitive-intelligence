@@ -681,6 +681,10 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         ),
         ("local", "fibre_value"): ("增长质量", "低价吸引", "全市场覆盖"),
         ("local", "overlap"): ("增长质量", "增长能力"),
+        ("international", "revenue"): ("EBITDA", "利润", "资本", "用户", "ARPU", "ARPA"),
+        ("international", "ebitda"): ("净利润", "用户", "ARPU", "ARPA", "资本开支", "利润率", "增速", "同比"),
+        ("international", "net_profit"): ("EBITDA", "用户", "ARPU", "ARPA", "资本开支", "利润率", "增速", "同比"),
+        ("international", "postpaid_arpu"): ("EBITDA", "净利润", "资本开支"),
     }
     forbidden_terms = forbidden_by_focus.get((domain, focus_id), ())
     leaked_terms = [term for term in forbidden_terms if term in analysis]
@@ -688,6 +692,38 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         return (
             f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}"
         )
+    if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"}:
+        mentioned = {
+            str(item.get("name") or "")
+            for item in evidence_focus.get("items") or []
+            if str(item.get("name") or "") and str(item.get("name") or "") in analysis
+        }
+        if len(mentioned) < 2:
+            return f"国际运营商AI解读必须引用至少两家公司原值：{domain}.{focus_id}"
+        if focus_id == "postpaid_arpu":
+            if not all(term in analysis for term in ("Verizon", "ARPA", "NTT Group", "手机订阅")):
+                return f"后付费用户数解读必须保留Verizon ARPA与NTT手机订阅替代口径：{domain}.{focus_id}"
+            items = [item for item in evidence_focus.get("items") or [] if isinstance(item, dict)]
+            positions = sorted(
+                (analysis.find(str(item.get("name") or "")), item)
+                for item in items
+                if str(item.get("name") or "") and str(item.get("name") or "") in analysis
+            )
+            paired_companies = 0
+            for index, (start, item) in enumerate(positions):
+                end = positions[index + 1][0] if index + 1 < len(positions) else len(analysis)
+                segment = analysis[start:end]
+                components = item.get("components") or []
+                arpu_component = next(
+                    (component for component in components if "ARPU/ARPA" in str(component.get("label") or "")),
+                    None,
+                )
+                main_value = _display_number(item.get("value"))
+                arpu_value = _display_number((arpu_component or {}).get("value"))
+                if main_value in segment and arpu_value in segment:
+                    paired_companies += 1
+            if paired_companies < 2:
+                return f"后付费用户数解读必须把至少两家公司的用户数与各自ARPU或ARPA正确配对：{domain}.{focus_id}"
     if (domain, focus_id) == ("local", "mobile_price"):
         ranges = [
             (float(item["low"]), float(item["high"]))
@@ -1481,7 +1517,41 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     metric_value = _display_number(metric.get("value"))
     metric_unit = str(metric.get("unit") or "")
     strategic_fallback = str(focus.get("insight") or "").strip()
-    if strategic_fallback:
+    if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"} and items:
+        high, low = items[0], items[-1]
+        high_name, low_name = str(high.get("name") or ""), str(low.get("name") or "")
+        high_value, low_value = _display_number(high.get("value")), _display_number(low.get("value"))
+        if focus_id == "revenue":
+            return (
+                f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
+                "统一汇率后表明两者营收存在差距并形成两层结构，但营收规模不等同于盈利能力。"
+            )
+        if focus_id == "ebitda":
+            return (
+                f"{high_name} EBITDA约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
+                "金额梯队明显，但非GAAP调整口径不同，不可直接等同盈利效率。"
+            )
+        if focus_id == "net_profit":
+            return (
+                f"{high_name} FY2025净利润约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
+                "绝对值差距表明利润规模形成梯队，但不等同于盈利效率。"
+            )
+        verizon = by_name.get("Verizon") or high
+        ntt = by_name.get("NTT Group") or low
+        verizon_arpu = next(
+            (component.get("value") for component in verizon.get("components") or [] if "ARPU/ARPA" in str(component.get("label") or "")),
+            None,
+        )
+        ntt_arpu = next(
+            (component.get("value") for component in ntt.get("components") or [] if "ARPU/ARPA" in str(component.get("label") or "")),
+            None,
+        )
+        return (
+            f"Verizon {_display_number(verizon.get('value'))}百万后付费连接、ARPA {_display_number(verizon_arpu)}美元/月；"
+            f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅替代口径、ARPU {_display_number(ntt_arpu)}美元/月。"
+            "定义不同，规模不可直接混排。"
+        )
+    if strategic_fallback and _has_deep_interpretation(strategic_fallback):
         return strategic_fallback
 
     if (domain, focus_id) == ("local", "scale") and items:
@@ -1613,7 +1683,9 @@ def _deterministic_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     return _compact_grounded_focus_analysis(domain, focus)
 
 
-def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, Any]]:
+def _deterministic_domain_summaries(
+    evidence: dict[str, Any], *, validate: bool = True,
+) -> list[dict[str, Any]]:
     """Build a fail-closed summary directly from the validated evidence pack."""
     summaries: list[dict[str, Any]] = []
     for domain in evidence.get("domains") or []:
@@ -1666,7 +1738,7 @@ def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, 
                 ],
             }
         )
-    return _validate_model_summaries(summaries, evidence)
+    return _validate_model_summaries(summaries, evidence) if validate else summaries
 
 
 def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2052,9 +2124,13 @@ def generate_model_focus_insight(
         ("international", "momentum"): "只比较四家企业本期与上期营收增速变化，说明放缓范围或梯队，不使用驱动、导致等因果词。",
         ("international", "investment"): "只比较同期间资本开支占营收比例，并明确缺失主体与投入比例不等于投资回报。",
         ("international", "margin"): "只比较已披露且同口径经营利润率的层次与样本边界，不计算输入外差值。",
-        ("cloud", "growth"): "先区分直接云收入口径与代理分部口径；只在直接披露组内判断增长层次，不编造增长原因。",
+        ("international", "revenue"): "只比较统一折算为十亿美元的营收绝对值和十年绝对值序列；不得引入增速、指数、利润、资本或用户维度。",
+        ("international", "ebitda"): "只比较FY2025统一折算的EBITDA绝对值；不得引入利润率、增速、净利润、资本或用户维度。",
+        ("international", "net_profit"): "只比较FY2025统一折算的净利润绝对值；不得引入同比、增速、利润率、EBITDA、资本或用户维度。",
+        ("international", "postpaid_arpu"): "只比较百万用户和美元/月的ARPU/ARPA；必须说明Verizon是ARPA、NTT为手机订阅替代口径。",
+        ("cloud", "revenue"): "只比较FY2024云收入绝对金额；先区分直接云收入口径与代理分部口径，不得引入增速、利润率或自行换算。",
         ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
-        ("cloud", "profit"): "只解释经营利润率、毛利率和调整后EBITA率的口径边界；不同利润口径不得跨厂商排名。",
+        ("cloud", "profit"): "只解释FY2024云利润绝对金额及经营利润、调整后EBITA和代理分部毛利的定义边界；不得引入利润率、增速或自行换算。",
         ("cloud", "margin_change"): "只比较各厂商自身同口径利润率变化的正负方向，不把不同利润定义混成统一排名。",
         ("macro", "connections"): "只解释登记数量、移动宽带登记和每百人登记的共同变化及多卡/联网设备边界，不等同独立客户。",
         ("macro", "traffic"): "只比较总流量与每连接流量同比，解释规模和单连接强度差异；禁止使用驱动、导致等因果词。",
@@ -2128,11 +2204,35 @@ def generate_model_focus_insight(
             "从只有三家可比的样本边界切入",
             "说明利润率不等于绝对利润，仍须引用至少两个主体原值",
         ),
-        ("cloud", "growth"): (
-            "只在直接披露云收入的厂商中判断增长梯队",
-            "比较直接披露组的高低层次，并把代理分部口径排除在排名外",
-            "从直接披露与代理分部两种口径边界切入",
-            "说明单一行业增速不能概括厂商分层，不解释增长原因",
+        ("international", "revenue"): (
+            "比较FY2025统一折算营收的高低梯队，至少引用两家原值",
+            "比较四家十年营收绝对值方向，不计算增速或指数",
+            "从头部营收是否接近切入，不计算输入外差值",
+            "说明统一汇率便于规模比较，但不等于盈利能力",
+        ),
+        ("international", "ebitda"): (
+            "比较FY2025 EBITDA折算金额梯队，保留非GAAP口径边界",
+            "只比较EBITDA绝对规模，不引入利润率或增速",
+            "从高位集中度切入，不把不同调整项视为完全可比",
+            "引用至少两家EBITDA绝对值形成判断",
+        ),
+        ("international", "net_profit"): (
+            "按FY2025净利润绝对值分层，引用最高与最低原值",
+            "只比较净利润折算金额，不引入同比、增速或利润率",
+            "从绝对规模差距切入，不将单年数值外推为增长趋势",
+            "说明集团范围与财年口径边界",
+        ),
+        ("international", "postpaid_arpu"): (
+            "比较百万用户规模与美元/月用户价值的梯队",
+            "说明Verizon ARPA与其他ARPU不能直接等同",
+            "说明NTT手机订阅数不是后付费用户口径",
+            "引用至少两家用户数与ARPU/ARPA原值形成分层判断",
+        ),
+        ("cloud", "revenue"): (
+            "比较FY2024云收入绝对金额梯队，至少引用两个主体原值",
+            "把直接披露云收入与代理分部口径分开说明",
+            "从直接披露与代理分部两种口径边界切入，不引入增速",
+            "说明统一为百万美元只便于观察规模，不等于盈利能力",
         ),
         ("cloud", "trend"): (
             "说明多数厂商提速与唯一放缓主体",
@@ -3589,7 +3689,7 @@ def regenerate_model_focus_summary(
     # produced under an older metric meaning (for example record counts rather
     # than deduplicated plan counts); validating that whole stale bundle would
     # reject an otherwise valid new focus and leave the UI apparently unchanged.
-    summaries = _deterministic_domain_summaries(evidence)
+    summaries = _deterministic_domain_summaries(evidence, validate=False)
     discoveries = (
         json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
         if previous_is_current
@@ -3601,10 +3701,34 @@ def regenerate_model_focus_summary(
         {**item, **scoped_focus} if str(item.get("id") or "") == focus_id else item
         for item in target_domain.get("focuses") or []
     ]
-    validated_summaries = _validate_model_summaries(
-        _repair_model_summaries(summaries, evidence),
-        evidence,
+    repaired_summaries = _repair_model_summaries(summaries, evidence)
+    repaired_target = next(
+        item for item in repaired_summaries if str(item.get("domain") or "") == domain_id
     )
+    validated_target = _validate_model_summaries(
+        [repaired_target], evidence, expected_domains={domain_id},
+    )[0]
+    previous_by_domain = {
+        str(item.get("domain") or ""): item
+        for item in previous.get("summaries") or []
+        if isinstance(item, dict) and str(item.get("domain") or "")
+    }
+    validated_summaries = []
+    for item in repaired_summaries:
+        item_domain = str(item.get("domain") or "")
+        if item_domain == domain_id:
+            validated_summaries.append(validated_target)
+            continue
+        try:
+            validated_summaries.extend(_validate_model_summaries(
+                [item], evidence, expected_domains={item_domain},
+            ))
+        except ValueError:
+            # Regenerating one visible tab must not be blocked by a concurrent
+            # edit in another domain. Preserve its last summary and leave that
+            # domain to its own generation cycle.
+            if item_domain in previous_by_domain:
+                validated_summaries.append(previous_by_domain[item_domain])
     report("证据校验通过，正在返回洞察")
     if previous_is_current:
         try:
