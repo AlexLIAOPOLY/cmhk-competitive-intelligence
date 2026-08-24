@@ -283,20 +283,30 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: clamp(42px, 3vw, 54px) minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(113, 183, 213, .2); border-radius: 3px; background: linear-gradient(145deg, rgba(7, 24, 38, .8), rgba(3, 13, 23, .72)); }
 .comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 clamp(8px, .55vw, 18px); border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, rgba(47, 112, 149, .2), transparent); }
 .comparison-metric-card h3 { min-width: 0; margin: 0; color: #e6f4f9; font-size: clamp(10px, .67vw, 16px); font-weight: 680; line-height: 1.3; white-space: normal; }
-.comparison-table { min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); overflow: hidden; }
-.comparison-row { min-width: 0; display: grid; grid-template-columns: minmax(58px, .78fr) minmax(28px, 1.05fr) minmax(56px, auto) minmax(40px, .72fr); align-items: center; gap: clamp(4px, .3vw, 8px); padding: 0 clamp(6px, .42vw, 12px); border-bottom: 1px solid rgba(133, 182, 207, .1); color: inherit; text-decoration: none; transition: background 130ms ease; }
-.comparison-row:last-child { border-bottom: 0; }
-.comparison-row:hover { background: rgba(87, 161, 199, .09); }
-.comparison-row:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+.comparison-chart-layout { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(120px, .92fr) minmax(150px, 1.08fr); align-items: stretch; overflow: hidden; }
+.comparison-chart { width: 100%; height: 100%; min-height: 0; padding: clamp(7px, .5vw, 12px); border-right: 1px solid rgba(133, 182, 207, .12); overflow: visible; }
+.comparison-chart text { fill: #8fb0bf; font: 600 8px/1 var(--font-ui); }
+.comparison-chart .chart-axis { stroke: rgba(133, 182, 207, .24); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.comparison-chart .chart-zero-axis { stroke: rgba(214, 233, 241, .38); }
+.comparison-chart .chart-track { stroke: rgba(94, 133, 151, .17); stroke-width: 6; stroke-linecap: round; }
+.comparison-chart .chart-track-ring { stroke: rgba(94, 133, 151, .17); }
+.comparison-chart .chart-lollipop-line { stroke-width: 2; stroke-linecap: round; }
+.comparison-chart .chart-line { fill: none; stroke: #86ddfa; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.comparison-chart .chart-missing-line { stroke: rgba(145, 173, 186, .48); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 2 3; }
+.comparison-chart .chart-donut-total { fill: #d8edf5; font-size: 9px; font-weight: 700; }
+.comparison-chart .chart-donut-count { fill: #7da7b8; font-size: 8px; }
+.comparison-chart-empty text { fill: #779aa9; font-size: 10px; }
+.comparison-values { min-width: 0; min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); overflow: hidden; }
+.comparison-value-row { min-width: 0; display: grid; grid-template-columns: 5px minmax(45px, .82fr) minmax(62px, 1.18fr); align-items: center; column-gap: clamp(4px, .28vw, 7px); padding: 0 clamp(6px, .42vw, 11px); border-bottom: 1px solid rgba(133, 182, 207, .1); color: inherit; transition: background 130ms ease; }
+.comparison-value-row:last-child { border-bottom: 0; }
+.comparison-value-row:hover { background: rgba(87, 161, 199, .09); }
+.comparison-value-row > i { width: 5px; height: 5px; border-radius: 50%; background: var(--series-color); box-shadow: 0 0 7px color-mix(in srgb, var(--series-color), transparent 40%); }
 .comparison-company { overflow: hidden; color: #dcebf1; font-size: clamp(9px, .58vw, 13px); font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
-.comparison-meter { position: relative; height: clamp(4px, .32vw, 8px); overflow: hidden; border-radius: 999px; background: rgba(94, 133, 151, .16); }
-.comparison-meter i { display: block; width: var(--bar); height: 100%; border-radius: inherit; background: linear-gradient(90deg, rgba(74, 151, 205, .72), rgba(100, 205, 244, .96)); box-shadow: 0 0 12px rgba(100, 205, 244, .18); }
-.comparison-row strong { color: #f4fbff; font-family: var(--font-tech); font-size: clamp(10px, .66vw, 16px); font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space: nowrap; }
-.comparison-row small { overflow: hidden; color: #779aa9; font-size: clamp(8px, .48vw, 11px); line-height: 1.3; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
-.comparison-row.is-missing { opacity: .62; }
-.comparison-row.is-missing .comparison-meter i { display: none; }
-.comparison-row.is-negative strong { color: #f0a66e; }
-.comparison-row.is-negative .comparison-meter i { background: linear-gradient(90deg, rgba(185, 103, 69, .72), rgba(239, 179, 84, .96)); }
+.comparison-value-row strong { color: #f4fbff; font-family: var(--font-tech); font-size: clamp(9px, .58vw, 14px); font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space: nowrap; }
+.comparison-value-row small { grid-column: 2 / 4; overflow: hidden; align-self: start; margin-top: -2px; color: #779aa9; font-size: clamp(7px, .42vw, 10px); line-height: 1; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.comparison-value-row.is-missing { opacity: .58; }
+.comparison-value-row.is-missing > i { background: transparent; border: 1px solid #779aa9; box-shadow: none; }
+.comparison-value-row.is-negative strong { color: #f0a66e; }
 
 /* Typography hierarchy: readable CJK UI text plus condensed instrument numerals. */
 .cockpit-title > span,
@@ -407,11 +417,13 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
   .comparison-grid .panel-finance { min-height: 780px; }
   .comparison-content { height: calc(100% - 56px); padding: 10px; }
   .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6 { grid-template-columns: 1fr; grid-template-rows: none; }
-  .comparison-metric-card { min-height: 224px; grid-template-rows: 56px minmax(0, 1fr); }
+  .comparison-metric-card { min-height: 252px; grid-template-rows: 56px minmax(0, 1fr); }
   .comparison-metric-card h3 { font-size: 12px; }
-  .comparison-row { grid-template-columns: 68px minmax(48px, 1fr) minmax(64px, auto) 56px; gap: 7px; padding-inline: 10px; }
-  .comparison-company, .comparison-row strong { font-size: 11px; }
-  .comparison-row small { font-size: 9px; }
+  .comparison-chart-layout { grid-template-columns: minmax(132px, .9fr) minmax(174px, 1.1fr); }
+  .comparison-chart { padding: 8px; }
+  .comparison-value-row { grid-template-columns: 5px 60px minmax(76px, 1fr); column-gap: 6px; padding-inline: 8px; }
+  .comparison-company, .comparison-value-row strong { font-size: 10px; }
+  .comparison-value-row small { font-size: 8px; }
 }
 @media (max-width: 400px) {
   .panel-heading > span { font-size: 27px; }
