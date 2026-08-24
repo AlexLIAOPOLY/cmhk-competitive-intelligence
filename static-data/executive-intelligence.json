@@ -4688,10 +4688,14 @@
           ],
           "ai_summary": {
             "id": "postpaid_arpu",
-            "headline": "后付费用户数关系重新判断",
-            "analysis": "就当前披露边界而言，Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月；客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "",
+            "analysis": "Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "https://report.telekom.com/annual-report-2025/",
+              "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+            ],
             "entities": [
               {
                 "name": "Verizon",
@@ -5091,10 +5095,14 @@
           },
           {
             "id": "postpaid_arpu",
-            "headline": "后付费用户数关系重新判断",
-            "analysis": "就当前披露边界而言，Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月；客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "",
+            "analysis": "Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "https://report.telekom.com/annual-report-2025/",
+              "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+            ],
             "entities": [
               {
                 "name": "Verizon",
@@ -7939,9 +7947,9 @@
           ],
           "ai_summary": {
             "id": "postpaid",
-            "headline": "",
-            "analysis": "中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "headline": "后付费用户数关系重新判断",
+            "analysis": "按当前可比口径，中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
             "source_urls": [],
             "entities": [
               {
@@ -8191,9 +8199,9 @@
           },
           {
             "id": "postpaid",
-            "headline": "",
-            "analysis": "中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "headline": "后付费用户数关系重新判断",
+            "analysis": "按当前可比口径，中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
             "source_urls": [],
             "entities": [
               {
@@ -12669,50 +12677,50 @@
   ],
   "relations": [
     {
-      "from": "mainland",
-      "to": "local",
-      "title": "FY2025香港与内地财务口径分开",
-      "detail": "内地营收卡片为10501.9亿元，香港为36553百万港元；两组均采用FY2025/FY2025最新已核验披露，但币种与主体范围结构不同；这表明数值高低不能直接等同经营质量。",
-      "kind": "证据规则回退",
+      "from": "local",
+      "to": "cloud",
+      "title": "本地电信与云厂商收入结构断层",
+      "detail": "HKT营收36553百万港元、AWS云收入128725百万美元，表明生态承载力分层由业务结构驱动，而非同一市场阶段竞争。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-        "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+        "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "https://ir.aboutamazon.com/quarterly-results/default.aspx"
       ],
       "origin": "ai"
     },
     {
       "from": "international",
       "to": "cloud",
-      "title": "FY2025云收入与运营商财务分口径",
-      "detail": "云收入卡片为128725百万美元，国际营收卡片为4家；分别采用FY2025/FY2016最新已核验披露，分部规模与集团财务口径结构不同，因此不能直接混合排名。",
-      "kind": "证据规则回退",
+      "title": "跨国运营商与云厂商资本投入口径背离",
+      "detail": "Verizon EBITDA约50.0十亿美元、Google集团资本开支52535百万美元，表明资源承载力驱动逻辑不同，但集团投入并非云业务单独投入，不能等同投入转化效率。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
-        "https://abc.xyz/investor/earnings/"
-      ],
-      "origin": "ai"
-    },
-    {
-      "from": "local",
-      "to": "cloud",
-      "title": "FY2025香港财务与云收入边界不同",
-      "detail": "香港营收卡片为36553百万港元，云收入卡片为128725百万美元；分别采用FY2025/FY2025最新已核验披露，公司整体与云分部范围结构不同；这表明两者不可直接比较。",
-      "kind": "证据规则回退",
-      "source_urls": [
-        "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf",
-        "https://abc.xyz/investor/earnings/"
+        "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+        "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm"
       ],
       "origin": "ai"
     },
     {
       "from": "mainland",
       "to": "international",
-      "title": "FY2025内地与国际用户口径分开",
-      "detail": "内地后付费用户数披露不足，国际营收卡片为4家；国际侧采用FY2016最新披露；两者用户口径结构不同，因此不能直接拿移动用户总数替代后付费竞争判断。",
-      "kind": "证据规则回退",
+      "title": "内地与跨国运营商客户价值口径不可混排",
+      "detail": "内地四家后付费数据均缺，Verizon为126.70百万连接且ARPA170.61美元/月，NTT为93.06百万订阅且ARPU26.48美元/月，意味着口径差异使客户价值无法穿透比较，而非单纯规模差异。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-        "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
+        "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+        "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+      ],
+      "origin": "ai"
+    },
+    {
+      "from": "local",
+      "to": "mainland",
+      "title": "本地与内地市场盈利韧性分化结构",
+      "detail": "HKT净利润5286百万港元、3HK为-25.0百万港元，中国移动为1370.95亿元、中国联通为208.16亿元，说明两地利润均向头部集中，但区域市场阶段与梯队断层深度不能等同。",
+      "kind": "AI综合研判",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
       ],
       "origin": "ai"
     }
@@ -12867,7 +12875,7 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-24T19:01:14+08:00",
+      "generated_at_hkt": "2026-08-24T19:10:28+08:00",
       "model": "Qwen3-30B-A3B-Instruct-2507",
       "summaries": [
         {
@@ -13312,10 +13320,14 @@
             },
             {
               "id": "postpaid_arpu",
-              "headline": "后付费用户数关系重新判断",
-              "analysis": "就当前披露边界而言，Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月；客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "",
+              "analysis": "Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                "https://report.telekom.com/annual-report-2025/",
+                "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+              ],
               "entities": [
                 {
                   "name": "Verizon",
@@ -13560,9 +13572,9 @@
             },
             {
               "id": "postpaid",
-              "headline": "",
-              "analysis": "中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "headline": "后付费用户数关系重新判断",
+              "analysis": "按当前可比口径，中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
               "source_urls": [],
               "entities": [
                 {
@@ -13948,101 +13960,84 @@
       ],
       "discoveries": [
         {
-          "from": "mainland",
-          "to": "local",
-          "title": "FY2025香港与内地财务口径分开",
-          "detail": "内地营收卡片为10501.9亿元，香港为36553百万港元；两组均采用FY2025/FY2025最新已核验披露，但币种与主体范围结构不同；这表明数值高低不能直接等同经营质量。",
-          "kind": "证据规则回退",
+          "from": "local",
+          "to": "cloud",
+          "title": "本地电信与云厂商收入结构断层",
+          "detail": "HKT营收36553百万港元、AWS云收入128725百万美元，表明生态承载力分层由业务结构驱动，而非同一市场阶段竞争。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-            "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf"
+            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+            "https://ir.aboutamazon.com/quarterly-results/default.aspx"
           ]
         },
         {
           "from": "international",
           "to": "cloud",
-          "title": "FY2025云收入与运营商财务分口径",
-          "detail": "云收入卡片为128725百万美元，国际营收卡片为4家；分别采用FY2025/FY2016最新已核验披露，分部规模与集团财务口径结构不同，因此不能直接混合排名。",
-          "kind": "证据规则回退",
+          "title": "跨国运营商与云厂商资本投入口径背离",
+          "detail": "Verizon EBITDA约50.0十亿美元、Google集团资本开支52535百万美元，表明资源承载力驱动逻辑不同，但集团投入并非云业务单独投入，不能等同投入转化效率。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
-            "https://abc.xyz/investor/earnings/"
-          ]
-        },
-        {
-          "from": "local",
-          "to": "cloud",
-          "title": "FY2025香港财务与云收入边界不同",
-          "detail": "香港营收卡片为36553百万港元，云收入卡片为128725百万美元；分别采用FY2025/FY2025最新已核验披露，公司整体与云分部范围结构不同；这表明两者不可直接比较。",
-          "kind": "证据规则回退",
-          "source_urls": [
-            "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre250314.pdf",
-            "https://abc.xyz/investor/earnings/"
+            "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+            "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm"
           ]
         },
         {
           "from": "mainland",
           "to": "international",
-          "title": "FY2025内地与国际用户口径分开",
-          "detail": "内地后付费用户数披露不足，国际营收卡片为4家；国际侧采用FY2016最新披露；两者用户口径结构不同，因此不能直接拿移动用户总数替代后付费竞争判断。",
-          "kind": "证据规则回退",
+          "title": "内地与跨国运营商客户价值口径不可混排",
+          "detail": "内地四家后付费数据均缺，Verizon为126.70百万连接且ARPA170.61美元/月，NTT为93.06百万订阅且ARPU26.48美元/月，意味着口径差异使客户价值无法穿透比较，而非单纯规模差异。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-            "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+            "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+          ]
+        },
+        {
+          "from": "local",
+          "to": "mainland",
+          "title": "本地与内地市场盈利韧性分化结构",
+          "detail": "HKT净利润5286百万港元、3HK为-25.0百万港元，中国移动为1370.95亿元、中国联通为208.16亿元，说明两地利润均向头部集中，但区域市场阶段与梯队断层深度不能等同。",
+          "kind": "AI综合研判",
+          "source_urls": [
+            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
           ]
         }
       ],
-      "discovery_model": "deterministic-evidence-fallback",
-      "discovery_generated_at_hkt": "2026-08-24T03:42:03+08:00",
-      "discovery_fallback_used": true,
-      "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：AI跨库发现出现输入之外的数字：['-1.8']",
+      "discovery_model": "DeepSeek-V4-Pro",
+      "discovery_generated_at_hkt": "2026-08-24T19:09:28+08:00",
       "evidence_hash": "c9f6820cfae1a6c4cabf95babac6d6525b145576cbd6e5e61d6dde0ea90f9cac",
       "insight_format": "evidence_relationship_v7",
       "reused": false,
       "manual_focus_regeneration_history": {
-        "local.ebitda": [
-          "",
-          "按当前可比口径，SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。"
+        "cloud.profit": [
+          "同属经营利润披露的AWS FY2024为45606百万美元，Google为13910百万美元；利润池向头部集中，表明云业务盈利缓冲呈头部主导梯队。",
+          "AWS、Azure和Oracle的经营利润分别为45606、44589和30930百万美元，表明同口径下利润池向头部集中，腾讯的代理分部毛利16358百万美元和Alibaba的调整后EBITA 1480.7百万美元不能等同经营利润。"
         ],
-        "cloud.investment": [
-          "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
-          "Google、Azure、中国移动云和Oracle的集团资本开支分别为52535.0、44477.0、22777.8和6866.0百万美元，但均为母公司集团口径而非云业务口径，说明该指标反映集团投入规模，不能等同于云市场竞争力区隔。"
-        ],
-        "international.postpaid_arpu": [
-          "NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月，定义不同，规模不可直接混排，Verizon后付费连接126.7百万、ARPA $170.61，AT&T后付费用户90.88百万、ARPU $56.70。",
-          "Verizon 126.7百万后付费连接、ARPA 170.61美元/月，NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月，定义不同，规模不可直接混排，意味着客户价值比较存在口径断层。",
-          "",
-          "就当前披露边界而言，Verizon 126.7百万后付费连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月；客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。"
+        "mainland.postpaid": [
+          "中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。",
+          "按当前可比口径，中国移动、中国电信、中国联通、中国广电当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，竞争结构判断不能由移动或5G用户总量替代。"
         ]
       },
       "manual_focus_regeneration_counts": {
-        "local.ebitda": 1,
-        "cloud.investment": 1,
-        "international.postpaid_arpu": 3
+        "cloud.profit": 1,
+        "mainland.postpaid": 1
       },
       "manual_focus_regeneration_title_history": {
-        "local.ebitda": [
+        "cloud.profit": [
           "",
-          "EBITDA关系重新判断"
+          "云利润关系重新判断"
         ],
-        "cloud.investment": [
-          "",
-          "资本开支分层区隔明显"
-        ],
-        "international.postpaid_arpu": [
-          "用户规模与价值形成双向分层",
-          "ARPA与ARPU口径分层",
+        "mainland.postpaid": [
           "",
           "后付费用户数关系重新判断"
         ]
       },
       "manual_focus_regeneration": {
-        "domain": "international",
-        "focus": "postpaid_arpu",
-        "generated_at_hkt": "2026-08-24T19:01:14+08:00"
-      },
-      "fallback_used": true,
-      "fallback_reason": "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
+        "domain": "mainland",
+        "focus": "postpaid",
+        "generated_at_hkt": "2026-08-24T19:10:28+08:00"
+      }
     },
     "evidence_hash": "c9f6820cfae1a6c4cabf95babac6d6525b145576cbd6e5e61d6dde0ea90f9cac",
     "model_analysis_fresh": true,
