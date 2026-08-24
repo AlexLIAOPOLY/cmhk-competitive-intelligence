@@ -10,8 +10,20 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=20', INDEX)
-        self.assertIn('/static/organization-admin.css?v=21', INDEX)
+        self.assertIn('/static/organization-admin.js?v=21', INDEX)
+        self.assertIn('/static/organization-admin.css?v=22', INDEX)
+
+    def test_member_detail_starts_empty_until_a_member_is_selected(self):
+        self.assertIn('selectedUserId: ""', SCRIPT)
+        self.assertNotIn('state.selectedUserId = String(state.users[0].id)', SCRIPT)
+        self.assertNotIn('const next = users[0]', SCRIPT)
+        self.assertIn('class="organization-member-detail is-empty"', SCRIPT)
+        self.assertIn('选择成员查看详情', SCRIPT)
+        self.assertIn('点击左侧成员，查看资料、角色与功能权限', SCRIPT)
+        self.assertIn('data-select-user=', SCRIPT)
+        self.assertIn('state.selectedUserId = select.dataset.selectUser', SCRIPT)
+        self.assertIn('.organization-member-detail.is-empty{display:grid', STYLE)
+        self.assertIn('.organization-detail-empty svg', STYLE)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)
