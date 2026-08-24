@@ -9596,6 +9596,68 @@
               ],
               "component_count": 1,
               "source_url": "https://www.huawei.com/en/annual-report/2025",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2017",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2018",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2019",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2020",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2021",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2022",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2023",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2024",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                },
+                {
+                  "label": "FY2025",
+                  "unit": "",
+                  "source_urls": [],
+                  "verification_count": 0
+                }
+              ],
               "ai_summary": {}
             }
           ],
