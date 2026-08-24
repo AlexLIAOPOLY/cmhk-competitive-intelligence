@@ -322,7 +322,15 @@ class CardActionHandler:
                 and str(item.get("chat_id") or "").startswith("oc_")
             ]
             if not verified_deliveries:
-                raise RuntimeError("告警没有可原地更新的已回读飞书消息")
+                # A notification can legitimately be absent when delivery was
+                # suppressed or failed before verification.  The dashboard
+                # action still has two authoritative, read-backed sinks: the
+                # error ledger and this local web-action journal.  Treat the
+                # missing card as "nothing to update", not as a rollback of an
+                # already verified manual disposition.
+                result["card_status"] = "not_sent_no_card_update"
+                _append_jsonl(self.web_actions_path, {"type": "incident_marked_handled_from_web", **result})
+                return result
             for target_delivery in verified_deliveries:
                 target = next(
                     (

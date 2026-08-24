@@ -820,6 +820,34 @@ class ProjectMonitorTests(unittest.TestCase):
             {item["condition_key"] for item in issues},
         )
 
+    def test_strategic_pending_archive_is_not_failed_during_finish_grace(self):
+        self.now = datetime(2026, 8, 16, 9, 58, 29, tzinfo=HKT)
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        path.write_text(json.dumps({
+            "slot": "2026-08-16@09:00",
+            "status": "pipeline_completed",
+            "notification_status": "pending",
+            "scanned_at": "2026-08-16T09:58:27+08:00",
+        }))
+
+        keys = {item["condition_key"] for item in self._monitor()._detect_strategic_slots()}
+
+        self.assertNotIn("strategic-slot-failed:2026-08-16@09-00", keys)
+
+    def test_strategic_pending_archive_is_failed_after_finish_grace(self):
+        self.now = datetime(2026, 8, 16, 10, 11, tzinfo=HKT)
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        path.write_text(json.dumps({
+            "slot": "2026-08-16@09:00",
+            "status": "pipeline_completed",
+            "notification_status": "pending",
+            "scanned_at": "2026-08-16T09:58:27+08:00",
+        }))
+
+        keys = {item["condition_key"] for item in self._monitor()._detect_strategic_slots()}
+
+        self.assertIn("strategic-slot-failed:2026-08-16@09-00", keys)
+
     def test_active_strategic_scan_heartbeat_prevents_false_monitor_stale_alarm(self):
         self.now = datetime(2026, 8, 16, 15, 10, tzinfo=HKT)
         (self.root / "strategy_briefing" / "state.json").write_text(
@@ -1138,6 +1166,33 @@ class ProjectMonitorTests(unittest.TestCase):
         result = monitor.run_cycle()
         self.assertEqual(self.runner.send_calls(), [])
         self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+
+    def test_repeated_ai_contract_failure_uses_bounded_deterministic_fallback(self):
+        def wrong_time_ai(incident):
+            payload = self._ai(incident)
+            payload["fault_time_hkt"] = "2026-08-15T01:00:00+08:00"
+            return payload
+
+        monitor = self._monitor(enabled=True, ai=wrong_time_ai)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        first = monitor.run_cycle()
+        self.assertEqual(first["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+        self.assertEqual(self.runner.send_calls(), [])
+        self.now += timedelta(minutes=5, seconds=1)
+        second = monitor.run_cycle()
+        self.assertEqual(second["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+        self.assertEqual(self.runner.send_calls(), [])
+        self.now += timedelta(minutes=5, seconds=1)
+
+        third = monitor.run_cycle()
+
+        self.assertEqual(third["active_incidents"][0]["diagnosis_status"], "completed_with_deterministic_fallback")
+        incident_id = third["active_incidents"][0]["incident_id"]
+        self.assertEqual(
+            monitor.state["incidents"][incident_id]["diagnosis"]["model"],
+            "deterministic-alert-fallback",
+        )
+        self.assertEqual(len(self.runner.send_calls()), 1)
 
     def test_incident_first_seen_while_disabled_is_never_replayed_when_gate_enables(self):
         monitor = self._monitor(enabled=False)

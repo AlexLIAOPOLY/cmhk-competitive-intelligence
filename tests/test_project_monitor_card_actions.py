@@ -275,6 +275,25 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertFalse(repeated["newly_handled"])
         self.assertEqual(len(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()), 1)
 
+    def test_dashboard_resolution_succeeds_when_alert_card_was_never_sent(self):
+        state_path = self.state_dir / "state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["incidents"][INCIDENT_ID]["delivery"] = {}
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+
+        result = self.handler.mark_incident_handled_from_web(
+            INCIDENT_ID,
+            OPERATOR_ID,
+            OPERATOR_UNION_ID,
+        )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["card_status"], "not_sent_no_card_update")
+        self.assertEqual(self.runner.ledger_rows[0][12:14], ["陈四", "已处理"])
+        self.assertEqual(self.runner.resolution_update_calls(), [])
+        saved = json.loads(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual(saved["incident_id"], INCIDENT_ID)
+
     def test_dashboard_resolution_rejects_non_feishu_login(self):
         with self.assertRaisesRegex(ValueError, "飞书身份"):
             self.handler.mark_incident_handled_from_web(INCIDENT_ID, "local-admin")

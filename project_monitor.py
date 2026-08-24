@@ -81,6 +81,7 @@ STATEFUL_CONDITION_PREFIXES = (
     "data-quality:",
     "crawl-task-failed:",
     "general-task-failed:",
+    "strategic-slot-",
     "ui-runtime:",
 )
 DEFAULT_CONFIG_PATH = ROOT / "config" / "project_monitor.json"
@@ -1032,10 +1033,18 @@ class ProjectMonitor:
             notification = str(archive.get("notification_status") or "")
             if status == "cutoff" and notification == "not_sent_cutoff":
                 continue
+            explicit_failure = status in {"failed", "error"} or notification == "failed"
+            if not explicit_failure and now < slot + timedelta(minutes=finish_grace):
+                # The archive is updated in several atomic stages.  In
+                # particular, pipeline_completed/pending is a normal transient
+                # state while the Feishu notification and final completion
+                # fields are being written.  Do not turn that intermediate
+                # snapshot into a sticky P1 incident.
+                continue
             if status not in {"completed"} or notification == "failed":
                 issues.append(
                     self._issue(
-                        condition_key=f"strategic-slot-failed:{slot_key}:{status}:{notification}",
+                        condition_key=f"strategic-slot-failed:{slot_key}",
                         component="strategic-news",
                         task_name=f"战略新闻定时扫描 {raw}",
                         severity="P1",
@@ -1931,18 +1940,20 @@ class ProjectMonitor:
             )
             return True
         except Exception as exc:
-            if str(incident.get("condition_key") or "").startswith("ui-runtime:"):
+            max_attempts = max(1, int(self.config.get("ai_diagnosis_max_attempts") or 3))
+            is_ui_runtime = str(incident.get("condition_key") or "").startswith("ui-runtime:")
+            if is_ui_runtime or int(incident.get("diagnosis_attempts") or 0) >= max_attempts:
                 incident["diagnosis"] = self._validate_diagnosis(
                     {
                         "severity": incident.get("severity") or "P2",
-                        "severity_reason": "用户可见的生产功能已明确进入降级状态，需要及时恢复且不应被同一 AI 故障阻断告警。",
-                        "fault_cause": f"已确认界面功能未完成；原始错误证据：{incident.get('error') or incident.get('summary') or '未记录'}",
-                        "fault_impact": incident.get("impact") or "用户当前操作未获得完整结果。",
+                        "severity_reason": "确定性监控已确认生产故障；AI 多次未通过诊断契约时，告警不得继续静默。",
+                        "fault_cause": f"确定性检测已确认异常；原始错误证据：{incident.get('error') or incident.get('summary') or '未记录'}",
+                        "fault_impact": incident.get("impact") or "当前任务或用户操作未获得完整结果。",
                         "fault_time_hkt": incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or "",
                         "recommended_solutions": incident.get("suggestions") or ["检查原始错误并只恢复失败阶段，恢复后回读界面状态。"],
-                        "needs_human": False,
+                        "needs_human": bool(incident.get("severity") == "P1"),
                     },
-                    model="deterministic-runtime-fallback",
+                    model=("deterministic-runtime-fallback" if is_ui_runtime else "deterministic-alert-fallback"),
                     incident=incident,
                 )
                 incident["diagnosis_status"] = "completed_with_deterministic_fallback"

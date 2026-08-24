@@ -3180,6 +3180,17 @@ def record_ui_runtime_incident(
                 "保留已展示的权威数据，只恢复 AI 洞察阶段；恢复后回读页面与告警状态。",
             ],
         },
+        "fault-resolution": {
+            "component": "project-monitor",
+            "task_name": "项目告警人工处置",
+            "severity": "P2",
+            "summary": "项目告警人工处置未完整成功",
+            "impact": "告警状态、飞书错误台账或原告警卡片可能没有完成一致更新。",
+            "suggestions": [
+                "按告警ID核对操作审计、飞书台账和原告警卡片的实际状态。",
+                "保留已完成步骤并幂等重试未完成步骤，成功后回读处置状态。",
+            ],
+        },
     }
     incident_type = str(incident_type or "").strip()
     if incident_type not in definitions:
@@ -4712,6 +4723,14 @@ class AppHandler(BaseHTTPRequestHandler):
                     str(actor.get("feishuOpenId") or ""),
                     str(actor.get("feishuUnionId") or ""),
                 )
+                try:
+                    record_ui_runtime_incident(
+                        "fault-resolution",
+                        status="resolved",
+                        context={"incident_id": incident_id},
+                    )
+                except Exception:
+                    logging.exception("failed to resolve fault-resolution runtime incident")
                 AUTH.record_operation(
                     actor=actor,
                     action="fault.mark_handled",
@@ -4742,6 +4761,15 @@ class AppHandler(BaseHTTPRequestHandler):
                     result="failure",
                     details={"error": str(exc)[:240]},
                 )
+                try:
+                    record_ui_runtime_incident(
+                        "fault-resolution",
+                        status="open",
+                        error=f"{type(exc).__name__}: {exc}",
+                        context={"incident_id": incident_id, "http_status": 409},
+                    )
+                except Exception:
+                    logging.exception("failed to persist fault-resolution runtime incident")
                 json_response(self, {"ok": False, "error": str(exc)}, 409)
             except Exception as exc:
                 AUTH.record_operation(
@@ -4751,6 +4779,15 @@ class AppHandler(BaseHTTPRequestHandler):
                     result="failure",
                     details={"error": "飞书同步失败"},
                 )
+                try:
+                    record_ui_runtime_incident(
+                        "fault-resolution",
+                        status="open",
+                        error=f"{type(exc).__name__}: {exc}",
+                        context={"incident_id": incident_id, "http_status": 502},
+                    )
+                except Exception:
+                    logging.exception("failed to persist fault-resolution runtime incident")
                 json_response(self, {"ok": False, "error": f"飞书同步失败：{exc}"}, 502)
             return
         if parsed.path == "/api/competitor-insight-stream":
