@@ -248,18 +248,33 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_navigation_groups_and_renames_business_modules(self):
         intelligence = INDEX[INDEX.index('id="workspace-group-intelligence"'):INDEX.index('id="workspace-group-products"')]
-        products = INDEX[INDEX.index('id="workspace-group-products"'):INDEX.index('id="workspace-group-tools"')]
+        products = INDEX[INDEX.index('id="workspace-group-products"'):INDEX.index('id="workspace-group-assistant"')]
+        assistant = INDEX[INDEX.index('id="workspace-group-assistant"'):INDEX.index('id="workspace-group-tools"')]
         operations = INDEX[INDEX.index('id="workspace-group-tools"'):INDEX.index('id="workspace-panel-dashboard"')]
-        self.assertIn("新闻生产", intelligence)
+        self.assertIn("情报采集与研判", intelligence)
         self.assertIn("新闻检索系统", intelligence)
         self.assertIn("新闻人工筛选", intelligence)
+        self.assertIn("竞对数据分析", intelligence)
         self.assertNotIn("新闻获取与推送", intelligence)
         self.assertNotIn("新闻过滤与审核", intelligence)
-        self.assertNotIn("竞对数据分析", intelligence)
-        self.assertLess(products.index("竞对数据分析"), products.index("战略周报"))
-        self.assertIn("AI智能助手", products)
+        self.assertIn("报告与触达", products)
+        self.assertLess(products.index("战略周报"), products.index("业绩摘要"))
+        self.assertLess(products.index("业绩摘要"), products.index("订阅与推送管理"))
+        self.assertNotIn("竞对数据分析", products)
+        self.assertIn("智能工具", assistant)
+        self.assertIn("AI智能助手", assistant)
+        self.assertNotIn("AI智能助手", products)
         self.assertNotIn("AI问数", INDEX)
         self.assertNotIn("AI智能助手", operations)
+
+    def test_navigation_uses_semantic_icons_instead_of_numeric_badges(self):
+        navigation = INDEX[INDEX.index('id="workspace-group-overview"'):INDEX.index('id="workspace-panel-dashboard"')]
+        self.assertEqual(13, navigation.count('class="workspace-tab-icon"'))
+        self.assertEqual(13, navigation.count('class="workspace-tab-icon" aria-hidden="true"'))
+        self.assertNotIn('workspace-tab-index', navigation)
+        for badge in (">00<", ">01<", ">02<", ">03<", ">04<", ">05<", ">06<", ">07<", ">08<", ">09<", ">10<", ">11<"):
+            self.assertNotIn(badge, navigation)
+        self.assertIn('.workspace-tab-icon svg', STYLE)
 
     def test_fault_monitor_uses_real_incident_ledger_with_identity_bound_resolution(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
@@ -505,7 +520,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.js?v=92', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=102', INDEX)
+        self.assertIn('workspace-tabs.css?v=103', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
