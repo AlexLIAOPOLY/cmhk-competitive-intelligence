@@ -43,8 +43,6 @@ PUBLIC_STATIC_FILES = (
     "organization-admin.js",
     "responsive-layout-hardening.css",
     "styles.css",
-    "subscription-admin.css",
-    "subscription-admin.js",
     "workspace-tabs.css",
     "workspace-tabs.js",
 )
@@ -83,7 +81,7 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
         permissions: { modules: {
           dashboard: true, monitoring: true, competitor: true, news: true,
           weekly: true, performance: true, review: true, log: true, fault: true,
-          subscriptions: false, ai: false, organization: true,
+          subscriptions: true, ai: true, organization: true,
         } },
       },
     }],
@@ -533,9 +531,9 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         "/api/news-review-sheet",
     )
     review_sheet = _public_news_review_sheet(review_sheet_payload)
-    subscriptions = _public_subscriptions(
-        fetch("/api/subscriptions")
-    )
+    # Keep the public module entry without exporting recipient, invitation,
+    # delivery or schedule records from the internal runtime.
+    subscriptions = _public_subscriptions({})
     incidents_payload = fetch("/api/project-incidents?limit=500")
     public_incidents = [
         _public_incident(item)
@@ -757,29 +755,15 @@ def _public_organization_snapshots(
 
 
 def _public_subscriptions(payload: dict[str, Any]) -> dict[str, Any]:
-    blocked_fragments = ("api_key", "apikey", "authorization", "cookie", "password", "secret", "token")
-
-    def clean(value: Any, *, key: str = "") -> Any:
-        if any(fragment in key.lower() for fragment in blocked_fragments):
-            return None
-        if isinstance(value, dict):
-            return {
-                str(child_key): cleaned
-                for child_key, child_value in value.items()
-                if (cleaned := clean(child_value, key=str(child_key))) is not None
-            }
-        if isinstance(value, list):
-            return [cleaned for item in value if (cleaned := clean(item, key=key)) is not None]
-        if isinstance(value, str) and any(marker in value.lower() for marker in ("/users/", "127.0.0.1", "localhost")):
-            return ""
-        return value
-
-    result = clean(payload)
-    if not isinstance(result, dict):
-        result = {}
-    result["ok"] = True
-    result["readOnly"] = True
-    return result
+    _ = payload
+    return {
+        "ok": True,
+        "readOnly": True,
+        "subscribers": [],
+        "candidates": [],
+        "deliveries": [],
+        "invitations": [],
+    }
 
 
 def _rewrite_static_css(source: str) -> str:
@@ -796,11 +780,14 @@ def _rewrite_root_javascript(source: str) -> str:
     )
 
 
-def _readonly_module_html() -> str:
-    return """<!doctype html>
+def _readonly_module_html(title: str, message: str) -> str:
+    safe_title = __import__("html").escape(title)
+    safe_message = __import__("html").escape(message)
+    template = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#06131e;color:#c8eaf4;font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.card{width:min(560px,calc(100% - 48px));padding:32px;border:1px solid rgba(84,205,232,.28);background:rgba(8,31,44,.82);box-shadow:0 18px 60px rgba(0,0,0,.24)}h1{margin:0 0 12px;font-size:22px}p{margin:0;color:#83a8b5}</style></head>
-<body><section class="card"><h1>公开网页为只读快照</h1><p>此模块包含内部订阅、人员或操作功能，不在 GitHub Pages 公开。请在 CMHK 内网主页使用完整功能。</p></section></body></html>"""
+<style>html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#06131e;color:#c8eaf4;font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.card{width:min(560px,calc(100% - 48px));padding:32px;border:1px solid rgba(84,205,232,.28);background:rgba(8,31,44,.82);box-shadow:0 18px 60px rgba(0,0,0,.24)}.eyebrow{margin:0 0 8px;color:#58c8df;font-size:12px;letter-spacing:.14em}h1{margin:0 0 12px;font-size:22px}p{margin:0;color:#83a8b5}</style></head>
+<body><section class="card"><p class="eyebrow">PUBLIC READ-ONLY</p><h1>__TITLE__</h1><p>__MESSAGE__</p></section></body></html>"""
+    return template.replace("__TITLE__", safe_title).replace("__MESSAGE__", safe_message)
 
 
 def _build_site(
@@ -818,6 +805,10 @@ def _build_site(
     html = html.replace('href="/executive-dashboard-demo.html', 'href="./executive-dashboard-demo.html')
     html = html.replace('src="/executive-dashboard-demo.html', 'src="./executive-dashboard-demo.html')
     html = html.replace('class="brand-mark" href="/"', 'class="brand-mark" href="./"')
+    html = html.replace(
+        'data-src="./static/subscription-admin.html?v=12"',
+        'data-src="./static/public-subscriptions.html"',
+    )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
         'src="./static/workspace-tabs.js?v=public-4"',
@@ -856,28 +847,30 @@ def _build_site(
                 'competitorSelection: { companies: ["HKBN", "HKT"], metric: "consumer_broadband_customers", years: 5 }',
                 1,
             )
+            content = content.replace(
+                'panel.innerHTML = `<div class="workspace-embedded-host" id="workspaceAiHost"></div>`;',
+                'panel.innerHTML = `<iframe src="./static/public-ai.html" title="AI智能助手" style="display:block;width:100%;height:100%;border:0" loading="eager"></iframe>`;',
+                1,
+            )
         (static_destination / name).write_text(content, encoding="utf-8")
     (static_destination / "public-snapshot-bootstrap.js").write_text(
         PUBLIC_SNAPSHOT_BOOTSTRAP,
         encoding="utf-8",
     )
-    (static_destination / "public-readonly.html").write_text(
-        _readonly_module_html(),
+    (static_destination / "public-subscriptions.html").write_text(
+        _readonly_module_html(
+            "订阅与推送管理",
+            "GitHub Pages 保留模块入口；收件人、推送记录及编辑操作不在公开快照展示。请在 CMHK 内网主页管理。",
+        ),
         encoding="utf-8",
     )
-    subscription_html = (STATIC_DIR / "subscription-admin.html").read_text(encoding="utf-8")
-    subscription_html = subscription_html.replace('href="/static/', 'href="./').replace('src="/static/', 'src="./')
-    subscription_html = subscription_html.replace(
-        '  <main id="subscriptionAdmin" aria-live="polite">',
-        '  <aside style="margin:12px 18px 0;padding:10px 14px;border:1px solid rgba(82,194,215,.35);color:#9bdcea;background:rgba(7,38,50,.72);font:600 13px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">公开只读快照：保留当前订阅、邀请与推送记录；邀请、保存和推送操作已禁用。</aside>\n'
-        '  <main id="subscriptionAdmin" aria-live="polite">',
+    (static_destination / "public-ai.html").write_text(
+        _readonly_module_html(
+            "AI智能助手",
+            "GitHub Pages 保留模块入口；对话、知识库及模型配置不在公开快照开放。请在 CMHK 内网主页使用。",
+        ),
+        encoding="utf-8",
     )
-    subscription_html = subscription_html.replace(
-        '  <script src="./subscription-admin.js?v=16"></script>',
-        '  <script src="./public-snapshot-bootstrap.js?v=4"></script>\n'
-        '  <script src="./subscription-admin.js?v=16"></script>',
-    )
-    (static_destination / "subscription-admin.html").write_text(subscription_html, encoding="utf-8")
 
     report_outputs = ((snapshots.get("status.json") or {}).get("status") or {}).get("outputs", [])
     latest_reports = [

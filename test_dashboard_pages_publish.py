@@ -131,6 +131,27 @@ class DashboardPagesPublishTests(unittest.TestCase):
             'const pdf = `./static/report-previews/${key}.pdf`;',
         )
 
+    def test_public_subscription_snapshot_never_exports_recipient_records(self):
+        payload = publisher._public_subscriptions(
+            {
+                "subscribers": [{"display_name": "Private Person", "open_id": "ou_private"}],
+                "deliveries": [{"recipient_name": "Private Person"}],
+                "schedule": {"enabled": True},
+            }
+        )
+
+        self.assertEqual(
+            payload,
+            {
+                "ok": True,
+                "readOnly": True,
+                "subscribers": [],
+                "candidates": [],
+                "deliveries": [],
+                "invitations": [],
+            },
+        )
+
     def test_monitoring_dashboard_uses_synced_local_operator_tabs(self):
         html = (publisher.STATIC_DIR / "executive-dashboard-demo.html").read_text(
             encoding="utf-8"
@@ -657,13 +678,25 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
             self.assertIn('src="./static/public-snapshot-bootstrap.js?v=4"', html)
             self.assertIn('src="./static/workspace-tabs.js?v=public-4"', html)
+            self.assertIn('data-workspace-tab="subscriptions"', html)
+            self.assertIn('data-workspace-tab="ai"', html)
+            self.assertIn('data-src="./static/public-subscriptions.html"', html)
             self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
             self.assertIn("公开网页是只读快照", bootstrap)
+            self.assertIn("subscriptions: true, ai: true", bootstrap)
             self.assertIn('"/api/scheduler-overview"', bootstrap)
             self.assertIn('"/api/news-review-sheet"', bootstrap)
             self.assertIn('"/api/weekly-report-preview"', bootstrap)
             self.assertIn('"/api/crawl-run-log"', bootstrap)
             self.assertTrue((destination / "static" / "app.js").is_file())
+            self.assertTrue((destination / "static" / "public-subscriptions.html").is_file())
+            self.assertTrue((destination / "static" / "public-ai.html").is_file())
+            self.assertFalse((destination / "static" / "subscription-admin.html").exists())
+            public_workspace = (destination / "static" / "workspace-tabs.js").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('src="./static/public-ai.html"', public_workspace)
+            self.assertNotIn('id="workspaceAiHost"', public_workspace)
             self.assertTrue((destination / "static" / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertTrue((destination / "static-data" / "executive-intelligence.json").is_file())
             self.assertTrue((destination / "executive-dashboard-demo.html").is_file())
