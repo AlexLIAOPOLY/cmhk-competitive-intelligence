@@ -118,8 +118,9 @@
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const metricTitle = (metric) => `${metric.label}${metric.unit ? `（${metric.unit}）` : ""}`;
-  const tooltipAttributes = (text) => `tabindex="0" data-chart-tooltip="${escapeHtml(text)}" aria-label="${escapeHtml(text)}"`;
-  const metricTooltip = (item, metricLabel) => tooltipAttributes(`${item.company}｜${metricLabel}：${item.display}｜${item.status}`);
+  const tooltipAttributes = (text, company) => `tabindex="0" data-company="${escapeHtml(company)}" data-chart-tooltip="${escapeHtml(text)}" aria-label="${escapeHtml(text)}"`;
+  const metricTooltip = (item, metricLabel) => tooltipAttributes(`${item.company}｜${metricLabel}：${item.display}｜${item.status}`, item.company);
+  const chartHitArea = (x, y, width, height) => `<rect class="chart-hit-area" x="${x}" y="${y}" width="${width}" height="${height}" rx="4"></rect>`;
 
   function metricNumber(value) {
     const text = String(value || "").replace(/,/g, "");
@@ -191,7 +192,7 @@
       <text x="90" y="20" text-anchor="middle" class="chart-empty-label">暂无披露</text>
       ${rows.map((item, index) => {
         const x = 20 + (index * 70);
-        return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}><text x="${x}" y="70" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 6}" y1="78" x2="${x + 6}" y2="78" class="chart-missing-line"></line><text x="${x}" y="104" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
+        return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}>${chartHitArea(Math.max(0, x - 24), 30, 48, 80)}<text x="${x}" y="70" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 6}" y1="78" x2="${x + 6}" y2="78" class="chart-missing-line"></line><text x="${x}" y="104" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
       }).join("")}
     </svg>`;
   }
@@ -208,6 +209,7 @@
         const height = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 66);
         const x = 12 + (index * slot) + ((slot - barWidth) / 2);
         return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>
+          ${chartHitArea(12 + (index * slot), 8, slot, 103)}
           ${item.value === null ? `<text x="${x + (barWidth / 2)}" y="80" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x}" y1="87" x2="${x + barWidth}" y2="87" class="chart-missing-line"></line>` : `<rect class="chart-column-mark" x="${x}" y="${91 - height}" width="${barWidth}" height="${height}" rx="3" fill="${chartColors[index]}"></rect><text x="${x + (barWidth / 2)}" y="${Math.max(13, 86 - height)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text>`}
           <text x="${x + (barWidth / 2)}" y="108" text-anchor="middle">${escapeHtml(item.company)}</text>
         </g>`;
@@ -225,7 +227,7 @@
           const center = 62 + (index * 88);
           const paired = metrics[1].rows[index];
           const tooltip = `${row.company}｜${metrics[0].label}：${row.display}｜${metrics[1].label}：${paired.display}｜未披露`;
-          return `<g class="chart-mark-missing chart-interactive-mark" ${tooltipAttributes(tooltip)}><text x="${center - 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><text x="${center + 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><line x1="${center - 20}" y1="75" x2="${center - 4}" y2="75" class="chart-missing-line"></line><line x1="${center + 4}" y1="75" x2="${center + 20}" y2="75" class="chart-missing-line"></line><text x="${center}" y="102" text-anchor="middle">${escapeHtml(row.company)}</text></g>`;
+          return `<g class="chart-mark-missing chart-interactive-mark" ${tooltipAttributes(tooltip, row.company)}>${chartHitArea(center - 40, 18, 80, 92)}<text x="${center - 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><text x="${center + 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><line x1="${center - 20}" y1="75" x2="${center - 4}" y2="75" class="chart-missing-line"></line><line x1="${center + 4}" y1="75" x2="${center + 20}" y2="75" class="chart-missing-line"></line><text x="${center}" y="102" text-anchor="middle">${escapeHtml(row.company)}</text></g>`;
         }).join("")}
       </svg>`;
     }
@@ -241,7 +243,8 @@
         const firstHeight = row.value === null ? 0 : Math.max(3, (Math.abs(row.value) / max) * 62);
         const secondHeight = paired.value === null ? 0 : Math.max(3, (Math.abs(paired.value) / max) * 62);
         const tooltip = `${row.company}｜${metrics[0].label}：${row.display}｜${metrics[1].label}：${paired.display}`;
-        return `<g class="chart-interactive-mark" ${tooltipAttributes(tooltip)}>
+        return `<g class="chart-interactive-mark" ${tooltipAttributes(tooltip, row.company)}>
+          ${chartHitArea(18 + (index * slot), 18, slot, 94)}
           ${row.value === null ? `<text x="${x + (barWidth / 2)}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x}" y1="84" x2="${x + barWidth}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x}" y="${88 - firstHeight}" width="${barWidth}" height="${firstHeight}" rx="3" class="series-a chart-column-mark"></rect><text x="${x + (barWidth / 2)}" y="${Math.max(20, 83 - firstHeight)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(row.chartDisplay)}</text>`}
           ${paired.value === null ? `<text x="${x + barWidth + 4 + (barWidth / 2)}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x + barWidth + 4}" y1="84" x2="${x + (barWidth * 2) + 4}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x + barWidth + 4}" y="${88 - secondHeight}" width="${barWidth}" height="${secondHeight}" rx="3" class="series-b chart-column-mark"></rect><text x="${x + barWidth + 4 + (barWidth / 2)}" y="${Math.max(20, 83 - secondHeight)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(paired.chartDisplay)}</text>`}
           <text x="${18 + (index * slot) + (slot / 2)}" y="105" text-anchor="middle">${escapeHtml(row.company)}</text>
@@ -261,6 +264,7 @@
         const y = rowY(index);
         const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 118);
         return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>
+          ${chartHitArea(0, y - 15, 180, 30)}
           <text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>
           <line x1="52" y1="${y}" x2="170" y2="${y}" class="chart-track"></line>
           ${item.value === null ? `<line x1="52" y1="${y}" x2="60" y2="${y}" class="chart-missing-line"></line>` : isLollipop ? `<line x1="52" y1="${y}" x2="${52 + width}" y2="${y}" stroke="${chartColors[index]}" class="chart-lollipop-line"></line><circle class="chart-point" cx="${52 + width}" cy="${y}" r="5" fill="${chartColors[index]}"></circle>` : `<rect class="chart-bar-mark" x="52" y="${y - 5}" width="${width}" height="10" rx="5" fill="${chartColors[index]}"></rect>`}
@@ -292,9 +296,9 @@
       ${segments.filter((segment) => segment.length > 1).map((segment) => `<polyline points="${segment.map(({ x, y }) => `${x},${y}`).join(" ")}" class="chart-line"></polyline>`).join("")}
       ${rows.map((item, index) => {
         const x = rows.length === 1 ? 90 : 20 + (index * (140 / (rows.length - 1)));
-        if (item.value === null) return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}><text x="${x}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 5}" y1="84" x2="${x + 5}" y2="84" class="chart-missing-line"></line><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
+        if (item.value === null) return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}>${chartHitArea(Math.max(0, x - 24), 8, 48, 103)}<text x="${x}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 5}" y1="84" x2="${x + 5}" y2="84" class="chart-missing-line"></line><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
         const { y } = point(item, index);
-        return `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)}><circle class="chart-point" cx="${x}" cy="${y}" r="5" fill="${chartColors[index]}"></circle><text x="${x}" y="${Math.max(13, y - 9)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
+        return `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)}>${chartHitArea(Math.max(0, x - 24), 8, 48, 103)}<circle class="chart-point" cx="${x}" cy="${y}" r="5" fill="${chartColors[index]}"></circle><text x="${x}" y="${Math.max(13, y - 9)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
       }).join("")}
     </svg>`;
   }
@@ -318,7 +322,7 @@
       ${rings}
       <text x="72" y="53" text-anchor="middle" class="chart-donut-total">已披露</text>
       <text x="72" y="66" text-anchor="middle" class="chart-donut-count">${disclosed.length} 家</text>
-      ${disclosed.map((item, index) => `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)} transform="translate(122 ${34 + index * 24})"><circle class="chart-point" r="5" fill="${chartColors[rows.indexOf(item)]}"></circle><text x="9" y="4" class="chart-direct-value">${escapeHtml(`${item.company} ${item.chartDisplay}`)}</text></g>`).join("")}
+      ${disclosed.map((item, index) => `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)} transform="translate(122 ${34 + index * 24})">${chartHitArea(-8, -11, 64, 22)}<circle class="chart-point" r="5" fill="${chartColors[rows.indexOf(item)]}"></circle><text x="9" y="4" class="chart-direct-value">${escapeHtml(`${item.company} ${item.chartDisplay}`)}</text></g>`).join("")}
     </svg>`;
   }
 
@@ -333,7 +337,7 @@
         const y = rowY(index);
         const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 70);
         const x = item.value < 0 ? 91 - width : 91;
-        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}><text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>${item.value === null ? `<line x1="87" y1="${y}" x2="95" y2="${y}" class="chart-missing-line"></line>` : `<rect class="chart-bar-mark${item.value < 0 ? " chart-bar-negative" : ""}" x="${x}" y="${y - 5}" width="${width}" height="10" rx="5" fill="${item.value < 0 ? "#efb354" : chartColors[index]}"></rect>`}<text x="174" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text></g>`;
+        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>${chartHitArea(0, y - 15, 180, 30)}<text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>${item.value === null ? `<line x1="87" y1="${y}" x2="95" y2="${y}" class="chart-missing-line"></line>` : `<rect class="chart-bar-mark${item.value < 0 ? " chart-bar-negative" : ""}" x="${x}" y="${y - 5}" width="${width}" height="10" rx="5" fill="${item.value < 0 ? "#efb354" : chartColors[index]}"></rect>`}<text x="174" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text></g>`;
       }).join("")}
     </svg>`;
   }
@@ -429,15 +433,34 @@
       tooltip.style.left = `${Math.max(8, Math.min(window.innerWidth - width - 8, clientX + gap))}px`;
       tooltip.style.top = `${Math.max(8, Math.min(window.innerHeight - height - 8, clientY + gap))}px`;
     };
+    const setLinkedCompany = (company) => {
+      root.querySelectorAll("[data-company]").forEach((mark) => {
+        mark.classList.toggle("is-related", mark.dataset.company === company);
+        mark.classList.toggle("is-muted", mark.dataset.company !== company);
+      });
+    };
+    const clearLinkedCompany = () => {
+      root.querySelectorAll("[data-company]").forEach((mark) => mark.classList.remove("is-related", "is-muted", "is-active"));
+    };
     const showTooltip = (mark, clientX, clientY) => {
+      activeMark?.classList.remove("is-active");
       activeMark = mark;
-      tooltip.textContent = mark.dataset.chartTooltip || "";
+      activeMark.classList.add("is-active");
+      const parts = (mark.dataset.chartTooltip || "").split("｜");
+      tooltip.replaceChildren(...parts.map((part, index) => {
+        const line = document.createElement(index === 0 ? "strong" : "span");
+        line.textContent = part;
+        return line;
+      }));
+      setLinkedCompany(mark.dataset.company || "");
       tooltip.hidden = false;
       placeTooltip(clientX, clientY);
     };
     const hideTooltip = (mark) => {
       if (mark && activeMark !== mark) return;
+      activeMark?.classList.remove("is-active");
       activeMark = null;
+      clearLinkedCompany();
       tooltip.hidden = true;
     };
 
