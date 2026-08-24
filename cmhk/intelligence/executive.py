@@ -1447,9 +1447,8 @@ def _reader_facing_copy(value: Any) -> Any:
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
     local = _local_domain(_read_json(LOCAL_PATH))
-    # 本轮战略总览按用户指定范围保留内地运营商；国际运营商数据库继续存在，
-    # 但不进入该页面，避免把未要求的国际扩展混入正式发布。
-    international = _international_domain(_read_json(INTERNATIONAL_PATH))
+    # 第二数据域沿用原有战略总览布局，只替换为本轮指定的四家国际运营商。
+    international = _requested_international_domain(_read_json(GLOBAL_ANNUAL_PATH))
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     macro = _macro_domain(_read_json(MACRO_PATH))
     domains = [local, international, cloud, macro]
