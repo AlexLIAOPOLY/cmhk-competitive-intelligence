@@ -237,8 +237,21 @@
     window.setTimeout(() => panel.classList.remove("is-panel-entering"), 220);
   }
 
+  let workspaceLayoutSwitchRevision = 0;
+
+  function synchronizeWorkspaceLayoutScale(active) {
+    if (!active) return;
+    const revision = ++workspaceLayoutSwitchRevision;
+    document.body.classList.add("is-workspace-layout-switching");
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (revision === workspaceLayoutSwitchRevision) document.body.classList.remove("is-workspace-layout-switching");
+    }));
+  }
+
   function activateModule(name, { focus = false, updateUrl = true } = {}) {
     const target = allowedModules.includes(name) ? name : (allowedModules[0] || "dashboard");
+    const targetIsDashboard = target === "dashboard";
+    const wasDashboard = document.body.classList.contains("workspace-dashboard-active");
     const targetIsAi = target === "ai";
     const wasAi = document.body.classList.contains("workspace-ai-active");
     const navLayout = document.querySelector("#workspaceLayout");
@@ -264,7 +277,8 @@
     if (shouldAnimatePanel) animateActivatedPanel(activePanel);
     document.querySelectorAll("[data-report-preview].is-maximized").forEach((preview) => preview.classList.remove("is-maximized"));
     document.body.classList.remove("has-maximized-report-preview");
-    document.body.classList.toggle("workspace-dashboard-active", target === "dashboard");
+    synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard);
+    document.body.classList.toggle("workspace-dashboard-active", targetIsDashboard);
     document.body.classList.toggle("workspace-ai-active", targetIsAi);
     if (targetIsAi) {
       setWorkspaceNavCollapsed?.(true, { fromRect: navTransitionStart });
@@ -861,11 +875,11 @@
     const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
-    if (!dates.includes(selectedDate)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
       const legacyRunId = String(params.get("newsRuns") || params.get("newsRun") || "").split(",").find(Boolean);
       selectedDate = newsRunDate(state.newsRuns.find((run) => run.crawl_run_id === legacyRunId));
     }
-    if (!dates.includes(selectedDate)) selectedDate = dates[0] || "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = dates[0] || "";
     state.newsSelectedDate = selectedDate;
     const selected = state.newsRuns.filter((run) => newsRunDate(run) === selectedDate);
     state.newsSelectedRunIds = selected.map((run) => run.crawl_run_id);
@@ -1416,6 +1430,9 @@
     const runs = selectedNewsRuns();
     const run = runs[0] || null;
     const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
+    const sortedDates = [...dates].sort();
+    const earliestDate = sortedDates[0] || "";
+    const latestDate = sortedDates.at(-1) || "";
     const stages = runs.length ? aggregateNewsStages(runs) : [];
     const lineage = globalSchedulerLineageModel(runs, stages);
     const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
@@ -1423,9 +1440,9 @@
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
-          <div class="news-run-controls"><label><span>日期</span><select data-news-date-select aria-label="选择要查看的日期">${dates.map((date) => `<option value="${esc(date)}"${date === state.newsSelectedDate ? " selected" : ""}>${esc(date)}</option>`).join("")}</select></label></div>
+          <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
-        ${!run ? '<div class="workspace-empty">正在读取新闻采集运行归档…</div>' : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
+        ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" tabindex="0" aria-label="可横向滚动的情报生成流程图">
             <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas style="--lineage-zoom:${state.newsLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
@@ -1891,6 +1908,10 @@
   }
 
   document.addEventListener("click", (event) => {
+    const newsDatePicker = event.target.closest?.("[data-news-date-select]");
+    if (newsDatePicker && typeof newsDatePicker.showPicker === "function") {
+      try { newsDatePicker.showPicker(); } catch (_error) { /* Native input remains keyboard-operable. */ }
+    }
     const row = event.target.closest(".workspace-report-host .file-row[data-path]");
     if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input, .file-name-editable")) showReportPreview(row.dataset.path);
     const expandPreview = event.target.closest("[data-report-preview-expand]");

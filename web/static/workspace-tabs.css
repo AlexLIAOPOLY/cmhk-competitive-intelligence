@@ -107,6 +107,13 @@
 
 .workspace-tabs:hover { border-color: rgba(112, 205, 222, .38); box-shadow: 0 28px 62px rgba(0, 8, 14, .44), 0 9px 22px rgba(0, 8, 14, .3), 0 0 24px rgba(75, 183, 207, .07), inset 0 1px rgba(218, 250, 255, .15); transform: translateY(-2px); }
 
+/* Dashboard fit scaling is applied to the whole app shell. When a tab switch
+   crosses that boundary, update the rail's inverse scale in the same frame so
+   it never appears oversized while its normal transform transition catches up. */
+.dashboard-page.is-workspace-layout-switching .workspace-tabs {
+  transition: background .2s ease, border-color .2s ease, box-shadow .24s ease;
+}
+
 .workspace-tabs::before {
   position: absolute;
   z-index: -1;
@@ -477,8 +484,9 @@
 .news-process-toolbar > div:first-child > span { display: block; margin-top: 5px; color: #7899a6; font-size: 10px; }
 .news-run-controls { display: flex; align-items: end; gap: 8px; }
 .news-run-controls label { display: grid; gap: 4px; color: #7899a6; font-size: 9px; }
-.news-run-controls select { min-width: 132px; height: 32px; padding: 0 28px 0 9px; border: 1px solid #3a6071; border-radius: 4px; outline: 0; color: #e4f1f4; background: #071d28; font: 600 11px/1 system-ui, sans-serif; }
-.news-run-controls select:focus { border-color: #58b8cc; box-shadow: 0 0 0 2px rgba(88,184,204,.13); }
+.news-date-input { min-width: 148px; height: 32px; padding: 0 8px 0 9px; border: 1px solid #3a6071; border-radius: 4px; outline: 0; color: #e4f1f4; color-scheme: dark; background: #071d28; font: 600 11px/1 system-ui, sans-serif; cursor: pointer; }
+.news-date-input:focus-visible { border-color: #58b8cc; box-shadow: 0 0 0 2px rgba(88,184,204,.13); }
+.news-date-input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .86; }
 .news-multi-select { position: relative; }
 .news-multi-select summary { display: flex; min-width: 128px; height: 32px; align-items: center; justify-content: space-between; gap: 18px; padding: 0 9px; border: 1px solid #3a6071; border-radius: 4px; color: #dcecef; background: #071d28; font-size: 10px; cursor: pointer; list-style: none; }
 .news-multi-select summary::-webkit-details-marker { display: none; }
@@ -1355,7 +1363,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 
 .dashboard-page:not(.workspace-dashboard-active) .workspace-search,
 .dashboard-page:not(.workspace-dashboard-active) .competitor-select select,
-.dashboard-page:not(.workspace-dashboard-active) .news-run-controls select,
+.dashboard-page:not(.workspace-dashboard-active) .news-date-input,
 .dashboard-page:not(.workspace-dashboard-active) .news-multi-select summary,
 .dashboard-page:not(.workspace-dashboard-active) .fault-filter-row select,
 .dashboard-page:not(.workspace-dashboard-active) .fault-filter-row input,
@@ -1638,7 +1646,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .news-multi-select { flex: 1 1 150px; }
   .news-multi-select summary { width: 100%; }
   .news-multi-select > div { right: auto; left: 0; max-width: min(310px,calc(100vw - 44px)); }
-  .news-run-controls select { width: 100%; }
+  .news-date-input { width: 100%; }
   .news-flow { grid-template-columns: 148px 24px 148px 24px 148px 24px 148px 24px 148px 24px 148px; }
   .news-process-detail { grid-template-columns: 1fr; }
   .news-lineage { margin-inline: 10px; }
