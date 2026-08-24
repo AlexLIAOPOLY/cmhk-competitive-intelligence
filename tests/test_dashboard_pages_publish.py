@@ -181,6 +181,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('chartTypes: ["donut", "line", "column", "lollipop", "line", "bar"]', script)
         self.assertIn('chartTypes: ["line", "lollipop", "diverging"]', script)
         self.assertIn("function donutChart", script)
+        self.assertNotIn('class="chart-donut-total">已披露</text>', script)
+        self.assertIn('class="chart-donut-count">${disclosed.length} 家</text>', script)
         self.assertIn("function lineChart", script)
         self.assertIn("function divergingChart", script)
         self.assertIn("缺失值留空", script)

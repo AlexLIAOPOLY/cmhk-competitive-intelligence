@@ -318,8 +318,7 @@
     return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}已披露运营商构成环形图`)}">
       <circle cx="72" cy="56" r="${radius}" fill="none" class="chart-track-ring" stroke-width="18"></circle>
       ${rings}
-      <text x="72" y="53" text-anchor="middle" class="chart-donut-total">已披露</text>
-      <text x="72" y="66" text-anchor="middle" class="chart-donut-count">${disclosed.length} 家</text>
+      <text x="72" y="60" text-anchor="middle" class="chart-donut-count">${disclosed.length} 家</text>
       ${disclosed.map((item, index) => `<g class="chart-donut-legend" transform="translate(122 ${34 + index * 24})"><circle class="chart-point" r="5" fill="${chartColors[rows.indexOf(item)]}"></circle><text x="9" y="4" class="chart-direct-value">${escapeHtml(`${item.company} ${item.chartDisplay}`)}</text></g>`).join("")}
     </svg>`;
   }
