@@ -159,8 +159,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
         script = (publisher.STATIC_DIR / "executive-dashboard-demo.js").read_text(
             encoding="utf-8"
         )
+        style = (publisher.STATIC_DIR / "executive-dashboard-demo.css").read_text(
+            encoding="utf-8"
+        )
+        hardening_style = (
+            publisher.STATIC_DIR / "executive-responsive-hardening.css"
+        ).read_text(encoding="utf-8")
 
         self.assertIn('aria-label="CMHK、HKT、3HK三家重点运营商四层完整指标对比"', html)
+        self.assertIn('class="comparison-page"', html)
         self.assertRegex(html, r'src="/static/executive-dashboard-demo\.js\?v=\d+"')
         self.assertNotIn('role="tablist"', html)
         self.assertNotIn("data-monitor-view", html)
@@ -184,9 +191,18 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("comparison-chart-only", script)
         self.assertIn("chart-direct-value", script)
         self.assertIn("data-chart-tooltip", script)
+        self.assertIn("chart-hit-area", script)
+        self.assertIn("data-company", script)
         self.assertIn("function setupChartTooltips", script)
         self.assertIn('root.addEventListener("pointerover"', script)
         self.assertIn('root.addEventListener("focusin"', script)
+        self.assertIn("setLinkedCompany", script)
+        self.assertIn("is-related", script)
+        self.assertIn(".comparison-grid { height: auto; grid-template-columns: 1fr", style)
+        self.assertIn(".comparison-metric-grid-business .comparison-metric-card", style)
+        self.assertIn(".comparison-mini-charts { height: 100%; grid-template-columns: 1fr", style)
+        self.assertIn(".chart-hit-area { fill: transparent; pointer-events: all; }", style)
+        self.assertIn(".comparison-page .cockpit", hardening_style)
         self.assertNotIn("function comparisonValues", script)
         self.assertNotIn("function combinedValues", script)
         self.assertNotIn("comparison-value-row", script)
