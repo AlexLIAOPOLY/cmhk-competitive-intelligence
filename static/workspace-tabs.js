@@ -717,19 +717,6 @@
     }));
   }
 
-  async function requestLegacyCompetitorInsight(payload, requestId, controller, card) {
-    card.classList.add("is-loading");
-    card.setAttribute("aria-busy", "true");
-    setCompetitorInsightStatus(card, "兼容模式正在生成真实 AI 结果");
-    card.querySelector("[data-competitor-insight-badge]").textContent = "GENERATING";
-    const response = await fetch("/api/competitor-insight", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.ok) throw new Error(result.error || `AI兼容接口 HTTP ${response.status}`);
-    if (requestId !== state.competitorInsightRequest) return false;
-    settleCompetitorInsight(card, { mode: "ai", insight: result.insight, insights: result.insights });
-    return true;
-  }
-
   function scheduleCompetitorInsightRecovery(payload, requestId, card, error) {
     if (requestId !== state.competitorInsightRequest || !card) return;
     const delays = [5, 15, 30, 60, 120, 300];
@@ -757,10 +744,6 @@
     let generated = "";
     try {
       const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
-      if (response.status === 404) {
-        await requestLegacyCompetitorInsight(payload, requestId, controller, card);
-        return;
-      }
       if (!response.ok || !response.body) throw new Error(`AI流式接口 HTTP ${response.status}`);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -782,6 +765,7 @@
           } else if (event.type === "delta") {
             generated += String(event.text || "");
             renderCompetitorInsightDraft(card, generated);
+            await new Promise((resolve) => window.requestAnimationFrame(resolve));
           } else if (event.type === "done" && event.ok) {
             completed = true;
             state.competitorInsightRetryAttempt = 0;
@@ -799,16 +783,6 @@
       if (error.name === "AbortError") return;
       if (requestId === state.competitorInsightRequest && card) {
         const partial = parseCompetitorInsightItems(generated);
-        if (!partial.length) {
-          try {
-            setCompetitorInsightStatus(card, "流式通道异常，正在自动切换兼容通道");
-            await requestLegacyCompetitorInsight(payload, requestId, controller, card);
-            state.competitorInsightRetryAttempt = 0;
-            return;
-          } catch (legacyError) {
-            error = legacyError;
-          }
-        }
         settleCompetitorInsight(card, {
           mode: partial.length ? "ai" : "unavailable",
           insight: generated,
