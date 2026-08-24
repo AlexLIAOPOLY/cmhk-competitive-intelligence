@@ -92,9 +92,6 @@
     ] }
   ];
   let financeCompaniesData = financeCompanyFallbacks;
-  let selectedOperator = 0;
-  let operatorRotationTimer = null;
-  let operatorManualPauseUntil = 0;
 
   const comparisonSections = [
     { key: "network", number: "01", title: "资源与基础设施层", metricCount: 3 },
@@ -104,128 +101,6 @@
   ];
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const displayValue = (metric, index) => metric.valueLabels?.[index] ?? String(metric.values[index]);
-  const tooltipText = (metric) => `${metric.label}\n${metric.periods.map((period, index) => `${period}：${displayValue(metric, index)} ${metric.fullUnit || metric.unit}`.trim()).join("\n")}`;
-
-  function renderOperatorTabs(section) {
-    return `<div class="operator-tabs" role="tablist" aria-label="本地运营商">
-      ${operatorProfiles.map((item, index) => `<button type="button" role="tab" aria-selected="${index === selectedOperator}" data-operator-index="${index}" data-operator-section="${section}" title="查看${escapeHtml(item.company)}"><span>${escapeHtml(item.company)}</span></button>`).join("")}
-    </div>`;
-  }
-
-  function chartGeometry(values, width, height, padX = 4, padY = 5) {
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const range = max - min || 1;
-    const points = values.map((value, index) => ({
-      x: padX + (index * (width - padX * 2)) / Math.max(1, values.length - 1),
-      y: padY + ((max - value) * (height - padY * 2)) / range
-    }));
-    return { points, line: points.map((point, index) => `${index ? "L" : "M"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ") };
-  }
-
-  function sparkline(metric) {
-    const { points, line } = chartGeometry(metric.values, 100, 34, 3, 5);
-    return `<svg class="metric-sparkline" viewBox="0 0 100 34" preserveAspectRatio="none" role="img" aria-label="${escapeHtml(metric.label)}真实趋势">
-      <path d="${line}"/>
-      <g class="spark-points">${points.map((point, index) => `<circle cx="${point.x}" cy="${point.y}" r="2.5"><title>${escapeHtml(metric.periods[index])}：${escapeHtml(displayValue(metric, index))} ${escapeHtml(metric.unit)}</title></circle>`).join("")}</g>
-    </svg>`;
-  }
-
-  const metricCard = (metric, index = 0) => `
-    <div class="monitor-kpi has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--metric-order:${index}">
-      <span>${escapeHtml(metric.label)}</span>
-      <strong>${escapeHtml(metric.value)}<small>${escapeHtml(metric.unit)}</small></strong>
-      ${metric.trend ? `<em class="${metric.trend.startsWith("-") ? "is-negative" : ""}">${escapeHtml(metric.trend)}</em>` : ""}
-      ${metric.value === "—" ? "" : sparkline(metric)}
-    </div>`;
-
-  function renderNetwork() {
-    const profile = operatorProfiles[selectedOperator];
-    const visual = document.querySelector("[data-network-visual]");
-    const metrics = document.querySelector("[data-network-metrics]");
-    document.querySelector('[data-operator-tabs="network"]').innerHTML = renderOperatorTabs("network");
-    const [first, second, third] = profile.networkMetrics;
-    visual.innerHTML = `
-      <div class="section-label"><span>${escapeHtml(profile.company)} NETWORK</span><strong>网络与连接资源</strong></div>
-      <div class="network-architecture" role="img" aria-label="${escapeHtml(profile.company)}网络与连接资源">
-        <section class="architecture-stage stage-access">
-          <span class="stage-label"><b>01</b> 移动网络基础设施</span>
-          <div class="access-stack">
-            <div class="architecture-node node-4g"><small>${escapeHtml(first.label)}</small><strong>${escapeHtml(first.value)}<em>${escapeHtml(first.unit)}</em></strong></div>
-            <div class="architecture-node node-5g"><small>${escapeHtml(second.label)}</small><strong>${escapeHtml(second.value)}<em>${escapeHtml(second.unit)}</em></strong></div>
-          </div>
-        </section>
-        <section class="architecture-stage stage-backbone">
-          <span class="stage-label"><b>02</b> 数据与云基础设施</span>
-          <div class="architecture-node node-backbone"><small>${escapeHtml(third.label)}</small><strong>${escapeHtml(third.value)}<em>${escapeHtml(third.unit)}</em></strong></div>
-        </section>
-        <section class="architecture-stage stage-core">
-          <span class="stage-label"><b>03</b> 本地运营商</span>
-          <div class="architecture-core"><b>${escapeHtml(profile.company)}</b><span>LOCAL NETWORK</span><small>香港本地通信网络</small></div>
-        </section>
-        <div class="architecture-caption"><span>4G基站</span><i>→</i><span>5G基站</span><i>→</i><span>智算能力</span></div>
-      </div>`;
-    metrics.innerHTML = profile.networkMetrics.map(metricCard).join("");
-  }
-
-  function renderBusiness() {
-    const profile = operatorProfiles[selectedOperator];
-    const target = document.querySelector("[data-business-cards]");
-    document.querySelector('[data-operator-tabs="business"]').innerHTML = renderOperatorTabs("business");
-    target.innerHTML = profile.businessGroups.map((group) => `
-      <section class="business-card ${group.accent}">
-        <header><strong>${escapeHtml(group.title)}</strong></header>
-        <div class="business-pair">${group.metrics.map(metricCard).join("")}</div>
-      </section>`).join("");
-  }
-
-  function renderReach() {
-    const profile = operatorProfiles[selectedOperator];
-    const target = document.querySelector("[data-reach-content]");
-    target.innerHTML = renderOperatorTabs("reach") + profile.reachMetrics.map((metric, index) => {
-      const max = Math.max(...metric.values, 1);
-      return `<section class="reach-dial-card has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--dial:${metric.dial || 0}; --dial-color:${metric.color}">
-        <div class="reach-dial" aria-hidden="true"><i></i><span></span><b>0${index + 1}</b></div>
-        <div class="reach-dial-copy">
-          <span>${escapeHtml(metric.label)}</span>
-          <strong>${escapeHtml(metric.value)}<small>${escapeHtml(metric.unit)}</small></strong>
-          <em>${escapeHtml(metric.trend)}</em>
-          ${metric.value === "—" ? "" : `<div class="reach-wave" aria-label="${escapeHtml(metric.label)}真实趋势">${metric.values.map((value, valueIndex) => `<i style="height:${Math.max(18, (value / max) * 82)}%"><span>${escapeHtml(metric.periods[valueIndex])}：${escapeHtml(value)} ${escapeHtml(metric.unit)}</span></i>`).join("")}</div>`}
-        </div>
-      </section>`;
-    }).join("");
-  }
-
-  function financeChart(metric, company) {
-    const { points, line } = chartGeometry(metric.values, 480, 170, 0, 24);
-    const area = `${line} L480 170 L0 170 Z`;
-    return `<svg class="finance-area-chart" viewBox="0 0 480 170" preserveAspectRatio="none" role="img" aria-label="${escapeHtml(company)}营运收入趋势">
-      <defs><linearGradient id="financeArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#54d9ff" stop-opacity=".42"/><stop offset="1" stop-color="#357ee8" stop-opacity="0"/></linearGradient></defs>
-      <path class="finance-grid-line" d="M0 42H480M0 85H480M0 128H480"/>
-      <path class="finance-area" d="${area}"/>
-      <path class="finance-line" d="${line}"/>
-      <g class="finance-points">${points.map((point, index) => `<circle cx="${point.x}" cy="${point.y}" r="4"><title>${escapeHtml(metric.periods[index])}：${escapeHtml(metric.values[index])} ${escapeHtml(metric.unit)}</title></circle>`).join("")}</g>
-    </svg>`;
-  }
-
-  function renderFinance() {
-    const target = document.querySelector("[data-finance-content]");
-    const selected = financeCompaniesData[selectedOperator] || financeCompaniesData[0];
-    const metrics = selected.metrics;
-    const revenue = metrics[0];
-    target.innerHTML = `
-      ${renderOperatorTabs("finance")}
-      <section class="finance-revenue-hero has-data-tooltip" tabindex="0" data-tooltip="${escapeHtml(tooltipText(revenue))}">
-        <div class="finance-revenue-copy"><span>${escapeHtml(revenue.label)}</span><strong>${escapeHtml(revenue.value)}<small>${escapeHtml(revenue.unit)}</small></strong><em>${escapeHtml(revenue.trend)}</em></div>
-        ${financeChart(revenue, selected.company)}
-      </section>
-      <div class="finance-gauge-stack">${metrics.slice(1).map((metric, index) => `
-        <section class="finance-gauge-card gauge-${index + 1} has-data-tooltip${metric.value === "—" ? " is-missing" : ""}" tabindex="0" data-tooltip="${escapeHtml(tooltipText(metric))}" style="--gauge:${metric.gauge}">
-          <div class="finance-gauge" aria-hidden="true"><i></i><span></span></div>
-          ${metricCard(metric, index)}
-      </section>`).join("")}</div>`;
-  }
 
   function metricNumber(value) {
     const text = String(value || "").replace(/,/g, "");
@@ -287,106 +162,14 @@
         if (!reports.length) return;
         const byKey = new Map(reports.map((report) => [companyKey(report.company), normalizeFinancialReport(report)]));
         financeCompaniesData = financeCompanyFallbacks.map((fallback) => byKey.get(fallback.key) || fallback);
-        selectedOperator = Math.min(selectedOperator, financeCompaniesData.length - 1);
-        renderFinance();
         renderComparison();
       })
       .catch(() => {});
   }
 
-  let particleTransitionTimer = 0;
-
-  function runParticleTransition(intensity = 1) {
-    if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const cockpit = document.querySelector(".cockpit");
-    if (!cockpit) return;
-    let layer = cockpit.querySelector(".transition-particles");
-    if (!layer) {
-      layer = document.createElement("div");
-      layer.className = "transition-particles";
-      layer.setAttribute("aria-hidden", "true");
-      cockpit.appendChild(layer);
-    }
-    window.clearTimeout(particleTransitionTimer);
-    layer.classList.remove("is-active");
-    layer.replaceChildren();
-    const mobile = window.matchMedia("(max-width: 620px)").matches;
-    const count = Math.round((mobile ? 18 : 34) * intensity);
-    const colors = ["#64cdf4", "#73e0cf", "#8db8ff", "#c3f4ff"];
-    const fragment = document.createDocumentFragment();
-    for (let index = 0; index < count; index += 1) {
-      const particle = document.createElement("i");
-      const angle = Math.random() * Math.PI * 2;
-      const distance = (mobile ? 18 : 28) + Math.random() * (mobile ? 34 : 72);
-      particle.style.setProperty("--particle-x", `${4 + Math.random() * 92}%`);
-      particle.style.setProperty("--particle-y", `${8 + Math.random() * 84}%`);
-      particle.style.setProperty("--particle-size", `${1.1 + Math.random() * 2.4}px`);
-      particle.style.setProperty("--particle-dx", `${Math.cos(angle) * distance}px`);
-      particle.style.setProperty("--particle-dy", `${Math.sin(angle) * distance * .62}px`);
-      particle.style.setProperty("--particle-duration", `${880 + Math.random() * 360}ms`);
-      particle.style.setProperty("--particle-delay", `${Math.random() * 190}ms`);
-      particle.style.setProperty("--particle-alpha", `${.24 + Math.random() * .34}`);
-      particle.style.setProperty("--particle-color", colors[index % colors.length]);
-      fragment.appendChild(particle);
-    }
-    layer.appendChild(fragment);
-    void layer.offsetWidth;
-    layer.classList.add("is-active");
-    particleTransitionTimer = window.setTimeout(() => {
-      layer.classList.remove("is-active");
-      layer.replaceChildren();
-    }, 1540);
-  }
-
-  function renderOperatorPanels({ animate = false } = {}) {
-    renderNetwork();
-    renderBusiness();
-    renderReach();
-    renderFinance();
-    const overview = document.querySelector("[data-overview-view]");
-    overview.setAttribute("aria-label", `${operatorProfiles[selectedOperator].company}战略监控四层体系`);
-    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    runParticleTransition(.82);
-    overview.querySelectorAll(".monitor-content").forEach((content) => {
-      content.classList.remove("is-operator-switching");
-      void content.offsetWidth;
-      content.classList.add("is-operator-switching");
-    });
-  }
-
-  function selectOperator(index, { manual = false, focusSection = "" } = {}) {
-    selectedOperator = (index + operatorProfiles.length) % operatorProfiles.length;
-    if (manual) operatorManualPauseUntil = Date.now() + 12000;
-    renderOperatorPanels({ animate: true });
-    if (focusSection) document.querySelector(`[data-operator-section="${focusSection}"][data-operator-index="${selectedOperator}"]`)?.focus();
-  }
-
-  function setupOperatorTabs() {
-    const overview = document.querySelector("[data-overview-view]");
-    overview.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-operator-index]");
-      if (!button) return;
-      selectOperator(Number(button.dataset.operatorIndex) || 0, { manual: true, focusSection: button.dataset.operatorSection });
-    });
-    overview.addEventListener("keydown", (event) => {
-      const button = event.target.closest("[data-operator-index]");
-      if (!button || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-      event.preventDefault();
-      const current = Number(button.dataset.operatorIndex) || 0;
-      const next = event.key === "Home" ? 0 : event.key === "End" ? operatorProfiles.length - 1 : current + (event.key === "ArrowRight" ? 1 : -1);
-      selectOperator(next, { manual: true, focusSection: button.dataset.operatorSection });
-    });
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    operatorRotationTimer = window.setInterval(() => {
-      const overviewVisible = !document.querySelector("[data-overview-view]")?.hidden;
-      if (!overviewVisible || document.hidden || Date.now() < operatorManualPauseUntil) return;
-      selectOperator(selectedOperator + 1);
-    }, 5000);
-  }
-
-  function comparisonRows(rows) {
+  function comparisonRows(rows, metricLabel) {
     const max = Math.max(...rows.map((item) => Math.abs(item.value || 0)), 1);
-    return `<div class="comparison-table" role="table">
+    return `<div class="comparison-table" role="table" aria-label="${escapeHtml(metricLabel)}六家本地运营商对比">
       ${rows.map((item) => {
         const width = item.value === null ? 0 : Math.max(2, (Math.abs(item.value) / max) * 100);
         return `<div class="comparison-row${item.value === null ? " is-missing" : ""}${item.value < 0 ? " is-negative" : ""}" role="row" aria-label="${escapeHtml(`${item.company} ${item.display}`)}">
@@ -425,19 +208,16 @@
   }
 
   function comparisonPanel(panel) {
-    const labels = sectionMetrics(panel.key, 0).map((metric) => metric.label);
-    const metric = comparisonMetric(panel.key, 0);
-    return `<article class="panel comparison-panel is-visible">
+    const metrics = Array.from({ length: panel.metricCount }, (_, index) => comparisonMetric(panel.key, index));
+    return `<article class="panel panel-${escapeHtml(panel.key)} comparison-panel is-visible">
       <header class="panel-heading"><span>${escapeHtml(panel.number)}</span><h2>${escapeHtml(panel.title)}</h2></header>
       <div class="monitor-content comparison-content">
-        <div class="comparison-toolbar comparison-finance-toolbar">
-          <div class="comparison-metric-tabs" role="tablist" aria-label="${escapeHtml(panel.title)}对比指标">
-            ${labels.map((label, index) => `<button type="button" role="tab" aria-selected="${index === 0}" data-comparison-section="${escapeHtml(panel.key)}" data-comparison-metric="${index}">${escapeHtml(label)}</button>`).join("")}
-          </div>
-          <em>六家本地运营商</em>
+        <div class="comparison-metric-grid comparison-metric-grid-${metrics.length}">
+          ${metrics.map((metric, index) => `<section class="comparison-metric-card" aria-labelledby="${escapeHtml(`${panel.key}-metric-${index}`)}">
+            <header><h3 id="${escapeHtml(`${panel.key}-metric-${index}`)}">${escapeHtml(metric.label)}</h3></header>
+            ${comparisonRows(metric.rows, metric.label)}
+          </section>`).join("")}
         </div>
-        <div data-comparison-rows="${escapeHtml(panel.key)}">${comparisonRows(metric.rows)}</div>
-        <p class="comparison-scope-note">只展示大屏指标；未披露同口径数据时显示“—”。</p>
       </div>
     </article>`;
   }
@@ -445,54 +225,6 @@
   function renderComparison() {
     const target = document.querySelector("[data-comparison-view]");
     target.innerHTML = comparisonSections.map(comparisonPanel).join("");
-  }
-
-  function setupComparisonMetricTabs() {
-    const comparison = document.querySelector("[data-comparison-view]");
-    comparison.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-comparison-metric]");
-      if (!button) return;
-      const sectionKey = button.dataset.comparisonSection;
-      const panel = button.closest(".comparison-panel");
-      panel.querySelectorAll("[data-comparison-metric]").forEach((item) => item.setAttribute("aria-selected", String(item === button)));
-      const metric = comparisonMetric(sectionKey, Number(button.dataset.comparisonMetric) || 0);
-      panel.querySelector(`[data-comparison-rows="${sectionKey}"]`).innerHTML = comparisonRows(metric.rows);
-    });
-  }
-
-  function setupViewTabs() {
-    const buttons = Array.from(document.querySelectorAll("[data-monitor-view]"));
-    const overview = document.querySelector("[data-overview-view]");
-    const comparison = document.querySelector("[data-comparison-view]");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let transitionRevision = 0;
-    buttons.forEach((button) => button.addEventListener("click", () => {
-      const showComparison = button.dataset.monitorView === "comparison";
-      const incoming = showComparison ? comparison : overview;
-      const outgoing = showComparison ? overview : comparison;
-      if (!incoming.hidden) return;
-      buttons.forEach((item) => item.setAttribute("aria-selected", String(item === button)));
-      const reveal = () => {
-        outgoing.hidden = true;
-        outgoing.classList.remove("is-view-leaving");
-        incoming.hidden = false;
-        incoming.querySelectorAll(".panel").forEach((panel) => panel.classList.add("is-visible"));
-        if (reducedMotion.matches) return;
-        incoming.classList.add("is-view-entering");
-        void incoming.offsetWidth;
-        window.requestAnimationFrame(() => incoming.classList.remove("is-view-entering"));
-      };
-      if (reducedMotion.matches) {
-        reveal();
-        return;
-      }
-      const revision = ++transitionRevision;
-      runParticleTransition(1.12);
-      outgoing.classList.add("is-view-leaving");
-      window.setTimeout(() => {
-        if (revision === transitionRevision) reveal();
-      }, 360);
-    }));
   }
 
   function setupMotion() {
@@ -525,11 +257,7 @@
     panels.forEach((panel) => observer.observe(panel));
   }
 
-  renderOperatorPanels();
-  setupOperatorTabs();
-  refreshFinancialCompanies();
   renderComparison();
-  setupComparisonMetricTabs();
-  setupViewTabs();
   setupMotion();
+  refreshFinancialCompanies();
 })();
