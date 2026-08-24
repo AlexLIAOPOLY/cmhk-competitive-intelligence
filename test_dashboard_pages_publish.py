@@ -291,6 +291,59 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertNotIn("sheetUrl", snapshot)
         self.assertEqual(len(snapshot["rows"]), 1)
 
+    def test_public_organization_snapshot_keeps_read_only_ui_fields_only(self):
+        users, audit = publisher._public_organization_snapshots(
+            {
+                "users": [{
+                    "id": "private-user-id",
+                    "name": "Alex",
+                    "account": "private-account",
+                    "email": "private@example.com",
+                    "department": "Technology",
+                    "title": "Manager",
+                    "role": "ADMIN",
+                    "roleLabel": "系统管理员",
+                    "status": "active",
+                    "avatarUrl": "/api/auth/avatar/private-open-id",
+                    "modules": {"organization": True},
+                }],
+                "roles": {"ADMIN": "系统管理员"},
+                "modules": {"organization": "团队管理"},
+                "roleModules": {"ADMIN": {"organization": True}},
+            },
+            {"events": [{
+                "id": "private-event-id",
+                "actor_id": "private-user-id",
+                "actor_open_id": "private-open-id",
+                "actor_name": "Alex",
+                "actor_avatar_url": "/api/auth/avatar/private-open-id",
+                "action": "organization.user_import",
+                "target": "member-target",
+                "result": "success",
+                "at": "2026-08-24T09:00:00+08:00",
+                "details": {"name": "Alex", "email": "private@example.com", "token": "secret"},
+            }]},
+            {"incidents": []},
+        )
+
+        self.assertTrue(users["readOnly"])
+        self.assertEqual(users["users"][0]["id"], "member-001")
+        self.assertEqual(users["users"][0]["name"], "Alex")
+        self.assertEqual(users["users"][0]["email"], "")
+        self.assertEqual(users["users"][0]["account"], "")
+        self.assertNotIn("avatarUrl", users["users"][0])
+        self.assertEqual(audit["events"][0]["actor_id"], "member-001")
+        self.assertEqual(audit["events"][0]["target_type"], "member")
+        self.assertEqual(audit["events"][0]["target_label"], "Alex")
+        self.assertEqual(audit["events"][0]["target_member_id"], "member-001")
+        self.assertEqual(audit["events"][0]["details"], {})
+        self.assertNotIn("actor_open_id", audit["events"][0])
+
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn('organization: true', source)
+        self.assertIn('"static-data/organization-users.json"', source)
+        self.assertIn("#organizationAdmin [data-delete-user]", source)
+
     def test_optional_public_snapshot_does_not_block_on_busy_live_preview(self):
         fetch = mock.Mock(side_effect=RuntimeError("preview is busy"))
         self.assertEqual(

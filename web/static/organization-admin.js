@@ -7,7 +7,7 @@
   if (!hosts.length) return;
   const state = {
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
-    users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [],
+    users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
@@ -145,11 +145,35 @@
     };
   }
 
+  function eventTarget(event) {
+    const details = event.details || {};
+    const memberName = String(event.target_label || details.name || details.member_name || "").trim();
+    const member = state.users.find((user) => String(user.id) === String(event.target_member_id || ""))
+      || state.users.find((user) => memberName && String(user.name || "") === memberName);
+    if (event.target_type === "member" || event.action === "organization.user_import") {
+      return { type: "member", label: member?.name || memberName || "组织成员", person: member || null };
+    }
+    const incident = state.incidents.find((item) => String(item.incident_id || "") === String(event.target || ""));
+    if (event.target_type === "fault" || event.action === "fault.mark_handled") {
+      return { type: "fault", label: String(event.target_label || incident?.title || incident?.summary || "故障记录"), person: null };
+    }
+    return { type: "record", label: String(event.target_label || "操作记录"), person: null };
+  }
+
+  function targetCell(event) {
+    const target = eventTarget(event);
+    if (target.type === "member" && target.person) {
+      return `<button type="button" class="organization-target-person" data-profile-key="${esc(profileKey(target.person))}" aria-label="查看成员 ${esc(target.label)} 的详情" aria-haspopup="dialog">${avatar(target.person, "is-audit")}<span><strong>${esc(target.label)}</strong><small>组织成员</small></span></button>`;
+    }
+    const kind = target.type === "fault" ? "故障" : "处理对象";
+    return `<button type="button" class="organization-event-button is-target" data-event-key="${esc(event.id)}" aria-label="查看${kind} ${esc(target.label)} 的足迹详情" aria-haspopup="dialog"><strong>${esc(target.label)}</strong><small>${kind}</small></button>`;
+  }
+
   function filteredAudit() {
     const query = state.auditQuery.trim().toLowerCase();
     return state.audit.filter((event) => {
       const person = eventPerson(event);
-      const matchesQuery = !query || [person.name, person.department, person.title, person.roleLabel, auditAction(event), event.action, event.target]
+      const matchesQuery = !query || [person.name, person.department, person.title, person.roleLabel, auditAction(event), event.action, eventTarget(event).label, event.target]
         .some((value) => String(value || "").toLowerCase().includes(query));
       return matchesQuery && (!state.auditAction || event.action === state.auditAction) && (!state.auditResult || event.result === state.auditResult);
     });
@@ -164,8 +188,7 @@
     const rows = events.map((event) => {
       const person = eventPerson(event);
       const action = auditAction(event);
-      const target = event.target || "—";
-      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${esc(action)}</button></td><td><button type="button" class="organization-event-button is-target" data-event-key="${esc(event.id)}" aria-label="查看处理对象 ${esc(target)} 的足迹详情" aria-haspopup="dialog">${esc(target)}</button></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${esc(action)}</button></td><td>${targetCell(event)}</td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
     }).join("");
     const count = events.length === state.audit.length ? `${state.audit.length} 条` : `${events.length} / ${state.audit.length} 条`;
     return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="5"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
@@ -193,12 +216,13 @@
     const event = state.audit.find((item) => String(item.id) === state.eventKey);
     if (!event) return "";
     const person = eventPerson(event);
+    const target = eventTarget(event);
     const labels = { email: "成员邮箱", name: "成员姓名", handler_name: "处理人", feishu_sync: "飞书同步", sheet_row: "表格行", error: "失败原因" };
     const details = Object.entries(event.details || {}).map(([key, value]) => `<div><dt>${esc(labels[key] || key)}</dt><dd>${esc(typeof value === "object" ? JSON.stringify(value) : value || "—")}</dd></div>`).join("");
     return `<section class="organization-event-card" role="dialog" aria-modal="false" aria-label="足迹详情" tabindex="-1">
       <button type="button" class="organization-profile-close" data-event-close aria-label="关闭足迹详情">×</button>
-      <header><span>${avatar(person, "is-audit")}</span><div><small>团队足迹</small><h2>${esc(auditAction(event))}</h2><p>${esc(event.target || "—")}</p></div><em class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</em></header>
-      <dl><div><dt>操作成员</dt><dd>${esc(person.name || "未知用户")}</dd></div><div><dt>发生时间</dt><dd>${esc(auditTime(event.at))}</dd></div>${details}</dl>
+      <header><span>${avatar(person, "is-audit")}</span><div><small>团队足迹</small><h2>${esc(auditAction(event))}</h2><p>${esc(target.label)}</p></div><em class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</em></header>
+      <dl><div><dt>操作成员</dt><dd>${esc(person.name || "未知用户")}</dd></div><div><dt>处理对象</dt><dd>${esc(target.label)}</dd></div><div><dt>发生时间</dt><dd>${esc(auditTime(event.at))}</dd></div>${event.target ? `<div><dt>追踪编号</dt><dd>${esc(event.target)}</dd></div>` : ""}${details}</dl>
     </section>`;
   }
 
@@ -245,7 +269,7 @@
     state.loading = true;
     if (!state.loaded) hosts.forEach((host) => { host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>'; });
     try {
-      const [payload, auditPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200")]);
+      const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200"), request("/api/project-incidents?limit=500")]);
       const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
       const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
       state.users = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
@@ -254,6 +278,7 @@
       state.modules = payload.modules || {};
       state.roleModules = payload.roleModules || {};
       state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
+      state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
       if (!state.selectedUserId && state.users.length) state.selectedUserId = String(state.users[0].id);
       state.loaded = true;
       render();

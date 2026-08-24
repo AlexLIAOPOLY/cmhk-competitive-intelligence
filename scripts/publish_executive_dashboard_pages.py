@@ -65,6 +65,8 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
     ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
     ["/api/subscriptions", "static-data/subscriptions.json"],
+    ["/api/auth/admin/users", "static-data/organization-users.json"],
+    ["/api/auth/admin/audit", "static-data/organization-audit.json"],
   ]);
   const lookupRoutes = new Map([
     ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
@@ -81,7 +83,7 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
         permissions: { modules: {
           dashboard: true, monitoring: true, competitor: true, news: true,
           weekly: true, performance: true, review: true, log: true, fault: true,
-          subscriptions: false, ai: false, organization: false,
+          subscriptions: false, ai: false, organization: true,
         } },
       },
     }],
@@ -153,6 +155,14 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
       item.setAttribute("aria-disabled", "true");
     });
     document.querySelectorAll('[data-workspace-panel="competitor"] button, [data-workspace-panel="competitor"] input, [data-workspace-panel="competitor"] select').forEach((item) => {
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+    });
+    document.querySelectorAll("#organizationAdmin [data-directory-open], #organizationAdmin [data-delete-user], #organizationAdmin .organization-save-bar").forEach((item) => {
+      item.hidden = true;
+      item.setAttribute("aria-hidden", "true");
+    });
+    document.querySelectorAll("#organizationAdmin [data-role], #organizationAdmin [data-status], #organizationAdmin [data-module]").forEach((item) => {
       item.disabled = true;
       item.setAttribute("aria-disabled", "true");
     });
@@ -532,6 +542,11 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         for item in (incidents_payload.get("incidents") or [])
         if isinstance(item, dict)
     ]
+    organization_users, organization_audit = _public_organization_snapshots(
+        _fetch_optional_public_snapshot(fetch, "/api/auth/admin/users"),
+        _fetch_optional_public_snapshot(fetch, "/api/auth/admin/audit?limit=200"),
+        incidents_payload,
+    )
 
     return {
         "status.json": public_status,
@@ -554,6 +569,8 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
             _fetch_optional_public_snapshot(fetch, "/api/weekly-report-preview")
         ),
         "subscriptions.json": subscriptions,
+        "organization-users.json": organization_users,
+        "organization-audit.json": organization_audit,
         "news-run-items.json": news_run_items,
         "strategic-briefs.json": public_briefs,
     }
@@ -642,6 +659,101 @@ def _public_news_review_sheet(payload: dict[str, Any]) -> dict[str, Any]:
         "rows": _scrub_public_value([item for item in rows[:500] if isinstance(item, dict)]),
         "readOnly": True,
     }
+
+
+def _public_organization_snapshots(
+    users_payload: dict[str, Any],
+    audit_payload: dict[str, Any],
+    incidents_payload: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    users = [item for item in (users_payload.get("users") or []) if isinstance(item, dict)]
+    public_users: list[dict[str, Any]] = []
+    member_ids: dict[str, str] = {}
+    member_names: dict[str, str] = {}
+    for index, user in enumerate(users, start=1):
+        public_id = f"member-{index:03d}"
+        original_id = str(user.get("id") or "")
+        name = str(user.get("name") or user.get("account") or "未命名成员")
+        if original_id:
+            member_ids[original_id] = public_id
+        member_names[name] = public_id
+        modules = {
+            str(key): bool(value)
+            for key, value in (user.get("modules") or {}).items()
+        }
+        public_users.append(
+            {
+                "id": public_id,
+                "name": name,
+                "account": "",
+                "email": "",
+                "department": str(user.get("department") or ""),
+                "title": str(user.get("title") or ""),
+                "role": str(user.get("role") or ""),
+                "roleLabel": str(user.get("roleLabel") or ""),
+                "status": "disabled" if user.get("status") == "disabled" else "active",
+                "authProvider": "feishu",
+                "current": False,
+                "developmentAccount": False,
+                "modules": modules,
+                "permissions": {"modules": modules},
+            }
+        )
+
+    public_events: list[dict[str, Any]] = []
+    incident_titles = {
+        str(item.get("incident_id") or ""): str(item.get("title") or item.get("summary") or "")
+        for item in ((incidents_payload or {}).get("incidents") or [])
+        if isinstance(item, dict) and item.get("incident_id")
+    }
+    for index, event in enumerate(
+        (item for item in (audit_payload.get("events") or []) if isinstance(item, dict)),
+        start=1,
+    ):
+        actor_name = str(event.get("actor_name") or "未知用户")
+        original_actor_id = str(event.get("actor_id") or "")
+        original_target = str(event.get("target") or "")
+        details = event.get("details") if isinstance(event.get("details"), dict) else {}
+        target_name = str(details.get("name") or details.get("member_name") or "").strip()
+        if event.get("action") == "organization.user_import":
+            target_type = "member"
+            target_label = target_name or "组织成员"
+            target_member_id = member_names.get(target_label) or ""
+        elif event.get("action") == "fault.mark_handled":
+            target_type = "fault"
+            target_label = incident_titles.get(original_target) or "故障记录"
+            target_member_id = ""
+        else:
+            target_type = "record"
+            target_label = target_name or "操作记录"
+            target_member_id = ""
+        public_events.append(
+            {
+                "id": f"event-{index:03d}",
+                "at": str(event.get("at") or ""),
+                "actor_id": member_ids.get(original_actor_id) or member_names.get(actor_name) or "",
+                "actor_name": actor_name,
+                "actor_role": str(event.get("actor_role") or ""),
+                "action": str(event.get("action") or ""),
+                "target": original_target,
+                "target_type": target_type,
+                "target_label": target_label,
+                "target_member_id": target_member_id,
+                "result": "failure" if event.get("result") == "failure" else "success",
+                "details": {},
+            }
+        )
+
+    public_users_payload = {
+        "ok": True,
+        "users": public_users,
+        "departments": sorted({item["department"] for item in public_users if item["department"]}),
+        "roles": _scrub_public_value(users_payload.get("roles") or {}),
+        "modules": _scrub_public_value(users_payload.get("modules") or {}),
+        "roleModules": _scrub_public_value(users_payload.get("roleModules") or {}),
+        "readOnly": True,
+    }
+    return public_users_payload, {"ok": True, "events": public_events, "readOnly": True}
 
 
 def _public_subscriptions(payload: dict[str, Any]) -> dict[str, Any]:
