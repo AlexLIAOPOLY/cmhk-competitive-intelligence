@@ -656,7 +656,7 @@ def _public_news_review_sheet(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
     return {
         "ok": True,
-        "sheetTitle": str(payload.get("sheetTitle") or "新闻人工筛选快照"),
+        "sheetTitle": str(payload.get("sheetTitle") or "新闻审核快照"),
         "headers": [str(item) for item in (payload.get("headers") or [])],
         "editableColumns": [],
         "statusOptions": [str(item) for item in (payload.get("statusOptions") or [])],
@@ -856,7 +856,7 @@ def _build_site(
             )
             content = content.replace(
                 'panel.innerHTML = `<div class="workspace-embedded-host" id="workspaceAiHost"></div>`;',
-                'panel.innerHTML = `<iframe src="./static/public-ai.html" title="AI智能助手" style="display:block;width:100%;height:100%;border:0" loading="eager"></iframe>`;',
+                'panel.innerHTML = `<iframe src="./static/public-ai.html" title="小竞AI" style="display:block;width:100%;height:100%;border:0" loading="eager"></iframe>`;',
                 1,
             )
             content = content.replace(
@@ -871,14 +871,14 @@ def _build_site(
     )
     (static_destination / "public-subscriptions.html").write_text(
         _readonly_module_html(
-            "订阅与推送管理",
+            "订阅与推送",
             "GitHub Pages 保留模块入口；收件人、推送记录及编辑操作不在公开快照展示。请在 CMHK 内网主页管理。",
         ),
         encoding="utf-8",
     )
     (static_destination / "public-ai.html").write_text(
         _readonly_module_html(
-            "AI智能助手",
+            "小竞AI",
             "GitHub Pages 保留模块入口；对话、知识库及模型配置不在公开快照开放。请在 CMHK 内网主页使用。",
         ),
         encoding="utf-8",

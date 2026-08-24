@@ -34,15 +34,15 @@ ROLE_LABELS = {
 MODULE_LABELS = {
     "dashboard": "战略总览",
     "monitoring": "战略监控体系",
-    "news": "新闻检索系统",
-    "review": "新闻人工筛选",
-    "competitor": "竞对数据分析",
+    "news": "新闻采集",
+    "review": "新闻审核",
+    "competitor": "竞对分析",
     "weekly": "战略周报",
     "performance": "业绩摘要",
-    "subscriptions": "订阅与推送管理",
-    "ai": "AI智能助手",
-    "log": "日志",
-    "fault": "故障报警监控系统",
+    "subscriptions": "订阅与推送",
+    "ai": "小竞AI",
+    "log": "任务日志",
+    "fault": "报警处置",
     "organization": "组织管理",
 }
 

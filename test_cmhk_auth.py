@@ -85,6 +85,13 @@ class AuthServiceTest(unittest.TestCase):
     def test_role_defaults_keep_leader_on_dashboard_only(self):
         self.assertEqual(ROLE_MODULES["LEADER"], ["dashboard"])
         self.assertEqual(MODULE_LABELS["dashboard"], "战略总览")
+        self.assertEqual(MODULE_LABELS["news"], "新闻采集")
+        self.assertEqual(MODULE_LABELS["review"], "新闻审核")
+        self.assertEqual(MODULE_LABELS["competitor"], "竞对分析")
+        self.assertEqual(MODULE_LABELS["subscriptions"], "订阅与推送")
+        self.assertEqual(MODULE_LABELS["ai"], "小竞AI")
+        self.assertEqual(MODULE_LABELS["log"], "任务日志")
+        self.assertEqual(MODULE_LABELS["fault"], "报警处置")
         self.assertEqual(set(ROLE_MODULES["ADMIN"]), set(MODULE_LABELS))
         self.assertNotIn("organization", ROLE_MODULES["ANALYST"])
 

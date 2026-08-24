@@ -44,9 +44,10 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=21', INDEX)
+        self.assertIn('/static/organization-admin.js?v=22', INDEX)
         self.assertIn('/static/organization-admin.css?v=22', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=92', INDEX)
+        self.assertIn('/static/app.js?v=293', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -242,7 +243,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_existing_feishu_review_sheet_is_reused_as_a_workspace_tab(self):
         self.assertIn('id="workspace-tab-review"', INDEX)
-        self.assertIn("新闻人工筛选", INDEX)
+        self.assertIn("新闻审核", INDEX)
         self.assertIn('document.querySelector("#newsReviewWorkspace")', SCRIPT)
         self.assertIn('appendChild(review)', SCRIPT)
 
@@ -252,20 +253,20 @@ class WorkspaceTabsTests(unittest.TestCase):
         assistant = INDEX[INDEX.index('id="workspace-group-assistant"'):INDEX.index('id="workspace-group-tools"')]
         operations = INDEX[INDEX.index('id="workspace-group-tools"'):INDEX.index('id="workspace-panel-dashboard"')]
         self.assertIn("情报采集与研判", intelligence)
-        self.assertIn("新闻检索系统", intelligence)
-        self.assertIn("新闻人工筛选", intelligence)
-        self.assertIn("竞对数据分析", intelligence)
+        self.assertIn("新闻采集", intelligence)
+        self.assertIn("新闻审核", intelligence)
+        self.assertIn("竞对分析", intelligence)
         self.assertNotIn("新闻获取与推送", intelligence)
         self.assertNotIn("新闻过滤与审核", intelligence)
         self.assertIn("报告与触达", products)
         self.assertLess(products.index("战略周报"), products.index("业绩摘要"))
-        self.assertLess(products.index("业绩摘要"), products.index("订阅与推送管理"))
-        self.assertNotIn("竞对数据分析", products)
+        self.assertLess(products.index("业绩摘要"), products.index("订阅与推送"))
+        self.assertNotIn("竞对分析", products)
         self.assertIn("智能工具", assistant)
-        self.assertIn("AI智能助手", assistant)
-        self.assertNotIn("AI智能助手", products)
+        self.assertIn("小竞AI", assistant)
+        self.assertNotIn("小竞AI", products)
         self.assertNotIn("AI问数", INDEX)
-        self.assertNotIn("AI智能助手", operations)
+        self.assertNotIn("小竞AI", operations)
 
     def test_navigation_uses_semantic_icons_instead_of_numeric_badges(self):
         navigation = INDEX[INDEX.index('id="workspace-group-overview"'):INDEX.index('id="workspace-panel-dashboard"')]
@@ -278,7 +279,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_fault_monitor_uses_real_incident_ledger_with_identity_bound_resolution(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
-        self.assertIn("故障报警监控系统", INDEX)
+        self.assertIn("报警处置", INDEX)
         self.assertIn('fetch("/api/project-incidents?limit=500"', SCRIPT)
         self.assertIn("state.faultTotal", SCRIPT)
         self.assertIn("filtersActive ? rows.length : state.faultTotal", SCRIPT)

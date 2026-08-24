@@ -18,7 +18,7 @@ class WorkspaceLogIndicatorTests(unittest.TestCase):
         self.assertIn('setWorkspaceTabIndicator(workspaceLogTab, "indicatorRunning", active)', render_activity)
         self.assertIn("has-running-task", render_activity)
         self.assertIn('workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false")', render_activity)
-        self.assertIn('workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志")', render_activity)
+        self.assertIn('workspaceLogTab.setAttribute("aria-label", active ? "任务日志，有任务正在运行" : "任务日志")', render_activity)
         self.assertIn("data-workspace-indicator hidden", INDEX)
         self.assertNotIn("workspace-running-dot", INDEX)
 
