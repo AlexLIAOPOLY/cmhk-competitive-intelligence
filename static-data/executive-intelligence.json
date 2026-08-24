@@ -2931,24 +2931,24 @@
       "title": "全球云厂商",
       "kicker": "营收增速与已披露利润率",
       "metric": {
-        "value": "35.8",
+        "value": "30.6",
         "unit": "%",
-        "label": "Google FY2025收入同比变化"
+        "label": "Google FY2024收入同比变化"
       },
-      "context": "覆盖 8 家全球云厂商",
-      "insight": "直接披露云收入的厂商中，Google35.8%、Oracle23.9%、中国移动云20.4%、AWS19.7%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
+      "context": "覆盖 7 家全球云厂商",
+      "insight": "直接披露云收入的厂商中，Google30.6%、Oracle24.5%、中国移动云20.4%、AWS18.5%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
       "entities": [
         {
           "name": "Google",
-          "value": 35.8,
+          "value": 30.6,
           "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 公司直接披露的云业务口径",
-          "analysis": "FY2025该披露口径的收入同比变化为 +35.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "period": "FY2024",
+          "detail": "FY2024 · 公司直接披露的云业务口径",
+          "analysis": "FY2024该披露口径的收入同比变化为 +30.6%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
           "components": [
             {
-              "label": "FY2025云业务营收同比",
-              "value": 35.8,
+              "label": "FY2024云业务营收同比",
+              "value": 30.6,
               "unit": "%"
             }
           ],
@@ -2957,37 +2957,20 @@
         },
         {
           "name": "Oracle",
-          "value": 23.9,
+          "value": 24.5,
           "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 公司直接披露的云业务口径",
-          "analysis": "FY2025该披露口径的收入同比变化为 +23.9%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "period": "FY2024",
+          "detail": "FY2024 · 公司直接披露的云业务口径",
+          "analysis": "FY2024该披露口径的收入同比变化为 +24.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
           "components": [
             {
-              "label": "FY2025云业务营收同比",
-              "value": 23.9,
+              "label": "FY2024云业务营收同比",
+              "value": 24.5,
               "unit": "%"
             }
           ],
           "component_count": 1,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm"
-        },
-        {
-          "name": "Azure",
-          "value": 21.5,
-          "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 代理分部口径，可能包含非云业务",
-          "analysis": "FY2025该披露口径的收入同比变化为 +21.5%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "FY2025云业务营收同比",
-              "value": 21.5,
-              "unit": "%"
-            }
-          ],
-          "component_count": 1,
-          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html"
         },
         {
           "name": "中国移动云",
@@ -3007,16 +2990,33 @@
           "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
         },
         {
-          "name": "AWS",
-          "value": 19.7,
+          "name": "Azure",
+          "value": 19.9,
           "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 公司直接披露的云业务口径",
-          "analysis": "FY2025该披露口径的收入同比变化为 +19.7%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "period": "FY2024",
+          "detail": "FY2024 · 代理分部口径，可能包含非云业务",
+          "analysis": "FY2024该披露口径的收入同比变化为 +19.9%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
           "components": [
             {
-              "label": "FY2025云业务营收同比",
-              "value": 19.7,
+              "label": "FY2024云业务营收同比",
+              "value": 19.9,
+              "unit": "%"
+            }
+          ],
+          "component_count": 1,
+          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html"
+        },
+        {
+          "name": "AWS",
+          "value": 18.5,
+          "unit": "%",
+          "period": "FY2024",
+          "detail": "FY2024 · 公司直接披露的云业务口径",
+          "analysis": "FY2024该披露口径的收入同比变化为 +18.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "components": [
+            {
+              "label": "FY2024云业务营收同比",
+              "value": 18.5,
               "unit": "%"
             }
           ],
@@ -3024,33 +3024,16 @@
           "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm"
         },
         {
-          "name": "Alibaba",
-          "value": 11.0,
-          "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 公司直接披露的云业务口径",
-          "analysis": "FY2025该披露口径的收入同比变化为 +11.0%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "FY2025云业务营收同比",
-              "value": 11.0,
-              "unit": "%"
-            }
-          ],
-          "component_count": 1,
-          "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
-        },
-        {
           "name": "腾讯",
-          "value": 8.2,
+          "value": 4.0,
           "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 代理分部口径，可能包含非云业务",
-          "analysis": "FY2025该披露口径的收入同比变化为 +8.2%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
+          "period": "FY2024",
+          "detail": "FY2024 · 代理分部口径，可能包含非云业务",
+          "analysis": "FY2024该披露口径的收入同比变化为 +4.0%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
           "components": [
             {
-              "label": "FY2025云业务营收同比",
-              "value": 8.2,
+              "label": "FY2024云业务营收同比",
+              "value": 4.0,
               "unit": "%"
             }
           ],
@@ -3058,21 +3041,21 @@
           "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf"
         },
         {
-          "name": "Huawei",
-          "value": -3.5,
+          "name": "Alibaba",
+          "value": 2.8,
           "unit": "%",
-          "period": "FY2025",
-          "detail": "FY2025 · 含重分类的分部口径",
-          "analysis": "FY2025该披露口径的收入同比变化为 -3.5%；含重分类的分部口径。不同口径不可直接视为纯云业务排名。",
+          "period": "FY2024",
+          "detail": "FY2024 · 公司直接披露的云业务口径",
+          "analysis": "FY2024该披露口径的收入同比变化为 +2.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
           "components": [
             {
-              "label": "FY2025云业务营收同比",
-              "value": -3.5,
+              "label": "FY2024云业务营收同比",
+              "value": 2.8,
               "unit": "%"
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.huawei.com/en/annual-report/2025"
+          "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
         }
       ],
       "focuses": [
@@ -3081,24 +3064,24 @@
           "label": "收入增长",
           "visual": "columns",
           "metric": {
-            "value": "35.8",
+            "value": "30.6",
             "unit": "%",
-            "label": "Google FY2025收入同比变化"
+            "label": "Google FY2024收入同比变化"
           },
-          "context": "覆盖 8 家全球云厂商",
-          "insight": "直接披露云收入的厂商中，Google35.8%、Oracle23.9%、中国移动云20.4%、AWS19.7%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
+          "context": "覆盖 7 家全球云厂商",
+          "insight": "直接披露云收入的厂商中，Google30.6%、Oracle24.5%、中国移动云20.4%、AWS18.5%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
           "items": [
             {
               "name": "Google",
-              "value": 35.8,
+              "value": 30.6,
               "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 公司直接披露的云业务口径",
-              "analysis": "FY2025该披露口径的收入同比变化为 +35.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "period": "FY2024",
+              "detail": "FY2024 · 公司直接披露的云业务口径",
+              "analysis": "FY2024该披露口径的收入同比变化为 +30.6%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
               "components": [
                 {
-                  "label": "FY2025云业务营收同比",
-                  "value": 35.8,
+                  "label": "FY2024云业务营收同比",
+                  "value": 30.6,
                   "unit": "%"
                 }
               ],
@@ -3108,38 +3091,20 @@
             },
             {
               "name": "Oracle",
-              "value": 23.9,
+              "value": 24.5,
               "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 公司直接披露的云业务口径",
-              "analysis": "FY2025该披露口径的收入同比变化为 +23.9%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "period": "FY2024",
+              "detail": "FY2024 · 公司直接披露的云业务口径",
+              "analysis": "FY2024该披露口径的收入同比变化为 +24.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
               "components": [
                 {
-                  "label": "FY2025云业务营收同比",
-                  "value": 23.9,
+                  "label": "FY2024云业务营收同比",
+                  "value": 24.5,
                   "unit": "%"
                 }
               ],
               "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "Azure",
-              "value": 21.5,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 代理分部口径，可能包含非云业务",
-              "analysis": "FY2025该披露口径的收入同比变化为 +21.5%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "FY2025云业务营收同比",
-                  "value": 21.5,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
               "ai_summary": {}
             },
             {
@@ -3161,16 +3126,34 @@
               "ai_summary": {}
             },
             {
-              "name": "AWS",
-              "value": 19.7,
+              "name": "Azure",
+              "value": 19.9,
               "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 公司直接披露的云业务口径",
-              "analysis": "FY2025该披露口径的收入同比变化为 +19.7%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "period": "FY2024",
+              "detail": "FY2024 · 代理分部口径，可能包含非云业务",
+              "analysis": "FY2024该披露口径的收入同比变化为 +19.9%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
               "components": [
                 {
-                  "label": "FY2025云业务营收同比",
-                  "value": 19.7,
+                  "label": "FY2024云业务营收同比",
+                  "value": 19.9,
+                  "unit": "%"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+              "ai_summary": {}
+            },
+            {
+              "name": "AWS",
+              "value": 18.5,
+              "unit": "%",
+              "period": "FY2024",
+              "detail": "FY2024 · 公司直接披露的云业务口径",
+              "analysis": "FY2024该披露口径的收入同比变化为 +18.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "components": [
+                {
+                  "label": "FY2024云业务营收同比",
+                  "value": 18.5,
                   "unit": "%"
                 }
               ],
@@ -3179,34 +3162,16 @@
               "ai_summary": {}
             },
             {
-              "name": "Alibaba",
-              "value": 11.0,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 公司直接披露的云业务口径",
-              "analysis": "FY2025该披露口径的收入同比变化为 +11.0%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "FY2025云业务营收同比",
-                  "value": 11.0,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
-              "ai_summary": {}
-            },
-            {
               "name": "腾讯",
-              "value": 8.2,
+              "value": 4.0,
               "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 代理分部口径，可能包含非云业务",
-              "analysis": "FY2025该披露口径的收入同比变化为 +8.2%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
+              "period": "FY2024",
+              "detail": "FY2024 · 代理分部口径，可能包含非云业务",
+              "analysis": "FY2024该披露口径的收入同比变化为 +4.0%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
               "components": [
                 {
-                  "label": "FY2025云业务营收同比",
-                  "value": 8.2,
+                  "label": "FY2024云业务营收同比",
+                  "value": 4.0,
                   "unit": "%"
                 }
               ],
@@ -3215,21 +3180,21 @@
               "ai_summary": {}
             },
             {
-              "name": "Huawei",
-              "value": -3.5,
+              "name": "Alibaba",
+              "value": 2.8,
               "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025 · 含重分类的分部口径",
-              "analysis": "FY2025该披露口径的收入同比变化为 -3.5%；含重分类的分部口径。不同口径不可直接视为纯云业务排名。",
+              "period": "FY2024",
+              "detail": "FY2024 · 公司直接披露的云业务口径",
+              "analysis": "FY2024该披露口径的收入同比变化为 +2.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
               "components": [
                 {
-                  "label": "FY2025云业务营收同比",
-                  "value": -3.5,
+                  "label": "FY2024云业务营收同比",
+                  "value": 2.8,
                   "unit": "%"
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.huawei.com/en/annual-report/2025",
+              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
               "ai_summary": {}
             }
           ],
@@ -3241,217 +3206,13 @@
           "label": "增长变化",
           "visual": "trends",
           "metric": {
-            "value": 8.2,
+            "value": "-",
             "unit": "%",
-            "label": "Alibaba增速变化"
+            "label": "增速变化"
           },
-          "context": "FY2025 相对 FY2024",
-          "insight": "FY2025相对FY2024，6家可比厂商中5家收入增速提高，只有Oracle放缓；Alibaba提高8.2%最多，这说明提速并非少数现象。",
+          "context": "FY2024 相对 FY2023",
+          "insight": "缺少连续两年收入增速，不判断增长变化。",
           "items": [
-            {
-              "name": "Alibaba",
-              "value": 8.2,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 2.8% 变为 11.0%，同比增速加快 8.2%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 2.8
-                },
-                {
-                  "label": "FY2025",
-                  "value": 11.0
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 2.8,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 11.0,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "Google",
-              "value": 5.2,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 30.6% 变为 35.8%，同比增速加快 5.2%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 30.6
-                },
-                {
-                  "label": "FY2025",
-                  "value": 35.8
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 30.6,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 35.8,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "腾讯",
-              "value": 4.2,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 4.0% 变为 8.2%，同比增速加快 4.2%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 4.0
-                },
-                {
-                  "label": "FY2025",
-                  "value": 8.2
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 4.0,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 8.2,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "Azure",
-              "value": 1.6,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 19.9% 变为 21.5%，同比增速加快 1.6%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 19.9
-                },
-                {
-                  "label": "FY2025",
-                  "value": 21.5
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 19.9,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 21.5,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-              "ai_summary": {}
-            },
-            {
-              "name": "AWS",
-              "value": 1.2,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 18.5% 变为 19.7%，同比增速加快 1.2%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 18.5
-                },
-                {
-                  "label": "FY2025",
-                  "value": 19.7
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 18.5,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 19.7,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "Oracle",
-              "value": -0.6,
-              "unit": "%",
-              "detail": "FY2024→FY2025",
-              "analysis": "营收增速由 24.5% 变为 23.9%，同比增速放缓 0.6%。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 24.5
-                },
-                {
-                  "label": "FY2025",
-                  "value": 23.9
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 24.5,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 23.9,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
-              "ai_summary": {}
-            },
             {
               "name": "中国移动云",
               "unit": "",
@@ -3476,26 +3237,141 @@
               "ai_summary": {}
             },
             {
-              "name": "Huawei",
+              "name": "AWS",
               "unit": "",
               "detail": "缺少上一财年",
               "analysis": "缺少上一财年可比增速，不推断趋势。",
               "trend": [
                 {
-                  "label": "FY2025",
-                  "value": -3.5
+                  "label": "FY2024",
+                  "value": 18.5
                 }
               ],
               "components": [
                 {
-                  "label": "FY2025",
-                  "value": -3.5,
+                  "label": "FY2024",
+                  "value": 18.5,
                   "unit": "%",
                   "detail": "收入同比增长"
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.huawei.com/en/annual-report/2025",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+              "ai_summary": {}
+            },
+            {
+              "name": "Azure",
+              "unit": "",
+              "detail": "缺少上一财年",
+              "analysis": "缺少上一财年可比增速，不推断趋势。",
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 19.9
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2024",
+                  "value": 19.9,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+              "ai_summary": {}
+            },
+            {
+              "name": "Google",
+              "unit": "",
+              "detail": "缺少上一财年",
+              "analysis": "缺少上一财年可比增速，不推断趋势。",
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 30.6
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2024",
+                  "value": 30.6,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+              "ai_summary": {}
+            },
+            {
+              "name": "Alibaba",
+              "unit": "",
+              "detail": "缺少上一财年",
+              "analysis": "缺少上一财年可比增速，不推断趋势。",
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 2.8
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2024",
+                  "value": 2.8,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+              "ai_summary": {}
+            },
+            {
+              "name": "腾讯",
+              "unit": "",
+              "detail": "缺少上一财年",
+              "analysis": "缺少上一财年可比增速，不推断趋势。",
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 4.0
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2024",
+                  "value": 4.0,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+              "ai_summary": {}
+            },
+            {
+              "name": "Oracle",
+              "unit": "",
+              "detail": "缺少上一财年",
+              "analysis": "缺少上一财年可比增速，不推断趋势。",
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 24.5
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2024",
+                  "value": 24.5,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
               "ai_summary": {}
             }
           ],
@@ -3636,21 +3512,6 @@
               "component_count": 1,
               "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
               "ai_summary": {}
-            },
-            {
-              "name": "Huawei",
-              "unit": "",
-              "detail": "保留披露缺口",
-              "analysis": "未披露利润率。",
-              "components": [
-                {
-                  "label": "利润率",
-                  "detail": "未披露"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.huawei.com/en/annual-report/2025",
-              "ai_summary": {}
             }
           ],
           "headline": "利润率不能跨厂商排名",
@@ -3666,7 +3527,7 @@
             "label": "已通过三来源入库"
           },
           "context": "母公司集团口径 · 保留原币 · 不跨币种排名",
-          "insight": "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
+          "insight": "当前 4/7 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
           "items": [
             {
               "name": "中国移动云",
@@ -3761,22 +3622,6 @@
               "ai_summary": {}
             },
             {
-              "name": "Huawei",
-              "unit": "",
-              "period": "",
-              "detail": "原表尚未收录集团资本开支",
-              "analysis": "原表尚未收录可通过三份独立来源核验的集团资本开支，保留缺口。",
-              "components": [
-                {
-                  "label": "集团资本开支",
-                  "detail": "三来源数据待补"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.huawei.com/en/annual-report/2025",
-              "ai_summary": {}
-            },
-            {
               "name": "Alibaba",
               "unit": "",
               "period": "",
@@ -3816,17 +3661,12 @@
       "relations": [
         {
           "title": "Google",
-          "detail": "FY2025 披露收入同比 +35.8%",
+          "detail": "FY2025 披露收入同比 +30.6%",
           "kind": "公司披露数据"
         },
         {
           "title": "Oracle",
-          "detail": "FY2025 披露收入同比 +23.9%",
-          "kind": "公司披露数据"
-        },
-        {
-          "title": "Azure",
-          "detail": "FY2025 披露收入同比 +21.5%",
+          "detail": "FY2025 披露收入同比 +24.5%",
           "kind": "公司披露数据"
         },
         {
@@ -3835,23 +3675,23 @@
           "kind": "公司披露数据"
         },
         {
-          "title": "AWS",
-          "detail": "FY2025 披露收入同比 +19.7%",
+          "title": "Azure",
+          "detail": "FY2025 披露收入同比 +19.9%",
           "kind": "公司披露数据"
         },
         {
-          "title": "Alibaba",
-          "detail": "FY2025 披露收入同比 +11.0%",
+          "title": "AWS",
+          "detail": "FY2025 披露收入同比 +18.5%",
           "kind": "公司披露数据"
         },
         {
           "title": "腾讯",
-          "detail": "FY2025 披露收入同比 +8.2%",
+          "detail": "FY2025 披露收入同比 +4.0%",
           "kind": "公司披露数据"
         },
         {
-          "title": "Huawei",
-          "detail": "FY2025 披露收入同比 -3.5%",
+          "title": "Alibaba",
+          "detail": "FY2025 披露收入同比 +2.8%",
           "kind": "公司披露数据"
         }
       ],
@@ -3865,28 +3705,24 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm"
         },
         {
-          "label": "Azure",
-          "url": "https://www.microsoft.com/investor/reports/ar25/index.html"
-        },
-        {
           "label": "中国移动云",
           "url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
+        },
+        {
+          "label": "Azure",
+          "url": "https://www.microsoft.com/investor/reports/ar25/index.html"
         },
         {
           "label": "AWS",
           "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm"
         },
         {
-          "label": "Alibaba",
-          "url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
-        },
-        {
           "label": "腾讯",
           "url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf"
         },
         {
-          "label": "Huawei",
-          "url": "https://www.huawei.com/en/annual-report/2025"
+          "label": "Alibaba",
+          "url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
         }
       ],
       "ai_analysis": [
@@ -4864,9 +4700,9 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "4f5d7fc01f641879765b2e6c74c2a6cc05c6fc89004ffd787ee3596d444dec58",
+    "evidence_hash": "9291fd882f67a364429cdb9de995cd0a90906a15bbbce9d718d042e478fd046b",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
-  "source_record_count": 108
+  "source_record_count": 107
 }
