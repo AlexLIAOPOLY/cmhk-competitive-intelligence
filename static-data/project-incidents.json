@@ -2,6 +2,31 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "ee450b8e10a79939c995a4ff",
+      "task_id": "incident:ee450b8e10a79939c995a4ff",
+      "title": "错误告警处理按钮监听器",
+      "kind": "project-monitor-card-actions",
+      "kind_label": "错误告警处理按钮监听器",
+      "scope": "project-monitor-card-actions",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目常驻服务未运行",
+      "impact": "对应的爬虫、定时任务或Web能力可能停止，后续计划任务可能漏跑。",
+      "suggestions": [
+        "先读取 launchctl print gui/501/com.liaowang.cmhk-project-monitor-card-actions 与对应 stderr 日志。",
+        "确认没有同类任务正在执行后，再按既有 LaunchAgent 流程恢复服务。",
+        "恢复后交叉检查任务归档、/api/status 与 /api/task-runs，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-24T17:35:31+08:00",
+      "started_at_hkt": "2026-08-24T17:35:31+08:00",
+      "heartbeat_at_hkt": "2026-08-24T17:35:31+08:00",
+      "completed_at_hkt": "2026-08-24T17:36:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "60a7e1e5f0f2ae2b4175708f",
       "task_id": "incident:60a7e1e5f0f2ae2b4175708f",
       "title": "主项目后台任务",
@@ -104,9 +129,9 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻定时扫描 09:00",
       "scope": "strategic-news",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "人工修复",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "战略新闻定时扫描未完整成功",
@@ -118,8 +143,8 @@
       "occurred_at_hkt": "2026-08-24T09:58:27+08:00",
       "started_at_hkt": "2026-08-24T09:58:29+08:00",
       "heartbeat_at_hkt": "2026-08-24T09:58:29+08:00",
-      "completed_at_hkt": "",
-      "handled_at_hkt": ""
+      "completed_at_hkt": "2026-08-24T17:35:31+08:00",
+      "handled_at_hkt": "2026-08-24T17:37:41+08:00"
     },
     {
       "incident_id": "e9c57e4b1a45b519bbb39500",
@@ -560,9 +585,9 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻定时扫描 09:00",
       "scope": "strategic-news",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "战略新闻定时扫描未完整成功",
@@ -574,7 +599,7 @@
       "occurred_at_hkt": "2026-08-23T09:48:06+08:00",
       "started_at_hkt": "2026-08-23T09:48:07+08:00",
       "heartbeat_at_hkt": "2026-08-23T09:48:07+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-24T17:35:31+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -11983,30 +12008,6 @@
       "started_at_hkt": "2026-08-17T11:55:07+08:00",
       "heartbeat_at_hkt": "2026-08-17T12:00:06+08:00",
       "completed_at_hkt": "2026-08-17T12:00:36+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0ded11e87e0cf4b12766e876",
-      "task_id": "incident:0ded11e87e0cf4b12766e876",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T11:48:37+08:00",
-      "started_at_hkt": "2026-08-17T11:48:37+08:00",
-      "heartbeat_at_hkt": "2026-08-17T11:48:37+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
   ],
