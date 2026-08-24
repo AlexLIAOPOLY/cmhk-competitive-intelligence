@@ -161,7 +161,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         )
 
         self.assertIn('aria-label="HKT战略监控四层体系"', html)
-        self.assertIn('src="/static/executive-dashboard-demo.js?v=24"', html)
+        self.assertIn('src="/static/executive-dashboard-demo.js?v=25"', html)
         self.assertIn("HKT经营全景", html)
         self.assertIn("本地运营商对比", html)
         self.assertIn("financeCompanyFallbacks", script)
@@ -216,6 +216,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("[17.322, 19.231, 18.685]", script)
         for company in ("3香港", "SmarTone", "HKBN", "i-CABLE"):
             self.assertIn(company, script)
+        self.assertIn('company: "CMHK"', script)
+        self.assertIn('value: "5.0", unit: "百万户"', script)
+        self.assertIn('value: "49", unit: "间"', script)
+        self.assertIn("六家本地运营商", script)
         for comparable_value in ("8.132", "2.75", "0.916", "186", "0.198", "26.8", "20.8"):
             self.assertIn(comparable_value, script)
         self.assertIn("未披露同口径数据时显示", script)
@@ -449,17 +453,20 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=44"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=47"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=7"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=24"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=25"', html)
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)
+            self.assertIn('font: 680 clamp(12px, .7vw, 24px)/1', style)
+            self.assertIn('font-size: clamp(14px, .82vw, 30px)', style)
+            self.assertIn('background: rgba(5, 18, 30, .5)', style)
             self.assertIn("metric-sparkline", script)
             self.assertIn("network-architecture", script)
             self.assertIn("移动网络基础设施", script)
@@ -510,7 +517,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertNotIn("benchmark-company-selector", html)
             self.assertIn("HKT", html)
             self.assertIn("HKT", script)
-            for company in ("HKT", "3香港", "SmarTone", "HKBN"):
+            for company in ("HKT", "3香港", "SmarTone", "HKBN", "CMHK"):
                 self.assertIn(company, script)
             selected_metrics = (
                 "基站总数（4G）",
@@ -684,6 +691,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
             self.assertIn("公开网页是只读快照", bootstrap)
             self.assertIn("subscriptions: true, ai: true", bootstrap)
+            self.assertIn('document.addEventListener("DOMContentLoaded", startPrivateControlLock', bootstrap)
+            self.assertNotIn("observe(document.documentElement", bootstrap.split("function startPrivateControlLock", 1)[0])
             self.assertIn('"/api/scheduler-overview"', bootstrap)
             self.assertIn('"/api/news-review-sheet"', bootstrap)
             self.assertIn('"/api/weekly-report-preview"', bootstrap)
