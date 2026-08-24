@@ -294,6 +294,13 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertNotIn(badge, navigation)
         self.assertIn('.workspace-tab-icon svg', STYLE)
 
+    def test_xiaojing_navigation_uses_the_existing_product_logo(self):
+        assistant = INDEX[INDEX.index('id="workspace-group-assistant"'):INDEX.index('id="workspace-group-tools"')]
+        self.assertIn('class="workspace-tab-icon"', assistant)
+        self.assertIn('/static/assets/logo/xiaojing-ai-logo-mark.png?v=2', assistant)
+        self.assertNotIn("<svg", assistant)
+        self.assertIn('#workspace-tab-ai .workspace-tab-icon img', STYLE)
+
     def test_fault_monitor_uses_real_incident_ledger_with_identity_bound_resolution(self):
         self.assertIn('id="workspace-tab-fault"', INDEX)
         self.assertIn("报警处置", INDEX)
@@ -541,7 +548,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.js?v=94', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=104', INDEX)
+        self.assertIn('workspace-tabs.css?v=105', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
