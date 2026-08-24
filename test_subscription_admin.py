@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=12', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=20', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=21', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -134,6 +134,16 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('class="icon-button add"', SCRIPT)
         self.assertNotIn('class="people-invite-grid"', SCRIPT)
         self.assertIn('.upper-grid', STYLE)
+
+    def test_invite_and_subscriber_surfaces_have_non_destructive_filters(self):
+        self.assertIn('data-section-filter="invite"', SCRIPT)
+        self.assertIn('data-section-filter="subscriber"', SCRIPT)
+        self.assertIn('data-invite-filter-row', SCRIPT)
+        self.assertIn('data-subscriber-filter-row', SCRIPT)
+        self.assertIn('applySectionFilter(filter.dataset.sectionFilter, filter.value)', SCRIPT)
+        self.assertIn('没有匹配的邀请对象', SCRIPT)
+        self.assertIn('没有匹配的订阅者', SCRIPT)
+        self.assertIn('.surface-filter', STYLE)
 
 
 if __name__ == "__main__":
