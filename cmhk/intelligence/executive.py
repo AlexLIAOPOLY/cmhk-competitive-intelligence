@@ -44,10 +44,10 @@ USD_FX_BY_YEAR = {
     2024: {"USD": 1.0, "RMB": 7.189, "CNY": 7.189},
     2025: {"USD": 1.0, "RMB": 7.129, "CNY": 7.129},
 }
-USD_FX_2024_SOURCES = (
-    ("OECD 2024年均汇率", "https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en/full-report/tax-levels-and-tax-structure-1990-2024_19909ff5.html"),
-    ("Federal Reserve G.5A 2024", "https://www.federalreserve.gov/releases/g5a/20250106/"),
-    ("IRS 2024年均汇率", "https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates"),
+USD_FX_SOURCES = (
+    ("OECD年度平均汇率", "https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en/full-report/tax-levels-and-tax-structure-1990-2024_19909ff5.html"),
+    ("Federal Reserve G.5A年度汇率", "https://www.federalreserve.gov/releases/g5a/"),
+    ("IRS年度平均汇率", "https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates"),
 )
 
 
@@ -1191,7 +1191,7 @@ def _financial_item(name: str, row: dict[str, Any] | None, label: str, unit: str
             "source_url": str((row or {}).get("source_url") or ""), "verification_count": int((row or {}).get("verification_count") or 0)}
 
 
-def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
+def _legacy_merged_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     """Build domain 02 from the merged international and India carrier group."""
     requested = ("Bharti Airtel", "Reliance Jio", "Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
     rows = [
@@ -1355,7 +1355,14 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     capex_items: list[dict[str, Any]] = []
     profit_keys = ("operating_margin", "adjusted_ebita_margin", "proxy_segment_gross_margin")
     profit_amount_keys = ("cloud_operating_profit", "operating_income", "adjusted_ebita", "proxy_segment_gross_profit", "cloud_and_license_margin")
-    comparison_year = "2024"
+    comparison_year_candidates = sorted({
+        str(row.get("fiscal_year") or "")
+        for row in rows
+        if str(row.get("metric_key") or "") in {"cloud_revenue", "proxy_segment_revenue"}
+        and _verified_number(row) is not None
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+    })
+    comparison_year = comparison_year_candidates[-1] if comparison_year_candidates else "2024"
 
     def amount_trend(vendor: str, metric_keys: tuple[str, ...]) -> list[dict[str, Any]]:
         trend: list[dict[str, Any]] = []
@@ -1377,11 +1384,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
 
     for vendor in vendors:
         row = _metric_for_fiscal_year(rows, "vendor", vendor, "revenue_yoy", comparison_year)
-        if not row:
-            continue
         value = _verified_number(row)
-        if value is None:
-            continue
         name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
         name = {
             "China Mobile Cloud": "中国移动云",
@@ -1392,8 +1395,8 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "Huawei Cloud": "Huawei",
             "Oracle Cloud": "Oracle",
         }.get(name, name)
-        source_url = str(row.get("primary_source_url") or "")
-        disclosure_quality = str(row.get("disclosure_quality") or "")
+        source_url = str((row or {}).get("primary_source_url") or "")
+        disclosure_quality = str((row or {}).get("disclosure_quality") or "")
         if disclosure_quality.startswith("direct"):
             growth_scope = "公司直接披露的云业务口径"
         elif "proxy" in disclosure_quality:
@@ -1407,9 +1410,9 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             revenue_row = _metric_for_fiscal_year(rows, "vendor", vendor, "proxy_segment_revenue", comparison_year)
         revenue_value = _verified_number(revenue_row)
         revenue_currency = str((revenue_row or {}).get("currency") or "")
-        revenue_usd = _million_usd(revenue_value, revenue_currency)
+        revenue_usd = _million_usd(revenue_value, revenue_currency, int(comparison_year))
         revenue_components = (
-            [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{revenue_currency} · 2024年均汇率")]
+            [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{revenue_currency} · {comparison_year}年均汇率")]
             if revenue_usd is not None else []
         )
         revenue_amount_items.append({
@@ -1424,41 +1427,42 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             "components": revenue_components or [_component("云收入", detail="三来源数据待补")],
             "component_count": 1,
-            "source_url": str((revenue_row or row).get("primary_source_url") or ""),
+            "source_url": str((revenue_row or row or {}).get("primary_source_url") or ""),
             "trend": amount_trend(vendor, ("cloud_revenue", "proxy_segment_revenue")),
         })
-        growth_items.append({
-            "name": name, "value": round(value, 1), "unit": "%",
-            "period": f"FY{row.get('fiscal_year')}",
-            "detail": f"FY{row.get('fiscal_year')} · {growth_scope}",
-            "analysis": f"FY{row.get('fiscal_year')}该披露口径的收入同比变化为 {value:+.1f}%；{growth_scope}。不同口径不可直接视为纯云业务排名。",
-            "components": revenue_components + [_component(f"FY{row.get('fiscal_year')}云业务收入同比", round(value, 1), "%")],
-            "component_count": len(revenue_components) + 1,
-            "source_url": source_url,
-        })
-        history = [
-            item for item in _metric_history(rows, "vendor", vendor, "revenue_yoy")
-            if str(item.get("fiscal_year") or "") <= comparison_year
-        ]
-        previous = _verified_number(history[-2]) if len(history) > 1 else None
-        change = value - previous if previous is not None else None
-        trend_items.append({
-            "name": name,
-            "value": round(change, 1) if change is not None else None,
-            "unit": "个百分点" if change is not None else "",
-            "detail": f"FY{history[-2].get('fiscal_year')}→FY{row.get('fiscal_year')}" if previous is not None else "缺少上一财年",
-            "analysis": (
-                f"营收增速由 {previous:.1f}% 变为 {value:.1f}%，同比增速{'加快' if change > 0 else '放缓' if change < 0 else '持平'} {abs(change):.1f} 个百分点。"
-                if change is not None else "缺少上一财年可比增速，不推断趋势。"
-            ),
-            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in history[-3:]],
-            "components": [
-                _component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", item.get("metric_zh") or "云业务营收同比")
-                for item in history[-3:]
-            ],
-            "component_count": len(history[-3:]),
-            "source_url": source_url,
-        })
+        if value is not None and row:
+            growth_items.append({
+                "name": name, "value": round(value, 1), "unit": "%",
+                "period": f"FY{row.get('fiscal_year')}",
+                "detail": f"FY{row.get('fiscal_year')} · {growth_scope}",
+                "analysis": f"FY{row.get('fiscal_year')}该披露口径的收入同比变化为 {value:+.1f}%；{growth_scope}。不同口径不可直接视为纯云业务排名。",
+                "components": revenue_components + [_component(f"FY{row.get('fiscal_year')}云业务收入同比", round(value, 1), "%")],
+                "component_count": len(revenue_components) + 1,
+                "source_url": source_url,
+            })
+            history = [
+                item for item in _metric_history(rows, "vendor", vendor, "revenue_yoy")
+                if str(item.get("fiscal_year") or "") <= comparison_year
+            ]
+            previous = _verified_number(history[-2]) if len(history) > 1 else None
+            change = value - previous if previous is not None else None
+            trend_items.append({
+                "name": name,
+                "value": round(change, 1) if change is not None else None,
+                "unit": "个百分点" if change is not None else "",
+                "detail": f"FY{history[-2].get('fiscal_year')}→FY{row.get('fiscal_year')}" if previous is not None else "缺少上一财年",
+                "analysis": (
+                    f"营收增速由 {previous:.1f}% 变为 {value:.1f}%，同比增速{'加快' if change > 0 else '放缓' if change < 0 else '持平'} {abs(change):.1f} 个百分点。"
+                    if change is not None else "缺少上一财年可比增速，不推断趋势。"
+                ),
+                "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in history[-3:]],
+                "components": [
+                    _component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", item.get("metric_zh") or "云业务营收同比")
+                    for item in history[-3:]
+                ],
+                "component_count": len(history[-3:]),
+                "source_url": source_url,
+            })
         profit_row = None
         for key in profit_keys:
             profit_row = _latest_metric(rows, "vendor", vendor, key)
@@ -1484,7 +1488,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 if profit_value is not None and profit_row else [_component("利润率", detail="未披露")]
             ),
             "component_count": 1,
-            "source_url": str((profit_row or row).get("primary_source_url") or ""),
+            "source_url": str((profit_row or row or {}).get("primary_source_url") or ""),
         })
         profit_amount_row = next((
             candidate for key in profit_amount_keys
@@ -1493,7 +1497,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         ), None)
         profit_amount_original = _verified_number(profit_amount_row)
         profit_amount_currency = str((profit_amount_row or {}).get("currency") or "")
-        profit_amount_usd = _million_usd(profit_amount_original, profit_amount_currency)
+        profit_amount_usd = _million_usd(profit_amount_original, profit_amount_currency, int(comparison_year))
         profit_amount_label = {
             "cloud_operating_profit": "云业务经营利润",
             "operating_income": "云分部经营利润",
@@ -1513,7 +1517,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             "components": [_component(profit_amount_label, round(profit_amount_usd, 1), "百万美元", f"FY{comparison_year}")] if profit_amount_usd is not None else [_component("云利润", detail="三来源数据待补")],
             "component_count": 1,
-            "source_url": str((profit_amount_row or row).get("primary_source_url") or ""),
+            "source_url": str((profit_amount_row or row or {}).get("primary_source_url") or ""),
             "trend": amount_trend(vendor, profit_amount_keys),
         })
         profit_history = _metric_history(rows, "vendor", vendor, str((profit_row or {}).get("metric_key") or "")) if profit_row else []
@@ -1530,12 +1534,13 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in profit_history[-3:]],
             "components": [_component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", profit_label) for item in profit_history[-3:]] or [_component(profit_label, detail="未披露连续两年")],
-            "component_count": len(profit_history[-3:]), "source_url": str((profit_row or row).get("primary_source_url") or ""),
+            "component_count": len(profit_history[-3:]), "source_url": str((profit_row or row or {}).get("primary_source_url") or ""),
         })
         capex_row = _latest_metric(rows, "vendor", vendor, "group_capex")
         capex_original = _verified_number(capex_row)
         capex_currency = str((capex_row or {}).get("currency") or "")
-        capex_value = _million_usd(capex_original, capex_currency)
+        capex_year = int(str((capex_row or {}).get("fiscal_year") or comparison_year))
+        capex_value = _million_usd(capex_original, capex_currency, capex_year)
         capex_unit = "百万美元" if capex_value is not None else ""
         capex_items.append({
             "name": name,
@@ -1556,7 +1561,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 if capex_value is not None and capex_row else [_component("集团资本开支", detail="三来源数据待补")]
             ),
             "component_count": 1,
-            "source_url": str((capex_row or row).get("primary_source_url") or ""),
+            "source_url": str((capex_row or row or {}).get("primary_source_url") or ""),
             "trend": amount_trend(vendor, ("group_capex",)),
         })
     if not any(item.get("name") == "Huawei" for item in growth_items):
@@ -1564,13 +1569,13 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         revenue_row = _metric_for_fiscal_year(rows, "vendor", vendor, "cloud_revenue", comparison_year)
         revenue_value = _verified_number(revenue_row)
         currency = str((revenue_row or {}).get("currency") or "CNY")
-        revenue_usd = _million_usd(revenue_value, currency)
+        revenue_usd = _million_usd(revenue_value, currency, int(comparison_year))
         source_url = str((revenue_row or {}).get("primary_source_url") or "")
         growth_items.append({
             "name": "Huawei", "value": None, "unit": "", "period": f"FY{comparison_year}",
             "detail": f"FY{comparison_year}云业务收入已披露；同比增速缺口",
             "analysis": f"FY{comparison_year}云业务收入折算为{revenue_usd:,.1f}百万美元（原值{revenue_value:,.1f}百万{currency}）；同比增速缺口不估算。" if revenue_usd is not None else "云业务收入及同比增速均待三来源补齐。",
-            "components": [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{currency} · 2024年均汇率"), _component("云业务收入同比", detail="三来源数据待补")] if revenue_usd is not None else [_component("云业务收入及同比", detail="三来源数据待补")],
+            "components": [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{currency} · {comparison_year}年均汇率"), _component("云业务收入同比", detail="三来源数据待补")] if revenue_usd is not None else [_component("云业务收入及同比", detail="三来源数据待补")],
             "component_count": 2 if revenue_usd is not None else 1, "source_url": source_url,
         })
         revenue_amount_items.append({
@@ -1625,6 +1630,10 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     comparable_trends = [item for item in trend_items if _number(item.get("value")) is not None]
     disclosed_capex = [item for item in capex_items if _number(item.get("value")) is not None]
     capex_leader = disclosed_capex[0] if disclosed_capex else {"name": "-", "value": "-"}
+    revenue_tail = next((item for item in reversed(revenue_amount_items) if _number(item.get("value")) is not None), revenue_amount_leader)
+    aws_profit_amount = next((item for item in profit_amount_items if item["name"] == "AWS" and _number(item.get("value")) is not None), None)
+    google_profit_amount = next((item for item in profit_amount_items if item["name"] == "Google" and _number(item.get("value")) is not None), None)
+    capex_tail = next((item for item in reversed(disclosed_capex) if _number(item.get("value")) is not None), capex_leader)
     accelerating = [item for item in comparable_trends if float(item["value"]) > 0]
     slowing = [item for item in comparable_trends if float(item["value"]) < 0]
     trend_insight = (
@@ -1637,20 +1646,27 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         {
             "id": "revenue", "label": "云收入", "visual": "columns",
             "metric": {"value": revenue_amount_leader["value"], "unit": "百万美元", "label": f"{revenue_amount_leader['name']} FY{comparison_year}云收入"},
-            "context": f"覆盖 {len(revenue_amount_items)} 家全球云厂商 · 统一折算百万美元", "insight": "AWS云收入107556百万美元、Huawei为4635.6百万美元；收入基础呈头尾断层，意味着生态与资源承载力分层，但代理分部和重分类口径仍需单列。", "items": revenue_amount_items,
+            "context": f"FY{comparison_year}最新已核验披露 · 覆盖 {len(revenue_amount_items)} 家全球云厂商 · 统一折算百万美元",
+            "insight": f"{revenue_amount_leader['name']}云收入{revenue_amount_leader['value']:g}百万美元、{revenue_tail['name']}为{revenue_tail['value']:g}百万美元；收入基础呈头尾断层，意味着生态与资源承载力分层，但代理分部和重分类口径仍需单列。",
+            "items": revenue_amount_items,
         },
         {
             "id": "profit", "label": "云利润", "visual": "columns",
             "metric": {"value": profit_amount_leader["value"], "unit": "百万美元", "label": f"{profit_amount_leader['name']} FY{comparison_year}云利润"},
             "context": "按各厂商原生利润定义标注 · 统一折算百万美元",
-            "insight": "同属经营利润披露的AWS为39834百万美元、Google为6112百万美元；利润池向头部集中，表明云业务盈利缓冲分层，其他利润定义不混入这一判断。",
+            "insight": (
+                f"同属经营利润披露的AWS为{aws_profit_amount['value']:g}百万美元、Google为{google_profit_amount['value']:g}百万美元；"
+                "利润池向头部集中，表明云业务盈利缓冲分层，其他利润定义不混入这一判断。"
+                if aws_profit_amount and google_profit_amount else
+                "各厂商利润定义不同；页面保留原披露口径和缺口，不把异口径利润混入同一判断。"
+            ),
             "items": profit_amount_items,
         },
         {
             "id": "investment", "label": "资本开支", "visual": "rows",
-            "metric": {"value": capex_leader["value"], "unit": "百万美元", "label": f"{capex_leader['name']} FY2024集团资本开支"},
-            "context": "母公司集团口径 · 统一折算百万美元 · 原币明细保留",
-            "insight": "Google集团资本开支52535百万美元、Oracle为6866百万美元；资源承载力明显分层，但集团投入并非云业务单独投入，不能据此判断投入转化效率。",
+            "metric": {"value": capex_leader["value"], "unit": "百万美元", "label": f"{capex_leader['name']} {capex_leader.get('period') or '最新披露期'}集团资本开支"},
+            "context": "各公司最新已核验披露期 · 母公司集团口径 · 统一折算百万美元 · 原币明细保留",
+            "insight": f"{capex_leader['name']}集团资本开支{capex_leader['value']:g}百万美元、{capex_tail['name']}为{capex_tail['value']:g}百万美元；资源承载力明显分层，但集团投入并非云业务单独投入，不能据此判断投入转化效率。",
             "items": capex_items,
         },
     ]
@@ -1665,7 +1681,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         "title": "全球云厂商",
         "kicker": "收入｜利润｜集团资本开支",
         "metric": {"value": revenue_amount_leader["value"], "unit": "百万美元", "label": f"{revenue_amount_leader['name']} FY{comparison_year}云收入"},
-        "context": f"2016–2025十年窗口；FY{comparison_year}为当前共同可比年，覆盖 {len(growth_items)} 家厂商",
+        "context": f"2016–2025十年窗口；收入与利润采用FY{comparison_year}最新已核验披露，资本开支采用各公司最新已披露期",
         "insight": "云收入、云利润和集团资本开支只展示绝对值；原币和原生利润定义保留在明细。",
         "entities": revenue_amount_items,
         "focuses": focuses,
@@ -1673,7 +1689,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             {"title": item["name"], "detail": (f"FY{comparison_year} 云收入 {item['value']:,.1f} 百万美元" if _number(item.get("value")) is not None else f"FY{comparison_year} 云收入金额待三来源补齐"), "kind": "公司披露数据"}
             for item in revenue_amount_items
         ],
-        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items] + [_source(label, url) for label, url in USD_FX_2024_SOURCES]),
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items] + [_source(label, url) for label, url in USD_FX_SOURCES]),
     }
 
 
@@ -2013,16 +2029,16 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     focuses = [
         {"id": "revenue", "label": "营收", "visual": "rows", "headline": "十年营收序列已入库",
          "metric": {"value": len(revenue_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
-         "context": "统一为十亿美元；原币明细保留", "insight": "4家均覆盖10年，统一折算后可比较绝对规模，但集团范围差异仍需结合原披露理解。", "items": revenue_items},
+         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入基础形成两层，表明竞争资源承载力不同，但不等同盈利能力。", "items": revenue_items},
         {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "调整后EBITDA绝对值",
          "metric": {"value": len(ebitda_items), "unit": "家", "label": "FY2025已披露"},
-         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "4家FY2025调整后EBITDA约22.89至50.00十亿美元，绝对规模形成梯队，但调整口径并不完全相同。", "items": ebitda_items},
+         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；经营现金创造代理形成梯队，意味着盈利缓冲厚度不同。", "items": ebitda_items},
         {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "净利润绝对值",
          "metric": {"value": len(profit_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
-         "context": "统一为十亿美元", "insight": "4家FY2025净利润约6.93至21.95十亿美元，绝对规模存在差距，但公司财年与集团范围仍需按原披露理解。", "items": profit_items},
+         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分布明显分层，表明盈利韧性不同，但绝对值不等同盈利效率。", "items": profit_items},
         {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "后付费用户数与ARPU/ARPA",
          "metric": {"value": len(postpaid_items), "unit": "家", "label": "口径差异已明示"},
-         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "4家FY2025披露值约90.88至126.7百万，但ARPU/ARPA及NTT替代口径不同，表明客户价值不可直接混排。", "items": postpaid_items},
+         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon为126.70百万连接、ARPA 170.61美元/月，NTT Group为93.06百万订阅、ARPU 26.48美元/月；客户基础与客户价值信号分化，但替代口径不可直接混排。", "items": postpaid_items},
     ]
     all_items = revenue_items + ebitda_items + profit_items + postpaid_items
     return {
@@ -2060,6 +2076,14 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     domains = _reader_percent_units(domains)
     evidence = _analysis_evidence_snapshot(domains)
     evidence_hash = _content_hash(evidence)
+    def displayed_fy(domain: dict[str, Any]) -> str:
+        years = re.findall(r"FY(20\d{2})", json.dumps(domain, ensure_ascii=False))
+        return f"FY{max(years)}" if years else "最新披露期"
+
+    local_period = displayed_fy(local)
+    international_period = displayed_fy(international)
+    mainland_period = displayed_fy(mainland)
+    cloud_period = displayed_fy(cloud)
     model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
     model_analysis_fresh = bool(
         str(model_analysis.get("evidence_hash") or "")
@@ -2095,32 +2119,32 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "mainland",
             "to": "local",
-            "title": "香港与内地运营商口径分别展示",
-            "detail": "两组均展示营收、EBITDA和净利润，但财年、主体范围及货币不同；后付客户与移动/5G用户也不是同一口径。",
+            "title": f"{local_period}香港与内地财务口径分开",
+            "detail": f"香港运营商与内地运营商均采用{local_period}/{mainland_period}最新已核验披露，但主体范围及货币不同；后付客户与移动/5G用户也不是同一口径。",
             "kind": "不可直接比较",
         },
         {
             "from": "international",
             "to": "cloud",
-            "title": "云厂商与国际运营商披露口径不同",
+            "title": f"{cloud_period}云收入与运营商财务分口径",
             "detail": (
-                f"云厂商页面展示收入增速，国际运营商页面最高披露连接规模为 {international['metric']['value']} 百万；"
-                "指标、报告期间和业务范围不同，不作高低排名。"
+                f"云厂商页面采用{cloud_period}最新已核验云收入与利润绝对值，国际运营商页面采用{international_period}财务及用户价值指标；"
+                "业务范围和计量单位不同，不作高低排名。"
             ),
             "kind": "不可直接比较",
         },
         {
             "from": "local",
             "to": "cloud",
-            "title": "运营商财务与云业务披露分别展示",
-            "detail": "香港运营商使用公司财务及后付口径；云厂商使用云业务或代理分部收入、利润及集团CAPEX，不能混合排名。",
+            "title": f"{local_period}香港财务与云收入边界不同",
+            "detail": f"香港运营商使用{local_period}公司财务及后付口径；云厂商使用{cloud_period}云业务或代理分部收入与利润，集团CAPEX另取各公司最新已披露期，不能混合排名。",
             "kind": "数据边界",
         },
         {
             "from": "mainland",
             "to": "international",
-            "title": "内地5G用户与国际连接规模分别统计",
-            "detail": "内地页区分移动用户总数、5G网络用户和5G套餐客户；国际页沿用六家公司各自连接口径，两者不直接相加或排名。",
+            "title": f"{mainland_period}内地与国际用户口径分开",
+            "detail": f"内地页按{mainland_period}披露区分移动用户总数、5G网络用户和5G套餐客户；国际页采用{international_period}各公司原生连接/订阅及ARPU口径，两者不直接相加或排名。",
             "kind": "数据边界",
         },
     ]

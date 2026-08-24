@@ -16191,6 +16191,44 @@ body.report-library-open::before {
 .intelligence-domain-cloud .intelligence-viz-columns .is-negative b::before { border: 0; background: #d79aa2; }
 .intelligence-domain-cloud .intelligence-viz-columns .is-negative b::after { background: linear-gradient(180deg, #95515d, #552631); }
 
+/* Cloud card vertical rhythm: use the full evidence stage and keep long row
+   views below the focus tabs instead of centering them into the header. */
+@media (min-width: 561px) {
+  .intelligence-domain-cloud .intelligence-domain-focus-stage {
+    align-items: stretch;
+    padding-top: 14px;
+    padding-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .intelligence-domain-cloud .intelligence-chart-scroll {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .intelligence-domain-cloud .intelligence-chart-scroll .intelligence-viz-columns {
+    height: calc(100% - 7px);
+    min-height: 0;
+  }
+
+  .intelligence-domain-cloud .intelligence-viz-rows {
+    align-content: start;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: color-mix(in srgb, var(--domain-accent) 58%, #315b68) transparent;
+    scrollbar-width: thin;
+  }
+
+  .intelligence-domain-cloud .intelligence-entity-focus {
+    height: 100%;
+  }
+
+  .intelligence-domain-cloud .intelligence-entity-focus.is-overview .intelligence-entity-detail-body {
+    max-height: none;
+  }
+}
+
 .intelligence-viz-ranges li > i b {
   top: -1px;
   height: 7px;

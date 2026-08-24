@@ -1823,38 +1823,48 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
         unit = focus.get("metric", {}).get("unit") if isinstance(focus.get("metric"), dict) else ""
         return _display_number(value), str(unit or "")
 
+    def period(domain_id: str, focus_id: str) -> str:
+        focus = focuses.get((domain_id, focus_id)) or {}
+        metric_payload = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+        match = re.search(r"FY(20\d{2})", str(metric_payload.get("label") or ""))
+        return f"FY{match.group(1)}" if match else "最新披露期"
+
     local_revenue, local_revenue_unit = metric("local", "revenue")
     international_revenue, international_revenue_unit = metric("international", "revenue")
     cloud_revenue, cloud_revenue_unit = metric("cloud", "revenue")
     mainland_revenue, mainland_revenue_unit = metric("mainland", "revenue")
     mainland_postpaid, mainland_postpaid_unit = metric("mainland", "postpaid")
+    local_period = period("local", "revenue")
+    international_period = period("international", "revenue")
+    mainland_period = period("mainland", "revenue")
+    cloud_period = period("cloud", "revenue")
     relations = [
         {
-            "from": "mainland", "to": "local", "title": "运营商规模口径不能混排",
+            "from": "mainland", "to": "local", "title": f"{local_period}香港与内地财务口径分开",
             "detail": (
                 f"内地营收卡片为{mainland_revenue}{mainland_revenue_unit}，香港为{local_revenue}{local_revenue_unit}；"
-                "币种与主体范围不同，表明数值高低不能直接等同经营质量。"
+                f"两组均采用{mainland_period}/{local_period}最新已核验披露，但币种与主体范围结构不同；这表明数值高低不能直接等同经营质量。"
             ),
         },
         {
-            "from": "international", "to": "cloud", "title": "云收入与运营商收入分口径",
+            "from": "international", "to": "cloud", "title": f"{cloud_period}云收入与运营商财务分口径",
             "detail": (
                 f"云收入卡片为{cloud_revenue}{cloud_revenue_unit}，国际营收卡片为{international_revenue}{international_revenue_unit}；"
-                "分部规模与集团原币规模不同，表明两类数值不能混合排名。"
+                f"分别采用{cloud_period}/{international_period}最新已核验披露，分部规模与集团财务口径结构不同，因此不能直接混合排名。"
             ),
         },
         {
-            "from": "local", "to": "cloud", "title": "香港财务与云收入边界不同",
+            "from": "local", "to": "cloud", "title": f"{local_period}香港财务与云收入边界不同",
             "detail": (
                 f"香港营收卡片为{local_revenue}{local_revenue_unit}，云收入卡片为{cloud_revenue}{cloud_revenue_unit}；"
-                "公司整体与云分部范围不同，表明两者不可直接比较。"
+                f"分别采用{local_period}/{cloud_period}最新已核验披露，公司整体与云分部范围结构不同；这表明两者不可直接比较。"
             ),
         },
         {
-            "from": "mainland", "to": "international", "title": "后付费用户与国际财务分开判断",
+            "from": "mainland", "to": "international", "title": f"{mainland_period}内地与国际用户口径分开",
             "detail": (
                 f"内地后付费用户数披露不足，国际营收卡片为{international_revenue}{international_revenue_unit}；"
-                "这说明两者口径不同，内地运营商没有单独披露可比后付费用户数，不能拿移动用户总数替代。"
+                f"国际侧采用{international_period}最新披露；两者用户口径结构不同，因此不能直接拿移动用户总数替代后付费竞争判断。"
             ),
         },
     ]

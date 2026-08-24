@@ -54,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/organization-admin.js?v=22', INDEX)
         self.assertIn('/static/organization-admin.css?v=22', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=95', INDEX)
-        self.assertIn('/static/app.js?v=293', INDEX)
+        self.assertIn('/static/app.js?v=294', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
