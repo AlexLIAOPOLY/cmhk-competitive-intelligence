@@ -35,6 +35,18 @@ class _StreamingResponse(_Response):
         yield b"data: [DONE]\n\n"
 
 
+class _BatchedStreamingResponse(_Response):
+    def __iter__(self):
+        event = {"choices": [{"delta": {"content": MODEL_CONTENT}}]}
+        yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode()
+        yield b"data: [DONE]\n\n"
+
+
+class _IgnoredStreamingResponse(_Response):
+    def __iter__(self):
+        yield self.read()
+
+
 class CompetitorInsightTests(unittest.TestCase):
     def payload(self):
         data = json.loads(web_app.COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
@@ -121,6 +133,32 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertGreaterEqual(len([event for event in events if event["type"] == "delta"]), 3)
         self.assertEqual(result["insight"], MODEL_CONTENT)
         self.assertEqual(len(result["insights"]), 3)
+
+    def test_batched_upstream_content_is_replayed_as_visible_deltas(self):
+        events = []
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", return_value=_BatchedStreamingResponse()
+        ), patch("web_app.time.sleep"):
+            result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
+
+        deltas = [event["text"] for event in events if event["type"] == "delta"]
+        self.assertGreater(len(deltas), 3)
+        self.assertEqual("".join(deltas), MODEL_CONTENT)
+        self.assertEqual(result["insight"], MODEL_CONTENT)
+
+    def test_gateway_ignoring_stream_flag_still_uses_stream_callback(self):
+        events = []
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", return_value=_IgnoredStreamingResponse()
+        ), patch("web_app.time.sleep"):
+            result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
+
+        deltas = [event["text"] for event in events if event["type"] == "delta"]
+        self.assertGreater(len(deltas), 3)
+        self.assertEqual("".join(deltas), MODEL_CONTENT)
+        self.assertEqual(result["insight"], MODEL_CONTENT)
 
     def test_model_receives_only_common_comparison_years(self):
         captured = {}

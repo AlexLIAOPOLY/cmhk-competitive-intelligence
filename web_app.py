@@ -414,6 +414,19 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         method="POST",
     )
     priority_token = set_internal_ai_priority("interactive")
+
+    def emit_visible_delta(text: object) -> None:
+        """Keep the browser visibly streaming even when the gateway batches text."""
+        value = str(text or "")
+        if not value or not stream_callback:
+            return
+        chunk_size = 14
+        for offset in range(0, len(value), chunk_size):
+            stream_callback({"type": "delta", "text": value[offset:offset + chunk_size]})
+            # A small pacing interval prevents localhost/proxy coalescing from
+            # turning several flushed SSE events into one browser paint.
+            time.sleep(0.018)
+
     try:
         if stream_callback:
             stream_callback({"type": "status", "stage": "queue", "message": "请求已进入内网 AI 前台队列"})
@@ -439,9 +452,12 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                 with urllib.request.urlopen(request, timeout=90 if stream_callback else 60) as response:
                     if stream_callback:
                         reasoning_started = False
+                        non_sse_parts: list[bytes] = []
                         for raw_line in response:
                             line = raw_line.decode("utf-8", errors="replace").strip()
                             if not line.startswith("data:"):
+                                if line:
+                                    non_sse_parts.append(raw_line)
                                 continue
                             payload_text = line.removeprefix("data:").strip()
                             if not payload_text or payload_text == "[DONE]":
@@ -458,7 +474,18 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                             content_delta = delta.get("content")
                             if isinstance(content_delta, str) and content_delta:
                                 content_parts.append(content_delta)
-                                stream_callback({"type": "delta", "text": content_delta})
+                                emit_visible_delta(content_delta)
+                        if not content_parts and non_sse_parts:
+                            # Some OpenAI-compatible gateways occasionally
+                            # ignore stream=true and return one JSON response.
+                            # Preserve the real response text, but never expose
+                            # a non-streaming browser path.
+                            result = json.loads(b"".join(non_sse_parts).decode("utf-8"))
+                            from ai_response_compat import final_chat_message_text
+                            complete_text = final_chat_message_text(result, operation="竞争指标AI洞察")
+                            complete_text = _competitor_insight_content(complete_text)
+                            content_parts.append(complete_text)
+                            emit_visible_delta(complete_text)
                         raw_content = "".join(content_parts)
                     else:
                         result = json.loads(response.read().decode("utf-8"))
@@ -4735,6 +4762,8 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
+            self.send_header("X-Accel-Buffering", "no")
+            self.send_header("Content-Encoding", "identity")
             self.send_header("Connection", "close")
             self.end_headers()
             try:
