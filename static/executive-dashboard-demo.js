@@ -94,15 +94,38 @@
   let financeCompaniesData = financeCompanyFallbacks;
 
   const comparisonSections = [
-    { key: "network", number: "01", title: "资源与基础设施层", metricCount: 3, chartTypes: ["column", "lollipop", "bar"] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["donut", "line", "column", "lollipop", "line", "bar"] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "line"] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["line", "lollipop", "diverging"] }
+    { key: "network", number: "01", title: "资源与基础设施层", metricCount: 3, chartTypes: ["column", "column", "bar"], groups: [
+      { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
+      { indices: [2] }
+    ] },
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["donut", "line", "column", "lollipop", "line", "bar"], groups: [
+      { title: "移动业务", indices: [0, 1] },
+      { title: "家庭业务", indices: [2, 3] },
+      { title: "政企业务", indices: [4, 5] }
+    ] },
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "line"], groups: [
+      { title: "线下与数字触达", indices: [0, 1] }
+    ] },
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["line", "lollipop", "diverging"], groups: [
+      { title: "经营规模与盈利", indices: [0, 2] },
+      { indices: [1] }
+    ] }
   ];
   const chartColors = ["#64cdf4", "#5c9cff", "#60d9aa", "#efb354", "#b68cff", "#f37f8c"];
   const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+  const compactMetricLabel = (label) => ({
+    "基站总数（4G）": "4G基站",
+    "基站总数（5G）": "5G基站",
+    "总移动用户数": "移动用户",
+    "移动综合ARPU": "移动ARPU",
+    "家庭宽带用户数": "宽带用户",
+    "家庭户均收益（ARPU）": "家庭ARPU",
+    "客户数（大中型企业/中小企业-参考政府公布的分类）": "政企客户数",
+    "官方手机应用程式 (如MyLink) 活跃用户数": "App活跃用户",
+    "全港实体门市数量": "实体门市"
+  }[label] || label);
 
   function metricNumber(value) {
     const text = String(value || "").replace(/,/g, "");
@@ -188,6 +211,32 @@
         return `<g class="${item.value === null ? "chart-mark-missing" : ""}">
           ${item.value === null ? `<line x1="${x}" y1="87" x2="${x + 14}" y2="87" class="chart-missing-line"></line>` : `<rect x="${x}" y="${91 - height}" width="14" height="${height}" rx="2" fill="${chartColors[index]}"></rect>`}
           <text x="${x + 7}" y="108" text-anchor="middle">${escapeHtml(item.company.replace("香港", ""))}</text>
+        </g>`;
+      }).join("")}
+    </svg>`;
+  }
+
+  function groupedColumnChart(metrics, title) {
+    const disclosed = metrics.flatMap((metric) => metric.rows).filter((item) => item.value !== null);
+    if (!disclosed.length) {
+      return `<div class="comparison-grouped-chart-empty">
+        ${emptyChart(title, "column")}
+        <div class="comparison-chart-legend"><span><i class="series-a"></i>${escapeHtml(metrics[0].label)}</span><span><i class="series-b"></i>${escapeHtml(metrics[1].label)}</span></div>
+      </div>`;
+    }
+    const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
+    return `<svg class="comparison-chart comparison-grouped-chart" viewBox="0 0 300 116" role="img" aria-label="${escapeHtml(`${title}六家本地运营商分组柱状图`)}">
+      <line x1="18" y1="88" x2="282" y2="88" class="chart-axis"></line>
+      <g class="comparison-svg-legend"><rect x="172" y="5" width="8" height="8" rx="2" class="series-a"></rect><text x="184" y="13">4G</text><rect x="224" y="5" width="8" height="8" rx="2" class="series-b"></rect><text x="236" y="13">5G</text></g>
+      ${metrics[0].rows.map((row, index) => {
+        const paired = metrics[1].rows[index];
+        const x = 25 + (index * 44);
+        const firstHeight = row.value === null ? 0 : Math.max(3, (Math.abs(row.value) / max) * 62);
+        const secondHeight = paired.value === null ? 0 : Math.max(3, (Math.abs(paired.value) / max) * 62);
+        return `<g>
+          ${row.value === null ? `<line x1="${x}" y1="84" x2="${x + 10}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x}" y="${88 - firstHeight}" width="10" height="${firstHeight}" rx="2" class="series-a"></rect>`}
+          ${paired.value === null ? `<line x1="${x + 12}" y1="80" x2="${x + 22}" y2="80" class="chart-missing-line"></line>` : `<rect x="${x + 12}" y="${88 - secondHeight}" width="10" height="${secondHeight}" rx="2" class="series-b"></rect>`}
+          <text x="${x + 11}" y="105" text-anchor="middle">${escapeHtml(row.company.replace("香港", ""))}</text>
         </g>`;
       }).join("")}
     </svg>`;
@@ -291,10 +340,51 @@
       ${rows.map((item, index) => `<div class="comparison-value-row${item.value === null ? " is-missing" : ""}${item.value < 0 ? " is-negative" : ""}" role="row" aria-label="${escapeHtml(`${item.company} ${item.display} ${item.status}`)}">
         <i style="--series-color:${chartColors[index]}" aria-hidden="true"></i>
         <span class="comparison-company" role="cell">${escapeHtml(item.company)}</span>
-        <strong role="cell">${escapeHtml(item.display)}</strong>
+        <strong class="comparison-value-reading" role="cell">${escapeHtml(item.display)}</strong>
         <small role="cell">${escapeHtml(item.status)}</small>
       </div>`).join("")}
     </div>`;
+  }
+
+  function combinedValues(metrics, title) {
+    return `<div class="comparison-values comparison-values-combined" role="table" aria-label="${escapeHtml(title)}六家本地运营商完整数值">
+      ${metrics[0].rows.map((item, index) => {
+        const paired = metrics[1].rows[index];
+        return `<div class="comparison-value-row comparison-combined-row" role="row" aria-label="${escapeHtml(`${item.company} ${metrics[0].label} ${item.display} ${metrics[1].label} ${paired.display}`)}">
+          <i style="--series-color:${chartColors[index]}" aria-hidden="true"></i>
+          <span class="comparison-company" role="cell">${escapeHtml(item.company)}</span>
+          <span class="comparison-value-cell${item.value === null ? " is-missing" : ""}${item.value < 0 ? " is-negative" : ""}" role="cell"><strong class="comparison-value-reading">${escapeHtml(item.display)}</strong><small>${escapeHtml(item.status)}</small></span>
+          <span class="comparison-value-cell${paired.value === null ? " is-missing" : ""}${paired.value < 0 ? " is-negative" : ""}" role="cell"><strong class="comparison-value-reading">${escapeHtml(paired.display)}</strong><small>${escapeHtml(paired.status)}</small></span>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  function combinedMetricCard(panel, metrics, group, groupIndex) {
+    const cardId = `${panel.key}-group-${groupIndex}`;
+    const charts = group.sharedChart === "grouped-column"
+      ? groupedColumnChart(metrics, group.title)
+      : `<div class="comparison-mini-charts">${metrics.map((metric, index) => `<div class="comparison-mini-chart"><span>${escapeHtml(metric.label)}</span>${comparisonChart(metric.rows, metric.label, panel.chartTypes[group.indices[index]])}</div>`).join("")}</div>`;
+    return `<section class="comparison-metric-card comparison-combined-card" data-chart-type="${escapeHtml(group.sharedChart || "paired")}" aria-labelledby="${escapeHtml(cardId)}">
+      <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(group.title)}</h3></header>
+      <div class="comparison-combined-layout">
+        ${charts}
+        <div class="comparison-combined-headings" aria-hidden="true"><span>${escapeHtml(compactMetricLabel(metrics[0].label))}</span><span>${escapeHtml(compactMetricLabel(metrics[1].label))}</span></div>
+        ${combinedValues(metrics, group.title)}
+      </div>
+    </section>`;
+  }
+
+  function singleMetricCard(panel, metric, metricIndex) {
+    const chartType = panel.chartTypes[metricIndex];
+    const cardId = `${panel.key}-metric-${metricIndex}`;
+    return `<section class="comparison-metric-card" data-chart-type="${escapeHtml(chartType)}" aria-labelledby="${escapeHtml(cardId)}">
+      <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(metric.label)}</h3></header>
+      <div class="comparison-chart-layout">
+        ${comparisonChart(metric.rows, metric.label, chartType)}
+        ${comparisonValues(metric.rows, metric.label)}
+      </div>
+    </section>`;
   }
 
   function sectionMetrics(sectionKey, companyIndex) {
@@ -324,19 +414,16 @@
 
   function comparisonPanel(panel) {
     const metrics = Array.from({ length: panel.metricCount }, (_, index) => comparisonMetric(panel.key, index));
+    const groups = panel.groups || metrics.map((_, index) => ({ indices: [index] }));
     return `<article class="panel panel-${escapeHtml(panel.key)} comparison-panel is-visible">
       <header class="panel-heading"><span>${escapeHtml(panel.number)}</span><h2>${escapeHtml(panel.title)}</h2></header>
       <div class="monitor-content comparison-content">
-        <div class="comparison-metric-grid comparison-metric-grid-${metrics.length}">
-          ${metrics.map((metric, index) => {
-            const chartType = panel.chartTypes[index];
-            return `<section class="comparison-metric-card" data-chart-type="${escapeHtml(chartType)}" aria-labelledby="${escapeHtml(`${panel.key}-metric-${index}`)}">
-            <header><h3 id="${escapeHtml(`${panel.key}-metric-${index}`)}">${escapeHtml(metric.label)}</h3></header>
-            <div class="comparison-chart-layout">
-              ${comparisonChart(metric.rows, metric.label, chartType)}
-              ${comparisonValues(metric.rows, metric.label)}
-            </div>
-          </section>`;
+        <div class="comparison-metric-grid comparison-metric-grid-${groups.length} comparison-metric-grid-${escapeHtml(panel.key)}">
+          ${groups.map((group, groupIndex) => {
+            const groupedMetrics = group.indices.map((index) => metrics[index]);
+            return groupedMetrics.length > 1
+              ? combinedMetricCard(panel, groupedMetrics, group, groupIndex)
+              : singleMetricCard(panel, groupedMetrics[0], group.indices[0]);
           }).join("")}
         </div>
       </div>
