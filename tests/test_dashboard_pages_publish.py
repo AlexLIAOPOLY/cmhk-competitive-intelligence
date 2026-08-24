@@ -160,7 +160,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn('aria-label="香港本地运营商四层完整指标对比"', html)
+        self.assertIn('aria-label="CMHK、HKT、3HK三家重点运营商四层完整指标对比"', html)
         self.assertRegex(html, r'src="/static/executive-dashboard-demo\.js\?v=\d+"')
         self.assertNotIn('role="tablist"', html)
         self.assertNotIn("data-monitor-view", html)
@@ -181,6 +181,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
         for combined_title in ("移动业务", "家庭业务", "政企业务", "线下与数字触达", "经营规模与盈利"):
             self.assertIn(f'title: "{combined_title}"', script)
         self.assertIn("function combinedMetricCard", script)
+        self.assertIn('comparisonOperatorKeys = ["cmhk", "hkt", "three"]', script)
+        self.assertIn('comparisonCompanyNames = { cmhk: "CMHK", hkt: "HKT", three: "3HK" }', script)
+        self.assertIn("三家重点运营商", script)
         self.assertIn("Array.from({ length: panel.metricCount }", script)
         self.assertNotIn("renderOperatorTabs", script)
         self.assertNotIn("data-operator-index", script)
@@ -235,7 +238,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('company: "CMHK"', script)
         self.assertIn('value: "5.0", unit: "百万户"', script)
         self.assertIn('value: "49", unit: "间"', script)
-        self.assertIn("六家本地运营商", script)
+        self.assertNotIn("六家本地运营商", script)
         for comparable_value in ("8.132", "2.75", "0.916", "186", "0.198", "26.8", "20.8"):
             self.assertIn(comparable_value, script)
         self.assertIn('status: metric?.value === "—" ? "未披露"', script)
