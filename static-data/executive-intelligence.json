@@ -2105,13 +2105,103 @@
       "title": "国际运营商",
       "kicker": "连接规模、增长与盈利",
       "metric": {
-        "value": 273.2,
+        "value": 590.51,
         "unit": "百万连接",
-        "label": "Deutsche Telekom FY2025披露规模"
+        "label": "Bharti Airtel FY2025披露规模"
       },
-      "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
-      "insight": "各公司移动连接口径不同，只比较披露规模；财务变化在各自本币内计算，不比较绝对金额。",
+      "context": "Bharti Airtel、Reliance Jio、Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
+      "insight": "六家公司连接口径不同，只比较披露规模；财务变化在各自本币内计算，Reliance Jio利润率采用EBITDA口径，其余采用归母净利润口径。",
       "entities": [
+        {
+          "name": "Bharti Airtel",
+          "value": 590.51,
+          "unit": "百万连接",
+          "period": "FY2025",
+          "detail": "FY2025官方披露口径；三份底层文件核验",
+          "analysis": "FY2025披露口径移动连接/用户数为590.514百万；group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table。",
+          "components": [
+            {
+              "label": "FY2023",
+              "value": 518.446,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            },
+            {
+              "label": "FY2024",
+              "value": 561.97,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            },
+            {
+              "label": "FY2025",
+              "value": 590.514,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            }
+          ],
+          "component_count": 3,
+          "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+          "verification_count": 5,
+          "trend": [
+            {
+              "label": "FY2023",
+              "value": 518.446
+            },
+            {
+              "label": "FY2024",
+              "value": 561.97
+            },
+            {
+              "label": "FY2025",
+              "value": 590.514
+            }
+          ]
+        },
+        {
+          "name": "Reliance Jio",
+          "value": 488.2,
+          "unit": "百万连接",
+          "period": "FY2025",
+          "detail": "FY2025官方披露口径；三份底层文件核验",
+          "analysis": "FY2025披露口径移动连接/用户数为488.200百万；Jio total mobile/fixed customer base at fiscal year end。",
+          "components": [
+            {
+              "label": "FY2023",
+              "value": 439.3,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            },
+            {
+              "label": "FY2024",
+              "value": 481.8,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            },
+            {
+              "label": "FY2025",
+              "value": 488.2,
+              "unit": "百万连接",
+              "detail": "total_customers"
+            }
+          ],
+          "component_count": 3,
+          "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+          "verification_count": 3,
+          "trend": [
+            {
+              "label": "FY2023",
+              "value": 439.3
+            },
+            {
+              "label": "FY2024",
+              "value": 481.8
+            },
+            {
+              "label": "FY2025",
+              "value": 488.2
+            }
+          ]
+        },
         {
           "name": "Deutsche Telekom",
           "value": 273.2,
@@ -2298,15 +2388,107 @@
           "id": "scale",
           "label": "移动连接规模",
           "visual": "columns",
-          "headline": "德国电信披露规模居前",
+          "headline": "Bharti Airtel披露规模居前",
           "metric": {
-            "value": 273.2,
+            "value": 590.51,
             "unit": "百万连接",
-            "label": "Deutsche Telekom FY2025披露规模"
+            "label": "Bharti Airtel FY2025披露规模"
           },
-          "context": "四家运营商FY2025官方披露口径",
-          "insight": "Deutsche Telekom为273.20百万连接，NTT Group为93.06百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
+          "context": "六家运营商FY2025官方披露口径",
+          "insight": "Bharti Airtel为590.51百万连接，NTT Group为93.06百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
           "items": [
+            {
+              "name": "Bharti Airtel",
+              "value": 590.51,
+              "unit": "百万连接",
+              "period": "FY2025",
+              "detail": "FY2025官方披露口径；三份底层文件核验",
+              "analysis": "FY2025披露口径移动连接/用户数为590.514百万；group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table。",
+              "components": [
+                {
+                  "label": "FY2023",
+                  "value": 518.446,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                },
+                {
+                  "label": "FY2024",
+                  "value": 561.97,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                },
+                {
+                  "label": "FY2025",
+                  "value": 590.514,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                }
+              ],
+              "component_count": 3,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 518.446
+                },
+                {
+                  "label": "FY2024",
+                  "value": 561.97
+                },
+                {
+                  "label": "FY2025",
+                  "value": 590.514
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "Reliance Jio",
+              "value": 488.2,
+              "unit": "百万连接",
+              "period": "FY2025",
+              "detail": "FY2025官方披露口径；三份底层文件核验",
+              "analysis": "FY2025披露口径移动连接/用户数为488.200百万；Jio total mobile/fixed customer base at fiscal year end。",
+              "components": [
+                {
+                  "label": "FY2023",
+                  "value": 439.3,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                },
+                {
+                  "label": "FY2024",
+                  "value": 481.8,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                },
+                {
+                  "label": "FY2025",
+                  "value": 488.2,
+                  "unit": "百万连接",
+                  "detail": "total_customers"
+                }
+              ],
+              "component_count": 3,
+              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 439.3
+                },
+                {
+                  "label": "FY2024",
+                  "value": 481.8
+                },
+                {
+                  "label": "FY2025",
+                  "value": 488.2
+                }
+              ],
+              "ai_summary": {}
+            },
             {
               "name": "Deutsche Telekom",
               "value": 273.2,
@@ -2498,15 +2680,35 @@
           "id": "connection_growth",
           "label": "连接规模变化",
           "visual": "diverging",
-          "headline": "四家连接规模均保持增长",
+          "headline": "六家连接规模均保持增长",
           "metric": {
-            "value": 4.51,
+            "value": 5.08,
             "unit": "%",
-            "label": "Deutsche Telekom FY2025同比"
+            "label": "Bharti Airtel FY2025同比"
           },
           "context": "同公司FY2025对FY2024",
-          "insight": "四家均增长，Deutsche Telekom为4.51%，Verizon为0.56%；这说明连接扩张同向但强弱分化。",
+          "insight": "六家均增长，Bharti Airtel为5.08%，Verizon为0.56%；这说明连接扩张同向但强弱分化。",
           "items": [
+            {
+              "name": "Bharti Airtel",
+              "value": 5.08,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025较FY2024连接规模变化",
+              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+5.08%；跨公司客户定义不完全相同。",
+              "components": [
+                {
+                  "label": "集团总客户数",
+                  "value": 5.08,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "ai_summary": {}
+            },
             {
               "name": "Deutsche Telekom",
               "value": 4.51,
@@ -2568,6 +2770,26 @@
               "ai_summary": {}
             },
             {
+              "name": "Reliance Jio",
+              "value": 1.33,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025较FY2024连接规模变化",
+              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+1.33%；跨公司客户定义不完全相同。",
+              "components": [
+                {
+                  "label": "集团总客户数",
+                  "value": 1.33,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+              "verification_count": 3,
+              "ai_summary": {}
+            },
+            {
               "name": "Verizon",
               "value": 0.56,
               "unit": "%",
@@ -2596,13 +2818,53 @@
           "visual": "diverging",
           "headline": "原币营收均实现增长",
           "metric": {
-            "value": 5.14,
+            "value": 15.93,
             "unit": "%",
-            "label": "NTT Group FY2025原币营收同比"
+            "label": "Reliance Jio FY2025原币营收同比"
           },
           "context": "同公司原币FY2025对FY2024",
-          "insight": "四家原币营收均增长，NTT Group为5.14%，Verizon为2.52%；这表明收入扩张同向但增速分层。",
+          "insight": "六家原币营收均增长，Reliance Jio为15.93%，Verizon为2.52%；这表明收入扩张同向但增速分层。",
           "items": [
+            {
+              "name": "Reliance Jio",
+              "value": 15.93,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025较FY2024原币营收变化",
+              "analysis": "在公司本币和原披露口径内，FY2025营收同比+15.93%；未做汇率换算。",
+              "components": [
+                {
+                  "label": "销售及服务价值",
+                  "value": 15.93,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+              "verification_count": 3,
+              "ai_summary": {}
+            },
+            {
+              "name": "Bharti Airtel",
+              "value": 10.43,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025较FY2024原币营收变化",
+              "analysis": "在公司本币和原披露口径内，FY2025营收同比+10.43%；未做汇率换算。",
+              "components": [
+                {
+                  "label": "营业收入",
+                  "value": 10.43,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "ai_summary": {}
+            },
             {
               "name": "NTT Group",
               "value": 5.14,
@@ -2688,24 +2950,64 @@
         },
         {
           "id": "profit_margin",
-          "label": "归母净利率",
+          "label": "已披露利润率",
           "visual": "rows",
           "headline": "盈利缓冲存在明显分层",
           "metric": {
-            "value": 17.47,
+            "value": 42.18,
             "unit": "%",
-            "label": "AT&T FY2025归母净利率"
+            "label": "Reliance Jio FY2025已披露利润率"
           },
-          "context": "FY2025归母净利润除以同年营收",
-          "insight": "AT&T归母净利率为17.47%，NTT Group为7.20%；差距说明盈利缓冲分层，但不代表绝对利润高低。",
+          "context": "FY2025同公司原币口径；Jio为EBITDA率，其余为归母净利率",
+          "insight": "Reliance Jio已披露利润率为42.18%，NTT Group为7.20%；利润定义不同，只用于观察各公司自身盈利缓冲。",
           "items": [
+            {
+              "name": "Reliance Jio",
+              "value": 42.18,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025EBITDA/销售及服务价值",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为42.18%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
+              "components": [
+                {
+                  "label": "EBITDA",
+                  "value": 42.18,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+              "verification_count": 3,
+              "ai_summary": {}
+            },
+            {
+              "name": "Bharti Airtel",
+              "value": 18.59,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "FY2025归母净利润/营收",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为18.59%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
+              "components": [
+                {
+                  "label": "净利润",
+                  "value": 18.59,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "ai_summary": {}
+            },
             {
               "name": "AT&T",
               "value": 17.47,
               "unit": "%",
               "period": "FY2025",
               "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025归母净利润率为17.47%。",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为17.47%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
               "components": [
                 {
                   "label": "净利润",
@@ -2725,7 +3027,7 @@
               "unit": "%",
               "period": "FY2025",
               "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025归母净利润率为12.43%。",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为12.43%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
               "components": [
                 {
                   "label": "净利润",
@@ -2745,7 +3047,7 @@
               "unit": "%",
               "period": "FY2025",
               "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025归母净利润率为8.06%。",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为8.06%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
               "components": [
                 {
                   "label": "净利润",
@@ -2765,7 +3067,7 @@
               "unit": "%",
               "period": "FY2025",
               "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025归母净利润率为7.20%。",
+              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为7.20%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
               "components": [
                 {
                   "label": "净利润",
@@ -2784,6 +3086,16 @@
         }
       ],
       "relations": [
+        {
+          "title": "Bharti Airtel",
+          "detail": "FY2025披露规模 590.51 百万连接",
+          "kind": "三来源认证"
+        },
+        {
+          "title": "Reliance Jio",
+          "detail": "FY2025披露规模 488.20 百万连接",
+          "kind": "三来源认证"
+        },
         {
           "title": "Deutsche Telekom",
           "detail": "FY2025披露规模 273.20 百万连接",
@@ -2806,6 +3118,14 @@
         }
       ],
       "sources": [
+        {
+          "label": "Bharti Airtel",
+          "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf"
+        },
+        {
+          "label": "Reliance Jio",
+          "url": "https://www.ril.com/ar2024-25/digital-services.html"
+        },
         {
           "label": "Deutsche Telekom",
           "url": "https://report.telekom.com/annual-report-2025/"
@@ -2953,7 +3273,7 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm"
+          "source_url": "https://abc.xyz/investor/earnings/"
         },
         {
           "name": "Oracle",
@@ -2970,7 +3290,7 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm"
         },
         {
           "name": "中国移动云",
@@ -3021,7 +3341,7 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm"
+          "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx"
         },
         {
           "name": "腾讯",
@@ -3038,7 +3358,7 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf"
+          "source_url": "https://www.tencent.com/en-us/investors/financial-news.html"
         },
         {
           "name": "Alibaba",
@@ -3055,7 +3375,7 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
+          "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results"
         }
       ],
       "focuses": [
@@ -3086,7 +3406,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+              "source_url": "https://abc.xyz/investor/earnings/",
               "ai_summary": {}
             },
             {
@@ -3104,7 +3424,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
               "ai_summary": {}
             },
             {
@@ -3158,7 +3478,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+              "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
               "ai_summary": {}
             },
             {
@@ -3176,7 +3496,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+              "source_url": "https://www.tencent.com/en-us/investors/financial-news.html",
               "ai_summary": {}
             },
             {
@@ -3194,7 +3514,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+              "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
               "ai_summary": {}
             }
           ],
@@ -3206,13 +3526,145 @@
           "label": "增长变化",
           "visual": "trends",
           "metric": {
-            "value": "-",
+            "value": 5.2,
             "unit": "%",
-            "label": "增速变化"
+            "label": "AWS增速变化"
           },
           "context": "FY2024 相对 FY2023",
-          "insight": "缺少连续两年收入增速，不判断增长变化。",
+          "insight": "FY2024相对FY2023，3家可比厂商中2家收入增速提高，只有腾讯放缓；AWS提高5.2%最多，这说明提速并非少数现象。",
           "items": [
+            {
+              "name": "AWS",
+              "value": 5.2,
+              "unit": "%",
+              "detail": "FY2023→FY2024",
+              "analysis": "营收增速由 13.3% 变为 18.5%，同比增速加快 5.2%。",
+              "trend": [
+                {
+                  "label": "FY2022",
+                  "value": 28.8
+                },
+                {
+                  "label": "FY2023",
+                  "value": 13.3
+                },
+                {
+                  "label": "FY2024",
+                  "value": 18.5
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2022",
+                  "value": 28.8,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2023",
+                  "value": 13.3,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2024",
+                  "value": 18.5,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 3,
+              "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+              "ai_summary": {}
+            },
+            {
+              "name": "Google",
+              "value": 4.7,
+              "unit": "%",
+              "detail": "FY2023→FY2024",
+              "analysis": "营收增速由 25.9% 变为 30.6%，同比增速加快 4.7%。",
+              "trend": [
+                {
+                  "label": "FY2022",
+                  "value": 36.8
+                },
+                {
+                  "label": "FY2023",
+                  "value": 25.9
+                },
+                {
+                  "label": "FY2024",
+                  "value": 30.6
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2022",
+                  "value": 36.8,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2023",
+                  "value": 25.9,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2024",
+                  "value": 30.6,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 3,
+              "source_url": "https://abc.xyz/investor/earnings/",
+              "ai_summary": {}
+            },
+            {
+              "name": "腾讯",
+              "value": -11.1,
+              "unit": "%",
+              "detail": "FY2023→FY2024",
+              "analysis": "营收增速由 15.1% 变为 4.0%，同比增速放缓 11.1%。",
+              "trend": [
+                {
+                  "label": "FY2022",
+                  "value": 2.8
+                },
+                {
+                  "label": "FY2023",
+                  "value": 15.1
+                },
+                {
+                  "label": "FY2024",
+                  "value": 4.0
+                }
+              ],
+              "components": [
+                {
+                  "label": "FY2022",
+                  "value": 2.8,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2023",
+                  "value": 15.1,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                },
+                {
+                  "label": "FY2024",
+                  "value": 4.0,
+                  "unit": "%",
+                  "detail": "收入同比增长"
+                }
+              ],
+              "component_count": 3,
+              "source_url": "https://www.tencent.com/en-us/investors/financial-news.html",
+              "ai_summary": {}
+            },
             {
               "name": "中国移动云",
               "unit": "",
@@ -3234,29 +3686,6 @@
               ],
               "component_count": 1,
               "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "AWS",
-              "unit": "",
-              "detail": "缺少上一财年",
-              "analysis": "缺少上一财年可比增速，不推断趋势。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 18.5
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 18.5,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
               "ai_summary": {}
             },
             {
@@ -3283,29 +3712,6 @@
               "ai_summary": {}
             },
             {
-              "name": "Google",
-              "unit": "",
-              "detail": "缺少上一财年",
-              "analysis": "缺少上一财年可比增速，不推断趋势。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 30.6
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 30.6,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
-              "ai_summary": {}
-            },
-            {
               "name": "Alibaba",
               "unit": "",
               "detail": "缺少上一财年",
@@ -3325,30 +3731,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "腾讯",
-              "unit": "",
-              "detail": "缺少上一财年",
-              "analysis": "缺少上一财年可比增速，不推断趋势。",
-              "trend": [
-                {
-                  "label": "FY2024",
-                  "value": 4.0
-                }
-              ],
-              "components": [
-                {
-                  "label": "FY2024",
-                  "value": 4.0,
-                  "unit": "%",
-                  "detail": "收入同比增长"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+              "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
               "ai_summary": {}
             },
             {
@@ -3371,7 +3754,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
               "ai_summary": {}
             }
           ],
@@ -3459,7 +3842,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+              "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
               "ai_summary": {}
             },
             {
@@ -3477,7 +3860,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+              "source_url": "https://abc.xyz/investor/earnings/",
               "ai_summary": {}
             },
             {
@@ -3495,7 +3878,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+              "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
               "ai_summary": {}
             },
             {
@@ -3618,7 +4001,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+              "source_url": "https://www.tencent.com/en-us/investors/financial-news.html",
               "ai_summary": {}
             },
             {
@@ -3634,7 +4017,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+              "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
               "ai_summary": {}
             },
             {
@@ -3650,7 +4033,7 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+              "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
               "ai_summary": {}
             }
           ],
@@ -3698,11 +4081,11 @@
       "sources": [
         {
           "label": "Google",
-          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm"
+          "url": "https://abc.xyz/investor/earnings/"
         },
         {
           "label": "Oracle",
-          "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm"
+          "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm"
         },
         {
           "label": "中国移动云",
@@ -3714,15 +4097,15 @@
         },
         {
           "label": "AWS",
-          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm"
+          "url": "https://ir.aboutamazon.com/quarterly-results/default.aspx"
         },
         {
           "label": "腾讯",
-          "url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf"
+          "url": "https://www.tencent.com/en-us/investors/financial-news.html"
         },
         {
           "label": "Alibaba",
-          "url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf"
+          "url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results"
         }
       ],
       "ai_analysis": [
@@ -4531,8 +4914,8 @@
     {
       "from": "international",
       "to": "cloud",
-      "title": "云业务与内地电讯企业披露口径不同",
-      "detail": "云厂商页面展示云业务收入增速，内地电讯企业页面最高披露集团营收增速为 273.2%；业务范围与报告期间不同，不作高低排名。",
+      "title": "云厂商与国际运营商披露口径不同",
+      "detail": "云厂商页面展示收入增速，国际运营商页面最高披露连接规模为 590.51 百万；指标、报告期间和业务范围不同，不作高低排名。",
       "kind": "不可直接比较"
     },
     {
@@ -4545,8 +4928,8 @@
     {
       "from": "macro",
       "to": "international",
-      "title": "香港行业数据与内地企业披露分别统计",
-      "detail": "香港页面展示全行业连接、流量与投资；内地电讯企业页面展示集团营收、增长、资本投入及利润率。统计范围不同，不直接比较。",
+      "title": "香港行业数据与国际公司披露分别统计",
+      "detail": "香港页面展示全行业连接、流量与投资；国际运营商页面展示六家公司的连接规模、原币营收变化和已披露利润率。统计范围不同，不直接比较。",
       "kind": "数据边界"
     }
   ],
@@ -4700,9 +5083,9 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "9291fd882f67a364429cdb9de995cd0a90906a15bbbce9d718d042e478fd046b",
+    "evidence_hash": "8f1989ec479256ceecf380e6ea2813357a8c4d698e8d5ca62595bd689c8c1a59",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
-  "source_record_count": 107
+  "source_record_count": 109
 }
