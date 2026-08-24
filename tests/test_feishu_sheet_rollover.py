@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from feishu_sheet_rollover import (
+from cmhk.integrations.feishu_sheet_rollover import (
     capacity_decision,
     read_registry,
     record_active_part,

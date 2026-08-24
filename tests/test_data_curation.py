@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from company_metrics import (
+from cmhk.data.company_metrics import (
     _apply_ai_cache,
     _apply_brand_market_reaction_not_applicable,
     build_company_metrics_payload,
@@ -185,7 +185,7 @@ class DataCurationTests(unittest.TestCase):
                 },
             },
         }
-        with patch("company_metrics._read_json", return_value=cache):
+        with patch("cmhk.data.company_metrics._read_json", return_value=cache):
             cleaned = _apply_ai_cache(rows)
         self.assertEqual(cleaned[0]["aiStatus"], "ok")
         self.assertEqual(cleaned[0]["value"], "1000M家宽月费108港元")

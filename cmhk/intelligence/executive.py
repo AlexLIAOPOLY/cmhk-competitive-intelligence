@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"

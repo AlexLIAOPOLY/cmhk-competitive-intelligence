@@ -453,7 +453,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 return_value=([], {}),
                 create=True,
             ) if hasattr(briefing, "news_review_sheet") else mock.patch(
-                "news_review_sheet.curate_news_items",
+                "cmhk.intelligence.news_review_sheet.curate_news_items",
                 return_value=([], {}),
             ),
             mock.patch(
@@ -491,7 +491,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 },
             ),
             mock.patch(
-                "news_review_sheet.run_cycle",
+                "cmhk.intelligence.news_review_sheet.run_cycle",
                 side_effect=record_review,
             ),
             mock.patch.object(briefing, "polish_candidates_before_review", return_value=[]),
@@ -1140,7 +1140,7 @@ class StrategicBriefingTests(unittest.TestCase):
     def test_completed_scan_dispatches_reviewed_news_to_subscription_service(self):
         reviewed = [{"title": "已审核新闻", "summary": "摘要"}]
         with (
-            mock.patch("subscription_service.SubscriptionService") as service_class,
+            mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class,
             mock.patch.object(briefing, "latest_reviewed_news", return_value=reviewed),
         ):
             service_class.return_value.dispatch_news_after_crawl.return_value = {

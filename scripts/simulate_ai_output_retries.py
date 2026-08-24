@@ -47,7 +47,7 @@ WORKFLOWS: tuple[tuple[str, str], ...] = (
 STRUCTURED_SOURCE_GATES: dict[str, tuple[str, ...]] = {
     "strategic_briefing.py": ("load_json_response", "response_format"),
     "normalize_company_metrics_ai.py": ("prepare_structured_chat_body", "load_json_response"),
-    "verification.py": ("response_format", "load_json_response"),
+    "cmhk.crawl.verification.py": ("response_format", "load_json_response"),
     "executive_intelligence_pipeline.py": ("prepare_structured_chat_body", "load_json_response"),
     "generate_weekly_report.py": ("prepare_structured_chat_body", "load_json_response"),
     "generate_carrier_performance_report.py": ("prepare_structured_chat_body", "load_json_response"),

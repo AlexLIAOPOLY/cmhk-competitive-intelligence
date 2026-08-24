@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from docx import Document
 
 import generate_weekly_report as report
-import news_review_sheet
+import cmhk.intelligence.news_review_sheet as news_review_sheet
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")

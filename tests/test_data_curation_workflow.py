@@ -14,7 +14,7 @@ from data_curation.workflow import (
     supervise_gap_actions,
 )
 from crawl import apply_crawl_settings, redact_sensitive
-from extractors import find_field_snippets, row_fields
+from cmhk.crawl.extractors import find_field_snippets, row_fields
 from normalize_company_metrics_ai import (
     _evidence_relevance,
     _evidence_mentions_company,

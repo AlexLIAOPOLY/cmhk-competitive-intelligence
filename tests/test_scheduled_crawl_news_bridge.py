@@ -9,7 +9,7 @@ from unittest import mock
 from zoneinfo import ZoneInfo
 
 import crawl
-import scheduled_crawl_news_bridge as bridge
+import cmhk.intelligence.scheduled_news_bridge as bridge
 import strategic_briefing
 
 

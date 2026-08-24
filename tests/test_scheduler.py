@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest import mock
 
 import daily_crawl_and_write
-import crawl_run_registry
+import cmhk.crawl.run_registry as crawl_run_registry
 import scheduler
 
 
@@ -471,6 +471,19 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertEqual(register.call_args.kwargs["crawl_return_code"], 0)
         clear_pending.assert_called_once()
 
+    def test_intelligence_refresh_is_never_spawned_during_packaged_unittest_discovery(self) -> None:
+        with mock.patch.object(scheduler, "ROOT", Path(scheduler.__file__).resolve().parent):
+            result = scheduler._launch_executive_intelligence_refresh(
+                "crawl-test",
+                Path("/tmp/test-stream.jsonl"),
+                {"agent_run_id": "agent-test"},
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertFalse(result["launched"])
+        self.assertTrue(result["skipped"])
+        self.assertEqual(result["reason"], "non_production_root")
+
     def test_resume_after_agent_audit_reapplies_financial_and_frontend_gates(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "resume-finance.jsonl"
@@ -489,7 +502,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             refresh = {
                 "generated_at_hkt": "2026-08-14T03:10:00+08:00",
                 "schedule_policy": "next-day",
-                "database_path": "local_financial_results.json",
+                "database_path": "cmhk.data.local_financial_results.json",
                 "database_updated": True,
                 "database_changed": False,
                 "quality": {"ok": True, "failures": []},
@@ -507,7 +520,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             }
             state: dict[str, object] = {"attempts": {"2": "2026-08-14T03:00:00+08:00"}}
             with (
-                mock.patch("local_financial_results.rebuild_local_financial_database", return_value=refresh) as rebuild,
+                mock.patch("cmhk.data.local_financial_results.rebuild_local_financial_database", return_value=refresh) as rebuild,
                 mock.patch.object(scheduler, "_publish_financial_frontend", return_value={
                     "ok": True,
                     "status": "verified",
@@ -729,7 +742,7 @@ class FinancialResultScheduleTests(unittest.TestCase):
 
 class SubscriptionDispatchScheduleTests(unittest.TestCase):
     def test_frequency_scheduler_flushes_due_subscription_queue(self) -> None:
-        with mock.patch("subscription_service.SubscriptionService") as service_class:
+        with mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class:
             service_class.return_value.flush_due.return_value = {
                 "processed_count": 2,
                 "verified_count": 2,
@@ -742,14 +755,14 @@ class SubscriptionDispatchScheduleTests(unittest.TestCase):
         service_class.return_value.flush_due.assert_called_once_with()
 
     def test_subscription_dispatch_failure_does_not_raise_into_crawler_cycle(self) -> None:
-        with mock.patch("subscription_service.SubscriptionService", side_effect=RuntimeError("offline")):
+        with mock.patch("cmhk.services.subscriptions.SubscriptionService", side_effect=RuntimeError("offline")):
             result = scheduler.dispatch_subscription_queue()
         self.assertFalse(result["ok"])
         self.assertIn("offline", result["error"])
 
     def test_frequency_scheduler_checks_saved_weekly_report_schedule(self) -> None:
         check_time = scheduler.datetime(2026, 8, 30, 9, 30, tzinfo=scheduler.HKT)
-        with mock.patch("subscription_service.SubscriptionService") as service_class:
+        with mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class:
             service_class.return_value.run_due_weekly_report.return_value = {
                 "ok": True,
                 "due": True,

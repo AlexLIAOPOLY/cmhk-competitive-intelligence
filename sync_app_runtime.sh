@@ -21,6 +21,9 @@ rsync -a \
   --exclude='crawl_runs/' \
   --exclude='task_runs/' \
   --exclude='agent_runs/' \
+  --exclude='artifacts/generated/' \
+  --exclude='runtime/local/' \
+  --exclude='var/' \
   --exclude='run_log.json' \
   --exclude='run_log.tsv' \
   --exclude='final_audit.md' \

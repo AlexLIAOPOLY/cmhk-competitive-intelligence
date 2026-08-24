@@ -5,7 +5,7 @@ import json
 import os
 import re
 import shutil
-from report_pdf_preview import convert_docx_to_pdf_preview
+from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
 import subprocess
 import sys
 import tempfile
@@ -30,21 +30,21 @@ from opencc import OpenCC
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
-from company_metrics import build_company_metrics_payload
+from cmhk.data.company_metrics import build_company_metrics_payload
 from network_utils import urlopen_with_local_proxy_fallback
-from report_web_research import public_web_search, run_web_research
+from cmhk.reporting.web_research import public_web_search, run_web_research
 
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATE_PATH = ROOT / "carrier_performance_template.docx"
-DATA_PATH = ROOT / "carrier_performance_data.json"
-SOURCE_PATH = ROOT / "carrier_performance_sources.json"
-CACHE_PATH = ROOT / "carrier_performance_cache.json"
-MARKET_CACHE_PATH = ROOT / "carrier_market_cache.json"
-FEISHU_MIRROR_PATH = ROOT / "carrier_performance_feishu.json"
-FEISHU_SYNC_SCRIPT = ROOT / "sync_carrier_performance_feishu.py"
-VERIFIED_FIELDS_PATH = ROOT / "carrier_performance_verified_fields.json"
-PERFORMANCE_USAGE_AUDIT_PATH = ROOT / "carrier_performance_fact_usage.json"
+DATA_PATH = ROOT / "data/carrier_performance/carrier_performance_data.json"
+SOURCE_PATH = ROOT / "data/carrier_performance/carrier_performance_sources.json"
+CACHE_PATH = ROOT / "data/carrier_performance/carrier_performance_cache.json"
+MARKET_CACHE_PATH = ROOT / "data/carrier_performance/carrier_market_cache.json"
+FEISHU_MIRROR_PATH = ROOT / "data/carrier_performance/carrier_performance_feishu.json"
+FEISHU_SYNC_SCRIPT = ROOT / "tools" / "integrations" / "sync_carrier_performance_feishu.py"
+VERIFIED_FIELDS_PATH = ROOT / "data/carrier_performance/carrier_performance_verified_fields.json"
+PERFORMANCE_USAGE_AUDIT_PATH = ROOT / "data/carrier_performance/carrier_performance_fact_usage.json"
 PERFORMANCE_AI_AUDIT_PATH = ROOT / "carrier_performance_ai_audit.json"
 RESULTS_DIR = ROOT / "results"
 PERFORMANCE_AI_PROMPT_VERSION = "carrier-performance-editor-v2-web-verified"
@@ -561,7 +561,7 @@ def load_source_config() -> dict:
         raise FileNotFoundError(f"业绩摘要来源配置不存在：{SOURCE_PATH}")
     data = json.loads(SOURCE_PATH.read_text(encoding="utf-8"))
     if not isinstance(data.get("companies"), dict):
-        raise ValueError("carrier_performance_sources.json 缺少 companies 配置")
+        raise ValueError("data/carrier_performance/carrier_performance_sources.json 缺少 companies 配置")
     if FEISHU_MIRROR_PATH.exists():
         mirror = json.loads(FEISHU_MIRROR_PATH.read_text(encoding="utf-8"))
         for row in mirror.get("rows") or []:

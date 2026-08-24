@@ -11,9 +11,9 @@ from urllib.parse import unquote, urlparse
 from zoneinfo import ZoneInfo
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = ROOT / "results"
-DATABASE_PATH = ROOT / "agent_knowledge" / "hk_competitor_product_tariffs" / "local_financial_results.json"
+DATABASE_PATH = ROOT / "agent_knowledge" / "hk_competitor_product_tariffs" / "cmhk.data.local_financial_results.json"
 HKT = ZoneInfo("Asia/Hong_Kong")
 
 FINANCIAL_RESULT_ROWS = frozenset({2, 5, 8, 11, 15, 17})

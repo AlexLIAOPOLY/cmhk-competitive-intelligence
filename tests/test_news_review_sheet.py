@@ -3,7 +3,7 @@ import subprocess
 import unittest
 from unittest import mock
 
-import news_review_sheet as review_sheet
+import cmhk.intelligence.news_review_sheet as review_sheet
 import strategic_briefing
 
 

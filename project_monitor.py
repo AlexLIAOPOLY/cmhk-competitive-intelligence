@@ -33,7 +33,7 @@ from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
-from feishu_sheet_rollover import (
+from cmhk.integrations.feishu_sheet_rollover import (
     active_part,
     capacity_decision,
     record_active_part,

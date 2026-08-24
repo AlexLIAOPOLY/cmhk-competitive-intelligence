@@ -2,9 +2,9 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).parent
-SOURCES_FILE = ROOT / "carrier_performance_sources.json"
-OUTPUT_FILE = ROOT / "carrier_performance_candidates.json"
+ROOT = Path(__file__).resolve().parents[2]
+SOURCES_FILE = ROOT / "data/carrier_performance/carrier_performance_sources.json"
+OUTPUT_FILE = ROOT / "data/carrier_performance/carrier_performance_candidates.json"
 RESULTS_DIR = ROOT / "results"
 
 ROW_TO_COMPANY = {

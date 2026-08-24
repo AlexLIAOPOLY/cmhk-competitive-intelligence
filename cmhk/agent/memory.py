@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 MEMORY_DIR = ROOT / "agent_knowledge" / "agent_operational_memory"
 MEMORY_PATH = MEMORY_DIR / "memories.jsonl"
 MANIFEST_PATH = MEMORY_DIR / "manifest.json"

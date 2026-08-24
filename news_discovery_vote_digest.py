@@ -150,7 +150,7 @@ def _build_sheet_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]
     )
     updated = dict(kwargs)
     updated["items"] = curated
-    from news_review_sheet import build_notice_cards
+    from cmhk.intelligence.news_review_sheet import build_notice_cards
 
     return build_notice_cards(*args, curation_stats=stats, **updated)
 

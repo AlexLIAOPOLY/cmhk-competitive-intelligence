@@ -12,9 +12,9 @@ OUT_DIR = ROOT / "agent_evals"
 sys.path.insert(0, str(ROOT))
 
 from agent import search_local_reports, trigger_full_crawl  # noqa: E402
-from agent_memory import load_memories  # noqa: E402
-from agent_production import eval_summary_line  # noqa: E402
-from rag_llm import build_context_package, retrieve_context  # noqa: E402
+from cmhk.agent.memory import load_memories  # noqa: E402
+from cmhk.agent.production import eval_summary_line  # noqa: E402
+from cmhk.agent.rag import build_context_package, retrieve_context  # noqa: E402
 
 
 def case(name: str, passed: bool, details: dict[str, Any] | None = None) -> dict[str, Any]:

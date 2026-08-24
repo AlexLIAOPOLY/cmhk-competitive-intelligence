@@ -15,9 +15,9 @@ from urllib.parse import urlparse
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
-from rag_llm import estimate_tokens
+from cmhk.agent.rag import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
-from company_metrics import (
+from cmhk.data.company_metrics import (
     AI_CACHE_PATH,
     AI_CACHE_SCHEMA_VERSION,
     DIRTY_SOURCE_LABEL_TERMS,
@@ -31,8 +31,8 @@ from company_metrics import (
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 STAGING_CACHE_PATH = AI_CACHE_PATH.with_name(f"{AI_CACHE_PATH.stem}.staging.json")
-VERIFIED_FIELDS_PATH = ROOT / "carrier_performance_verified_fields.json"
-VERIFIED_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
+VERIFIED_FIELDS_PATH = ROOT / "data/carrier_performance/carrier_performance_verified_fields.json"
+VERIFIED_SOURCES_PATH = ROOT / "data/carrier_performance/carrier_performance_sources.json"
 AI_BATCH_TOKEN_BUDGET = int(os.environ.get("CMHK_CURATION_AI_BATCH_TOKEN_BUDGET", "26000"))
 
 DIRTY_PATTERNS = [

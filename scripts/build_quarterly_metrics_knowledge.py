@@ -12481,7 +12481,7 @@ def merge_stockanalysis_quarterly(
 
 
 def load_official_sources() -> dict[str, list[dict[str, str]]]:
-    path = ROOT / "carrier_performance_sources.json"
+    path = ROOT / "data/carrier_performance/carrier_performance_sources.json"
     if not path.exists():
         return {}
     try:

@@ -3,7 +3,8 @@
 check: pycheck test git-health
 
 pycheck:
-	python3 -m py_compile agent.py web_app.py rag_llm.py agent_production.py agent_memory.py
+	python3 -m compileall -q cmhk
+	python3 -m py_compile agent.py web_app.py crawl.py scheduler.py project_monitor.py strategic_briefing.py
 
 test:
 	python3 -m unittest \

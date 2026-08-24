@@ -26,8 +26,8 @@ from langgraph.types import RetryPolicy
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_response_compat import deepseek_nonthinking_parameters
-from rag_llm import estimate_tokens
-from company_metrics import (
+from cmhk.agent.rag import estimate_tokens
+from cmhk.data.company_metrics import (
     AI_CACHE_PATH,
     AI_CACHE_SCHEMA_VERSION,
     DIRTY_SOURCE_LABEL_TERMS,

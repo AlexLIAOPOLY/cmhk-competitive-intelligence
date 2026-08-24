@@ -4,7 +4,7 @@ from contextlib import nullcontext
 import unittest
 from unittest import mock
 
-import news_review_sheet
+import cmhk.intelligence.news_review_sheet as news_review_sheet
 import web_app
 
 

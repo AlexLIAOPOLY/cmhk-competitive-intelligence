@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-import local_financial_results as finance
+import cmhk.data.local_financial_results as finance
 
 
 HKT_2026_TEXT = """
@@ -39,7 +39,7 @@ class LocalFinancialResultsTests(unittest.TestCase):
             root = Path(temp_dir)
             results = root / "results"
             results.mkdir()
-            database = root / "local_financial_results.json"
+            database = root / "cmhk.data.local_financial_results.json"
             (results / "row_2.json").write_text(
                 json.dumps(
                     {
@@ -88,7 +88,7 @@ class LocalFinancialResultsTests(unittest.TestCase):
             root = Path(temp_dir)
             results = root / "results"
             results.mkdir()
-            database = root / "local_financial_results.json"
+            database = root / "cmhk.data.local_financial_results.json"
             database.write_text('{"reports": [{"row": 2, "period": "FY 2025"}]}', encoding="utf-8")
             (results / "row_2.json").write_text('{"row": 2, "raw_records": []}', encoding="utf-8")
             before = database.read_text(encoding="utf-8")
@@ -107,7 +107,7 @@ class LocalFinancialResultsTests(unittest.TestCase):
             root = Path(temp_dir)
             results = root / "results"
             results.mkdir()
-            database = root / "local_financial_results.json"
+            database = root / "cmhk.data.local_financial_results.json"
             database.write_text('{"reports": [{"row": 2, "period": "H1 2026"}]}', encoding="utf-8")
             old_url = "https://www.hkt.com/api-service/assets/2026_interim_results.pdf"
             new_url = "https://www.hkt.com/api-service/assets/2026_annual_results.pdf"

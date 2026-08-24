@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import news_review_sheet as review
+import cmhk.intelligence.news_review_sheet as review
 
 
 DEFAULT_BACKUP = (

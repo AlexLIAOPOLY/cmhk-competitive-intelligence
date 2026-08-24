@@ -12,8 +12,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import crawl
-from crawl_log_formatter import write_and_format_crawl_log_sheet
-from feishu_sheet_rollover import (
+from cmhk.crawl.log_formatter import write_and_format_crawl_log_sheet
+from cmhk.integrations.feishu_sheet_rollover import (
     active_part,
     capacity_decision,
     record_active_part,
@@ -27,7 +27,7 @@ SPREADSHEET_TOKEN = crawl.SPREADSHEET_TOKEN
 MAIN_SHEET_ID = crawl.MAIN_SHEET_ID
 LARK_CLI = crawl.LARK_CLI
 RESULT_HEADER_PREFIXES = ("数据爬取更新", "本轮爬虫日志摘要", "原始数据")
-PERFORMANCE_SYNC_SCRIPT = ROOT / "sync_carrier_performance_feishu.py"
+PERFORMANCE_SYNC_SCRIPT = ROOT / "tools" / "integrations" / "sync_carrier_performance_feishu.py"
 AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
 LOG_INDEX_SHEET_TITLE = "爬虫历史记录链接"
@@ -116,7 +116,7 @@ def refresh_sheet_snapshot() -> None:
         timeout=120,
     )
     data = json_from_output(output)
-    (ROOT / "feishu_latest_AJ.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    (ROOT / "data/feishu/feishu_latest_AJ.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def create_log_spreadsheet() -> dict[str, str]:

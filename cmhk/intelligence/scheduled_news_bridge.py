@@ -19,7 +19,7 @@ from urllib.parse import urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 HKT = ZoneInfo("Asia/Hong_Kong")
 BRIDGE_DIR = ROOT / "strategy_briefing" / "scheduled_crawl_bridge"
 BASELINE_PATH = BRIDGE_DIR / "baseline.json"

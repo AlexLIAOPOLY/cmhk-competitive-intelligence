@@ -7,13 +7,13 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = ROOT / "results"
-FEISHU_CACHE_PATH = ROOT / "carrier_performance_feishu.json"
-PERFORMANCE_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
-AI_CACHE_PATH = ROOT / "company_metrics_ai_cache.json"
+FEISHU_CACHE_PATH = ROOT / "data/carrier_performance/carrier_performance_feishu.json"
+PERFORMANCE_SOURCES_PATH = ROOT / "data/carrier_performance/carrier_performance_sources.json"
+AI_CACHE_PATH = ROOT / "data/company_metrics/company_metrics_ai_cache.json"
 VERIFIED_FACTS_PATH = ROOT / "curation_data" / "verified_facts.jsonl"
-LOCAL_FINANCIAL_RESULTS_PATH = ROOT / "agent_knowledge" / "hk_competitor_product_tariffs" / "local_financial_results.json"
+LOCAL_FINANCIAL_RESULTS_PATH = ROOT / "agent_knowledge" / "hk_competitor_product_tariffs" / "cmhk.data.local_financial_results.json"
 AI_CACHE_SCHEMA_VERSION = 3
 
 CORE_METRICS = ["派息", "资本开支", "战略升级", "券商观点", "市场反应"]
@@ -802,7 +802,7 @@ def _crawl_rows() -> list[dict]:
 
 
 def _official_financial_result_rows() -> list[dict]:
-    from local_financial_results import financial_database_rows
+    from cmhk.data.local_financial_results import financial_database_rows
 
     output: list[dict] = []
     metric_aliases = {

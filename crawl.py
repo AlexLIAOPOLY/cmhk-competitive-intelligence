@@ -19,20 +19,20 @@ from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from verification import verify_extraction
+from cmhk.crawl.verification import verify_extraction
 from urllib.robotparser import RobotFileParser
 
 import httpx
 from bs4 import BeautifulSoup
 
-from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
+from cmhk.crawl.extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
 
 ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "raw"
 RESULTS_DIR = ROOT / "results"
-SPREADSHEET_JSON = ROOT / "feishu_latest_AJ.json"
+SPREADSHEET_JSON = ROOT / "data/feishu/feishu_latest_AJ.json"
 SOURCE_REGISTRY_JSON = ROOT / "source_registry.json"
-VERIFIED_FIELDS_JSON = ROOT / "carrier_performance_verified_fields.json"
+VERIFIED_FIELDS_JSON = ROOT / "data/carrier_performance/carrier_performance_verified_fields.json"
 PER_URL_TIMEOUT_SECONDS = 35.0
 CURL_TIMEOUT_SECONDS = 45
 CURL_PROCESS_TIMEOUT_SECONDS = 55

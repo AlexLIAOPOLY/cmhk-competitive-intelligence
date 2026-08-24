@@ -24,7 +24,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph
-from report_pdf_preview import convert_docx_to_pdf_preview
+from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
 from bs4 import BeautifulSoup
 import httpx
 from opencc import OpenCC
@@ -32,9 +32,9 @@ from opencc import OpenCC
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
-from company_metrics import build_company_metrics_payload
+from cmhk.data.company_metrics import build_company_metrics_payload
 from network_utils import urlopen_with_local_proxy_fallback
-from report_web_research import public_web_search, run_web_research
+from cmhk.reporting.web_research import public_web_search, run_web_research
 
 
 ROOT = Path(__file__).resolve().parent
@@ -49,13 +49,13 @@ def _env_timeout_seconds(name: str, default: int, minimum: int) -> int:
 
 WEEKLY_MD = ROOT / "weekly_report.md"
 WEEKLY_HTML = ROOT / "weekly_report.html"
-WEEKLY_USAGE_AUDIT = ROOT / "weekly_report_fact_usage.json"
-WEEKLY_LLM_CACHE = ROOT / "weekly_report_llm_cache.json"
+WEEKLY_USAGE_AUDIT = ROOT / "data/weekly_report/weekly_report_fact_usage.json"
+WEEKLY_LLM_CACHE = ROOT / "data/weekly_report/weekly_report_llm_cache.json"
 WEEKLY_REVIEW_CACHE = ROOT / "weekly_report_review_cache.json"
 WEEKLY_AI_QUALITY_AUDIT = ROOT / "weekly_report_ai_quality_audit.json"
-WEEKLY_EVENT_CACHE = ROOT / "weekly_report_recent_events_cache.json"
-WEEKLY_HUMAN_EXAMPLES = ROOT / "weekly_report_human_examples.json"
-WEEKLY_SUPPLEMENTAL_EVIDENCE = ROOT / "weekly_report_supplemental_evidence.json"
+WEEKLY_EVENT_CACHE = ROOT / "data/weekly_report/weekly_report_recent_events_cache.json"
+WEEKLY_HUMAN_EXAMPLES = ROOT / "data/weekly_report/weekly_report_human_examples.json"
+WEEKLY_SUPPLEMENTAL_EVIDENCE = ROOT / "data/weekly_report/weekly_report_supplemental_evidence.json"
 BIWEEKLY_WINDOW_DAYS = 14
 WEEKLY_WRITER_BATCH_SIZE = 1
 WEEKLY_WRITER_RETRY_WORKERS = 4
@@ -4735,7 +4735,7 @@ def finalize_weekly_limited_model(model: dict) -> dict:
 
 
 def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
-    from news_review_sheet import load_weekly_report_candidates
+    from cmhk.intelligence.news_review_sheet import load_weekly_report_candidates
 
     hkt = ZoneInfo("Asia/Hong_Kong")
     now = period.as_of if period is not None else datetime.now(hkt)

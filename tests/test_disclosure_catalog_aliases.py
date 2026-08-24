@@ -1,6 +1,6 @@
 import unittest
 
-from rag_llm import _quarterly_exact_metric_chunks
+from cmhk.agent.rag import _quarterly_exact_metric_chunks
 from scripts import audit_cross_database_disclosures as audit
 
 

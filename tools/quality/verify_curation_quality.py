@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 BLOCKED_TEXT_RE = re.compile(
     r"captcha|waf|forbidden|access denied|verify you are human|人机验证|访问验证|安全验证|403|429",
     re.IGNORECASE,

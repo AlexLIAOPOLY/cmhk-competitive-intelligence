@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from verification import get_verification_llm
+from cmhk.crawl.verification import get_verification_llm
 from langchain_core.messages import SystemMessage, HumanMessage
 import concurrent.futures
 

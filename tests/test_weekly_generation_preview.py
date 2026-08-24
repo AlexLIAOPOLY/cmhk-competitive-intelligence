@@ -22,7 +22,7 @@ class WeeklyGenerationPreviewTests(TestCase):
         }
 
         with mock.patch(
-            "news_review_sheet.load_weekly_report_candidates",
+            "cmhk.intelligence.news_review_sheet.load_weekly_report_candidates",
             return_value=(rows, audit),
         ) as load_candidates:
             preview = web_app.build_weekly_report_generation_preview(now)

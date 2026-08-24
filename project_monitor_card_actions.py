@@ -33,8 +33,8 @@ from project_monitor import (
     _redact,
     _to_simplified,
 )
-from cmhk_auth import AuthService
-from subscription_service import SubscriptionService
+from cmhk.auth.service import AuthService
+from cmhk.services.subscriptions import SubscriptionService
 
 
 ROOT = Path(__file__).resolve().parent

@@ -882,7 +882,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             }],
         }
         with patch(
-            "executive_intelligence.build_executive_intelligence_snapshot",
+            "cmhk.intelligence.executive.build_executive_intelligence_snapshot",
             return_value=rendered,
         ):
             evidence = pipeline._analysis_input_snapshot()
@@ -955,11 +955,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
     def test_refresh_task_persists_parent_crawl_run_id(self):
         with (
-            patch("crawl_run_registry.start_crawl_run", return_value={
+            patch("cmhk.crawl.run_registry.start_crawl_run", return_value={
                 "crawl_run_id": "refresh-test",
                 "stream_log_path": "/tmp/refresh-test.jsonl",
             }) as start,
-            patch("crawl_run_registry.append_crawl_run_event"),
+            patch("cmhk.crawl.run_registry.append_crawl_run_event"),
         ):
             task = pipeline._start_refresh_task(
                 agent_run_id="agent-test",
@@ -978,7 +978,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "curation": {"agent_run_id": "agent-0300"},
         }
         with (
-            patch("crawl_run_registry.load_index", return_value=[scheduled]),
+            patch("cmhk.crawl.run_registry.load_index", return_value=[scheduled]),
             patch("executive_intelligence_pipeline._read_json", side_effect=[{}, {}]),
             patch("executive_intelligence_pipeline.launch_pipeline_async", return_value={
                 "ok": True, "task_run_id": "refresh-recovery"

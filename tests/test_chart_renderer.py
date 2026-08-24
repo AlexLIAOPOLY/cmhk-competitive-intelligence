@@ -2,7 +2,7 @@ import unittest
 
 import matplotlib.pyplot as plt
 
-from chart_renderer import CHART_BG, _format_value_label, _label_bars, _wrap_category_label, render_chart
+from cmhk.reporting.charts import CHART_BG, _format_value_label, _label_bars, _wrap_category_label, render_chart
 
 
 class ChartLabelLayoutTests(unittest.TestCase):

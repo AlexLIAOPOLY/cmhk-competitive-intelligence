@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-import report_web_research as research
+import cmhk.reporting.web_research as research
 
 
 run_web_research = research.run_web_research

@@ -12,10 +12,10 @@ from urllib.parse import urlsplit, urlunsplit
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
-from source_document_identity import canonical_source_document_identity, is_derived_value
+from cmhk.data.source_identity import canonical_source_document_identity, is_derived_value
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 AGENT_KNOWLEDGE_ROOT = ROOT / "agent_knowledge"
 AGENT_KNOWLEDGE_ALLOWED_SUFFIXES = {".md", ".txt", ".json", ".csv", ".tsv"}
 AGENT_KNOWLEDGE_SKIP_NAMES = {".DS_Store"}

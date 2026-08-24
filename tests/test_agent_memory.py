@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import agent_memory
+import cmhk.agent.memory as agent_memory
 
 
 class AgentMemoryTests(unittest.TestCase):

@@ -275,7 +275,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
                 return_value={"scheduled_crawl_consumed_signal_ids": []},
             ),
             mock.patch(
-                "scheduled_crawl_news_bridge.load_pending_signals",
+                "cmhk.intelligence.scheduled_news_bridge.load_pending_signals",
                 return_value={
                     "signals": [signal],
                     "expired_signal_ids": [],
@@ -310,7 +310,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
         with (
             mock.patch.object(strategic_briefing, "_load_state", return_value={}),
             mock.patch(
-                "scheduled_crawl_news_bridge.load_pending_signals",
+                "cmhk.intelligence.scheduled_news_bridge.load_pending_signals",
                 return_value={"signals": [signal], "expired_signal_ids": []},
             ),
         ):

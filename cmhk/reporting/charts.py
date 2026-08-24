@@ -16,7 +16,7 @@ from matplotlib import font_manager
 from matplotlib.ticker import FuncFormatter
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 CHART_OUTPUT_DIR = ROOT / "agent_knowledge" / "generated_charts"
 CHART_RENDERER_VERSION = "2026-08-10-dark-gray-readable-category-labels-v5"
 

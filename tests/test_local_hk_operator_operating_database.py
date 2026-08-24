@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 import agent
-import rag_llm
+import cmhk.agent.rag as rag_llm
 
 
 ROOT = Path(__file__).resolve().parents[1]

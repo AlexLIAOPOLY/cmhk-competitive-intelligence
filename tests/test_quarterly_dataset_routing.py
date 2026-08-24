@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 
 import agent
-import rag_llm
+import cmhk.agent.rag as rag_llm
 
 
 class QuarterlyDatasetRoutingTests(unittest.TestCase):

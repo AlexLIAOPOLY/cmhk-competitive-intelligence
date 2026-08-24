@@ -6,7 +6,7 @@ from contextlib import closing
 from pathlib import Path
 from unittest import mock
 
-from subscription_service import (
+from cmhk.services.subscriptions import (
     SubscriptionService,
     encode_strategic_news_digest,
     strategic_news_card,
@@ -523,7 +523,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.assertEqual(card["elements"][index + 1]["tag"], "hr")
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
-        from report_pdf_preview import pdf_preview_path
+        from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "测试周报.docx"
         report.write_bytes(b"docx placeholder")
@@ -552,7 +552,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.service.push(service="weekly", mode="text", path=report.name, test_open_id="ou_test123")
 
     def test_report_audio_is_a_separate_message_after_pdf(self):
-        from report_pdf_preview import pdf_preview_path
+        from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "语音周报.docx"
         report.write_bytes(b"docx placeholder")
@@ -582,7 +582,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
 
     def test_bulk_report_audio_respects_each_subscriber_preference(self):
-        from report_pdf_preview import pdf_preview_path
+        from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "偏好周报.docx"
         report.write_bytes(b"docx placeholder")

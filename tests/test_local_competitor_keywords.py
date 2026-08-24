@@ -4,10 +4,10 @@ from datetime import datetime
 from unittest import mock
 from zoneinfo import ZoneInfo
 
-import local_competitor_keywords as competitors
+import cmhk.intelligence.local_competitor_keywords as competitors
 import news_discovery_digest as digest
 import news_discovery_vote_digest as vote_digest
-import news_review_sheet as review_sheet
+import cmhk.intelligence.news_review_sheet as review_sheet
 import strategic_briefing
 
 

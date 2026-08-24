@@ -30,8 +30,8 @@ from langgraph.prebuilt import create_react_agent
 
 from ai_config import load_ai_config
 from ai_response_compat import deepseek_nonthinking_parameters, load_json_response
-from agent_memory import add_memory, auto_capture_user_memory, load_memories, memory_context, search_memories
-from agent_production import (
+from cmhk.agent.memory import add_memory, auto_capture_user_memory, load_memories, memory_context, search_memories
+from cmhk.agent.production import (
     AgentRunRecorder,
     action_id,
     confirmation_event,
@@ -40,10 +40,10 @@ from agent_production import (
     retrieval_quality,
     rolling_backtest,
 )
-from crawl_run_registry import latest_crawl_run_summary
+from cmhk.crawl.run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from rag_llm import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
-from chart_renderer import render_chart
+from cmhk.agent.rag import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
+from cmhk.reporting.charts import render_chart
 
 
 _NON_AI_FOLLOW_UP_SUGGESTIONS = {

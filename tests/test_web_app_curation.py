@@ -13,7 +13,7 @@ from unittest import mock
 from pathlib import Path
 
 import agent
-import rag_llm
+import cmhk.agent.rag as rag_llm
 import web_app
 
 

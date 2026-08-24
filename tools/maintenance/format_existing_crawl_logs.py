@@ -6,12 +6,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import crawl
 import daily_crawl_and_write as daily
-from crawl_log_formatter import write_and_format_crawl_log_sheet
+from cmhk.crawl.log_formatter import write_and_format_crawl_log_sheet
 
 
-ROOT = Path(__file__).resolve().parent
 TOKEN_PATTERN = re.compile(r"/sheets/([A-Za-z0-9]+)")
 
 

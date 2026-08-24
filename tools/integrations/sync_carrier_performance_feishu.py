@@ -10,11 +10,11 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 
-ROOT = Path(__file__).resolve().parent
-SOURCE_PATH = ROOT / "carrier_performance_sources.json"
-MIRROR_PATH = ROOT / "carrier_performance_feishu.json"
-MARKET_CACHE_PATH = ROOT / "carrier_market_cache.json"
-VERIFIED_FIELDS_PATH = ROOT / "carrier_performance_verified_fields.json"
+ROOT = Path(__file__).resolve().parents[2]
+SOURCE_PATH = ROOT / "data/carrier_performance/carrier_performance_sources.json"
+MIRROR_PATH = ROOT / "data/carrier_performance/carrier_performance_feishu.json"
+MARKET_CACHE_PATH = ROOT / "data/carrier_performance/carrier_market_cache.json"
+VERIFIED_FIELDS_PATH = ROOT / "data/carrier_performance/carrier_performance_verified_fields.json"
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 SHEET_TITLE = "运营商业绩摘要补充"
 LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"

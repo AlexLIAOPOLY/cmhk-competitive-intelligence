@@ -161,7 +161,7 @@ def merge_metric_pages(slug: str) -> tuple[dict[str, dict[str, str]], list[dict[
 
 
 def load_official_sources() -> dict[str, list[dict[str, str]]]:
-    path = ROOT / "carrier_performance_sources.json"
+    path = ROOT / "data/carrier_performance/carrier_performance_sources.json"
     if not path.exists():
         return {}
     data = json.loads(path.read_text(encoding="utf-8"))

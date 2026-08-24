@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from executive_intelligence import _international_domain, build_executive_intelligence_snapshot
+from cmhk.intelligence.executive import _international_domain, build_executive_intelligence_snapshot
 
 
 class ExecutiveIntelligenceTests(unittest.TestCase):

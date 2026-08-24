@@ -15,7 +15,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from rag_llm import list_knowledge_datasets, retrieve_context  # noqa: E402
+from cmhk.agent.rag import list_knowledge_datasets, retrieve_context  # noqa: E402
 
 
 AUDIT_DATE = date.today().isoformat()

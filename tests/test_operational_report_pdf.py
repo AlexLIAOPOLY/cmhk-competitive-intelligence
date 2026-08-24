@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 from pypdf import PdfReader
 
-from operational_report_pdf import (
+from cmhk.reporting.operational_pdf import (
     build_report_model,
     generate_operational_report_pdf,
     renderable_text,

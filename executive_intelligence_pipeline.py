@@ -144,7 +144,7 @@ def _task_event(
     """Write one human-readable task-log line and update the unified-task heartbeat."""
     if not task_run_id:
         return
-    from crawl_run_registry import append_crawl_run_event, heartbeat_crawl_run
+    from cmhk.crawl.run_registry import append_crawl_run_event, heartbeat_crawl_run
 
     heartbeat_crawl_run(
         task_run_id,
@@ -169,7 +169,7 @@ def _start_refresh_task(
     parent_crawl_run_id: str = "",
     recovery_reason: str = "",
 ) -> dict[str, Any]:
-    from crawl_run_registry import append_crawl_run_event, start_crawl_run
+    from cmhk.crawl.run_registry import append_crawl_run_event, start_crawl_run
 
     scope = f"Agent审核 {agent_run_id}"
     if parent_crawl_run_id:
@@ -208,7 +208,7 @@ def _finalize_refresh_task(
 ) -> None:
     if not task_run_id:
         return
-    from crawl_run_registry import finalize_operational_crawl_run
+    from cmhk.crawl.run_registry import finalize_operational_crawl_run
 
     _task_event(
         task_run_id,
@@ -420,7 +420,7 @@ def publish_domain_fact_sidecars(
 
 
 def _analysis_input_snapshot() -> dict[str, Any]:
-    from executive_intelligence import build_executive_intelligence_evidence_snapshot
+    from cmhk.intelligence.executive import build_executive_intelligence_evidence_snapshot
 
     # Rendered relations are intentionally excluded. The hash must move only
     # when source-backed facts or the deterministic evidence pack changes.
@@ -4402,7 +4402,7 @@ def _process_alive(pid: int) -> bool:
 
 def monitor_scheduled_refresh_health(now: datetime | None = None) -> dict[str, Any]:
     """Recover once when a completed 03:00 crawl has no matching four-database publication."""
-    from crawl_run_registry import load_index
+    from cmhk.crawl.run_registry import load_index
 
     now = (now or datetime.now(HKT)).astimezone(HKT)
     scheduled = next(

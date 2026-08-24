@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from crawl_run_registry import (
+from cmhk.crawl.run_registry import (
     append_crawl_run_event,
     heartbeat_crawl_run,
     load_index as load_crawl_run_index,
@@ -23,7 +23,7 @@ from crawl_run_registry import (
     resume_crawl_run,
     start_crawl_run,
 )
-from scheduled_crawl_news_bridge import capture_completed_crawl
+from cmhk.intelligence.scheduled_news_bridge import capture_completed_crawl
 
 
 ROOT = Path(__file__).resolve().parent
@@ -785,7 +785,7 @@ def _launch_executive_intelligence_refresh(
     if (
         ROOT != Path(__file__).resolve().parent
         or (
-            any(name.startswith("test_") for name in sys.modules)
+            any(name.rsplit(".", 1)[-1].startswith("test_") for name in sys.modules)
             and os.environ.get("CMHK_FORCE_INTELLIGENCE_REFRESH_FOR_TESTS") != "1"
         )
     ):
@@ -1070,7 +1070,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
 
     financial_rows = sorted(set(rows) & FINANCIAL_RESULT_ROWS)
     if financial_rows:
-        from local_financial_results import rebuild_local_financial_database
+        from cmhk.data.local_financial_results import rebuild_local_financial_database
 
         financial_refresh = rebuild_local_financial_database(rows=financial_rows)
         financial_quality = financial_refresh.get("quality") or {}
@@ -1390,7 +1390,7 @@ def resume_pending_run(
     if stage == "audit_completed":
         financial_rows = sorted(set(rows) & FINANCIAL_RESULT_ROWS)
         if financial_rows:
-            from local_financial_results import rebuild_local_financial_database
+            from cmhk.data.local_financial_results import rebuild_local_financial_database
 
             financial_refresh = rebuild_local_financial_database(rows=financial_rows)
             financial_quality = financial_refresh.get("quality") or {}
@@ -1586,7 +1586,7 @@ def resume_pending_run(
 def dispatch_subscription_queue(*, dry_run: bool = False) -> dict[str, object]:
     """Dispatch due subscriber messages without coupling failures to crawler scheduling."""
     try:
-        from subscription_service import SubscriptionService
+        from cmhk.services.subscriptions import SubscriptionService
 
         service = SubscriptionService(runtime_root=ROOT)
         if dry_run:
@@ -1600,7 +1600,7 @@ def dispatch_subscription_queue(*, dry_run: bool = False) -> dict[str, object]:
 def dispatch_scheduled_weekly_report(*, dry_run: bool = False, now: datetime | None = None) -> dict[str, object]:
     """Generate and deliver the weekly report when the saved monthly slot is due."""
     try:
-        from subscription_service import SubscriptionService
+        from cmhk.services.subscriptions import SubscriptionService
 
         service = SubscriptionService(runtime_root=ROOT)
         return service.run_due_weekly_report(now=now or datetime.now(HKT), dry_run=dry_run)

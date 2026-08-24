@@ -22,7 +22,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import strategic_briefing
-from local_competitor_keywords import (
+from cmhk.intelligence.local_competitor_keywords import (
     canonical_competitors_for_text,
     mandatory_search_groups,
     priority_for,
@@ -570,7 +570,7 @@ def _scheduled_crawl_plans(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Turn fixed-page discoveries into date-aware news-index searches."""
     try:
-        from scheduled_crawl_news_bridge import load_pending_signals
+        from cmhk.intelligence.scheduled_news_bridge import load_pending_signals
 
         batch = load_pending_signals(
             strategic_briefing._load_state(),

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from report_pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
+from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
 
 
 class ReportPdfPreviewTests(unittest.TestCase):
@@ -25,8 +25,8 @@ class ReportPdfPreviewTests(unittest.TestCase):
                 (output_dir / "sample.pdf").write_bytes(b"%PDF-test")
                 return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
 
-            with patch("report_pdf_preview.shutil.which", return_value="/opt/homebrew/bin/soffice"), patch(
-                "report_pdf_preview.subprocess.run", side_effect=fake_run
+            with patch("cmhk.reporting.pdf_preview.shutil.which", return_value="/opt/homebrew/bin/soffice"), patch(
+                "cmhk.reporting.pdf_preview.subprocess.run", side_effect=fake_run
             ):
                 result = convert_docx_to_pdf_preview(source, preview_dir=preview_dir)
 

@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 import crawl
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_DIR = ROOT / "agent_knowledge" / "crawl_run_logs"
 RUNS_DIR = REGISTRY_DIR / "runs"
 INDEX_JSON = REGISTRY_DIR / "index.json"

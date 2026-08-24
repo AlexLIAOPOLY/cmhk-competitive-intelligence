@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 import project_monitor
 from project_monitor_card_actions import CardActionHandler
-from subscription_service import subscription_entry_card
+from cmhk.services.subscriptions import subscription_entry_card
 from tests.test_project_monitor import FakeCommandRunner
 
 

@@ -1,5 +1,11 @@
 import asyncio
+from pathlib import Path
+
 from playwright.async_api import async_playwright
+
+
+RESULT_PATH = Path(__file__).with_name("frontend_test_results.txt")
+
 
 async def main():
     async with async_playwright() as p:
@@ -21,10 +27,10 @@ async def main():
         # Get the text content of the output block
         output = await page.evaluate('document.querySelector("#performanceOutputBlock").innerText')
         
-        with open("frontend_test_results.txt", "w") as f:
+        with RESULT_PATH.open("w", encoding="utf-8") as f:
             f.write(output)
-            
-        print("Done. Results written to frontend_test_results.txt")
+
+        print(f"Done. Results written to {RESULT_PATH}")
         await browser.close()
 
 if __name__ == "__main__":

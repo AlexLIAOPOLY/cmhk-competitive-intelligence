@@ -20,13 +20,13 @@ from typing import Any, Callable
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
-from feishu_sheet_rollover import (
+from cmhk.integrations.feishu_sheet_rollover import (
     capacity_decision,
     record_active_part,
     timestamped_part_title,
 )
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "strategy_briefing"
 LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
 FULL_DISCOVERY_PATH = DATA_DIR / "news_discovery_full.json"
@@ -79,7 +79,7 @@ HEADERS = [
 ]
 
 _LOCK = threading.RLock()
-PROCESS_LOCK_PATH = DATA_DIR / "news_review_sheet.lock"
+PROCESS_LOCK_PATH = DATA_DIR / "cmhk.intelligence.news_review_sheet.lock"
 DASHBOARD_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
 DASHBOARD_PUBLISH_LOG = DATA_DIR / "dashboard_pages_publish.log"
 
@@ -2484,7 +2484,7 @@ def _crawl_item_id(*parts: Any) -> str:
 
 def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     roots = [
-        Path(__file__).resolve().parent / "curation_data" / "backups",
+        Path(__file__).resolve().parents[2] / "curation_data" / "backups",
         Path("/Users/liaowang/cmhk_public_crawl_app/curation_data/backups"),
     ]
     run_dirs: list[Path] = []

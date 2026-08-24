@@ -20,7 +20,7 @@ from typing import Any, Iterable
 from urllib.parse import urlsplit, urlunsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from source_document_identity import canonical_source_document_identity, is_derived_value
+from cmhk.data.source_identity import canonical_source_document_identity, is_derived_value
 
 
 ROOT = Path(__file__).resolve().parents[1]

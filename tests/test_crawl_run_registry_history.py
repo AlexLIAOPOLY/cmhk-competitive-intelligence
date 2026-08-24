@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import crawl_run_registry
+import cmhk.crawl.run_registry as crawl_run_registry
 
 
 class CrawlRunHistoryTests(unittest.TestCase):

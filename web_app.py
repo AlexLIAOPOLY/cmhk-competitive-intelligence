@@ -23,7 +23,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import crawl
-from crawl_run_registry import (
+from cmhk.crawl.run_registry import (
     heartbeat_crawl_run,
     latest_crawl_run_summary,
     load_crawl_run_log,
@@ -36,14 +36,14 @@ from crawl_run_registry import (
 )
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
-from company_metrics import build_company_metrics_payload
+from cmhk.data.company_metrics import build_company_metrics_payload
 from executive_company_benchmarks import build_company_benchmarks
-from extractors import row_fields
-from rag_llm import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
+from cmhk.crawl.extractors import row_fields
+from cmhk.agent.rag import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
 from agent import available_agent_skills, stream_agent
-from agent_memory import delete_memory, load_memories
-from agent_production import dataset_lineage, list_agent_runs
-from chart_renderer import generated_chart_path
+from cmhk.agent.memory import delete_memory, load_memories
+from cmhk.agent.production import dataset_lineage, list_agent_runs
+from cmhk.reporting.charts import generated_chart_path
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
@@ -52,7 +52,7 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
-from subscription_service import (
+from cmhk.services.subscriptions import (
     FREQUENCY_LABELS,
     NEWS_CATEGORY_LABELS,
     REPORT_CADENCE_LABEL,
@@ -62,9 +62,9 @@ from subscription_service import (
     filter_news_by_categories,
     news_category_summary,
 )
-from cmhk_auth import AuthService
+from cmhk.auth.service import AuthService
 from project_monitor_card_actions import CardActionHandler
-from operational_report_pdf import generate_operational_report_pdf, report_filename
+from cmhk.reporting.operational_pdf import generate_operational_report_pdf, report_filename
 
 
 ROOT = Path(__file__).resolve().parent
@@ -90,7 +90,7 @@ TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TE
 REPORT_FILE_RE = re.compile(
     r"^\d{1,2}月\d{1,2}日周报(?:（(?:草稿，)?截至\d{1,2}月\d{1,2}日）)?(?: \(\d+\))?\.docx$"
 )
-REPORT_METADATA_PATH = ROOT / "report_file_metadata.json"
+REPORT_METADATA_PATH = ROOT / "data/reporting/report_file_metadata.json"
 EXCLUDED_REPORT_NAMES = {
     "test_out.docx",
     "weekly_report.docx",
@@ -2276,7 +2276,7 @@ def run_crawl() -> dict:
             timeout=600,
         )
         subprocess.run(
-            [sys.executable, str(ROOT / "update_sources_from_crawl.py")],
+            [sys.executable, str(ROOT / "tools" / "maintenance" / "update_sources_from_crawl.py")],
             cwd=str(ROOT),
             text=True,
             capture_output=True,
@@ -2521,7 +2521,7 @@ def stream_company_metrics_refresh(
 def run_carrier_performance_sync() -> dict:
     env = os.environ.copy()
     proc = subprocess.run(
-        [sys.executable, str(ROOT / "sync_carrier_performance_feishu.py")],
+        [sys.executable, str(ROOT / "tools" / "integrations" / "sync_carrier_performance_feishu.py")],
         cwd=str(ROOT),
         env=env,
         text=True,
@@ -2539,7 +2539,7 @@ def run_carrier_performance_sync() -> dict:
 def build_weekly_report_generation_preview(now: datetime | None = None) -> dict[str, object]:
     """Describe the exact input window and approved rows a new weekly run would use."""
     from generate_weekly_report import resolve_weekly_period
-    from news_review_sheet import load_weekly_report_candidates
+    from cmhk.intelligence.news_review_sheet import load_weekly_report_candidates
 
     period = resolve_weekly_period(now)
     effective_range = period.effective_range
@@ -4420,7 +4420,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/news-review-sheet":
             try:
-                from news_review_sheet import review_sheet_snapshot
+                from cmhk.intelligence.news_review_sheet import review_sheet_snapshot
 
                 json_response(self, {"ok": True, **attach_news_review_actors(review_sheet_snapshot())})
             except Exception as exc:
@@ -4432,7 +4432,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/executive-intelligence":
             try:
-                from executive_intelligence import build_executive_intelligence_snapshot
+                from cmhk.intelligence.executive import build_executive_intelligence_snapshot
 
                 json_response(
                     self,
@@ -4941,7 +4941,7 @@ class AppHandler(BaseHTTPRequestHandler):
             actor = AUTH.current_actor(self)
             changes = []
             try:
-                from news_review_sheet import update_review_sheet_cells
+                from cmhk.intelligence.news_review_sheet import update_review_sheet_cells
 
                 payload = read_request_json(self)
                 changes = payload.get("changes")
@@ -5107,7 +5107,11 @@ class AppHandler(BaseHTTPRequestHandler):
                         )
 
                     # Update supplementary JSON configs with newly extracted data
-                    update_proc = subprocess.run([sys.executable, str(ROOT / "update_sources_from_crawl.py")], capture_output=True, text=True)
+                    update_proc = subprocess.run(
+                        [sys.executable, str(ROOT / "tools" / "maintenance" / "update_sources_from_crawl.py")],
+                        capture_output=True,
+                        text=True,
+                    )
                     if update_proc.returncode != 0:
                         write_sse(self, {"type": "log", "text": f"⚠️ 业绩补充桥接更新异常: {update_proc.stderr[-200:]}"})
                     else:

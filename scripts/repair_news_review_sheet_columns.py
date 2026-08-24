@@ -13,7 +13,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import news_review_sheet as review  # noqa: E402
+import cmhk.intelligence.news_review_sheet as review  # noqa: E402
 
 
 BACKUP_PATH = Path(

@@ -12,6 +12,8 @@ var/feishu_media_metrics/
 var/auth/
 raw/
 archives/
+/artifacts/generated/
+/runtime/local/
 last_daily_command.log
 daily_validation*.json
 feishu_readback.json

@@ -2310,7 +2310,7 @@ class SubscriptionService:
         return target
 
     def _report_pdf(self, report_path: Path) -> Path:
-        from report_pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
+        from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
 
         preview_dir = self.runtime_root / "web" / "static" / "report-previews"
         target = pdf_preview_path(report_path, preview_dir)

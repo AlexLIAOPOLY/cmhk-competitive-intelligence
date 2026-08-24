@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from rag_llm import _strict_source_document_count, _strict_three_source_row_text, retrieve_context
-from source_document_identity import is_derived_value
+from cmhk.agent.rag import _strict_source_document_count, _strict_three_source_row_text, retrieve_context
+from cmhk.data.source_identity import is_derived_value
 
 
 class StrictSourceDocumentCountTest(unittest.TestCase):

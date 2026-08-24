@@ -8,10 +8,10 @@ import time
 from pathlib import Path
 from typing import Any
 
-from rag_llm import estimate_tokens, list_knowledge_datasets
+from cmhk.agent.rag import estimate_tokens, list_knowledge_datasets
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 TRACE_DIR = ROOT / "agent_runs"
 TRACE_INDEX = TRACE_DIR / "runs.jsonl"
 

@@ -65,6 +65,8 @@ rsync -a --delete --link-dest="$ROOT" \
   --exclude '/venv/' \
   --exclude '/tmp/' \
   --exclude '/archives/' \
+  --exclude '/artifacts/generated/' \
+  --exclude '/runtime/local/' \
   --exclude '/audio/' \
   --exclude '/models/' \
   --exclude '/__pycache__/' \
@@ -132,7 +134,7 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
     --include='/coverage_report.tsv' \
     --include='/final_audit.md' \
     --include='/feishu_latest_*.json' \
-    --include='/report_file_metadata.json' \
+    --include='/data/reporting/report_file_metadata.json' \
     --include='/run_log*.json' \
     --include='/run_log*.tsv' \
     --include='/scheduler_state.json' \

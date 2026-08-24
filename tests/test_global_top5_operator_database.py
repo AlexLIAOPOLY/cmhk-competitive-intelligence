@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 
-import rag_llm
+import cmhk.agent.rag as rag_llm
 import agent
 
 

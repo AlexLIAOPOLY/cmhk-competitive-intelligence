@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import urlparse
 
-from cmhk_auth import AuthService, MODULE_LABELS, ROLE_MODULES
+from cmhk.auth.service import AuthService, MODULE_LABELS, ROLE_MODULES
 
 
 class FakeHandler:
@@ -275,7 +275,7 @@ class AuthServiceTest(unittest.TestCase):
         }
         completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
         profile = {"avatar_url": "https://example.test/member.webp", "title": "Project Manager", "department": "缓存部门"}
-        with patch("cmhk_auth.subprocess.run", return_value=completed), patch.object(self.service, "_cached_directory_profile", return_value=profile):
+        with patch("cmhk.auth.service.subprocess.run", return_value=completed), patch.object(self.service, "_cached_directory_profile", return_value=profile):
             users = self.service._search_directory_users("测试")
         self.assertEqual(users[0]["avatar_url"], "https://example.test/member.webp")
         self.assertEqual(users[0]["title"], "Project Manager")
@@ -292,7 +292,7 @@ class AuthServiceTest(unittest.TestCase):
             }]}
         }
         completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
-        with patch("cmhk_auth.subprocess.run", return_value=completed), patch.object(
+        with patch("cmhk.auth.service.subprocess.run", return_value=completed), patch.object(
             self.service,
             "_feishu_profile_by_email",
             return_value={"title": "经理", "avatar_url": "https://example.test/alan.webp"},

@@ -25,14 +25,14 @@ from opencc import OpenCC
 from ai_config import load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import load_json_response
-from crawl_run_registry import (
+from cmhk.crawl.run_registry import (
     append_crawl_run_event,
     finalize_operational_crawl_run,
     heartbeat_crawl_run,
     load_index as load_crawl_run_index,
     start_crawl_run,
 )
-from scheduled_crawl_news_bridge import (
+from cmhk.intelligence.scheduled_news_bridge import (
     commit_signal_attempts,
     load_pending_signals,
 )
@@ -2197,7 +2197,7 @@ def _dispatch_subscription_news_after_scan(
             else [item for item in candidates if isinstance(item, dict)]
         )
     try:
-        from subscription_service import SubscriptionService
+        from cmhk.services.subscriptions import SubscriptionService
 
         result = SubscriptionService(runtime_root=ROOT).dispatch_news_after_crawl(
             crawl_slot=slot_key,
@@ -2517,7 +2517,7 @@ def _run_scan_impl(
             "items": full_items,
         },
     )
-    import news_review_sheet
+    import cmhk.intelligence.news_review_sheet as news_review_sheet
 
     gated_items, gate_reasons = news_review_sheet.curate_news_items(full_items)
     passed_bridge_signal_ids = list(
@@ -6921,7 +6921,7 @@ def public_snapshot() -> dict[str, Any]:
 
 
 def main() -> None:
-    import news_review_sheet
+    import cmhk.intelligence.news_review_sheet as news_review_sheet
 
     logging.info(
         "战略快讯监视器启动：%s；群消息每 %s 秒检查；时区 Asia/Hong_Kong",
