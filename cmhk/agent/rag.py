@@ -717,6 +717,12 @@ def _global_operator_exact_metric_chunks(
         matched_metrics.discard("ebitda")
     if "postpaid_phone_arpu" in matched_metrics or "postpaid_arpa" in matched_metrics:
         matched_metrics.discard("mobile_arpu")
+    if "ntt_group" in matched_subjects and "postpaid_connections" in matched_metrics:
+        # NTT does not disclose a postpaid-customer KPI. When the user asks for
+        # the four-carrier postpaid comparison, return its official mobile
+        # service subscriptions as an explicitly labelled substitute instead
+        # of forcing the Agent into repeated broad searches.
+        matched_metrics.add("mobile_service_subscriptions")
 
     # Keep subject-to-metric associations in compound questions instead of
     # returning every metric for every named operator.
@@ -742,6 +748,8 @@ def _global_operator_exact_metric_chunks(
                 for metric_key, aliases in metric_aliases.items()
                 if any(alias in clause for alias in aliases)
             }
+            if "ntt_group" in clause_subjects and "postpaid_connections" in clause_metrics:
+                clause_metrics.add("mobile_service_subscriptions")
             if "broadband_arpu" in clause_metrics or "household_customer_blended_arpu" in clause_metrics or "integrated_package_arpu" in clause_metrics:
                 clause_metrics.discard("mobile_arpu")
             if "integrated_package_arpu" in clause_metrics:
@@ -769,6 +777,12 @@ def _global_operator_exact_metric_chunks(
                     requested_pairs.add(pair)
                     if clause_years:
                         requested_years_by_pair.setdefault(pair, set()).update(clause_years)
+
+    if "postpaid_connections" in matched_metrics and len(matched_subjects) > 1:
+        requested_pairs.discard(("ntt_group", "postpaid_connections"))
+        for subject in matched_subjects:
+            metric = "mobile_service_subscriptions" if subject == "ntt_group" else "postpaid_connections"
+            requested_pairs.add((subject, metric))
 
     years = {
         int(value)
@@ -828,6 +842,16 @@ def _global_operator_exact_metric_chunks(
             if str(row.get("official_value") or "").strip()
             else "未披露（source_gap_confirmed / not_applicable_precommercial）"
         )
+        comparison_guidance = ""
+        if (
+            (row.get("operator_id") or "").strip() == "ntt_group"
+            and (row.get("metric_key") or "").strip() == "mobile_service_subscriptions"
+            and "postpaid_connections" in matched_metrics
+        ):
+            comparison_guidance = (
+                " 用户询问四家后付费用户数时，应把该值列为NTT替代口径值，"
+                "不得写成NTT无数值；同时必须说明它并非后付费客户数，不能视为严格同口径。"
+            )
         text = (
             f"精确年度运营商指标行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
@@ -836,6 +860,7 @@ def _global_operator_exact_metric_chunks(
             f"verification_status={row.get('verification_status')}; verification_count={row.get('verification_count')}; "
             f"{_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
+            f"{comparison_guidance}"
             "如果值为未披露，只能回答未披露或商用前不适用，不能当作0、行业汇总或估算值。"
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})

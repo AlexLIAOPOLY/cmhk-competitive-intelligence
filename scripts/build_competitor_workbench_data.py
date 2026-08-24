@@ -64,6 +64,14 @@ UNIT_LABELS = {
     "EUR_billion": "十亿欧元",
     "JPY_billion": "十亿日元",
 }
+COMPARISON_ALIASES = {
+    ("NTT Group", "mobile_service_subscriptions"): {
+        "metric": "postpaid_connections",
+        "unit": "million_subscribers",
+        "scopePrefix": "替代口径（非后付费）：NTT DOCOMO移动电话服务订阅数，包含MVNO及通信模块合同；",
+        "notePrefix": "为四家国际运营商十年趋势比较映射到“后付费用户数”；仅作规模替代观察，不代表NTT披露了后付费客户数。",
+    },
+}
 SIMPLIFIED_TITLE_REPLACEMENTS = (
     ("寬頻", "宽带"),
     ("客戶", "客户"),
@@ -118,7 +126,8 @@ def main() -> None:
                     continue
                 if not company or not metric or status in BLOCKED_STATUSES:
                     continue
-                unit = text(row, "unit")
+                native_unit = text(row, "unit")
+                unit = "million_subscribers" if metric == "postpaid_connections" else native_unit
                 company_meta.setdefault(company, {
                     "id": company,
                     "label": company,
@@ -136,7 +145,7 @@ def main() -> None:
                     meta["units"].append(unit)
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 availability[(company, metric)].add(year)
-                cells.append({
+                cell = {
                     "dataset": source.parent.name,
                     "company": company,
                     "metric": metric,
@@ -151,7 +160,32 @@ def main() -> None:
                     "status": status,
                     "source": text(row, "primary_source_url"),
                     "note": text(row, "quality_note"),
-                })
+                }
+                if unit != native_unit:
+                    cell["nativeUnit"] = native_unit
+                cells.append(cell)
+                alias = COMPARISON_ALIASES.get((company, metric))
+                if alias:
+                    alias_metric = alias["metric"]
+                    alias_unit = alias["unit"]
+                    availability[(company, alias_metric)].add(year)
+                    cells.append({
+                        "dataset": source.parent.name,
+                        "company": company,
+                        "metric": alias_metric,
+                        "year": year,
+                        "value": value,
+                        "unit": alias_unit,
+                        "comparator": text(row, "comparator") or "=",
+                        "period": text(row, "period"),
+                        "periodEnd": text(row, "period_end"),
+                        "scope": f"{alias['scopePrefix']}{text(row, 'scope')}",
+                        "basis": text(row, "basis"),
+                        "status": status,
+                        "source": text(row, "primary_source_url"),
+                        "note": f"{alias['notePrefix']}{text(row, 'quality_note')}",
+                        "derivedFromMetric": metric,
+                    })
     viable = {key for key, years in availability.items() if len(years) >= 2}
     cells = [cell for cell in cells if (cell["company"], cell["metric"]) in viable]
     active_companies = {cell["company"] for cell in cells}

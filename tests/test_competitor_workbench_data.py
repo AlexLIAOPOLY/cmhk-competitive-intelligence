@@ -61,16 +61,20 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
                     availability[key].add(int(row["year"]))
                     source_rows.append((row["operator"], row["metric_key"], int(row["year"])))
         expected = {row for row in source_rows if len(availability[row[:2]]) >= 2}
-        actual = {(row["company"], row["metric"], row["year"]) for row in self.payload["cells"]}
+        actual = {
+            (row["company"], row["metric"], row["year"])
+            for row in self.payload["cells"]
+            if not row.get("derivedFromMetric")
+        }
         self.assertEqual(actual, expected)
         self.assertEqual(
             self.payload["sourceDatasets"],
             ["global_top5_operators_2016_2025", "local_hk_operator_operating_metrics_2016_2025"],
         )
         bases = {item["id"]: item for item in self.payload["knowledgeBases"]}
-        self.assertEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 573)
+        self.assertEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 583)
         self.assertEqual(bases["local_hk_operator_operating_metrics_2016_2025"]["cellCount"], 167)
-        self.assertEqual(sum(item["cellCount"] for item in bases.values()), len(actual))
+        self.assertEqual(sum(item["cellCount"] for item in bases.values()), len(self.payload["cells"]))
 
     def test_recent_global_operator_additions_are_visible(self):
         companies = {item["id"]: item for item in self.payload["companies"]}
@@ -79,6 +83,26 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             self.assertEqual(companies[company]["group"], "国际运营商")
         self.assertTrue({"revenue", "ebitda", "net_profit", "network_towers", "total_data_traffic"} <= metrics)
         self.assertIn("reported_mobile_connections", metrics)
+
+    def test_four_international_operators_share_ten_year_postpaid_comparison(self):
+        selected = {"Verizon", "Deutsche Telekom", "AT&T", "NTT Group"}
+        cells = [
+            item for item in self.payload["cells"]
+            if item["company"] in selected and item["metric"] == "postpaid_connections"
+        ]
+        by_company = defaultdict(list)
+        for item in cells:
+            by_company[item["company"]].append(item)
+        self.assertEqual(set(by_company), selected)
+        self.assertTrue(all(sorted(item["year"] for item in rows) == list(range(2016, 2026)) for rows in by_company.values()))
+        self.assertEqual({item["unit"] for item in cells}, {"million_subscribers"})
+        self.assertEqual(
+            {item.get("nativeUnit", item["unit"]) for item in cells if item["company"] != "NTT Group"},
+            {"million_subscribers", "million_customers", "million_connections"},
+        )
+        ntt = by_company["NTT Group"]
+        self.assertTrue(all(item["derivedFromMetric"] == "mobile_service_subscriptions" for item in ntt))
+        self.assertTrue(all("替代口径（非后付费）" in item["scope"] for item in ntt))
 
     def test_metric_titles_are_simplified_chinese(self):
         forbidden = set("寬頻戶業務網絡電視樓蓋連費長滲擴動後預淨營總")

@@ -98,6 +98,33 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertEqual(captured["body"]["temperature"], 0.1)
         self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
 
+    def test_four_international_postpaid_series_are_comparable_with_ntt_caveat(self):
+        captured = {}
+
+        def open_request(request, timeout):
+            captured["body"] = json.loads(request.data.decode())
+            return _Response()
+
+        data = json.loads(web_app.COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
+        payload = {
+            "requestId": "international-postpaid-10y",
+            "companies": ["Verizon", "Deutsche Telekom", "AT&T", "NTT Group"],
+            "metric": {"key": "postpaid_connections", "label": "后付费用户数"},
+            "years": list(range(2016, 2026)),
+            "evidenceVersion": data["evidenceVersion"],
+        }
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", side_effect=open_request
+        ):
+            web_app.generate_competitor_insight(payload)
+
+        prompt = captured["body"]["messages"][1]["content"]
+        self.assertIn("Verizon\t2016\t=\t108.796\tmillion_subscribers", prompt)
+        self.assertIn("NTT Group\t2025\t=\t93.065\tmillion_subscribers", prompt)
+        self.assertIn("替代口径（非后付费）", prompt)
+        self.assertEqual(sum(1 for line in prompt.splitlines() if "\tmillion_subscribers" in line), 40)
+
     def test_browser_cells_are_not_trusted(self):
         captured = {}
 

@@ -71,6 +71,33 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
             }
             self.assertEqual(actual, expected)
 
+    def test_xiaojing_maps_ntt_postpaid_question_to_explicit_substitute(self) -> None:
+        question = (
+            "列出Verizon、Deutsche Telekom、AT&T、NTT Group的FY2025"
+            "后付费用户数，单位统一为百万，并明确NTT口径。"
+        )
+        chunks = rag._global_operator_exact_metric_chunks(
+            question, dataset_ids={"global_top5_operators_2016_2025"}
+        )
+        pairs = {
+            (
+                chunk["text"].split("operator_id=", 1)[1].split(";", 1)[0],
+                chunk["text"].split("metric_key=", 1)[1].split(";", 1)[0],
+            )
+            for chunk in chunks
+        }
+        self.assertEqual(
+            pairs,
+            {
+                ("verizon", "postpaid_connections"),
+                ("deutsche_telekom", "postpaid_connections"),
+                ("att", "postpaid_connections"),
+                ("ntt_group", "mobile_service_subscriptions"),
+            },
+        )
+        self.assertTrue(any("not labelled postpaid customers" in chunk["text"] for chunk in chunks))
+        self.assertTrue(any("不得写成NTT无数值" in chunk["text"] for chunk in chunks))
+
     def test_postpaid_ai_gate_rejects_cross_company_arpu_pairing(self) -> None:
         snapshot = pipeline._analysis_input_snapshot()
         focus = next(
