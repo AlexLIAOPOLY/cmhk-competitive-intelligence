@@ -339,8 +339,8 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 
 /* Chart-only comparison: values are labeled directly on marks; no duplicate tables. */
 .comparison-metric-card { position: relative; isolation: isolate; grid-template-rows: clamp(46px, 3.2vw, 60px) minmax(0, 1fr); border-color: rgba(113, 183, 213, .26); border-radius: 4px; background: linear-gradient(145deg, rgba(7, 24, 38, .86), rgba(3, 13, 23, .78)); transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
-.comparison-metric-card::before { content: ""; position: absolute; z-index: 0; inset: 0; background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .2; filter: saturate(.72) contrast(1.08); pointer-events: none; transition: opacity 180ms ease; }
-.comparison-metric-card:hover::before { opacity: .27; }
+.comparison-metric-card::before { content: ""; position: absolute; z-index: 0; inset: 0; background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .12; filter: saturate(.72) contrast(1.08); pointer-events: none; transition: opacity 180ms ease; }
+.comparison-metric-card:hover::before { opacity: .16; }
 .panel-network .comparison-metric-card:first-child::before { background-image: url("./assets/executive-dashboard/network-context-v1.webp"); }
 .panel-network .comparison-metric-card:nth-child(2)::before { background-image: url("./assets/executive-dashboard/network-core-bg-v1.jpg"); background-position: 68% center; }
 .panel-business .comparison-metric-card:nth-child(1)::before { background-image: url("./assets/executive-dashboard/mobile-context-v1.webp"); }
@@ -372,7 +372,7 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-chart .chart-empty-label { fill: #9ab9c5; font-size: 13px; font-weight: 700; }
 .chart-interactive-mark { cursor: pointer; outline: none; opacity: 1; transition: opacity 160ms ease, filter 160ms ease; }
 .chart-hit-area { fill: transparent; pointer-events: all; }
-.chart-ring-hit-area { fill: none; stroke: rgba(255, 255, 255, .001); stroke-width: 30; pointer-events: stroke; }
+.chart-ring-hit-area { fill: none; stroke: rgba(255, 255, 255, .001); stroke-width: 36; pointer-events: stroke; }
 .chart-interactive-mark.is-muted { opacity: .24; }
 .chart-interactive-mark.is-related { filter: brightness(1.12); }
 .chart-interactive-mark.is-active { filter: brightness(1.25) drop-shadow(0 0 5px rgba(116, 218, 255, .48)); }
