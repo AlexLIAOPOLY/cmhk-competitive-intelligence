@@ -438,10 +438,14 @@
           ],
           "ai_summary": {
             "id": "ebitda",
-            "headline": "EBITDA关系重新判断",
-            "analysis": "按当前可比口径，SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "",
+            "analysis": "SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -1102,10 +1106,14 @@
           },
           {
             "id": "ebitda",
-            "headline": "EBITDA关系重新判断",
-            "analysis": "按当前可比口径，SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "",
+            "analysis": "SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -5680,14 +5688,10 @@
           "headline": "集团投入口径正在补齐",
           "ai_summary": {
             "id": "investment",
-            "headline": "",
-            "analysis": "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
-              "https://www.microsoft.com/investor/reports/ar24/index.html",
-              "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
-            ],
+            "headline": "资本开支分层区隔明显",
+            "analysis": "Google、Azure、中国移动云和Oracle的集团资本开支分别为52535.0、44477.0、22777.8和6866.0百万美元，但均为母公司集团口径而非云业务口径，说明该指标反映集团投入规模，不能等同于云市场竞争力区隔。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "Google",
@@ -6189,14 +6193,10 @@
           },
           {
             "id": "investment",
-            "headline": "",
-            "analysis": "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
-              "https://www.microsoft.com/investor/reports/ar24/index.html",
-              "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
-            ],
+            "headline": "资本开支分层区隔明显",
+            "analysis": "Google、Azure、中国移动云和Oracle的集团资本开支分别为52535.0、44477.0、22777.8和6866.0百万美元，但均为母公司集团口径而非云业务口径，说明该指标反映集团投入规模，不能等同于云市场竞争力区隔。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "Google",
@@ -6502,8 +6502,8 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-24T17:45:11+08:00",
-      "model": "Qwen3-30B-A3B-Instruct-2507",
+      "generated_at_hkt": "2026-08-24T17:47:36+08:00",
+      "model": "GLM",
       "summaries": [
         {
           "domain": "local",
@@ -6577,10 +6577,14 @@
             },
             {
               "id": "ebitda",
-              "headline": "EBITDA关系重新判断",
-              "analysis": "按当前可比口径，SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "",
+              "analysis": "SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
               "entities": [
                 {
                   "name": "CMHK",
@@ -7516,14 +7520,10 @@
             },
             {
               "id": "investment",
-              "headline": "",
-              "analysis": "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-              "source_urls": [
-                "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
-                "https://www.microsoft.com/investor/reports/ar24/index.html",
-                "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
-              ],
+              "headline": "资本开支分层区隔明显",
+              "analysis": "Google、Azure、中国移动云和Oracle的集团资本开支分别为52535.0、44477.0、22777.8和6866.0百万美元，但均为母公司集团口径而非云业务口径，说明该指标反映集团投入规模，不能等同于云市场竞争力区隔。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+              "source_urls": [],
               "entities": [
                 {
                   "name": "Google",
@@ -7683,21 +7683,30 @@
         "local.ebitda": [
           "",
           "按当前可比口径，SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。"
+        ],
+        "cloud.investment": [
+          "当前 4/8 家已有三份独立官方文件核验的集团CAPEX，其余为缺口，反映三来源覆盖仍不足；集团CAPEX与云业务单独投入口径不同，不能直接用来判断云投入高低。",
+          "Google、Azure、中国移动云和Oracle的集团资本开支分别为52535.0、44477.0、22777.8和6866.0百万美元，但均为母公司集团口径而非云业务口径，说明该指标反映集团投入规模，不能等同于云市场竞争力区隔。"
         ]
       },
       "manual_focus_regeneration_counts": {
-        "local.ebitda": 1
+        "local.ebitda": 1,
+        "cloud.investment": 1
       },
       "manual_focus_regeneration_title_history": {
         "local.ebitda": [
           "",
           "EBITDA关系重新判断"
+        ],
+        "cloud.investment": [
+          "",
+          "资本开支分层区隔明显"
         ]
       },
       "manual_focus_regeneration": {
-        "domain": "local",
-        "focus": "ebitda",
-        "generated_at_hkt": "2026-08-24T17:45:11+08:00"
+        "domain": "cloud",
+        "focus": "investment",
+        "generated_at_hkt": "2026-08-24T17:47:36+08:00"
       },
       "fallback_used": true,
       "fallback_reason": "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
