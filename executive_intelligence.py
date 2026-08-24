@@ -1250,6 +1250,17 @@ def _reader_percent_units(value: Any) -> Any:
     return value
 
 
+def _reader_facing_copy(value: Any) -> Any:
+    """Normalize legacy analysis wording before it reaches the board."""
+    if isinstance(value, dict):
+        return {key: _reader_facing_copy(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_reader_facing_copy(item) for item in value]
+    if isinstance(value, str):
+        return value.replace("增长梯队", "增速层次")
+    return value
+
+
 @lru_cache(maxsize=4)
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
@@ -1350,7 +1361,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         }
         for item in model_discoveries[:4]
     ] if len(model_discoveries) >= 4 else deterministic_relations
-    relations = _reader_percent_units(relations)
+    relations = _reader_facing_copy(_reader_percent_units(relations))
     refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
     return {
         "domains": domains,

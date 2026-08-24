@@ -339,6 +339,40 @@ def _selected_skill_context(skill_ids: list[str] | None, message: str = "") -> s
     return "\n".join(lines)
 
 
+def _skill_routing_instruction(
+    message: str,
+    selected_skill_ids: list[str] | None,
+    loaded_skill_ids: list[str] | None,
+) -> str:
+    """Build a concise routing hint without forcing irrelevant skill reads."""
+    clean_message = _clean_search_text(message, 1200)
+    selected = [
+        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
+        for item in (selected_skill_ids or [])
+    ]
+    loaded = {
+        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
+        for item in (loaded_skill_ids or [])
+    }
+    selected = [item for item in selected if item and item not in loaded]
+    if re.search(r"历史聊天|聊天记录|上一轮对话|之前的对话", clean_message):
+        return "这是历史对话检索任务；不要为了流程感读取 Skill，直接使用历史聊天检索工具。"
+
+    topic_hints = {
+        "macro-policy-context": r"政策|监管|频谱|宏观|经济",
+        "trend-forecasting": r"趋势|预测|未来|收入|增长|下降",
+        "executive-briefing": r"汇报|简报|管理层|领导|建议|风险",
+    }
+    relevant = [
+        skill_id
+        for skill_id in selected
+        if re.search(topic_hints.get(skill_id, re.escape(skill_id)), clean_message, re.IGNORECASE)
+    ]
+    if not relevant:
+        return "当前问题不需要额外 Skill；不要为了流程感读取 Skill。"
+    return "优先调用 `read_agent_skill` 读取与本题直接相关的 Skill：" + "、".join(relevant) + "。"
+
+
 def _looks_like_blocked_or_encoded_text(text: str) -> bool:
     sample = " ".join((text or "").split())[:2400]
     if not sample:

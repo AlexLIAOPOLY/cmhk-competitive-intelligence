@@ -30,11 +30,17 @@ AUDIT_DATE = date.today().isoformat()
 
 
 def latest_quarterly_dataset_path() -> Path:
-    candidates = [
-        folder
-        for folder in KNOWLEDGE.glob("quarterly_competitor_metrics_*")
-        if folder.is_dir() and (folder / "quarterly_metrics.csv").exists()
-    ]
+    candidates = []
+    for folder in KNOWLEDGE.glob("quarterly_competitor_metrics_*"):
+        if not folder.is_dir() or not (folder / "quarterly_metrics.csv").exists():
+            continue
+        try:
+            manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            manifest = {}
+        if manifest.get("visibility") in {"hidden", "superseded", "archived"}:
+            continue
+        candidates.append(folder)
     if not candidates:
         return KNOWLEDGE / "quarterly_competitor_metrics_2026-06-18"
     return max(candidates, key=lambda folder: folder.name)

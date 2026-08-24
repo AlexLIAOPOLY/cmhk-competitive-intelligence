@@ -1716,7 +1716,7 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
             "from": "local", "to": "cloud", "title": "产品广度不等同云端增长",
             "detail": (
                 f"本地在售方案{local_scale}{local_scale_unit}，云端领先增速{cloud_growth}{cloud_growth_unit}，"
-                "说明连接产品广度与云增长梯队并不等同。"
+                "说明连接产品广度与云收入增速层次并不等同。"
             ),
         },
         {
@@ -1802,7 +1802,7 @@ def _safe_discovery_regeneration_fallback(
             (
                 "运营商与云增长分处两档",
                 f"内地运营商最高营收增速{international_growth}，云厂商领先增速{cloud_growth}，"
-                "说明两类市场增长梯队明显分化，业务周期并不同步。",
+                "说明两类市场增速层次明显分化，业务周期并不同步。",
             ),
             (
                 "电信动量与云增速背离",
@@ -1810,7 +1810,7 @@ def _safe_discovery_regeneration_fallback(
                 "表明传统电信和云业务增长动量脱钩，不能按同一周期解释。",
             ),
             (
-                "两类市场增长梯队分化",
+                "两类市场增速层次分化",
                 f"云端领先增速{cloud_growth}高于运营商最高营收增速{international_growth}，"
                 "说明两类市场形成分层竞争，增速差距并非同口径经营效率比较。",
             ),
@@ -1829,7 +1829,7 @@ def _safe_discovery_regeneration_fallback(
             (
                 "方案规模与云增长脱钩",
                 f"本地在售方案{local_scale}与云端领先增速{cloud_growth}分别描述供给规模和增长速度，"
-                "说明两域指标口径不同，产品广度不等于增长梯队。",
+                "说明两域指标口径不同，产品广度不等于收入增速层次。",
             ),
         ],
         ("macro", "international"): [

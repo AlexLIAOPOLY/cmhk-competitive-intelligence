@@ -110,6 +110,38 @@ def load_json_response(text: str, *, operation: str = "结构化AI") -> Any:
     except json.JSONDecodeError as exc:
         parse_error = exc
 
+    # Repair an unfinished JSON root before looking for a nested balanced value.
+    # Otherwise {"items":[{"ok":true} can be misread as the complete inner
+    # object and silently lose the outer response contract.
+    if value.startswith(("[", "{")):
+        stack: list[str] = []
+        in_string = False
+        escaped = False
+        for char in value:
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if char == '"':
+                in_string = True
+            elif char in "[{":
+                stack.append(char)
+            elif char in "]}":
+                expected = "[" if char == "]" else "{"
+                if not stack or stack.pop() != expected:
+                    raise StructuredAIResponseError(f"{operation}返回了错位的JSON括号") from parse_error
+        if in_string or escaped or not stack or value.rstrip().endswith((":", ",")):
+            raise StructuredAIResponseError(f"{operation}返回了不完整JSON") from parse_error
+        repaired = value + "".join("]" if opener == "[" else "}" for opener in reversed(stack))
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError as exc:
+            raise StructuredAIResponseError(f"{operation}返回了无效JSON") from exc
+
     # A few OpenAI-compatible gateways wrap an otherwise complete JSON answer
     # in a short prose prefix/suffix even in JSON mode. Extract only a balanced,
     # independently parseable top-level value; never guess inside an unfinished
@@ -145,30 +177,4 @@ def load_json_response(text: str, *, operation: str = "结构化AI") -> Any:
                         return json.loads(value[start : end + 1])
                     except json.JSONDecodeError:
                         break
-    stack: list[str] = []
-    in_string = False
-    escaped = False
-    for char in value:
-        if in_string:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                in_string = False
-            continue
-        if char == '"':
-            in_string = True
-        elif char in "[{":
-            stack.append(char)
-        elif char in "]}":
-            expected = "[" if char == "]" else "{"
-            if not stack or stack.pop() != expected:
-                raise StructuredAIResponseError(f"{operation}返回了错位的JSON括号") from parse_error
-    if in_string or escaped or not stack or value.rstrip().endswith((":", ",")):
-        raise StructuredAIResponseError(f"{operation}返回了不完整JSON") from parse_error
-    repaired = value + "".join("]" if opener == "[" else "}" for opener in reversed(stack))
-    try:
-        return json.loads(repaired)
-    except json.JSONDecodeError as exc:
-        raise StructuredAIResponseError(f"{operation}返回了无效JSON") from exc
+    raise StructuredAIResponseError(f"{operation}返回了无效JSON") from parse_error

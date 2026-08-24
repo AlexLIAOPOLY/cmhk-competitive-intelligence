@@ -4989,7 +4989,21 @@ def polish_candidates_before_review(
                             120,
                         )
                         if not rescue_model or rescue_model == primary_model:
-                            raise
+                            error = _clean_text(primary_exc, 240)
+                            logging.error(
+                                "候选 %s 单条审核失败且无独立救援模型，留待下轮：%s",
+                                source["id"],
+                                error,
+                            )
+                            deferred_reviews.append(
+                                {
+                                    "key": key,
+                                    "id": source["id"],
+                                    "title": source["title"],
+                                    "error": error,
+                                }
+                            )
+                            continue
                         rescue_retry_attempt_count += 1
                         logging.warning(
                             "候选 %s 主审核模型输出异常，改由救援模型 %s 复审：%s",
