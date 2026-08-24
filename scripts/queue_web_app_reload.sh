@@ -8,6 +8,7 @@ STATE_DIR="$HOME/Library/Application Support/CMHK"
 REQUEST_FILE="$STATE_DIR/web-reload-requested"
 INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
+QUEUE_LOCK_DIR="$STATE_DIR/web-reload-queue.lock"
 WORKER_COPY="$STATE_DIR/queued_web_app_reload_worker.sh"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
 
@@ -23,6 +24,75 @@ if (( $# > 0 )); then
   echo "Usage: $0 [--interrupt-strategic]" >&2
   exit 2
 fi
+
+queue_lock_acquired=0
+request_published=0
+release_dir=""
+
+valid_release_token() {
+  [[ "$1" =~ ^[0-9]{8}T[0-9]{6}-[0-9]+-[0-9]+$ ]]
+}
+
+delete_release_dir() {
+  local candidate="$1" token
+  token="${candidate##*/}"
+  valid_release_token "$token" || return 1
+  [[ "$candidate" == "$STAGE_ROOT/$token" ]] || return 1
+  [[ -d "$candidate" && ! -L "$candidate" ]] || return 0
+  find "$candidate" -depth -delete
+}
+
+release_queue_lock() {
+  if (( queue_lock_acquired == 1 )); then
+    rm -f "$QUEUE_LOCK_DIR/pid"
+    rmdir "$QUEUE_LOCK_DIR" 2>/dev/null || true
+    queue_lock_acquired=0
+  fi
+}
+
+cleanup_queue_exit() {
+  local exit_status=$?
+  trap - EXIT
+  if (( request_published == 0 )) && [[ -n "$release_dir" ]]; then
+    delete_release_dir "$release_dir" || true
+  fi
+  release_queue_lock
+  exit "$exit_status"
+}
+
+acquire_queue_lock() {
+  local existing_pid="" _attempt
+  for _attempt in {1..120}; do
+    if mkdir "$QUEUE_LOCK_DIR" 2>/dev/null; then
+      printf '%s\n' "$$" > "$QUEUE_LOCK_DIR/pid"
+      queue_lock_acquired=1
+      return 0
+    fi
+    existing_pid="$(cat "$QUEUE_LOCK_DIR/pid" 2>/dev/null || true)"
+    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && ! kill -0 "$existing_pid" 2>/dev/null; then
+      rm -f "$QUEUE_LOCK_DIR/pid"
+      rmdir "$QUEUE_LOCK_DIR" 2>/dev/null || true
+      continue
+    fi
+    sleep 1
+  done
+  echo "Timed out waiting for the Web reload queue lock." >&2
+  return 1
+}
+
+prune_superseded_releases() {
+  local previous_token="$1" current_token="$2" candidate token
+  while IFS= read -r -d '' candidate; do
+    token="${candidate##*/}"
+    if [[ "$token" == "$previous_token" || "$token" == "$current_token" ]]; then
+      continue
+    fi
+    delete_release_dir "$candidate"
+  done < <(find "$STAGE_ROOT" -mindepth 1 -maxdepth 1 -type d -print0)
+}
+
+trap cleanup_queue_exit EXIT
+acquire_queue_lock
 
 request_token="$(date '+%Y%m%dT%H%M%S')-$$-${RANDOM}"
 release_dir="$STAGE_ROOT/$request_token"
@@ -73,13 +143,24 @@ chmod 700 "$WORKER_COPY"
 xattr -c "$WORKER_COPY" 2>/dev/null || true
 
 temporary_request="$REQUEST_FILE.tmp.$$"
+previous_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
 printf '%s\n' "$request_token" > "$temporary_request"
 mv -f "$temporary_request" "$REQUEST_FILE"
+request_published=1
 if (( interrupt_strategic == 1 )); then
   temporary_interrupt="$INTERRUPT_FILE.tmp.$$"
   printf '%s\n' "$request_token" > "$temporary_interrupt"
   mv -f "$temporary_interrupt" "$INTERRUPT_FILE"
+elif [[ -f "$INTERRUPT_FILE" ]] \
+  && [[ "$(cat "$INTERRUPT_FILE" 2>/dev/null || true)" != "$request_token" ]]; then
+  rm -f "$INTERRUPT_FILE"
 fi
+
+# The worker may already be activating the previously requested release, so
+# preserve that token and the new token. Every other immutable staging copy is
+# superseded and can be reclaimed immediately.
+prune_superseded_releases "$previous_token" "$request_token"
+release_queue_lock
 
 if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
   echo "Web reload request coalesced into the active background worker: $request_token"

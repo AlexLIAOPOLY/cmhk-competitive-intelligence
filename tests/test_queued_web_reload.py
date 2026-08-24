@@ -48,6 +48,12 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
         self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
+        self.assertIn("web-reload-queue.lock", queue)
+        self.assertIn("prune_superseded_releases", queue)
+        self.assertIn('prune_superseded_releases "$previous_token" "$request_token"', queue)
+        self.assertIn("web-reload-queue.lock", worker)
+        self.assertIn('delete_release_dir "$release_dir"', worker)
+        self.assertNotIn('rm -rf "$release_dir"', worker)
         self.assertIn(
             '$RUNTIME/agent_knowledge/crawl_run_logs/index.json', worker
         )

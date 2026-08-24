@@ -10,6 +10,7 @@ STATE_DIR="$HOME/Library/Application Support/CMHK"
 REQUEST_FILE="$STATE_DIR/web-reload-requested"
 INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
+QUEUE_LOCK_DIR="$STATE_DIR/web-reload-queue.lock"
 RUNTIME="${CMHK_WEB_RUNTIME:-/Users/liaowang/cmhk_public_crawl_app}"
 WEB_PLIST="$HOME/Library/LaunchAgents/$WEB_LABEL.plist"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
@@ -18,6 +19,45 @@ mkdir -p "$STATE_DIR" "$(dirname "$LOG_FILE")"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"
+}
+
+queue_lock_acquired=0
+
+acquire_queue_lock() {
+  local existing_pid="" _attempt
+  for _attempt in {1..120}; do
+    if mkdir "$QUEUE_LOCK_DIR" 2>/dev/null; then
+      printf '%s\n' "$$" > "$QUEUE_LOCK_DIR/pid"
+      queue_lock_acquired=1
+      return 0
+    fi
+    existing_pid="$(cat "$QUEUE_LOCK_DIR/pid" 2>/dev/null || true)"
+    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && ! kill -0 "$existing_pid" 2>/dev/null; then
+      rm -f "$QUEUE_LOCK_DIR/pid"
+      rmdir "$QUEUE_LOCK_DIR" 2>/dev/null || true
+      continue
+    fi
+    sleep 1
+  done
+  log "Timed out waiting for the Web reload queue lock."
+  return 1
+}
+
+release_queue_lock() {
+  if (( queue_lock_acquired == 1 )); then
+    rm -f "$QUEUE_LOCK_DIR/pid"
+    rmdir "$QUEUE_LOCK_DIR" 2>/dev/null || true
+    queue_lock_acquired=0
+  fi
+}
+
+delete_release_dir() {
+  local candidate="$1" token
+  token="${candidate##*/}"
+  [[ "$token" =~ ^[0-9]{8}T[0-9]{6}-[0-9]+-[0-9]+$ ]] || return 1
+  [[ "$candidate" == "$STAGE_ROOT/$token" ]] || return 1
+  [[ -d "$candidate" && ! -L "$candidate" ]] || return 0
+  find "$candidate" -depth -delete
 }
 
 running_strategic_tasks() {
@@ -166,17 +206,22 @@ while [[ -f "$REQUEST_FILE" ]]; do
     sleep 1
   done
 
+  # Serialize request publication and completion so an arriving request cannot
+  # be removed by the worker after it compared the previous token.
+  acquire_queue_lock
   current_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
   if [[ "$current_token" == "$requested_token" ]]; then
     rm -f "$REQUEST_FILE"
     if interrupt_requested "$requested_token"; then
       rm -f "$INTERRUPT_FILE"
     fi
-    rm -rf "$release_dir"
+    delete_release_dir "$release_dir"
     log "Request $requested_token activated; queue is empty."
   else
+    delete_release_dir "$release_dir"
     log "A newer request is queued; worker will coalesce and activate it next."
   fi
+  release_queue_lock
 done
 
 log "Queued Web reload worker exiting."
