@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "3a5cbf876d2c3999d4979d15",
+      "task_id": "incident:3a5cbf876d2c3999d4979d15",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "自动恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-24T19:14:27+08:00",
+      "started_at_hkt": "2026-08-24T19:12:57+08:00",
+      "heartbeat_at_hkt": "2026-08-24T19:14:27+08:00",
+      "completed_at_hkt": "2026-08-24T19:14:57+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "b486004dd5b4f21fba0bc005",
       "task_id": "incident:b486004dd5b4f21fba0bc005",
       "title": "主项目后台任务",
@@ -240,6 +264,30 @@
       "started_at_hkt": "2026-08-24T17:53:15+08:00",
       "heartbeat_at_hkt": "2026-08-24T18:03:49+08:00",
       "completed_at_hkt": "2026-08-24T18:04:19+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "5fe39adeebff5bf1557a3aa8",
+      "task_id": "incident:5fe39adeebff5bf1557a3aa8",
+      "title": "竞对工作台 AI 竞争洞察",
+      "kind": "competitor-workbench",
+      "kind_label": "竞对工作台 AI 竞争洞察",
+      "scope": "competitor-workbench",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "竞对工作台 AI 洞察未生成",
+      "impact": "用户可查看权威数据图表，但当前组合的 AI 竞争格局、公司定位和业务含义未完成生成。",
+      "suggestions": [
+        "核对 AI 网关、当前模型路由、限流队列和返回协议。",
+        "保留已展示的权威数据，只恢复 AI 洞察阶段；恢复后回读页面与告警状态。"
+      ],
+      "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
+      "started_at_hkt": "2026-08-24T19:12:57+08:00",
+      "heartbeat_at_hkt": "2026-08-24T19:15:27+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -11960,54 +12008,6 @@
       "started_at_hkt": "2026-08-17T12:15:33+08:00",
       "heartbeat_at_hkt": "2026-08-17T12:15:33+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "7bfcf5ba6cac634fa059b761",
-      "task_id": "incident:7bfcf5ba6cac634fa059b761",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T12:11:02+08:00",
-      "started_at_hkt": "2026-08-17T12:11:02+08:00",
-      "heartbeat_at_hkt": "2026-08-17T12:11:02+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "3afacd0ff95e4e7aa6c74ec9",
-      "task_id": "incident:3afacd0ff95e4e7aa6c74ec9",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "自动恢复",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-17T12:05:23+08:00",
-      "started_at_hkt": "2026-08-17T12:05:34+08:00",
-      "heartbeat_at_hkt": "2026-08-17T12:14:03+08:00",
-      "completed_at_hkt": "2026-08-17T12:14:33+08:00",
       "handled_at_hkt": ""
     }
   ],
