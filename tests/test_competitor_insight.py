@@ -130,6 +130,7 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("deadline_monotonic", wait_kwargs)
         self.assertTrue(callable(wait_kwargs["wait_callback"]))
         self.assertEqual([event["stage"] for event in events if event["type"] == "status"], ["queue", "generating", "reasoning"])
+        self.assertFalse(any("内网" in str(event.get("message") or "") for event in events))
         self.assertGreaterEqual(len([event for event in events if event["type"] == "delta"]), 3)
         self.assertEqual(result["insight"], MODEL_CONTENT)
         self.assertEqual(len(result["insights"]), 3)

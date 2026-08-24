@@ -454,7 +454,7 @@
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
         <header class="competitor-insight-header">
-          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在连接内网 AI</small></div></div>
+          <div class="competitor-insight-identity"><i data-competitor-insight-icon><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M13 2.5c1.05 5.52 3.48 7.95 9 9-5.52 1.05-7.95 3.48-9 9-1.05-5.52-3.48-7.95-9-9 5.52-1.05 7.95-3.48 9-9Z"/><path d="M24.5 2c.45 2.35 1.65 3.55 4 4-2.35.45-3.55 1.65-4 4-.45-2.35-1.65-3.55-4-4 2.35-.45 3.55-1.65 4-4Z"/></svg></i><div><b data-competitor-insight-title>AI 竞争洞察</b><small data-competitor-insight-status>正在连接 AI</small></div></div>
           <span class="competitor-insight-badge" data-competitor-insight-badge>CONNECTING</span>
         </header>
         <div class="competitor-insight-body">
@@ -694,7 +694,7 @@
     card.classList.remove("is-ai", "is-streaming");
     card.classList.add("is-loading");
     card.setAttribute("aria-busy", "true");
-    setCompetitorInsightStatus(card, "正在连接内网 AI");
+    setCompetitorInsightStatus(card, "正在连接 AI");
     card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
   }
 
@@ -703,7 +703,7 @@
     if (!card || !drafts.length) return;
     card.classList.remove("is-loading");
     card.classList.add("is-streaming");
-    setCompetitorInsightStatus(card, `内网 AI 正在流式生成 · 已收到 ${String(text).length} 字`);
+    setCompetitorInsightStatus(card, `AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
     const labels = ["竞争格局", "公司定位", "业务含义"];
     card.querySelector("[data-competitor-insight-list]").replaceChildren(...drafts.map((item, index) => {
@@ -760,7 +760,7 @@
           const event = JSON.parse(line.replace(/^data:\s*/, ""));
           if (requestId !== state.competitorInsightRequest) return;
           if (event.type === "status") {
-            setCompetitorInsightStatus(card, event.message || "内网 AI 正在处理");
+            setCompetitorInsightStatus(card, event.message || "AI 正在处理");
             card.querySelector("[data-competitor-insight-badge]").textContent = event.stage === "queue" ? "QUEUED" : "GENERATING";
           } else if (event.type === "delta") {
             generated += String(event.text || "");

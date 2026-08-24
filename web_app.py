@@ -383,7 +383,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     api_key = str(config.get("api_key") or "").strip()
     model = str(config.get("model") or "").strip()
     if not base_url or not api_key or not model or not is_internal_ai_base_url(base_url):
-        raise RuntimeError("公司内网 AI 配置不完整")
+        raise RuntimeError("AI 配置不完整")
     metric_label = str(metric.get("label") or metric_key)[:120]
     body = {
         "model": model,
@@ -429,7 +429,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
 
     try:
         if stream_callback:
-            stream_callback({"type": "status", "stage": "queue", "message": "请求已进入内网 AI 前台队列"})
+            stream_callback({"type": "status", "stage": "queue", "message": "请求已进入 AI 前台队列"})
         for attempt in range(2 if stream_callback else 1):
             content_parts: list[str] = []
             try:
@@ -440,7 +440,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                             {
                                 "type": "status",
                                 "stage": "queue",
-                                "message": f"内网 AI 繁忙，已为本次洞察保留队列（约 {max(1, round(remaining))} 秒）",
+                                "message": f"AI 繁忙，已为本次洞察保留队列（约 {max(1, round(remaining))} 秒）",
                             }
                         )
                         if stream_callback
@@ -448,7 +448,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                     ),
                 )
                 if stream_callback:
-                    stream_callback({"type": "status", "stage": "generating", "message": "内网 AI 已连接，正在生成真实结果"})
+                    stream_callback({"type": "status", "stage": "generating", "message": "AI 已连接，正在生成结果"})
                 with urllib.request.urlopen(request, timeout=90 if stream_callback else 60) as response:
                     if stream_callback:
                         reasoning_started = False
@@ -470,7 +470,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                             reasoning_delta = delta.get("reasoning_content")
                             if reasoning_delta and not reasoning_started:
                                 reasoning_started = True
-                                stream_callback({"type": "status", "stage": "reasoning", "message": "内网 AI 正在分析所选数据"})
+                                stream_callback({"type": "status", "stage": "reasoning", "message": "AI 正在分析所选数据"})
                             content_delta = delta.get("content")
                             if isinstance(content_delta, str) and content_delta:
                                 content_parts.append(content_delta)
@@ -496,7 +496,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                 retryable_http = not isinstance(exc, urllib.error.HTTPError) or exc.code in {429, 500, 502, 503, 504}
                 if attempt == 0 and stream_callback and not content_parts and retryable_http:
                     logging.warning("competitor insight upstream interrupted before content; retrying once: %s", exc)
-                    stream_callback({"type": "status", "stage": "queue", "message": "内网 AI 连接波动，正在自动续接"})
+                    stream_callback({"type": "status", "stage": "queue", "message": "AI 连接波动，正在自动续接"})
                     continue
                 raise
     finally:
