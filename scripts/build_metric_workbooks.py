@@ -13,6 +13,7 @@ from openpyxl.utils import get_column_letter
 ROOT = Path(__file__).resolve().parents[1]
 CORE_DIR = ROOT / "agent_knowledge" / "core_company_metrics_2026-06-16"
 CLOUD_DIR = ROOT / "agent_knowledge" / "cloud_vendor_metrics_2026-06-17"
+CLOUD_YEARS = [f"FY{year}" for year in range(2016, 2026)]
 
 
 CORE_METRIC_ORDER = [
@@ -36,12 +37,14 @@ CORE_METRIC_ORDER = [
 
 CLOUD_METRIC_ORDER = [
     "cloud_revenue",
+    "legacy_intelligent_cloud_revenue",
     "proxy_segment_revenue",
     "server_products_cloud_services_revenue",
     "cloud_services_license_support_revenue",
     "cloud_and_license_revenue",
     "revenue_yoy",
     "operating_income",
+    "legacy_intelligent_cloud_operating_income",
     "operating_margin",
     "adjusted_ebita",
     "adjusted_ebita_margin",
@@ -49,6 +52,7 @@ CLOUD_METRIC_ORDER = [
     "proxy_segment_gross_margin",
     "cloud_and_license_margin",
     "cloud_including_other_segments_revenue",
+    "group_capex",
 ]
 
 
@@ -118,7 +122,7 @@ def build_core_human_rows() -> list[dict[str, Any]]:
 
 
 def build_cloud_human_rows() -> list[dict[str, Any]]:
-    rows = read_csv(CLOUD_DIR / "cloud_vendor_metrics_2023_2025.csv")
+    rows = read_csv(CLOUD_DIR / "cloud_vendor_metrics_2016_2025.csv")
     sources = json.loads((CLOUD_DIR / "sources.json").read_text(encoding="utf-8"))
     grouped: dict[tuple[str, str], dict[str, Any]] = {}
     for row in rows:
@@ -136,16 +140,14 @@ def build_cloud_human_rows() -> list[dict[str, Any]]:
                 "股票代码": row["ticker"],
                 "指标": row["metric_zh"],
                 "指标代码": row["metric_key"],
-                "FY2023": "",
-                "FY2024": "",
-                "FY2025": "",
+                **{year: "" for year in CLOUD_YEARS},
                 "单位": "%" if row["unit"] == "percent" else f"{row['currency']} million".strip(),
                 "披露口径": row["disclosure_quality"],
                 "口径说明": row["quality_note"],
                 "主要来源": "；".join(source_labels[:3]),
             },
         )
-        item[f"FY{row['fiscal_year']}"] = format_value(row["value"], row["unit"], row["currency"])
+        item[f"FY{row['fiscal_year']}"] = format_value(row["official_value"], row["unit"], row["currency"])
     order = {metric: i for i, metric in enumerate(CLOUD_METRIC_ORDER)}
     return sorted(grouped.values(), key=lambda r: (r["云厂商/口径"], order.get(r["指标代码"], 999), r["指标代码"]))
 
@@ -190,7 +192,7 @@ def write_workbook(path: Path, core_rows: list[dict[str, Any]], cloud_rows: list
     wb = Workbook()
     wb.remove(wb.active)
     core_fields = ["主体", "公司全称", "股票代码", "指标", "FY2023", "FY2024", "FY2025", "单位", "口径说明", "主要来源"]
-    cloud_fields = ["云厂商/口径", "公司全称", "股票代码", "指标", "FY2023", "FY2024", "FY2025", "单位", "披露口径", "口径说明", "主要来源"]
+    cloud_fields = ["云厂商/口径", "公司全称", "股票代码", "指标", *CLOUD_YEARS, "单位", "披露口径", "口径说明", "主要来源"]
     add_sheet(wb, "竞对核心数据", core_rows, core_fields)
     add_sheet(wb, "重点云厂商", cloud_rows, cloud_fields)
     wb.save(path)
@@ -200,7 +202,7 @@ def main() -> None:
     core_rows = build_core_human_rows()
     cloud_rows = build_cloud_human_rows()
     core_fields = ["主体", "公司全称", "股票代码", "指标", "FY2023", "FY2024", "FY2025", "单位", "口径说明", "主要来源"]
-    cloud_fields = ["云厂商/口径", "公司全称", "股票代码", "指标", "FY2023", "FY2024", "FY2025", "单位", "披露口径", "口径说明", "主要来源"]
+    cloud_fields = ["云厂商/口径", "公司全称", "股票代码", "指标", *CLOUD_YEARS, "单位", "披露口径", "口径说明", "主要来源"]
 
     write_csv(CORE_DIR / "core_metrics_human_readable.csv", core_rows, core_fields)
     write_csv(CLOUD_DIR / "cloud_vendor_metrics_human_readable.csv", cloud_rows, cloud_fields)

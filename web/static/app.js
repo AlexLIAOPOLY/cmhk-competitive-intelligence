@@ -3261,7 +3261,7 @@ function renderCrawlRunArchive(data) {
 
   if (parsed.fourDomainRefresh) {
     const refresh = parsed.fourDomainRefresh;
-    const domainLabels = { local: "本地竞对", international: "内地/国际运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
+    const domainLabels = { local: "香港运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
     const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项战略解读", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
     const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "cloud", "macro"])
       .map((item) => domainLabels[item] || item);
@@ -7835,8 +7835,9 @@ document.addEventListener("keydown", (event) => {
   if (!board || !grid || !rail || !backdrop || !drawer || !drawerBody) return;
 
   const domainLabels = {
-    local: "本地运营商",
-    international: "内地电讯企业",
+    local: "香港运营商",
+    international: "国际运营商",
+    mainland: "内地运营商",
     cloud: "全球云厂商",
     macro: "香港电讯市场",
   };
@@ -8332,16 +8333,20 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (visual === "columns") {
-      return `<div class="intelligence-viz intelligence-viz-columns" aria-label="${safe(focus.label)}柱列比较">${items.map((item, index) => {
+      const isScrollableCloudChart = domain.id === "cloud" && items.length > 6;
+      const columns = `<div class="intelligence-viz intelligence-viz-columns ${isScrollableCloudChart ? "is-scrollable-chart" : ""}" aria-label="${safe(focus.label)}柱列比较">${items.map((item, index) => {
         const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `
           <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${Number(item.value) < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-            <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
+            <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
             <span>${renderScrollingLabel(item.name)}</span>
           </div>
         `;
       }).join("")}</div>`;
+      return isScrollableCloudChart
+        ? `<div class="intelligence-chart-scroll" role="region" tabindex="0" aria-label="${safe(focus.label)}图表，可横向滚动查看更多厂商">${columns}</div>`
+        : columns;
     }
 
     if (visual === "ranges") {

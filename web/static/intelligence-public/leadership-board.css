@@ -58,6 +58,11 @@
   --domain-image-position: 82% 65%;
 }
 
+.intelligence-domain-mainland {
+  --domain-image: url("/static/assets/competitive-intelligence-radar-v3.webp");
+  --domain-image-position: 72% 35%;
+}
+
 .intelligence-domain-cloud {
   --domain-image: url("./assets/competitive-intelligence-radar-v3.webp");
   --domain-image-position: 28% 82%;
@@ -688,16 +693,18 @@
     grid-column: 1 / 5;
     grid-row: 2;
     justify-self: start;
-    width: min(100%, 760px);
-  }
-  .intelligence-domain-local .intelligence-focus-tabs {
-    width: fit-content;
+    width: auto;
     max-width: 100%;
   }
+  .intelligence-domain-local .intelligence-focus-tabs {
+    width: auto;
+    max-width: 100%;
+  }
+  .intelligence-focus-tabs button,
   .intelligence-domain-local .intelligence-focus-tabs button {
-    flex: 0 0 auto;
-    min-width: max-content;
-    padding-inline: 18px;
+    flex: 0 0 118px;
+    min-width: 118px;
+    padding-inline: 10px;
   }
   .intelligence-domain-focus-stage { grid-row: 3; }
 }

@@ -14,8 +14,9 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
   if (!board || !grid || !rail || !backdrop || !drawer || !drawerBody) return;
 
   const domainLabels = {
-    local: "本地运营商",
-    international: "内地电讯企业",
+    local: "香港运营商",
+    international: "国际运营商",
+    mainland: "内地运营商",
     cloud: "全球云厂商",
     macro: "香港电讯市场",
   };

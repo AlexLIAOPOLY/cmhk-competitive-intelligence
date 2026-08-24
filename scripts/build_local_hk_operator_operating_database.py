@@ -13,6 +13,7 @@ BUILD_TIME = "2026-08-18T00:00:00+08:00"
 YEARS = list(range(2016, 2026))
 
 OPERATORS = {
+    "cmhk": {"name": "CMHK", "legal_name": "China Mobile Hong Kong Company Limited", "fiscal_year_end": "12-31", "brands": ["CMHK"]},
     "hkt": {"name": "HKT", "legal_name": "HKT Trust and HKT Limited", "fiscal_year_end": "12-31", "brands": ["csl", "1O1O"]},
     "three_hk": {"name": "3HK", "legal_name": "Hutchison Telecommunications Hong Kong Holdings Limited", "fiscal_year_end": "12-31", "brands": ["3 Hong Kong"]},
     "smartone": {"name": "SmarTone", "legal_name": "SmarTone Telecommunications Holdings Limited", "fiscal_year_end": "06-30", "brands": ["SmarTone"]},
@@ -71,12 +72,53 @@ def smartone_url(year: int) -> str:
     return f"https://www.smartoneholdings.com/about/investor/financial_reports/english/{year-1}_{year}_annual.pdf"
 
 
+HKT_ANNUAL_RESULTS = {
+    2016: ("HKT 2016 Annual Res.pdf", "e01-2017.01.13 (201.pdf"),
+    2017: ("HKT 2017 Annual Res.pdf", "e01-2018.02.06 (201.pdf"),
+    2018: ("hkt-2018-annual-res.pdf", "e01-2019.02.22 (201.pdf"),
+    2019: ("hkt-2019-annual-res.pdf", "e-2020.02.12 (2019 .pdf"),
+    2020: ("hkt-2020-annual-res.pdf", "e01-2021.02.04 (202.pdf"),
+    2021: ("hkt-2021-annual-res.pdf", "e01-2022.02.24 (202.pdf"),
+    2022: ("hkt-2022-annual-res.pdf", "e01-2023.02.23 (202.pdf"),
+    2023: ("hkt-2023-annual-res.pdf", "e01-hkt-2023-annual.pdf"),
+    2024: ("hkt-2024-annual-results-presentation.pdf", "e01-2025.02.20 (2024 Annual Results Announcement).pdf"),
+    2025: ("c01-2025_Annual_Results.pdf", "e-2026.02.09_(2025_Annual_Results_Announcement).pdf"),
+}
+
+THREE_HK_ANNUAL_RESULTS = {
+    2016: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a170937-e215_2016resultsannouncement.pdf", "https://www.hthkh.com/en/ir/presentation/pre170228.pdf"),
+    2017: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a189326-e215_2017resultsannouncement.pdf", "https://www.hthkh.com/en/ir/presentation/pre180226.pdf"),
+    2018: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a207044-e215_2018resultsannouncement.pdf", "https://www.hthkh.com/en/ir/presentation/pre190228.pdf"),
+    2019: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a225532-e215_2019resultsannouncement.pdf", "https://www.hthkh.com/en/ir/presentation/pre200228.pdf"),
+    2020: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a243524-e215_2020annualresultsannoucement.pdf", "https://www.hthkh.com/en/ir/presentation/pre210226.pdf"),
+    2021: ("https://doc.irasia.com/listco/hk/hthkh/annual/2021/res.pdf", "https://www.hthkh.com/en/ir/presentation/pre220225.pdf"),
+    2022: ("https://doc.irasia.com/listco/hk/hthkh/annual/2022/res.pdf", "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre230228.pdf"),
+    2023: ("https://doc.irasia.com/listco/hk/hthkh/annual/2023/res.pdf", "https://www.hthkh.com/en/ir/presentation/pre240305.pdf"),
+    2024: ("https://doc.irasia.com/listco/hk/hthkh/annual/2024/res.pdf", "https://www.hthkh.com/en/ir/presentation/pre250314.pdf"),
+    2025: ("https://doc.irasia.com/listco/hk/hthkh/announcement/a332012-e_2025annualresultsannouncement.pdf", "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"),
+}
+
+
 SOURCES: dict[str, dict[str, Any]] = {}
 for year in YEARS:
     SOURCES[f"hkt_ar_{year}"] = {"source_id": f"hkt_ar_{year}", "operator_id": "hkt", "year": year, "label": f"HKT {year} Annual Report", "url": hkt_url(year), "source_type": "official_annual_report", "publisher": OPERATORS["hkt"]["legal_name"]}
     SOURCES[f"three_hk_ar_{year}"] = {"source_id": f"three_hk_ar_{year}", "operator_id": "three_hk", "year": year, "label": f"Hutchison Telecommunications Hong Kong {year} Annual Report", "url": f"https://www.hthkh.com/en/ir/reports/ar{year}/ar{year}.pdf", "source_type": "official_annual_report", "publisher": OPERATORS["three_hk"]["legal_name"]}
+    hkt_presentation, hkt_announcement = HKT_ANNUAL_RESULTS[year]
+    SOURCES[f"hkt_presentation_{year}"] = {"source_id": f"hkt_presentation_{year}", "operator_id": "hkt", "year": year, "label": f"HKT {year} Annual Results Presentation", "url": "https://www.hkt.com/api-service/assets/" + hkt_presentation.replace(" ", "%20"), "source_type": "official_results_presentation", "publisher": OPERATORS["hkt"]["legal_name"]}
+    SOURCES[f"hkt_results_{year}"] = {"source_id": f"hkt_results_{year}", "operator_id": "hkt", "year": year, "label": f"HKT {year} Annual Results Announcement", "url": "https://www.hkt.com/api-service/assets/" + hkt_announcement.replace(" ", "%20"), "source_type": "official_results_announcement", "publisher": OPERATORS["hkt"]["legal_name"]}
+    three_results, three_presentation = THREE_HK_ANNUAL_RESULTS[year]
+    SOURCES[f"three_hk_results_{year}"] = {"source_id": f"three_hk_results_{year}", "operator_id": "three_hk", "year": year, "label": f"3HK {year} Annual Results Announcement", "url": three_results, "source_type": "official_results_announcement", "publisher": OPERATORS["three_hk"]["legal_name"]}
+    SOURCES[f"three_hk_presentation_{year}"] = {"source_id": f"three_hk_presentation_{year}", "operator_id": "three_hk", "year": year, "label": f"3HK {year} Annual Results Presentation", "url": three_presentation, "source_type": "official_results_presentation", "publisher": OPERATORS["three_hk"]["legal_name"]}
 for year in range(2017, 2026):
     SOURCES[f"smartone_ar_{year}"] = {"source_id": f"smartone_ar_{year}", "operator_id": "smartone", "year": year, "label": f"SmarTone FY{year} Annual Report", "url": smartone_url(year), "source_type": "official_annual_report", "publisher": OPERATORS["smartone"]["legal_name"]}
+SOURCES.update({
+    "hkt_results_2025": {"source_id": "hkt_results_2025", "operator_id": "hkt", "year": 2025, "label": "HKT 2025 Annual Results Announcement", "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf", "source_type": "official_results_announcement", "publisher": OPERATORS["hkt"]["legal_name"]},
+    "hkt_presentation_2025": {"source_id": "hkt_presentation_2025", "operator_id": "hkt", "year": 2025, "label": "HKT 2025 Annual Results Presentation", "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf", "source_type": "official_results_presentation", "publisher": OPERATORS["hkt"]["legal_name"]},
+    "three_hk_highlights_2025": {"source_id": "three_hk_highlights_2025", "operator_id": "three_hk", "year": 2025, "label": "3HK 2025 Annual Results Highlights", "url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf", "source_type": "official_results_highlights", "publisher": OPERATORS["three_hk"]["legal_name"]},
+    "three_hk_analysis_2025": {"source_id": "three_hk_analysis_2025", "operator_id": "three_hk", "year": 2025, "label": "3HK 2025 Annual Results Analysis", "url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf", "source_type": "official_results_analysis", "publisher": OPERATORS["three_hk"]["legal_name"]},
+    "smartone_results_2025": {"source_id": "smartone_results_2025", "operator_id": "smartone", "year": 2025, "label": "SmarTone FY2025 Annual Results", "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_results.pdf", "source_type": "official_results_announcement", "publisher": OPERATORS["smartone"]["legal_name"]},
+    "smartone_presentation_2025": {"source_id": "smartone_presentation_2025", "operator_id": "smartone", "year": 2025, "label": "SmarTone FY2025 Annual Results Presentation", "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf", "source_type": "official_results_presentation", "publisher": OPERATORS["smartone"]["legal_name"]},
+})
 for year in [2024, 2025]:
     SOURCES[f"hkbn_ar_{year}"] = {"source_id": f"hkbn_ar_{year}", "operator_id": "hkbn", "year": year, "label": "HKBN FY2025 Annual Report and FY2024 comparative", "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf", "source_type": "official_annual_report", "publisher": OPERATORS["hkbn"]["legal_name"]}
     SOURCES[f"hkbn_results_{year}"] = {"source_id": f"hkbn_results_{year}", "operator_id": "hkbn", "year": year, "label": "HKBN FY2025 Annual Results Presentation and FY2024 comparative", "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY25_HKBN_Annual_Results_Announcement_Presentation_en.pdf", "source_type": "official_results_presentation", "publisher": OPERATORS["hkbn"]["legal_name"]}
@@ -93,8 +135,13 @@ def add_series(operator_id: str, metric_key: str, values: dict[int, float | int 
     spec = OPERATORS[operator_id]
     for year, value in values.items():
         ids = (source_ids or {}).get(year, [])
-        valid = [sid for sid in ids if sid in SOURCES]
-        row_status = "source_gap_confirmed" if value is None else ("official_multi_source_verified" if len(valid) >= 2 else status)
+        valid = [sid for sid in ids if sid in SOURCES] if value is not None else []
+        row_status = (
+            "source_gap_confirmed" if value is None
+            else "official_three_distinct_sources_verified" if len(valid) >= 3
+            else "official_multi_source_verified" if len(valid) >= 2
+            else status
+        )
         ROWS.append({
             "operator_id": operator_id, "operator": spec["name"], "legal_name": spec["legal_name"],
             "year": year, "period": f"FY{year}", "period_end": f"{year}-{spec['fiscal_year_end']}", "grain": "annual",
@@ -108,10 +155,24 @@ def add_series(operator_id: str, metric_key: str, values: dict[int, float | int 
 
 def annual_sources(operator_id: str, years: list[int]) -> dict[int, list[str]]:
     prefix = {"hkt": "hkt", "three_hk": "three_hk", "smartone": "smartone"}[operator_id]
-    return {year: [f"{prefix}_ar_{year}"] for year in years}
+    sources = {
+        year: (
+            [f"{prefix}_ar_{year}", f"{prefix}_results_{year}", f"{prefix}_presentation_{year}"]
+            if operator_id in {"hkt", "three_hk"} else [f"{prefix}_ar_{year}"]
+        )
+        for year in years
+    }
+    if 2025 in sources:
+        sources[2025] = {
+            "hkt": ["hkt_ar_2025", "hkt_results_2025", "hkt_presentation_2025"],
+            "three_hk": ["three_hk_ar_2025", "three_hk_highlights_2025", "three_hk_analysis_2025"],
+            "smartone": ["smartone_ar_2025", "smartone_results_2025", "smartone_presentation_2025"],
+        }[operator_id]
+    return sources
 
 
 # HKT: calendar-year annual metrics. Total mobile base is not backfilled where reports do not state a reusable exact figure.
+add_series("cmhk", "mobile_postpaid_customers", {year: None for year in YEARS}, scope="Hong Kong post-paid mobile customer base", note="CMHK is not separately listed and does not publish a reusable annual post-paid subscriber series; group mobile totals are not substituted.")
 add_series("hkt", "mobile_postpaid_customers", dict(zip(YEARS, [3.130, 3.217, 3.247, 3.250, 3.252, 3.297, 3.323, 3.428, 3.459, 3.494])), scope="Hong Kong post-paid mobile customer base", source_ids=annual_sources("hkt", YEARS))
 add_series("hkt", "mobile_postpaid_exit_arpu", dict(zip(YEARS, [233, 232, 198, 200, 184, 187, 188, 191, 193, 195])), scope="Hong Kong post-paid exit ARPU", basis="exit_month", source_ids=annual_sources("hkt", YEARS))
 add_series("hkt", "mobile_postpaid_churn", dict(zip(YEARS, [1.3, 1.1, 1.0, 1.0, 0.9, 0.7, 0.8, 0.8, 0.7, 0.7])), scope="monthly post-paid churn", basis="monthly_rate", source_ids=annual_sources("hkt", YEARS))

@@ -1,17 +1,18 @@
 {
   "generated_at": "2026-08-18T00:00:00+08:00",
   "status": "pass",
-  "row_count": 783,
+  "row_count": 903,
   "available_value_rows": 172,
-  "source_gap_rows": 611,
-  "source_count": 39,
+  "source_gap_rows": 731,
+  "source_count": 83,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
   "verification_status_counts": {
-    "source_gap_confirmed": 611,
-    "official_single_source": 158,
-    "official_multi_source_verified": 14
+    "source_gap_confirmed": 731,
+    "official_single_source": 40,
+    "official_multi_source_verified": 14,
+    "official_three_distinct_sources_verified": 118
   },
   "available_rows_by_operator": {
     "HGC": 1,

@@ -20,6 +20,42 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "hkt_presentation_2016",
+      "operator_id": "hkt",
+      "year": 2016,
+      "label": "HKT 2016 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/HKT%202016%20Annual%20Res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2016",
+      "operator_id": "hkt",
+      "year": 2016,
+      "label": "HKT 2016 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2017.01.13%20(201.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2016",
+      "operator_id": "three_hk",
+      "year": 2016,
+      "label": "3HK 2016 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a170937-e215_2016resultsannouncement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2016",
+      "operator_id": "three_hk",
+      "year": 2016,
+      "label": "3HK 2016 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre170228.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
       "source_id": "hkt_ar_2017",
       "operator_id": "hkt",
       "year": 2017,
@@ -35,6 +71,42 @@
       "label": "Hutchison Telecommunications Hong Kong 2017 Annual Report",
       "url": "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf",
       "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_presentation_2017",
+      "operator_id": "hkt",
+      "year": 2017,
+      "label": "HKT 2017 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/HKT%202017%20Annual%20Res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2017",
+      "operator_id": "hkt",
+      "year": 2017,
+      "label": "HKT 2017 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2018.02.06%20(201.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2017",
+      "operator_id": "three_hk",
+      "year": 2017,
+      "label": "3HK 2017 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a189326-e215_2017resultsannouncement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2017",
+      "operator_id": "three_hk",
+      "year": 2017,
+      "label": "3HK 2017 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre180226.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
@@ -56,6 +128,42 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "hkt_presentation_2018",
+      "operator_id": "hkt",
+      "year": 2018,
+      "label": "HKT 2018 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2018-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2018",
+      "operator_id": "hkt",
+      "year": 2018,
+      "label": "HKT 2018 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2019.02.22%20(201.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2018",
+      "operator_id": "three_hk",
+      "year": 2018,
+      "label": "3HK 2018 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a207044-e215_2018resultsannouncement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2018",
+      "operator_id": "three_hk",
+      "year": 2018,
+      "label": "3HK 2018 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre190228.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
       "source_id": "hkt_ar_2019",
       "operator_id": "hkt",
       "year": 2019,
@@ -71,6 +179,42 @@
       "label": "Hutchison Telecommunications Hong Kong 2019 Annual Report",
       "url": "https://www.hthkh.com/en/ir/reports/ar2019/ar2019.pdf",
       "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_presentation_2019",
+      "operator_id": "hkt",
+      "year": 2019,
+      "label": "HKT 2019 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2019-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2019",
+      "operator_id": "hkt",
+      "year": 2019,
+      "label": "HKT 2019 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e-2020.02.12%20(2019%20.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2019",
+      "operator_id": "three_hk",
+      "year": 2019,
+      "label": "3HK 2019 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a225532-e215_2019resultsannouncement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2019",
+      "operator_id": "three_hk",
+      "year": 2019,
+      "label": "3HK 2019 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre200228.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
@@ -92,6 +236,42 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "hkt_presentation_2020",
+      "operator_id": "hkt",
+      "year": 2020,
+      "label": "HKT 2020 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2020-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2020",
+      "operator_id": "hkt",
+      "year": 2020,
+      "label": "HKT 2020 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2021.02.04%20(202.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2020",
+      "operator_id": "three_hk",
+      "year": 2020,
+      "label": "3HK 2020 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a243524-e215_2020annualresultsannoucement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2020",
+      "operator_id": "three_hk",
+      "year": 2020,
+      "label": "3HK 2020 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre210226.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
       "source_id": "hkt_ar_2021",
       "operator_id": "hkt",
       "year": 2021,
@@ -107,6 +287,42 @@
       "label": "Hutchison Telecommunications Hong Kong 2021 Annual Report",
       "url": "https://www.hthkh.com/en/ir/reports/ar2021/ar2021.pdf",
       "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_presentation_2021",
+      "operator_id": "hkt",
+      "year": 2021,
+      "label": "HKT 2021 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2021-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2021",
+      "operator_id": "hkt",
+      "year": 2021,
+      "label": "HKT 2021 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2022.02.24%20(202.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2021",
+      "operator_id": "three_hk",
+      "year": 2021,
+      "label": "3HK 2021 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/annual/2021/res.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2021",
+      "operator_id": "three_hk",
+      "year": 2021,
+      "label": "3HK 2021 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre220225.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
@@ -128,6 +344,42 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "hkt_presentation_2022",
+      "operator_id": "hkt",
+      "year": 2022,
+      "label": "HKT 2022 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2022-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2022",
+      "operator_id": "hkt",
+      "year": 2022,
+      "label": "HKT 2022 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2023.02.23%20(202.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2022",
+      "operator_id": "three_hk",
+      "year": 2022,
+      "label": "3HK 2022 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/annual/2022/res.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2022",
+      "operator_id": "three_hk",
+      "year": 2022,
+      "label": "3HK 2022 Annual Results Presentation",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre230228.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
       "source_id": "hkt_ar_2023",
       "operator_id": "hkt",
       "year": 2023,
@@ -143,6 +395,42 @@
       "label": "Hutchison Telecommunications Hong Kong 2023 Annual Report",
       "url": "https://www.hthkh.com/en/ir/reports/ar2023/ar2023.pdf",
       "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_presentation_2023",
+      "operator_id": "hkt",
+      "year": 2023,
+      "label": "HKT 2023 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2023-annual-res.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2023",
+      "operator_id": "hkt",
+      "year": 2023,
+      "label": "HKT 2023 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-hkt-2023-annual.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2023",
+      "operator_id": "three_hk",
+      "year": 2023,
+      "label": "3HK 2023 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/annual/2023/res.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2023",
+      "operator_id": "three_hk",
+      "year": 2023,
+      "label": "3HK 2023 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre240305.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
@@ -164,6 +452,42 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "hkt_presentation_2024",
+      "operator_id": "hkt",
+      "year": 2024,
+      "label": "HKT 2024 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/hkt-2024-annual-results-presentation.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2024",
+      "operator_id": "hkt",
+      "year": 2024,
+      "label": "HKT 2024 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e01-2025.02.20%20(2024%20Annual%20Results%20Announcement).pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2024",
+      "operator_id": "three_hk",
+      "year": 2024,
+      "label": "3HK 2024 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/annual/2024/res.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2024",
+      "operator_id": "three_hk",
+      "year": 2024,
+      "label": "3HK 2024 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre250314.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
       "source_id": "hkt_ar_2025",
       "operator_id": "hkt",
       "year": 2025,
@@ -179,6 +503,42 @@
       "label": "Hutchison Telecommunications Hong Kong 2025 Annual Report",
       "url": "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf",
       "source_type": "official_annual_report",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "hkt_presentation_2025",
+      "operator_id": "hkt",
+      "year": 2025,
+      "label": "HKT 2025 Annual Results Presentation",
+      "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "hkt_results_2025",
+      "operator_id": "hkt",
+      "year": 2025,
+      "label": "HKT 2025 Annual Results Announcement",
+      "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "HKT Trust and HKT Limited"
+    },
+    {
+      "source_id": "three_hk_results_2025",
+      "operator_id": "three_hk",
+      "year": 2025,
+      "label": "3HK 2025 Annual Results Announcement",
+      "url": "https://doc.irasia.com/listco/hk/hthkh/announcement/a332012-e_2025annualresultsannouncement.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_presentation_2025",
+      "operator_id": "three_hk",
+      "year": 2025,
+      "label": "3HK 2025 Annual Results Presentation",
+      "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
@@ -260,6 +620,42 @@
       "label": "SmarTone FY2025 Annual Report",
       "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf",
       "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_highlights_2025",
+      "operator_id": "three_hk",
+      "year": 2025,
+      "label": "3HK 2025 Annual Results Highlights",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+      "source_type": "official_results_highlights",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_analysis_2025",
+      "operator_id": "three_hk",
+      "year": 2025,
+      "label": "3HK 2025 Annual Results Analysis",
+      "url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+      "source_type": "official_results_analysis",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "smartone_results_2025",
+      "operator_id": "smartone",
+      "year": 2025,
+      "label": "SmarTone FY2025 Annual Results",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_results.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_presentation_2025",
+      "operator_id": "smartone",
+      "year": 2025,
+      "label": "SmarTone FY2025 Annual Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "SmarTone Telecommunications Holdings Limited"
     },
     {

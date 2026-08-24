@@ -48,7 +48,19 @@ FOCUS_RELATION_FEW_SHOTS = (
     "收入增速形成两层；Azure和Tencent是代理分部口径，不纳入这一比较。\n"
     "反例：投资增长1.3%推动投诉增长2.9%。问题：期间不同且虚构因果。\n"
     "正例：投资数据截至2025年3月，投诉数据为2025自然年，期间不同，"
-    "不能判断两者关系，只能分别观察投入变化和服务压力。"
+    "不能判断两者关系，只能分别观察投入变化和服务压力。\n"
+    "反例：HKT营收36553百万港元，3HK为5448百万港元，数值存在差距。"
+    "问题：只告诉读者数据是什么，没有提炼战略发现。\n"
+    "正例：HKT营收36553百万港元、3HK为5448百万港元，可披露收入规模形成头尾分层，"
+    "意味着两者竞争资源承载力不在同一量级；但绝对规模不等同经营效率。\n"
+    "反例：AWS云利润39834百万美元，Google为6112百万美元，利润定义见明细。"
+    "问题：只复述金额和定义。\n"
+    "正例：同属经营利润披露的AWS为39834百万美元、Google为6112百万美元，利润池向头部集中，"
+    "表明云业务盈利缓冲分层；其他厂商的毛利或调整后EBITA不混入这一判断。\n"
+    "反例：三来源数据待补为-，四家公司后付费数据均未披露，因此无法比较。"
+    "问题：把空值或占位符当成数字，而且只报告数据缺口。\n"
+    "正例：四家公司均缺少可比后付费原值，口径缺口意味着客户价值和客户质量无法穿透比较，"
+    "竞争结构判断不能由移动或5G用户总量替代。"
 )
 MAX_FOCUS_INSIGHT_CHARS = 120
 MAX_FOCUS_INSIGHT_SENTENCES = 2
@@ -598,7 +610,13 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         return f"AI分析分类使用了未经证据支持的因果词{unsupported_causal}：{domain}.{focus_id}"
     focus_numbers = _focus_value_tokens(evidence_focus)
     analysis_numbers = _numeric_tokens(analysis)
-    if focus_numbers and not (focus_numbers & analysis_numbers):
+    focus_items = [item for item in evidence_focus.get("items") or [] if isinstance(item, dict)]
+    has_disclosed_value = any(
+        item.get("value") not in (None, "", "-")
+        or any(point.get("value") not in (None, "", "-") for point in item.get("trend") or [] if isinstance(point, dict))
+        for item in focus_items
+    )
+    if focus_numbers and has_disclosed_value and not (focus_numbers & analysis_numbers):
         return f"AI分析分类缺少输入数值证据：{domain}.{focus_id}"
     if (domain, focus_id) == ("local", "financials"):
         companies_by_period: dict[str, int] = {}
@@ -920,9 +938,11 @@ def _repair_focus_numeric_anchors(raw: Any, evidence: dict[str, Any]) -> Any:
                 continue
             metric = evidence_focus.get("metric") if isinstance(evidence_focus.get("metric"), dict) else {}
             value = metric.get("value")
-            if value in (None, ""):
-                continue
             label = str(metric.get("label") or "最新指标")
+            if value in (None, "", "-", "—") or any(
+                placeholder in label for placeholder in ("待补", "未披露", "暂无")
+            ):
+                continue
             unit = str(metric.get("unit") or "")
             focus["analysis"] = f"{label}为{value}{unit}；{analysis}"
             focus["numeric_anchor_repaired"] = True
@@ -1086,7 +1106,9 @@ def _validate_model_summaries(
 ) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
         raise ValueError("AI分析没有返回items数组")
-    expected = expected_domains or {"local", "international", "cloud", "macro"}
+    expected = expected_domains or {
+        str(domain.get("id") or "") for domain in evidence.get("domains") or [] if str(domain.get("id") or "")
+    }
     allowed_numbers = _numeric_tokens(evidence)
     allowed_urls = {
         str(item.get("source_url") or "")
@@ -1247,14 +1269,17 @@ def _validate_model_summaries(
     if seen != expected:
         raise ValueError(f"AI分析领域不完整：{sorted(expected - seen)}")
     domain_order = {
-        domain_id: index
-        for index, domain_id in enumerate(("local", "international", "cloud", "macro"))
+        str(domain.get("id") or ""): index
+        for index, domain in enumerate(evidence.get("domains") or [])
     }
     return sorted(result, key=lambda item: domain_order.get(item["domain"], len(domain_order)))
 
 
 def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
-    urls: dict[str, set[str]] = {key: set() for key in ("local", "international", "cloud", "macro")}
+    urls: dict[str, set[str]] = {
+        str(domain.get("id") or ""): set()
+        for domain in evidence.get("domains") or [] if str(domain.get("id") or "")
+    }
     for domain in evidence.get("domains") or []:
         domain_id = str(domain.get("id") or "")
         if domain_id not in urls:
@@ -1312,7 +1337,9 @@ def _repair_discovery_conciseness(raw: Any) -> Any:
 def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw, list) or len(raw) != 4:
         raise ValueError("AI跨库发现必须恰好返回四项")
-    expected_domains = {"local", "international", "cloud", "macro"}
+    expected_domains = {
+        str(domain.get("id") or "") for domain in evidence.get("domains") or [] if str(domain.get("id") or "")
+    }
     allowed_numbers = _numeric_tokens(evidence)
     urls_by_domain = _evidence_urls_by_domain(evidence)
     allowed_urls = set().union(*urls_by_domain.values())
@@ -1517,6 +1544,38 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     metric_value = _display_number(metric.get("value"))
     metric_unit = str(metric.get("unit") or "")
     strategic_fallback = str(focus.get("insight") or "").strip()
+    if domain in {"local", "mainland"} and focus_id in {"revenue", "ebitda", "net_profit", "postpaid"}:
+        if len(items) >= 2:
+            high, low = items[0], items[-1]
+            high_name, low_name = str(high.get("name") or ""), str(low.get("name") or "")
+            high_value, low_value = _display_number(high.get("value")), _display_number(low.get("value"))
+            unit = str(high.get("unit") or low.get("unit") or "")
+            if focus_id == "revenue":
+                return (
+                    f"{high_name} FY2025营收{high_value}{unit}，{low_name}{low_value}{unit}；"
+                    "可披露收入规模差距形成头尾梯队，意味着竞争资源承载力不在同一量级，但不等同经营效率。"
+                )
+            if focus_id == "ebitda":
+                return (
+                    f"{high_name} FY2025 EBITDA为{high_value}{unit}，{low_name}{low_value}{unit}；"
+                    "经营现金创造代理形成梯队，表明盈利缓冲厚度不同，但不直接等同现金流质量。"
+                )
+            if focus_id == "net_profit":
+                low_signal = "已为负值" if float(low.get("value") or 0) < 0 else "位于样本尾部"
+                return (
+                    f"{high_name} FY2025净利润{high_value}{unit}，{low_name}{low_value}{unit}且{low_signal}；"
+                    "利润绝对值断层表明盈利韧性明显分化，而非单纯规模差异。"
+                )
+            return (
+                f"{high_name} FY2025后付费用户{high_value}{unit}，{low_name}{low_value}{unit}；"
+                "客户基础规模形成梯队，意味着经常性收入基础不同，但未结合ARPU不能判断客户价值。"
+            )
+        if focus_id == "postpaid":
+            named = "、".join(str(item.get("name") or "") for item in focus.get("items") or [] if item.get("name"))
+            return (
+                f"{named}当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，"
+                "竞争结构判断不能由移动或5G用户总量替代。"
+            )
     if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"} and items:
         high, low = items[0], items[-1]
         high_name, low_name = str(high.get("name") or ""), str(low.get("name") or "")
@@ -1524,17 +1583,17 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         if focus_id == "revenue":
             return (
                 f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
-                "统一汇率后表明两者营收存在差距并形成两层结构，但营收规模不等同于盈利能力。"
+                "统一汇率后收入基础形成两层，表明竞争资源承载力不同，但营收规模不等同于盈利能力。"
             )
         if focus_id == "ebitda":
             return (
                 f"{high_name} EBITDA约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "金额梯队明显，但非GAAP调整口径不同，不可直接等同盈利效率。"
+                "经营现金创造代理形成梯队，意味着盈利缓冲厚度不同；非GAAP调整口径仍不可直接等同。"
             )
         if focus_id == "net_profit":
             return (
                 f"{high_name} FY2025净利润约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "绝对值差距表明利润规模形成梯队，但不等同于盈利效率。"
+                "利润池分布明显分层，表明盈利韧性不同，但绝对值不等同于盈利效率。"
             )
         verizon = by_name.get("Verizon") or high
         ntt = by_name.get("NTT Group") or low
@@ -1549,7 +1608,7 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         return (
             f"Verizon {_display_number(verizon.get('value'))}百万后付费连接、ARPA {_display_number(verizon_arpu)}美元/月；"
             f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅替代口径、ARPU {_display_number(ntt_arpu)}美元/月。"
-            "定义不同，规模不可直接混排。"
+            "客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。"
         )
     if strategic_fallback and _has_deep_interpretation(strategic_fallback):
         return strategic_fallback
@@ -1617,11 +1676,12 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             f"披露最多{_display_number(high.get('value'))}项、最少{_display_number(low.get('value'))}项，差距有限，"
             "说明公开信息广度并不能解释经营质量高低。"
         )
-    if (domain, focus_id) == ("cloud", "growth") and items:
+    if (domain, focus_id) == ("cloud", "revenue") and items:
         high, low = items[0], items[-1]
         return (
-            f"云业务增速从{_display_number(high.get('value'))}%到{_display_number(low.get('value'))}%，"
-            "正负分层表明云市场并非同步扩张，增长已明显集中于头部平台。"
+            f"最高的{high.get('name')} FY2024云收入{_display_number(high.get('value'))}百万美元，"
+            f"最低的{low.get('name')}{_display_number(low.get('value'))}百万美元；"
+            "云收入基础呈头尾断层，意味着生态与资源承载力分层；代理分部与重分类口径仍不能直接等同。"
         )
     if (domain, focus_id) == ("cloud", "trend") and items:
         high, low = items[0], items[-1]
@@ -1630,10 +1690,18 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             "说明当前梯队变化主要来自二线厂商再加速，而非全行业同步回暖。"
         )
     if (domain, focus_id) == ("cloud", "profit") and items:
+        direct = [item for item in items if "经营利润" in str(item.get("detail") or "")]
+        high, low = (direct[0], direct[-1]) if len(direct) >= 2 else (items[0], items[-1])
+        return (
+            f"同属经营利润披露的{high.get('name')} FY2024为{_display_number(high.get('value'))}百万美元，"
+            f"{low.get('name')}为{_display_number(low.get('value'))}百万美元；利润池向头部集中，表明云业务盈利缓冲呈头部主导梯队。"
+        )
+    if (domain, focus_id) == ("cloud", "investment") and items:
         high, low = items[0], items[-1]
         return (
-            f"利润率从{_display_number(low.get('value'))}%到{_display_number(high.get('value'))}%，"
-            "但混合调整后EBITA、代理毛利与分部经营利润，绝对差距主要被口径放大，不能直接等同盈利能力。"
+            f"{high.get('name')} FY2024集团资本开支{_display_number(high.get('value'))}百万美元，"
+            f"{low.get('name')}{_display_number(low.get('value'))}百万美元；资源承载力明显分层，"
+            "但集团投入并非云业务单独投入，不能据此判断投入转化效率。"
         )
     if (domain, focus_id) == ("cloud", "disclosure"):
         return (
@@ -1755,47 +1823,38 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
         unit = focus.get("metric", {}).get("unit") if isinstance(focus.get("metric"), dict) else ""
         return _display_number(value), str(unit or "")
 
-    local_scale, local_scale_unit = metric("local", "scale")
-    international_momentum, momentum_unit = metric("international", "momentum")
-    international_growth, international_growth_unit = metric("international", "growth")
-    cloud_growth, cloud_growth_unit = metric("cloud", "growth")
-    macro_market, macro_market_unit = metric("macro", "market")
-    macro_coverage = next(
-        (
-            f'{_display_number(item.get("value"))}{str(item.get("unit") or "")}'
-            for item in (focuses.get(("macro", "governance")) or {}).get("items") or []
-            if "覆盖" in str(item.get("name") or "") and item.get("value") not in (None, "")
-        ),
-        "",
-    )
-    coverage_anchor = f"5G人口覆盖{macro_coverage}" if macro_coverage else "网络覆盖已趋成熟"
+    local_revenue, local_revenue_unit = metric("local", "revenue")
+    international_revenue, international_revenue_unit = metric("international", "revenue")
+    cloud_revenue, cloud_revenue_unit = metric("cloud", "revenue")
+    mainland_revenue, mainland_revenue_unit = metric("mainland", "revenue")
+    mainland_postpaid, mainland_postpaid_unit = metric("mainland", "postpaid")
     relations = [
         {
-            "from": "macro", "to": "local", "title": "连接饱和削弱方案数量优势",
+            "from": "mainland", "to": "local", "title": "运营商规模口径不能混排",
             "detail": (
-                f"移动连接{macro_market}{macro_market_unit}与本地方案{local_scale}{local_scale_unit}并存，"
-                "说明基础连接接近饱和，竞争差异主要来自产品结构而非方案总量。"
+                f"内地营收卡片为{mainland_revenue}{mainland_revenue_unit}，香港为{local_revenue}{local_revenue_unit}；"
+                "币种与主体范围不同，表明数值高低不能直接等同经营质量。"
             ),
         },
         {
-            "from": "international", "to": "cloud", "title": "云增长与运营商动量背离",
+            "from": "international", "to": "cloud", "title": "云收入与运营商收入分口径",
             "detail": (
-                f"云端增速最高{cloud_growth}{cloud_growth_unit}，运营商最佳动量仍为"
-                f"{international_momentum}{momentum_unit}，说明两类市场周期脱钩，增长并非同步传导。"
+                f"云收入卡片为{cloud_revenue}{cloud_revenue_unit}，国际营收卡片为{international_revenue}{international_revenue_unit}；"
+                "分部规模与集团原币规模不同，表明两类数值不能混合排名。"
             ),
         },
         {
-            "from": "local", "to": "cloud", "title": "产品广度不等同云端增长",
+            "from": "local", "to": "cloud", "title": "香港财务与云收入边界不同",
             "detail": (
-                f"本地在售方案{local_scale}{local_scale_unit}，云端领先增速{cloud_growth}{cloud_growth_unit}，"
-                "说明连接产品广度与云收入增速层次并不等同。"
+                f"香港营收卡片为{local_revenue}{local_revenue_unit}，云收入卡片为{cloud_revenue}{cloud_revenue_unit}；"
+                "公司整体与云分部范围不同，表明两者不可直接比较。"
             ),
         },
         {
-            "from": "macro", "to": "international", "title": "覆盖成熟与收入增长脱钩",
+            "from": "mainland", "to": "international", "title": "后付费用户与国际财务分开判断",
             "detail": (
-                f"{coverage_anchor}，运营商增速最高{international_growth}{international_growth_unit}，"
-                "说明网络可达性趋于饱和，收入增长不再由覆盖扩张单独驱动。"
+                f"内地后付费用户数披露不足，国际营收卡片为{international_revenue}{international_revenue_unit}；"
+                "这说明两者口径不同，内地运营商没有单独披露可比后付费用户数，不能拿移动用户总数替代。"
             ),
         },
     ]
@@ -1846,10 +1905,9 @@ def _safe_discovery_regeneration_fallback(
                 return f"{_display_number(item.get('value'))}{str(item.get('unit') or '')}"
         return ""
 
-    local_scale = metric("local", "scale")
-    international_growth = metric("international", "growth")
-    international_momentum = metric("international", "momentum")
-    cloud_growth = metric("cloud", "growth")
+    local_scale = metric("local", "revenue")
+    international_profit_coverage = metric("international", "net_profit")
+    cloud_growth = metric("cloud", "revenue")
     macro_connections = metric("macro", "connections")
     macro_coverage = item_value("macro", "service", "5G人口覆盖")
     variants: dict[tuple[str, str], list[tuple[str, str]]] = {
@@ -1872,53 +1930,53 @@ def _safe_discovery_regeneration_fallback(
         ],
         ("international", "cloud"): [
             (
-                "运营商与云增长分处两档",
-                f"内地运营商最高营收增速{international_growth}，云厂商领先增速{cloud_growth}，"
-                "说明两类市场增速层次明显分化，业务周期并不同步。",
+                "运营商与云收入分口径",
+                f"国际运营商净利润卡片{international_profit_coverage}，云收入卡片{cloud_growth}，"
+                "说明两域指标结构不同，不能直接换算盈利能力。",
             ),
             (
-                "电信动量与云增速背离",
-                f"运营商增速变化{international_momentum}与云端领先增速{cloud_growth}分处不同区间，"
-                "表明传统电信和云业务增长动量脱钩，不能按同一周期解释。",
+                "电信利润与云收入分层",
+                f"国际运营商净利润{international_profit_coverage}与云收入{cloud_growth}分属集团利润和分部收入，"
+                "表明两者结构不同，不能按同一维度混排。",
             ),
             (
-                "两类市场增速层次分化",
-                f"云端领先增速{cloud_growth}高于运营商最高营收增速{international_growth}，"
-                "说明两类市场形成分层竞争，增速差距并非同口径经营效率比较。",
+                "两类市场绝对规模分层",
+                f"云收入{cloud_growth}与国际运营商净利润{international_profit_coverage}分属不同口径，"
+                "说明两域形成分层信号，不能直接作经营效率比较。",
             ),
         ],
         ("local", "cloud"): [
             (
-                "产品数量与云增速口径错位",
-                f"本地在售方案{local_scale}衡量产品广度，云端领先增速{cloud_growth}衡量收入变化，"
-                "说明两项指标存在结构性差异，方案数量不代表云增长能力。",
+                "香港与云收入边界不同",
+                f"香港营收卡片{local_scale}衡量公司收入，云收入卡片{cloud_growth}衡量云分部规模，"
+                "说明两项指标存在主体和币种差异，不能直接比较。",
             ),
             (
-                "供给广度不等同增长动量",
-                f"本地市场共有{local_scale}，云端领先增速为{cloud_growth}，"
-                "表明产品数量与收入增长属于不同口径，两者不能直接换算。",
+                "公司营收不等同云分部收入",
+                f"香港营收卡片为{local_scale}，云收入卡片为{cloud_growth}，"
+                "表明公司整体与云分部属于不同口径，两者不能直接换算。",
             ),
             (
-                "方案规模与云增长脱钩",
-                f"本地在售方案{local_scale}与云端领先增速{cloud_growth}分别描述供给规模和增长速度，"
-                "说明两域指标口径不同，产品广度不等于收入增速层次。",
+                "两类收入绝对值不能混排",
+                f"香港营收{local_scale}与云收入{cloud_growth}分别描述公司整体和云分部绝对规模，"
+                "说明两域指标主体、币种与范围不同。",
             ),
         ],
         ("macro", "international"): [
             (
                 "覆盖高位与营收增长脱钩",
-                f"5G人口覆盖{macro_coverage}，内地运营商最高营收增速{international_growth}，"
-                "说明网络可达性与收入增长分属不同层面，覆盖高位不代表同步增长。",
+                f"5G人口覆盖{macro_coverage}，国际运营商净利润样本{international_profit_coverage}，"
+                "说明网络可达性与公司利润分属不同口径，不可直接建立因果。",
             ),
             (
                 "网络覆盖不等同增长动量",
-                f"5G人口覆盖{macro_coverage}反映网络供给，运营商最高营收增速{international_growth}反映收入变化，"
-                "表明两项指标结构性差异明显，不能直接推导增长动量。",
+                f"5G人口覆盖{macro_coverage}反映网络供给，国际运营商样本{international_profit_coverage}反映分析范围，"
+                "表明两项指标结构性差异明显，不能直接推导利润变化。",
             ),
             (
                 "覆盖成熟与收入表现分层",
-                f"5G人口覆盖{macro_coverage}已处高位，运营商最高营收增速为{international_growth}，"
-                "说明覆盖成熟和收入表现并不同步，两者形成分层关系。",
+                f"5G人口覆盖{macro_coverage}与国际运营商样本{international_profit_coverage}分属网络和公司口径，"
+                "说明两者结构不同，不能直接推导盈利表现。",
             ),
         ],
     }
@@ -2114,6 +2172,10 @@ def generate_model_focus_insight(
             "只分析同一报告期间、同一币种下的收入与净利润关系；必须至少引用两家公司收入或净利润原值。"
             "披露项数只作样本完整度边界，不能成为标题或主要结论；不得把FY全年与H1半年直接排名。"
         ),
+        ("local", "revenue"): "只比较FY2025营收绝对值；必须从至少两家原值提炼收入基础或竞争资源承载力分层，不得只复述高低。",
+        ("local", "ebitda"): "只比较FY2025 EBITDA绝对值；必须解释经营现金创造代理或盈利缓冲分层，不得引入净利润或利润率。",
+        ("local", "net_profit"): "只比较FY2025净利润绝对值；必须解释利润池或盈利韧性分化，不得只写金额差距。",
+        ("local", "postpaid"): "只比较FY2025后付费用户绝对值；从客户基础与经常性收入基础切入，缺失值只能作为样本边界。",
         ("local", "scale"): "只分析运营商之间去重后在售产品数量的分层与区隔；记录数只作数据质量边界，不能成为标题或主要结论。",
         ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
         ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
@@ -2131,11 +2193,16 @@ def generate_model_focus_insight(
         ("cloud", "revenue"): "只比较FY2024云收入绝对金额；先区分直接云收入口径与代理分部口径，不得引入增速、利润率或自行换算。",
         ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
         ("cloud", "profit"): "只解释FY2024云利润绝对金额及经营利润、调整后EBITA和代理分部毛利的定义边界；不得引入利润率、增速或自行换算。",
+        ("cloud", "investment"): "只比较FY2024集团资本开支绝对值；提炼资源承载力层次，同时明确集团投入不等于云业务单独投入或投入转化效率。",
         ("cloud", "margin_change"): "只比较各厂商自身同口径利润率变化的正负方向，不把不同利润定义混成统一排名。",
         ("macro", "connections"): "只解释登记数量、移动宽带登记和每百人登记的共同变化及多卡/联网设备边界，不等同独立客户。",
         ("macro", "traffic"): "只比较总流量与每连接流量同比，解释规模和单连接强度差异；禁止使用驱动、导致等因果词。",
         ("macro", "purchasing"): "只使用当前同月家庭收入、消费物价和输入中的购买力代理原值；不引用旧月份或自行重算。",
         ("macro", "service"): "只分别解释异期间的投资、投诉及网络供给背景，不比较差值、不建立因果。",
+        ("mainland", "revenue"): "只比较FY2025营收绝对值；必须从至少两家原值提炼收入基础或竞争资源承载力分层，不得只复述高低。",
+        ("mainland", "ebitda"): "只比较FY2025 EBITDA绝对值；必须解释经营现金创造代理或盈利缓冲分层，不得引入净利润或利润率。",
+        ("mainland", "net_profit"): "只比较FY2025净利润绝对值；必须解释利润池或盈利韧性分化，不得只写金额差距。",
+        ("mainland", "postpaid"): "当前无可比后付费原值；必须解释这一口径缺口对客户价值、客户质量或竞争结构判断的限制，不能只说无法比较。",
     }
     focus_contract = focus_contracts.get(
         (domain_id, focus_id),
@@ -2228,6 +2295,30 @@ def generate_model_focus_insight(
             "说明NTT手机订阅数不是后付费用户口径",
             "引用至少两家用户数与ARPU/ARPA原值形成分层判断",
         ),
+        ("local", "revenue"): (
+            "从最高与最低营收原值提炼竞争资源承载力分层",
+            "从头部与中尾部收入基础断层切入，不计算输入外比例",
+            "说明收入规模层次不等同经营效率，但不能只写口径边界",
+            "引用至少两家公司原值，判断可披露收入基础是否集中",
+        ),
+        ("local", "ebitda"): (
+            "从最高与最低EBITDA原值提炼盈利缓冲分层",
+            "判断经营现金创造代理是否形成头尾断层",
+            "比较至少两家公司原值，不引入利润率或净利润",
+            "说明EBITDA规模层次对竞争资源承载的有界含义",
+        ),
+        ("local", "net_profit"): (
+            "从正负利润或最高最低原值提炼盈利韧性分化",
+            "判断利润池是否向头部集中，不计算输入外比例",
+            "引用至少两家公司净利润原值形成战略发现",
+            "说明利润绝对值分层而非复述金额高低",
+        ),
+        ("local", "postpaid"): (
+            "从已披露两家后付费用户原值提炼客户基础分层",
+            "说明客户基础不等同客户价值，缺失主体只作边界",
+            "判断经常性收入基础是否存在规模层次",
+            "引用至少两家原值，禁止以总用户或5G用户补位",
+        ),
         ("cloud", "revenue"): (
             "比较FY2024云收入绝对金额梯队，至少引用两个主体原值",
             "把直接披露云收入与代理分部口径分开说明",
@@ -2241,10 +2332,40 @@ def generate_model_focus_insight(
             "判断变化方向是否一致，并明确缺少可比历史的主体",
         ),
         ("cloud", "profit"): (
-            "比较不同利润定义的口径边界，禁止跨厂商排名",
-            "从经营利润率、毛利率、调整后EBITA率不可混排切入",
+            "比较FY2024云利润绝对金额，并说明不同利润定义不可直接混排",
+            "从经营利润、代理分部毛利与调整后EBITA定义不同切入",
             "说明已披露与未披露主体的样本边界",
-            "分别观察两个同类利润口径原值，不计算新差值",
+            "引用至少两个主体利润绝对金额，不计算新差值或利润率",
+        ),
+        ("cloud", "investment"): (
+            "比较已披露集团资本开支的头尾层次，提炼资源承载力差异",
+            "从Google与Azure高位投入接近切入，不计算输入外差值",
+            "说明集团投入不等于云业务单独投入或投入转化效率",
+            "引用至少两个主体原值形成战略发现，缺失主体只作样本边界",
+        ),
+        ("mainland", "revenue"): (
+            "从最高与最低营收原值提炼收入基础和资源承载力分层",
+            "判断头部与中尾部是否形成断层，不计算输入外比例",
+            "引用至少两家原值，不能只说主体规模不同",
+            "说明收入规模层次不等同经营效率",
+        ),
+        ("mainland", "ebitda"): (
+            "比较已披露两家EBITDA原值，提炼盈利缓冲层次",
+            "从经营现金创造代理的头尾差异切入",
+            "说明只有两家可比的样本边界，但不能只报告缺口",
+            "不得引入净利润、利润率或输入外数字",
+        ),
+        ("mainland", "net_profit"): (
+            "从最高与最低净利润原值提炼利润池集中或盈利韧性分化",
+            "比较头部与中尾部利润绝对值层次，不计算新比例",
+            "引用至少两家公司原值形成战略发现",
+            "缺失广电数据只作样本边界，不能成为主要结论",
+        ),
+        ("mainland", "postpaid"): (
+            "解释统一缺少后付费原值为何限制客户价值穿透比较",
+            "说明移动或5G用户总量不能替代客户质量判断",
+            "从披露口径缺口对竞争结构判断的影响切入",
+            "不编造数字、不只写无法比较",
         ),
         ("cloud", "margin_change"): (
             "按自身同口径利润率改善与减弱分组",
@@ -2331,13 +2452,16 @@ def generate_model_focus_insight(
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
                 "不得复用旧版标题。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、集中度、"
-                "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
+                "口径可比性、市场阶段或指标关系判断；结论还必须落到资源承载、现金创造、盈利韧性、"
+                "利润池、投入转化、客户价值、收入基础或竞争结构中的至少一项；换一个有效分析角度，不能解释指标定义、"
                 "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value；"
                 "local.financials还可原样选自items.metrics.value。禁止自行加总、计算占比或创造衍生数字。"
                 "结论必须使用表明、说明、意味着、主要来自、并非、而非或不能等同中的至少一个连接词。"
                 "必须严格遵守输入scope，只能总结当前页，"
                 "不得把相邻页或item附带信息扩展为当前页结论。"
                 "禁止把单项高低直接写成领先、竞争力、定价权或因果；少于3个可比对象时必须明确样本边界。"
+                "如果items.value全部为空、横线或待补，不得输出‘待补为-’、空值、占位符或虚构数字；"
+                "此时直接解释该口径缺口限制了哪一种客户价值、盈利质量或竞争结构判断。"
                 "禁止使用导致、造成、推动、带来、源于、驱动等因果词；输入scope要求说明驱动时，也只能改写为关系或边界。"
                 + FOCUS_RELATION_FEW_SHOTS
             ),
@@ -2703,7 +2827,9 @@ def generate_model_domain_summaries(
         "实体analysis只需准确陈述该实体的事实、期间、单位和口径，不强迫单个实体推导经营含义；"
         "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
         "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
-        "每个focus的analysis必须是一至两句、总长不超过120字，并引用至少一个输入具体数值作为证据；"
+        "每个focus的analysis必须是一至两句、总长不超过120字；有有效数值时必须引用至少一个输入具体数值作为证据；"
+        "若该focus所有value均为空、横线或待补，不得输出‘待补为-’、空值、占位符或虚构数字，"
+        "而要直接解释这一口径缺口限制了哪一种客户价值、盈利质量或竞争结构判断；"
         "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
         "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
         "全部17个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
@@ -3074,8 +3200,8 @@ def _manual_discovery_evidence(
     }
     anchor_focus_ids = {
         ("macro", "local"): (("macro", "connections"), ("local", "scale")),
-        ("international", "cloud"): (("international", "growth"), ("cloud", "growth")),
-        ("local", "cloud"): (("local", "scale"), ("cloud", "growth")),
+        ("international", "cloud"): (("international", "revenue"), ("cloud", "revenue")),
+        ("local", "cloud"): (("local", "revenue"), ("cloud", "revenue")),
         ("macro", "international"): (("macro", "service"), ("international", "growth")),
     }
     selected = anchor_focus_ids.get((source_domain, target_domain))
@@ -3678,7 +3804,39 @@ def regenerate_model_focus_summary(
         "regeneration_index": regeneration_index,
     }
     report("正在生成新的数据判断")
-    scoped = generate_model_focus_insight(domain_id, generation_focus, temperature=0.25)
+    try:
+        scoped = generate_model_focus_insight(domain_id, generation_focus, temperature=0.25)
+    except Exception as exc:
+        # Manual regeneration must remain usable when the internal model is
+        # temporarily slow or unavailable. Rotate wording only; all numbers,
+        # units, periods and judgements still come from the validated focus.
+        fallback_summary = next(
+            item for item in _deterministic_domain_summaries(evidence, validate=False)
+            if str(item.get("domain") or "") == domain_id
+        )
+        fallback_focus = next(
+            item for item in fallback_summary.get("focuses") or []
+            if str(item.get("id") or "") == focus_id
+        )
+        fallback_focus = json.loads(json.dumps(fallback_focus, ensure_ascii=False))
+        fallback_analysis = str(fallback_focus.get("analysis") or "")
+        wording_variants = (
+            (("表明", "说明"), ("意味着", "反映"), ("不能", "不可")),
+            (("说明", "表明"), ("反映", "意味着"), ("不可", "不能")),
+        )
+        for old, new in wording_variants[(regeneration_index - 1) % len(wording_variants)]:
+            fallback_analysis = fallback_analysis.replace(old, new)
+        previous_analysis = str((previous_focus or {}).get("analysis") or "")
+        if fallback_analysis == previous_analysis:
+            for old, new in wording_variants[regeneration_index % len(wording_variants)]:
+                fallback_analysis = fallback_analysis.replace(old, new)
+        fallback_focus["analysis"] = fallback_analysis
+        fallback_focus["origin"] = "evidence_rule"
+        scoped = {
+            "model": "deterministic-evidence-fallback",
+            "focus": fallback_focus,
+            "fallback_reason": str(exc)[:500],
+        }
     scoped_focus = scoped.get("focus")
     if not isinstance(scoped_focus, dict):
         raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")

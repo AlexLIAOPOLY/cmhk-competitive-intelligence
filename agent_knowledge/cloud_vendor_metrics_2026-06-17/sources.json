@@ -14,6 +14,21 @@
     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
     "type": "official_10k"
   },
+  "alphabet_2024_10k": {
+    "label": "Alphabet 2024 Form 10-K, consolidated cash-flow statement",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+    "type": "official_10k"
+  },
+  "alphabet_2023_10k": {
+    "label": "Alphabet 2023 Form 10-K, consolidated cash-flow statement",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+    "type": "official_10k"
+  },
+  "alphabet_fy2024_results": {
+    "label": "Alphabet Q4 and FY2024 earnings release",
+    "url": "https://abc.xyz/assets/a3/91/6d1950c148fa84c7d699abe05284/2024q4-alphabet-earnings-release.pdf",
+    "type": "official_results_pdf"
+  },
   "alphabet_ir_sec_filings": {
     "label": "Alphabet Investor Relations SEC filings index",
     "url": "https://abc.xyz/investor/sec-filings/",
@@ -24,6 +39,26 @@
     "url": "https://www.microsoft.com/investor/reports/ar25/index.html",
     "type": "official_annual_report"
   },
+  "microsoft_2024_10k": {
+    "label": "Microsoft 2024 Annual Report, consolidated cash-flow statement",
+    "url": "https://www.microsoft.com/investor/reports/ar24/index.html",
+    "type": "official_annual_report"
+  },
+  "microsoft_2023_10k": {
+    "label": "Microsoft 2023 Annual Report, consolidated cash-flow statement",
+    "url": "https://www.microsoft.com/investor/reports/ar23/index.html",
+    "type": "official_annual_report"
+  },
+  "microsoft_fy2024_results": {
+    "label": "Microsoft FY2024 Q4 earnings financial statements",
+    "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2024-q4/cash-flows",
+    "type": "official_results_financial_statements"
+  },
+  "microsoft_fy2025_results": {
+    "label": "Microsoft FY2025 Q4 and full-year results",
+    "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2025-q4/press-release-webcast",
+    "type": "official_results_release"
+  },
   "microsoft_ir_annual_reports": {
     "label": "Microsoft Investor Relations annual reports index",
     "url": "https://www.microsoft.com/en-us/investor/annual-reports",
@@ -33,6 +68,26 @@
     "label": "Oracle FY2025 Form 10-K, cloud services and cloud/license tables",
     "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
     "type": "official_10k"
+  },
+  "oracle_2024_10k": {
+    "label": "Oracle FY2024 Form 10-K, consolidated cash-flow statement",
+    "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
+    "type": "official_10k"
+  },
+  "oracle_2023_10k": {
+    "label": "Oracle FY2023 Form 10-K, consolidated cash-flow statement",
+    "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017023028914/orcl-20230531.htm",
+    "type": "official_10k"
+  },
+  "oracle_fy2024_results": {
+    "label": "Oracle FY2024 Q4 and full-year earnings release tables",
+    "url": "https://investor.oracle.com/files/doc_financials/2024/q4/Q424_Form8K_Exhibit99-1_Earnings_Release_Tables.pdf",
+    "type": "official_results_pdf"
+  },
+  "oracle_fy2025_results": {
+    "label": "Oracle FY2025 Q4 and full-year results",
+    "url": "https://investor.oracle.com/investor-news/news-details/2025/Oracle-Announces-Fiscal-2025-Fourth-Quarter-and-Fiscal-Full-Year-Financial-Results/default.aspx",
+    "type": "official_results_release"
   },
   "oracle_ir_sec_filings": {
     "label": "Oracle Investor Relations SEC filings index",
@@ -66,7 +121,7 @@
   },
   "tencent_ir_financial_reports": {
     "label": "Tencent Investor Relations financial reports index",
-    "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+    "url": "https://www.tencent.com/investors/financial-reports/",
     "type": "official_ir_report_index"
   },
   "huawei_2025_annual": {
@@ -83,5 +138,935 @@
     "label": "Huawei annual report index",
     "url": "https://www.huawei.com/en/annual-report",
     "type": "official_report_index"
+  },
+  "china_mobile_2023_annual_report": {
+    "label": "China Mobile 2023 Annual Report",
+    "url": "https://www.chinamobileltd.com/en/ir/reports/ar2023.pdf",
+    "type": "official_annual_report_pdf"
+  },
+  "china_mobile_2023_results_announcement": {
+    "label": "China Mobile 2023 Annual Results Announcement",
+    "url": "https://www.chinamobileltd.com/en/file/view.php?id=294582",
+    "type": "official_results_announcement_pdf"
+  },
+  "china_mobile_2023_results_presentation": {
+    "label": "China Mobile 2023 Annual Results Presentation",
+    "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre240321.pdf",
+    "type": "official_results_presentation_pdf"
+  },
+  "china_mobile_2024_annual_report": {
+    "label": "China Mobile 2024 Annual Report",
+    "url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+    "type": "official_annual_report_pdf"
+  },
+  "china_mobile_2024_results_announcement": {
+    "label": "China Mobile 2024 Annual Results Announcement",
+    "url": "https://www.chinamobileltd.com/en/file/view.php?id=309957",
+    "type": "official_results_announcement_pdf"
+  },
+  "china_mobile_2024_results_presentation": {
+    "label": "China Mobile 2024 Annual Results Presentation",
+    "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre250320.pdf",
+    "type": "official_results_presentation_pdf"
+  },
+  "china_mobile_2025_annual_report": {
+    "label": "China Mobile 2025 Annual Report",
+    "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+    "type": "official_annual_report_pdf"
+  },
+  "china_mobile_2025_results_announcement": {
+    "label": "China Mobile 2025 Annual Results Announcement",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0326/2026032600468.pdf",
+    "type": "official_results_announcement_pdf"
+  },
+  "china_mobile_2025_results_presentation": {
+    "label": "China Mobile 2025 Annual Results Presentation",
+    "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf",
+    "type": "official_results_presentation_pdf"
+  },
+  "history_db11329f9f082c": {
+    "label": "Amazon quarterly results and filings",
+    "url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+    "type": "official_historical_disclosure"
+  },
+  "history_a7d544f7379483": {
+    "label": "Amazon Q1 2016 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000227/amzn-20160331x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_830271b0d81167": {
+    "label": "Amazon Q2 2016 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000286/amzn-20160630x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_28dedd48b2d924": {
+    "label": "Amazon Q3 2016 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000324/amzn-20160930x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_a45589b59e4797": {
+    "label": "Amazon 2016 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000011/amzn-20161231x10k.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_42c308ec5f5522": {
+    "label": "Amazon Q1 2017 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000051/amzn-20170331x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_e27a1b1da6f8f9": {
+    "label": "Amazon Q2 2017 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000100/amzn-20170630x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_90272d6707fd0c": {
+    "label": "Amazon Q3 2017 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000135/amzn-20170930x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_9ac43eb5f3a2a9": {
+    "label": "Amazon 2017 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000005/amzn-20171231x10k.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_dddb634562b9ac": {
+    "label": "Amazon Q1 2018 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000072/amzn-20180331x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_466d04da5b6ac3": {
+    "label": "Amazon Q2 2018 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000108/amzn-20180630x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_6854c825aa1f99": {
+    "label": "Amazon Q3 2018 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000159/amzn-20180930x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_726d1b2f6b8818": {
+    "label": "Amazon 2018 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000004/amzn-20181231x10k.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_c20f09db7beaba": {
+    "label": "Amazon Q1 2019 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000043/amzn-2019331x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_25f685c0e51150": {
+    "label": "Amazon Q2 2019 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000071/amzn-2019630x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_66b249b13eeb5e": {
+    "label": "Amazon Q3 2019 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000089/amzn-2019930x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_87fafa3723f2fb": {
+    "label": "Amazon 2019 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000004/amzn-20191231x10k.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_d212a6f6d7329c": {
+    "label": "Amazon Q1 2020 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000010/amzn-20200331x10q.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_74afba1bb44caa": {
+    "label": "Amazon Q2 2020 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000021/amzn-20200630.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_236bcd42364e46": {
+    "label": "Amazon Q3 2020 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000030/amzn-20200930.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_ef17b92fc8e6b5": {
+    "label": "Amazon 2020 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000004/amzn-20201231.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_5270bdd87b42c9": {
+    "label": "Amazon Q1 2021 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000010/amzn-20210331.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_d28e6406a06096": {
+    "label": "Amazon Q2 2021 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000020/amzn-20210630.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_a3355291963839": {
+    "label": "Amazon Q3 2021 Form 10-Q AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000028/amzn-20210930.htm",
+    "type": "official_quarterly_sec_filing"
+  },
+  "history_0e1386a61fb5d0": {
+    "label": "Amazon 2021 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872422000005/amzn-20211231.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_c2243381d6a02c": {
+    "label": "Amazon 2022 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872423000004/amzn-20221231.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_4f9ddde974d962": {
+    "label": "Amazon Q3 2023 earnings release trailing AWS segment table",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q3/AMZN-Q3-2023-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release_trailing_table"
+  },
+  "history_de084a843fdc5a": {
+    "label": "Amazon Q4 2023 earnings release trailing AWS segment table",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release_trailing_table"
+  },
+  "history_98dcce7450fd2c": {
+    "label": "Amazon Q1 2024 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q1/AMZN-Q1-2024-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_c9e605da907323": {
+    "label": "Amazon Q2 2024 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q2/AMZN-Q2-2024-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_b711135e1b1368": {
+    "label": "Amazon Q3 2024 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q3/AMZN-Q3-2024-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_0c2baeb0de2a4f": {
+    "label": "Amazon Q4 2024 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q4/AMZN-Q4-2024-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_8cab062aab1a89": {
+    "label": "Amazon Q1 2025 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q1/AMZN-Q1-2025-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_c9c13f811f1551": {
+    "label": "Amazon Q2 2025 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q2/AMZN-Q2-2025-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_867792186592da": {
+    "label": "Amazon Q3 2025 earnings release",
+    "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q3/AMZN-Q3-2025-Earnings-Release.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_344a2a02f3eeee": {
+    "label": "Amazon 2025 Form 10-K AWS segment reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_edbe1719f56c80": {
+    "label": "Microsoft quarterly earnings",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings",
+    "type": "official_historical_disclosure"
+  },
+  "history_b1f4dec6e4bd93": {
+    "label": "Microsoft FY17 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_4e9ec32ec72d02": {
+    "label": "Microsoft FY17 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312516742796/d245252d10q.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_51c536c55d311c": {
+    "label": "Microsoft FY17 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_f39e7c20e6f4d0": {
+    "label": "Microsoft FY17 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017000654/msft-10q_20161231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_eb989ced4c6327": {
+    "label": "Microsoft FY17 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_f873b8d5db2b34": {
+    "label": "Microsoft FY17 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017007547/msft-10q_20170331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_087b9b1b01622a": {
+    "label": "Microsoft FY17 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_895c920fd56d8b": {
+    "label": "Microsoft FY17 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017014900/msft-10k_20170630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_50ccc7fbef5311": {
+    "label": "Microsoft FY18 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_e5c42122f3cb77": {
+    "label": "Microsoft FY18 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017020171/msft-10q_20170930.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_42377d431bcc6e": {
+    "label": "Microsoft FY18 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_b4c120d6008c42": {
+    "label": "Microsoft FY18 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018001129/msft-10q_20171231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_238e35023fd706": {
+    "label": "Microsoft FY18 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_449b23aaadd990": {
+    "label": "Microsoft FY18 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018009307/msft-10q_20180331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_813fa71e2f1852": {
+    "label": "Microsoft FY18 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_7ff9b485afb672": {
+    "label": "Microsoft FY18 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018019062/msft-10k_20180630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_db3ed0e9da6097": {
+    "label": "Microsoft FY19 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_124ba946e2be40": {
+    "label": "Microsoft FY19 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018024893/msft-10q_20180930.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_167c864e9bf75c": {
+    "label": "Microsoft FY19 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_e691de6a8b79a0": {
+    "label": "Microsoft FY19 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019001392/msft-10q_20181231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_cf02cd1cc39503": {
+    "label": "Microsoft FY19 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_0a4447233045d6": {
+    "label": "Microsoft FY19 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019012709/msft-10q_20190331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_becfe1ad9ffd53": {
+    "label": "Microsoft FY19 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_de4396d0e0235b": {
+    "label": "Microsoft FY19 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019027952/msft-10k_20190630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_ec960fb640bef6": {
+    "label": "Microsoft FY20 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_d9e0cb2e1d8a18": {
+    "label": "Microsoft FY20 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019037549/msft-10q_20190930.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_b3643f46f26f92": {
+    "label": "Microsoft FY20 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_8e27932824d17c": {
+    "label": "Microsoft FY20 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020002450/msft-10q_20191231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_a234220308aa76": {
+    "label": "Microsoft FY20 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_300aae327a7256": {
+    "label": "Microsoft FY20 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020019706/msft-10q_20200331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_359d5df623a510": {
+    "label": "Microsoft FY20 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_10ced6e8bfebbc": {
+    "label": "Microsoft FY20 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_5e4981e0e30754": {
+    "label": "Microsoft FY21 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_4bccd3976b5f01": {
+    "label": "Microsoft FY21 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020047996/msft-10q_20200930.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_d39f3232156032": {
+    "label": "Microsoft FY21 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_604b536f2a46c6": {
+    "label": "Microsoft FY21 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021002316/msft-10q_20201231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_7994e85dd9ed2a": {
+    "label": "Microsoft FY21 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_f60cc4f450d305": {
+    "label": "Microsoft FY21 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021020891/msft-10q_20210331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_f7182fcb1c9e54": {
+    "label": "Microsoft FY21 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_d2c7fd25ecfcc6": {
+    "label": "Microsoft FY21 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021039151/msft-10k_20210630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_0063d155083379": {
+    "label": "Microsoft FY22 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_3dc32ae12c58da": {
+    "label": "Microsoft FY22 Q1 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021051992/msft-10q_20210930.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_6bb874a8ddc6f1": {
+    "label": "Microsoft FY22 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_7e16778f54359c": {
+    "label": "Microsoft FY22 Q2 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022002324/msft-10q_20211231.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_9a0ab4a5f6302a": {
+    "label": "Microsoft FY22 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_51424d1e43fef0": {
+    "label": "Microsoft FY22 Q3 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022015675/msft-10q_20220331.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_aa020fb96a12ac": {
+    "label": "Microsoft FY22 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_2874e99f508a72": {
+    "label": "Microsoft FY22 Q4 earnings release - Segment results",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm",
+    "type": "official_segment_results_page"
+  },
+  "history_81ed8cc4f57254": {
+    "label": "Microsoft FY23 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_482b698511801f": {
+    "label": "Microsoft FY23 Q1 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q1/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_005545e9d8c3e0": {
+    "label": "Microsoft FY23 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_aa53ac3ccc2dd7": {
+    "label": "Microsoft FY23 Q2 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q2/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_06669badf53621": {
+    "label": "Microsoft FY23 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_3e1b5720cb2f99": {
+    "label": "Microsoft FY23 Q3 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q3/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_e40b111e50a7b5": {
+    "label": "Microsoft FY23 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q4/press-release-webcast",
+    "type": "official_annual_report_reconciliation"
+  },
+  "history_0e419ee2fee1ba": {
+    "label": "Microsoft FY23 Q4 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q4/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_39acb2d644aadd": {
+    "label": "Microsoft FY24 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_604864c5fe4652": {
+    "label": "Microsoft FY24 Q1 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q1/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_864d97bd2b88ac": {
+    "label": "Microsoft FY24 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_bb92ae58be1b7a": {
+    "label": "Microsoft FY24 Q2 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q2/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_50c3ca9c89e37a": {
+    "label": "Microsoft FY24 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_47aca8df625fbd": {
+    "label": "Microsoft FY24 Q3 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q3/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_de0edfe8b482be": {
+    "label": "Microsoft FY24 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q4/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_257970d01a6d77": {
+    "label": "Microsoft FY24 Q4 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q4/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_1a9dd5bb3411a2": {
+    "label": "Microsoft FY25 Q1 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q1/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_7a23c46e35a8cd": {
+    "label": "Microsoft FY25 Q1 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q1/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_edc8ba021c4acb": {
+    "label": "Microsoft FY25 Q2 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q2/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_3de6002e382696": {
+    "label": "Microsoft FY25 Q2 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q2/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_3f1effa9b2138b": {
+    "label": "Microsoft FY25 Q3 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_0b24850ed82cf1": {
+    "label": "Microsoft FY25 Q3 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_79be6f0c439add": {
+    "label": "Microsoft FY25 Q4 earnings release",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/press-release-webcast",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_dd62a048aad3d7": {
+    "label": "Microsoft FY25 Q4 earnings release - Segment results",
+    "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/segment-revenues",
+    "type": "official_segment_results_page"
+  },
+  "history_bbc4c8be885f35": {
+    "label": "Alphabet investor relations earnings index",
+    "url": "https://abc.xyz/investor/earnings/",
+    "type": "official_quarterly_results_index"
+  },
+  "history_cff8c4bfa81701": {
+    "label": "Alphabet Q1 2020 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000021/goog-20200331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_fc1cdde0e30780": {
+    "label": "Alphabet Q1 2020 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_7de4b30d23a964": {
+    "label": "Alphabet Q2 2020 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000032/goog-20200630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_d8be8563dfdc04": {
+    "label": "Alphabet Q3 2020 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000050/goog-20200930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_2f1cef008f7949": {
+    "label": "Alphabet Q1 2021 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000020/goog-20210331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_2f7dd7f769e062": {
+    "label": "Alphabet Q1 2021 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_27bc674179cace": {
+    "label": "Alphabet Q2 2021 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000047/goog-20210630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_dc1660906e1d9f": {
+    "label": "Alphabet Q3 2021 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000057/goog-20210930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_0e43545dd37422": {
+    "label": "Alphabet Q1 2022 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000029/goog-20220331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_18441870e5cb3e": {
+    "label": "Alphabet Q1 2022 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_292416434a449c": {
+    "label": "Alphabet Q2 2022 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000071/goog-20220630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_05bb97361d0a29": {
+    "label": "Alphabet Q3 2022 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000090/goog-20220930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_afb8f1c1c0cbad": {
+    "label": "Alphabet Q1 2023 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000045/goog-20230331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_c4ee82dfd94c32": {
+    "label": "Alphabet Q1 2023 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_57d5f5fa61c100": {
+    "label": "Alphabet Q2 2023 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000070/goog-20230630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_fba7d9a9335cb5": {
+    "label": "Alphabet Q3 2023 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000094/goog-20230930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_be12143caf267f": {
+    "label": "Alphabet Q1 2024 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000053/goog-20240331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_53b3a1ad6b6201": {
+    "label": "Alphabet Q1 2024 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_967d8bcd431677": {
+    "label": "Alphabet Q2 2024 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000079/goog-20240630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_896a03d154e882": {
+    "label": "Alphabet Q3 2024 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000118/goog-20240930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_b6fc1041cc97c8": {
+    "label": "Alphabet Q1 2025 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000043/goog-20250331.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_d4c88f484e1945": {
+    "label": "Alphabet Q1 2025 Form 10-Q - annual Google Cloud segment cross-check",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+    "type": "official_annual_report_segment_table"
+  },
+  "history_64925b46877c67": {
+    "label": "Alphabet Q2 2025 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_5eba6397b8581d": {
+    "label": "Alphabet Q3 2025 Form 10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm",
+    "type": "official_sec_10q_segment_table"
+  },
+  "history_385e5efea1d98d": {
+    "label": "Alphabet Q4 2025 earnings release exhibit",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm",
+    "type": "official_sec_8k_earnings_exhibit"
+  },
+  "history_91efa98b3c3fd1": {
+    "label": "Alibaba quarterly results index",
+    "url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+    "type": "official_quarterly_results_index"
+  },
+  "history_76c0a1c3331b71": {
+    "label": "Alibaba September Quarter 2023 results - restated Cloud Intelligence Group reconciliation",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465923119081/tm2330915d1_ex99-1.htm",
+    "type": "official_sec_6k_restated_segment_reconciliation"
+  },
+  "history_ba968cacba0845": {
+    "label": "Alibaba December Quarter 2023 results - restated Cloud Intelligence Group comparative announcement page",
+    "url": "https://www.alibabagroup.com/en-US/document-1691989841455087616",
+    "type": "official_results_announcement_page"
+  },
+  "history_8d5b726b2b699d": {
+    "label": "Alibaba December Quarter 2023 results - restated Cloud Intelligence Group comparative",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924011604/tm245446d1_ex99-1.htm",
+    "type": "official_sec_6k_restated_segment_comparative"
+  },
+  "history_8632b46ad561b5": {
+    "label": "Alibaba March Quarter 2024 and Fiscal Year 2024 results - restated Cloud Intelligence Group comparative announcement page",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924061145/tm2414429d1_ex99-1.htm",
+    "type": "official_results_announcement_page"
+  },
+  "history_0c38dcce14bd2c": {
+    "label": "Alibaba June Quarter 2024 results announcement page",
+    "url": "https://www.alibabagroup.com/document-1761110461375315968",
+    "type": "official_results_announcement_page"
+  },
+  "history_aabf897b82f8b9": {
+    "label": "Alibaba June Quarter 2024 results",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924090102/tm2421791d1_ex99-1.htm",
+    "type": "official_sec_6k_quarterly_results"
+  },
+  "history_f60eec20c578f7": {
+    "label": "Alibaba September Quarter 2024 results",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924119688/tm2428590d1_ex99-1.htm",
+    "type": "official_sec_6k_quarterly_results"
+  },
+  "history_a066e39842a937": {
+    "label": "Alibaba December Quarter 2024 results",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465925015648/tm257183d1_ex99-1.htm",
+    "type": "official_sec_6k_quarterly_results"
+  },
+  "history_f9bcc2696de9fa": {
+    "label": "Alibaba March Quarter 2025 and Fiscal Year 2025 results announcement page",
+    "url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+    "type": "official_results_announcement_page"
+  },
+  "history_ac13b7d64632f7": {
+    "label": "Alibaba March Quarter 2025 and Fiscal Year 2025 results",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465925049400/tm2515233d1_ex99-1.htm",
+    "type": "official_sec_6k_quarterly_results"
+  },
+  "history_c2075c1c7abfcd": {
+    "label": "Tencent financial news earnings releases index",
+    "url": "https://www.tencent.com/en-us/investors/financial-news.html",
+    "type": "official_quarterly_results_index"
+  },
+  "history_86efbdf9f2447e": {
+    "label": "Tencent 2019 Q1 earnings release",
+    "url": "https://static.www.tencent.com/storage/uploads/2019/11/09/996a00a688b56c13c220845ed6f63be9.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_14e176a1277898": {
+    "label": "Tencent 2019 Q2 earnings release",
+    "url": "https://static.www.tencent.com/storage/uploads/2019/11/09/77248c95e2a3295269c2875c8c908f86.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_d571f48acad6de": {
+    "label": "Tencent 2019 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2019/11/13/8b98062831f2f28d9cb4616222a4d3c3.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_614088929682a4": {
+    "label": "Tencent 2019 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2020/03/18/7fceaf3d1b264debc61342fc1a27dd18.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_1d6bea0244e28d": {
+    "label": "Tencent 2020 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2020/05/18/13009f73ecab16501df9062e43e47e67.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_b3d2b7a477d388": {
+    "label": "Tencent 2020 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2020/08/12/00e999c23314aa085c0b48c533d4d393.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_32501ce2b9a925": {
+    "label": "Tencent 2020 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2020/11/12/4c2090d5f6f00fd90ddc9bbd9a1415d1.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_3376b436f35760": {
+    "label": "Tencent 2020 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2021/03/24/b83f5784d0579b51cf8515cf560b4256.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_624f470cba3c98": {
+    "label": "Tencent 2021 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2021/05/20/269facaab659f690ab4e262b4c0bd01d.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_fbcf84c7e6ec27": {
+    "label": "Tencent 2021 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2021/08/18/236f212d95d7402bacdbdf904a6b2b65.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_1bbe2c890b98f0": {
+    "label": "Tencent 2021 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2021/11/10/57d32da50c1d7abe221d7f9ca9ec3dcb.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_a4005f91ac2dce": {
+    "label": "Tencent 2021 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2022/03/23/b107f5a267bf6a7d00fd8373cd841558.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_e9f723ec68079e": {
+    "label": "Tencent 2022 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2022/05/18/f403326038a641b20465a17eff3567ce.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_76ecb799d5d99c": {
+    "label": "Tencent 2022 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2022/08/17/a1a39b69021bb7e4bf7f8dd238070079.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_b4b12e1409f305": {
+    "label": "Tencent 2022 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2022/11/16/33aad36dea97848eb75aa988d785e9f8.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_3924038d575d5f": {
+    "label": "Tencent 2022 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2023/03/22/3b5431187fdc8a053d9fee3a4c031aa6.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_51a49299120818": {
+    "label": "Tencent 2023 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2023/05/17/7b07c1a2b0befc1a89a6fc4219ed6cae.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_8bf9d0759ceed1": {
+    "label": "Tencent 2023 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2023/08/16/f283f2dfd05151ae7659e7a8e3d667ef.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_de3cd7830b2aac": {
+    "label": "Tencent 2023 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2023/11/15/9e4da3187104bbdf04e2cbe491b75147.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_1214b7c401b992": {
+    "label": "Tencent 2023 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2024/03/20/fe50310bf15caaab4b05dd9e8e49d316.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_330d7a99974660": {
+    "label": "Tencent 2024 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2024/05/14/207c400f3d6e2d9894c0b9b778507cf1.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_56098f20e90eb4": {
+    "label": "Tencent 2024 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2024/08/14/027889ef78b4ed2b83337dd4a7c2ffef.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_5f82333ccea989": {
+    "label": "Tencent 2024 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2024/11/13/fc23e847ab5be9093587be6b7b01c115.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_9421a16fd1efb5": {
+    "label": "Tencent 2024 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2025/03/19/81cb1f36bec218d27d6e0b24eec012b6.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_dc12015ae00c7c": {
+    "label": "Tencent 2025 Q1 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2025/05/16/2af4e73edd208df236dadd8b9df89fc4.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_9e43f1488639df": {
+    "label": "Tencent 2025 Q2 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2025/08/13/56af6c5c98acdc7bd757a7bd208d8189.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_2231bd2d635097": {
+    "label": "Tencent 2025 Q3 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2025/11/13/a33b6f19738615834787623f17d20ba3.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_266a915b42808d": {
+    "label": "Tencent 2025 Q4 earnings release",
+    "url": "https://static.www.tencent.com/uploads/2026/03/18/e6a646796d0d869acc76271c9ee1a6a5.pdf",
+    "type": "official_quarterly_earnings_release"
+  },
+  "history_94c440d6d473ce": {
+    "label": "Alphabet SEC filings index",
+    "url": "https://abc.xyz/investor/sec-filings/",
+    "type": "official_sec_filings_index"
+  },
+  "history_2bedbd1d70a419": {
+    "label": "Alphabet 2019 Form 10-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000008/goog10-k2019.htm",
+    "type": "official_annual_report_segment_table"
   }
 }

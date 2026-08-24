@@ -13,9 +13,9 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
 
     def test_four_domains_are_present_and_backed_by_entities(self):
         domains = self.snapshot["domains"]
-        self.assertEqual([item["id"] for item in domains], ["local", "international", "cloud", "macro"])
+        self.assertEqual([item["id"] for item in domains], ["local", "international", "mainland", "cloud"])
         self.assertTrue(all(item["entities"] for item in domains))
-        self.assertGreaterEqual(domains[0]["metric"]["value"], 50)
+        self.assertGreaterEqual(domains[0]["metric"]["value"], 5000)
 
     def test_relationships_connect_different_domains_and_are_typed(self):
         relations = self.snapshot["relations"]
@@ -34,7 +34,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertEqual(len({tuple(sorted((item["from"], item["to"]))) for item in relations}), 4)
         self.assertEqual(
             {domain for item in relations for domain in (item["from"], item["to"])},
-            {"local", "international", "cloud", "macro"},
+            {"local", "international", "mainland", "cloud"},
         )
 
     def test_source_links_are_public_http_urls(self):
@@ -46,7 +46,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
     def test_each_domain_exposes_expected_distinct_data_backed_focuses(self):
         for domain in self.snapshot["domains"]:
             focuses = domain["focuses"]
-            expected_count = 5 if domain["id"] == "local" else 4
+            expected_count = 3 if domain["id"] == "cloud" else 4
             self.assertEqual(len(focuses), expected_count, domain["id"])
             self.assertEqual(len({focus["id"] for focus in focuses}), expected_count, domain["id"])
             signatures = {
@@ -71,8 +71,10 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
                 self.assertTrue(focus["metric"]["label"])
                 for item in focus["items"]:
                     self.assertTrue(item["analysis"])
-                    self.assertTrue(item["source_url"].startswith(("https://", "http://")))
+                    if item.get("value") is not None:
+                        self.assertTrue(item["source_url"].startswith(("https://", "http://")))
 
+    @unittest.skip("旧产品资费四象限已由用户指定的01/03/04指标替代")
     def test_focuses_preserve_their_real_measurement_semantics(self):
         domains = {domain["id"]: domain for domain in self.snapshot["domains"]}
         local = {focus["id"]: focus for focus in domains["local"]["focuses"]}
@@ -107,24 +109,15 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertIn("月费区间", price_insight)
 
         international = {focus["id"]: focus for focus in domains["international"]["focuses"]}
-        self.assertEqual(domains["international"]["title"], "内地电讯企业")
-        self.assertEqual(international["momentum"]["label"], "增长变化")
-        self.assertIn("放缓已扩散至全部公司", international["momentum"]["insight"])
-        self.assertIn(international["growth"]["items"][0]["period"], international["growth"]["metric"]["label"])
-        self.assertNotEqual(
-            [item["value"] for item in international["growth"]["items"]],
-            [item["value"] for item in international["momentum"]["items"]],
-        )
-        self.assertTrue(all("trend" in item for item in international["momentum"]["items"]))
+        self.assertEqual(domains["international"]["title"], "国际运营商")
+        self.assertEqual(international["revenue"]["label"], "营收")
+        self.assertEqual(international["ebitda_margin"]["label"], "EBITDA")
+        self.assertEqual(international["net_profit_growth"]["label"], "净利润")
+        self.assertEqual(international["postpaid_arpu"]["label"], "后付费/ARPU")
+        self.assertTrue(all(len(item["trend"]) == 10 for item in international["revenue"]["items"]))
+        self.assertTrue(all(len(item["trend"]) == 10 for item in international["net_profit_growth"]["items"]))
         self.assertNotIn("gap", international)
-        self.assertEqual(international["investment"]["label"], "资本投入占比")
-        self.assertTrue(
-            all(
-                item["value"] is None or "资本开支占营收" in item["detail"]
-                for item in international["investment"]["items"]
-            )
-        )
-        self.assertIn("资本开支/营收", international["investment"]["metric"]["label"])
+        self.assertIn("ARPA", json.dumps(international["postpaid_arpu"], ensure_ascii=False))
 
         cloud = {focus["id"]: focus for focus in domains["cloud"]["focuses"]}
         self.assertEqual(cloud["growth"]["label"], "收入增长")
@@ -134,7 +127,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertTrue(any(item["value"] is None for item in cloud["profit"]["items"]))
         self.assertTrue(all(item["value"] is not None or item["unit"] == "" for item in cloud["trend"]["items"]))
         self.assertTrue(all(item["value"] is not None or item["unit"] == "" for item in cloud["profit"]["items"]))
-        self.assertIn("margin_change", cloud)
+        self.assertIn("investment", cloud)
 
         macro = {focus["id"]: focus for focus in domains["macro"]["focuses"]}
         self.assertEqual(macro["service"]["label"], "投入与投诉")
@@ -169,20 +162,36 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             visible.extend([relation["title"], relation["detail"], relation["kind"]])
         text = "\n".join(str(item) for item in visible)
         for forbidden in (
-            "竞对", "赛道", "交锋", "增长梯队", "投入强度", "增长动量", "移动用户",
+            "竞对", "赛道", "交锋", "增长梯队", "投入强度", "增长动量",
             "月费带", "结构化平均月费中位数", "direct_product_line_and_segment",
             "official_proxy_segment", "direct_segment_non_gaap_profit", "proxy_segment",
             "segment_with_reclassification",
         ):
             self.assertNotIn(forbidden, text)
-        self.assertIn("联网设备", text)
         self.assertTrue(
-            any(boundary in text for boundary in ("不直接比较", "不可直接比较", "不能直接比较"))
+            any(boundary in text for boundary in (
+                "不直接比较", "不可直接比较", "不能直接比较", "不能等同", "不可等同",
+            ))
         )
         self.assertNotIn("同类套餐竞争最多", text)
         self.assertNotIn("可核验指标数", text)
         self.assertNotIn("（%）", text)
 
+    def test_cloud_domain_exposes_china_mobile_cloud_and_group_capex(self):
+        cloud_domain = next(domain for domain in self.snapshot["domains"] if domain["id"] == "cloud")
+        cloud = {focus["id"]: focus for focus in cloud_domain["focuses"]}
+        self.assertEqual(cloud["investment"]["label"], "资本开支")
+        self.assertIn("统一折算百万美元", cloud["investment"]["context"])
+        china_mobile_capex = next(
+            item for item in cloud["investment"]["items"] if item["name"] == "中国移动云"
+        )
+        self.assertEqual(china_mobile_capex["value"], 22812.6)
+        self.assertEqual(china_mobile_capex["period"], "FY2024")
+        self.assertIn("集团投入", china_mobile_capex["analysis"])
+        revenue_names = {item["name"] for item in cloud["revenue"]["items"]}
+        self.assertIn("中国移动云", revenue_names)
+
+    @unittest.skip("旧宏观市场卡片已由用户指定的03内地运营商替代")
     def test_frontend_payload_exposes_ai_gate_and_refresh_status(self):
         self.assertIn("refresh", self.snapshot)
         self.assertIn("ai", self.snapshot)
@@ -209,6 +218,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
                     self.assertTrue(item.get("components"), f"{domain['id']}:{focus['id']}:{item['name']}")
                     self.assertTrue(all(component.get("label") for component in item["components"]))
 
+    @unittest.skip("旧产品资费卡片已不在战略总览四象限中")
     def test_icable_scale_lists_unique_plans_and_duplicate_record_risk(self):
         local = next(domain for domain in self.snapshot["domains"] if domain["id"] == "local")
         scale = next(focus for focus in local["focuses"] if focus["id"] == "scale")
@@ -267,11 +277,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         margin = next(focus for focus in domain["focuses"] if focus["id"] == "margin")
         self.assertNotIn("用于判断", margin["insight"])
 
-    def test_reader_facing_snapshot_uses_percent_symbol_instead_of_percentage_points(self):
-        visible = json.dumps(self.snapshot["domains"], ensure_ascii=False)
+    def test_requested_domains_use_absolute_values_not_growth_or_margin(self):
+        requested = [domain for domain in self.snapshot["domains"] if domain["id"] in {"local", "mainland", "cloud"}]
+        visible = json.dumps(requested, ensure_ascii=False)
 
         self.assertNotIn("百分点", visible)
-        self.assertIn('"unit": "%"', visible)
+        self.assertNotIn('"unit": "%"', visible)
 
 
 if __name__ == "__main__":
