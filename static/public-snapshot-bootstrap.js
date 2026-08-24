@@ -14,6 +14,8 @@
     ["/api/news-review-sheet", "static-data/news-review-sheet.json"],
     ["/api/weekly-report-preview", "static-data/weekly-report-preview.json"],
     ["/api/subscriptions", "static-data/subscriptions.json"],
+    ["/api/auth/admin/users", "static-data/organization-users.json"],
+    ["/api/auth/admin/audit", "static-data/organization-audit.json"],
   ]);
   const lookupRoutes = new Map([
     ["/api/crawl-run-log", ["static-data/crawl-run-details.json", "details"]],
@@ -30,7 +32,7 @@
         permissions: { modules: {
           dashboard: true, monitoring: true, competitor: true, news: true,
           weekly: true, performance: true, review: true, log: true, fault: true,
-          subscriptions: false, ai: false, organization: false,
+          subscriptions: false, ai: false, organization: true,
         } },
       },
     }],
@@ -102,6 +104,14 @@
       item.setAttribute("aria-disabled", "true");
     });
     document.querySelectorAll('[data-workspace-panel="competitor"] button, [data-workspace-panel="competitor"] input, [data-workspace-panel="competitor"] select').forEach((item) => {
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+    });
+    document.querySelectorAll("#organizationAdmin [data-directory-open], #organizationAdmin [data-delete-user], #organizationAdmin .organization-save-bar").forEach((item) => {
+      item.hidden = true;
+      item.setAttribute("aria-hidden", "true");
+    });
+    document.querySelectorAll("#organizationAdmin [data-role], #organizationAdmin [data-status], #organizationAdmin [data-module]").forEach((item) => {
       item.disabled = true;
       item.setAttribute("aria-disabled", "true");
     });
