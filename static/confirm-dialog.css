@@ -1,0 +1,101 @@
+.cmhk-confirm-dialog {
+  width: min(460px, calc(100vw - 32px));
+  max-width: none;
+  border: 1px solid rgba(91, 218, 232, .42);
+  border-radius: 16px;
+  padding: 0;
+  color: #dff8fb;
+  background: rgba(5, 27, 38, .98);
+  box-shadow: 0 28px 90px rgba(0, 8, 15, .58), 0 0 42px rgba(42, 188, 214, .13), inset 0 1px rgba(255, 255, 255, .05);
+  overflow: hidden;
+}
+
+.cmhk-confirm-dialog::backdrop {
+  background: rgba(1, 10, 17, .72);
+  backdrop-filter: blur(7px) saturate(.82);
+}
+
+.cmhk-confirm-frame {
+  position: relative;
+  background:
+    linear-gradient(rgba(74, 190, 211, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 190, 211, .035) 1px, transparent 1px),
+    radial-gradient(circle at 16% 0, rgba(49, 201, 225, .12), transparent 42%);
+  background-size: 24px 24px, 24px 24px, auto;
+}
+
+.cmhk-confirm-dialog[open] { animation: cmhk-dialog-enter .2s cubic-bezier(.2, .8, .2, 1) both; }
+.cmhk-confirm-dialog.is-closing { animation: cmhk-dialog-leave .15s ease-in both; }
+
+.cmhk-confirm-corner {
+  position: absolute;
+  z-index: 2;
+  right: 9px;
+  left: 9px;
+  height: 8px;
+  border-right: 1px solid rgba(107, 229, 237, .55);
+  border-left: 1px solid rgba(107, 229, 237, .55);
+  pointer-events: none;
+}
+.cmhk-confirm-corner.is-top { top: 8px; border-top: 1px solid rgba(107, 229, 237, .55); }
+.cmhk-confirm-corner.is-bottom { bottom: 8px; border-bottom: 1px solid rgba(107, 229, 237, .55); }
+
+.cmhk-confirm-header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 13px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid rgba(88, 188, 207, .16);
+}
+
+.cmhk-confirm-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(91, 219, 230, .38);
+  border-radius: 12px;
+  place-items: center;
+  color: #65dce8;
+  background: rgba(35, 155, 178, .11);
+  box-shadow: inset 0 0 18px rgba(54, 203, 224, .08);
+}
+.cmhk-confirm-icon svg { width: 23px; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+.cmhk-confirm-dialog[data-tone="danger"] .cmhk-confirm-icon { border-color: rgba(255, 123, 116, .4); color: #ff8b84; background: rgba(201, 56, 54, .12); }
+.cmhk-confirm-dialog[data-tone="success"] .cmhk-confirm-icon { border-color: rgba(72, 222, 171, .4); color: #58dfb2; background: rgba(40, 173, 129, .12); }
+
+.cmhk-confirm-heading { min-width: 0; }
+.cmhk-confirm-heading small { display: block; margin-bottom: 5px; color: #63cbd5; font: 700 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .18em; }
+.cmhk-confirm-heading strong { display: block; color: #e5f7f9; font: 650 18px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .02em; }
+.cmhk-confirm-close { width: 30px; height: 30px; border: 0; border-radius: 8px; padding: 0; color: #7fa8af; background: transparent; cursor: pointer; font: 300 22px/1 sans-serif; }
+.cmhk-confirm-close:hover { color: #e0f5f7; background: rgba(87, 181, 195, .12); }
+.cmhk-confirm-close:focus-visible { outline: 2px solid #65dce8; outline-offset: 2px; }
+
+.cmhk-confirm-body { padding: 22px 24px 12px; }
+.cmhk-confirm-body p { margin: 0; color: #c7dfe3; font: 500 14px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.cmhk-confirm-body .cmhk-confirm-detail { margin-top: 12px; border-left: 2px solid rgba(94, 210, 221, .45); padding: 8px 11px; color: #83aab2; background: rgba(42, 117, 133, .08); font-size: 11px; line-height: 1.55; }
+
+.cmhk-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px 24px; }
+.cmhk-confirm-button { min-width: 94px; min-height: 40px; border-radius: 9px; padding: 0 18px; cursor: pointer; font: 650 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .03em; transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+.cmhk-confirm-button:hover { transform: translateY(-1px); }
+.cmhk-confirm-button:focus-visible { outline: 2px solid #68dde7; outline-offset: 2px; }
+.cmhk-confirm-button.is-secondary { border: 1px solid rgba(119, 179, 189, .3); color: #9fc2c8; background: rgba(13, 53, 65, .65); }
+.cmhk-confirm-button.is-primary { border: 1px solid rgba(84, 221, 232, .68); color: #04171e; background: linear-gradient(135deg, #64dce6, #3bbdcd); box-shadow: 0 8px 24px rgba(42, 193, 210, .18); }
+.cmhk-confirm-dialog[data-tone="danger"] .cmhk-confirm-button.is-primary { border-color: rgba(255, 133, 126, .72); color: #fff; background: linear-gradient(135deg, #e95c55, #c53c3a); box-shadow: 0 8px 24px rgba(211, 62, 59, .2); }
+
+@keyframes cmhk-dialog-enter { from { opacity: 0; transform: translateY(10px) scale(.975); } to { opacity: 1; transform: none; } }
+@keyframes cmhk-dialog-leave { to { opacity: 0; transform: translateY(6px) scale(.985); } }
+
+@media (max-width: 520px) {
+  .cmhk-confirm-dialog { width: calc(100vw - 20px); margin: auto auto 10px; border-radius: 14px; }
+  .cmhk-confirm-header { grid-template-columns: 40px minmax(0, 1fr) 30px; gap: 11px; padding: 21px 18px 16px; }
+  .cmhk-confirm-icon { width: 38px; height: 38px; }
+  .cmhk-confirm-body { padding: 18px 18px 9px; }
+  .cmhk-confirm-actions { padding: 12px 18px 20px; }
+  .cmhk-confirm-button { flex: 1; min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmhk-confirm-dialog[open], .cmhk-confirm-dialog.is-closing { animation: none; }
+  .cmhk-confirm-button { transition: none; }
+}
