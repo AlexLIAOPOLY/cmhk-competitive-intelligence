@@ -630,7 +630,6 @@
     card.querySelector("[data-competitor-insight-title]").textContent = "AI 竞争洞察";
     setCompetitorInsightStatus(card, status || (isAi ? "" : "AI暂未完成"));
     card.querySelector("[data-competitor-insight-badge]").textContent = isAi ? "COMPETITIVE INSIGHT" : "RETRY";
-    const list = card.querySelector("[data-competitor-insight-list]");
     const sourceItems = Array.isArray(insights) && insights.length ? insights : parseCompetitorInsightItems(insight);
     const items = sourceItems.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     syncCompetitorInsightRows(card, items);
