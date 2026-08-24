@@ -15508,6 +15508,31 @@ body.report-library-open::before {
   padding: 2px 3px 0;
 }
 
+.intelligence-chart-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 7px;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: color-mix(in srgb, var(--domain-accent) 72%, #315b68) rgba(32, 69, 82, .22);
+  scrollbar-width: thin;
+}
+
+.intelligence-chart-scroll::-webkit-scrollbar { height: 6px; }
+.intelligence-chart-scroll::-webkit-scrollbar-track { background: rgba(32, 69, 82, .22); }
+.intelligence-chart-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--domain-accent) 72%, #315b68);
+}
+.intelligence-chart-scroll:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--domain-accent) 58%, #d9f8ff);
+  outline-offset: 2px;
+}
+.intelligence-chart-scroll .intelligence-viz-columns.is-scrollable-chart {
+  grid-template-columns: repeat(var(--cloud-chart-columns, 8), minmax(72px, 1fr));
+  width: max(100%, 640px);
+}
+
 .intelligence-viz-columns > div {
   grid-template-rows: 18px minmax(46px, 1fr) 20px;
   padding-top: 3px;
@@ -15524,7 +15549,16 @@ body.report-library-open::before {
   outline: none;
 }
 
-.intelligence-viz-columns strong { font-size: 9px; }
+.intelligence-viz-columns strong { font-size: 9px; line-height: 1.05; }
+.intelligence-viz-columns strong small {
+  display: block;
+  margin-top: 2px;
+  color: var(--domain-accent);
+  font-size: 6.5px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
 .intelligence-viz-columns i { width: min(26px, 60%); }
 .intelligence-viz-columns span { font-size: 8px; }
 .intelligence-viz-kpis { gap: 4px; }

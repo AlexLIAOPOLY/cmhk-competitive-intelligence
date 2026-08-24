@@ -409,7 +409,7 @@
 .competitor-insight b { color: #f0fafb; font-size: 16px; letter-spacing: .04em; }
 .competitor-insight small { color: #789ba7; font-size: 9px; }
 .competitor-insight-badge { padding: 5px 8px; border: 1px solid rgba(95,196,215,.35); border-radius: 999px; color: #75bdca; background: rgba(5,26,35,.42); font: 700 8px/1 system-ui; letter-spacing: .12em; }
-.competitor-insight-body { display: grid; min-height: 0; height: 100%; grid-template-columns: minmax(0,1fr); align-items: start; gap: 22px; padding-right: 8px; overflow-y: scroll; overscroll-behavior-y: contain; scrollbar-color: rgba(100,198,216,.72) rgba(4,24,33,.55); scrollbar-gutter: stable; scrollbar-width: thin; }
+.competitor-insight-body { display: grid; min-height: 0; grid-template-columns: minmax(0,1fr); align-items: start; gap: 22px; padding-right: 8px; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-color: rgba(100,198,216,.72) rgba(4,24,33,.55); scrollbar-gutter: stable; scrollbar-width: thin; }
 .competitor-insight-body::-webkit-scrollbar { width: 8px; }
 .competitor-insight-body::-webkit-scrollbar-track { border-radius: 999px; background: rgba(4,24,33,.55); }
 .competitor-insight-body::-webkit-scrollbar-thumb { border: 2px solid rgba(4,24,33,.55); border-radius: 999px; background: linear-gradient(#57bfd3,#65d2ad); }

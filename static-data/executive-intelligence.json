@@ -3410,8 +3410,8 @@
             "unit": "家",
             "label": "口径差异已明示"
           },
-          "context": "Verizon为ARPA；NTT为手机订阅数+移动ARPU",
-          "insight": "4家用户规模从52.97至126.7百万，但ARPU/ARPA口径不同，表明客户价值不可直接混排。",
+          "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径",
+          "insight": "4家FY2025披露值约90.88至126.7百万，但ARPU/ARPA及NTT替代口径不同，表明客户价值不可直接混排。",
           "items": [
             {
               "name": "Verizon",
@@ -3486,8 +3486,8 @@
               "value": 116.44,
               "unit": "百万",
               "period": "FY2025",
-              "detail": "后付费手机用户 116.445百万 · ARPU $50.71/用户/月",
-              "analysis": "Deutsche Telekom数值为T-Mobile US分部，ARPU为2025年第四季度期末口径。",
+              "detail": "后付费用户 116.445百万 · 后付费手机ARPU $50.71/用户/月",
+              "analysis": "Deutsche Telekom用户数为T-Mobile US分部后付费总客户，ARPU为后付费手机口径。",
               "components": [
                 {
                   "label": "后付费用户数",
@@ -3554,8 +3554,8 @@
               "value": 90.88,
               "unit": "百万",
               "period": "FY2025",
-              "detail": "后付费手机用户 90.879百万 · ARPU $56.70/用户/月",
-              "analysis": "AT&T为美国Mobility后付费手机口径。",
+              "detail": "后付费用户 90.879百万 · 后付费手机ARPU $56.70/用户/月",
+              "analysis": "AT&T用户数为美国Mobility后付费总客户，ARPU为后付费手机口径。",
               "components": [
                 {
                   "label": "后付费用户数",
@@ -8139,7 +8139,7 @@
         {
           "id": "profit",
           "label": "云利润",
-          "visual": "diverging",
+          "visual": "columns",
           "metric": {
             "value": 39834.0,
             "unit": "百万美元",
@@ -10012,7 +10012,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "300c91d3e1a0993a1796f6309ff8acdb970a8b34e1903ec3f81036b7cceff958",
+    "evidence_hash": "d1ea8afacdeb5a643f2b307b89938adbed8924b685421c0210b202c024b5021b",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
