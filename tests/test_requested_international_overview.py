@@ -98,6 +98,37 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertTrue(any("not labelled postpaid customers" in chunk["text"] for chunk in chunks))
         self.assertTrue(any("不得写成NTT无数值" in chunk["text"] for chunk in chunks))
 
+    def test_xiaojing_compacts_four_ten_year_series_without_losing_values(self) -> None:
+        chunks = rag._global_operator_exact_metric_chunks(
+            "Verizon、Deutsche Telekom、AT&T、NTT Group从2016到2025的后付费用户数",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        self.assertEqual(len(chunks), 4)
+        by_pair = {
+            (
+                chunk["text"].split("operator_id=", 1)[1].split(";", 1)[0],
+                chunk["text"].split("metric_key=", 1)[1].split(";", 1)[0],
+            ): chunk["text"]
+            for chunk in chunks
+        }
+        self.assertTrue(all("point_count=10" in text for text in by_pair.values()))
+        self.assertIn("FY2016=108.796", by_pair[("verizon", "postpaid_connections")])
+        self.assertIn("FY2025=126.705", by_pair[("verizon", "postpaid_connections")])
+        self.assertIn("FY2016=74.88", by_pair[("ntt_group", "mobile_service_subscriptions")])
+        self.assertIn("FY2025=93.065", by_pair[("ntt_group", "mobile_service_subscriptions")])
+        self.assertIn("不得用有值、xxx或估算", by_pair[("ntt_group", "mobile_service_subscriptions")])
+
+    def test_xiaojing_single_year_followup_still_receives_complete_series(self) -> None:
+        chunks = rag._global_operator_exact_metric_chunks(
+            "NTT Group FY2016移动电话服务订阅数",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        self.assertEqual(len(chunks), 1)
+        text = chunks[0]["text"]
+        self.assertIn("point_count=10", text)
+        self.assertIn("FY2016=74.88", text)
+        self.assertIn("FY2025=93.065", text)
+
     def test_postpaid_ai_gate_rejects_cross_company_arpu_pairing(self) -> None:
         snapshot = pipeline._analysis_input_snapshot()
         focus = next(

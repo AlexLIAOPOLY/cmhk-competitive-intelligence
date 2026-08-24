@@ -798,6 +798,11 @@ def _global_operator_exact_metric_chunks(
     if not matched_subjects or not matched_metrics:
         return []
 
+    postpaid_series_mode = bool(
+        matched_subjects & {"verizon", "deutsche_telekom", "att", "ntt_group"}
+        and matched_metrics & {"postpaid_connections", "mobile_service_subscriptions"}
+    )
+
     try:
         with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
             rows = list(csv.DictReader(handle))
@@ -826,15 +831,49 @@ def _global_operator_exact_metric_chunks(
             (row.get("metric_key") or "").strip(),
         )
         pair_years = requested_years_by_pair.get(pair)
-        if pair_years and row_year not in pair_years:
+        if pair_years and row_year not in pair_years and not postpaid_series_mode:
             continue
-        if years and row_year not in years:
+        if years and row_year not in years and not postpaid_series_mode:
             continue
         filtered.append(row)
 
     source = csv_path.relative_to(ROOT).as_posix()
     registry_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "sources.json"
     chunks: list[dict[str, Any]] = []
+    if len(years) >= 5 or postpaid_series_mode:
+        grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for row in filtered:
+            pair = (
+                (row.get("operator_id") or "").strip(),
+                (row.get("metric_key") or "").strip(),
+            )
+            grouped.setdefault(pair, []).append(row)
+        for pair in sorted(grouped):
+            pair_rows = sorted(grouped[pair], key=lambda item: int(item.get("year") or 0))
+            first = pair_rows[0]
+            points = []
+            for row in pair_rows:
+                strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
+                points.append(
+                    f"{row.get('period')}={row.get('official_value')} {row.get('unit')}"
+                    f"[status={row.get('verification_status')},verification_count={row.get('verification_count')},"
+                    f"distinct_sources={strict_sources}]"
+                )
+            comparison_guidance = ""
+            if pair == ("ntt_group", "mobile_service_subscriptions") and "postpaid_connections" in matched_metrics:
+                comparison_guidance = (
+                    "NTT序列是移动电话服务订阅数替代口径；回答四家后付费用户数时必须列出具体值，"
+                    "不得写成NTT无数值；同时说明包含MVNO及通信模块合同、并非后付费客户数。"
+                )
+            text = (
+                f"精确年度运营商指标序列：operator={first.get('operator')}; operator_id={pair[0]}; "
+                f"metric_key={pair[1]}; metric_zh={first.get('metric_zh')}; point_count={len(pair_rows)}; "
+                f"values={' | '.join(points)}; scope={first.get('scope')}; basis={first.get('basis')}; "
+                f"quality_note={first.get('quality_note')}; {comparison_guidance}"
+                "所有年份必须逐点读取；不得用有值、xxx或估算代替具体数值。"
+            )
+            chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+        return chunks
     for row in filtered[:24]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
         value_text = (
