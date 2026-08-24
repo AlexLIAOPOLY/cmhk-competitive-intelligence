@@ -405,7 +405,12 @@
       const deleteButton = event.target.closest("[data-delete-user]");
       if (deleteButton) { removeUser(deleteButton); return; }
       const select = event.target.closest("[data-select-user]");
-      if (select) { state.selectedUserId = select.dataset.selectUser; render(); return; }
+      if (select) {
+        const userId = select.dataset.selectUser;
+        state.selectedUserId = String(state.selectedUserId) === String(userId) ? "" : userId;
+        render();
+        return;
+      }
       if (event.target.closest("[data-directory-open]")) { state.directory.open = true; render(); controlHost?.querySelector("[data-directory-search]")?.focus(); return; }
       if (event.target.closest("[data-directory-close]")) { state.directory.open = false; render(); return; }
       const importButton = event.target.closest("[data-import-email]");
