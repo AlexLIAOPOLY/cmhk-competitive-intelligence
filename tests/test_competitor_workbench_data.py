@@ -75,9 +75,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
     def test_recent_global_operator_additions_are_visible(self):
         companies = {item["id"]: item for item in self.payload["companies"]}
         metrics = {item["key"] for item in self.payload["metrics"]}
-        self.assertEqual(companies["Bharti Airtel"]["group"], "印度运营商")
-        self.assertEqual(companies["Reliance Jio"]["group"], "印度运营商")
-        for company in ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group"):
+        for company in ("Bharti Airtel", "Reliance Jio", "Verizon", "Deutsche Telekom", "AT&T", "NTT Group"):
             self.assertEqual(companies[company]["group"], "国际运营商")
         self.assertTrue({"revenue", "ebitda", "net_profit", "network_towers", "total_data_traffic"} <= metrics)
         self.assertIn("reported_mobile_connections", metrics)
