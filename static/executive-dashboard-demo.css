@@ -283,7 +283,6 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: clamp(42px, 3vw, 54px) minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(113, 183, 213, .2); border-radius: 3px; background: linear-gradient(145deg, rgba(7, 24, 38, .8), rgba(3, 13, 23, .72)); }
 .comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 clamp(8px, .55vw, 18px); border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, rgba(47, 112, 149, .2), transparent); }
 .comparison-metric-card h3 { min-width: 0; margin: 0; color: #e6f4f9; font-size: clamp(10px, .67vw, 16px); font-weight: 680; line-height: 1.3; white-space: normal; }
-.comparison-metric-card > header span { flex: 0 0 auto; color: #6f98aa; font-size: clamp(8px, .5vw, 12px); font-weight: 600; white-space: nowrap; }
 .comparison-table { min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); overflow: hidden; }
 .comparison-row { min-width: 0; display: grid; grid-template-columns: minmax(58px, .78fr) minmax(28px, 1.05fr) minmax(56px, auto) minmax(40px, .72fr); align-items: center; gap: clamp(4px, .3vw, 8px); padding: 0 clamp(6px, .42vw, 12px); border-bottom: 1px solid rgba(133, 182, 207, .1); color: inherit; text-decoration: none; transition: background 130ms ease; }
 .comparison-row:last-child { border-bottom: 0; }
