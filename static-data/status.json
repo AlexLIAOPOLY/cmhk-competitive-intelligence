@@ -8,12 +8,12 @@
     },
     "visuals": {
       "crawl": {
-        "success": 208,
-        "failed": 5,
+        "success": 205,
+        "failed": 6,
         "fallback": 0,
-        "total": 213,
-        "successRate": 98,
-        "completedAt": "2026-08-24 03:07:43"
+        "total": 211,
+        "successRate": 97,
+        "completedAt": "2026-08-25 03:05:49"
       },
       "quality": {
         "ok": 31,
@@ -293,7 +293,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-25 03:04:06",
+    "latestOutputText": "2026-08-25 03:05:06",
     "outputs": [
       {
         "name": "8月19日周报.docx",
