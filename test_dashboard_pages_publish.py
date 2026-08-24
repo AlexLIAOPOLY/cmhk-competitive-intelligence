@@ -25,6 +25,46 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_public_asset_manifest_covers_every_local_homepage_dependency(self):
+        html = (publisher.STATIC_DIR / "index.html").read_text(encoding="utf-8")
+        regex = __import__("re")
+        referenced = set(
+            regex.findall(r'<script[^>]+src="/static/([^"?]+)', html)
+            + regex.findall(
+                r'<link[^>]+rel="stylesheet"[^>]+href="/static/([^"?]+)',
+                html,
+            )
+        )
+        self.assertTrue(referenced)
+        self.assertEqual(referenced - set(publisher.PUBLIC_STATIC_FILES), set())
+
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn('["/api/auth/me", {', source)
+        self.assertIn('name: "公开快照"', source)
+
+    def test_public_report_preview_is_copied_from_non_empty_local_artifact(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            static = root / "static"
+            preview_dir = static / "report-previews"
+            preview_dir.mkdir(parents=True)
+            report_name = "8月13日运营商业绩摘要.docx"
+            report_base = report_name.removesuffix(".docx")
+            key = __import__("base64").urlsafe_b64encode(report_base.encode()).decode().rstrip("=")
+            (preview_dir / f"{key}.pdf").write_bytes(b"%PDF-1.7\npreview")
+            destination = root / "published-static"
+            destination.mkdir()
+
+            with mock.patch.object(publisher, "STATIC_DIR", static):
+                copied = publisher._copy_public_report_preview(report_name, destination)
+
+            self.assertEqual(copied.read_bytes(), b"%PDF-1.7\npreview")
+            self.assertGreater(copied.stat().st_size, 0)
+
+            self.assertIsNone(
+                publisher._copy_public_report_preview("不存在的周报.docx", destination)
+            )
+
     def test_snapshot_publisher_authenticates_loopback_session_without_exposing_credentials(self):
         with tempfile.TemporaryDirectory() as temp:
             cookie_jar = Path(temp) / "cookies.txt"
@@ -250,6 +290,17 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertNotIn("sheetId", snapshot)
         self.assertNotIn("sheetUrl", snapshot)
         self.assertEqual(len(snapshot["rows"]), 1)
+
+    def test_optional_public_snapshot_does_not_block_on_busy_live_preview(self):
+        fetch = mock.Mock(side_effect=RuntimeError("preview is busy"))
+        self.assertEqual(
+            publisher._fetch_optional_public_snapshot(fetch, "/api/news-review-sheet"),
+            {},
+        )
+        fetch.assert_called_once_with("/api/news-review-sheet")
+
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn('_fetch_optional_public_snapshot(fetch, "/api/weekly-report-preview")', source)
 
     def test_fresh_intelligence_snapshot_is_built_from_local_runtime(self):
         with tempfile.TemporaryDirectory() as temp:

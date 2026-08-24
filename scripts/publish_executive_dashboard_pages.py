@@ -32,10 +32,15 @@ DEFAULT_PUBLIC_URL = "https://alexliaopoly.github.io/cmhk-competitive-intelligen
 DEFAULT_INTELLIGENCE_SOURCE_URL = "http://127.0.0.1:8765/"
 PUBLIC_STATIC_FILES = (
     "app.js",
+    "auth-client.js",
     "company-data.js",
+    "confirm-dialog.css",
+    "confirm-dialog.js",
     "leadership-board.css",
     "news-review-sheet.css",
     "news-review-sheet.js",
+    "organization-admin.css",
+    "organization-admin.js",
     "responsive-layout-hardening.css",
     "styles.css",
     "subscription-admin.css",
@@ -66,6 +71,20 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     ["/api/task-run-log", ["static-data/task-run-details.json", "details"]],
   ]);
   const inlineRoutes = new Map([
+    ["/api/auth/me", {
+      ok: true,
+      authenticated: true,
+      user: {
+        name: "公开快照",
+        role: "VIEWER",
+        roleLabel: "只读",
+        permissions: { modules: {
+          dashboard: true, monitoring: true, competitor: true, news: true,
+          weekly: true, performance: true, review: true, log: true, fault: true,
+          subscriptions: false, ai: false, organization: false,
+        } },
+      },
+    }],
     ["/api/agent-datasets", { ok: true, datasets: [] }],
     ["/api/agent-memory", { ok: true, memories: [] }],
     ["/api/agent-skills", { ok: true, skills: [] }],
@@ -417,6 +436,14 @@ def _scrub_public_value(value: Any, *, key: str = "") -> Any:
     return value
 
 
+def _fetch_optional_public_snapshot(fetch: Any, endpoint: str) -> dict[str, Any]:
+    """Return an empty safe snapshot when a non-core live preview is busy."""
+    try:
+        return fetch(endpoint)
+    except Exception:
+        return {}
+
+
 def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]]:
     cookie_dir = tempfile.TemporaryDirectory(prefix="cmhk-public-snapshot-session-")
     cookie_jar = Path(cookie_dir.name) / "cookies.txt"
@@ -489,9 +516,13 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         for item in public_task_runs
         if item.get("task_id") or item.get("task_run_id")
     }
-    review_sheet = _public_news_review_sheet(
-        fetch("/api/news-review-sheet")
+    # These previews may be temporarily locked while strategic-news writes to
+    # Feishu. They must not block unrelated performance snapshot publication.
+    review_sheet_payload = _fetch_optional_public_snapshot(
+        fetch,
+        "/api/news-review-sheet",
     )
+    review_sheet = _public_news_review_sheet(review_sheet_payload)
     subscriptions = _public_subscriptions(
         fetch("/api/subscriptions")
     )
@@ -520,7 +551,7 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
         ),
         "news-review-sheet.json": review_sheet,
         "weekly-report-preview.json": _scrub_public_value(
-            fetch("/api/weekly-report-preview")
+            _fetch_optional_public_snapshot(fetch, "/api/weekly-report-preview")
         ),
         "subscriptions.json": subscriptions,
         "news-run-items.json": news_run_items,
@@ -550,6 +581,21 @@ def _public_report_output(item: dict[str, Any]) -> dict[str, Any]:
         "url": "",
         "audio": None,
     }
+
+
+def _copy_public_report_preview(report_name: str, static_destination: Path) -> Path | None:
+    report_base = re.sub(r"\.docx$", "", report_name, flags=re.I)
+    preview_key = base64.urlsafe_b64encode(report_base.encode("utf-8")).decode("ascii").rstrip("=")
+    source = STATIC_DIR / "report-previews" / f"{preview_key}.pdf"
+    if not source.is_file() or source.stat().st_size <= 0:
+        return None
+    destination_dir = static_destination / "report-previews"
+    destination_dir.mkdir(exist_ok=True)
+    destination = destination_dir / source.name
+    shutil.copy2(source, destination)
+    if destination.stat().st_size <= 0:
+        raise RuntimeError(f"public report preview is empty after copy: {report_name}")
+    return destination
 
 
 def _public_crawl_run_detail(payload: dict[str, Any]) -> dict[str, Any]:
@@ -733,15 +779,10 @@ def _build_site(
         for report_type in ("weekly", "carrier-performance")
     ]
     for latest_report in (item for item in latest_reports if item):
-        report_base = re.sub(r"\.docx$", "", str(latest_report.get("name") or ""), flags=re.I)
-        preview_key = base64.urlsafe_b64encode(report_base.encode("utf-8")).decode("ascii").rstrip("=")
-        preview_destination = static_destination / "report-previews"
-        preview_destination.mkdir(exist_ok=True)
-        _run([
-            "curl", "--fail", "--silent", "--show-error", "--max-time", "60",
-            "--output", str(preview_destination / f"{preview_key}.pdf"),
-            source_url.rstrip("/") + f"/static/report-previews/{preview_key}.pdf",
-        ])
+        _copy_public_report_preview(
+            str(latest_report.get("name") or ""),
+            static_destination,
+        )
     shutil.copy2(
         STATIC_DIR / "competitor-workbench-data.json",
         static_destination / "competitor-workbench-data.json",
