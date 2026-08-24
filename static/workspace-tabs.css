@@ -559,7 +559,7 @@
 .news-lineage-node > em { display: -webkit-box; overflow: hidden; color: #789aa5; font-size: 8px; font-style: normal; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .news-lineage-node.is-focus > span { padding: 0; color: #dff6f7; }
 .news-lineage-node.is-focus > em { color: #7fa7af; }
-.news-lineage.is-global .news-lineage-node { width: 168px; height: 146px; gap: 7px; padding: 16px 15px 13px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 12px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 14px 28px rgba(0,8,14,.3),inset 0 1px rgba(221,249,253,.07); }
+.news-lineage.is-global .news-lineage-node { width: 168px; height: 146px; gap: 4px; padding: 12px 15px 10px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 12px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 14px 28px rgba(0,8,14,.3),inset 0 1px rgba(221,249,253,.07); }
 .news-lineage.is-global .news-lineage-node.is-focus { width: 168px; height: 146px; min-height: 146px; place-content: start; border-radius: 12px; text-align: left; }
 .news-lineage.is-global .news-lineage-node.is-mint { border-color: rgba(82,187,163,.82); }
 .news-lineage.is-global .news-lineage-node.is-result { height: 116px; min-height: 116px; padding-top: 12px; padding-bottom: 10px; }

@@ -62,7 +62,7 @@
   }
 
   body.dashboard-page .app-shell {
-    --fit-scale: clamp(.70, calc(100vh / 1018px), .92);
+    --fit-scale: clamp(.70, calc(100vh / 1044px), .92);
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));
@@ -98,7 +98,7 @@
   }
 
   body.dashboard-page .app-shell {
-    --fit-scale: min(1, calc((100vh - 8px) / 1090px));
+    --fit-scale: min(1, calc((100vh - 8px) / 1096px));
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));
