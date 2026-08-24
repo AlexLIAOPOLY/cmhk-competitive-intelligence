@@ -3,12 +3,18 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from cmhk.intelligence.executive import build_executive_intelligence_snapshot
+
 GLOBAL_OPERATOR_SOURCE = (
     ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
 )
@@ -19,6 +25,11 @@ SOURCES = (
     GLOBAL_OPERATOR_SOURCE,
     LOCAL_HK_SOURCE,
 )
+REQUESTED_OVERVIEW_SOURCES = (
+    ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+    ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
+)
+REQUESTED_OVERVIEW_DATASET_ID = "requested_overview_010304_2016_2025"
 KNOWLEDGE_BASE_META = {
     GLOBAL_OPERATOR_SOURCE: {
         "label": "全球重点运营商年度知识库",
@@ -63,6 +74,9 @@ UNIT_LABELS = {
     "USD_million": "百万美元",
     "EUR_billion": "十亿欧元",
     "JPY_billion": "十亿日元",
+    "HKD_million": "百万港元",
+    "CNY_100million": "亿元",
+    "hundred_million_subscribers": "亿户",
 }
 COMPARISON_ALIASES = {
     ("NTT Group", "mobile_service_subscriptions"): {
@@ -105,6 +119,79 @@ def simplified_title(value: str) -> str:
     for traditional, simplified in SIMPLIFIED_TITLE_REPLACEMENTS:
         value = value.replace(traditional, simplified)
     return value
+
+
+def add_requested_overview_cells(
+    cells: list[dict],
+    company_meta: dict[str, dict],
+    metric_meta: dict[str, dict],
+    availability: dict[tuple[str, str], set[int]],
+) -> None:
+    snapshot = build_executive_intelligence_snapshot()
+    domain_meta = {
+        "local": ("01", "香港运营商"),
+        "mainland": ("03", "内地运营商"),
+        "cloud": ("04", "全球云厂商"),
+    }
+    unit_keys = {
+        "百万港元": "HKD_million",
+        "百万户": "million_customers",
+        "亿元": "CNY_100million",
+        "亿户": "hundred_million_subscribers",
+        "百万美元": "USD_million",
+    }
+    for domain in snapshot.get("domains") or []:
+        domain_id = str(domain.get("id") or "")
+        if domain_id not in domain_meta:
+            continue
+        index, group = domain_meta[domain_id]
+        for focus in domain.get("focuses") or []:
+            focus_id = str(focus.get("id") or "")
+            metric = f"overview_{index}_{focus_id}"
+            metric_label = f"{focus.get('label') or focus_id}（{index}）"
+            for entity in focus.get("items") or []:
+                company = str(entity.get("name") or "")
+                company_meta.setdefault(company, {"id": company, "label": company, "group": group})
+                for point in entity.get("trend") or []:
+                    value = point.get("value")
+                    if value is None:
+                        continue
+                    source_urls = list(dict.fromkeys(str(url) for url in (point.get("source_urls") or []) if url))
+                    verification_count = int(point.get("verification_count") or 0)
+                    if verification_count < 3 or len(source_urls) < 3:
+                        raise ValueError(f"three-source gate failed: {domain_id}/{focus_id}/{company}/{point.get('label')}")
+                    year = int(str(point.get("label") or "").removeprefix("FY"))
+                    unit = unit_keys.get(str(point.get("unit") or ""), str(point.get("unit") or ""))
+                    meta = metric_meta.setdefault(metric, {
+                        "key": metric,
+                        "label": metric_label,
+                        "unit": unit,
+                        "unitLabel": UNIT_LABELS.get(unit, unit),
+                        "units": [],
+                        "unitLabels": {},
+                    })
+                    if unit not in meta["units"]:
+                        meta["units"].append(unit)
+                    meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
+                    availability[(company, metric)].add(year)
+                    cells.append({
+                        "dataset": REQUESTED_OVERVIEW_DATASET_ID,
+                        "company": company,
+                        "metric": metric,
+                        "year": year,
+                        "value": float(value),
+                        "unit": unit,
+                        "comparator": "=",
+                        "period": f"FY{year}",
+                        "periodEnd": f"{year}-12-31",
+                        "scope": f"战略总览{index}；{focus.get('label') or focus_id}绝对值；沿用公司原生披露口径",
+                        "basis": "三份不同官方文件核验",
+                        "status": "official_three_distinct_sources_verified",
+                        "source": source_urls[0],
+                        "sources": source_urls,
+                        "verificationCount": verification_count,
+                        "note": "不展示增速或利润率；不同单位不直接比较。",
+                    })
 
 
 def main() -> None:
@@ -186,6 +273,7 @@ def main() -> None:
                         "note": f"{alias['notePrefix']}{text(row, 'quality_note')}",
                         "derivedFromMetric": metric,
                     })
+    add_requested_overview_cells(cells, company_meta, metric_meta, availability)
     viable = {key for key, years in availability.items() if len(years) >= 2}
     cells = [cell for cell in cells if (cell["company"], cell["metric"]) in viable]
     active_companies = {cell["company"] for cell in cells}
@@ -201,14 +289,27 @@ def main() -> None:
             "metricCount": len({cell["metric"] for cell in dataset_cells}),
             "cellCount": len(dataset_cells),
         })
+    overview_cells = [cell for cell in cells if cell["dataset"] == REQUESTED_OVERVIEW_DATASET_ID]
+    knowledge_bases.append({
+        "id": REQUESTED_OVERVIEW_DATASET_ID,
+        "label": "战略总览01/03/04十年数据",
+        "type": "营收 + EBITDA + 净利润 + 后付费用户数 + 云收入/利润/资本开支",
+        "scope": "01香港电讯市场 + 03内地运营商 + 04全球云厂商 · 2016–2025 · 三来源门禁",
+        "companyCount": len({cell["company"] for cell in overview_cells}),
+        "metricCount": len({cell["metric"] for cell in overview_cells}),
+        "cellCount": len(overview_cells),
+    })
     digest = hashlib.sha256()
     for source in SOURCES:
+        digest.update(source.name.encode("utf-8"))
+        digest.update(source.read_bytes())
+    for source in REQUESTED_OVERVIEW_SOURCES:
         digest.update(source.name.encode("utf-8"))
         digest.update(source.read_bytes())
     payload = {
         "generatedAt": datetime.fromtimestamp(max(source.stat().st_mtime for source in SOURCES), tz=timezone.utc).isoformat(),
         "evidenceVersion": digest.hexdigest(),
-        "sourceDatasets": [source.parent.name for source in SOURCES],
+        "sourceDatasets": [source.parent.name for source in SOURCES] + [REQUESTED_OVERVIEW_DATASET_ID],
         "knowledgeBases": knowledge_bases,
         "companies": [value for key, value in sorted(company_meta.items()) if key in active_companies],
         "metrics": [value for key, value in sorted(metric_meta.items(), key=lambda item: item[1]["label"]) if key in active_metrics],

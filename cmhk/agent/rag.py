@@ -932,7 +932,17 @@ def _local_hk_operator_exact_metric_chunks(
     matched_subjects = {key for key, aliases in subject_aliases.items() if any(alias in lowered for alias in aliases)}
     metric_aliases = {
         "total_customers": ["總客戶", "总客户", "total customers", "customer base"],
-        "mobile_postpaid_customers": ["後付客戶", "后付客户", "postpaid customers", "post-paid customers"],
+        "mobile_postpaid_customers": [
+            "後付客戶",
+            "后付客户",
+            "後付費用戶",
+            "后付费用户",
+            "後付費客戶",
+            "后付费客户",
+            "postpaid customers",
+            "post-paid customers",
+            "postpaid subscribers",
+        ],
         "mobile_prepaid_customers": ["預付客戶", "预付客户", "prepaid customers", "pre-paid customers"],
         "5g_customers": ["5g客戶", "5g客户", "5g用戶", "5g用户", "5g customers"],
         "5g_penetration": ["5g滲透率", "5g渗透率", "5g penetration"],

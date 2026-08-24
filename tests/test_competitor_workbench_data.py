@@ -65,16 +65,38 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             (row["company"], row["metric"], row["year"])
             for row in self.payload["cells"]
             if not row.get("derivedFromMetric")
+            and row.get("dataset") != "requested_overview_010304_2016_2025"
         }
         self.assertEqual(actual, expected)
         self.assertEqual(
             self.payload["sourceDatasets"],
-            ["global_top5_operators_2016_2025", "local_hk_operator_operating_metrics_2016_2025"],
+            [
+                "global_top5_operators_2016_2025",
+                "local_hk_operator_operating_metrics_2016_2025",
+                "requested_overview_010304_2016_2025",
+            ],
         )
         bases = {item["id"]: item for item in self.payload["knowledgeBases"]}
         self.assertEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 583)
         self.assertEqual(bases["local_hk_operator_operating_metrics_2016_2025"]["cellCount"], 167)
+        self.assertEqual(bases["requested_overview_010304_2016_2025"]["cellCount"], 242)
         self.assertEqual(sum(item["cellCount"] for item in bases.values()), len(self.payload["cells"]))
+
+    def test_requested_010304_values_are_available_to_workbench_ai(self):
+        cells = {
+            (item["company"], item["metric"], item["year"]): item
+            for item in self.payload["cells"]
+            if item["dataset"] == "requested_overview_010304_2016_2025"
+        }
+        self.assertEqual(cells[("HKT", "overview_01_postpaid", 2025)]["value"], 3.494)
+        self.assertEqual(cells[("3HK", "overview_01_postpaid", 2025)]["value"], 1.289)
+        self.assertEqual(cells[("中国移动", "overview_03_revenue", 2025)]["value"], 10501.87)
+        self.assertEqual(cells[("AWS", "overview_04_revenue", 2024)]["value"], 107556.0)
+        self.assertEqual(cells[("AWS", "overview_04_profit", 2024)]["value"], 39834.0)
+        self.assertEqual(cells[("Google", "overview_04_investment", 2024)]["value"], 52535.0)
+        self.assertFalse([key for key in cells if key[1] == "overview_03_postpaid"])
+        self.assertTrue(all(len(item.get("sources") or []) >= 3 for item in cells.values()))
+        self.assertTrue(all(int(item.get("verificationCount") or 0) >= 3 for item in cells.values()))
 
     def test_recent_global_operator_additions_are_visible(self):
         companies = {item["id"]: item for item in self.payload["companies"]}

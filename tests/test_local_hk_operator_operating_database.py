@@ -44,7 +44,7 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         quality = json.loads((DATASET / "quality_audit.json").read_text(encoding="utf-8"))
         payload = json.loads((DATASET / "annual_metrics.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["id"], DATASET_ID)
-        self.assertEqual(set(payload["operators"]), {"hkt", "three_hk", "smartone", "hkbn", "hgc", "icable"})
+        self.assertEqual(set(payload["operators"]), {"cmhk", "hkt", "three_hk", "smartone", "hkbn", "hgc", "icable"})
         self.assertEqual(quality["status"], "pass")
         self.assertEqual(quality["duplicate_key_count"], 0)
         self.assertEqual(quality["invalid_source_ids"], [])
@@ -89,6 +89,18 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(len(chunks), 1)
         self.assertIn("official_value=2.096 million_customers", chunks[0]["text"])
         self.assertIn("period_end=2025-12-31", chunks[0]["text"])
+
+        postpaid_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "HKT和3HK的FY2025后付费用户数分别是多少？",
+            dataset_ids={DATASET_ID},
+        )
+        postpaid_text = "\n".join(chunk["text"] for chunk in postpaid_chunks)
+        self.assertEqual(len(postpaid_chunks), 2)
+        self.assertIn("operator=HKT", postpaid_text)
+        self.assertIn("official_value=3.494 million_customers", postpaid_text)
+        self.assertIn("operator=3HK", postpaid_text)
+        self.assertIn("official_value=1.289 million_customers", postpaid_text)
+        self.assertNotIn("未披露（source_gap_confirmed）", postpaid_text)
 
         gap_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "HGC 2025年ARPU是多少？",

@@ -8,12 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / "web/static/competitor-workbench-data.json").read_text(encoding="utf-8"))
 SCRIPT = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 WINDOWS = (3, 5, 10, 99)
+CELLS_BY_COMPANY_METRIC = {}
+for _cell in DATA["cells"]:
+    CELLS_BY_COMPANY_METRIC.setdefault((_cell["company"], _cell["metric"]), []).append(_cell)
 
 
 def comparable_window(company_ids, metric_key, years):
     cells = [
-        cell for cell in DATA["cells"]
-        if cell["company"] in company_ids and cell["metric"] == metric_key
+        cell
+        for company in company_ids
+        for cell in CELLS_BY_COMPANY_METRIC.get((company, metric_key), [])
     ]
     if len({cell["company"] for cell in cells}) != len(company_ids):
         return False
@@ -45,12 +49,12 @@ class CompetitorSelectionGateTests(unittest.TestCase):
                 self.assertFalse(comparable_window(companies, "consumer_broadband_customers", years))
 
     def test_every_selectable_combination_meets_result_gate(self):
-        companies = [company["id"] for company in DATA["companies"]]
         metrics = [metric["key"] for metric in DATA["metrics"]]
         selectable = 0
-        for count in range(2, min(6, len(companies)) + 1):
-            for selection in itertools.combinations(companies, count):
-                for metric in metrics:
+        for metric in metrics:
+            companies = sorted({cell["company"] for cell in DATA["cells"] if cell["metric"] == metric})
+            for count in range(2, min(6, len(companies)) + 1):
+                for selection in itertools.combinations(companies, count):
                     for years in WINDOWS:
                         if comparable_window(selection, metric, years):
                             selectable += 1
