@@ -12,9 +12,16 @@ AUTH_SCRIPT = (ROOT / "web" / "static" / "auth-client.js").read_text(encoding="u
 ORGANIZATION_SCRIPT = (ROOT / "web" / "static" / "organization-admin.js").read_text(encoding="utf-8")
 ORGANIZATION_STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding="utf-8")
 NEWS_REVIEW_STYLE = (ROOT / "web" / "static" / "news-review-sheet.css").read_text(encoding="utf-8")
+WEB_APP = (ROOT / "web_app.py").read_text(encoding="utf-8")
 
 
 class WorkspaceTabsTests(unittest.TestCase):
+    def test_user_facing_ai_copy_does_not_say_company_intranet(self):
+        self.assertNotIn("公司内网", INDEX)
+        self.assertNotIn("公司内网", WEB_APP)
+        self.assertNotIn("内网 AI", WEB_APP)
+        self.assertIn("AI 模型网关", INDEX)
+
     def test_dashboard_and_five_modules_have_accessible_tabs_and_panels(self):
         modules = (
             "dashboard",

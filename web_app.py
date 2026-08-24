@@ -220,7 +220,7 @@ def analyze_chat_image(payload: dict) -> dict:
     base_url = str(config.get("base_url") or "").strip().rstrip("/")
     api_key = str(config.get("api_key") or "").strip()
     if not is_internal_ai_base_url(base_url) or not api_key:
-        raise ValueError("公司内网模型配置不完整")
+        raise ValueError("AI 模型配置不完整")
     question = str(payload.get("question") or "请分析这张图片").strip()[:1200]
     body = {
         "model": model,
@@ -568,7 +568,7 @@ def transcribe_chat_audio(payload: dict) -> dict:
     base_url = str(config.get("base_url") or "").strip().rstrip("/")
     api_key = str(config.get("api_key") or "").strip()
     if not is_internal_ai_base_url(base_url) or not api_key:
-        raise ValueError("公司内网模型配置不完整")
+        raise ValueError("AI 模型配置不完整")
 
     boundary = f"----CMHKVoice{uuid.uuid4().hex}"
     line_break = b"\r\n"
@@ -3176,7 +3176,7 @@ def record_ui_runtime_incident(
             "summary": "竞对工作台 AI 洞察未生成",
             "impact": "用户可查看权威数据图表，但当前组合的 AI 竞争格局、公司定位和业务含义未完成生成。",
             "suggestions": [
-                "核对内网 AI 网关、当前模型路由、限流队列和返回协议。",
+                "核对 AI 网关、当前模型路由、限流队列和返回协议。",
                 "保留已展示的权威数据，只恢复 AI 洞察阶段；恢复后回读页面与告警状态。",
             ],
         },
@@ -4218,7 +4218,7 @@ def start_audio_generation_task(target: Path, force: bool = True) -> tuple[dict,
             heartbeat_general_task_run(
                 task_id,
                 "生成语音摘要",
-                "公司内网 TTS 正在生成并统一处理音频。",
+                "AI TTS 正在生成并统一处理音频。",
                 worker_pid=proc_audio.pid,
                 append_log=True,
             )
@@ -4229,7 +4229,7 @@ def start_audio_generation_task(target: Path, force: bool = True) -> tuple[dict,
                     heartbeat_general_task_run(
                         task_id,
                         "生成语音摘要",
-                        "公司内网 TTS 仍在处理，任务持续跟踪中。",
+                        "AI TTS 仍在处理，任务持续跟踪中。",
                         worker_pid=proc_audio.pid,
                         append_log=False,
                     )
@@ -5526,7 +5526,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 if not re.match(r"^https?://", base_url, flags=re.I):
                     raise ValueError("Base URL 必须以 http:// 或 https:// 开头")
                 if not is_internal_ai_base_url(base_url):
-                    raise ValueError("只能访问公司内网模型服务")
+                    raise ValueError("只能访问指定的 AI 模型服务")
                 saved = load_ai_config(include_key=True)
                 api_key = str(payload.get("api_key") or saved.get("api_key") or "").strip()
                 if not api_key:
@@ -5569,7 +5569,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 if not re.match(r"^https?://", base_url, flags=re.I):
                     raise ValueError("Base URL 必须以 http:// 或 https:// 开头")
                 if not is_internal_ai_base_url(base_url):
-                    raise ValueError("只能访问公司内网模型服务")
+                    raise ValueError("只能访问指定的 AI 模型服务")
                 if provider == "openai":
                     url = f"{base_url}/responses"
                     body = {"model": model, "input": "Reply OK", "max_output_tokens": 16}
