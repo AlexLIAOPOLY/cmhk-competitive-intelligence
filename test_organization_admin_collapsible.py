@@ -10,8 +10,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=19', INDEX)
-        self.assertIn('/static/organization-admin.css?v=20', INDEX)
+        self.assertIn('/static/organization-admin.js?v=20', INDEX)
+        self.assertIn('/static/organization-admin.css?v=21', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)
@@ -68,6 +68,9 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_footprint_separates_clickable_action_and_target_with_filters(self):
         self.assertIn('<th>动作</th><th>处理对象</th>', SCRIPT)
         self.assertIn('class="organization-event-button is-action"', SCRIPT)
+        self.assertIn('function actionIcon(action)', SCRIPT)
+        self.assertIn('class="organization-action-icon"', SCRIPT)
+        self.assertIn('.organization-event-button.is-action{display:inline-flex', STYLE)
         self.assertIn('class="organization-event-button is-target"', SCRIPT)
         self.assertIn('class="organization-target-person"', SCRIPT)
         self.assertIn('function eventTarget(event)', SCRIPT)
