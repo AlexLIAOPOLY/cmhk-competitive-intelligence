@@ -1840,8 +1840,8 @@
         "unit": "亿元",
         "label": "中国移动 FY2025"
       },
-      "context": "2016–2025十年窗口；财务、移动和5G口径分别标注",
-      "insight": "5G网络用户是移动用户子集，不与移动用户总数相加；5G套餐客户另作口径说明。",
+      "context": "2016–2025十年窗口；全部卡片只展示绝对数",
+      "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；官方未单列的后付费数据保留缺口。",
       "entities": [
         {
           "name": "中国移动",
@@ -2017,61 +2017,49 @@
           "visual": "rows",
           "headline": "EBITDA按三来源门禁展示",
           "metric": {
-            "value": 32.3,
-            "unit": "%",
+            "value": 3389.31,
+            "unit": "亿元",
             "label": "中国移动 FY2025"
           },
-          "context": "利润率=同公司同财年EBITDA/营收",
-          "insight": "中国移动为32.3%，中国电信为27.2%；差距表明主体规模或结构不同，但披露范围存在边界，不能把数值高低直接等同经营质量。",
+          "context": "只展示FY2025 EBITDA金额",
+          "insight": "中国移动为3389.31亿元，中国电信为1438.72亿元；差距表明主体规模或结构不同，但披露范围存在边界，不能把数值高低直接等同经营质量。",
           "items": [
             {
               "name": "中国移动",
-              "value": 32.3,
-              "unit": "%",
+              "value": 3389.31,
+              "unit": "亿元",
               "period": "FY2025",
-              "detail": "EBITDA及利润率",
-              "analysis": "FY2025 EBITDA为3,389.31亿元，利润率32.3%。",
+              "detail": "FY2025EBITDA · 三来源核验",
+              "analysis": "FY2025EBITDA为3,389.31亿元；沿用公司原披露口径。",
               "components": [
                 {
                   "label": "EBITDA",
                   "value": 3389.31,
                   "unit": "亿元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 32.3,
-                  "unit": "%",
-                  "detail": "同公司同财年"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
               "verification_count": 8,
               "ai_summary": {}
             },
             {
               "name": "中国电信",
-              "value": 27.2,
-              "unit": "%",
+              "value": 1438.72,
+              "unit": "亿元",
               "period": "FY2025",
-              "detail": "EBITDA及利润率",
-              "analysis": "FY2025 EBITDA为1,438.72亿元，利润率27.2%。",
+              "detail": "FY2025EBITDA · 三来源核验",
+              "analysis": "FY2025EBITDA为1,438.72亿元；沿用公司原披露口径。",
               "components": [
                 {
                   "label": "EBITDA",
                   "value": 1438.72,
                   "unit": "亿元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 27.2,
-                  "unit": "%",
-                  "detail": "同公司同财年"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
               "verification_count": 6,
               "ai_summary": {}
@@ -2084,7 +2072,7 @@
               "analysis": "三来源数据待补",
               "components": [
                 {
-                  "label": "EBITDA及利润率",
+                  "label": "EBITDA",
                   "detail": "三来源数据待补"
                 }
               ],
@@ -2101,7 +2089,7 @@
               "analysis": "三来源数据待补；中国广电不以非上市集团估算值代替",
               "components": [
                 {
-                  "label": "EBITDA及利润率",
+                  "label": "EBITDA",
                   "detail": "三来源数据待补；中国广电不以非上市集团估算值代替"
                 }
               ],
@@ -2119,87 +2107,69 @@
           "visual": "rows",
           "headline": "净利润按三来源门禁展示",
           "metric": {
-            "value": 1.0,
-            "unit": "%",
-            "label": "中国联通 FY2025"
+            "value": 1370.95,
+            "unit": "亿元",
+            "label": "中国移动 FY2025"
           },
-          "context": "FY2025对FY2024",
-          "insight": "中国联通为1.0%，中国移动为-0.9%；差距表明主体规模或结构不同，但披露范围存在边界，不能把数值高低直接等同经营质量。",
+          "context": "只展示FY2025净利润金额",
+          "insight": "中国移动为1370.95亿元，中国联通为208.16亿元；差距表明主体规模或结构不同，但披露范围存在边界，不能把数值高低直接等同经营质量。",
           "items": [
             {
               "name": "中国移动",
-              "value": -0.9,
-              "unit": "%",
+              "value": 1370.95,
+              "unit": "亿元",
               "period": "FY2025",
-              "detail": "净利润及同比",
-              "analysis": "FY2025净利润为1,370.95亿元，同比-0.9%。",
+              "detail": "FY2025净利润 · 三来源核验",
+              "analysis": "FY2025净利润为1,370.95亿元；沿用公司原披露口径。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 1370.95,
                   "unit": "亿元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": -0.9,
-                  "unit": "%",
-                  "detail": "FY2025对FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
               "verification_count": 8,
               "ai_summary": {}
             },
             {
               "name": "中国电信",
-              "value": 0.5,
-              "unit": "%",
+              "value": 331.85,
+              "unit": "亿元",
               "period": "FY2025",
-              "detail": "净利润及同比",
-              "analysis": "FY2025净利润为331.85亿元，同比+0.5%。",
+              "detail": "FY2025净利润 · 三来源核验",
+              "analysis": "FY2025净利润为331.85亿元；沿用公司原披露口径。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 331.85,
                   "unit": "亿元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 0.5,
-                  "unit": "%",
-                  "detail": "FY2025对FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
               "verification_count": 6,
               "ai_summary": {}
             },
             {
               "name": "中国联通",
-              "value": 1.0,
-              "unit": "%",
+              "value": 208.16,
+              "unit": "亿元",
               "period": "FY2025",
-              "detail": "净利润及同比",
-              "analysis": "FY2025净利润为208.16亿元，同比+1.0%。",
+              "detail": "FY2025净利润 · 三来源核验",
+              "analysis": "FY2025净利润为208.16亿元；沿用公司原披露口径。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 208.16,
                   "unit": "亿元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 1.0,
-                  "unit": "%",
-                  "detail": "FY2025对FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
               "verification_count": 6,
               "ai_summary": {}
@@ -2212,7 +2182,7 @@
               "analysis": "三来源数据待补；中国广电不以非上市集团估算值代替",
               "components": [
                 {
-                  "label": "净利润及同比",
+                  "label": "净利润",
                   "detail": "三来源数据待补；中国广电不以非上市集团估算值代替"
                 }
               ],
@@ -2225,106 +2195,84 @@
           "ai_summary": {}
         },
         {
-          "id": "mobile",
-          "label": "移动·5G",
+          "id": "postpaid",
+          "label": "后付费用户数",
           "visual": "rows",
-          "headline": "移动·5G按三来源门禁展示",
+          "headline": "后付费用户数按三来源门禁展示",
           "metric": {
-            "value": 10.05,
-            "unit": "亿户",
-            "label": "中国移动 FY2025"
+            "value": "-",
+            "unit": "",
+            "label": "三来源数据待补"
           },
-          "context": "5G网络用户与5G套餐客户分口径；不重复相加",
-          "insight": "中国移动为10.05亿户，中国电信为4.3865亿户；差距表明主体规模或结构不同，但披露范围存在边界，不能把数值高低直接等同经营质量。",
+          "context": "只展示官方明确披露的后付费用户数",
+          "insight": "现有三来源数值不足两家，数据结构不同，不能形成跨公司高低判断。",
           "items": [
             {
               "name": "中国移动",
-              "value": 10.05,
-              "unit": "亿户",
+              "unit": "",
               "period": "FY2025",
-              "detail": "移动用户总数及5G网络用户",
-              "analysis": "移动用户总数10.05亿户；5G网络用户6.42亿户。5G网络用户是总移动用户子集，不与总数相加，也不等同5G套餐客户。",
+              "detail": "官方文件未单列后付费用户数；保留缺口",
+              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数；不以移动用户总数或5G用户替代。",
               "components": [
                 {
-                  "label": "移动用户总数",
-                  "value": 10.05,
-                  "unit": "亿户",
-                  "detail": "FY2025"
-                },
-                {
-                  "label": "5G网络用户",
-                  "value": 6.42,
-                  "unit": "亿户",
-                  "detail": "FY2025"
+                  "label": "后付费用户数",
+                  "detail": "官方未单列披露"
                 }
               ],
-              "component_count": 2,
-              "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
-              "verification_count": 3,
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
               "ai_summary": {}
             },
             {
               "name": "中国电信",
-              "value": 4.3865,
-              "unit": "亿户",
+              "unit": "",
               "period": "FY2025",
-              "detail": "移动用户总数及5G网络用户",
-              "analysis": "移动用户总数4.386亿户；5G网络用户3.018亿户。5G网络用户是总移动用户子集，不与总数相加，也不等同5G套餐客户。",
+              "detail": "官方文件未单列后付费用户数；保留缺口",
+              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数；不以移动用户总数或5G用户替代。",
               "components": [
                 {
-                  "label": "移动用户总数",
-                  "value": 4.3865,
-                  "unit": "亿户",
-                  "detail": "FY2025"
-                },
-                {
-                  "label": "5G网络用户",
-                  "value": 3.0181,
-                  "unit": "亿户",
-                  "detail": "FY2025"
+                  "label": "后付费用户数",
+                  "detail": "官方未单列披露"
                 }
               ],
-              "component_count": 2,
-              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
-              "verification_count": 3,
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
               "ai_summary": {}
             },
             {
               "name": "中国联通",
               "unit": "",
               "period": "FY2025",
-              "detail": "移动用户总数及5G网络用户",
-              "analysis": "移动用户总数未通过三来源；5G网络用户2.322亿户。5G网络用户是总移动用户子集，不与总数相加，也不等同5G套餐客户。",
+              "detail": "官方文件未单列后付费用户数；保留缺口",
+              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数；不以移动用户总数或5G用户替代。",
               "components": [
                 {
-                  "label": "5G网络用户",
-                  "value": 2.3218,
-                  "unit": "亿户",
-                  "detail": "FY2025"
+                  "label": "后付费用户数",
+                  "detail": "官方未单列披露"
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
-              "verification_count": 3,
+              "source_url": "",
+              "verification_count": 0,
               "ai_summary": {}
             },
             {
               "name": "中国广电",
               "unit": "",
               "period": "FY2025",
-              "detail": "移动用户总数及5G网络用户",
-              "analysis": "移动用户总数未通过三来源；5G网络用户0.42亿户。5G网络用户是总移动用户子集，不与总数相加，也不等同5G套餐客户。",
+              "detail": "官方文件未单列后付费用户数；保留缺口",
+              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数；不以移动用户总数或5G用户替代。",
               "components": [
                 {
-                  "label": "5G网络用户",
-                  "value": 0.42,
-                  "unit": "亿户",
-                  "detail": "FY2025"
+                  "label": "后付费用户数",
+                  "detail": "官方未单列披露"
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.nrta.gov.cn/art/2026/5/13/art_113_73265.html",
-              "verification_count": 3,
+              "source_url": "",
+              "verification_count": 0,
               "ai_summary": {}
             }
           ],
@@ -2344,22 +2292,6 @@
         {
           "label": "中国联通",
           "url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
-        },
-        {
-          "label": "中国移动",
-          "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
-        },
-        {
-          "label": "中国电信",
-          "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
-        },
-        {
-          "label": "中国联通",
-          "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
-        },
-        {
-          "label": "中国广电",
-          "url": "https://www.nrta.gov.cn/art/2026/5/13/art_113_73265.html"
         }
       ],
       "ai_analysis": [],
@@ -2373,335 +2305,241 @@
       "title": "全球云厂商",
       "kicker": "收入｜利润｜集团资本开支",
       "metric": {
-        "value": "30.6",
-        "unit": "%",
-        "label": "Google FY2024收入同比变化"
+        "value": 107556.0,
+        "unit": "百万美元",
+        "label": "AWS FY2024云收入"
       },
       "context": "2016–2025十年窗口；FY2024为当前共同可比年，覆盖 8 家厂商",
-      "insight": "直接披露云收入的厂商中，Google30.6%、Oracle24.5%、中国移动云20.4%、AWS18.5%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
+      "insight": "云收入、云利润和集团资本开支只展示绝对值；原币和原生利润定义保留在明细。",
       "entities": [
         {
-          "name": "Google",
-          "value": 30.6,
-          "unit": "%",
-          "period": "FY2024",
-          "detail": "FY2024 · 公司直接披露的云业务口径",
-          "analysis": "FY2024该披露口径的收入同比变化为 +30.6%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "云业务收入",
-              "value": 43229.0,
-              "unit": "百万美元",
-              "detail": "FY2024 · 原值43,229.0百万USD · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 30.6,
-              "unit": "%"
-            }
-          ],
-          "component_count": 2,
-          "source_url": "https://abc.xyz/investor/earnings/"
-        },
-        {
-          "name": "Oracle",
-          "value": 24.5,
-          "unit": "%",
-          "period": "FY2024",
-          "detail": "FY2024 · 公司直接披露的云业务口径",
-          "analysis": "FY2024该披露口径的收入同比变化为 +24.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "云业务收入",
-              "value": 19774.0,
-              "unit": "百万美元",
-              "detail": "FY2024 · 原值19,774.0百万USD · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 24.5,
-              "unit": "%"
-            }
-          ],
-          "component_count": 2,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm"
-        },
-        {
-          "name": "中国移动云",
-          "value": 20.4,
-          "unit": "%",
-          "period": "FY2024",
-          "detail": "FY2024 · 公司直接披露的云业务口径",
-          "analysis": "FY2024该披露口径的收入同比变化为 +20.4%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "云业务收入",
-              "value": 13944.4,
-              "unit": "百万美元",
-              "detail": "FY2024 · 原值100,400.0百万RMB · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 20.4,
-              "unit": "%"
-            }
-          ],
-          "component_count": 2,
-          "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
-        },
-        {
-          "name": "Azure",
-          "value": 19.9,
-          "unit": "%",
-          "period": "FY2024",
-          "detail": "FY2024 · 代理分部口径，可能包含非云业务",
-          "analysis": "FY2024该披露口径的收入同比变化为 +19.9%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
-          "components": [
-            {
-              "label": "云业务收入",
-              "value": 87464.0,
-              "unit": "百万美元",
-              "detail": "FY2024 · 原值87,464.0百万USD · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 19.9,
-              "unit": "%"
-            }
-          ],
-          "component_count": 2,
-          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html"
-        },
-        {
           "name": "AWS",
-          "value": 18.5,
-          "unit": "%",
+          "value": 107556.0,
+          "unit": "百万美元",
           "period": "FY2024",
-          "detail": "FY2024 · 公司直接披露的云业务口径",
-          "analysis": "FY2024该披露口径的收入同比变化为 +18.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为107,556.0百万美元（原值107,556.0百万USD）；只展示收入金额。",
           "components": [
             {
               "label": "云业务收入",
               "value": 107556.0,
               "unit": "百万美元",
               "detail": "FY2024 · 原值107,556.0百万USD · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 18.5,
-              "unit": "%"
             }
           ],
-          "component_count": 2,
+          "component_count": 1,
           "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx"
         },
         {
-          "name": "腾讯",
-          "value": 4.0,
-          "unit": "%",
+          "name": "Azure",
+          "value": 87464.0,
+          "unit": "百万美元",
           "period": "FY2024",
-          "detail": "FY2024 · 代理分部口径，可能包含非云业务",
-          "analysis": "FY2024该披露口径的收入同比变化为 +4.0%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为87,464.0百万美元（原值87,464.0百万USD）；只展示收入金额。",
           "components": [
             {
-              "label": "FY2024云业务收入同比",
-              "value": 4.0,
-              "unit": "%"
+              "label": "云业务收入",
+              "value": 87464.0,
+              "unit": "百万美元",
+              "detail": "FY2024 · 原值87,464.0百万USD · 2024年均汇率"
+            }
+          ],
+          "component_count": 1,
+          "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html"
+        },
+        {
+          "name": "Google",
+          "value": 43229.0,
+          "unit": "百万美元",
+          "period": "FY2024",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为43,229.0百万美元（原值43,229.0百万USD）；只展示收入金额。",
+          "components": [
+            {
+              "label": "云业务收入",
+              "value": 43229.0,
+              "unit": "百万美元",
+              "detail": "FY2024 · 原值43,229.0百万USD · 2024年均汇率"
+            }
+          ],
+          "component_count": 1,
+          "source_url": "https://abc.xyz/investor/earnings/"
+        },
+        {
+          "name": "腾讯",
+          "value": 29438.3,
+          "unit": "百万美元",
+          "period": "FY2024",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为29,438.3百万美元（原值211,956.0百万RMB）；只展示收入金额。",
+          "components": [
+            {
+              "label": "云业务收入",
+              "value": 29438.3,
+              "unit": "百万美元",
+              "detail": "FY2024 · 原值211,956.0百万RMB · 2024年均汇率"
             }
           ],
           "component_count": 1,
           "source_url": "https://www.tencent.com/en-us/investors/financial-news.html"
         },
         {
-          "name": "Alibaba",
-          "value": 2.8,
-          "unit": "%",
+          "name": "Oracle",
+          "value": 19774.0,
+          "unit": "百万美元",
           "period": "FY2024",
-          "detail": "FY2024 · 公司直接披露的云业务口径",
-          "analysis": "FY2024该披露口径的收入同比变化为 +2.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为19,774.0百万美元（原值19,774.0百万USD）；只展示收入金额。",
+          "components": [
+            {
+              "label": "云业务收入",
+              "value": 19774.0,
+              "unit": "百万美元",
+              "detail": "FY2024 · 原值19,774.0百万USD · 2024年均汇率"
+            }
+          ],
+          "component_count": 1,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm"
+        },
+        {
+          "name": "Alibaba",
+          "value": 14774.2,
+          "unit": "百万美元",
+          "period": "FY2024",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为14,774.2百万美元（原值106,374.0百万RMB）；只展示收入金额。",
           "components": [
             {
               "label": "云业务收入",
               "value": 14774.2,
               "unit": "百万美元",
               "detail": "FY2024 · 原值106,374.0百万RMB · 2024年均汇率"
-            },
-            {
-              "label": "FY2024云业务收入同比",
-              "value": 2.8,
-              "unit": "%"
             }
           ],
-          "component_count": 2,
+          "component_count": 1,
           "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results"
         },
         {
-          "name": "Huawei",
-          "unit": "",
+          "name": "中国移动云",
+          "value": 13944.4,
+          "unit": "百万美元",
           "period": "FY2024",
-          "detail": "FY2024云业务收入已披露；同比增速缺口",
-          "analysis": "FY2024云业务收入折算为4,628.5百万美元（原值33,325.0百万CNY）；同比增速缺口不估算。",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为13,944.4百万美元（原值100,400.0百万RMB）；只展示收入金额。",
           "components": [
             {
               "label": "云业务收入",
-              "value": 4628.5,
+              "value": 13944.4,
               "unit": "百万美元",
-              "detail": "FY2024 · 原值33,325.0百万CNY · 2024年均汇率"
-            },
-            {
-              "label": "云业务收入同比",
-              "detail": "三来源数据待补"
+              "detail": "FY2024 · 原值100,400.0百万RMB · 2024年均汇率"
             }
           ],
-          "component_count": 2,
+          "component_count": 1,
+          "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf"
+        },
+        {
+          "name": "Huawei",
+          "value": 4628.5,
+          "unit": "百万美元",
+          "period": "FY2024",
+          "detail": "FY2024云收入金额 · 统一折算美元",
+          "analysis": "FY2024云收入折算为4,628.5百万美元（原值33,325.0百万CNY）；只展示收入金额。",
+          "components": [
+            {
+              "label": "云收入",
+              "value": 4628.5,
+              "unit": "百万美元",
+              "detail": "FY2024"
+            }
+          ],
+          "component_count": 1,
           "source_url": "https://www.huawei.com/en/annual-report/2025"
         }
       ],
       "focuses": [
         {
-          "id": "growth",
+          "id": "revenue",
           "label": "云收入",
           "visual": "columns",
           "metric": {
-            "value": "30.6",
-            "unit": "%",
-            "label": "Google FY2024收入同比变化"
+            "value": 107556.0,
+            "unit": "百万美元",
+            "label": "AWS FY2024云收入"
           },
-          "context": "覆盖 8 家全球云厂商",
-          "insight": "直接披露云收入的厂商中，Google30.6%、Oracle24.5%、中国移动云20.4%、AWS18.5%；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。Azure、腾讯采用代理分部口径，不参与同一排名。",
+          "context": "覆盖 8 家全球云厂商 · 统一折算百万美元",
+          "insight": "各厂商只展示FY2024云收入绝对值；代理分部和重分类口径在明细中保留，不能把口径差异解释为经营差距。",
           "items": [
             {
-              "name": "Google",
-              "value": 30.6,
-              "unit": "%",
-              "period": "FY2024",
-              "detail": "FY2024 · 公司直接披露的云业务口径",
-              "analysis": "FY2024该披露口径的收入同比变化为 +30.6%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "云业务收入",
-                  "value": 43229.0,
-                  "unit": "百万美元",
-                  "detail": "FY2024 · 原值43,229.0百万USD · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 30.6,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://abc.xyz/investor/earnings/",
-              "ai_summary": {}
-            },
-            {
-              "name": "Oracle",
-              "value": 24.5,
-              "unit": "%",
-              "period": "FY2024",
-              "detail": "FY2024 · 公司直接披露的云业务口径",
-              "analysis": "FY2024该披露口径的收入同比变化为 +24.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "云业务收入",
-                  "value": 19774.0,
-                  "unit": "百万美元",
-                  "detail": "FY2024 · 原值19,774.0百万USD · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 24.5,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "中国移动云",
-              "value": 20.4,
-              "unit": "%",
-              "period": "FY2024",
-              "detail": "FY2024 · 公司直接披露的云业务口径",
-              "analysis": "FY2024该披露口径的收入同比变化为 +20.4%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "云业务收入",
-                  "value": 13944.4,
-                  "unit": "百万美元",
-                  "detail": "FY2024 · 原值100,400.0百万RMB · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 20.4,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "Azure",
-              "value": 19.9,
-              "unit": "%",
-              "period": "FY2024",
-              "detail": "FY2024 · 代理分部口径，可能包含非云业务",
-              "analysis": "FY2024该披露口径的收入同比变化为 +19.9%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
-              "components": [
-                {
-                  "label": "云业务收入",
-                  "value": 87464.0,
-                  "unit": "百万美元",
-                  "detail": "FY2024 · 原值87,464.0百万USD · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 19.9,
-                  "unit": "%"
-                }
-              ],
-              "component_count": 2,
-              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-              "ai_summary": {}
-            },
-            {
               "name": "AWS",
-              "value": 18.5,
-              "unit": "%",
+              "value": 107556.0,
+              "unit": "百万美元",
               "period": "FY2024",
-              "detail": "FY2024 · 公司直接披露的云业务口径",
-              "analysis": "FY2024该披露口径的收入同比变化为 +18.5%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为107,556.0百万美元（原值107,556.0百万USD）；只展示收入金额。",
               "components": [
                 {
                   "label": "云业务收入",
                   "value": 107556.0,
                   "unit": "百万美元",
                   "detail": "FY2024 · 原值107,556.0百万USD · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 18.5,
-                  "unit": "%"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
               "ai_summary": {}
             },
             {
-              "name": "腾讯",
-              "value": 4.0,
-              "unit": "%",
+              "name": "Azure",
+              "value": 87464.0,
+              "unit": "百万美元",
               "period": "FY2024",
-              "detail": "FY2024 · 代理分部口径，可能包含非云业务",
-              "analysis": "FY2024该披露口径的收入同比变化为 +4.0%；代理分部口径，可能包含非云业务。不同口径不可直接视为纯云业务排名。",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为87,464.0百万美元（原值87,464.0百万USD）；只展示收入金额。",
               "components": [
                 {
-                  "label": "FY2024云业务收入同比",
-                  "value": 4.0,
-                  "unit": "%"
+                  "label": "云业务收入",
+                  "value": 87464.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024 · 原值87,464.0百万USD · 2024年均汇率"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+              "ai_summary": {}
+            },
+            {
+              "name": "Google",
+              "value": 43229.0,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为43,229.0百万美元（原值43,229.0百万USD）；只展示收入金额。",
+              "components": [
+                {
+                  "label": "云业务收入",
+                  "value": 43229.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024 · 原值43,229.0百万USD · 2024年均汇率"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://abc.xyz/investor/earnings/",
+              "ai_summary": {}
+            },
+            {
+              "name": "腾讯",
+              "value": 29438.3,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为29,438.3百万美元（原值211,956.0百万RMB）；只展示收入金额。",
+              "components": [
+                {
+                  "label": "云业务收入",
+                  "value": 29438.3,
+                  "unit": "百万美元",
+                  "detail": "FY2024 · 原值211,956.0百万RMB · 2024年均汇率"
                 }
               ],
               "component_count": 1,
@@ -2709,53 +2547,83 @@
               "ai_summary": {}
             },
             {
-              "name": "Alibaba",
-              "value": 2.8,
-              "unit": "%",
+              "name": "Oracle",
+              "value": 19774.0,
+              "unit": "百万美元",
               "period": "FY2024",
-              "detail": "FY2024 · 公司直接披露的云业务口径",
-              "analysis": "FY2024该披露口径的收入同比变化为 +2.8%；公司直接披露的云业务口径。不同口径不可直接视为纯云业务排名。",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为19,774.0百万美元（原值19,774.0百万USD）；只展示收入金额。",
+              "components": [
+                {
+                  "label": "云业务收入",
+                  "value": 19774.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024 · 原值19,774.0百万USD · 2024年均汇率"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
+              "ai_summary": {}
+            },
+            {
+              "name": "Alibaba",
+              "value": 14774.2,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为14,774.2百万美元（原值106,374.0百万RMB）；只展示收入金额。",
               "components": [
                 {
                   "label": "云业务收入",
                   "value": 14774.2,
                   "unit": "百万美元",
                   "detail": "FY2024 · 原值106,374.0百万RMB · 2024年均汇率"
-                },
-                {
-                  "label": "FY2024云业务收入同比",
-                  "value": 2.8,
-                  "unit": "%"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
               "ai_summary": {}
             },
             {
-              "name": "Huawei",
-              "unit": "",
+              "name": "中国移动云",
+              "value": 13944.4,
+              "unit": "百万美元",
               "period": "FY2024",
-              "detail": "FY2024云业务收入已披露；同比增速缺口",
-              "analysis": "FY2024云业务收入折算为4,628.5百万美元（原值33,325.0百万CNY）；同比增速缺口不估算。",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为13,944.4百万美元（原值100,400.0百万RMB）；只展示收入金额。",
               "components": [
                 {
                   "label": "云业务收入",
-                  "value": 4628.5,
+                  "value": 13944.4,
                   "unit": "百万美元",
-                  "detail": "FY2024 · 原值33,325.0百万CNY · 2024年均汇率"
-                },
-                {
-                  "label": "云业务收入同比",
-                  "detail": "三来源数据待补"
+                  "detail": "FY2024 · 原值100,400.0百万RMB · 2024年均汇率"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
+              "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf",
+              "ai_summary": {}
+            },
+            {
+              "name": "Huawei",
+              "value": 4628.5,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云收入金额 · 统一折算美元",
+              "analysis": "FY2024云收入折算为4,628.5百万美元（原值33,325.0百万CNY）；只展示收入金额。",
+              "components": [
+                {
+                  "label": "云收入",
+                  "value": 4628.5,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
+                }
+              ],
+              "component_count": 1,
               "source_url": "https://www.huawei.com/en/annual-report/2025",
               "ai_summary": {}
             }
           ],
-          "headline": "收入与同比按披露口径并列",
+          "headline": "云收入只展示金额",
           "ai_summary": {}
         },
         {
@@ -2763,79 +2631,26 @@
           "label": "云利润",
           "visual": "diverging",
           "metric": {
-            "value": 35.4,
-            "unit": "%",
-            "label": "AWS经营利润率"
+            "value": 39834.0,
+            "unit": "百万美元",
+            "label": "AWS FY2024云利润"
           },
-          "context": "按各厂商披露口径标注",
-          "insight": "AWS披露经营利润率35.4%，腾讯披露代理分部毛利率51.0%；两者利润口径不同，这说明数值不可直接比较，只能分别观察各自的利润转化变化。",
+          "context": "按各厂商原生利润定义标注 · 统一折算百万美元",
+          "insight": "各厂商只展示FY2024利润绝对值；经营利润、调整后EBITA和代理分部毛利定义不同，不跨口径评价盈利能力。",
           "items": [
             {
-              "name": "Oracle",
-              "value": 62.8,
-              "unit": "%",
-              "detail": "FY2025 · 经营利润率",
-              "analysis": "FY2025披露的经营利润率为 62.8%；不同利润口径不可直接比较。",
-              "components": [
-                {
-                  "label": "经营利润率",
-                  "value": 62.8,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
-              "ai_summary": {}
-            },
-            {
-              "name": "腾讯",
-              "value": 51.0,
-              "unit": "%",
-              "detail": "FY2025 · 代理分部毛利率",
-              "analysis": "FY2025披露的代理分部毛利率为 51.0%；不同利润口径不可直接比较。",
-              "components": [
-                {
-                  "label": "代理分部毛利率",
-                  "value": 51.0,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
-              "ai_summary": {}
-            },
-            {
-              "name": "Azure",
-              "value": 42.0,
-              "unit": "%",
-              "detail": "FY2025 · 经营利润率",
-              "analysis": "FY2025披露的经营利润率为 42.0%；不同利润口径不可直接比较。",
-              "components": [
-                {
-                  "label": "经营利润率",
-                  "value": 42.0,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
-              "ai_summary": {}
-            },
-            {
               "name": "AWS",
-              "value": 35.4,
-              "unit": "%",
-              "detail": "FY2025 · 经营利润率",
-              "analysis": "FY2025披露的经营利润率为 35.4%；不同利润口径不可直接比较。",
+              "value": 39834.0,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云分部经营利润 · 统一折算美元",
+              "analysis": "FY2024云分部经营利润折算为39,834.0百万美元（原值39,834.0百万USD）；只展示金额，利润定义按厂商原披露标注。",
               "components": [
                 {
-                  "label": "经营利润率",
-                  "value": 35.4,
-                  "unit": "%",
-                  "detail": "FY2025"
+                  "label": "云分部经营利润",
+                  "value": 39834.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
                 }
               ],
               "component_count": 1,
@@ -2843,17 +2658,75 @@
               "ai_summary": {}
             },
             {
-              "name": "Google",
-              "value": 23.7,
-              "unit": "%",
-              "detail": "FY2025 · 经营利润率",
-              "analysis": "FY2025披露的经营利润率为 23.7%；不同利润口径不可直接比较。",
+              "name": "Azure",
+              "value": 37813.0,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云分部经营利润 · 统一折算美元",
+              "analysis": "FY2024云分部经营利润折算为37,813.0百万美元（原值37,813.0百万USD）；只展示金额，利润定义按厂商原披露标注。",
               "components": [
                 {
-                  "label": "经营利润率",
-                  "value": 23.7,
-                  "unit": "%",
-                  "detail": "FY2025"
+                  "label": "云分部经营利润",
+                  "value": 37813.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+              "ai_summary": {}
+            },
+            {
+              "name": "Oracle",
+              "value": 28514.0,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云与许可证分部利润 · 统一折算美元",
+              "analysis": "FY2024云与许可证分部利润折算为28,514.0百万美元（原值28,514.0百万USD）；只展示金额，利润定义按厂商原披露标注。",
+              "components": [
+                {
+                  "label": "云与许可证分部利润",
+                  "value": 28514.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017024075605/orcl-20240531.htm",
+              "ai_summary": {}
+            },
+            {
+              "name": "腾讯",
+              "value": 13847.4,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024代理分部毛利 · 统一折算美元",
+              "analysis": "FY2024代理分部毛利折算为13,847.4百万美元（原值99,701.0百万RMB）；只展示金额，利润定义按厂商原披露标注。",
+              "components": [
+                {
+                  "label": "代理分部毛利",
+                  "value": 13847.4,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+              "ai_summary": {}
+            },
+            {
+              "name": "Google",
+              "value": 6112.0,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云分部经营利润 · 统一折算美元",
+              "analysis": "FY2024云分部经营利润折算为6,112.0百万美元（原值6,112.0百万USD）；只展示金额，利润定义按厂商原披露标注。",
+              "components": [
+                {
+                  "label": "云分部经营利润",
+                  "value": 6112.0,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
                 }
               ],
               "component_count": 1,
@@ -2862,16 +2735,17 @@
             },
             {
               "name": "Alibaba",
-              "value": 8.9,
-              "unit": "%",
-              "detail": "FY2025 · 调整后EBITA率",
-              "analysis": "FY2025披露的调整后EBITA率为 8.9%；不同利润口径不可直接比较。",
+              "value": 850.1,
+              "unit": "百万美元",
+              "period": "FY2024",
+              "detail": "FY2024云业务调整后EBITA · 统一折算美元",
+              "analysis": "FY2024云业务调整后EBITA折算为850.1百万美元（原值6,121.0百万RMB）；只展示金额，利润定义按厂商原披露标注。",
               "components": [
                 {
-                  "label": "调整后EBITA率",
-                  "value": 8.9,
-                  "unit": "%",
-                  "detail": "FY2025"
+                  "label": "云业务调整后EBITA",
+                  "value": 850.1,
+                  "unit": "百万美元",
+                  "detail": "FY2024"
                 }
               ],
               "component_count": 1,
@@ -2881,12 +2755,13 @@
             {
               "name": "中国移动云",
               "unit": "",
-              "detail": "保留披露缺口",
-              "analysis": "未披露利润率。",
+              "period": "FY2024",
+              "detail": "三来源云利润金额待补",
+              "analysis": "未收录通过三份独立来源核验的云利润金额，保留缺口。",
               "components": [
                 {
-                  "label": "利润率",
-                  "detail": "未披露"
+                  "label": "云利润",
+                  "detail": "三来源数据待补"
                 }
               ],
               "component_count": 1,
@@ -2896,12 +2771,12 @@
             {
               "name": "Huawei",
               "unit": "",
-              "period": "",
-              "detail": "三来源数据待补",
-              "analysis": "原表尚未收录可通过三份不同来源核验的云业务利润或利润率，保留缺口。",
+              "period": "FY2024",
+              "detail": "三来源云利润金额待补",
+              "analysis": "原表尚未收录可通过三份不同来源核验的云利润金额，保留缺口。",
               "components": [
                 {
-                  "label": "云业务利润或利润率",
+                  "label": "云利润",
                   "detail": "三来源数据待补"
                 }
               ],
@@ -2910,7 +2785,7 @@
               "ai_summary": {}
             }
           ],
-          "headline": "利润率不能跨厂商排名",
+          "headline": "云利润只展示金额",
           "ai_summary": {}
         },
         {
@@ -3066,49 +2941,49 @@
               "ai_summary": {}
             }
           ],
-          "headline": "集团投入口径正在补齐",
+          "headline": "集团资本开支只展示金额",
           "ai_summary": {}
         }
       ],
       "relations": [
         {
-          "title": "Google",
-          "detail": "FY2024 披露收入同比 +30.6%",
-          "kind": "公司披露数据"
-        },
-        {
-          "title": "Oracle",
-          "detail": "FY2024 披露收入同比 +24.5%",
-          "kind": "公司披露数据"
-        },
-        {
-          "title": "中国移动云",
-          "detail": "FY2024 披露收入同比 +20.4%",
+          "title": "AWS",
+          "detail": "FY2024 云收入 107,556.0 百万美元",
           "kind": "公司披露数据"
         },
         {
           "title": "Azure",
-          "detail": "FY2024 披露收入同比 +19.9%",
+          "detail": "FY2024 云收入 87,464.0 百万美元",
           "kind": "公司披露数据"
         },
         {
-          "title": "AWS",
-          "detail": "FY2024 披露收入同比 +18.5%",
+          "title": "Google",
+          "detail": "FY2024 云收入 43,229.0 百万美元",
           "kind": "公司披露数据"
         },
         {
           "title": "腾讯",
-          "detail": "FY2024 披露收入同比 +4.0%",
+          "detail": "FY2024 云收入 29,438.3 百万美元",
+          "kind": "公司披露数据"
+        },
+        {
+          "title": "Oracle",
+          "detail": "FY2024 云收入 19,774.0 百万美元",
           "kind": "公司披露数据"
         },
         {
           "title": "Alibaba",
-          "detail": "FY2024 披露收入同比 +2.8%",
+          "detail": "FY2024 云收入 14,774.2 百万美元",
+          "kind": "公司披露数据"
+        },
+        {
+          "title": "中国移动云",
+          "detail": "FY2024 云收入 13,944.4 百万美元",
           "kind": "公司披露数据"
         },
         {
           "title": "Huawei",
-          "detail": "FY2024 同比增速待三来源补齐",
+          "detail": "FY2024 云收入 4,628.5 百万美元",
           "kind": "公司披露数据"
         }
       ],
@@ -3417,7 +3292,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "f68187a8cd625fe6edee180ed4b0728682d0c186cc472b7dbfd801794414285f",
+    "evidence_hash": "722bd71576adadd48f441bfb3559ea4fc9324a2ea301484b53197b606dc8d30d",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
