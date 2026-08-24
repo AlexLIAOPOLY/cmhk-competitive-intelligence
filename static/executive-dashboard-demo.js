@@ -419,12 +419,33 @@
     const buttons = Array.from(document.querySelectorAll("[data-monitor-view]"));
     const overview = document.querySelector("[data-overview-view]");
     const comparison = document.querySelector("[data-comparison-view]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let transitionRevision = 0;
     buttons.forEach((button) => button.addEventListener("click", () => {
       const showComparison = button.dataset.monitorView === "comparison";
-      overview.hidden = showComparison;
-      comparison.hidden = !showComparison;
+      const incoming = showComparison ? comparison : overview;
+      const outgoing = showComparison ? overview : comparison;
+      if (!incoming.hidden) return;
       buttons.forEach((item) => item.setAttribute("aria-selected", String(item === button)));
-      if (showComparison) comparison.querySelectorAll(".panel").forEach((panel) => panel.classList.add("is-visible"));
+      const reveal = () => {
+        outgoing.hidden = true;
+        outgoing.classList.remove("is-view-leaving");
+        incoming.hidden = false;
+        incoming.querySelectorAll(".panel").forEach((panel) => panel.classList.add("is-visible"));
+        if (reducedMotion.matches) return;
+        incoming.classList.add("is-view-entering");
+        void incoming.offsetWidth;
+        window.requestAnimationFrame(() => incoming.classList.remove("is-view-entering"));
+      };
+      if (reducedMotion.matches) {
+        reveal();
+        return;
+      }
+      const revision = ++transitionRevision;
+      outgoing.classList.add("is-view-leaving");
+      window.setTimeout(() => {
+        if (revision === transitionRevision) reveal();
+      }, 210);
     }));
   }
 
