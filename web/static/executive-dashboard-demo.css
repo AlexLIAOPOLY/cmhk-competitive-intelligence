@@ -335,6 +335,47 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
 .comparison-value-cell.is-missing { opacity: .58; }
 .comparison-value-cell.is-negative strong { color: #f0a66e; }
 
+/* Chart-only comparison: values are labeled directly on marks; no duplicate tables. */
+.comparison-metric-card { grid-template-rows: clamp(46px, 3.2vw, 60px) minmax(0, 1fr); border-color: rgba(113, 183, 213, .26); border-radius: 4px; background: linear-gradient(145deg, rgba(7, 24, 38, .86), rgba(3, 13, 23, .78)); transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.comparison-metric-card:hover { border-color: rgba(100, 205, 244, .44); box-shadow: 0 10px 28px rgba(0, 8, 16, .22), inset 0 0 20px rgba(100, 205, 244, .025); transform: translateY(-1px); }
+.comparison-metric-card h3 { color: #edf9fd; font-size: clamp(14px, .82vw, 20px); font-weight: 720; }
+.comparison-chart-only { min-width: 0; min-height: 0; height: 100%; overflow: hidden; }
+.comparison-chart { display: block; width: 100%; height: 100%; border-right: 0; }
+.comparison-chart text { fill: #a9c5d1; font: 650 11px/1 var(--font-ui); }
+.comparison-chart .chart-lollipop-line { stroke-width: 3; }
+.comparison-chart .chart-donut-total { fill: #e2f4fa; font-size: 11px; font-weight: 750; }
+.comparison-chart .chart-donut-count { fill: #91b3c2; font-size: 10px; }
+.comparison-chart .chart-direct-value { fill: #f2fbff; font-size: 10px; font-weight: 780; paint-order: stroke; stroke: #06121e; stroke-width: 2.5px; stroke-linejoin: round; }
+.comparison-chart .chart-empty-label { fill: #8eb0be; font-size: 11px; font-weight: 700; }
+.chart-interactive-mark { cursor: help; outline: none; }
+.chart-interactive-mark > rect,
+.chart-interactive-mark > circle,
+.chart-interactive-mark > line { transition: filter 150ms ease, opacity 150ms ease; }
+.chart-interactive-mark:hover > rect,
+.chart-interactive-mark:hover > circle,
+.chart-interactive-mark:hover > line,
+.chart-interactive-mark:focus > rect,
+.chart-interactive-mark:focus > circle,
+.chart-interactive-mark:focus > line { filter: brightness(1.22) drop-shadow(0 0 4px rgba(116, 218, 255, .42)); }
+.comparison-chart-tooltip { position: fixed; z-index: 1000; max-width: min(320px, calc(100vw - 16px)); padding: 9px 12px; border: 1px solid rgba(114, 210, 244, .48); border-radius: 6px; background: rgba(3, 15, 25, .96); box-shadow: 0 10px 28px rgba(0, 5, 12, .42), inset 0 0 18px rgba(91, 189, 229, .05); color: #edfaff; font-size: 13px; font-weight: 650; line-height: 1.45; pointer-events: none; white-space: normal; }
+.comparison-chart-tooltip[hidden] { display: none; }
+.comparison-mini-charts { height: 100%; }
+.comparison-mini-chart { grid-template-rows: 44px minmax(0, 1fr); }
+.comparison-mini-chart > span { padding: 7px 10px 0; color: #b8d0da; font-size: clamp(11px, .58vw, 14px); font-weight: 680; line-height: 1.25; }
+
+.motion-enabled .panel.is-visible .comparison-metric-card { animation: comparison-card-in 560ms cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--panel-delay, 0ms) + var(--card-delay, 0ms) + 80ms); }
+.motion-enabled .chart-column-mark { transform-box: fill-box; transform-origin: center bottom; animation: comparison-column-grow 620ms cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--panel-delay, 0ms) + 320ms); }
+.motion-enabled .chart-bar-mark { transform-box: fill-box; transform-origin: left center; animation: comparison-bar-grow 620ms cubic-bezier(.2, .8,.2, 1) both; animation-delay: calc(var(--panel-delay, 0ms) + 320ms); }
+.motion-enabled .chart-bar-mark.chart-bar-negative { transform-origin: right center; }
+.motion-enabled .chart-line, .motion-enabled .chart-lollipop-line { stroke-dasharray: 240; stroke-dashoffset: 240; animation: comparison-line-draw 720ms cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: calc(var(--panel-delay, 0ms) + 300ms); }
+.motion-enabled .chart-point, .motion-enabled .chart-donut-segment { transform-box: fill-box; transform-origin: center; animation: comparison-mark-in 460ms cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--panel-delay, 0ms) + 540ms); }
+
+@keyframes comparison-card-in { from { opacity: 0; transform: translateY(8px) scale(.992); } to { opacity: 1; transform: none; } }
+@keyframes comparison-column-grow { from { opacity: .25; transform: scaleY(.08); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes comparison-bar-grow { from { opacity: .25; transform: scaleX(.08); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes comparison-line-draw { to { stroke-dashoffset: 0; } }
+@keyframes comparison-mark-in { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: scale(1); } }
+
 /* Typography hierarchy: readable CJK UI text plus condensed instrument numerals. */
 .cockpit-title > span,
 .panel-heading > span,
@@ -446,7 +487,8 @@ h1 { margin: 0; color: #f8fcff; font-size: clamp(29px, 2vw, 76px); font-weight: 
   .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }
   .comparison-metric-card { min-height: 252px; grid-template-rows: 56px minmax(0, 1fr); }
   .comparison-combined-card { min-height: 360px; }
-  .comparison-metric-card h3 { font-size: 12px; }
+  .comparison-metric-card h3 { font-size: 16px; }
+  .comparison-chart .chart-direct-value { font-size: 11px; }
   .comparison-chart-layout { grid-template-columns: minmax(132px, .9fr) minmax(174px, 1.1fr); }
   .comparison-chart { padding: 8px; }
   .comparison-value-row { grid-template-columns: 5px 60px minmax(76px, 1fr); column-gap: 6px; padding-inline: 8px; }

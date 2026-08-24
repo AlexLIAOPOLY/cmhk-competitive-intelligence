@@ -91,6 +91,8 @@
       missingMetric("官方手机应用程式 (如MyLink) 活跃用户数", { dial: 0, color: "#5de2b6" })
     ] }
   ];
+  const comparisonOperatorKeys = ["cmhk", "hkt", "three"];
+  const comparisonCompanyNames = { cmhk: "CMHK", hkt: "HKT", three: "3HK" };
   let financeCompaniesData = financeCompanyFallbacks;
 
   const comparisonSections = [
@@ -115,17 +117,9 @@
   const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const compactMetricLabel = (label) => ({
-    "基站总数（4G）": "4G基站",
-    "基站总数（5G）": "5G基站",
-    "总移动用户数": "移动用户",
-    "移动综合ARPU": "移动ARPU",
-    "家庭宽带用户数": "宽带用户",
-    "家庭户均收益（ARPU）": "家庭ARPU",
-    "客户数（大中型企业/中小企业-参考政府公布的分类）": "政企客户数",
-    "官方手机应用程式 (如MyLink) 活跃用户数": "App活跃用户",
-    "全港实体门市数量": "实体门市"
-  }[label] || label);
+  const metricTitle = (metric) => `${metric.label}${metric.unit ? `（${metric.unit}）` : ""}`;
+  const tooltipAttributes = (text) => `tabindex="0" data-chart-tooltip="${escapeHtml(text)}" aria-label="${escapeHtml(text)}"`;
+  const metricTooltip = (item, metricLabel) => tooltipAttributes(`${item.company}｜${metricLabel}：${item.display}｜${item.status}`);
 
   function metricNumber(value) {
     const text = String(value || "").replace(/,/g, "");
@@ -192,25 +186,30 @@
       .catch(() => {});
   }
 
-  function emptyChart(metricLabel, chartType) {
+  function emptyChart(rows, metricLabel, chartType) {
     return `<svg class="comparison-chart comparison-chart-empty" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}${chartTypeNames[chartType]}，暂无披露数据`)}">
-      <circle cx="90" cy="54" r="31" fill="none" stroke="rgba(122,166,187,.28)" stroke-width="8" stroke-dasharray="4 6"></circle>
-      <text x="90" y="58" text-anchor="middle">暂无披露</text>
+      <text x="90" y="20" text-anchor="middle" class="chart-empty-label">暂无披露</text>
+      ${rows.map((item, index) => {
+        const x = 20 + (index * 70);
+        return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}><text x="${x}" y="70" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 6}" y1="78" x2="${x + 6}" y2="78" class="chart-missing-line"></line><text x="${x}" y="104" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
+      }).join("")}
     </svg>`;
   }
 
   function columnChart(rows, metricLabel) {
     const disclosed = rows.filter((item) => item.value !== null);
-    if (!disclosed.length) return emptyChart(metricLabel, "column");
+    if (!disclosed.length) return emptyChart(rows, metricLabel, "column");
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}六家本地运营商柱状图`)}">
+    const slot = 156 / rows.length;
+    const barWidth = Math.min(24, slot * .46);
+    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商柱状图`)}">
       <line x1="12" y1="91" x2="168" y2="91" class="chart-axis"></line>
       ${rows.map((item, index) => {
         const height = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 66);
-        const x = 17 + (index * 26);
-        return `<g class="${item.value === null ? "chart-mark-missing" : ""}">
-          ${item.value === null ? `<line x1="${x}" y1="87" x2="${x + 14}" y2="87" class="chart-missing-line"></line>` : `<rect x="${x}" y="${91 - height}" width="14" height="${height}" rx="2" fill="${chartColors[index]}"></rect>`}
-          <text x="${x + 7}" y="108" text-anchor="middle">${escapeHtml(item.company.replace("香港", ""))}</text>
+        const x = 12 + (index * slot) + ((slot - barWidth) / 2);
+        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>
+          ${item.value === null ? `<text x="${x + (barWidth / 2)}" y="80" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x}" y1="87" x2="${x + barWidth}" y2="87" class="chart-missing-line"></line>` : `<rect class="chart-column-mark" x="${x}" y="${91 - height}" width="${barWidth}" height="${height}" rx="3" fill="${chartColors[index]}"></rect><text x="${x + (barWidth / 2)}" y="${Math.max(13, 86 - height)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text>`}
+          <text x="${x + (barWidth / 2)}" y="108" text-anchor="middle">${escapeHtml(item.company)}</text>
         </g>`;
       }).join("")}
     </svg>`;
@@ -219,24 +218,33 @@
   function groupedColumnChart(metrics, title) {
     const disclosed = metrics.flatMap((metric) => metric.rows).filter((item) => item.value !== null);
     if (!disclosed.length) {
-      return `<div class="comparison-grouped-chart-empty">
-        ${emptyChart(title, "column")}
-        <div class="comparison-chart-legend"><span><i class="series-a"></i>${escapeHtml(metrics[0].label)}</span><span><i class="series-b"></i>${escapeHtml(metrics[1].label)}</span></div>
-      </div>`;
+      return `<svg class="comparison-chart comparison-grouped-chart comparison-chart-empty" viewBox="0 0 300 116" role="img" aria-label="${escapeHtml(`${title}三家重点运营商分组柱状图，暂无披露数据`)}">
+        <g class="comparison-svg-legend"><rect x="172" y="5" width="8" height="8" rx="2" class="series-a"></rect><text x="184" y="13">4G</text><rect x="224" y="5" width="8" height="8" rx="2" class="series-b"></rect><text x="236" y="13">5G</text></g>
+        <text x="75" y="14" text-anchor="middle" class="chart-empty-label">暂无披露</text>
+        ${metrics[0].rows.map((row, index) => {
+          const center = 62 + (index * 88);
+          const paired = metrics[1].rows[index];
+          const tooltip = `${row.company}｜${metrics[0].label}：${row.display}｜${metrics[1].label}：${paired.display}｜未披露`;
+          return `<g class="chart-mark-missing chart-interactive-mark" ${tooltipAttributes(tooltip)}><text x="${center - 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><text x="${center + 12}" y="65" text-anchor="middle" class="chart-direct-value">—</text><line x1="${center - 20}" y1="75" x2="${center - 4}" y2="75" class="chart-missing-line"></line><line x1="${center + 4}" y1="75" x2="${center + 20}" y2="75" class="chart-missing-line"></line><text x="${center}" y="102" text-anchor="middle">${escapeHtml(row.company)}</text></g>`;
+        }).join("")}
+      </svg>`;
     }
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
-    return `<svg class="comparison-chart comparison-grouped-chart" viewBox="0 0 300 116" role="img" aria-label="${escapeHtml(`${title}六家本地运营商分组柱状图`)}">
+    const slot = 264 / metrics[0].rows.length;
+    const barWidth = Math.min(18, slot * .24);
+    return `<svg class="comparison-chart comparison-grouped-chart" viewBox="0 0 300 116" role="img" aria-label="${escapeHtml(`${title}三家重点运营商分组柱状图`)}">
       <line x1="18" y1="88" x2="282" y2="88" class="chart-axis"></line>
       <g class="comparison-svg-legend"><rect x="172" y="5" width="8" height="8" rx="2" class="series-a"></rect><text x="184" y="13">4G</text><rect x="224" y="5" width="8" height="8" rx="2" class="series-b"></rect><text x="236" y="13">5G</text></g>
       ${metrics[0].rows.map((row, index) => {
         const paired = metrics[1].rows[index];
-        const x = 25 + (index * 44);
+        const x = 18 + (index * slot) + (slot / 2) - barWidth - 2;
         const firstHeight = row.value === null ? 0 : Math.max(3, (Math.abs(row.value) / max) * 62);
         const secondHeight = paired.value === null ? 0 : Math.max(3, (Math.abs(paired.value) / max) * 62);
-        return `<g>
-          ${row.value === null ? `<line x1="${x}" y1="84" x2="${x + 10}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x}" y="${88 - firstHeight}" width="10" height="${firstHeight}" rx="2" class="series-a"></rect>`}
-          ${paired.value === null ? `<line x1="${x + 12}" y1="80" x2="${x + 22}" y2="80" class="chart-missing-line"></line>` : `<rect x="${x + 12}" y="${88 - secondHeight}" width="10" height="${secondHeight}" rx="2" class="series-b"></rect>`}
-          <text x="${x + 11}" y="105" text-anchor="middle">${escapeHtml(row.company.replace("香港", ""))}</text>
+        const tooltip = `${row.company}｜${metrics[0].label}：${row.display}｜${metrics[1].label}：${paired.display}`;
+        return `<g class="chart-interactive-mark" ${tooltipAttributes(tooltip)}>
+          ${row.value === null ? `<text x="${x + (barWidth / 2)}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x}" y1="84" x2="${x + barWidth}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x}" y="${88 - firstHeight}" width="${barWidth}" height="${firstHeight}" rx="3" class="series-a chart-column-mark"></rect><text x="${x + (barWidth / 2)}" y="${Math.max(20, 83 - firstHeight)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(row.chartDisplay)}</text>`}
+          ${paired.value === null ? `<text x="${x + barWidth + 4 + (barWidth / 2)}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x + barWidth + 4}" y1="84" x2="${x + (barWidth * 2) + 4}" y2="84" class="chart-missing-line"></line>` : `<rect x="${x + barWidth + 4}" y="${88 - secondHeight}" width="${barWidth}" height="${secondHeight}" rx="3" class="series-b chart-column-mark"></rect><text x="${x + barWidth + 4 + (barWidth / 2)}" y="${Math.max(20, 83 - secondHeight)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(paired.chartDisplay)}</text>`}
+          <text x="${18 + (index * slot) + (slot / 2)}" y="105" text-anchor="middle">${escapeHtml(row.company)}</text>
         </g>`;
       }).join("")}
     </svg>`;
@@ -244,17 +252,19 @@
 
   function horizontalChart(rows, metricLabel, chartType) {
     const disclosed = rows.filter((item) => item.value !== null);
-    if (!disclosed.length) return emptyChart(metricLabel, chartType);
+    if (!disclosed.length) return emptyChart(rows, metricLabel, chartType);
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
     const isLollipop = chartType === "lollipop";
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}六家本地运营商${chartTypeNames[chartType]}`)}">
+    const rowY = (index) => rows.length === 1 ? 54 : 20 + (index * (76 / (rows.length - 1)));
+    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商${chartTypeNames[chartType]}`)}">
       ${rows.map((item, index) => {
-        const y = 13 + (index * 18);
+        const y = rowY(index);
         const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 118);
-        return `<g class="${item.value === null ? "chart-mark-missing" : ""}">
-          <text x="4" y="${y + 4}">${escapeHtml(item.company.replace("香港", ""))}</text>
+        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>
+          <text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>
           <line x1="52" y1="${y}" x2="170" y2="${y}" class="chart-track"></line>
-          ${item.value === null ? `<line x1="52" y1="${y}" x2="60" y2="${y}" class="chart-missing-line"></line>` : isLollipop ? `<line x1="52" y1="${y}" x2="${52 + width}" y2="${y}" stroke="${chartColors[index]}" class="chart-lollipop-line"></line><circle cx="${52 + width}" cy="${y}" r="4" fill="${chartColors[index]}"></circle>` : `<rect x="52" y="${y - 4}" width="${width}" height="8" rx="4" fill="${chartColors[index]}"></rect>`}
+          ${item.value === null ? `<line x1="52" y1="${y}" x2="60" y2="${y}" class="chart-missing-line"></line>` : isLollipop ? `<line x1="52" y1="${y}" x2="${52 + width}" y2="${y}" stroke="${chartColors[index]}" class="chart-lollipop-line"></line><circle class="chart-point" cx="${52 + width}" cy="${y}" r="5" fill="${chartColors[index]}"></circle>` : `<rect class="chart-bar-mark" x="52" y="${y - 5}" width="${width}" height="10" rx="5" fill="${chartColors[index]}"></rect>`}
+          <text x="170" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text>
         </g>`;
       }).join("")}
     </svg>`;
@@ -262,12 +272,12 @@
 
   function lineChart(rows, metricLabel) {
     const disclosed = rows.filter((item) => item.value !== null);
-    if (!disclosed.length) return emptyChart(metricLabel, "line");
+    if (!disclosed.length) return emptyChart(rows, metricLabel, "line");
     const values = disclosed.map((item) => item.value);
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min || Math.max(Math.abs(max), 1);
-    const point = (item, index) => ({ x: 17 + (index * 29), y: 84 - (((item.value - min) / range) * 58) });
+    const point = (item, index) => ({ x: rows.length === 1 ? 90 : 20 + (index * (140 / (rows.length - 1))), y: 84 - (((item.value - min) / range) * 58) });
     const segments = [];
     let current = [];
     rows.forEach((item, index) => {
@@ -277,14 +287,14 @@
       } else current.push(point(item, index));
     });
     if (current.length) segments.push(current);
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}六家本地运营商折线图，缺失值留空`)}">
+    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商折线图，缺失值留空`)}">
       <line x1="12" y1="88" x2="168" y2="88" class="chart-axis"></line>
       ${segments.filter((segment) => segment.length > 1).map((segment) => `<polyline points="${segment.map(({ x, y }) => `${x},${y}`).join(" ")}" class="chart-line"></polyline>`).join("")}
       ${rows.map((item, index) => {
-        const x = 17 + (index * 29);
-        if (item.value === null) return `<g class="chart-mark-missing"><line x1="${x - 4}" y1="84" x2="${x + 4}" y2="84" class="chart-missing-line"></line><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company.replace("香港", ""))}</text></g>`;
+        const x = rows.length === 1 ? 90 : 20 + (index * (140 / (rows.length - 1)));
+        if (item.value === null) return `<g class="chart-mark-missing chart-interactive-mark" ${metricTooltip(item, metricLabel)}><text x="${x}" y="76" text-anchor="middle" class="chart-direct-value">—</text><line x1="${x - 5}" y1="84" x2="${x + 5}" y2="84" class="chart-missing-line"></line><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
         const { y } = point(item, index);
-        return `<g><circle cx="${x}" cy="${y}" r="4" fill="${chartColors[index]}"></circle><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company.replace("香港", ""))}</text></g>`;
+        return `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)}><circle class="chart-point" cx="${x}" cy="${y}" r="5" fill="${chartColors[index]}"></circle><text x="${x}" y="${Math.max(13, y - 9)}" text-anchor="middle" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text><text x="${x}" y="106" text-anchor="middle">${escapeHtml(item.company)}</text></g>`;
       }).join("")}
     </svg>`;
   }
@@ -299,7 +309,7 @@
     const rings = disclosed.map((item) => {
       const index = rows.indexOf(item);
       const length = (item.value / total) * circumference;
-      const ring = `<circle cx="72" cy="56" r="${radius}" fill="none" stroke="${chartColors[index]}" stroke-width="18" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}" transform="rotate(-90 72 56)"></circle>`;
+      const ring = `<circle class="chart-donut-segment" cx="72" cy="56" r="${radius}" fill="none" stroke="${chartColors[index]}" stroke-width="18" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}" transform="rotate(-90 72 56)"></circle>`;
       offset += length;
       return ring;
     }).join("");
@@ -308,21 +318,22 @@
       ${rings}
       <text x="72" y="53" text-anchor="middle" class="chart-donut-total">已披露</text>
       <text x="72" y="66" text-anchor="middle" class="chart-donut-count">${disclosed.length} 家</text>
-      ${disclosed.map((item, index) => `<g transform="translate(128 ${28 + index * 18})"><circle r="4" fill="${chartColors[rows.indexOf(item)]}"></circle><text x="8" y="4">${escapeHtml(item.company.replace("香港", ""))}</text></g>`).join("")}
+      ${disclosed.map((item, index) => `<g class="chart-interactive-mark" ${metricTooltip(item, metricLabel)} transform="translate(122 ${34 + index * 24})"><circle class="chart-point" r="5" fill="${chartColors[rows.indexOf(item)]}"></circle><text x="9" y="4" class="chart-direct-value">${escapeHtml(`${item.company} ${item.chartDisplay}`)}</text></g>`).join("")}
     </svg>`;
   }
 
   function divergingChart(rows, metricLabel) {
     const disclosed = rows.filter((item) => item.value !== null);
-    if (!disclosed.length) return emptyChart(metricLabel, "diverging");
+    if (!disclosed.length) return emptyChart(rows, metricLabel, "diverging");
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}六家本地运营商正负发散条形图`)}">
+    const rowY = (index) => rows.length === 1 ? 54 : 20 + (index * (76 / (rows.length - 1)));
+    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商正负发散条形图`)}">
       <line x1="91" y1="5" x2="91" y2="111" class="chart-axis chart-zero-axis"></line>
       ${rows.map((item, index) => {
-        const y = 10 + (index * 18);
+        const y = rowY(index);
         const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 70);
         const x = item.value < 0 ? 91 - width : 91;
-        return `<g class="${item.value === null ? "chart-mark-missing" : ""}"><text x="4" y="${y + 4}">${escapeHtml(item.company.replace("香港", ""))}</text>${item.value === null ? `<line x1="87" y1="${y}" x2="95" y2="${y}" class="chart-missing-line"></line>` : `<rect x="${x}" y="${y - 4}" width="${width}" height="8" rx="4" fill="${item.value < 0 ? "#efb354" : chartColors[index]}"></rect>`}</g>`;
+        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}><text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>${item.value === null ? `<line x1="87" y1="${y}" x2="95" y2="${y}" class="chart-missing-line"></line>` : `<rect class="chart-bar-mark${item.value < 0 ? " chart-bar-negative" : ""}" x="${x}" y="${y - 5}" width="${width}" height="10" rx="5" fill="${item.value < 0 ? "#efb354" : chartColors[index]}"></rect>`}<text x="174" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text></g>`;
       }).join("")}
     </svg>`;
   }
@@ -335,76 +346,47 @@
     return lineChart(rows, metricLabel);
   }
 
-  function comparisonValues(rows, metricLabel) {
-    return `<div class="comparison-values" role="table" aria-label="${escapeHtml(metricLabel)}六家本地运营商完整数值">
-      ${rows.map((item, index) => `<div class="comparison-value-row${item.value === null ? " is-missing" : ""}${item.value < 0 ? " is-negative" : ""}" role="row" aria-label="${escapeHtml(`${item.company} ${item.display} ${item.status}`)}">
-        <i style="--series-color:${chartColors[index]}" aria-hidden="true"></i>
-        <span class="comparison-company" role="cell">${escapeHtml(item.company)}</span>
-        <strong class="comparison-value-reading" role="cell">${escapeHtml(item.display)}</strong>
-        <small role="cell">${escapeHtml(item.status)}</small>
-      </div>`).join("")}
-    </div>`;
-  }
-
-  function combinedValues(metrics, title) {
-    return `<div class="comparison-values comparison-values-combined" role="table" aria-label="${escapeHtml(title)}六家本地运营商完整数值">
-      ${metrics[0].rows.map((item, index) => {
-        const paired = metrics[1].rows[index];
-        return `<div class="comparison-value-row comparison-combined-row" role="row" aria-label="${escapeHtml(`${item.company} ${metrics[0].label} ${item.display} ${metrics[1].label} ${paired.display}`)}">
-          <i style="--series-color:${chartColors[index]}" aria-hidden="true"></i>
-          <span class="comparison-company" role="cell">${escapeHtml(item.company)}</span>
-          <span class="comparison-value-cell${item.value === null ? " is-missing" : ""}${item.value < 0 ? " is-negative" : ""}" role="cell"><strong class="comparison-value-reading">${escapeHtml(item.display)}</strong><small>${escapeHtml(item.status)}</small></span>
-          <span class="comparison-value-cell${paired.value === null ? " is-missing" : ""}${paired.value < 0 ? " is-negative" : ""}" role="cell"><strong class="comparison-value-reading">${escapeHtml(paired.display)}</strong><small>${escapeHtml(paired.status)}</small></span>
-        </div>`;
-      }).join("")}
-    </div>`;
-  }
-
   function combinedMetricCard(panel, metrics, group, groupIndex) {
     const cardId = `${panel.key}-group-${groupIndex}`;
     const charts = group.sharedChart === "grouped-column"
       ? groupedColumnChart(metrics, group.title)
-      : `<div class="comparison-mini-charts">${metrics.map((metric, index) => `<div class="comparison-mini-chart"><span>${escapeHtml(metric.label)}</span>${comparisonChart(metric.rows, metric.label, panel.chartTypes[group.indices[index]])}</div>`).join("")}</div>`;
-    return `<section class="comparison-metric-card comparison-combined-card" data-chart-type="${escapeHtml(group.sharedChart || "paired")}" aria-labelledby="${escapeHtml(cardId)}">
+      : `<div class="comparison-mini-charts">${metrics.map((metric, index) => `<div class="comparison-mini-chart"><span>${escapeHtml(metricTitle(metric))}</span>${comparisonChart(metric.rows, metric.label, panel.chartTypes[group.indices[index]])}</div>`).join("")}</div>`;
+    return `<section class="comparison-metric-card comparison-combined-card" style="--card-delay:${groupIndex * 80}ms" data-chart-type="${escapeHtml(group.sharedChart || "paired")}" aria-labelledby="${escapeHtml(cardId)}">
       <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(group.title)}</h3></header>
-      <div class="comparison-combined-layout">
-        ${charts}
-        <div class="comparison-combined-headings" aria-hidden="true"><span>${escapeHtml(compactMetricLabel(metrics[0].label))}</span><span>${escapeHtml(compactMetricLabel(metrics[1].label))}</span></div>
-        ${combinedValues(metrics, group.title)}
-      </div>
+      <div class="comparison-chart-only">${charts}</div>
     </section>`;
   }
 
   function singleMetricCard(panel, metric, metricIndex) {
     const chartType = panel.chartTypes[metricIndex];
     const cardId = `${panel.key}-metric-${metricIndex}`;
-    return `<section class="comparison-metric-card" data-chart-type="${escapeHtml(chartType)}" aria-labelledby="${escapeHtml(cardId)}">
-      <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(metric.label)}</h3></header>
-      <div class="comparison-chart-layout">
-        ${comparisonChart(metric.rows, metric.label, chartType)}
-        ${comparisonValues(metric.rows, metric.label)}
-      </div>
+    return `<section class="comparison-metric-card" style="--card-delay:${metricIndex * 80}ms" data-chart-type="${escapeHtml(chartType)}" aria-labelledby="${escapeHtml(cardId)}">
+      <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(metricTitle(metric))}</h3></header>
+      <div class="comparison-chart-only">${comparisonChart(metric.rows, metric.label, chartType)}</div>
     </section>`;
   }
 
-  function sectionMetrics(sectionKey, companyIndex) {
-    if (sectionKey === "finance") return financeCompaniesData[companyIndex]?.metrics || [];
-    const profile = operatorProfiles[companyIndex];
+  function sectionMetrics(sectionKey, profile) {
+    if (sectionKey === "finance") return financeCompaniesData.find((company) => company.key === profile.key)?.metrics || [];
     if (sectionKey === "network") return profile.networkMetrics;
     if (sectionKey === "reach") return profile.reachMetrics;
     return profile.businessGroups.flatMap((group) => group.metrics);
   }
 
   function comparisonMetric(sectionKey, metricIndex) {
-    const metrics = operatorProfiles.map((profile, companyIndex) => ({ profile, metric: sectionMetrics(sectionKey, companyIndex)[metricIndex] }));
+    const selectedProfiles = comparisonOperatorKeys.map((key) => operatorProfiles.find((profile) => profile.key === key)).filter(Boolean);
+    const metrics = selectedProfiles.map((profile) => ({ profile, metric: sectionMetrics(sectionKey, profile)[metricIndex] }));
     const label = metrics.find((item) => item.metric)?.metric.label || "指标";
+    const unit = metrics.find((item) => item.metric?.unit)?.metric.unit || "";
     return {
       label,
+      unit,
       rows: metrics.map(({ profile, metric }) => {
         const numeric = metric?.value === "—" ? null : Number(metric?.values?.at(-1));
         return {
-          company: profile.company,
+          company: comparisonCompanyNames[profile.key] || profile.company,
           value: Number.isFinite(numeric) ? numeric : null,
+          chartDisplay: metric?.value === "—" ? "—" : (metric?.value || "—"),
           display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}`,
           status: metric?.value === "—" ? "未披露" : (metric?.trend || "最新披露")
         };
@@ -430,9 +412,62 @@
     </article>`;
   }
 
+  function setupChartTooltips(root) {
+    if (root.dataset.chartTooltipsReady === "1") return;
+    root.dataset.chartTooltipsReady = "1";
+    const tooltip = document.createElement("div");
+    tooltip.className = "comparison-chart-tooltip";
+    tooltip.hidden = true;
+    tooltip.setAttribute("role", "tooltip");
+    document.body.appendChild(tooltip);
+    let activeMark = null;
+
+    const placeTooltip = (clientX, clientY) => {
+      const gap = 14;
+      const width = tooltip.offsetWidth;
+      const height = tooltip.offsetHeight;
+      tooltip.style.left = `${Math.max(8, Math.min(window.innerWidth - width - 8, clientX + gap))}px`;
+      tooltip.style.top = `${Math.max(8, Math.min(window.innerHeight - height - 8, clientY + gap))}px`;
+    };
+    const showTooltip = (mark, clientX, clientY) => {
+      activeMark = mark;
+      tooltip.textContent = mark.dataset.chartTooltip || "";
+      tooltip.hidden = false;
+      placeTooltip(clientX, clientY);
+    };
+    const hideTooltip = (mark) => {
+      if (mark && activeMark !== mark) return;
+      activeMark = null;
+      tooltip.hidden = true;
+    };
+
+    root.addEventListener("pointerover", (event) => {
+      const mark = event.target.closest?.("[data-chart-tooltip]");
+      if (mark) showTooltip(mark, event.clientX, event.clientY);
+    });
+    root.addEventListener("pointermove", (event) => {
+      if (activeMark) placeTooltip(event.clientX, event.clientY);
+    });
+    root.addEventListener("pointerout", (event) => {
+      const mark = event.target.closest?.("[data-chart-tooltip]");
+      if (mark && !mark.contains(event.relatedTarget)) hideTooltip(mark);
+    });
+    root.addEventListener("focusin", (event) => {
+      const mark = event.target.closest?.("[data-chart-tooltip]");
+      if (!mark) return;
+      const rect = mark.getBoundingClientRect();
+      showTooltip(mark, rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+    });
+    root.addEventListener("focusout", (event) => {
+      const mark = event.target.closest?.("[data-chart-tooltip]");
+      if (mark) hideTooltip(mark);
+    });
+  }
+
   function renderComparison() {
     const target = document.querySelector("[data-comparison-view]");
     target.innerHTML = comparisonSections.map(comparisonPanel).join("");
+    setupChartTooltips(target);
   }
 
   function setupMotion() {
