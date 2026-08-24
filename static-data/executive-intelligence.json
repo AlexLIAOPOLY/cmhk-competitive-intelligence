@@ -2103,982 +2103,1136 @@
       "id": "international",
       "index": "02",
       "title": "国际运营商",
-      "kicker": "连接规模、增长与盈利",
+      "kicker": "营收、EBITDA、净利润与后付费用户价值",
       "metric": {
-        "value": 590.51,
-        "unit": "百万连接",
-        "label": "Bharti Airtel FY2025披露规模"
+        "value": 10,
+        "unit": "年",
+        "label": "FY2016–FY2025财务历史"
       },
-      "context": "Bharti Airtel、Reliance Jio、Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
-      "insight": "六家公司连接口径不同，只比较披露规模；财务变化在各自本币内计算，Reliance Jio利润率采用EBITDA口径，其余采用归母净利润口径。",
+      "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；Comcast已排除；展示值经三份不同底层官方文件核验",
+      "insight": "财务值保留原币；Verizon为ARPA，NTT未披露统一后付费用户口径，已在卡片内明示。",
       "entities": [
         {
-          "name": "Bharti Airtel",
-          "value": 590.51,
-          "unit": "百万连接",
+          "name": "Verizon",
+          "value": 138191.0,
+          "unit": "USD million",
           "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为590.514百万；group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table。",
+          "detail": "FY2016–FY2025十年原币序列",
+          "analysis": "FY2025营收为138191 USD million；保留本币，不跨币种排名。",
           "components": [
             {
-              "label": "FY2023",
-              "value": 518.446,
-              "unit": "百万连接",
-              "detail": "total_customers"
-            },
-            {
-              "label": "FY2024",
-              "value": 561.97,
-              "unit": "百万连接",
-              "detail": "total_customers"
-            },
-            {
-              "label": "FY2025",
-              "value": 590.514,
-              "unit": "百万连接",
-              "detail": "total_customers"
+              "label": "营业收入",
+              "value": 138191.0,
+              "unit": "USD million",
+              "detail": "FY2025"
             }
           ],
-          "component_count": 3,
-          "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
-          "verification_count": 5,
-          "trend": [
-            {
-              "label": "FY2023",
-              "value": 518.446
-            },
-            {
-              "label": "FY2024",
-              "value": 561.97
-            },
-            {
-              "label": "FY2025",
-              "value": 590.514
-            }
-          ]
-        },
-        {
-          "name": "Reliance Jio",
-          "value": 488.2,
-          "unit": "百万连接",
-          "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为488.200百万；Jio total mobile/fixed customer base at fiscal year end。",
-          "components": [
-            {
-              "label": "FY2023",
-              "value": 439.3,
-              "unit": "百万连接",
-              "detail": "total_customers"
-            },
-            {
-              "label": "FY2024",
-              "value": 481.8,
-              "unit": "百万连接",
-              "detail": "total_customers"
-            },
-            {
-              "label": "FY2025",
-              "value": 488.2,
-              "unit": "百万连接",
-              "detail": "total_customers"
-            }
-          ],
-          "component_count": 3,
-          "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+          "component_count": 1,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
           "verification_count": 3,
           "trend": [
             {
+              "label": "FY2016",
+              "value": 125980.0
+            },
+            {
+              "label": "FY2017",
+              "value": 126034.0
+            },
+            {
+              "label": "FY2018",
+              "value": 130863.0
+            },
+            {
+              "label": "FY2019",
+              "value": 131868.0
+            },
+            {
+              "label": "FY2020",
+              "value": 128292.0
+            },
+            {
+              "label": "FY2021",
+              "value": 133613.0
+            },
+            {
+              "label": "FY2022",
+              "value": 136835.0
+            },
+            {
               "label": "FY2023",
-              "value": 439.3
+              "value": 133974.0
             },
             {
               "label": "FY2024",
-              "value": 481.8
+              "value": 134788.0
             },
             {
               "label": "FY2025",
-              "value": 488.2
+              "value": 138191.0
             }
           ]
         },
         {
           "name": "Deutsche Telekom",
-          "value": 273.2,
-          "unit": "百万连接",
+          "value": 119.1,
+          "unit": "EUR billion",
           "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为273.200百万；Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers。",
+          "detail": "FY2016–FY2025十年原币序列",
+          "analysis": "FY2025营收为119.1 EUR billion；保留本币，不跨币种排名。",
           "components": [
             {
-              "label": "FY2023",
-              "value": 252.2,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2024",
-              "value": 261.4,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2025",
-              "value": 273.2,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
+              "label": "营业收入",
+              "value": 119.1,
+              "unit": "EUR billion",
+              "detail": "FY2025"
             }
           ],
-          "component_count": 3,
+          "component_count": 1,
           "source_url": "https://report.telekom.com/annual-report-2025/",
           "verification_count": 3,
           "trend": [
             {
+              "label": "FY2016",
+              "value": 73.1
+            },
+            {
+              "label": "FY2017",
+              "value": 74.9
+            },
+            {
+              "label": "FY2018",
+              "value": 75.7
+            },
+            {
+              "label": "FY2019",
+              "value": 80.5
+            },
+            {
+              "label": "FY2020",
+              "value": 100.1
+            },
+            {
+              "label": "FY2021",
+              "value": 107.8
+            },
+            {
+              "label": "FY2022",
+              "value": 114.4
+            },
+            {
               "label": "FY2023",
-              "value": 252.2
+              "value": 112.0
             },
             {
               "label": "FY2024",
-              "value": 261.4
+              "value": 115.8
             },
             {
               "label": "FY2025",
-              "value": 273.2
+              "value": 119.1
             }
           ]
         },
         {
           "name": "AT&T",
-          "value": 120.11,
-          "unit": "百万连接",
+          "value": 125648.0,
+          "unit": "USD million",
           "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为120.105百万；AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices。",
+          "detail": "FY2016–FY2025十年原币序列",
+          "analysis": "FY2025营收为125648 USD million；保留本币，不跨币种排名。",
           "components": [
             {
-              "label": "FY2023",
-              "value": 113.808,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2024",
-              "value": 117.851,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2025",
-              "value": 120.105,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
+              "label": "营业收入",
+              "value": 125648.0,
+              "unit": "USD million",
+              "detail": "FY2025"
             }
           ],
-          "component_count": 3,
+          "component_count": 1,
           "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
           "verification_count": 3,
           "trend": [
             {
+              "label": "FY2016",
+              "value": 163786.0
+            },
+            {
+              "label": "FY2017",
+              "value": 160546.0
+            },
+            {
+              "label": "FY2018",
+              "value": 170756.0
+            },
+            {
+              "label": "FY2019",
+              "value": 181193.0
+            },
+            {
+              "label": "FY2020",
+              "value": 143050.0
+            },
+            {
+              "label": "FY2021",
+              "value": 134038.0
+            },
+            {
+              "label": "FY2022",
+              "value": 120741.0
+            },
+            {
               "label": "FY2023",
-              "value": 113.808
+              "value": 122428.0
             },
             {
               "label": "FY2024",
-              "value": 117.851
+              "value": 122336.0
             },
             {
               "label": "FY2025",
-              "value": 120.105
-            }
-          ]
-        },
-        {
-          "name": "Verizon",
-          "value": 115.9,
-          "unit": "百万连接",
-          "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为115.903百万；Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only。",
-          "components": [
-            {
-              "label": "FY2023",
-              "value": 114.972,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2024",
-              "value": 115.256,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2025",
-              "value": 115.903,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            }
-          ],
-          "component_count": 3,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
-          "verification_count": 3,
-          "trend": [
-            {
-              "label": "FY2023",
-              "value": 114.972
-            },
-            {
-              "label": "FY2024",
-              "value": 115.256
-            },
-            {
-              "label": "FY2025",
-              "value": 115.903
+              "value": 125648.0
             }
           ]
         },
         {
           "name": "NTT Group",
-          "value": 93.06,
-          "unit": "百万连接",
+          "value": 14409.1,
+          "unit": "JPY billion",
           "period": "FY2025",
-          "detail": "FY2025官方披露口径；三份底层文件核验",
-          "analysis": "FY2025披露口径移动连接/用户数为93.065百万；NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions。",
+          "detail": "FY2016–FY2025十年原币序列",
+          "analysis": "FY2025营收为14409.1 JPY billion；保留本币，不跨币种排名。",
           "components": [
             {
-              "label": "FY2023",
-              "value": 89.94,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2024",
-              "value": 91.407,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
-            },
-            {
-              "label": "FY2025",
-              "value": 93.065,
-              "unit": "百万连接",
-              "detail": "reported_mobile_connections"
+              "label": "营业收入",
+              "value": 14409.1,
+              "unit": "JPY billion",
+              "detail": "FY2025"
             }
           ],
-          "component_count": 3,
+          "component_count": 1,
           "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
           "verification_count": 3,
           "trend": [
             {
+              "label": "FY2016",
+              "value": 11391.0
+            },
+            {
+              "label": "FY2017",
+              "value": 11782.1
+            },
+            {
+              "label": "FY2018",
+              "value": 11879.8
+            },
+            {
+              "label": "FY2019",
+              "value": 11899.4
+            },
+            {
+              "label": "FY2020",
+              "value": 11944.0
+            },
+            {
+              "label": "FY2021",
+              "value": 12156.4
+            },
+            {
+              "label": "FY2022",
+              "value": 13136.2
+            },
+            {
               "label": "FY2023",
-              "value": 89.94
+              "value": 13374.6
             },
             {
               "label": "FY2024",
-              "value": 91.407
+              "value": 13704.7
             },
             {
               "label": "FY2025",
-              "value": 93.065
+              "value": 14409.1
             }
           ]
         }
       ],
       "focuses": [
         {
-          "id": "scale",
-          "label": "移动连接规模",
-          "visual": "columns",
-          "headline": "Bharti Airtel披露规模居前",
-          "metric": {
-            "value": 590.51,
-            "unit": "百万连接",
-            "label": "Bharti Airtel FY2025披露规模"
-          },
-          "context": "六家运营商FY2025官方披露口径",
-          "insight": "Bharti Airtel为590.51百万连接，NTT Group为93.06百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
-          "items": [
-            {
-              "name": "Bharti Airtel",
-              "value": 590.51,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为590.514百万；group total customer base across consolidated operations; includes mobile and non-mobile customer categories disclosed in KPI table。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 518.446,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 561.97,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 590.514,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
-              "verification_count": 5,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 518.446
-                },
-                {
-                  "label": "FY2024",
-                  "value": 561.97
-                },
-                {
-                  "label": "FY2025",
-                  "value": 590.514
-                }
-              ],
-              "ai_summary": {}
-            },
-            {
-              "name": "Reliance Jio",
-              "value": 488.2,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为488.200百万；Jio total mobile/fixed customer base at fiscal year end。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 439.3,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 481.8,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 488.2,
-                  "unit": "百万连接",
-                  "detail": "total_customers"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
-              "verification_count": 3,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 439.3
-                },
-                {
-                  "label": "FY2024",
-                  "value": 481.8
-                },
-                {
-                  "label": "FY2025",
-                  "value": 488.2
-                }
-              ],
-              "ai_summary": {}
-            },
-            {
-              "name": "Deutsche Telekom",
-              "value": 273.2,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为273.200百万；Deutsche Telekom consolidated; mobile customers include T-Mobile US wholesale customers。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 252.2,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 261.4,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 273.2,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://report.telekom.com/annual-report-2025/",
-              "verification_count": 3,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 252.2
-                },
-                {
-                  "label": "FY2024",
-                  "value": 261.4
-                },
-                {
-                  "label": "FY2025",
-                  "value": 273.2
-                }
-              ],
-              "ai_summary": {}
-            },
-            {
-              "name": "AT&T",
-              "value": 120.11,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为120.105百万；AT&T consolidated; FY2020-FY2021 revenue is continuing-operations recast after WarnerMedia separation; Mobility subscribers include postpaid, prepaid, reseller and connected devices。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 113.808,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 117.851,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 120.105,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
-              "verification_count": 3,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 113.808
-                },
-                {
-                  "label": "FY2024",
-                  "value": 117.851
-                },
-                {
-                  "label": "FY2025",
-                  "value": 120.105
-                }
-              ],
-              "ai_summary": {}
-            },
-            {
-              "name": "Verizon",
-              "value": 115.9,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为115.903百万；Verizon consolidated; net profit is attributable to Verizon; mobile connections are Consumer wireless retail connections only。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 114.972,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 115.256,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 115.903,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
-              "verification_count": 3,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 114.972
-                },
-                {
-                  "label": "FY2024",
-                  "value": 115.256
-                },
-                {
-                  "label": "FY2025",
-                  "value": 115.903
-                }
-              ],
-              "ai_summary": {}
-            },
-            {
-              "name": "NTT Group",
-              "value": 93.06,
-              "unit": "百万连接",
-              "period": "FY2025",
-              "detail": "FY2025官方披露口径；三份底层文件核验",
-              "analysis": "FY2025披露口径移动连接/用户数为93.065百万；NTT consolidated; mobile subscriptions include 5G, LTE and FOMA, including MVNO and communication-module subscriptions。",
-              "components": [
-                {
-                  "label": "FY2023",
-                  "value": 89.94,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2024",
-                  "value": 91.407,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                },
-                {
-                  "label": "FY2025",
-                  "value": 93.065,
-                  "unit": "百万连接",
-                  "detail": "reported_mobile_connections"
-                }
-              ],
-              "component_count": 3,
-              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
-              "verification_count": 3,
-              "trend": [
-                {
-                  "label": "FY2023",
-                  "value": 89.94
-                },
-                {
-                  "label": "FY2024",
-                  "value": 91.407
-                },
-                {
-                  "label": "FY2025",
-                  "value": 93.065
-                }
-              ],
-              "ai_summary": {}
-            }
-          ],
-          "ai_summary": {}
-        },
-        {
-          "id": "connection_growth",
-          "label": "连接规模变化",
-          "visual": "diverging",
-          "headline": "六家连接规模均保持增长",
-          "metric": {
-            "value": 5.08,
-            "unit": "%",
-            "label": "Bharti Airtel FY2025同比"
-          },
-          "context": "同公司FY2025对FY2024",
-          "insight": "六家均增长，Bharti Airtel为5.08%，Verizon为0.56%；这说明连接扩张同向但强弱分化。",
-          "items": [
-            {
-              "name": "Bharti Airtel",
-              "value": 5.08,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+5.08%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "集团总客户数",
-                  "value": 5.08,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
-              "verification_count": 5,
-              "ai_summary": {}
-            },
-            {
-              "name": "Deutsche Telekom",
-              "value": 4.51,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+4.51%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "披露口径移动连接/用户数",
-                  "value": 4.51,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://report.telekom.com/annual-report-2025/",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "AT&T",
-              "value": 1.91,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+1.91%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "披露口径移动连接/用户数",
-                  "value": 1.91,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "NTT Group",
-              "value": 1.81,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+1.81%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "披露口径移动连接/用户数",
-                  "value": 1.81,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Reliance Jio",
-              "value": 1.33,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+1.33%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "集团总客户数",
-                  "value": 1.33,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Verizon",
-              "value": 0.56,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024连接规模变化",
-              "analysis": "按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比+0.56%；跨公司客户定义不完全相同。",
-              "components": [
-                {
-                  "label": "披露口径移动连接/用户数",
-                  "value": 0.56,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            }
-          ],
-          "ai_summary": {}
-        },
-        {
-          "id": "revenue_growth",
-          "label": "营收变化",
-          "visual": "diverging",
-          "headline": "原币营收均实现增长",
-          "metric": {
-            "value": 15.93,
-            "unit": "%",
-            "label": "Reliance Jio FY2025原币营收同比"
-          },
-          "context": "同公司原币FY2025对FY2024",
-          "insight": "六家原币营收均增长，Reliance Jio为15.93%，Verizon为2.52%；这表明收入扩张同向但增速分层。",
-          "items": [
-            {
-              "name": "Reliance Jio",
-              "value": 15.93,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+15.93%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "销售及服务价值",
-                  "value": 15.93,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Bharti Airtel",
-              "value": 10.43,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+10.43%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "营业收入",
-                  "value": 10.43,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
-              "verification_count": 5,
-              "ai_summary": {}
-            },
-            {
-              "name": "NTT Group",
-              "value": 5.14,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+5.14%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "营业收入",
-                  "value": 5.14,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Deutsche Telekom",
-              "value": 2.85,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+2.85%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "营业收入",
-                  "value": 2.85,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://report.telekom.com/annual-report-2025/",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "AT&T",
-              "value": 2.71,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+2.71%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "营业收入",
-                  "value": 2.71,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Verizon",
-              "value": 2.52,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025较FY2024原币营收变化",
-              "analysis": "在公司本币和原披露口径内，FY2025营收同比+2.52%；未做汇率换算。",
-              "components": [
-                {
-                  "label": "营业收入",
-                  "value": 2.52,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            }
-          ],
-          "ai_summary": {}
-        },
-        {
-          "id": "profit_margin",
-          "label": "已披露利润率",
+          "id": "revenue",
+          "label": "营收",
           "visual": "rows",
-          "headline": "盈利缓冲存在明显分层",
+          "headline": "十年营收序列已入库",
           "metric": {
-            "value": 42.18,
-            "unit": "%",
-            "label": "Reliance Jio FY2025已披露利润率"
+            "value": 4,
+            "unit": "家",
+            "label": "FY2016–FY2025完整覆盖"
           },
-          "context": "FY2025同公司原币口径；Jio为EBITDA率，其余为归母净利率",
-          "insight": "Reliance Jio已披露利润率为42.18%，NTT Group为7.20%；利润定义不同，只用于观察各公司自身盈利缓冲。",
+          "context": "原币集团口径，不跨币种排名",
+          "insight": "四家均已形成十年营收序列。",
           "items": [
             {
-              "name": "Reliance Jio",
-              "value": 42.18,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025EBITDA/销售及服务价值",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为42.18%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
-              "components": [
-                {
-                  "label": "EBITDA",
-                  "value": 42.18,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
-              "name": "Bharti Airtel",
-              "value": 18.59,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为18.59%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
-              "components": [
-                {
-                  "label": "净利润",
-                  "value": 18.59,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
-              "verification_count": 5,
-              "ai_summary": {}
-            },
-            {
-              "name": "AT&T",
-              "value": 17.47,
-              "unit": "%",
-              "period": "FY2025",
-              "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为17.47%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
-              "components": [
-                {
-                  "label": "净利润",
-                  "value": 17.47,
-                  "unit": "%",
-                  "detail": "FY2025"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
-              "verification_count": 3,
-              "ai_summary": {}
-            },
-            {
               "name": "Verizon",
-              "value": 12.43,
-              "unit": "%",
+              "value": 138191.0,
+              "unit": "USD million",
               "period": "FY2025",
-              "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为12.43%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
+              "detail": "FY2016–FY2025十年原币序列",
+              "analysis": "FY2025营收为138191 USD million；保留本币，不跨币种排名。",
               "components": [
                 {
-                  "label": "净利润",
-                  "value": 12.43,
-                  "unit": "%",
+                  "label": "营业收入",
+                  "value": 138191.0,
+                  "unit": "USD million",
                   "detail": "FY2025"
                 }
               ],
               "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 125980.0
+                },
+                {
+                  "label": "FY2017",
+                  "value": 126034.0
+                },
+                {
+                  "label": "FY2018",
+                  "value": 130863.0
+                },
+                {
+                  "label": "FY2019",
+                  "value": 131868.0
+                },
+                {
+                  "label": "FY2020",
+                  "value": 128292.0
+                },
+                {
+                  "label": "FY2021",
+                  "value": 133613.0
+                },
+                {
+                  "label": "FY2022",
+                  "value": 136835.0
+                },
+                {
+                  "label": "FY2023",
+                  "value": 133974.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 134788.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 138191.0
+                }
+              ],
               "ai_summary": {}
             },
             {
               "name": "Deutsche Telekom",
-              "value": 8.06,
-              "unit": "%",
+              "value": 119.1,
+              "unit": "EUR billion",
               "period": "FY2025",
-              "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为8.06%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
+              "detail": "FY2016–FY2025十年原币序列",
+              "analysis": "FY2025营收为119.1 EUR billion；保留本币，不跨币种排名。",
               "components": [
                 {
-                  "label": "净利润",
-                  "value": 8.06,
-                  "unit": "%",
+                  "label": "营业收入",
+                  "value": 119.1,
+                  "unit": "EUR billion",
                   "detail": "FY2025"
                 }
               ],
               "component_count": 1,
               "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 73.1
+                },
+                {
+                  "label": "FY2017",
+                  "value": 74.9
+                },
+                {
+                  "label": "FY2018",
+                  "value": 75.7
+                },
+                {
+                  "label": "FY2019",
+                  "value": 80.5
+                },
+                {
+                  "label": "FY2020",
+                  "value": 100.1
+                },
+                {
+                  "label": "FY2021",
+                  "value": 107.8
+                },
+                {
+                  "label": "FY2022",
+                  "value": 114.4
+                },
+                {
+                  "label": "FY2023",
+                  "value": 112.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 115.8
+                },
+                {
+                  "label": "FY2025",
+                  "value": 119.1
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "AT&T",
+              "value": 125648.0,
+              "unit": "USD million",
+              "period": "FY2025",
+              "detail": "FY2016–FY2025十年原币序列",
+              "analysis": "FY2025营收为125648 USD million；保留本币，不跨币种排名。",
+              "components": [
+                {
+                  "label": "营业收入",
+                  "value": 125648.0,
+                  "unit": "USD million",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 163786.0
+                },
+                {
+                  "label": "FY2017",
+                  "value": 160546.0
+                },
+                {
+                  "label": "FY2018",
+                  "value": 170756.0
+                },
+                {
+                  "label": "FY2019",
+                  "value": 181193.0
+                },
+                {
+                  "label": "FY2020",
+                  "value": 143050.0
+                },
+                {
+                  "label": "FY2021",
+                  "value": 134038.0
+                },
+                {
+                  "label": "FY2022",
+                  "value": 120741.0
+                },
+                {
+                  "label": "FY2023",
+                  "value": 122428.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 122336.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 125648.0
+                }
+              ],
               "ai_summary": {}
             },
             {
               "name": "NTT Group",
-              "value": 7.2,
-              "unit": "%",
+              "value": 14409.1,
+              "unit": "JPY billion",
               "period": "FY2025",
-              "detail": "FY2025归母净利润/营收",
-              "analysis": "按同公司同年度原币数据计算，FY2025已披露利润率为7.20%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
+              "detail": "FY2016–FY2025十年原币序列",
+              "analysis": "FY2025营收为14409.1 JPY billion；保留本币，不跨币种排名。",
               "components": [
                 {
-                  "label": "净利润",
-                  "value": 7.2,
-                  "unit": "%",
+                  "label": "营业收入",
+                  "value": 14409.1,
+                  "unit": "JPY billion",
                   "detail": "FY2025"
                 }
               ],
               "component_count": 1,
               "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 11391.0
+                },
+                {
+                  "label": "FY2017",
+                  "value": 11782.1
+                },
+                {
+                  "label": "FY2018",
+                  "value": 11879.8
+                },
+                {
+                  "label": "FY2019",
+                  "value": 11899.4
+                },
+                {
+                  "label": "FY2020",
+                  "value": 11944.0
+                },
+                {
+                  "label": "FY2021",
+                  "value": 12156.4
+                },
+                {
+                  "label": "FY2022",
+                  "value": 13136.2
+                },
+                {
+                  "label": "FY2023",
+                  "value": 13374.6
+                },
+                {
+                  "label": "FY2024",
+                  "value": 13704.7
+                },
+                {
+                  "label": "FY2025",
+                  "value": 14409.1
+                }
+              ],
+              "ai_summary": {}
+            }
+          ],
+          "ai_summary": {}
+        },
+        {
+          "id": "ebitda_margin",
+          "label": "EBITDA（EBITDA利润率）",
+          "visual": "rows",
+          "headline": "EBITDA与利润率按原披露口径并列",
+          "metric": {
+            "value": 4,
+            "unit": "家",
+            "label": "FY2025已披露"
+          },
+          "context": "调整后EBITDA；非GAAP调整项存在公司差异",
+          "insight": "不用净利率替代EBITDA利润率。",
+          "items": [
+            {
+              "name": "Verizon",
+              "value": 49997.0,
+              "unit": "USD million",
+              "period": "FY2025",
+              "detail": "调整后EBITDA 49997 USD million · 利润率 36.2%",
+              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "components": [
+                {
+                  "label": "调整后EBITDA",
+                  "value": 49997.0,
+                  "unit": "USD million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "EBITDA利润率",
+                  "value": 36.2,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 48791.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 49997.0
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "Deutsche Telekom",
+              "value": 44.24,
+              "unit": "EUR billion",
+              "period": "FY2025",
+              "detail": "调整后EBITDA 44.244 EUR billion · 利润率 37.2%",
+              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "components": [
+                {
+                  "label": "调整后EBITDA",
+                  "value": 44.244,
+                  "unit": "EUR billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "EBITDA利润率",
+                  "value": 37.2,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://report.telekom.com/annual-report-2025/",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 40.497
+                },
+                {
+                  "label": "FY2024",
+                  "value": 43.021
+                },
+                {
+                  "label": "FY2025",
+                  "value": 44.244
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "AT&T",
+              "value": 46361.0,
+              "unit": "USD million",
+              "period": "FY2025",
+              "detail": "调整后EBITDA 46361 USD million · 利润率 36.9%",
+              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "components": [
+                {
+                  "label": "调整后EBITDA",
+                  "value": 46361.0,
+                  "unit": "USD million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "EBITDA利润率",
+                  "value": 36.9,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 43400.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 44760.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 46361.0
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "NTT Group",
+              "value": 3423.3,
+              "unit": "JPY billion",
+              "period": "FY2025",
+              "detail": "调整后EBITDA 3423.3 JPY billion · 利润率 23.8%",
+              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "components": [
+                {
+                  "label": "调整后EBITDA",
+                  "value": 3423.3,
+                  "unit": "JPY billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "EBITDA利润率",
+                  "value": 23.8,
+                  "unit": "%",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2025",
+                  "value": 3423.3
+                }
+              ],
+              "ai_summary": {}
+            }
+          ],
+          "ai_summary": {}
+        },
+        {
+          "id": "net_profit_growth",
+          "label": "净利润+净利润同比增速",
+          "visual": "diverging",
+          "headline": "净利润与同比增速同卡展示",
+          "metric": {
+            "value": 4,
+            "unit": "家",
+            "label": "FY2016–FY2025完整覆盖"
+          },
+          "context": "同比在同公司原币口径内计算",
+          "insight": "四家净利润均保留十年历史。",
+          "items": [
+            {
+              "name": "Verizon",
+              "value": -1.9,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "净利润 17174 USD million · 同比 -1.9%",
+              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "components": [
+                {
+                  "label": "净利润",
+                  "value": 17174.0,
+                  "unit": "USD million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "净利润同比",
+                  "value": -1.9,
+                  "unit": "%",
+                  "detail": "FY2025 vs FY2024"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 13127.0
+                },
+                {
+                  "label": "FY2017",
+                  "value": 30101.0
+                },
+                {
+                  "label": "FY2018",
+                  "value": 15528.0
+                },
+                {
+                  "label": "FY2019",
+                  "value": 19265.0
+                },
+                {
+                  "label": "FY2020",
+                  "value": 17801.0
+                },
+                {
+                  "label": "FY2021",
+                  "value": 22065.0
+                },
+                {
+                  "label": "FY2022",
+                  "value": 21256.0
+                },
+                {
+                  "label": "FY2023",
+                  "value": 11614.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 17506.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 17174.0
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "Deutsche Telekom",
+              "value": -14.29,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "净利润 9.6 EUR billion · 同比 -14.3%",
+              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "components": [
+                {
+                  "label": "净利润",
+                  "value": 9.6,
+                  "unit": "EUR billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "净利润同比",
+                  "value": -14.29,
+                  "unit": "%",
+                  "detail": "FY2025 vs FY2024"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://report.telekom.com/annual-report-2025/",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 2.7
+                },
+                {
+                  "label": "FY2017",
+                  "value": 3.5
+                },
+                {
+                  "label": "FY2018",
+                  "value": 2.2
+                },
+                {
+                  "label": "FY2019",
+                  "value": 3.9
+                },
+                {
+                  "label": "FY2020",
+                  "value": 4.2
+                },
+                {
+                  "label": "FY2021",
+                  "value": 4.2
+                },
+                {
+                  "label": "FY2022",
+                  "value": 8.0
+                },
+                {
+                  "label": "FY2023",
+                  "value": 17.8
+                },
+                {
+                  "label": "FY2024",
+                  "value": 11.2
+                },
+                {
+                  "label": "FY2025",
+                  "value": 9.6
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "AT&T",
+              "value": 100.52,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "净利润 21953 USD million · 同比 +100.5%",
+              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "components": [
+                {
+                  "label": "净利润",
+                  "value": 21953.0,
+                  "unit": "USD million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "净利润同比",
+                  "value": 100.52,
+                  "unit": "%",
+                  "detail": "FY2025 vs FY2024"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 12976.0
+                },
+                {
+                  "label": "FY2017",
+                  "value": 29450.0
+                },
+                {
+                  "label": "FY2018",
+                  "value": 19370.0
+                },
+                {
+                  "label": "FY2019",
+                  "value": 13903.0
+                },
+                {
+                  "label": "FY2020",
+                  "value": -5176.0
+                },
+                {
+                  "label": "FY2021",
+                  "value": 20081.0
+                },
+                {
+                  "label": "FY2022",
+                  "value": -8524.0
+                },
+                {
+                  "label": "FY2023",
+                  "value": 14400.0
+                },
+                {
+                  "label": "FY2024",
+                  "value": 10948.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 21953.0
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "NTT Group",
+              "value": 3.7,
+              "unit": "%",
+              "period": "FY2025",
+              "detail": "净利润 1037 JPY billion · 同比 +3.7%",
+              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "components": [
+                {
+                  "label": "净利润",
+                  "value": 1037.0,
+                  "unit": "JPY billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "净利润同比",
+                  "value": 3.7,
+                  "unit": "%",
+                  "detail": "FY2025 vs FY2024"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 800.1
+                },
+                {
+                  "label": "FY2017",
+                  "value": 897.9
+                },
+                {
+                  "label": "FY2018",
+                  "value": 854.6
+                },
+                {
+                  "label": "FY2019",
+                  "value": 855.3
+                },
+                {
+                  "label": "FY2020",
+                  "value": 916.2
+                },
+                {
+                  "label": "FY2021",
+                  "value": 1181.1
+                },
+                {
+                  "label": "FY2022",
+                  "value": 1213.1
+                },
+                {
+                  "label": "FY2023",
+                  "value": 1279.5
+                },
+                {
+                  "label": "FY2024",
+                  "value": 1000.0
+                },
+                {
+                  "label": "FY2025",
+                  "value": 1037.0
+                }
+              ],
+              "ai_summary": {}
+            }
+          ],
+          "ai_summary": {}
+        },
+        {
+          "id": "postpaid_arpu",
+          "label": "后付费用户数+后付费ARPU",
+          "visual": "rows",
+          "headline": "用户数与ARPU/ARPA保留企业原生定义",
+          "metric": {
+            "value": 4,
+            "unit": "家",
+            "label": "口径差异已明示"
+          },
+          "context": "Verizon为ARPA；NTT为手机订阅数+移动ARPU",
+          "insight": "不用总连接数冒充后付费用户，不用ARPA冒充ARPU。",
+          "items": [
+            {
+              "name": "Verizon",
+              "value": 126.7,
+              "unit": "百万",
+              "period": "FY2025",
+              "detail": "后付费连接 126.705百万 · ARPA $170.61/账户/月",
+              "analysis": "Verizon披露的是ARPA（每账户），不写成ARPU。",
+              "components": [
+                {
+                  "label": "后付费用户/披露替代口径",
+                  "value": 126.705,
+                  "unit": "百万",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "ARPU/ARPA",
+                  "value": 170.61,
+                  "unit": "USD_per_account_month",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2024",
+                  "value": 125.937
+                },
+                {
+                  "label": "FY2025",
+                  "value": 126.705
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "Deutsche Telekom",
+              "value": 116.44,
+              "unit": "百万",
+              "period": "FY2025",
+              "detail": "后付费手机用户 116.445百万 · ARPU $50.71/用户/月",
+              "analysis": "Deutsche Telekom数值为T-Mobile US分部，ARPU为2025年第四季度期末口径。",
+              "components": [
+                {
+                  "label": "后付费用户/披露替代口径",
+                  "value": 116.445,
+                  "unit": "百万",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "ARPU/ARPA",
+                  "value": 50.71,
+                  "unit": "USD_per_phone_month",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://report.telekom.com/annual-report-2025/",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 98.052
+                },
+                {
+                  "label": "FY2024",
+                  "value": 104.118
+                },
+                {
+                  "label": "FY2025",
+                  "value": 116.445
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "AT&T",
+              "value": 74.21,
+              "unit": "百万",
+              "period": "FY2025",
+              "detail": "后付费手机用户 74.214百万 · ARPU $56.70/用户/月",
+              "analysis": "AT&T为美国Mobility后付费手机口径。",
+              "components": [
+                {
+                  "label": "后付费用户/披露替代口径",
+                  "value": 74.214,
+                  "unit": "百万",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "ARPU/ARPA",
+                  "value": 56.7,
+                  "unit": "USD_per_phone_month",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2023",
+                  "value": 71.255
+                },
+                {
+                  "label": "FY2024",
+                  "value": 72.749
+                },
+                {
+                  "label": "FY2025",
+                  "value": 74.214
+                }
+              ],
+              "ai_summary": {}
+            },
+            {
+              "name": "NTT Group",
+              "value": 52.97,
+              "unit": "百万",
+              "period": "FY2025",
+              "detail": "手机订阅 52.971百万 · 移动ARPU ¥3960/用户/月",
+              "analysis": "NTT未将手机订阅数标为后付费用户，因此明确列为替代披露口径。",
+              "components": [
+                {
+                  "label": "后付费用户/披露替代口径",
+                  "value": 52.971,
+                  "unit": "百万",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "ARPU/ARPA",
+                  "value": 3960.0,
+                  "unit": "JPY_per_user_month",
+                  "detail": "FY2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "trend": [
+                {
+                  "label": "FY2025",
+                  "value": 52.971
+                }
+              ],
               "ai_summary": {}
             }
           ],
@@ -3087,44 +3241,30 @@
       ],
       "relations": [
         {
-          "title": "Bharti Airtel",
-          "detail": "FY2025披露规模 590.51 百万连接",
-          "kind": "三来源认证"
-        },
-        {
-          "title": "Reliance Jio",
-          "detail": "FY2025披露规模 488.20 百万连接",
+          "title": "Verizon",
+          "detail": "四项指标口径已校准",
           "kind": "三来源认证"
         },
         {
           "title": "Deutsche Telekom",
-          "detail": "FY2025披露规模 273.20 百万连接",
+          "detail": "四项指标口径已校准",
           "kind": "三来源认证"
         },
         {
           "title": "AT&T",
-          "detail": "FY2025披露规模 120.11 百万连接",
-          "kind": "三来源认证"
-        },
-        {
-          "title": "Verizon",
-          "detail": "FY2025披露规模 115.90 百万连接",
+          "detail": "四项指标口径已校准",
           "kind": "三来源认证"
         },
         {
           "title": "NTT Group",
-          "detail": "FY2025披露规模 93.06 百万连接",
+          "detail": "四项指标口径已校准",
           "kind": "三来源认证"
         }
       ],
       "sources": [
         {
-          "label": "Bharti Airtel",
-          "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf"
-        },
-        {
-          "label": "Reliance Jio",
-          "url": "https://www.ril.com/ar2024-25/digital-services.html"
+          "label": "Verizon",
+          "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
         },
         {
           "label": "Deutsche Telekom",
@@ -3133,10 +3273,6 @@
         {
           "label": "AT&T",
           "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
-        },
-        {
-          "label": "Verizon",
-          "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
         },
         {
           "label": "NTT Group",
@@ -4915,7 +5051,7 @@
       "from": "international",
       "to": "cloud",
       "title": "云厂商与国际运营商披露口径不同",
-      "detail": "云厂商页面展示收入增速，国际运营商页面最高披露连接规模为 590.51 百万；指标、报告期间和业务范围不同，不作高低排名。",
+      "detail": "云厂商页面展示收入增速，国际运营商页面最高披露连接规模为 10 百万；指标、报告期间和业务范围不同，不作高低排名。",
       "kind": "不可直接比较"
     },
     {
@@ -5083,9 +5219,9 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "8f1989ec479256ceecf380e6ea2813357a8c4d698e8d5ca62595bd689c8c1a59",
+    "evidence_hash": "544385f41e3dbb391e565d8b290dfa23f012268a3610586ce72a17e71e6bd993",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
-  "source_record_count": 109
+  "source_record_count": 107
 }
