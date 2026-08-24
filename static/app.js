@@ -259,8 +259,8 @@ function renderLogButtonActivity() {
   if (els.logButton) {
     els.logButton.classList.toggle("log-glowing", active);
     els.logButton.setAttribute("aria-busy", active ? "true" : "false");
-    els.logButton.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
-    els.logButton.title = active ? "有任务正在运行，点击查看日志" : "日志";
+    els.logButton.setAttribute("aria-label", active ? "任务日志，有任务正在运行" : "任务日志");
+    els.logButton.title = active ? "有任务正在运行，点击查看任务日志" : "任务日志";
   }
 
   // The unified workspace navigation is rendered independently from the
@@ -271,8 +271,8 @@ function renderLogButtonActivity() {
     setWorkspaceTabIndicator(workspaceLogTab, "indicatorRunning", active);
     workspaceLogTab.classList.toggle("has-running-task", active);
     workspaceLogTab.setAttribute("aria-busy", active ? "true" : "false");
-    workspaceLogTab.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
-    workspaceLogTab.title = active ? "有任务正在运行，点击查看日志" : "日志";
+    workspaceLogTab.setAttribute("aria-label", active ? "任务日志，有任务正在运行" : "任务日志");
+    workspaceLogTab.title = active ? "有任务正在运行，点击查看任务日志" : "任务日志";
   }
 }
 

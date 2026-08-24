@@ -294,6 +294,50 @@
       .catch(() => {});
   }
 
+  let particleTransitionTimer = 0;
+
+  function runParticleTransition(intensity = 1) {
+    if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cockpit = document.querySelector(".cockpit");
+    if (!cockpit) return;
+    let layer = cockpit.querySelector(".transition-particles");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.className = "transition-particles";
+      layer.setAttribute("aria-hidden", "true");
+      cockpit.appendChild(layer);
+    }
+    window.clearTimeout(particleTransitionTimer);
+    layer.classList.remove("is-active");
+    layer.replaceChildren();
+    const mobile = window.matchMedia("(max-width: 620px)").matches;
+    const count = Math.round((mobile ? 18 : 34) * intensity);
+    const colors = ["#64cdf4", "#73e0cf", "#8db8ff", "#c3f4ff"];
+    const fragment = document.createDocumentFragment();
+    for (let index = 0; index < count; index += 1) {
+      const particle = document.createElement("i");
+      const angle = Math.random() * Math.PI * 2;
+      const distance = (mobile ? 18 : 28) + Math.random() * (mobile ? 34 : 72);
+      particle.style.setProperty("--particle-x", `${4 + Math.random() * 92}%`);
+      particle.style.setProperty("--particle-y", `${8 + Math.random() * 84}%`);
+      particle.style.setProperty("--particle-size", `${1.1 + Math.random() * 2.4}px`);
+      particle.style.setProperty("--particle-dx", `${Math.cos(angle) * distance}px`);
+      particle.style.setProperty("--particle-dy", `${Math.sin(angle) * distance * .62}px`);
+      particle.style.setProperty("--particle-duration", `${880 + Math.random() * 360}ms`);
+      particle.style.setProperty("--particle-delay", `${Math.random() * 190}ms`);
+      particle.style.setProperty("--particle-alpha", `${.24 + Math.random() * .34}`);
+      particle.style.setProperty("--particle-color", colors[index % colors.length]);
+      fragment.appendChild(particle);
+    }
+    layer.appendChild(fragment);
+    void layer.offsetWidth;
+    layer.classList.add("is-active");
+    particleTransitionTimer = window.setTimeout(() => {
+      layer.classList.remove("is-active");
+      layer.replaceChildren();
+    }, 1540);
+  }
+
   function renderOperatorPanels({ animate = false } = {}) {
     renderNetwork();
     renderBusiness();
@@ -302,6 +346,7 @@
     const overview = document.querySelector("[data-overview-view]");
     overview.setAttribute("aria-label", `${operatorProfiles[selectedOperator].company}战略监控四层体系`);
     if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    runParticleTransition(.82);
     overview.querySelectorAll(".monitor-content").forEach((content) => {
       content.classList.remove("is-operator-switching");
       void content.offsetWidth;
@@ -442,10 +487,11 @@
         return;
       }
       const revision = ++transitionRevision;
+      runParticleTransition(1.12);
       outgoing.classList.add("is-view-leaving");
       window.setTimeout(() => {
         if (revision === transitionRevision) reveal();
-      }, 210);
+      }, 360);
     }));
   }
 
