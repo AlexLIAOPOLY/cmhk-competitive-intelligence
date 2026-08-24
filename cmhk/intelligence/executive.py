@@ -1448,7 +1448,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
     local = _local_domain(_read_json(LOCAL_PATH))
     # 第二数据域沿用原有战略总览布局，只替换为本轮指定的四家国际运营商。
-    international = _requested_international_domain(_read_json(GLOBAL_ANNUAL_PATH))
+    international = _requested_international_domain(_read_json(GLOBAL_OPERATOR_PATH))
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     macro = _macro_domain(_read_json(MACRO_PATH))
     domains = [local, international, cloud, macro]
