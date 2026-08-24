@@ -818,7 +818,7 @@ def _build_site(
     )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
-        'src="./static/workspace-tabs.js?v=public-5"',
+        'src="./static/workspace-tabs.js?v=public-6"',
         html,
     )
     html = re.sub(

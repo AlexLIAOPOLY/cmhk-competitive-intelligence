@@ -686,7 +686,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('data-workspace-tab="monitoring"', html)
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
             self.assertIn('src="./static/public-snapshot-bootstrap.js?v=5"', html)
-            self.assertIn('src="./static/workspace-tabs.js?v=public-5"', html)
+            self.assertIn('src="./static/workspace-tabs.js?v=public-6"', html)
             self.assertIn('data-workspace-tab="subscriptions"', html)
             self.assertIn('data-workspace-tab="ai"', html)
             self.assertIn('data-src="./static/public-subscriptions.html"', html)
