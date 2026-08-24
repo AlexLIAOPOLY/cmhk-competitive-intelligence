@@ -4,7 +4,11 @@
   const root = document.querySelector("#subscriptionAdmin");
   const state = {
     data: null, searchResults: [], chatSearchResults: [], searchQuery: "",
-    inviteFilter: "", subscriberFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
+    filters: {
+      invite: { kind: "all", status: "all" },
+      subscriber: { service: "all", status: "all", frequency: "all" },
+    },
+    openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
   };
   let noticeTimer = 0;
   let noticeExitTimer = 0;
@@ -20,7 +24,6 @@
       : esc(part)).join("");
   };
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
-  const normalizeFilterText = (value) => String(value ?? "").trim().toLocaleLowerCase("zh-CN");
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
   const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
   const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已发送并回读", responded: "已有人选择" }[value] || value);
@@ -30,6 +33,7 @@
     refresh: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>',
     send: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 5 16 7-16 7 3-7-3-7Z"/><path d="M7 12h13"/></svg>',
     history: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h9"/><circle cx="18" cy="18" r="3"/></svg>',
+    filter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16l-6.5 7.2V19l-3 1v-6.8L4 6Z"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   }[name] || "");
   const avatar = (item, always = false) => {
@@ -92,7 +96,7 @@
         item.report_mode, modeLabel(item.report_mode), item.news_frequency || item.frequency,
         item.status, item.status === "paused" ? "暂停" : "启用",
       ].filter(Boolean).join(" ");
-      return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-text="${esc(filterText)}">
+      return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-services="${esc((item.services || []).join(" "))}" data-filter-status="${esc(item.status || "active")}" data-filter-frequency="${esc(item.news_frequency || item.frequency || "once_daily")}" data-filter-text="${esc(filterText)}">
       <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td><div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div></td>
@@ -136,14 +140,16 @@
       const responses = item.responses || [];
       const responseCount = Number(item.response_count || responses.length || 0);
       const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已选择" : "已发送并回读", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
-      return `<details class="group-invite-record" data-invite-filter-row data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
+      return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${responseCount ? "accepted" : "verified"}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
         <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
         <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已发送并回读"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
       </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
     const personRows = rows.map((item) => {
       const filterText = [item.display_name, item.en_name, ...(item.department_names || []), item.job_title, invitationStatus(item.latest_invitation?.status || "未邀请")].filter(Boolean).join(" ");
-      return `<label class="invite-row" data-invite-filter-row data-filter-text="${esc(filterText)}">
+      const rawStatus = item.latest_invitation?.status || "pending";
+      const filterStatus = ["accepted", "responded"].includes(rawStatus) ? "accepted" : rawStatus === "verified" ? "verified" : ["failed", "paused"].includes(rawStatus) ? "issue" : "pending";
+      return `<label class="invite-row" data-invite-filter-row data-filter-kind="person" data-filter-status="${filterStatus}" data-filter-text="${esc(filterText)}">
       <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate>
       ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc((item.department_names || []).join(" / ") || item.job_title || "已验证飞书用户")}</small></span>
       <span class="invite-meta"><span class="status ${esc(item.latest_invitation?.status || "pending")}">${esc(invitationStatus(item.latest_invitation?.status || "未邀请"))}</span><small>${esc(item.latest_invitation?.sent_at || "未发送")}</small></span>
@@ -152,23 +158,58 @@
     return groupRows + personRows + '<p class="empty compact" data-invite-filter-empty hidden>没有匹配的邀请对象</p>';
   }
 
-  function applySectionFilter(section, query) {
-    const normalizedQuery = normalizeFilterText(query);
-    state[`${section}Filter`] = query;
+  function activeFilterCount(section) {
+    return Object.values(state.filters[section] || {}).filter((value) => value !== "all").length;
+  }
+
+  function filterChoice(section, field, value, label) {
+    const checked = state.filters[section]?.[field] === value;
+    return `<label class="compact-filter-choice"><input type="radio" name="${section}-${field}" value="${esc(value)}" data-filter-section="${section}" data-filter-field="${field}"${checked ? " checked" : ""}><span>${esc(label)}</span></label>`;
+  }
+
+  function compactFilter(section) {
+    const isInvite = section === "invite";
+    const count = activeFilterCount(section);
+    const open = state.openFilter === section;
+    const groups = isInvite
+      ? `<fieldset><legend>对象类型</legend><div class="compact-filter-choices">${filterChoice(section, "kind", "all", "全部")}${filterChoice(section, "kind", "person", "个人")}${filterChoice(section, "kind", "group", "群邀请")}</div></fieldset>
+        <fieldset><legend>邀请状态</legend><div class="compact-filter-choices">${filterChoice(section, "status", "all", "全部")}${filterChoice(section, "status", "pending", "待选择")}${filterChoice(section, "status", "verified", "已发送")}${filterChoice(section, "status", "accepted", "已接受")}${filterChoice(section, "status", "issue", "异常")}</div></fieldset>`
+      : `<fieldset><legend>订阅内容</legend><div class="compact-filter-choices">${filterChoice(section, "service", "all", "全部")}${filterChoice(section, "service", "weekly", "周报")}${filterChoice(section, "service", "performance", "业绩")}${filterChoice(section, "service", "news", "新闻")}</div></fieldset>
+        <fieldset><legend>状态</legend><div class="compact-filter-choices">${filterChoice(section, "status", "all", "全部")}${filterChoice(section, "status", "active", "启用")}${filterChoice(section, "status", "paused", "暂停")}</div></fieldset>
+        <fieldset><legend>新闻频率</legend><div class="compact-filter-choices">${filterChoice(section, "frequency", "all", "全部")}${filterChoice(section, "frequency", "once_daily", "每天一次")}${filterChoice(section, "frequency", "twice_daily", "每天两次")}</div></fieldset>`;
+    const label = isInvite ? "筛选邀请对象" : "筛选订阅者";
+    return `<div class="compact-filter" data-compact-filter="${section}"><button class="icon-button filter-trigger${count ? " is-active" : ""}" type="button" data-filter-trigger="${section}" aria-label="${label}" title="${label}" aria-expanded="${open}" aria-controls="${section}-filter-panel">${icon("filter")}<span class="icon-badge filter-count"${count ? "" : " hidden"}>${count}</span></button><div class="compact-filter-panel" id="${section}-filter-panel" role="dialog" aria-label="${label}"${open ? "" : " hidden"}><div class="compact-filter-heading"><strong>${label}</strong><button type="button" data-filter-reset="${section}"${count ? "" : " disabled"}>清除</button></div>${groups}</div></div>`;
+  }
+
+  function updateFilterIndicator(section) {
+    const count = activeFilterCount(section);
+    const trigger = root.querySelector(`[data-filter-trigger="${section}"]`);
+    const badge = trigger?.querySelector(".filter-count");
+    trigger?.classList.toggle("is-active", count > 0);
+    if (badge) { badge.textContent = String(count); badge.hidden = count === 0; }
+    const reset = root.querySelector(`[data-filter-reset="${section}"]`);
+    if (reset) reset.disabled = count === 0;
+  }
+
+  function applySectionFilter(section) {
+    const filters = state.filters[section];
     const rows = Array.from(root.querySelectorAll(`[data-${section}-filter-row]`));
     let visibleCount = 0;
     rows.forEach((row) => {
-      const visible = !normalizedQuery || normalizeFilterText(row.dataset.filterText).includes(normalizedQuery);
+      const visible = section === "invite"
+        ? (filters.kind === "all" || row.dataset.filterKind === filters.kind) && (filters.status === "all" || row.dataset.filterStatus === filters.status)
+        : (filters.service === "all" || (row.dataset.filterServices || "").split(" ").includes(filters.service)) && (filters.status === "all" || row.dataset.filterStatus === filters.status) && (filters.frequency === "all" || row.dataset.filterFrequency === filters.frequency);
       row.hidden = !visible;
       if (visible) visibleCount += 1;
     });
     const empty = root.querySelector(`[data-${section}-filter-empty]`);
-    if (empty) empty.hidden = !normalizedQuery || visibleCount > 0;
+    if (empty) empty.hidden = activeFilterCount(section) === 0 || visibleCount > 0;
+    updateFilterIndicator(section);
   }
 
   function applySavedFilters() {
-    applySectionFilter("invite", state.inviteFilter);
-    applySectionFilter("subscriber", state.subscriberFilter);
+    applySectionFilter("invite");
+    applySectionFilter("subscriber");
   }
 
   function invitationRows() {
@@ -203,8 +244,8 @@
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
         <div class="upper-grid">
-          <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions"><label class="surface-filter">${icon("search")}<span class="sr-only">筛选邀请对象</span><input type="search" data-section-filter="invite" value="${esc(state.inviteFilter)}" placeholder="筛选邀请" autocomplete="off"></label><button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions"><label class="surface-filter">${icon("search")}<span class="sr-only">筛选订阅者</span><input type="search" data-section-filter="subscriber" value="${esc(state.subscriberFilter)}" placeholder="筛选订阅者" autocomplete="off"></label><button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions">${compactFilter("invite")}<button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
@@ -280,6 +321,34 @@
   }
 
   document.addEventListener("click", async (event) => {
+    const filterTrigger = event.target.closest("[data-filter-trigger]");
+    if (filterTrigger) {
+      const section = filterTrigger.dataset.filterTrigger;
+      const panel = root.querySelector(`#${section}-filter-panel`);
+      const opening = Boolean(panel?.hidden);
+      root.querySelectorAll(".compact-filter-panel").forEach((item) => { item.hidden = true; });
+      root.querySelectorAll("[data-filter-trigger]").forEach((trigger) => trigger.setAttribute("aria-expanded", "false"));
+      if (panel) panel.hidden = !opening;
+      filterTrigger.setAttribute("aria-expanded", String(opening));
+      state.openFilter = opening ? section : "";
+      if (opening) panel?.querySelector("input:checked")?.focus();
+      return;
+    }
+    const resetFilter = event.target.closest("[data-filter-reset]");
+    if (resetFilter) {
+      const section = resetFilter.dataset.filterReset;
+      Object.keys(state.filters[section]).forEach((field) => { state.filters[section][field] = "all"; });
+      root.querySelectorAll(`[data-filter-section="${section}"][value="all"]`).forEach((input) => { input.checked = true; });
+      applySectionFilter(section);
+      return;
+    }
+    if (state.openFilter && !event.target.closest("[data-compact-filter]")) {
+      const trigger = root.querySelector(`[data-filter-trigger="${state.openFilter}"]`);
+      const panel = root.querySelector(`#${state.openFilter}-filter-panel`);
+      if (panel) panel.hidden = true;
+      trigger?.setAttribute("aria-expanded", "false");
+      state.openFilter = "";
+    }
     if (event.target.closest("[data-open-people]")) {
       state.peopleOpen = true;
       render();
@@ -420,13 +489,23 @@
     }
   });
 
-  document.addEventListener("input", (event) => {
-    const filter = event.target.closest("[data-section-filter]");
+  document.addEventListener("change", (event) => {
+    const filter = event.target.closest("[data-filter-section][data-filter-field]");
     if (!filter) return;
-    applySectionFilter(filter.dataset.sectionFilter, filter.value);
+    state.filters[filter.dataset.filterSection][filter.dataset.filterField] = filter.value;
+    applySectionFilter(filter.dataset.filterSection);
   });
 
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.openFilter) {
+      const section = state.openFilter;
+      const panel = root.querySelector(`#${section}-filter-panel`);
+      if (panel) panel.hidden = true;
+      root.querySelector(`[data-filter-trigger="${section}"]`)?.setAttribute("aria-expanded", "false");
+      root.querySelector(`[data-filter-trigger="${section}"]`)?.focus();
+      state.openFilter = "";
+      return;
+    }
     if (event.key === "Escape" && (state.drawerOpen || state.peopleOpen)) {
       state.drawerOpen = false;
       state.peopleOpen = false;
