@@ -4,7 +4,9 @@
   const SOURCES = {
     interim2026: "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0729/2026072900430.pdf",
     annual2025: "https://www.hkt.com/api-service/assets/e-2025_Annual_Report.pdf",
-    esg2025: "https://www.hkt.com/api-service/assets/e-2025_ESG_Report.pdf"
+    esg2025: "https://www.hkt.com/api-service/assets/e-2025_ESG_Report.pdf",
+    cmhkBusiness2024: "https://omniapi.hk.chinamobile.com/upload/onlineshop/9208%20%E6%95%B8%E7%A2%BC%E8%BD%89%E5%9E%8B%E6%94%AF%E6%8F%B4%E5%85%88%E5%B0%8E%E8%A8%88%E5%8A%83%E5%A5%97%E9%A4%90%20%E9%9B%BB%E5%AD%90%E7%89%88booklet_FINAL_240621.pdf",
+    cmhkStores: "https://www.discoverhongkong.com/eng/travel-guide/qts/shops-results/shops-details.id9615.china-mobile-hong-kong-company-limited.html"
   };
 
   const missingMetric = (label, extra = {}) => ({
@@ -56,6 +58,11 @@
       { label: "营运收入", value: "0.539", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [0.539] },
       { label: "EBITDA率", value: "—", unit: "", trend: "未披露", periods: ["未披露"], values: [0], valueLabels: ["—"], gauge: 0 },
       { label: "净利润", value: "-0.490", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [-0.490], gauge: 72 }
+    ] },
+    { key: "cmhk", company: "CMHK", period: "未披露", metrics: [
+      missingMetric("营运收入"),
+      missingMetric("EBITDA率", { gauge: 0 }),
+      missingMetric("净利润", { gauge: 0 })
     ] }
   ];
   const operatorProfiles = [
@@ -76,7 +83,13 @@
     }), reachMetrics: makeReachMetrics() },
     { key: "icable", company: "i-CABLE", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
       homeBroadband: { label: "家庭宽带用户数", value: "0.198", unit: "百万户", trend: "已披露口径", periods: ["已披露口径"], values: [0.198] }
-    }), reachMetrics: makeReachMetrics() }
+    }), reachMetrics: makeReachMetrics() },
+    { key: "cmhk", company: "CMHK", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
+      totalMobile: { label: "总移动用户数", value: "5.0", unit: "百万户", trend: "已披露口径", periods: ["2024年公开材料"], values: [5.0], source: SOURCES.cmhkBusiness2024 }
+    }), reachMetrics: [
+      { label: "全港实体门市数量", value: "49", unit: "间", trend: "当前列示", periods: ["当前列示"], values: [49], dial: 82, color: "#55d9ff", source: SOURCES.cmhkStores },
+      missingMetric("官方手机应用程式 (如MyLink) 活跃用户数", { dial: 0, color: "#5de2b6" })
+    ] }
   ];
   let financeCompaniesData = financeCompanyFallbacks;
   let selectedOperator = 0;
@@ -229,6 +242,7 @@
     if (/SmarTone/i.test(name)) return "smartone";
     if (/HKBN/i.test(name)) return "hkbn";
     if (/i-CABLE/i.test(name)) return "icable";
+    if (/CMHK|China Mobile Hong Kong|中国移动香港|中國移動香港/i.test(name)) return "cmhk";
     return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   }
 
@@ -334,7 +348,7 @@
           <span class="comparison-company" role="cell">${escapeHtml(item.company)}</span>
           <span class="comparison-meter" role="cell"><i style="--bar:${width}%"></i></span>
           <strong role="cell">${escapeHtml(item.display)}</strong>
-          <small role="cell">${escapeHtml(item.value === null ? "未披露" : "最新披露")}</small>
+          <small role="cell">${escapeHtml(item.status)}</small>
         </div>`;
       }).join("")}
     </div>`;
@@ -358,7 +372,8 @@
         return {
           company: profile.company,
           value: Number.isFinite(numeric) ? numeric : null,
-          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}`
+          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}`,
+          status: metric?.value === "—" ? "未披露" : (metric?.trend || "最新披露")
         };
       })
     };
@@ -374,7 +389,7 @@
           <div class="comparison-metric-tabs" role="tablist" aria-label="${escapeHtml(panel.title)}对比指标">
             ${labels.map((label, index) => `<button type="button" role="tab" aria-selected="${index === 0}" data-comparison-section="${escapeHtml(panel.key)}" data-comparison-metric="${index}">${escapeHtml(label)}</button>`).join("")}
           </div>
-          <em>五家本地运营商</em>
+          <em>六家本地运营商</em>
         </div>
         <div data-comparison-rows="${escapeHtml(panel.key)}">${comparisonRows(metric.rows)}</div>
         <p class="comparison-scope-note">只展示大屏指标；未披露同口径数据时显示“—”。</p>
