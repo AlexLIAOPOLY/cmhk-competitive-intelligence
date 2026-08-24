@@ -818,7 +818,7 @@ def _build_site(
     )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
-        'src="./static/workspace-tabs.js?v=public-4"',
+        'src="./static/workspace-tabs.js?v=public-5"',
         html,
     )
     html = re.sub(
@@ -828,7 +828,7 @@ def _build_site(
     )
     html = html.replace(
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-        '    <script src="./static/public-snapshot-bootstrap.js?v=4"></script>\n'
+        '    <script src="./static/public-snapshot-bootstrap.js?v=5"></script>\n'
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
     )
     html = html.replace(
