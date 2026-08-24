@@ -476,6 +476,31 @@ class ProjectMonitorTests(unittest.TestCase):
         base.update(payload)
         path.write_text(json.dumps(base))
 
+    def test_open_ui_runtime_failure_is_alerted_and_resolved_state_is_clear(self):
+        path = self.root / "var" / "ui_runtime_incidents.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "incident_type": "competitor-ai-insight",
+            "status": "open",
+            "component": "competitor-workbench",
+            "task_name": "竞对工作台 AI 竞争洞察",
+            "severity": "P2",
+            "summary": "竞对工作台 AI 洞察未生成",
+            "error": "TimeoutError: timed out",
+            "impact": "AI 洞察未生成。",
+            "suggestions": ["恢复 AI 洞察阶段。"],
+            "first_seen_at_hkt": "2026-08-16T12:00:00+08:00",
+        }
+        path.write_text(json.dumps({"version": 1, "incidents": {"competitor-ai-insight": record}}))
+
+        issues = self._monitor()._detect_ui_runtime_incidents()
+
+        self.assertEqual([item["condition_key"] for item in issues], ["ui-runtime:competitor-ai-insight"])
+        self.assertEqual(issues[0]["severity"], "P2")
+        record["status"] = "resolved"
+        path.write_text(json.dumps({"version": 1, "incidents": {"competitor-ai-insight": record}}))
+        self.assertEqual(self._monitor()._detect_ui_runtime_incidents(), [])
+
     def test_empty_agentic_gap_search_alerts_even_when_scan_completes(self):
         self._write_slot_archive(
             "09:00",
@@ -1056,6 +1081,27 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(self.ai_calls, 1)
         self.assertEqual(self.runner.send_calls(), [])
         self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+
+    def test_ui_runtime_alert_uses_deterministic_diagnosis_if_ai_is_the_failure(self):
+        def failing_ai(_incident):
+            raise RuntimeError("AI unavailable")
+
+        monitor = self._monitor(ai=failing_ai)
+        incident = monitor._issue(
+            condition_key="ui-runtime:competitor-ai-insight",
+            component="competitor-workbench",
+            task_name="竞对工作台 AI 竞争洞察",
+            severity="P2",
+            summary="AI 洞察未生成",
+            error="TimeoutError: timed out",
+            impact="AI 洞察未完成。",
+            suggestions=["恢复 AI 洞察阶段。"],
+        )
+        incident.update({"incident_id": "ui-test", "diagnosis": {}, "diagnosis_attempts": 0})
+
+        self.assertTrue(monitor._ensure_ai_diagnosis(incident))
+        self.assertEqual(incident["diagnosis_status"], "completed_with_deterministic_fallback")
+        self.assertEqual(incident["diagnosis"]["model"], "deterministic-runtime-fallback")
 
     def test_ai_output_missing_required_fault_field_fails_closed(self):
         def incomplete_ai(incident):

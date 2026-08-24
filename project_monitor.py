@@ -81,6 +81,7 @@ STATEFUL_CONDITION_PREFIXES = (
     "data-quality:",
     "crawl-task-failed:",
     "general-task-failed:",
+    "ui-runtime:",
 )
 DEFAULT_CONFIG_PATH = ROOT / "config" / "project_monitor.json"
 SEVERITY_ORDER = {"P1": 0, "P2": 1, "P3": 2}
@@ -447,6 +448,7 @@ class ProjectMonitor:
         detectors = (
             ("launch-services", self._detect_launch_services),
             ("web-health", self._detect_web_health),
+            ("ui-runtime-incidents", self._detect_ui_runtime_incidents),
             ("crawl-runs", self._detect_crawl_runs),
             ("general-tasks", self._detect_general_tasks),
             ("scheduler-pending", self._detect_scheduler_pending),
@@ -468,6 +470,33 @@ class ProjectMonitor:
             if issue.get("component") not in excluded
             and not any(value in str(issue.get("condition_key") or "") for value in excluded)
         ]
+
+    def _detect_ui_runtime_incidents(self) -> list[dict[str, Any]]:
+        """Surface failures which reached a user-visible fallback but used to be swallowed."""
+        path = self.runtime_root / "var" / "ui_runtime_incidents.json"
+        payload = _read_json(path, {})
+        records = payload.get("incidents") if isinstance(payload, dict) else {}
+        if not isinstance(records, dict):
+            return []
+        issues: list[dict[str, Any]] = []
+        for incident_type, record in records.items():
+            if not isinstance(record, dict) or record.get("status") != "open":
+                continue
+            issues.append(
+                self._issue(
+                    condition_key=f"ui-runtime:{incident_type}",
+                    component=str(record.get("component") or "web-app"),
+                    task_name=str(record.get("task_name") or "用户界面实时功能"),
+                    severity=str(record.get("severity") or "P2"),
+                    summary=str(record.get("summary") or "用户界面功能降级"),
+                    error=str(record.get("error") or "界面已进入失败状态，未记录具体错误"),
+                    impact=str(record.get("impact") or "至少一项用户可见功能未完成。"),
+                    suggestions=record.get("suggestions") or ["核对服务日志并只恢复失败步骤。"],
+                    occurred_at_hkt=str(record.get("first_seen_at_hkt") or record.get("last_seen_at_hkt") or ""),
+                    evidence=[str(path), json.dumps(record.get("context") or {}, ensure_ascii=False)],
+                )
+            )
+        return issues
 
     def _detect_launch_services(self) -> list[dict[str, Any]]:
         issues: list[dict[str, Any]] = []
@@ -1902,6 +1931,33 @@ class ProjectMonitor:
             )
             return True
         except Exception as exc:
+            if str(incident.get("condition_key") or "").startswith("ui-runtime:"):
+                incident["diagnosis"] = self._validate_diagnosis(
+                    {
+                        "severity": incident.get("severity") or "P2",
+                        "severity_reason": "用户可见的生产功能已明确进入降级状态，需要及时恢复且不应被同一 AI 故障阻断告警。",
+                        "fault_cause": f"已确认界面功能未完成；原始错误证据：{incident.get('error') or incident.get('summary') or '未记录'}",
+                        "fault_impact": incident.get("impact") or "用户当前操作未获得完整结果。",
+                        "fault_time_hkt": incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or "",
+                        "recommended_solutions": incident.get("suggestions") or ["检查原始错误并只恢复失败阶段，恢复后回读界面状态。"],
+                        "needs_human": False,
+                    },
+                    model="deterministic-runtime-fallback",
+                    incident=incident,
+                )
+                incident["diagnosis_status"] = "completed_with_deterministic_fallback"
+                incident["diagnosis_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
+                incident.pop("diagnosis_retry_after_hkt", None)
+                _append_jsonl(
+                    self.events_path,
+                    {
+                        "type": "deterministic_diagnosis_completed_after_ai_failure",
+                        "at_hkt": _iso(self.now()),
+                        "incident_id": incident.get("incident_id"),
+                        "ai_error": incident["diagnosis_error"],
+                    },
+                )
+                return True
             incident["diagnosis_status"] = "failed_waiting_retry"
             incident["diagnosis_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
             incident["diagnosis_retry_after_hkt"] = _iso(self.now() + timedelta(minutes=5))

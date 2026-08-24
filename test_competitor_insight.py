@@ -55,7 +55,12 @@ class CompetitorInsightTests(unittest.TestCase):
             return _Response()
 
         payload = self.payload()
-        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        config = {
+            "base_url": web_app.INTERNAL_AI_BASE_URL,
+            "api_key": "test",
+            "model": "test-model",
+            "extra_parameters": {"max_tokens": 500},
+        }
         with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
             "web_app.urllib.request.urlopen", side_effect=open_request
         ):
@@ -63,13 +68,14 @@ class CompetitorInsightTests(unittest.TestCase):
 
         self.assertEqual(result["requestId"], "selection-1")
         self.assertIn("HKT\t2020\t=\t0.9\tpercent", captured["body"]["messages"][1]["content"])
-        self.assertIn("官方来源", captured["body"]["messages"][1]["content"])
+        self.assertIn("原生口径", captured["body"]["messages"][1]["content"])
+        self.assertNotIn("https://", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
         self.assertEqual(result["insight"], MODEL_CONTENT)
         self.assertEqual(len(result["insights"]), 3)
         self.assertIn("只输出三行", captured["body"]["messages"][0]["content"])
         self.assertIn("竞争格局｜", captured["body"]["messages"][0]["content"])
-        self.assertEqual(captured["body"]["max_tokens"], 500)
+        self.assertEqual(captured["body"]["max_tokens"], 1800)
         self.assertEqual(captured["body"]["temperature"], 0.1)
         self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
 
@@ -133,7 +139,6 @@ class CompetitorInsightTests(unittest.TestCase):
             web_app.generate_competitor_insight(payload)
 
         prompt = captured["body"]["messages"][1]["content"]
-        self.assertIn("共同数据年度：2020,2021,2022", prompt)
         self.assertNotIn("HKT\t2018", prompt)
         self.assertNotIn("HKT\t2019", prompt)
         self.assertIn("SmarTone\t2022", prompt)

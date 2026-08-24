@@ -363,10 +363,21 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     if len(common_years) < 2:
         raise ValueError("共同可比年度不足两个，暂不生成 AI 解析")
     comparison_rows = [row for row in normalized if row["year"] in common_years]
+    # URLs and repeated per-year disclosure metadata made this prompt large
+    # enough for the gateway's hidden reasoning to consume the whole completion
+    # budget.  The model needs values plus native scope/basis/notes; official
+    # source URLs remain available in the rendered evidence table and are not
+    # useful input to this no-external-knowledge analysis.
     table = "\n".join(
-        "\t".join(str(row[key]) for key in ("company", "year", "comparator", "value", "unit", "period", "period_end", "scope", "basis", "status", "source", "note"))
+        "\t".join(str(row[key]) for key in ("company", "year", "comparator", "value", "unit"))
         for row in comparison_rows
     )
+    definition_lines: list[str] = []
+    for company in companies:
+        company_rows = [row for row in comparison_rows if row["company"] == company]
+        scopes = sorted({row["scope"] for row in company_rows if row["scope"]})
+        definition_lines.append(f"{company}={' / '.join(scopes) or '未标注'}")
+    definitions = "\n".join(definition_lines)
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).strip().rstrip("/")
     api_key = str(config.get("api_key") or "").strip()
@@ -377,17 +388,25 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "你是电信行业竞争策略分析师。只输出三行精炼的简体中文纯文本，每行约45—90字，禁止前言、编号、Markdown标题、表格和结语。三行依次以‘竞争格局｜’‘公司定位｜’‘业务含义｜’开头，基于表格数据判断趋势、公司间位置与业务意义。保留大于、至少、约等原始比较符，共建共享数值不得相加，不得补数或引用外部知识。"},
-            {"role": "user", "content": f"指标：{metric_label}\n证据版本：{str(canonical.get('evidenceVersion') or '')}\n所选公司：{'、'.join(companies)}\n共同数据年度：{','.join(str(year) for year in common_years)}\n列：公司、年度、比较符、数值、单位、披露期、期末日、范围、口径、核验状态、官方来源、备注\n{table}"},
+            {"role": "system", "content": "只输出三行简体中文，每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。只基于输入判断趋势、位置和业务意义；保留比较符；不得补数、使用Markdown或引用外部知识。"},
+            {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,
-        "max_tokens": 500,
+        # The current internal V4 gateway may still emit hidden reasoning even
+        # when both supported non-thinking switches are present.  Keep enough
+        # headroom for the required final three lines instead of ending after
+        # reasoning-only tokens; the final-output gate below remains strict.
+        "max_tokens": 1800,
         "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
     from ai_response_compat import deepseek_nonthinking_parameters
     body.update(config.get("extra_parameters") or {})
     body = deepseek_nonthinking_parameters(body)
+    # Per-feature completion headroom is a correctness gate.  A smaller global
+    # extra_parameters.max_tokens previously overrode this value and let hidden
+    # reasoning consume the whole budget, leaving no user-visible final answer.
+    body["max_tokens"] = 1800
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
@@ -3098,7 +3117,9 @@ TASK_RUNS_INDEX_PATH = TASK_RUNS_DIR / "index.json"
 PROJECT_MONITOR_STATE_PATH = ROOT / "var" / "project_monitor" / "state.json"
 PROJECT_MONITOR_ACTIONS_PATH = ROOT / "var" / "project_monitor" / "card_actions.json"
 PROJECT_MONITOR_WEB_ACTIONS_PATH = ROOT / "var" / "project_monitor" / "web_actions.jsonl"
+UI_RUNTIME_INCIDENTS_PATH = ROOT / "var" / "ui_runtime_incidents.json"
 TASK_RUNS_LOCK = threading.Lock()
+UI_RUNTIME_INCIDENTS_LOCK = threading.Lock()
 GENERAL_TASK_MAX_AUTO_RETRIES = max(1, int(os.environ.get("CMHK_TASK_AUTO_RETRY_MAX", "3")))
 GENERAL_TASK_RETRY_DELAY_SECONDS = max(
     1.0, float(os.environ.get("CMHK_TASK_AUTO_RETRY_DELAY_SECONDS", "5"))
@@ -3110,6 +3131,75 @@ def _task_atomic_json(path: Path, payload: object) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     os.replace(temporary, path)
+
+
+def record_ui_runtime_incident(
+    incident_type: str,
+    *,
+    status: str,
+    error: str = "",
+    context: dict | None = None,
+) -> dict:
+    """Persist UI-visible failures so the independent monitor can alert and resolve them."""
+    definitions = {
+        "competitor-ai-insight": {
+            "component": "competitor-workbench",
+            "task_name": "竞对工作台 AI 竞争洞察",
+            "severity": "P2",
+            "summary": "竞对工作台 AI 洞察未生成",
+            "impact": "用户可查看权威数据图表，但当前组合的 AI 竞争格局、公司定位和业务含义未完成生成。",
+            "suggestions": [
+                "核对内网 AI 网关、当前模型路由、限流队列和返回协议。",
+                "保留已展示的权威数据，只恢复 AI 洞察阶段；恢复后回读页面与告警状态。",
+            ],
+        },
+    }
+    incident_type = str(incident_type or "").strip()
+    if incident_type not in definitions:
+        raise ValueError("不支持的界面故障类型")
+    if status not in {"open", "resolved"}:
+        raise ValueError("界面故障状态无效")
+    now_text = datetime.now().astimezone().isoformat(timespec="seconds")
+    safe_context = {
+        str(key)[:80]: str(value)[:240]
+        for key, value in (context or {}).items()
+        if isinstance(value, (str, int, float, bool))
+    }
+    with UI_RUNTIME_INCIDENTS_LOCK:
+        try:
+            payload = json.loads(UI_RUNTIME_INCIDENTS_PATH.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError):
+            payload = {"version": 1, "incidents": {}}
+        incidents = payload.get("incidents") if isinstance(payload, dict) else None
+        if not isinstance(incidents, dict):
+            incidents = {}
+            payload = {"version": 1, "incidents": incidents}
+        record = incidents.get(incident_type) if isinstance(incidents.get(incident_type), dict) else {}
+        definition = definitions[incident_type]
+        if status == "open":
+            record.update(definition)
+            record.update({
+                "incident_type": incident_type,
+                "status": "open",
+                "first_seen_at_hkt": record.get("first_seen_at_hkt") or now_text,
+                "last_seen_at_hkt": now_text,
+                "error": str(error or "未记录到具体错误")[:1800],
+                "context": safe_context,
+                "failure_count": int(record.get("failure_count") or 0) + 1,
+            })
+            record.pop("resolved_at_hkt", None)
+        else:
+            record.update({
+                "incident_type": incident_type,
+                "status": "resolved",
+                "last_seen_at_hkt": now_text,
+                "resolved_at_hkt": now_text,
+                "context": safe_context or record.get("context") or {},
+            })
+        incidents[incident_type] = record
+        payload["updated_at_hkt"] = now_text
+        _task_atomic_json(UI_RUNTIME_INCIDENTS_PATH, payload)
+    return dict(record)
 
 
 def _task_read_local_index() -> list[dict]:
@@ -4649,18 +4739,49 @@ class AppHandler(BaseHTTPRequestHandler):
             self.end_headers()
             try:
                 result = generate_competitor_insight(payload, stream_callback=lambda event: write_sse(self, event))
+                record_ui_runtime_incident(
+                    "competitor-ai-insight",
+                    status="resolved",
+                    context={"request_id": payload.get("requestId") or "", "metric": (payload.get("metric") or {}).get("key") or ""},
+                )
                 write_sse(self, {"type": "done", "ok": True, **result})
             except Exception as exc:
-                write_sse(self, {"type": "error", "ok": False, "error": str(exc)})
+                if isinstance(exc, (BrokenPipeError, ConnectionResetError)):
+                    self.close_connection = True
+                    return
+                logging.error("UI_RUNTIME_INCIDENT competitor-ai-insight: %s: %s", type(exc).__name__, exc)
+                record_ui_runtime_incident(
+                    "competitor-ai-insight",
+                    status="open",
+                    error=f"{type(exc).__name__}: {exc}",
+                    context={"request_id": payload.get("requestId") or "", "metric": (payload.get("metric") or {}).get("key") or ""},
+                )
+                try:
+                    write_sse(self, {"type": "error", "ok": False, "error": str(exc)})
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
             self.close_connection = True
             return
         if parsed.path == "/api/competitor-insight":
             try:
-                result = generate_competitor_insight(read_request_json(self))
+                payload = read_request_json(self)
+                result = generate_competitor_insight(payload)
+                record_ui_runtime_incident(
+                    "competitor-ai-insight",
+                    status="resolved",
+                    context={"request_id": payload.get("requestId") or "", "metric": (payload.get("metric") or {}).get("key") or ""},
+                )
                 json_response(self, {"ok": True, **result})
             except ValueError as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             except Exception as exc:
+                logging.error("UI_RUNTIME_INCIDENT competitor-ai-insight: %s: %s", type(exc).__name__, exc)
+                record_ui_runtime_incident(
+                    "competitor-ai-insight",
+                    status="open",
+                    error=f"{type(exc).__name__}: {exc}",
+                    context={"request_id": payload.get("requestId") or "", "metric": (payload.get("metric") or {}).get("key") or ""},
+                )
                 json_response(self, {"ok": False, "error": str(exc)}, 503)
             return
         if parsed.path == "/api/subscriptions":

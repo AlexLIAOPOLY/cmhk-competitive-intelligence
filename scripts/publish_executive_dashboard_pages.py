@@ -859,6 +859,11 @@ def _build_site(
                 'panel.innerHTML = `<iframe src="./static/public-ai.html" title="AI智能助手" style="display:block;width:100%;height:100%;border:0" loading="eager"></iframe>`;',
                 1,
             )
+            content = content.replace(
+                'requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);',
+                'void requestId;',
+                1,
+            )
         (static_destination / name).write_text(content, encoding="utf-8")
     (static_destination / "public-snapshot-bootstrap.js").write_text(
         PUBLIC_SNAPSHOT_BOOTSTRAP,

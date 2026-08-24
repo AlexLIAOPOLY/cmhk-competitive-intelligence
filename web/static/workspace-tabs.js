@@ -13,6 +13,8 @@
     competitorSelection: { companies: [], metric: "", years: 5 },
     competitorInsightRequest: 0,
     competitorInsightController: null,
+    competitorInsightRetryTimer: null,
+    competitorInsightRetryAttempt: 0,
     newsRuns: [],
     crawlRuns: [],
     newsSelectedDate: "",
@@ -419,6 +421,9 @@
     const requestId = ++state.competitorInsightRequest;
     state.competitorInsightController?.abort();
     state.competitorInsightController = null;
+    window.clearTimeout(state.competitorInsightRetryTimer);
+    state.competitorInsightRetryTimer = null;
+    state.competitorInsightRetryAttempt = 0;
     const { companies, metric, years } = state.competitorSelection;
     if (companies.length < 2 || !metric) {
       host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后生成对比图</strong><p>选择至少两家竞对、一个指标和回看年限；AI 将比较多家公司的竞争位置、分化路径与业务含义。</p></div>`;
@@ -725,11 +730,30 @@
     return true;
   }
 
-  async function requestCompetitorInsight(payload, requestId) {
+  function scheduleCompetitorInsightRecovery(payload, requestId, card, error) {
+    if (requestId !== state.competitorInsightRequest || !card) return;
+    const delays = [5, 15, 30, 60, 120, 300];
+    const attempt = ++state.competitorInsightRetryAttempt;
+    const delay = delays[Math.min(attempt - 1, delays.length - 1)];
+    card.querySelector("[data-competitor-insight-badge]").textContent = "AUTO HEAL";
+    setCompetitorInsightStatus(card, `AI 生成失败，已告警 · ${delay} 秒后自动恢复（第 ${attempt} 次）`);
+    console.warn("Competitor insight recovery scheduled", error);
+    window.clearTimeout(state.competitorInsightRetryTimer);
+    state.competitorInsightRetryTimer = window.setTimeout(() => {
+      state.competitorInsightRetryTimer = null;
+      if (requestId === state.competitorInsightRequest) requestCompetitorInsight(payload, requestId, { recovery: true });
+    }, delay * 1000);
+  }
+
+  async function requestCompetitorInsight(payload, requestId, { recovery = false } = {}) {
     const controller = new AbortController();
     state.competitorInsightController = controller;
     const card = document.querySelector("#competitorInsight");
     beginCompetitorInsightStream(card);
+    if (recovery) {
+      setCompetitorInsightStatus(card, `自动恢复中 · 第 ${state.competitorInsightRetryAttempt} 次`);
+      card.querySelector("[data-competitor-insight-badge]").textContent = "RECOVERING";
+    }
     let generated = "";
     try {
       const response = await fetch("/api/competitor-insight-stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: String(requestId), ...payload }), signal: controller.signal });
@@ -760,6 +784,9 @@
             renderCompetitorInsightDraft(card, generated);
           } else if (event.type === "done" && event.ok) {
             completed = true;
+            state.competitorInsightRetryAttempt = 0;
+            window.clearTimeout(state.competitorInsightRetryTimer);
+            state.competitorInsightRetryTimer = null;
             settleCompetitorInsight(card, { mode: "ai", insight: event.insight, insights: event.insights });
           } else if (event.type === "error") {
             throw new Error(event.error || "AI生成失败");
@@ -772,12 +799,23 @@
       if (error.name === "AbortError") return;
       if (requestId === state.competitorInsightRequest && card) {
         const partial = parseCompetitorInsightItems(generated);
+        if (!partial.length) {
+          try {
+            setCompetitorInsightStatus(card, "流式通道异常，正在自动切换兼容通道");
+            await requestLegacyCompetitorInsight(payload, requestId, controller, card);
+            state.competitorInsightRetryAttempt = 0;
+            return;
+          } catch (legacyError) {
+            error = legacyError;
+          }
+        }
         settleCompetitorInsight(card, {
           mode: partial.length ? "ai" : "unavailable",
           insight: generated,
           insights: partial,
-          status: partial.length ? "本次生成提前结束，已保留 AI 返回内容" : "本次 AI 暂未完成，请稍后重试",
+          status: partial.length ? "本次生成提前结束，已保留 AI 返回内容；故障已告警" : "AI 生成失败，已告警并启动自动恢复",
         });
+        scheduleCompetitorInsightRecovery(payload, requestId, card, error);
       }
     } finally {
       if (state.competitorInsightController === controller) state.competitorInsightController = null;
