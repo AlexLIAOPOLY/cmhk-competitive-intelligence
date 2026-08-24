@@ -8,7 +8,7 @@
   const state = {
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [],
-    view: "control", profileKey: "", eventKey: "",
+    view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
     directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -145,12 +145,30 @@
     };
   }
 
-  function footprintSurface() {
-    const rows = state.audit.map((event) => {
+  function filteredAudit() {
+    const query = state.auditQuery.trim().toLowerCase();
+    return state.audit.filter((event) => {
       const person = eventPerson(event);
-      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button" data-event-key="${esc(event.id)}" aria-label="查看 ${esc(auditAction(event))} 的足迹详情" aria-haspopup="dialog"><strong>${esc(auditAction(event))}</strong><small>${esc(event.target || "—")}</small></button></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+      const matchesQuery = !query || [person.name, person.department, person.title, person.roleLabel, auditAction(event), event.action, event.target]
+        .some((value) => String(value || "").toLowerCase().includes(query));
+      return matchesQuery && (!state.auditAction || event.action === state.auditAction) && (!state.auditResult || event.result === state.auditResult);
+    });
+  }
+
+  function footprintSurface() {
+    const events = filteredAudit();
+    const actionOptions = [...new Set(state.audit.map((event) => String(event.action || "")).filter(Boolean))]
+      .sort((left, right) => auditAction({ action: left }).localeCompare(auditAction({ action: right }), "zh-CN"))
+      .map((action) => `<option value="${esc(action)}"${state.auditAction === action ? " selected" : ""}>${esc(auditAction({ action }))}</option>`)
+      .join("");
+    const rows = events.map((event) => {
+      const person = eventPerson(event);
+      const action = auditAction(event);
+      const target = event.target || "—";
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${esc(action)}</button></td><td><button type="button" class="organization-event-button is-target" data-event-key="${esc(event.id)}" aria-label="查看处理对象 ${esc(target)} 的足迹详情" aria-haspopup="dialog">${esc(target)}</button></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
     }).join("");
-    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span>${state.audit.length} 条</span></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作与对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="4"><div class="organization-empty">暂无团队足迹</div></td></tr>'}</tbody></table></div></section>`;
+    const count = events.length === state.audit.length ? `${state.audit.length} 条` : `${events.length} / ${state.audit.length} 条`;
+    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="5"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
   }
 
   function profilePerson() {
@@ -329,11 +347,14 @@
   hosts.forEach((host) => {
     host.addEventListener("input", (event) => {
       if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
+      if (event.target.matches("[data-audit-search]")) { state.auditQuery = event.target.value; render(); const search = footprintHost?.querySelector("[data-audit-search]"); search?.focus(); search?.setSelectionRange(state.auditQuery.length, state.auditQuery.length); return; }
       if (!event.target.matches("[data-search]")) return;
       state.query = event.target.value; render();
       const search = controlHost?.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);
     });
     host.addEventListener("change", (event) => {
+      if (event.target.matches("[data-audit-action-filter]")) { state.auditAction = event.target.value; render(); return; }
+      if (event.target.matches("[data-audit-result-filter]")) { state.auditResult = event.target.value; render(); return; }
       if (event.target.matches("[data-department-filter]")) { state.department = event.target.value; render(); return; }
       if (event.target.matches("[data-role-filter]")) { state.role = event.target.value; render(); return; }
       const detail = event.target.closest("[data-user-id]");

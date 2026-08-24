@@ -10,8 +10,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=17', INDEX)
-        self.assertIn('/static/organization-admin.css?v=18', INDEX)
+        self.assertIn('/static/organization-admin.js?v=18', INDEX)
+        self.assertIn('/static/organization-admin.css?v=19', INDEX)
 
     def test_account_menu_keeps_department_label_and_role_visible(self):
         self.assertIn('id="authUserDepartment"', INDEX)
@@ -64,6 +64,17 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn('class="organization-event-card" role="dialog"', SCRIPT)
         self.assertIn('data-event-close', SCRIPT)
         self.assertIn('.organization-event-button:focus-visible', STYLE)
+
+    def test_footprint_separates_clickable_action_and_target_with_filters(self):
+        self.assertIn('<th>动作</th><th>处理对象</th>', SCRIPT)
+        self.assertIn('class="organization-event-button is-action"', SCRIPT)
+        self.assertIn('class="organization-event-button is-target"', SCRIPT)
+        self.assertIn('function filteredAudit()', SCRIPT)
+        self.assertIn('data-audit-search', SCRIPT)
+        self.assertIn('data-audit-action-filter', SCRIPT)
+        self.assertIn('data-audit-result-filter', SCRIPT)
+        self.assertIn('没有符合筛选条件的团队足迹', SCRIPT)
+        self.assertIn('.organization-footprint-toolbar', STYLE)
 
     def test_disclosure_controls_have_focus_motion_and_mobile_rules(self):
         self.assertIn(".organization-section-summary:focus-visible", STYLE)
