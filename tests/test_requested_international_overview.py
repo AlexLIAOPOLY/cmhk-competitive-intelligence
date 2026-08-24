@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import cmhk.agent.rag as rag
+import agent as xiaojing_agent
 import executive_intelligence_pipeline as pipeline
 from cmhk.intelligence.executive import _requested_international_domain
 
@@ -128,6 +129,21 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertIn("point_count=10", text)
         self.assertIn("FY2016=74.88", text)
         self.assertIn("FY2025=93.065", text)
+
+    def test_xiaojing_structured_four_carrier_answer_is_complete_and_exact(self) -> None:
+        result = xiaojing_agent._structured_global_postpaid_answer(
+            "Verizon、Deutsche Telekom、AT&T、NTT Group从2016到2025是否各有10个后付费用户年度点？",
+            {"global_top5_operators_2016_2025"},
+        )
+        self.assertIsNotNone(result)
+        answer, evidence = result
+        self.assertIn("Verizon | 10 | 108.796 | 126.705", answer)
+        self.assertIn("Deutsche Telekom | 10 | 34.427 | 116.445", answer)
+        self.assertIn("AT&T | 10 | 77.372 | 90.879", answer)
+        self.assertIn("NTT Group | 10 | 74.88 | 93.065", answer)
+        self.assertIn("无插值、无换算", answer)
+        self.assertIn("非后付费客户数", answer)
+        self.assertEqual(len(evidence["series"]), 4)
 
     def test_postpaid_ai_gate_rejects_cross_company_arpu_pairing(self) -> None:
         snapshot = pipeline._analysis_input_snapshot()
