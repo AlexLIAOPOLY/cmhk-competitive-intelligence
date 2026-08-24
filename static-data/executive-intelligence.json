@@ -12,7 +12,7 @@
         "label": "HKT FY2025"
       },
       "context": "2016–2025十年窗口；不同财年与公司口径分别标注",
-      "insight": "营收、EBITDA、净利润、后付用户及ARPU按公司原披露口径展示；缺口不填充。",
+      "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；缺口不填充。",
       "entities": [
         {
           "name": "CMHK",
@@ -186,24 +186,24 @@
           "id": "ebitda",
           "label": "EBITDA",
           "visual": "rows",
-          "headline": "EBITDA与利润率同表核对",
+          "headline": "FY2025 EBITDA只展示金额",
           "metric": {
-            "value": 39.1,
-            "unit": "%",
-            "label": "SmarTone FY2025"
+            "value": 14234.0,
+            "unit": "百万港元",
+            "label": "HKT FY2025"
           },
-          "context": "利润率=同公司同财年EBITDA/营收",
-          "insight": "SmarTone为39.1%，3HK为27.7%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
+          "context": "2016–2025原表；当前卡片显示FY2025",
+          "insight": "HKT为14234.0百万港元，3HK为1508.0百万港元；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
           "items": [
             {
               "name": "CMHK",
               "unit": "",
               "period": "FY2025",
               "detail": "CMHK未公开独立公司口径，保留缺口",
-              "analysis": "CMHK未公开独立公司口径，保留缺口，不估算EBITDA利润率。",
+              "analysis": "CMHK未公开独立公司口径，保留缺口，不估算EBITDA。",
               "components": [
                 {
-                  "label": "EBITDA及利润率",
+                  "label": "EBITDA",
                   "detail": "CMHK未公开独立公司口径，保留缺口"
                 }
               ],
@@ -214,78 +214,60 @@
             },
             {
               "name": "HKT",
-              "value": 38.9,
-              "unit": "%",
+              "value": 14234.0,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025 EBITDA及EBITDA利润率",
-              "analysis": "FY2025 EBITDA为14,234.0百万港元，按同年营收计算利润率38.9%。",
+              "detail": "FY2025 EBITDA金额",
+              "analysis": "FY2025 EBITDA为14,234.0百万港元；只展示金额，不混入利润率。",
               "components": [
                 {
                   "label": "EBITDA",
                   "value": 14234.0,
                   "unit": "百万港元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 38.9,
-                  "unit": "%",
-                  "detail": "同公司同财年"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "verification_count": 4,
               "ai_summary": {}
             },
             {
               "name": "SmarTone",
-              "value": 39.1,
-              "unit": "%",
+              "value": 2445.1,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025 EBITDA及EBITDA利润率",
-              "analysis": "FY2025 EBITDA为2,445.1百万港元，按同年营收计算利润率39.1%。",
+              "detail": "FY2025 EBITDA金额",
+              "analysis": "FY2025 EBITDA为2,445.1百万港元；只展示金额，不混入利润率。",
               "components": [
                 {
                   "label": "EBITDA",
                   "value": 2445.1,
                   "unit": "百万港元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 39.1,
-                  "unit": "%",
-                  "detail": "同公司同财年"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
               "verification_count": 10,
               "ai_summary": {}
             },
             {
               "name": "3HK",
-              "value": 27.7,
-              "unit": "%",
+              "value": 1508.0,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025 EBITDA及EBITDA利润率",
-              "analysis": "FY2025 EBITDA为1,508.0百万港元，按同年营收计算利润率27.7%。",
+              "detail": "FY2025 EBITDA金额",
+              "analysis": "FY2025 EBITDA为1,508.0百万港元；只展示金额，不混入利润率。",
               "components": [
                 {
                   "label": "EBITDA",
                   "value": 1508.0,
                   "unit": "百万港元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 27.7,
-                  "unit": "%",
-                  "detail": "同公司同财年"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
               "verification_count": 6,
               "ai_summary": {}
@@ -297,14 +279,14 @@
           "id": "net_profit",
           "label": "净利润",
           "visual": "rows",
-          "headline": "同比只使用连续可比财年",
+          "headline": "FY2025净利润只展示金额",
           "metric": {
-            "value": 4.3,
-            "unit": "%",
+            "value": 5286.0,
+            "unit": "百万港元",
             "label": "HKT FY2025"
           },
-          "context": "FY2025对FY2024",
-          "insight": "HKT为4.3%，SmarTone为1.9%；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
+          "context": "2016–2025原表；当前卡片显示FY2025",
+          "insight": "HKT为5286.0百万港元，3HK为-25.0百万港元；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
           "items": [
             {
               "name": "CMHK",
@@ -314,7 +296,7 @@
               "analysis": "CMHK未公开独立公司口径，保留缺口，不估算净利润。",
               "components": [
                 {
-                  "label": "净利润及同比",
+                  "label": "净利润",
                   "detail": "CMHK未公开独立公司口径，保留缺口"
                 }
               ],
@@ -325,62 +307,51 @@
             },
             {
               "name": "HKT",
-              "value": 4.3,
-              "unit": "%",
+              "value": 5286.0,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025净利润及同比增速",
-              "analysis": "FY2025净利润为5,286.0百万港元，同比+4.3%。",
+              "detail": "FY2025净利润金额",
+              "analysis": "FY2025净利润为5,286.0百万港元；只展示金额，不混入同比增速。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 5286.0,
                   "unit": "百万港元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 4.3,
-                  "unit": "%",
-                  "detail": "FY2025对FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-              "verification_count": 5,
+              "verification_count": 6,
               "ai_summary": {}
             },
             {
               "name": "SmarTone",
-              "value": 1.9,
-              "unit": "%",
+              "value": 478.9,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025净利润及同比增速",
-              "analysis": "FY2025净利润为478.9百万港元，同比+1.9%。",
+              "detail": "FY2025净利润金额",
+              "analysis": "FY2025净利润为478.9百万港元；只展示金额，不混入同比增速。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 478.9,
                   "unit": "百万港元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 1.9,
-                  "unit": "%",
-                  "detail": "FY2025对FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "verification_count": 5,
+              "verification_count": 10,
               "ai_summary": {}
             },
             {
               "name": "3HK",
-              "unit": "",
+              "value": -25.0,
+              "unit": "百万港元",
               "period": "FY2025",
-              "detail": "FY2025净利润及同比增速",
-              "analysis": "FY2025净利润为-25.0百万港元；上年三来源可比值不足，不计算同比。",
+              "detail": "FY2025净利润金额",
+              "analysis": "FY2025净利润为-25.0百万港元；只展示金额，不混入同比增速。",
               "components": [
                 {
                   "label": "净利润",
@@ -399,15 +370,15 @@
         },
         {
           "id": "postpaid",
-          "label": "后付用户",
+          "label": "后付费用户数",
           "visual": "rows",
-          "headline": "后付口径不以总客户替代",
+          "headline": "后付费口径不以总客户替代",
           "metric": {
             "value": 3.494,
             "unit": "百万户",
             "label": "HKT FY2025"
           },
-          "context": "公司原生后付客户与ARPU定义",
+          "context": "只展示公司原生后付费用户数",
           "insight": "HKT为3.494百万户，3HK为1.289百万户；差距表明公司规模或结构不同，但财年与披露范围存在边界，不能把数值高低直接等同经营质量。",
           "items": [
             {
@@ -415,10 +386,10 @@
               "unit": "",
               "period": "FY2025",
               "detail": "CMHK未公开独立公司口径，保留缺口",
-              "analysis": "CMHK未公开独立公司口径，保留缺口；缺失项不以总客户或预付客户替代。",
+              "analysis": "CMHK未公开独立公司口径，保留缺口；不以总客户或预付客户替代。",
               "components": [
                 {
-                  "label": "后付用户及ARPU",
+                  "label": "后付费用户数",
                   "detail": "CMHK未公开独立公司口径，保留缺口"
                 }
               ],
@@ -432,23 +403,17 @@
               "value": 3.494,
               "unit": "百万户",
               "period": "FY2025",
-              "detail": "后付用户数及后付ARPU",
-              "analysis": "FY2025后付用户3.494百万户，后付ARPU为195港元/月；两项均按公司原生定义展示。",
+              "detail": "FY2025后付费用户数",
+              "analysis": "FY2025后付费用户数为3.494百万户；不混入ARPU或总客户口径。",
               "components": [
                 {
-                  "label": "后付用户数",
+                  "label": "后付费用户数",
                   "value": 3.494,
                   "unit": "百万户",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "后付ARPU",
-                  "value": 195.0,
-                  "unit": "港元/月",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.hkt.com/api-service/assets/e-2025_Annual_Report.pdf",
               "verification_count": 3,
               "ai_summary": {}
@@ -458,10 +423,10 @@
               "unit": "",
               "period": "FY2025",
               "detail": "三来源数据待补",
-              "analysis": "三来源数据待补；缺失项不以总客户或预付客户替代。",
+              "analysis": "三来源数据待补；不以总客户或预付客户替代。",
               "components": [
                 {
-                  "label": "后付用户及ARPU",
+                  "label": "后付费用户数",
                   "detail": "三来源数据待补"
                 }
               ],
@@ -475,23 +440,17 @@
               "value": 1.289,
               "unit": "百万户",
               "period": "FY2025",
-              "detail": "后付用户数及后付ARPU",
-              "analysis": "FY2025后付用户1.289百万户，后付ARPU为187港元/月；两项均按公司原生定义展示。",
+              "detail": "FY2025后付费用户数",
+              "analysis": "FY2025后付费用户数为1.289百万户；不混入ARPU或总客户口径。",
               "components": [
                 {
-                  "label": "后付用户数",
+                  "label": "后付费用户数",
                   "value": 1.289,
                   "unit": "百万户",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "后付ARPU",
-                  "value": 187.0,
-                  "unit": "港元/月",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf",
               "verification_count": 3,
               "ai_summary": {}
@@ -648,7 +607,7 @@
           "unit": "十亿美元",
           "period": "FY2025",
           "detail": "FY2025约138.19十亿美元 · 原披露138191 USD million",
-          "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+          "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
           "components": [
             {
               "label": "营业收入",
@@ -663,43 +622,43 @@
           "trend": [
             {
               "label": "FY2016",
-              "value": 100.0
+              "value": 125.98
             },
             {
               "label": "FY2017",
-              "value": 100.0
+              "value": 126.03
             },
             {
               "label": "FY2018",
-              "value": 103.9
+              "value": 130.86
             },
             {
               "label": "FY2019",
-              "value": 104.7
+              "value": 131.87
             },
             {
               "label": "FY2020",
-              "value": 101.8
+              "value": 128.29
             },
             {
               "label": "FY2021",
-              "value": 106.1
+              "value": 133.61
             },
             {
               "label": "FY2022",
-              "value": 108.6
+              "value": 136.84
             },
             {
               "label": "FY2023",
-              "value": 106.3
+              "value": 133.97
             },
             {
               "label": "FY2024",
-              "value": 107.0
+              "value": 134.79
             },
             {
               "label": "FY2025",
-              "value": 109.7
+              "value": 138.19
             }
           ]
         },
@@ -709,7 +668,7 @@
           "unit": "十亿美元",
           "period": "FY2025",
           "detail": "FY2025约134.58十亿美元 · 原披露119.1 EUR billion",
-          "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+          "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
           "components": [
             {
               "label": "营业收入",
@@ -724,43 +683,43 @@
           "trend": [
             {
               "label": "FY2016",
-              "value": 100.0
+              "value": 82.6
             },
             {
               "label": "FY2017",
-              "value": 102.5
+              "value": 84.64
             },
             {
               "label": "FY2018",
-              "value": 103.6
+              "value": 85.54
             },
             {
               "label": "FY2019",
-              "value": 110.1
+              "value": 90.96
             },
             {
               "label": "FY2020",
-              "value": 136.9
+              "value": 113.11
             },
             {
               "label": "FY2021",
-              "value": 147.5
+              "value": 121.81
             },
             {
               "label": "FY2022",
-              "value": 156.5
+              "value": 129.27
             },
             {
               "label": "FY2023",
-              "value": 153.2
+              "value": 126.56
             },
             {
               "label": "FY2024",
-              "value": 158.4
+              "value": 130.85
             },
             {
               "label": "FY2025",
-              "value": 162.9
+              "value": 134.58
             }
           ]
         },
@@ -770,7 +729,7 @@
           "unit": "十亿美元",
           "period": "FY2025",
           "detail": "FY2025约125.65十亿美元 · 原披露125648 USD million",
-          "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+          "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
           "components": [
             {
               "label": "营业收入",
@@ -785,43 +744,43 @@
           "trend": [
             {
               "label": "FY2016",
-              "value": 100.0
+              "value": 163.79
             },
             {
               "label": "FY2017",
-              "value": 98.0
+              "value": 160.55
             },
             {
               "label": "FY2018",
-              "value": 104.3
+              "value": 170.76
             },
             {
               "label": "FY2019",
-              "value": 110.6
+              "value": 181.19
             },
             {
               "label": "FY2020",
-              "value": 87.3
+              "value": 143.05
             },
             {
               "label": "FY2021",
-              "value": 81.8
+              "value": 134.04
             },
             {
               "label": "FY2022",
-              "value": 73.7
+              "value": 120.74
             },
             {
               "label": "FY2023",
-              "value": 74.7
+              "value": 122.43
             },
             {
               "label": "FY2024",
-              "value": 74.7
+              "value": 122.34
             },
             {
               "label": "FY2025",
-              "value": 76.7
+              "value": 125.65
             }
           ]
         },
@@ -831,7 +790,7 @@
           "unit": "十亿美元",
           "period": "FY2025",
           "detail": "FY2025约96.34十亿美元 · 原披露14409.1 JPY billion",
-          "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+          "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
           "components": [
             {
               "label": "营业收入",
@@ -846,43 +805,43 @@
           "trend": [
             {
               "label": "FY2016",
-              "value": 100.0
+              "value": 76.16
             },
             {
               "label": "FY2017",
-              "value": 103.4
+              "value": 78.77
             },
             {
               "label": "FY2018",
-              "value": 104.3
+              "value": 79.43
             },
             {
               "label": "FY2019",
-              "value": 104.5
+              "value": 79.56
             },
             {
               "label": "FY2020",
-              "value": 104.9
+              "value": 79.86
             },
             {
               "label": "FY2021",
-              "value": 106.7
+              "value": 81.28
             },
             {
               "label": "FY2022",
-              "value": 115.3
+              "value": 87.83
             },
             {
               "label": "FY2023",
-              "value": 117.4
+              "value": 89.42
             },
             {
               "label": "FY2024",
-              "value": 120.3
+              "value": 91.63
             },
             {
               "label": "FY2025",
-              "value": 126.5
+              "value": 96.34
             }
           ]
         }
@@ -898,8 +857,8 @@
             "unit": "家",
             "label": "FY2016–FY2025完整覆盖"
           },
-          "context": "原币集团口径，不跨币种排名",
-          "insight": "4家均覆盖10年，但原币与集团口径不同，表明收入规模不可直接混排。",
+          "context": "统一为十亿美元；原币明细保留",
+          "insight": "4家均覆盖10年，统一折算后可比较绝对规模，但集团范围差异仍需结合原披露理解。",
           "items": [
             {
               "name": "Verizon",
@@ -907,7 +866,7 @@
               "unit": "十亿美元",
               "period": "FY2025",
               "detail": "FY2025约138.19十亿美元 · 原披露138191 USD million",
-              "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+              "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
               "components": [
                 {
                   "label": "营业收入",
@@ -922,43 +881,43 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 125.98
                 },
                 {
                   "label": "FY2017",
-                  "value": 100.0
+                  "value": 126.03
                 },
                 {
                   "label": "FY2018",
-                  "value": 103.9
+                  "value": 130.86
                 },
                 {
                   "label": "FY2019",
-                  "value": 104.7
+                  "value": 131.87
                 },
                 {
                   "label": "FY2020",
-                  "value": 101.8
+                  "value": 128.29
                 },
                 {
                   "label": "FY2021",
-                  "value": 106.1
+                  "value": 133.61
                 },
                 {
                   "label": "FY2022",
-                  "value": 108.6
+                  "value": 136.84
                 },
                 {
                   "label": "FY2023",
-                  "value": 106.3
+                  "value": 133.97
                 },
                 {
                   "label": "FY2024",
-                  "value": 107.0
+                  "value": 134.79
                 },
                 {
                   "label": "FY2025",
-                  "value": 109.7
+                  "value": 138.19
                 }
               ],
               "ai_summary": {}
@@ -969,7 +928,7 @@
               "unit": "十亿美元",
               "period": "FY2025",
               "detail": "FY2025约134.58十亿美元 · 原披露119.1 EUR billion",
-              "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+              "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
               "components": [
                 {
                   "label": "营业收入",
@@ -984,43 +943,43 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 82.6
                 },
                 {
                   "label": "FY2017",
-                  "value": 102.5
+                  "value": 84.64
                 },
                 {
                   "label": "FY2018",
-                  "value": 103.6
+                  "value": 85.54
                 },
                 {
                   "label": "FY2019",
-                  "value": 110.1
+                  "value": 90.96
                 },
                 {
                   "label": "FY2020",
-                  "value": 136.9
+                  "value": 113.11
                 },
                 {
                   "label": "FY2021",
-                  "value": 147.5
+                  "value": 121.81
                 },
                 {
                   "label": "FY2022",
-                  "value": 156.5
+                  "value": 129.27
                 },
                 {
                   "label": "FY2023",
-                  "value": 153.2
+                  "value": 126.56
                 },
                 {
                   "label": "FY2024",
-                  "value": 158.4
+                  "value": 130.85
                 },
                 {
                   "label": "FY2025",
-                  "value": 162.9
+                  "value": 134.58
                 }
               ],
               "ai_summary": {}
@@ -1031,7 +990,7 @@
               "unit": "十亿美元",
               "period": "FY2025",
               "detail": "FY2025约125.65十亿美元 · 原披露125648 USD million",
-              "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+              "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
               "components": [
                 {
                   "label": "营业收入",
@@ -1046,43 +1005,43 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 163.79
                 },
                 {
                   "label": "FY2017",
-                  "value": 98.0
+                  "value": 160.55
                 },
                 {
                   "label": "FY2018",
-                  "value": 104.3
+                  "value": 170.76
                 },
                 {
                   "label": "FY2019",
-                  "value": 110.6
+                  "value": 181.19
                 },
                 {
                   "label": "FY2020",
-                  "value": 87.3
+                  "value": 143.05
                 },
                 {
                   "label": "FY2021",
-                  "value": 81.8
+                  "value": 134.04
                 },
                 {
                   "label": "FY2022",
-                  "value": 73.7
+                  "value": 120.74
                 },
                 {
                   "label": "FY2023",
-                  "value": 74.7
+                  "value": 122.43
                 },
                 {
                   "label": "FY2024",
-                  "value": 74.7
+                  "value": 122.34
                 },
                 {
                   "label": "FY2025",
-                  "value": 76.7
+                  "value": 125.65
                 }
               ],
               "ai_summary": {}
@@ -1093,7 +1052,7 @@
               "unit": "十亿美元",
               "period": "FY2025",
               "detail": "FY2025约96.34十亿美元 · 原披露14409.1 JPY billion",
-              "analysis": "金额按2025年平均汇率统一折算；十年趋势用FY2016=100指数比较。",
+              "analysis": "金额及十年趋势均按统一汇率折算为十亿美元。",
               "components": [
                 {
                   "label": "营业收入",
@@ -1108,43 +1067,43 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 76.16
                 },
                 {
                   "label": "FY2017",
-                  "value": 103.4
+                  "value": 78.77
                 },
                 {
                   "label": "FY2018",
-                  "value": 104.3
+                  "value": 79.43
                 },
                 {
                   "label": "FY2019",
-                  "value": 104.5
+                  "value": 79.56
                 },
                 {
                   "label": "FY2020",
-                  "value": 104.9
+                  "value": 79.86
                 },
                 {
                   "label": "FY2021",
-                  "value": 106.7
+                  "value": 81.28
                 },
                 {
                   "label": "FY2022",
-                  "value": 115.3
+                  "value": 87.83
                 },
                 {
                   "label": "FY2023",
-                  "value": 117.4
+                  "value": 89.42
                 },
                 {
                   "label": "FY2024",
-                  "value": 120.3
+                  "value": 91.63
                 },
                 {
                   "label": "FY2025",
-                  "value": 126.5
+                  "value": 96.34
                 }
               ],
               "ai_summary": {}
@@ -1153,40 +1112,34 @@
           "ai_summary": {}
         },
         {
-          "id": "ebitda_margin",
+          "id": "ebitda",
           "label": "EBITDA",
           "visual": "rows",
-          "headline": "EBITDA与利润率按原披露口径并列",
+          "headline": "调整后EBITDA绝对值",
           "metric": {
             "value": 4,
             "unit": "家",
             "label": "FY2025已披露"
           },
-          "context": "调整后EBITDA；非GAAP调整项存在公司差异",
-          "insight": "4家FY2025利润率介于23.8%至37.2%，口径不同表明高低差异不等同于相同盈利效率。",
+          "context": "统一为十亿美元；非GAAP调整项存在公司差异",
+          "insight": "4家FY2025调整后EBITDA约22.89至50.00十亿美元，绝对规模形成梯队，但调整口径并不完全相同。",
           "items": [
             {
               "name": "Verizon",
               "value": 50.0,
               "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "EBITDA约50.00十亿美元 · 利润率 36.2% · 原披露49997 USD million",
-              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "detail": "FY2025约50.00十亿美元 · 原披露49997 USD million",
+              "analysis": "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
               "components": [
                 {
-                  "label": "调整后EBITDA",
+                  "label": "公司披露的调整后EBITDA",
                   "value": 50.0,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 36.2,
-                  "unit": "%",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "trend": [
@@ -1206,23 +1159,17 @@
               "value": 50.0,
               "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "EBITDA约50.00十亿美元 · 利润率 37.2% · 原披露44.244 EUR billion",
-              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "detail": "FY2025约50.00十亿美元 · 原披露44.244 EUR billion",
+              "analysis": "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
               "components": [
                 {
-                  "label": "调整后EBITDA",
+                  "label": "公司披露的调整后EBITDA",
                   "value": 50.0,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 37.2,
-                  "unit": "%",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "trend": [
@@ -1246,23 +1193,17 @@
               "value": 46.36,
               "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "EBITDA约46.36十亿美元 · 利润率 36.9% · 原披露46361 USD million",
-              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "detail": "FY2025约46.36十亿美元 · 原披露46361 USD million",
+              "analysis": "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
               "components": [
                 {
-                  "label": "调整后EBITDA",
+                  "label": "公司披露的调整后EBITDA",
                   "value": 46.36,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 36.9,
-                  "unit": "%",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "trend": [
@@ -1286,23 +1227,17 @@
               "value": 22.89,
               "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "EBITDA约22.89十亿美元 · 利润率 23.8% · 原披露3423.3 JPY billion",
-              "analysis": "Deutsche Telekom为调整后EBITDA AL；其他按各公司调整后EBITDA。非GAAP调整项不完全相同。",
+              "detail": "FY2025约22.89十亿美元 · 原披露3423.3 JPY billion",
+              "analysis": "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
               "components": [
                 {
-                  "label": "调整后EBITDA",
+                  "label": "公司披露的调整后EBITDA",
                   "value": 22.89,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "EBITDA利润率",
-                  "value": 23.8,
-                  "unit": "%",
-                  "detail": "FY2025"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "trend": [
@@ -1317,286 +1252,262 @@
           "ai_summary": {}
         },
         {
-          "id": "net_profit_growth",
+          "id": "net_profit",
           "label": "净利润",
-          "visual": "diverging",
-          "headline": "净利润与同比增速同卡展示",
+          "visual": "rows",
+          "headline": "净利润绝对值",
           "metric": {
             "value": 4,
             "unit": "家",
             "label": "FY2016–FY2025完整覆盖"
           },
-          "context": "同比在同公司原币口径内计算",
-          "insight": "4家FY2025同比从-14.29%至100.52%分化，表明利润弹性不同，但不等同于长期趋势。",
+          "context": "统一为十亿美元",
+          "insight": "4家FY2025净利润约6.93至21.95十亿美元，绝对规模存在差距，但公司财年与集团范围仍需按原披露理解。",
           "items": [
             {
               "name": "Verizon",
-              "value": -1.9,
-              "unit": "%",
+              "value": 17.17,
+              "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "净利润约17.17十亿美元 · 同比 -1.9% · 原披露17174 USD million",
-              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "detail": "FY2025约17.17十亿美元 · 原披露17174 USD million",
+              "analysis": "按统一汇率折算为十亿美元，原币金额保留在明细中。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 17.17,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": -1.9,
-                  "unit": "%",
-                  "detail": "FY2025 vs FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
               "verification_count": 3,
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 13.13
                 },
                 {
                   "label": "FY2017",
-                  "value": 229.3
+                  "value": 30.1
                 },
                 {
                   "label": "FY2018",
-                  "value": 118.3
+                  "value": 15.53
                 },
                 {
                   "label": "FY2019",
-                  "value": 146.8
+                  "value": 19.27
                 },
                 {
                   "label": "FY2020",
-                  "value": 135.6
+                  "value": 17.8
                 },
                 {
                   "label": "FY2021",
-                  "value": 168.1
+                  "value": 22.07
                 },
                 {
                   "label": "FY2022",
-                  "value": 161.9
+                  "value": 21.26
                 },
                 {
                   "label": "FY2023",
-                  "value": 88.5
+                  "value": 11.61
                 },
                 {
                   "label": "FY2024",
-                  "value": 133.4
+                  "value": 17.51
                 },
                 {
                   "label": "FY2025",
-                  "value": 130.8
+                  "value": 17.17
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "Deutsche Telekom",
-              "value": -14.29,
-              "unit": "%",
+              "value": 10.85,
+              "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "净利润约10.85十亿美元 · 同比 -14.3% · 原披露9.6 EUR billion",
-              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "detail": "FY2025约10.85十亿美元 · 原披露9.6 EUR billion",
+              "analysis": "按统一汇率折算为十亿美元，原币金额保留在明细中。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 10.85,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": -14.29,
-                  "unit": "%",
-                  "detail": "FY2025 vs FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://report.telekom.com/annual-report-2025/",
               "verification_count": 3,
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 3.05
                 },
                 {
                   "label": "FY2017",
-                  "value": 129.6
+                  "value": 3.95
                 },
                 {
                   "label": "FY2018",
-                  "value": 81.5
+                  "value": 2.49
                 },
                 {
                   "label": "FY2019",
-                  "value": 144.4
+                  "value": 4.41
                 },
                 {
                   "label": "FY2020",
-                  "value": 155.6
+                  "value": 4.75
                 },
                 {
                   "label": "FY2021",
-                  "value": 155.6
+                  "value": 4.75
                 },
                 {
                   "label": "FY2022",
-                  "value": 296.3
+                  "value": 9.04
                 },
                 {
                   "label": "FY2023",
-                  "value": 659.3
+                  "value": 20.11
                 },
                 {
                   "label": "FY2024",
-                  "value": 414.8
+                  "value": 12.66
                 },
                 {
                   "label": "FY2025",
-                  "value": 355.6
+                  "value": 10.85
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "AT&T",
-              "value": 100.52,
-              "unit": "%",
+              "value": 21.95,
+              "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "净利润约21.95十亿美元 · 同比 +100.5% · 原披露21953 USD million",
-              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "detail": "FY2025约21.95十亿美元 · 原披露21953 USD million",
+              "analysis": "按统一汇率折算为十亿美元，原币金额保留在明细中。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 21.95,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 100.52,
-                  "unit": "%",
-                  "detail": "FY2025 vs FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
               "verification_count": 3,
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 12.98
                 },
                 {
                   "label": "FY2017",
-                  "value": 227.0
+                  "value": 29.45
                 },
                 {
                   "label": "FY2018",
-                  "value": 149.3
+                  "value": 19.37
                 },
                 {
                   "label": "FY2019",
-                  "value": 107.1
+                  "value": 13.9
                 },
                 {
                   "label": "FY2020",
-                  "value": -39.9
+                  "value": -5.18
                 },
                 {
                   "label": "FY2021",
-                  "value": 154.8
+                  "value": 20.08
                 },
                 {
                   "label": "FY2022",
-                  "value": -65.7
+                  "value": -8.52
                 },
                 {
                   "label": "FY2023",
-                  "value": 111.0
+                  "value": 14.4
                 },
                 {
                   "label": "FY2024",
-                  "value": 84.4
+                  "value": 10.95
                 },
                 {
                   "label": "FY2025",
-                  "value": 169.2
+                  "value": 21.95
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "NTT Group",
-              "value": 3.7,
-              "unit": "%",
+              "value": 6.93,
+              "unit": "十亿美元",
               "period": "FY2025",
-              "detail": "净利润约6.93十亿美元 · 同比 +3.7% · 原披露1037 JPY billion",
-              "analysis": "同比只在同公司原币及原披露口径内计算；负值与口径断点不作平滑。",
+              "detail": "FY2025约6.93十亿美元 · 原披露1037 JPY billion",
+              "analysis": "按统一汇率折算为十亿美元，原币金额保留在明细中。",
               "components": [
                 {
                   "label": "净利润",
                   "value": 6.93,
                   "unit": "十亿美元",
                   "detail": "FY2025"
-                },
-                {
-                  "label": "净利润同比",
-                  "value": 3.7,
-                  "unit": "%",
-                  "detail": "FY2025 vs FY2024"
                 }
               ],
-              "component_count": 2,
+              "component_count": 1,
               "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
               "verification_count": 3,
               "trend": [
                 {
                   "label": "FY2016",
-                  "value": 100.0
+                  "value": 5.35
                 },
                 {
                   "label": "FY2017",
-                  "value": 112.2
+                  "value": 6.0
                 },
                 {
                   "label": "FY2018",
-                  "value": 106.8
+                  "value": 5.71
                 },
                 {
                   "label": "FY2019",
-                  "value": 106.9
+                  "value": 5.72
                 },
                 {
                   "label": "FY2020",
-                  "value": 114.5
+                  "value": 6.13
                 },
                 {
                   "label": "FY2021",
-                  "value": 147.6
+                  "value": 7.9
                 },
                 {
                   "label": "FY2022",
-                  "value": 151.6
+                  "value": 8.11
                 },
                 {
                   "label": "FY2023",
-                  "value": 159.9
+                  "value": 8.55
                 },
                 {
                   "label": "FY2024",
-                  "value": 125.0
+                  "value": 6.69
                 },
                 {
                   "label": "FY2025",
-                  "value": 129.6
+                  "value": 6.93
                 }
               ],
               "ai_summary": {}
@@ -1606,9 +1517,9 @@
         },
         {
           "id": "postpaid_arpu",
-          "label": "后付费/ARPU",
+          "label": "后付费用户数",
           "visual": "rows",
-          "headline": "用户数与ARPU/ARPA保留企业原生定义",
+          "headline": "后付费用户数与ARPU/ARPA",
           "metric": {
             "value": 4,
             "unit": "家",
@@ -1626,7 +1537,7 @@
               "analysis": "Verizon披露的是ARPA（每账户），不写成ARPU。",
               "components": [
                 {
-                  "label": "后付费用户/披露替代口径",
+                  "label": "后付费用户数",
                   "value": 126.705,
                   "unit": "百万",
                   "detail": "FY2025"
@@ -1662,7 +1573,7 @@
               "analysis": "Deutsche Telekom数值为T-Mobile US分部，ARPU为2025年第四季度期末口径。",
               "components": [
                 {
-                  "label": "后付费用户/披露替代口径",
+                  "label": "后付费用户数",
                   "value": 116.445,
                   "unit": "百万",
                   "detail": "FY2025"
@@ -1702,7 +1613,7 @@
               "analysis": "AT&T为美国Mobility后付费手机口径。",
               "components": [
                 {
-                  "label": "后付费用户/披露替代口径",
+                  "label": "后付费用户数",
                   "value": 74.214,
                   "unit": "百万",
                   "detail": "FY2025"
@@ -1742,7 +1653,7 @@
               "analysis": "NTT未将手机订阅数标为后付费用户，因此明确列为替代披露口径。",
               "components": [
                 {
-                  "label": "后付费用户/披露替代口径",
+                  "label": "后付费用户数",
                   "value": 52.971,
                   "unit": "百万",
                   "detail": "FY2025"
@@ -3506,7 +3417,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "0e1c9d79b4c256188fe85ba8689172869040559f35df0f6e26ce45fb150ee0c2",
+    "evidence_hash": "f68187a8cd625fe6edee180ed4b0728682d0c186cc472b7dbfd801794414285f",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
