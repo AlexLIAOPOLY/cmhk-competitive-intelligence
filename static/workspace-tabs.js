@@ -684,7 +684,7 @@
         candidates.push(line);
       }
     });
-    if (candidates.length < 3) {
+    if (candidates.length < 3 && labelled.size === 0) {
       const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
       if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
     }
