@@ -848,8 +848,8 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
-    """Build domain 02 from the four explicitly requested international carriers."""
-    requested = ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
+    """Build domain 02 from the merged international and India carrier group."""
+    requested = ("Bharti Airtel", "Reliance Jio", "Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
     rows = [
         row for row in (payload.get("rows") or [])
         if row.get("operator") in requested
@@ -890,13 +890,16 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     revenue_growth: list[dict[str, Any]] = []
     profit_margin: list[dict[str, Any]] = []
     for operator in requested:
-        connection_rows = [row_for(operator, "reported_mobile_connections", year) for year in (2023, 2024, 2025)]
+        connection_metric = "total_customers" if operator in {"Bharti Airtel", "Reliance Jio"} else "reported_mobile_connections"
+        revenue_metric = "value_of_sales_and_services" if operator == "Reliance Jio" else "revenue"
+        profit_metric = "ebitda" if operator == "Reliance Jio" else "net_profit"
+        connection_rows = [row_for(operator, connection_metric, year) for year in (2023, 2024, 2025)]
         connection_values = [_verified_number(row) for row in connection_rows]
         latest_connections = connection_values[-1]
         if latest_connections is not None:
             scope = str((connection_rows[-1] or {}).get("scope") or "")
             connections.append(item(
-                operator, "reported_mobile_connections", 2025,
+                operator, connection_metric, 2025,
                 value=latest_connections, unit="百万连接",
                 detail="FY2025官方披露口径；三份底层文件核验",
                 analysis=f"FY2025披露口径移动连接/用户数为{latest_connections:.3f}百万；{scope}。",
@@ -905,29 +908,30 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         if connection_values[-2] not in (None, 0) and connection_values[-1] is not None:
             growth = (connection_values[-1] / connection_values[-2] - 1) * 100
             connection_growth.append(item(
-                operator, "reported_mobile_connections", 2025,
+                operator, connection_metric, 2025,
                 value=growth, unit="%",
                 detail="FY2025较FY2024连接规模变化",
                 analysis=f"按同公司连续两年披露口径计算，FY2025移动连接/用户规模同比{growth:+.2f}%；跨公司客户定义不完全相同。",
             ))
-        revenues = [_verified_number(row_for(operator, "revenue", year)) for year in (2024, 2025)]
+        revenues = [_verified_number(row_for(operator, revenue_metric, year)) for year in (2024, 2025)]
         if revenues[0] not in (None, 0) and revenues[1] is not None:
             growth = (revenues[1] / revenues[0] - 1) * 100
             revenue_growth.append(item(
-                operator, "revenue", 2025,
+                operator, revenue_metric, 2025,
                 value=growth, unit="%",
                 detail="FY2025较FY2024原币营收变化",
                 analysis=f"在公司本币和原披露口径内，FY2025营收同比{growth:+.2f}%；未做汇率换算。",
             ))
         revenue = revenues[-1]
-        profit = _verified_number(row_for(operator, "net_profit", 2025))
+        profit = _verified_number(row_for(operator, profit_metric, 2025))
         if revenue not in (None, 0) and profit is not None:
             margin = profit / revenue * 100
+            margin_label = "EBITDA/销售及服务价值" if operator == "Reliance Jio" else "归母净利润/营收"
             profit_margin.append(item(
-                operator, "net_profit", 2025,
+                operator, profit_metric, 2025,
                 value=margin, unit="%",
-                detail="FY2025归母净利润/营收",
-                analysis=f"按同公司同年度原币数据计算，FY2025归母净利润率为{margin:.2f}%。",
+                detail=f"FY2025{margin_label}",
+                analysis=f"按同公司同年度原币数据计算，FY2025已披露利润率为{margin:.2f}%；Reliance Jio使用EBITDA口径，其余公司使用归母净利润口径。",
             ))
 
     connections.sort(key=lambda value: float(value["value"]), reverse=True)
@@ -942,22 +946,22 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     connection_growth_low = connection_growth[-1] if connection_growth else {"name": "-", "value": 0}
     revenue_low = revenue_growth[-1] if revenue_growth else {"name": "-", "value": 0}
     margin_low = profit_margin[-1] if profit_margin else {"name": "-", "value": 0}
-    scope_warning = "各公司移动连接口径不同，只比较披露规模；财务变化在各自本币内计算，不比较绝对金额。"
+    scope_warning = "六家公司连接口径不同，只比较披露规模；财务变化在各自本币内计算，Reliance Jio利润率采用EBITDA口径，其余采用归母净利润口径。"
     focuses = [
         {
             "id": "scale", "label": "移动连接规模", "visual": "columns",
-            "headline": "德国电信披露规模居前",
+            "headline": "Bharti Airtel披露规模居前",
             "metric": {"value": leader["value"], "unit": "百万连接", "label": f"{leader['name']} FY2025披露规模"},
-            "context": "四家运营商FY2025官方披露口径",
+            "context": "六家运营商FY2025官方披露口径",
             "insight": f"{leader['name']}为{leader['value']:.2f}百万连接，{connection_low['name']}为{connection_low['value']:.2f}百万连接；差距表明披露规模分层明显，但客户与设备范围不可直接等同。",
             "items": connections,
         },
         {
             "id": "connection_growth", "label": "连接规模变化", "visual": "diverging",
-            "headline": "四家连接规模均保持增长",
+            "headline": "六家连接规模均保持增长",
             "metric": {"value": connection_growth_leader["value"], "unit": "%", "label": f"{connection_growth_leader['name']} FY2025同比"},
             "context": "同公司FY2025对FY2024",
-            "insight": f"四家均增长，{connection_growth_leader['name']}为{connection_growth_leader['value']:.2f}%，{connection_growth_low['name']}为{connection_growth_low['value']:.2f}%；这说明连接扩张同向但强弱分化。",
+            "insight": f"六家均增长，{connection_growth_leader['name']}为{connection_growth_leader['value']:.2f}%，{connection_growth_low['name']}为{connection_growth_low['value']:.2f}%；这说明连接扩张同向但强弱分化。",
             "items": connection_growth,
         },
         {
@@ -965,15 +969,15 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "headline": "原币营收均实现增长",
             "metric": {"value": revenue_leader["value"], "unit": "%", "label": f"{revenue_leader['name']} FY2025原币营收同比"},
             "context": "同公司原币FY2025对FY2024",
-            "insight": f"四家原币营收均增长，{revenue_leader['name']}为{revenue_leader['value']:.2f}%，{revenue_low['name']}为{revenue_low['value']:.2f}%；这表明收入扩张同向但增速分层。",
+            "insight": f"六家原币营收均增长，{revenue_leader['name']}为{revenue_leader['value']:.2f}%，{revenue_low['name']}为{revenue_low['value']:.2f}%；这表明收入扩张同向但增速分层。",
             "items": revenue_growth,
         },
         {
-            "id": "profit_margin", "label": "归母净利率", "visual": "rows",
+            "id": "profit_margin", "label": "已披露利润率", "visual": "rows",
             "headline": "盈利缓冲存在明显分层",
-            "metric": {"value": margin_leader["value"], "unit": "%", "label": f"{margin_leader['name']} FY2025归母净利率"},
-            "context": "FY2025归母净利润除以同年营收",
-            "insight": f"{margin_leader['name']}归母净利率为{margin_leader['value']:.2f}%，{margin_low['name']}为{margin_low['value']:.2f}%；差距说明盈利缓冲分层，但不代表绝对利润高低。",
+            "metric": {"value": margin_leader["value"], "unit": "%", "label": f"{margin_leader['name']} FY2025已披露利润率"},
+            "context": "FY2025同公司原币口径；Jio为EBITDA率，其余为归母净利率",
+            "insight": f"{margin_leader['name']}已披露利润率为{margin_leader['value']:.2f}%，{margin_low['name']}为{margin_low['value']:.2f}%；利润定义不同，只用于观察各公司自身盈利缓冲。",
             "items": profit_margin,
         },
     ]
@@ -983,7 +987,7 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         "title": "国际运营商",
         "kicker": "连接规模、增长与盈利",
         "metric": {"value": leader["value"], "unit": "百万连接", "label": f"{leader['name']} FY2025披露规模"},
-        "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
+        "context": "Bharti Airtel、Reliance Jio、Verizon、Deutsche Telekom、AT&T、NTT Group；全部展示值经三份不同底层官方文件核验",
         "insight": scope_warning,
         "entities": connections,
         "focuses": focuses,
@@ -1447,7 +1451,7 @@ def _reader_facing_copy(value: Any) -> Any:
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
     local = _local_domain(_read_json(LOCAL_PATH))
-    # 第二数据域沿用原有战略总览布局，只替换为本轮指定的四家国际运营商。
+    # 第二数据域沿用原有布局，展示合并后的六家国际运营商。
     international = _requested_international_domain(_read_json(GLOBAL_OPERATOR_PATH))
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     macro = _macro_domain(_read_json(MACRO_PATH))
@@ -1519,7 +1523,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "from": "macro",
             "to": "international",
             "title": "香港行业数据与国际公司披露分别统计",
-            "detail": "香港页面展示全行业连接、流量与投资；国际运营商页面展示四家公司的连接规模、原币营收变化和净利率。统计范围不同，不直接比较。",
+            "detail": "香港页面展示全行业连接、流量与投资；国际运营商页面展示六家公司的连接规模、原币营收变化和已披露利润率。统计范围不同，不直接比较。",
             "kind": "数据边界",
         },
     ]

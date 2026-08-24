@@ -18,16 +18,17 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
 
         domain = _requested_international_domain(payload)
 
+        self.assertEqual(domain["index"], "02")
         self.assertEqual(domain["title"], "国际运营商")
         self.assertEqual(
             {item["name"] for item in domain["entities"]},
-            {"Verizon", "Deutsche Telekom", "AT&T", "NTT Group"},
+            {"Bharti Airtel", "Reliance Jio", "Verizon", "Deutsche Telekom", "AT&T", "NTT Group"},
         )
         self.assertEqual(
             [focus["id"] for focus in domain["focuses"]],
             ["scale", "connection_growth", "revenue_growth", "profit_margin"],
         )
-        self.assertTrue(all(len(focus["items"]) == 4 for focus in domain["focuses"]))
+        self.assertTrue(all(len(focus["items"]) == 6 for focus in domain["focuses"]))
         self.assertTrue(all(item["verification_count"] >= 3 for item in domain["entities"]))
         self.assertNotIn("Comcast", json.dumps(domain, ensure_ascii=False))
 
