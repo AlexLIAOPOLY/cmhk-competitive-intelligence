@@ -506,6 +506,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
+        self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-layout { transition: none; }', STYLE)
         self.assertIn("const mainRun = mainRunForDate(date)", SCRIPT)
         self.assertIn("跨日完成", SCRIPT)
         self.assertIn("linkedParentRunId(run) === mainRun.crawl_run_id", SCRIPT)

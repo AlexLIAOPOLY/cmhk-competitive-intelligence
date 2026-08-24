@@ -113,6 +113,7 @@
 .dashboard-page.is-workspace-layout-switching .workspace-tabs {
   transition: background .2s ease, border-color .2s ease, box-shadow .24s ease;
 }
+.dashboard-page.is-workspace-layout-switching .workspace-layout { transition: none; }
 
 .workspace-tabs::before {
   position: absolute;
