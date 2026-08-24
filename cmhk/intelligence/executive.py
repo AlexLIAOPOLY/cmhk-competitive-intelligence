@@ -20,7 +20,7 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
-INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
+INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
 
 DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
@@ -1078,10 +1078,10 @@ def _requested_hong_kong_domain(
         if len(available) >= 2:
             prefix = f"{lead['name']}为{lead['value']}{lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": "可披露收入规模形成头尾梯队，意味着竞争资源承载力不在同一量级，但不等同经营效率。",
-                "ebitda": "经营现金创造代理形成梯队，表明盈利缓冲厚度不同，但不直接等同现金流质量。",
-                "net_profit": "利润绝对值断层表明盈利韧性明显分化，而非单纯规模差异。",
-                "postpaid": "客户基础规模形成梯队，意味着经常性收入基础不同；未结合ARPU不能判断客户价值。",
+                "revenue": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
+                "ebitda": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
+                "net_profit": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+                "postpaid": "经常性收入底盘形成梯队，意味着尾部续约与流失波动风险更高；未结合ARPU仍不能判断客户价值。",
             }[fid]
             insight = prefix + implication
         else:
@@ -1091,10 +1091,10 @@ def _requested_hong_kong_domain(
                 "context": context, "insight": insight, "items": items}
 
     focuses = [
-        focus("revenue", "营收", revenue_items, "FY2025营收按原币同财年展示", "2016–2025原表；当前卡片显示FY2025"),
-        focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA只展示金额", "2016–2025原表；当前卡片显示FY2025"),
-        focus("net_profit", "净利润", profit_items, "FY2025净利润只展示金额", "2016–2025原表；当前卡片显示FY2025"),
-        focus("postpaid", "后付费用户数", postpaid_items, "后付费口径不以总客户替代", "只展示公司原生后付费用户数"),
+        focus("revenue", "营收", revenue_items, "持续竞争资源明显分层", "2016–2025原表；当前卡片显示FY2025"),
+        focus("ebitda", "EBITDA", ebitda_items, "持续投入能力形成断层", "2016–2025原表；当前卡片显示FY2025"),
+        focus("net_profit", "净利润", profit_items, "盈利防线出现两极分化", "2016–2025原表；当前卡片显示FY2025"),
+        focus("postpaid", "后付费用户数", postpaid_items, "经常性收入底盘分层", "只展示公司原生后付费用户数"),
     ]
     return {"id": "local", "index": "01", "title": "香港电讯市场", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
             "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；不同财年与公司口径分别标注",
@@ -1169,16 +1169,22 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
         if len(available) >= 2:
             prefix = f"{lead['name']}为{lead['value']}{lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": "可披露收入基础形成头尾梯队，意味着竞争资源承载力不在同一量级，但不等同经营效率。",
-                "ebitda": "经营现金创造代理形成梯队，表明盈利缓冲厚度不同；当前仅两家可比。",
-                "net_profit": "利润池明显向头部集中，表明盈利韧性分化，而非单纯规模差异。",
-                "postpaid": "客户基础规模形成梯队，但未结合ARPU不能判断客户价值。",
+                "revenue": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
+                "ebitda": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
+                "net_profit": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+                "postpaid": "经常性收入底盘形成梯队，但未结合ARPU仍不能判断客户价值。",
             }[fid]
             insight = prefix + implication
         else:
-            insight = "四家公司均缺少可比后付费原值；口径缺口意味着客户价值和客户质量无法穿透比较，不能以移动或5G用户总量替代。"
-        return {"id": fid, "label": label, "visual": "rows", "headline": f"{label}按三来源门禁展示", "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"}, "context": context, "insight": insight, "items": items}
-    focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "只展示FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "只展示FY2025净利润金额"), focus("postpaid", "后付费用户数", postpaid_items, "只展示官方明确披露的后付费用户数")]
+            insight = "四家公司均缺少可比后付费原值；这一盲区使客户收入底盘、续约质量与客户价值无法穿透比较，不能以移动或5G用户总量替代。"
+        headline = {
+            "revenue": "规模优势固化资源壁垒",
+            "ebitda": "现金创造支撑能力分层",
+            "net_profit": "盈利韧性向头部集中",
+            "postpaid": "客户价值判断出现盲区",
+        }[fid]
+        return {"id": fid, "label": label, "visual": "rows", "headline": headline, "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"}, "context": context, "insight": insight, "items": items}
+    focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "FY2025净利润金额"), focus("postpaid", "后付费用户数", postpaid_items, "官方明确披露的后付费用户数")]
     return {"id": "mainland", "index": "03", "title": "内地运营商", "kicker": "移动｜电信｜联通｜广电", "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；全部卡片只展示绝对数", "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；官方未单列的后付费数据保留缺口。", "entities": revenue_items, "focuses": focuses, "relations": [], "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, postpaid_items) for item in items])}
 
 
@@ -1647,7 +1653,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "id": "revenue", "label": "云收入", "visual": "columns",
             "metric": {"value": revenue_amount_leader["value"], "unit": "百万美元", "label": f"{revenue_amount_leader['name']} FY{comparison_year}云收入"},
             "context": f"FY{comparison_year}最新已核验披露 · 覆盖 {len(revenue_amount_items)} 家全球云厂商 · 统一折算百万美元",
-            "insight": f"{revenue_amount_leader['name']}云收入{revenue_amount_leader['value']:g}百万美元、{revenue_tail['name']}为{revenue_tail['value']:g}百万美元；收入基础呈头尾断层，意味着生态与资源承载力分层，但代理分部和重分类口径仍需单列。",
+            "insight": f"{revenue_amount_leader['name']}云收入{revenue_amount_leader['value']:g}百万美元、{revenue_tail['name']}为{revenue_tail['value']:g}百万美元；收入底盘断层意味着头部具备更强生态扩张与基础设施持续投入空间，但代理分部和重分类口径仍需单列。",
             "items": revenue_amount_items,
         },
         {
@@ -1656,7 +1662,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "context": "按各厂商原生利润定义标注 · 统一折算百万美元",
             "insight": (
                 f"同属经营利润披露的AWS为{aws_profit_amount['value']:g}百万美元、Google为{google_profit_amount['value']:g}百万美元；"
-                "利润池向头部集中，表明云业务盈利缓冲分层，其他利润定义不混入这一判断。"
+                "利润池向头部集中并形成主导梯队，意味着头部可用更厚盈利缓冲支撑再投资与价格竞争；其他利润定义不混入这一判断。"
                 if aws_profit_amount and google_profit_amount else
                 "各厂商利润定义不同；页面保留原披露口径和缺口，不把异口径利润混入同一判断。"
             ),
@@ -1666,14 +1672,14 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "id": "investment", "label": "资本开支", "visual": "rows",
             "metric": {"value": capex_leader["value"], "unit": "百万美元", "label": f"{capex_leader['name']} {capex_leader.get('period') or '最新披露期'}集团资本开支"},
             "context": "各公司最新已核验披露期 · 母公司集团口径 · 统一折算百万美元 · 原币明细保留",
-            "insight": f"{capex_leader['name']}集团资本开支{capex_leader['value']:g}百万美元、{capex_tail['name']}为{capex_tail['value']:g}百万美元；资源承载力明显分层，但集团投入并非云业务单独投入，不能据此判断投入转化效率。",
+            "insight": f"{capex_leader['name']}集团资本开支{capex_leader['value']:g}百万美元、{capex_tail['name']}为{capex_tail['value']:g}百万美元；资本军备能力分层意味着基础设施扩张承载空间不同，但集团投入并非云业务单独投入，不能据此判断投入转化效率。",
             "items": capex_items,
         },
     ]
     for focus in focuses:
         focus["headline"] = {
-            "revenue": "云收入形成头尾断层",
-            "profit": "云利润池向头部集中", "investment": "集团投入资源明显分层",
+            "revenue": "生态承载力形成头尾断层",
+            "profit": "盈利飞轮集中于头部", "investment": "资本军备能力明显分层",
         }[focus["id"]]
     return {
         "id": "cloud",
@@ -2027,18 +2033,18 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         ))
 
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "十年营收序列已入库",
+        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "跨国资源底盘形成分层",
          "metric": {"value": len(revenue_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
-         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入基础形成两层，表明竞争资源承载力不同，但不等同盈利能力。", "items": revenue_items},
-        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "调整后EBITDA绝对值",
+         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同，但营收规模不等同盈利能力。", "items": revenue_items},
+        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "经营缓冲厚度明显分化",
          "metric": {"value": len(ebitda_items), "unit": "家", "label": "FY2025已披露"},
-         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；经营现金创造代理形成梯队，意味着盈利缓冲厚度不同。", "items": ebitda_items},
-        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "净利润绝对值",
+         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；盈利缓冲分层意味着网络投入与价格竞争的经营容错不同。", "items": ebitda_items},
+        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "利润池控制力出现分化",
          "metric": {"value": len(profit_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
-         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分布明显分层，表明盈利韧性不同，但绝对值不等同盈利效率。", "items": profit_items},
-        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "后付费用户数与ARPU/ARPA",
+         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分层意味着自我融资、再投资与周期防守空间不同，但绝对值不等同盈利效率。", "items": profit_items},
+        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "客户规模与价值信号错位",
          "metric": {"value": len(postpaid_items), "unit": "家", "label": "口径差异已明示"},
-         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon为126.70百万连接、ARPA 170.61美元/月，NTT Group为93.06百万订阅、ARPU 26.48美元/月；客户基础与客户价值信号分化，但替代口径不可直接混排。", "items": postpaid_items},
+         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。", "items": postpaid_items},
     ]
     all_items = revenue_items + ebitda_items + profit_items + postpaid_items
     return {

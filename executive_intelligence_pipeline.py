@@ -34,7 +34,7 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
-INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
+INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
 
 FOCUS_RELATION_FEW_SHOTS = (
     "少样本约束：\n"
@@ -587,6 +587,63 @@ def _has_business_judgement(value: Any) -> bool:
     return _has_deep_interpretation(value)
 
 
+_OVERVIEW_STRATEGIC_HEADLINES = {
+    ("local", "revenue"): "持续竞争资源明显分层",
+    ("local", "ebitda"): "持续投入能力形成断层",
+    ("local", "net_profit"): "盈利防线出现两极分化",
+    ("local", "postpaid"): "经常性收入底盘分层",
+    ("international", "revenue"): "跨国资源底盘形成分层",
+    ("international", "ebitda"): "经营缓冲厚度明显分化",
+    ("international", "net_profit"): "利润池控制力出现分化",
+    ("international", "postpaid_arpu"): "客户规模与价值信号错位",
+    ("mainland", "revenue"): "规模优势固化资源壁垒",
+    ("mainland", "ebitda"): "现金创造支撑能力分层",
+    ("mainland", "net_profit"): "盈利韧性向头部集中",
+    ("mainland", "postpaid"): "客户价值判断出现盲区",
+    ("cloud", "revenue"): "生态承载力形成头尾断层",
+    ("cloud", "profit"): "盈利飞轮集中于头部",
+    ("cloud", "investment"): "资本军备能力明显分层",
+}
+
+_OVERVIEW_STRATEGIC_HEADLINE_VARIANTS = {
+    ("local", "revenue"): ("持续竞争资源明显分层", "网络与获客投入空间分化", "规模底盘拉开防守容错"),
+    ("local", "ebitda"): ("持续投入能力形成断层", "价格竞争缓冲明显分化", "经营容错空间拉开层次"),
+    ("local", "net_profit"): ("盈利防线出现两极分化", "自我融资空间明显分层", "再投资能力呈现断层"),
+    ("local", "postpaid"): ("经常性收入底盘分层", "客户保有风险明显分化", "续约底盘拉开层次"),
+    ("international", "revenue"): ("跨国资源底盘形成分层", "网络与渠道投入空间分化", "全球获客资源承载力分层"),
+    ("international", "ebitda"): ("经营缓冲厚度明显分化", "价格竞争容错拉开层次", "持续网络投入能力分层"),
+    ("international", "net_profit"): ("利润池控制力出现分化", "自我融资与再投资空间分层", "周期防守能力拉开差距"),
+    ("international", "postpaid_arpu"): ("客户规模与价值信号错位", "客户质量不能只看规模", "客户经营底盘口径分化"),
+    ("mainland", "revenue"): ("规模优势固化资源壁垒", "网络与获客投入能力分层", "经营防守资源拉开层次"),
+    ("mainland", "ebitda"): ("现金创造支撑能力分层", "持续投入缓冲明显分化", "价格竞争容错拉开差距"),
+    ("mainland", "net_profit"): ("盈利韧性向头部集中", "自我融资能力形成断层", "再投资空间明显分化"),
+    ("mainland", "postpaid"): ("客户价值判断出现盲区", "客户收入底盘缺少抓手", "客户经营战略存在盲区"),
+    ("cloud", "revenue"): ("生态承载力形成头尾断层", "生态扩张资源明显分层", "基础设施投入空间分化"),
+    ("cloud", "profit"): ("盈利飞轮集中于头部", "再投资与价格竞争空间分层", "盈利缓冲拉开生态差距"),
+    ("cloud", "investment"): ("资本军备能力明显分层", "基础设施扩张空间分化", "持续扩容能力形成断层"),
+}
+
+_OVERVIEW_DIRECT_HEADLINE_TERMS = (
+    "FY", "财年", "营收", "EBITDA", "净利润", "后付费用户", "云收入", "云利润", "资本开支",
+    "金额", "绝对值", "序列", "入库", "披露", "口径", "数据", "待补", "重新判断", "按三来源",
+)
+
+_OVERVIEW_STRATEGIC_MEANING_TERMS = (
+    "持续投入", "竞争投入", "网络投入", "客户获取", "客户保有", "价格竞争", "价格战", "经营容错",
+    "自我融资", "再投资", "经常性收入", "收入底盘", "客户价值", "客户质量", "续约", "流失",
+    "生态扩张", "资本军备", "基础设施", "客户经营战略",
+)
+
+
+def _strategic_focus_headline(
+    domain: str, focus_id: str, fallback: Any = "", *, variant_index: int = 0
+) -> str:
+    variants = _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS.get((domain, focus_id))
+    if variants:
+        return variants[variant_index % len(variants)]
+    return _OVERVIEW_STRATEGIC_HEADLINES.get((domain, focus_id), str(fallback or "").strip())
+
+
 def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
     if re.match(r"^(?:但|但是|然而|而|这说明|这表明|这意味着|因此)", analysis) or re.search(
         r"(?:意味着|说明|表明)中(?:[，,。！？!?]|$)|存在差距个|(?:变化|观察)[，,]分别为", analysis
@@ -602,6 +659,12 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         )
     if _contains_action_advice(analysis):
         return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}"
+    if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and not any(
+        term in analysis for term in _OVERVIEW_STRATEGIC_MEANING_TERMS
+    ):
+        return f"AI分析分类仍停留在报数，缺少当前格子的战略意义：{domain}.{focus_id}"
+    if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and "不能纳入这一判断" in analysis:
+        return f"AI分析引用有效竞对数值后又排除该竞对，判断自相矛盾：{domain}.{focus_id}"
     unsupported_causal = tuple(
         term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
         if term in analysis and not any(boundary in analysis for boundary in ("不能判断", "无法判断", "不能建立", "不代表"))
@@ -1182,6 +1245,11 @@ def _validate_model_summaries(
                     validated_focus["origin"] = "evidence_rule"
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
+                if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and (
+                    not validated_focus["headline"]
+                    or any(term in validated_focus["headline"] for term in _OVERVIEW_DIRECT_HEADLINE_TERMS)
+                ):
+                    validated_focus["headline"] = _strategic_focus_headline(domain, focus_id)
                 if (domain, focus_id) == ("local", "financials") and any(
                     term in validated_focus["headline"]
                     for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
@@ -1553,28 +1621,28 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             if focus_id == "revenue":
                 return (
                     f"{high_name} FY2025营收{high_value}{unit}，{low_name}{low_value}{unit}；"
-                    "可披露收入规模差距形成头尾梯队，意味着竞争资源承载力不在同一量级，但不等同经营效率。"
+                    "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。"
                 )
             if focus_id == "ebitda":
                 return (
                     f"{high_name} FY2025 EBITDA为{high_value}{unit}，{low_name}{low_value}{unit}；"
-                    "经营现金创造代理形成梯队，表明盈利缓冲厚度不同，但不直接等同现金流质量。"
+                    "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。"
                 )
             if focus_id == "net_profit":
                 low_signal = "已为负值" if float(low.get("value") or 0) < 0 else "位于样本尾部"
                 return (
                     f"{high_name} FY2025净利润{high_value}{unit}，{low_name}{low_value}{unit}且{low_signal}；"
-                    "利润绝对值断层表明盈利韧性明显分化，而非单纯规模差异。"
+                    "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。"
                 )
             return (
                 f"{high_name} FY2025后付费用户{high_value}{unit}，{low_name}{low_value}{unit}；"
-                "客户基础规模形成梯队，意味着经常性收入基础不同，但未结合ARPU不能判断客户价值。"
+                "经常性收入底盘形成梯队，意味着尾部续约与流失波动风险更高；未结合ARPU仍不能判断客户价值。"
             )
         if focus_id == "postpaid":
             named = "、".join(str(item.get("name") or "") for item in focus.get("items") or [] if item.get("name"))
             return (
                 f"{named}当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，"
-                "竞争结构判断不能由移动或5G用户总量替代。"
+                "客户经营战略因此缺少关键判断抓手，且不能由移动或5G用户总量替代。"
             )
     if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"} and items:
         high, low = items[0], items[-1]
@@ -1583,17 +1651,17 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         if focus_id == "revenue":
             return (
                 f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
-                "统一汇率后收入基础形成两层，表明竞争资源承载力不同，但营收规模不等同于盈利能力。"
+                "收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同；营收规模仍不等同盈利能力。"
             )
         if focus_id == "ebitda":
             return (
                 f"{high_name} EBITDA约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "经营现金创造代理形成梯队，意味着盈利缓冲厚度不同；非GAAP调整口径仍不可直接等同。"
+                "盈利缓冲分层意味着网络投入与价格竞争的经营容错不同；非GAAP调整口径仍不可直接等同。"
             )
         if focus_id == "net_profit":
             return (
                 f"{high_name} FY2025净利润约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "利润池分布明显分层，表明盈利韧性不同，但绝对值不等同于盈利效率。"
+                "利润池分层意味着自我融资、再投资与周期防守空间不同；绝对值仍不等同盈利效率。"
             )
         verizon = by_name.get("Verizon") or high
         ntt = by_name.get("NTT Group") or low
@@ -1606,9 +1674,9 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             None,
         )
         return (
-            f"Verizon {_display_number(verizon.get('value'))}百万后付费连接、ARPA {_display_number(verizon_arpu)}美元/月；"
+            f"Verizon {_display_number(verizon.get('value'))}百万连接、ARPA {_display_number(verizon_arpu)}美元/月；"
             f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅替代口径、ARPU {_display_number(ntt_arpu)}美元/月。"
-            "客户基础接近但单客价值信号分化；定义不同，规模不可直接混排。"
+            "客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。"
         )
     if strategic_fallback and _has_deep_interpretation(strategic_fallback):
         return strategic_fallback
@@ -1681,7 +1749,7 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         return (
             f"最高的{high.get('name')} FY2024云收入{_display_number(high.get('value'))}百万美元，"
             f"最低的{low.get('name')}{_display_number(low.get('value'))}百万美元；"
-            "云收入基础呈头尾断层，意味着生态与资源承载力分层；代理分部与重分类口径仍不能直接等同。"
+            "云收入底盘断层意味着头部具备更强生态扩张与基础设施持续投入空间；代理分部与重分类口径仍不能直接等同。"
         )
     if (domain, focus_id) == ("cloud", "trend") and items:
         high, low = items[0], items[-1]
@@ -1694,13 +1762,13 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         high, low = (direct[0], direct[-1]) if len(direct) >= 2 else (items[0], items[-1])
         return (
             f"同属经营利润披露的{high.get('name')} FY2024为{_display_number(high.get('value'))}百万美元，"
-            f"{low.get('name')}为{_display_number(low.get('value'))}百万美元；利润池向头部集中，表明云业务盈利缓冲呈头部主导梯队。"
+            f"{low.get('name')}为{_display_number(low.get('value'))}百万美元；利润池向头部集中并形成主导梯队，意味着头部可用更厚盈利缓冲支撑再投资与价格竞争。"
         )
     if (domain, focus_id) == ("cloud", "investment") and items:
         high, low = items[0], items[-1]
         return (
             f"{high.get('name')} FY2024集团资本开支{_display_number(high.get('value'))}百万美元，"
-            f"{low.get('name')}{_display_number(low.get('value'))}百万美元；资源承载力明显分层，"
+            f"{low.get('name')}{_display_number(low.get('value'))}百万美元；资本军备能力明显分层，意味着基础设施扩张承载空间不同，"
             "但集团投入并非云业务单独投入，不能据此判断投入转化效率。"
         )
     if (domain, focus_id) == ("cloud", "disclosure"):
@@ -1773,6 +1841,11 @@ def _deterministic_domain_summaries(
                 "focuses": [
                     {
                         "id": str(focus.get("id") or ""),
+                        "headline": _strategic_focus_headline(
+                            str(domain.get("id") or ""),
+                            str(focus.get("id") or ""),
+                            focus.get("headline"),
+                        ),
                         "analysis": _deterministic_focus_analysis(
                             str(domain.get("id") or ""),
                             focus,
@@ -2460,11 +2533,14 @@ def generate_model_focus_insight(
                 "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
                 "任务不是解释指标，而是比较当前items中至少两个竞对、期间或指标，找出数据关系及其有界经营含义。"
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
-                "不得复用旧版标题。只能使用输入数字和事实。"
+                "不得复用旧版标题。标题必须直接概括这组数字对持续投入、竞争防守、客户收入底盘、盈利飞轮或资本军备的意义；"
+                "禁止用年份、指标名、金额、绝对值、序列、入库、披露、口径、数据或重新判断充当标题。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、集中度、"
                 "口径可比性、市场阶段或指标关系判断；结论还必须落到资源承载、现金创造、盈利韧性、"
                 "利润池、投入转化、客户价值、收入基础或竞争结构中的至少一项；换一个有效分析角度，不能解释指标定义、"
-                "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value；"
+                "复述高低增减、给行动建议或编造因果。正文必须进一步落到持续投入能力、价格竞争容错、客户获取/保有、"
+                "自我融资/再投资、生态扩张或基础设施资本军备中的至少一项，不能以‘形成梯队’作为句号。所有数字必须原样选自metric.value或items.value；"
+                "引用某个有效items.value后不得又说该主体‘不能纳入这一判断’；只有value为空或输入明确标注代理口径时才可作为边界。"
                 "local.financials还可原样选自items.metrics.value。禁止自行加总、计算占比或创造衍生数字。"
                 "结论必须使用表明、说明、意味着、主要来自、并非、而非或不能等同中的至少一个连接词。"
                 "必须严格遵守输入scope，只能总结当前页，"
@@ -2586,6 +2662,12 @@ def generate_model_focus_insight(
                 recent_headlines=[] if scale_has_record_counts else recent_headlines,
                 forbidden_terms=forbidden_headline_terms,
             )
+            if (domain_id, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and any(
+                term in headline for term in _OVERVIEW_DIRECT_HEADLINE_TERMS
+            ):
+                headline = _strategic_focus_headline(
+                    domain_id, focus_id, variant_index=regeneration_index - 1 + attempt
+                )
             if (domain_id, focus_id) == ("local", "financials") and (
                 "重要财务指标" in headline
                 or "重新" in headline
@@ -2606,17 +2688,20 @@ def generate_model_focus_insight(
             ]
             if max(headline_similarities, default=0.0) >= 0.96:
                 label = str(focus.get("label") or "当前指标").strip()
-                fallback_headlines = (
-                    f"{label}呈现头尾断层",
-                    f"{label}形成梯队分化",
-                    f"{label}分布明显失衡",
-                    f"{label}集中于头部主体",
-                    f"{label}尾部显著分化",
-                    f"{label}结构出现分层",
-                    f"{label}头部优势扩大",
-                    f"{label}供给呈现偏态",
-                    f"{label}主体差异拉开",
-                    f"{label}层次重新分化",
+                fallback_headlines = _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS.get(
+                    (domain_id, focus_id),
+                    (
+                        f"{label}呈现头尾断层",
+                        f"{label}形成梯队分化",
+                        f"{label}分布明显失衡",
+                        f"{label}集中于头部主体",
+                        f"{label}尾部显著分化",
+                        f"{label}结构出现分层",
+                        f"{label}头部优势扩大",
+                        f"{label}供给呈现偏态",
+                        f"{label}主体差异拉开",
+                        f"{label}层次重新分化",
+                    ),
                 )
                 fallback_start = (regeneration_index - 1 + attempt) % len(fallback_headlines)
                 headline = next(
@@ -2736,6 +2821,8 @@ def generate_model_focus_insight(
                 "同期间业绩形成梯队",
             )
             repaired_headline = financial_headlines[(regeneration_index - 1) % len(financial_headlines)]
+        elif (domain_id, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES:
+            repaired_headline = _strategic_focus_headline(domain_id, focus_id)
         else:
             repaired_headline = _normalize_fresh_focus_headline(
                 "",
@@ -2843,7 +2930,9 @@ def generate_model_domain_summaries(
         "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
         "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
         "全部17个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
-        "focus.headline必须是关系判断，不能照抄页签或指标名称。"
+        "focus.headline必须是战略意义判断，不能照抄页签或指标名称，也不能用年份、金额、绝对值、序列、入库、披露、口径或数据作标题。"
+        "overview四区域的focus正文在引用具体数字后，必须继续说明其对持续投入、价格竞争容错、客户收入底盘、"
+        "自我融资与再投资、生态扩张或基础设施资本军备的意义，不能停在高低、分层或梯队描述。"
         "每个focus至少比较两个竞对、两个期间或两个指标；无法同口径比较时，结论必须是不可比边界而非强行排名。"
         "禁止无证据写领先、竞争力、定价权、导致、造成、推动、带来、源于或驱动；少于3个可比对象时明确样本边界。"
         "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
@@ -2859,7 +2948,7 @@ def generate_model_domain_summaries(
     user_prompt = (
         f"请分析输入中的领域：{', '.join(requested_domain_ids)}。返回{{\"items\":[...]}}，每项字段严格为"
         "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
-        "id, analysis, risk, source_urls, entities；entities每项字段严格为"
+        "id, headline, analysis, risk, source_urls, entities；entities每项字段严格为"
         "name, headline, analysis, risk, evidence_labels, source_urls。不要Markdown。输入：\n"
         + json.dumps(evidence, ensure_ascii=False)
     )

@@ -77,12 +77,60 @@ class RequestedOverview010304Tests(unittest.TestCase):
 
     def test_default_focus_copy_states_strategic_findings_not_display_instructions(self):
         forbidden = ("只展示金额", "只展示FY2024", "只复述")
-        required = ("资源承载", "盈利缓冲", "盈利韧性", "利润池", "客户价值", "收入基础", "投入转化")
+        required = (
+            "资源承载", "持续投入", "经营容错", "盈利缓冲", "盈利韧性", "利润池", "客户价值",
+            "收入基础", "收入底盘", "自我融资", "再投资", "生态扩张", "资本军备", "投入转化",
+        )
         for domain in self.snapshot["domains"]:
             for focus in domain["focuses"]:
                 insight = str(focus.get("insight") or "")
                 self.assertFalse(any(term in insight for term in forbidden), f"{domain['id']}:{focus['id']}:{insight}")
                 self.assertTrue(any(term in insight for term in required), f"{domain['id']}:{focus['id']}:{insight}")
+
+    def test_every_overview_focus_has_a_strategic_meaning_headline(self):
+        forbidden = (
+            "FY", "营收", "EBITDA", "净利润", "后付费用户", "云收入", "云利润", "资本开支",
+            "金额", "绝对值", "序列", "入库", "披露", "口径", "数据", "待补", "重新判断", "按三来源",
+        )
+        for domain in self.snapshot["domains"]:
+            for focus in domain["focuses"]:
+                headline = str(focus.get("headline") or "")
+                self.assertTrue(headline, f"{domain['id']}:{focus['id']}")
+                self.assertFalse(any(term in headline for term in forbidden), f"{domain['id']}:{focus['id']}:{headline}")
+
+    def test_deterministic_ai_copy_keeps_specific_numbers_and_adds_strategic_meaning(self):
+        evidence = pipeline._analysis_input_snapshot()
+        summaries = pipeline._deterministic_domain_summaries(evidence)
+        direct_headline_terms = pipeline._OVERVIEW_DIRECT_HEADLINE_TERMS
+        strategic_terms = pipeline._OVERVIEW_STRATEGIC_MEANING_TERMS
+        for summary in summaries:
+            for focus in summary["focuses"]:
+                key = (summary["domain"], focus["id"])
+                if key not in pipeline._OVERVIEW_STRATEGIC_HEADLINES:
+                    continue
+                self.assertEqual(focus["headline"], pipeline._OVERVIEW_STRATEGIC_HEADLINES[key])
+                self.assertFalse(any(term in focus["headline"] for term in direct_headline_terms))
+                self.assertTrue(pipeline._numeric_tokens(focus["analysis"]), key)
+                self.assertTrue(any(term in focus["analysis"] for term in strategic_terms), key)
+
+    def test_overview_gate_rejects_generic_rank_restatement(self):
+        focus = next(item for item in self.domains["local"]["focuses"] if item["id"] == "revenue")
+        generic = "HKT FY2025营收36553百万港元，3HK为5448百万港元；收入规模形成梯队，意味着资源承载力不同。"
+        self.assertIn(
+            "缺少当前格子的战略意义",
+            pipeline._focus_gate_error("local", "revenue", generic, focus),
+        )
+
+    def test_overview_gate_rejects_contradictory_competitor_exclusion(self):
+        focus = next(item for item in self.domains["local"]["focuses"] if item["id"] == "ebitda")
+        contradictory = (
+            "HKT EBITDA为14234百万港元，SmarTone与3HK分别为2445.1和1508百万港元，"
+            "不能纳入这一判断；盈利缓冲分层意味着持续投入与价格竞争容错不同。"
+        )
+        self.assertIn(
+            "判断自相矛盾",
+            pipeline._focus_gate_error("local", "ebitda", contradictory, focus),
+        )
 
     def test_only_triple_source_values_are_admitted_for_requested_gaps(self):
         local = {focus["id"]: focus for focus in self.domains["local"]["focuses"]}
