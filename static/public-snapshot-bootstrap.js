@@ -32,7 +32,7 @@
         permissions: { modules: {
           dashboard: true, monitoring: true, competitor: true, news: true,
           weekly: true, performance: true, review: true, log: true, fault: true,
-          subscriptions: false, ai: false, organization: true,
+          subscriptions: true, ai: true, organization: true,
         } },
       },
     }],
