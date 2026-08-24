@@ -10,10 +10,10 @@
       "scope": "晨间扫描（2026-08-24@09:00）",
       "run_status": "running",
       "phase": "AI批量审核",
-      "progress_detail": "开始剩余未命中缓存队列第 95/132 批，剩余候选 377-380/526，本轮已复用 1 条，本批 4 条。",
+      "progress_detail": "开始剩余未命中缓存队列第 110/132 批，剩余候选 437-440/526，本轮已复用 1 条，本批 4 条。",
       "status_detail": "",
       "started_at_hkt": "2026-08-24T09:00:45+08:00",
-      "heartbeat_at_hkt": "2026-08-24T09:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-24T09:43:05+08:00",
       "completed_at_hkt": "",
       "duration_ms": 0,
       "retry_index": 0
