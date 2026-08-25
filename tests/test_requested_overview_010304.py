@@ -71,6 +71,9 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn("Math.min(8, components.length)", app)
         self.assertIn("components.slice(0, 8)", app)
         self.assertIn('entity.period === "2026首7月" ? "2026首7月累计"', app)
+        self.assertIn('item.period === "2026首7月"', app)
+        self.assertIn("intelligence-period-prefix", app)
+        self.assertIn("intelligence-period-prefix", styles)
         self.assertIn("intelligence-entity-period-note", styles)
         self.assertIn(".intelligence-domain-local .intelligence-entity-focus:not(.is-overview)", styles)
 
