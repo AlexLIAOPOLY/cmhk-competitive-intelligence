@@ -532,14 +532,14 @@
           "id": "revenue",
           "label": "营收",
           "visual": "rows",
-          "headline": "持续竞争资源明显分层",
+          "headline": "HKT资源底盘最厚",
           "metric": {
             "value": 36553.0,
             "unit": "百万港元",
             "label": "HKT FY2025"
           },
           "context": "CMHK为2026首7月累计；其他公司当前卡片显示FY2025",
-          "insight": "HKT为36553.0百万港元，CMHK为4544.6百万港元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
+          "insight": "HKT为36553.0百万港元，CMHK为4544.6百万港元；这表明HKT的经营资源底盘最厚，更能承担网络与获客投入，CMHK的资源容错较窄；规模不等同效率。",
           "items": [
             {
               "name": "CMHK",
@@ -1064,14 +1064,14 @@
           "id": "ebitda",
           "label": "EBITDA",
           "visual": "rows",
-          "headline": "持续投入能力形成断层",
+          "headline": "HKT造血能力最强",
           "metric": {
             "value": 14234.0,
             "unit": "百万港元",
             "label": "HKT FY2025"
           },
           "context": "2016–2025原表；当前卡片显示FY2025",
-          "insight": "HKT为14234.0百万港元，3HK为1508.0百万港元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
+          "insight": "HKT为14234.0百万港元，3HK为1508.0百万港元；这表明HKT的经营造血代理最强，持续投入与价格竞争缓冲更厚，3HK的防守容错更窄。",
           "items": [
             {
               "name": "CMHK",
@@ -1560,14 +1560,14 @@
           "id": "net_profit",
           "label": "净利润",
           "visual": "rows",
-          "headline": "盈利防线出现两极分化",
+          "headline": "HKT稳健三港承压",
           "metric": {
             "value": 5286.0,
             "unit": "百万港元",
             "label": "HKT FY2025"
           },
           "context": "CMHK为2026首7月累计；其他公司当前卡片显示FY2025",
-          "insight": "HKT为5286.0百万港元，3HK为-25.0百万港元；利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+          "insight": "HKT为5286.0百万港元，3HK为-25.0百万港元；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
           "items": [
             {
               "name": "CMHK",
@@ -1993,14 +1993,14 @@
           "id": "postpaid",
           "label": "后付费用户数",
           "visual": "rows",
-          "headline": "经常性收入底盘分层",
+          "headline": "HKT客户底盘更稳",
           "metric": {
             "value": 3.494,
             "unit": "百万户",
             "label": "HKT FY2025"
           },
           "context": "只展示公司原生后付费用户数",
-          "insight": "HKT为3.494百万户，3HK为1.289百万户；经常性收入底盘形成梯队，意味着尾部续约与流失波动风险更高；未结合ARPU仍不能判断客户价值。",
+          "insight": "HKT为3.494百万户，3HK为1.289百万户；这表明HKT的客户经营底盘更厚，3HK的续约与交叉销售基础较窄；未结合ARPU不判断客户价值。",
           "items": [
             {
               "name": "CMHK",
@@ -2837,14 +2837,14 @@
           "id": "revenue",
           "label": "营收",
           "visual": "rows",
-          "headline": "跨国资源底盘形成分层",
+          "headline": "Verizon资源底盘领先",
           "metric": {
             "value": 138.19,
             "unit": "十亿美元",
             "label": "Verizon FY2025"
           },
           "context": "统一为十亿美元；原币明细保留",
-          "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同，但营收规模不等同盈利能力。",
+          "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；这表明Verizon的跨国经营资源底盘更厚，更能承担网络、渠道与获客投入，但营收不等同盈利能力。",
           "items": [
             {
               "name": "Verizon",
@@ -3101,14 +3101,14 @@
           "id": "ebitda",
           "label": "EBITDA",
           "visual": "rows",
-          "headline": "经营缓冲厚度明显分化",
+          "headline": "美德双强造血",
           "metric": {
             "value": 50.0,
             "unit": "十亿美元",
             "label": "Verizon FY2025"
           },
           "context": "统一为十亿美元；非GAAP调整项存在公司差异",
-          "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；盈利缓冲分层意味着网络投入与价格竞争的经营容错不同。",
+          "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；这表明美德两家的经营造血代理更强，网络投入与价战容错更厚。",
           "items": [
             {
               "name": "Verizon",
@@ -3241,14 +3241,14 @@
           "id": "net_profit",
           "label": "净利润",
           "visual": "rows",
-          "headline": "利润池控制力出现分化",
+          "headline": "AT&T自我融资最强",
           "metric": {
             "value": 21.95,
             "unit": "十亿美元",
             "label": "AT&T FY2025"
           },
           "context": "统一为十亿美元",
-          "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分层意味着自我融资、再投资与周期防守空间不同，但绝对值不等同盈利效率。",
+          "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；这表明AT&T当期自我融资、再投资与周期防守空间更厚，但绝对值不等同盈利效率。",
           "items": [
             {
               "name": "Verizon",
@@ -3505,14 +3505,14 @@
           "id": "postpaid_arpu",
           "label": "后付费用户数",
           "visual": "rows",
-          "headline": "客户规模与价值信号错位",
+          "headline": "Verizon客户经营信号最强",
           "metric": {
             "value": 126.7,
             "unit": "百万",
             "label": "Verizon FY2025"
           },
           "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径",
-          "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。",
+          "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅、ARPU 26.48美元/月。Verizon在自身口径下同时呈现大规模与高账户价值信号；NTT为替代口径，不可混排。",
           "items": [
             {
               "name": "Verizon",
@@ -4419,14 +4419,14 @@
           "id": "revenue",
           "label": "营收",
           "visual": "rows",
-          "headline": "规模优势固化资源壁垒",
+          "headline": "中国移动资源底盘最强",
           "metric": {
             "value": 10501.87,
             "unit": "亿元",
             "label": "中国移动 FY2025"
           },
           "context": "2016–2025原表；当前卡片显示FY2025",
-          "insight": "中国移动为10501.87亿元，中国联通为3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
+          "insight": "中国移动为10501.87亿元，中国联通为3922.23亿元；这表明中国移动的经营资源底盘最厚，更能承担网络与获客投入，中国联通的资源容错较窄；规模不等同效率。",
           "items": [
             {
               "name": "中国移动",
@@ -4886,14 +4886,14 @@
           "id": "ebitda",
           "label": "EBITDA",
           "visual": "rows",
-          "headline": "现金创造支撑能力分层",
+          "headline": "中国移动造血能力最强",
           "metric": {
             "value": 3389.31,
             "unit": "亿元",
             "label": "中国移动 FY2025"
           },
           "context": "FY2025 EBITDA金额",
-          "insight": "中国移动为3389.31亿元，中国电信为1438.72亿元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
+          "insight": "中国移动为3389.31亿元，中国电信为1438.72亿元；这表明中国移动的经营造血代理最强，持续投入与价格竞争缓冲更厚，中国电信的防守容错更窄。",
           "items": [
             {
               "name": "中国移动",
@@ -5348,14 +5348,14 @@
           "id": "net_profit",
           "label": "净利润",
           "visual": "rows",
-          "headline": "盈利韧性向头部集中",
+          "headline": "中国移动盈利韧性最强",
           "metric": {
             "value": 1370.95,
             "unit": "亿元",
             "label": "中国移动 FY2025"
           },
           "context": "FY2025净利润金额",
-          "insight": "中国移动为1370.95亿元，中国联通为208.16亿元；利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+          "insight": "中国移动为1370.95亿元，中国联通为208.16亿元；这表明中国移动盈利状态最稳、自我融资与再投资空间最厚，中国联通的盈利防线明显承压。",
           "items": [
             {
               "name": "中国移动",
@@ -5815,14 +5815,14 @@
           "id": "postpaid",
           "label": "移动客户数",
           "visual": "rows",
-          "headline": "客户覆盖底盘形成断层",
+          "headline": "中国移动客户底盘最厚",
           "metric": {
             "value": 10.05,
             "unit": "亿户",
             "label": "中国移动 FY2025"
           },
           "context": "公司披露的移动客户/移动用户；联通约值为官方期初加全年净增推导",
-          "insight": "中国移动为10.05亿户，中国联通为3.573亿户；客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
+          "insight": "中国移动为10.05亿户，中国联通为3.573亿户；这表明中国移动的客户经营底盘更厚，交叉销售与网络规模摊薄基础更广，中国联通的底盘较窄；未结合ARPU不判断客户价值。",
           "items": [
             {
               "name": "中国移动",
@@ -7095,7 +7095,7 @@
             "label": "AWS FY2025云收入"
           },
           "context": "FY2025最新已核验披露 · 覆盖 8 家全球云厂商 · 统一折算百万美元",
-          "insight": "AWS云收入128725百万美元、Huawei为4511.3百万美元；收入底盘断层意味着头部具备更强生态扩张与基础设施持续投入空间，但代理分部和重分类口径仍需单列。",
+          "insight": "AWS云收入128725百万美元、Huawei为4511.3百万美元；这表明AWS的云业务生态底盘最厚，持续投入能力更强，Huawei资源弹性较窄。",
           "items": [
             {
               "name": "AWS",
@@ -8004,7 +8004,7 @@
               "ai_summary": {}
             }
           ],
-          "headline": "生态承载力形成头尾断层",
+          "headline": "AWS生态底盘领先",
           "ai_summary": {}
         },
         {
@@ -8017,7 +8017,7 @@
             "label": "AWS FY2025云利润"
           },
           "context": "按各厂商原生利润定义标注 · 统一折算百万美元",
-          "insight": "同属经营利润披露的AWS为45606百万美元、Google为13910百万美元；利润池向头部集中并形成主导梯队，意味着头部可用更厚盈利缓冲支撑再投资与价格竞争；其他利润定义不混入这一判断。",
+          "insight": "同属经营利润披露的AWS为45606百万美元、Google为13910百万美元；这表明AWS的云业务自我造血能力更强，可用更厚盈利缓冲支撑再投资与价格竞争；其他利润定义不混入这一判断。",
           "items": [
             {
               "name": "AWS",
@@ -8848,7 +8848,7 @@
               "ai_summary": {}
             }
           ],
-          "headline": "盈利飞轮集中于头部",
+          "headline": "AWS自我造血能力最强",
           "ai_summary": {}
         },
         {
@@ -8861,7 +8861,7 @@
             "label": "AWS FY2024集团资本开支"
           },
           "context": "各公司最新已核验披露期 · 母公司集团口径 · 统一折算百万美元 · 原币明细保留",
-          "insight": "AWS集团资本开支77658百万美元、Alibaba为4444百万美元；资本军备能力分层意味着基础设施扩张承载空间不同，但集团投入与云业务单独投入不能等同，也不能据此判断投入转化效率。",
+          "insight": "AWS集团资本开支77658百万美元、Alibaba为4444百万美元；这表明AWS的基础设施扩容弹药更足，Alibaba的集团投入空间较窄；集团投入不等同云业务单独投入，也不能证明投入转化效率。",
           "items": [
             {
               "name": "Google",
@@ -9588,7 +9588,7 @@
               "ai_summary": {}
             }
           ],
-          "headline": "资本军备能力明显分层",
+          "headline": "AWS扩容弹药最足",
           "ai_summary": {}
         }
       ],
@@ -9978,7 +9978,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "929137fe8d20123b7900f55a841b159979f993e7c9c13b98bd282c4e3722b9ab",
+    "evidence_hash": "b1babc0f3c49ebc22d0769bfa0c2b27e41840870bd7f358e97eed2e856ebf1de",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
