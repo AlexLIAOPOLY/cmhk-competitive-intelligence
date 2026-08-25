@@ -554,6 +554,7 @@
 .news-lineage-group > span { color: #638b97; font-size: 8px; }
 .news-lineage.is-global .news-lineage-group > strong { font-size: 13px; }
 .news-lineage.is-global .news-lineage-group > span { font-size: 10px; }
+.news-lineage-lane-label { position: absolute; z-index: 2; padding: 4px 10px; border-left: 3px solid #61cadc; color: #d8eef2; background: linear-gradient(90deg,rgba(35,96,112,.46),transparent); font-size: 12px; font-weight: 750; letter-spacing: .06em; line-height: 1; pointer-events: none; }
 .news-lineage-nodes { position: absolute; inset: 0; z-index: 2; }
 .news-lineage-node { --node-accent:#58bdd2; position: absolute; display: grid; width: 168px; min-height: 112px; align-content: start; gap: 5px; padding: 13px 13px 11px; touch-action: manipulation; border: 1px solid rgba(79,128,145,.78); border-radius: 10px; color: #d8e9ed; background: linear-gradient(150deg,rgba(15,48,62,.98),rgba(6,27,38,.98)); box-shadow: 0 12px 26px rgba(0,8,14,.25),inset 0 1px rgba(221,249,253,.04); text-align: left; cursor: pointer; user-select: none; }
 .news-lineage-node:active { cursor: pointer; }

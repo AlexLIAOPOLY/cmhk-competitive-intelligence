@@ -1240,8 +1240,7 @@
     "database-international": /\[国际运营商\]|\[发布审核事实\]/,
     "database-cloud": /\[全球云厂商\]|\[发布审核事实\]/,
     "database-mainland": /\[内地运营商\]|\[发布审核事实\]/,
-    insights: /\[生成AI洞察\]/,
-    consumers: /\[更新主页UI\]|\[任务完成\]/,
+    insights: /\[生成AI洞察\]|\[更新主页UI\]|\[任务完成\]/,
   };
 
   function actualEventMeta(rawLine, index) {
@@ -1289,7 +1288,7 @@
   const newsErrorStageLabels = {
     strategic_news: "战略新闻任务",
     scheduled_cutoff: "战略新闻调度截止",
-    financial_frontend_publish: "情报进入业务入口 / 前端发布",
+    financial_frontend_publish: "AI洞察与业务应用 / 前端发布",
     executive_intelligence_refresh: "四库更新",
   };
 
@@ -1300,7 +1299,7 @@
     if (/新闻索引|搜索|检索|查询/.test(text)) return { label: "线索补缺 / 检索", nodeKey: "news-search" };
     if (/AI审核|AI 审核|模型调用|模型返回/.test(text)) return { label: "AI审核", nodeKey: "news-ai" };
     if (/语义去重|历史去重|重复判定/.test(text)) return { label: "历史去重", nodeKey: "news-dedupe" };
-    if (/financial_frontend_publish|前端发布|publish_executive_dashboard_pages|\/api\/status/.test(text)) return { label: "情报进入业务入口 / 前端发布", nodeKey: "consumers" };
+    if (/financial_frontend_publish|前端发布|publish_executive_dashboard_pages|\/api\/status/.test(text)) return { label: "AI洞察与业务应用 / 前端发布", nodeKey: "insights" };
     const rowMatch = text.match(/第\s*(\d+)\s*行失败/);
     if (rowMatch) return { label: `03:00 主爬虫 / 第 ${rowMatch[1]} 行网页抓取`, nodeKey: "main" };
     if (/AGENT_TRACE|数据整理|Agent/.test(text)) return { label: "Agent 证据审核", nodeKey: "agent" };
@@ -1388,7 +1387,7 @@
       }));
     }
     if (nodeKey === "insights") {
-      return domains.flatMap((domain) => {
+      const insightRecords = domains.flatMap((domain) => {
         if (!String(domain.ai_updated_at || "").startsWith(state.newsSelectedDate)) return [];
         return (domain.ai_analysis || []).map((item) => ({
           title: `${item.company || domain.title || "未分类"} · ${item.metric || "AI洞察"}`,
@@ -1401,6 +1400,10 @@
           publishedAt: domain.ai_updated_at || "",
         }));
       });
+      const intelligenceRun = lineageRunsForNode(nodeKey)[0];
+      const publish = intelligenceRun?.operational_summary?.pages_publish;
+      if (publish) insightRecords.push({ title: "主页与公开页发布", summary: publish.status || "", source: publish.public_url || "", status: publish.ok ? "included" : "excluded", resultLabel: publish.ok ? "发布通过" : "发布失败", reason: publish.error || publish.status || "", publishedAt: intelligenceRun.completed_at_hkt || "" });
+      return insightRecords;
     }
     return [];
   }
@@ -1414,13 +1417,6 @@
       });
     }
     if (nodeKey === "database-hub" || nodeKey.startsWith("database-") || nodeKey === "insights") return executiveNodeRecords(nodeKey);
-    if (nodeKey === "consumers") {
-      return relatedRuns.flatMap((run) => {
-        const publish = run.operational_summary?.pages_publish;
-        if (!publish) return [];
-        return [{ title: "主页与公开页发布", summary: publish.status || "", source: publish.public_url || "", status: publish.ok ? "included" : "excluded", resultLabel: publish.ok ? "发布通过" : "发布失败", reason: publish.error || publish.status || "", publishedAt: run.completed_at_hkt || "", run }];
-      });
-    }
     return [];
   }
 
@@ -1544,6 +1540,7 @@
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
+              ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
               <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health"><i aria-hidden="true"></i>${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
