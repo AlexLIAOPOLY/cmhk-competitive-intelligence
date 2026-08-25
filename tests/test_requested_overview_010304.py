@@ -20,7 +20,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertEqual(
             [(domain["index"], domain["id"], domain["title"]) for domain in self.snapshot["domains"]],
             [
-                ("01", "local", "香港电讯市场"),
+                ("01", "local", "本地运营商"),
                 ("02", "international", "国际运营商"),
                 ("03", "mainland", "内地运营商"),
                 ("04", "cloud", "全球云厂商"),

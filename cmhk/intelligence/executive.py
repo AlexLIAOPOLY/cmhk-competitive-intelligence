@@ -1096,7 +1096,7 @@ def _requested_hong_kong_domain(
         focus("net_profit", "净利润", profit_items, "盈利防线出现两极分化", "2016–2025原表；当前卡片显示FY2025"),
         focus("postpaid", "后付费用户数", postpaid_items, "经常性收入底盘分层", "只展示公司原生后付费用户数"),
     ]
-    return {"id": "local", "index": "01", "title": "香港电讯市场", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
+    return {"id": "local", "index": "01", "title": "本地运营商", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
             "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；不同财年与公司口径分别标注",
             "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；缺口不填充。",
             "entities": revenue_items, "focuses": focuses, "relations": [],

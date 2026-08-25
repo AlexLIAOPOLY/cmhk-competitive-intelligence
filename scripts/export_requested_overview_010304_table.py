@@ -12,7 +12,7 @@ from cmhk.intelligence.executive import build_executive_intelligence_snapshot
 
 
 DOMAIN_NAMES = {
-    "local": "01 香港电讯市场",
+    "local": "01 本地运营商",
     "mainland": "03 内地运营商",
     "cloud": "04 全球云厂商",
 }
