@@ -7817,7 +7817,7 @@ document.addEventListener("keydown", (event) => {
       mutation.addedNodes.forEach(scan);
     });
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true });
 })();
 
 /* Four-domain executive intelligence board: data comes from the four local databases. */

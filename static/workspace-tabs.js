@@ -2031,7 +2031,7 @@
       row.setAttribute("aria-label", `预览报告 ${row.dataset.path || ""}`);
     });
   });
-  reportRowObserver.observe(document.body, { childList: true, subtree: true });
+  if (document.body) reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {
     const faultResolve = event.target.closest("[data-fault-resolve]");
     if (faultResolve) {
