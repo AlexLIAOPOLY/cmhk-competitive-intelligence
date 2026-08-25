@@ -718,8 +718,8 @@
           company: comparisonCompanyNames[profile.key] || profile.company,
           value: Number.isFinite(numeric) ? numeric : null,
           chartDisplay: metric?.value === "—" ? "—" : (metric?.value || "—"),
-          periodNote: sectionKey === "finance" && profile.key === "cmhk" && metric?.value !== "—" ? "2026H1" : "",
-          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}${sectionKey === "finance" && profile.key === "cmhk" ? "｜2026H1" : ""}`,
+          periodNote: sectionKey === "finance" && profile.key === "cmhk" && metric?.value !== "—" ? "2026首7月" : "",
+          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}${sectionKey === "finance" && profile.key === "cmhk" ? "｜2026首7月" : ""}`,
           status: metric?.value === "—" ? "未披露" : (metric?.trend || "最新披露")
         };
       })
