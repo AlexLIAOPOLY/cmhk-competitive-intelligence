@@ -1298,22 +1298,30 @@ class ProjectMonitor:
         media_metrics_path = self._source_root() / "var" / "feishu_media_metrics" / "daemon.stderr.log"
         media_metrics_text = self._read_new_log_text(media_metrics_path)
         issues: list[dict[str, Any]] = []
+        heartbeat_path = self._source_root() / "var" / "frequency_scheduler" / "heartbeat.json"
+        heartbeat = _read_json(heartbeat_path, {})
+        heartbeat_at = _parse_datetime(heartbeat.get("updated_at_hkt")) if isinstance(heartbeat, dict) else None
+        heartbeat_fresh = bool(
+            isinstance(heartbeat, dict)
+            and heartbeat.get("service") == "frequency-scheduler"
+            and heartbeat_at
+            and (self.now() - heartbeat_at).total_seconds() <= 120
+        )
         try:
             scheduler_mtime = datetime.fromtimestamp(scheduler_path.stat().st_mtime, HKT)
         except OSError:
             scheduler_mtime = None
-        if not scheduler_mtime or (self.now() - scheduler_mtime).total_seconds() > 300:
+        if not heartbeat_fresh and (not scheduler_mtime or (self.now() - scheduler_mtime).total_seconds() > 300):
             issues.append(
                 self._issue(
                     condition_key="frequency-scheduler-heartbeat-stale",
                     component="frequency-scheduler",
                     task_name="飞书频率调度器",
                     severity="P1",
-                    summary="频率调度器超过5分钟没有轮询心跳",
+                    summary="频率调度器独立心跳中断",
                     error=(
-                        f"scheduler log mtime={scheduler_mtime.isoformat(timespec='seconds')}"
-                        if scheduler_mtime
-                        else "scheduler stderr log missing"
+                        f"heartbeat updated_at={heartbeat_at.isoformat(timespec='seconds') if heartbeat_at else 'missing'}; "
+                        f"scheduler log mtime={scheduler_mtime.isoformat(timespec='seconds') if scheduler_mtime else 'missing'}"
                     ),
                     impact="到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
                     suggestions=[
@@ -1325,7 +1333,7 @@ class ProjectMonitor:
                         if scheduler_mtime
                         else _iso(self.now())
                     ),
-                    evidence=[str(scheduler_path)],
+                    evidence=[str(heartbeat_path), str(scheduler_path)],
                 )
             )
         scheduler_markers = [
@@ -1532,6 +1540,28 @@ class ProjectMonitor:
             )
         return issues
 
+    def _mark_resolved(
+        self,
+        record: dict[str, Any],
+        *,
+        resolution_type: str,
+        reason: str,
+        evidence: list[str],
+        action_type: str = "none",
+    ) -> None:
+        resolved_at = _iso(self.now())
+        record["status"] = "resolved"
+        record["resolved_at_hkt"] = resolved_at
+        record["resolution_reason"] = reason
+        record["resolution"] = {
+            "status": "evidence_verified",
+            "type": resolution_type,
+            "resolved_at_hkt": resolved_at,
+            "evidence": [_redact(item, 800) for item in evidence if str(item).strip()],
+            "action": {"type": action_type, "performed": action_type != "none"},
+            "ai_status": "pending",
+        }
+
     def _upsert_incidents(self, issues: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         now_text = _iso(self.now())
         incidents = self.state.setdefault("incidents", {})
@@ -1588,9 +1618,12 @@ class ProjectMonitor:
                 for stable_key in STABLE_LOG_CONDITION_KEYS
             )
             if legacy_log_key:
-                record["status"] = "resolved"
-                record["resolved_at_hkt"] = now_text
-                record["resolution_reason"] = "superseded_by_stable_log_condition"
+                self._mark_resolved(
+                    record,
+                    resolution_type="superseded",
+                    reason="superseded_by_stable_log_condition",
+                    evidence=["旧版游标型日志告警已由同类稳定条件键接管。"],
+                )
                 conditions.pop(key, None)
                 _append_jsonl(
                     self.events_path,
@@ -1624,9 +1657,13 @@ class ProjectMonitor:
                     record.get("first_seen_at_hkt")
                 )
                 if service_started and occurred and occurred < service_started:
-                    record["status"] = "resolved"
-                    record["resolved_at_hkt"] = now_text
-                    record["resolution_reason"] = "service_restarted_after_error"
+                    self._mark_resolved(
+                        record,
+                        resolution_type="service_restarted",
+                        reason="service_restarted_after_error",
+                        evidence=[f"服务 {service_id} 于 {_iso(service_started)} 重新启动，晚于故障证据时间。"],
+                        action_type="service_restart",
+                    )
                     record["resolved_by_service_start_hkt"] = _iso(service_started)
                     conditions.pop(key, None)
                     _append_jsonl(
@@ -1642,9 +1679,12 @@ class ProjectMonitor:
                     )
                     continue
                 if stable_log_key in AUTO_RECOVERING_LOG_CONDITION_KEYS:
-                    record["status"] = "resolved"
-                    record["resolved_at_hkt"] = now_text
-                    record["resolution_reason"] = "log_condition_cleared"
+                    self._mark_resolved(
+                        record,
+                        resolution_type="condition_cleared",
+                        reason="log_condition_cleared",
+                        evidence=["本轮增量日志未再出现同一稳定错误条件；未记录自动修复动作。"],
+                    )
                     conditions.pop(key, None)
                     _append_jsonl(
                         self.events_path,
@@ -1658,9 +1698,12 @@ class ProjectMonitor:
                     )
                     continue
             if key.startswith(STATEFUL_CONDITION_PREFIXES):
-                record["status"] = "resolved"
-                record["resolved_at_hkt"] = now_text
-                record["resolution_reason"] = "condition_no_longer_current"
+                self._mark_resolved(
+                    record,
+                    resolution_type="condition_cleared",
+                    reason="condition_no_longer_current",
+                    evidence=["最新任务归档或状态源不再返回该条件；未记录自动修复动作。"],
+                )
                 conditions.pop(key, None)
                 _append_jsonl(
                     self.events_path,
@@ -1682,8 +1725,37 @@ class ProjectMonitor:
                         active_records.append(record)
                         active_ids.add(str(incident_id))
                     continue
-            record["status"] = "resolved"
-            record["resolved_at_hkt"] = now_text
+            if key == "frequency-scheduler-heartbeat-stale":
+                heartbeat_path = self._source_root() / "var" / "frequency_scheduler" / "heartbeat.json"
+                heartbeat = _read_json(heartbeat_path, {})
+                heartbeat_at = _parse_datetime(heartbeat.get("updated_at_hkt")) if isinstance(heartbeat, dict) else None
+                if heartbeat_at and (self.now() - heartbeat_at).total_seconds() <= 120:
+                    self._mark_resolved(
+                        record,
+                        resolution_type="normal_task_progress",
+                        reason="scheduler_heartbeat_verified",
+                        evidence=[
+                            f"独立心跳于 {_iso(heartbeat_at)} 更新。",
+                            f"调度器 PID={heartbeat.get('pid')}，状态={heartbeat.get('status')}，阶段={heartbeat.get('stage') or '-'}，run_id={heartbeat.get('crawl_run_id') or '-'}。",
+                            "没有记录重启、补跑或其他自动修复动作。",
+                        ],
+                    )
+                else:
+                    record["status"] = "recovery_pending"
+                    record["resolution"] = {
+                        "status": "awaiting_evidence",
+                        "type": "unverified",
+                        "evidence": ["告警条件本轮未出现，但尚无新鲜独立心跳作为恢复证据。"],
+                        "action": {"type": "none", "performed": False},
+                    }
+            else:
+                record["status"] = "recovery_pending"
+                record["resolution"] = {
+                    "status": "awaiting_evidence",
+                    "type": "unverified",
+                    "evidence": ["告警条件本轮未出现，但没有足够正向证据确认恢复。"],
+                    "action": {"type": "none", "performed": False},
+                }
             conditions.pop(key, None)
             _append_jsonl(
                 self.events_path,
@@ -1776,10 +1848,10 @@ class ProjectMonitor:
                     "content": (
                         "你是中国移动香港公司科创及数智化部的生产运维分析员。"
                         "只根据输入错误做一轮分析，不得臆测未提供的内部事实。"
-                        "输出单一JSON对象，字段必须是severity、severity_reason、fault_cause、"
-                        "fault_impact、fault_time_hkt、recommended_solutions、needs_human。"
+                        "输出单一JSON对象，字段必须是severity、severity_reason、diagnosis_summary、"
+                        "confirmed_facts、inferences、fault_cause、fault_impact、recommended_solutions、needs_human。"
                         "severity只能是P1、P2或P3，可以提高输入的严重程度，但不得降低；"
-                        "fault_time_hkt必须原样复制输入的occurred_at_hkt，不得推测或改写时间；"
+                        "confirmed_facts只能写输入中可直接验证的事实；inferences必须明确为推断，可为空数组；"
                         "severity_reason、fault_cause和fault_impact使用简体中文，并区分已确认事实与推断；"
                         "recommended_solutions是1至4条可执行步骤，包含检查、修复及修复后验证；"
                         "needs_human必须是JSON布尔值；"
@@ -1829,7 +1901,13 @@ class ProjectMonitor:
                 "AI诊断未返回可解析JSON对象"
                 f"（content_chars={len(content)}）"
             )
-        return self._validate_diagnosis(parsed, model=model, incident=incident)
+        diagnosis = self._validate_diagnosis(parsed, model=model, incident=incident)
+        diagnosis.update({
+            "source": "llm",
+            "request_id": request_id,
+            "response_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+        })
+        return diagnosis
 
     def _validate_diagnosis(
         self,
@@ -1845,7 +1923,6 @@ class ProjectMonitor:
             "severity_reason",
             "fault_cause",
             "fault_impact",
-            "fault_time_hkt",
             "recommended_solutions",
             "needs_human",
         }
@@ -1870,19 +1947,23 @@ class ProjectMonitor:
         severity_reason = _to_simplified(_redact(payload.get("severity_reason"), 600))
         fault_cause = _to_simplified(_redact(payload.get("fault_cause"), 900))
         fault_impact = _to_simplified(_redact(payload.get("fault_impact"), 900))
-        fault_time_hkt = _redact(payload.get("fault_time_hkt"), 100)
         source_fault_time = str(
             incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or ""
         ).strip()
-        parsed_fault_time = _parse_datetime(fault_time_hkt)
-        parsed_source_time = _parse_datetime(source_fault_time)
-        if (
-            not fault_time_hkt
-            or parsed_fault_time is None
-            or parsed_source_time is None
-            or abs((parsed_fault_time - parsed_source_time).total_seconds()) > 1
-        ):
-            raise ValueError("AI诊断 fault_time_hkt 与故障证据时间不一致")
+        if _parse_datetime(source_fault_time) is None:
+            raise ValueError("故障证据时间无效，禁止由 AI 补写")
+
+        diagnosis_summary = _to_simplified(_redact(payload.get("diagnosis_summary") or fault_cause, 900))
+        confirmed_facts = [
+            _to_simplified(_redact(item, 500))
+            for item in (payload.get("confirmed_facts") if isinstance(payload.get("confirmed_facts"), list) else [])
+            if str(item).strip()
+        ][:8]
+        inferences = [
+            _to_simplified(_redact(item, 500))
+            for item in (payload.get("inferences") if isinstance(payload.get("inferences"), list) else [])
+            if str(item).strip()
+        ][:8]
 
         solutions_raw = payload.get("recommended_solutions")
         solutions = [
@@ -1897,6 +1978,7 @@ class ProjectMonitor:
         return {
             "ok": True,
             "model": str(model),
+            "source": "llm",
             "severity": severity,
             "severity_label": SEVERITY_LABELS[severity],
             "llm_severity": llm_severity,
@@ -1906,6 +1988,9 @@ class ProjectMonitor:
             "fault_cause": fault_cause,
             "fault_impact": fault_impact,
             "fault_time_hkt": source_fault_time,
+            "diagnosis_summary": diagnosis_summary,
+            "confirmed_facts": confirmed_facts,
+            "inferences": inferences,
             "recommended_solutions": solutions,
             "needs_human": bool(payload.get("needs_human")),
             "completed_at_hkt": _iso(self.now()),
@@ -1914,7 +1999,12 @@ class ProjectMonitor:
 
     def _ensure_ai_diagnosis(self, incident: dict[str, Any]) -> bool:
         diagnosis = incident.get("diagnosis")
-        if isinstance(diagnosis, dict) and diagnosis.get("ok"):
+        if (
+            isinstance(diagnosis, dict)
+            and diagnosis.get("ok")
+            and diagnosis.get("source") == "llm"
+            and not str(diagnosis.get("model") or "").startswith("deterministic-")
+        ):
             return True
         if not self.ai_enabled:
             incident["diagnosis_status"] = "disabled"
@@ -1928,61 +2018,120 @@ class ProjectMonitor:
             incident["diagnosis_status"] = "completed"
             incident.pop("diagnosis_error", None)
             incident.pop("diagnosis_retry_after_hkt", None)
-            _append_jsonl(
-                self.events_path,
-                {
-                    "type": "ai_diagnosis_completed",
-                    "at_hkt": _iso(self.now()),
-                    "incident_id": incident.get("incident_id"),
-                    "model": incident["diagnosis"].get("model"),
-                    "rounds": 1,
-                },
-            )
+            _append_jsonl(self.events_path, {
+                "type": "ai_diagnosis_completed",
+                "at_hkt": _iso(self.now()),
+                "incident_id": incident.get("incident_id"),
+                "model": incident["diagnosis"].get("model"),
+                "rounds": 1,
+            })
             return True
         except Exception as exc:
-            max_attempts = max(1, int(self.config.get("ai_diagnosis_max_attempts") or 3))
-            is_ui_runtime = str(incident.get("condition_key") or "").startswith("ui-runtime:")
-            if is_ui_runtime or int(incident.get("diagnosis_attempts") or 0) >= max_attempts:
-                incident["diagnosis"] = self._validate_diagnosis(
-                    {
-                        "severity": incident.get("severity") or "P2",
-                        "severity_reason": "确定性监控已确认生产故障；AI 多次未通过诊断契约时，告警不得继续静默。",
-                        "fault_cause": f"确定性检测已确认异常；原始错误证据：{incident.get('error') or incident.get('summary') or '未记录'}",
-                        "fault_impact": incident.get("impact") or "当前任务或用户操作未获得完整结果。",
-                        "fault_time_hkt": incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or "",
-                        "recommended_solutions": incident.get("suggestions") or ["检查原始错误并只恢复失败阶段，恢复后回读界面状态。"],
-                        "needs_human": bool(incident.get("severity") == "P1"),
-                    },
-                    model=("deterministic-runtime-fallback" if is_ui_runtime else "deterministic-alert-fallback"),
-                    incident=incident,
-                )
-                incident["diagnosis_status"] = "completed_with_deterministic_fallback"
-                incident["diagnosis_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
-                incident.pop("diagnosis_retry_after_hkt", None)
-                _append_jsonl(
-                    self.events_path,
-                    {
-                        "type": "deterministic_diagnosis_completed_after_ai_failure",
-                        "at_hkt": _iso(self.now()),
-                        "incident_id": incident.get("incident_id"),
-                        "ai_error": incident["diagnosis_error"],
-                    },
-                )
-                return True
             incident["diagnosis_status"] = "failed_waiting_retry"
             incident["diagnosis_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
             incident["diagnosis_retry_after_hkt"] = _iso(self.now() + timedelta(minutes=5))
-            _append_jsonl(
-                self.events_path,
-                {
-                    "type": "ai_diagnosis_failed_local_only",
-                    "at_hkt": _iso(self.now()),
-                    "incident_id": incident.get("incident_id"),
-                    "error": incident["diagnosis_error"],
-                },
-            )
+            _append_jsonl(self.events_path, {
+                "type": "ai_diagnosis_failed_local_only",
+                "at_hkt": _iso(self.now()),
+                "incident_id": incident.get("incident_id"),
+                "error": incident["diagnosis_error"],
+            })
             return False
 
+    def _summarize_resolution_with_internal_ai(self, incident: dict[str, Any]) -> dict[str, Any]:
+        resolution = incident.get("resolution") if isinstance(incident.get("resolution"), dict) else {}
+        prompt_payload = {
+            "analysis_kind": "resolution",
+            "task": incident.get("task_name"),
+            "original_diagnosis": incident.get("diagnosis"),
+            "locked_resolution_type": resolution.get("type"),
+            "locked_evidence": resolution.get("evidence"),
+            "locked_action": resolution.get("action"),
+            "resolved_at_hkt": resolution.get("resolved_at_hkt"),
+        }
+        if self.ai_diagnoser is not None:
+            payload = self.ai_diagnoser({**dict(incident), "_analysis_kind": "resolution", "resolution_prompt": prompt_payload})
+            model = "test-injected"
+            request_id = f"cmhk-resolution-{incident.get('incident_id')}-test"
+            raw = json.dumps(payload, ensure_ascii=False)
+        else:
+            from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+            from ai_rate_limit import wait_for_internal_ai_slot
+            from network_utils import urlopen_with_local_proxy_fallback
+
+            config = load_ai_config(include_key=True)
+            api_key = str(config.get("api_key") or "").strip()
+            base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
+            model = str(self.environ.get("CMHK_ALERT_AI_MODEL") or config.get("model") or "deepseek-v4").strip()
+            if not api_key or not base_url or not model:
+                raise RuntimeError("内部AI配置不完整")
+            request_id = f"cmhk-resolution-{incident.get('incident_id')}-a{int(resolution.get('ai_attempts') or 1)}"
+            body = prepare_structured_chat_body({
+                **dict(config.get("extra_parameters") or {}),
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": (
+                        "你是生产运维结案分析员。只根据已锁定的恢复类型、证据和动作写结论，不得把条件消失写成自动修复。"
+                        "输出单一JSON对象，字段为resolution_summary、recovery_cause、verification_summary、remaining_risk、needs_followup。"
+                        "不得改写恢复类型、时间、证据或动作；没有修复动作时必须明确说明。"
+                    )},
+                    {"role": "user", "content": json.dumps(prompt_payload, ensure_ascii=False)},
+                ],
+                "temperature": 0.1,
+                "max_tokens": 650,
+            })
+            request = urllib.request.Request(
+                f"{base_url}/chat/completions?request_id={request_id}",
+                data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", "Cache-Control": "no-cache, no-store", "X-Request-ID": request_id},
+                method="POST",
+            )
+            wait_for_internal_ai_slot("project-monitor-resolution", deadline_monotonic=time.monotonic() + 45)
+            with urlopen_with_local_proxy_fallback(request, timeout=35) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+            raw = final_chat_message_text(response_payload, operation="运维告警结案")
+            payload = load_json_response(raw, operation="运维告警结案")
+        if not isinstance(payload, dict):
+            raise ValueError("AI结案未返回JSON对象")
+        required = ("resolution_summary", "recovery_cause", "verification_summary", "remaining_risk", "needs_followup")
+        if any(key not in payload for key in required) or type(payload.get("needs_followup")) is not bool:
+            raise ValueError("AI结案缺少必填字段或 needs_followup 不是布林值")
+        result = {key: _to_simplified(_redact(payload.get(key), 900)) for key in required[:-1]}
+        if any(not result[key] for key in required[:-1]):
+            raise ValueError("AI结案关键字段为空")
+        result.update({
+            "ok": True,
+            "source": "llm",
+            "model": model,
+            "request_id": request_id,
+            "response_sha256": hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+            "needs_followup": bool(payload.get("needs_followup")),
+            "completed_at_hkt": _iso(self.now()),
+        })
+        return result
+
+    def _ensure_resolution_ai_summary(self, incident: dict[str, Any]) -> bool:
+        resolution = incident.get("resolution") if isinstance(incident.get("resolution"), dict) else {}
+        if resolution.get("status") != "evidence_verified":
+            return False
+        ai_summary = resolution.get("ai_summary") if isinstance(resolution.get("ai_summary"), dict) else {}
+        if ai_summary.get("ok") and ai_summary.get("source") == "llm":
+            return True
+        retry_after = _parse_datetime(resolution.get("ai_retry_after_hkt"))
+        if retry_after and self.now() < retry_after:
+            return False
+        resolution["ai_attempts"] = int(resolution.get("ai_attempts") or 0) + 1
+        try:
+            resolution["ai_summary"] = self._summarize_resolution_with_internal_ai(incident)
+            resolution["ai_status"] = "completed"
+            resolution.pop("ai_error", None)
+            resolution.pop("ai_retry_after_hkt", None)
+            return True
+        except Exception as exc:
+            resolution["ai_status"] = "failed_waiting_retry"
+            resolution["ai_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
+            resolution["ai_retry_after_hkt"] = _iso(self.now() + timedelta(minutes=5))
+            return False
     def _card_markdown_text(self, value: object, limit: int = 1800) -> str:
         text = _to_simplified(_redact(value, limit)).replace("&", "&amp;").replace("<", "&#60;").replace(">", "&#62;")
         for character in ("\\", "`", "*", "_", "~", "[", "]", "(", ")", "#"):
@@ -1991,7 +2140,11 @@ class ProjectMonitor:
 
     def render_alert_card(self, incident: dict[str, Any]) -> dict[str, Any]:
         diagnosis = incident.get("diagnosis") if isinstance(incident.get("diagnosis"), dict) else {}
-        if not diagnosis.get("ok"):
+        if not (
+            diagnosis.get("ok")
+            and diagnosis.get("source") == "llm"
+            and not str(diagnosis.get("model") or "").startswith("deterministic-")
+        ):
             raise ValueError("alert rendering requires a completed AI diagnosis")
         card_actions = (
             self.config.get("card_actions")
@@ -2240,6 +2393,10 @@ class ProjectMonitor:
 
     def render_resolved_card(self, incident: dict[str, Any]) -> dict[str, Any]:
         card = self.render_alert_card(incident)
+        resolution = incident.get("resolution") if isinstance(incident.get("resolution"), dict) else {}
+        ai_summary = resolution.get("ai_summary") if isinstance(resolution.get("ai_summary"), dict) else {}
+        if not (resolution.get("status") == "evidence_verified" and ai_summary.get("ok") and ai_summary.get("source") == "llm"):
+            raise ValueError("resolved card requires verified evidence and a completed LLM resolution summary")
         task_name_plain = _to_simplified(
             _alert_plain(incident.get("task_name") or "-", 100)
         ).replace("\n", " ")
@@ -2248,11 +2405,23 @@ class ProjectMonitor:
         severity_label = SEVERITY_LABELS.get(severity, "高")
         resolved_at_plain = _alert_plain(incident.get("resolved_at_hkt") or _iso(self.now()), 100)
         resolved_at = self._card_markdown_text(resolved_at_plain, 100)
-        reason = self._card_markdown_text(self._resolution_reason_text(incident), 500)
+        reason = self._card_markdown_text(ai_summary.get("verification_summary") or self._resolution_reason_text(incident), 900)
+        recovery_cause = self._card_markdown_text(ai_summary.get("recovery_cause") or "-", 900)
+        remaining_risk = self._card_markdown_text(ai_summary.get("remaining_risk") or "-", 900)
+        resolution_type = str(resolution.get("type") or "condition_cleared")
+        labels = {
+            "automatic_recovery": "已自动恢复",
+            "normal_task_progress": "已确认任务正常",
+            "service_restarted": "服务已恢复",
+            "condition_cleared": "故障已恢复（已验证）",
+            "false_positive": "已确认为误报",
+            "superseded": "已由新口径接管",
+        }
+        resolution_label = labels.get(resolution_type, "恢复证据已确认")
 
-        card["config"]["summary"] = {"content": f"已自动恢复 · {task_name_plain}"}
+        card["config"]["summary"] = {"content": f"{resolution_label} · {task_name_plain}"}
         card["header"] = {
-            "title": {"tag": "plain_text", "content": f"已自动恢复｜{task_name_plain}"},
+            "title": {"tag": "plain_text", "content": f"{resolution_label}｜{task_name_plain}"},
             "subtitle": {
                 "tag": "plain_text",
                 "content": f"{resolved_at_plain} · 告警 ID {incident_id}",
@@ -2262,7 +2431,7 @@ class ProjectMonitor:
             "text_tag_list": [
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": "自动恢复"},
+                    "text": {"tag": "plain_text", "content": resolution_label},
                     "color": "green",
                 },
                 {
@@ -2291,9 +2460,12 @@ class ProjectMonitor:
                             {
                                 "tag": "markdown",
                                 "content": (
-                                    f"**自动修复时间**\n{resolved_at}\n\n"
-                                    f"**恢复依据**\n{reason}\n\n"
-                                    "监控自动判定的是故障条件已消失，不等同于确认发生过人工改码。"
+                                    f"**结案时间**\n{resolved_at}\n\n"
+                                    f"**恢复原因（LLM）**\n{recovery_cause}\n\n"
+                                    f"**验证依据**\n{reason}\n\n"
+                                    f"**剩余风险**\n{remaining_risk}\n\n"
+                                    f"模型：`{self._card_markdown_text(ai_summary.get('model') or '-', 100)}`；"
+                                    "恢复类型、时间、证据和动作由程序锁定，LLM 只负责据实归纳。"
                                 ),
                             }
                         ],
@@ -2318,11 +2490,7 @@ class ProjectMonitor:
         handled_at_hkt: str,
         handler_open_id: str = "",
     ) -> dict[str, Any]:
-        card = (
-            self.render_resolved_card(incident)
-            if incident.get("status") == "resolved"
-            else self.render_alert_card(incident)
-        )
+        card = self.render_alert_card(incident)
         task_name_plain = _to_simplified(
             _alert_plain(incident.get("task_name") or "-", 100)
         ).replace("\n", " ")
@@ -2494,6 +2662,9 @@ class ProjectMonitor:
         ]
         records.sort(key=lambda item: str(item.get("resolved_at_hkt") or ""))
         for incident in records:
+            manual = self._manual_repair_record(str(incident.get("incident_id") or ""))
+            if not manual and not self._ensure_resolution_ai_summary(incident):
+                continue
             resolved_at = _parse_datetime(incident.get("resolved_at_hkt"))
             if backfill_from and (not resolved_at or resolved_at < backfill_from):
                 continue
@@ -2515,7 +2686,6 @@ class ProjectMonitor:
                 try:
                     self._verify_bot_identity()
                     self._verify_target(target)
-                    manual = self._manual_repair_record(str(incident.get("incident_id") or ""))
                     card = (
                         self.render_manually_repaired_card(
                             incident,
@@ -2551,7 +2721,7 @@ class ProjectMonitor:
                         incident,
                         delivery,
                         target,
-                        expected_marker="已人工修复" if manual else "已自动恢复",
+                        expected_marker="已人工修复" if manual else str(card.get("header", {}).get("title", {}).get("content", "")).split("｜", 1)[0],
                     )
                     delivery["resolution_update"] = {
                         "state": "verified",

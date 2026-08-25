@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -384,6 +385,26 @@ class ProjectMonitorTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_fresh_independent_scheduler_heartbeat_suppresses_stale_log_alarm(self):
+        scheduler_log = self.log_root / "frequency_scheduler.stderr.log"
+        old_timestamp = (self.now - timedelta(hours=1)).timestamp()
+        os.utime(scheduler_log, (old_timestamp, old_timestamp))
+        heartbeat_path = self.root / "var" / "frequency_scheduler" / "heartbeat.json"
+        heartbeat_path.parent.mkdir(parents=True, exist_ok=True)
+        heartbeat_path.write_text(json.dumps({
+            "service": "frequency-scheduler",
+            "pid": 84947,
+            "status": "running",
+            "stage": "crawl_running",
+            "crawl_run_id": "20260825_030017_080611",
+            "updated_at_hkt": self.now.isoformat(timespec="seconds"),
+        }))
+        monitor = self._monitor()
+
+        issues = monitor._detect_runtime_logs()
+
+        self.assertNotIn("frequency-scheduler-heartbeat-stale", {item["condition_key"] for item in issues})
+
     def _write_completed_slot(self, slot: str) -> None:
         hour, minute = slot.split(":")
         path = self.root / "strategy_briefing" / "runs" / f"2026-08-16@{hour}-{minute}.json"
@@ -401,6 +422,14 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def _ai(self, incident):
         self.ai_calls += 1
+        if incident.get("_analysis_kind") == "resolution":
+            return {
+                "resolution_summary": "独立心跳证明调度器持续存活，原告警来自旧日志口径。",
+                "recovery_cause": "任务执行期间 stderr 没有更新，但调度器进程没有中断。",
+                "verification_summary": "已回读独立心跳的时间、PID、状态和阶段。",
+                "remaining_risk": "无需补跑；继续观察下一轮心跳。",
+                "needs_followup": False,
+            }
         return {
             "severity": incident["severity"],
             "severity_reason": "定時任務或外部寫入可能漏跑，屬需要即時處理的生產錯誤。",
@@ -1110,7 +1139,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(self.runner.send_calls(), [])
         self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
 
-    def test_ui_runtime_alert_uses_deterministic_diagnosis_if_ai_is_the_failure(self):
+    def test_ui_runtime_alert_also_fails_closed_if_ai_is_the_failure(self):
         def failing_ai(_incident):
             raise RuntimeError("AI unavailable")
 
@@ -1127,9 +1156,9 @@ class ProjectMonitorTests(unittest.TestCase):
         )
         incident.update({"incident_id": "ui-test", "diagnosis": {}, "diagnosis_attempts": 0})
 
-        self.assertTrue(monitor._ensure_ai_diagnosis(incident))
-        self.assertEqual(incident["diagnosis_status"], "completed_with_deterministic_fallback")
-        self.assertEqual(incident["diagnosis"]["model"], "deterministic-runtime-fallback")
+        self.assertFalse(monitor._ensure_ai_diagnosis(incident))
+        self.assertEqual(incident["diagnosis_status"], "failed_waiting_retry")
+        self.assertFalse(incident.get("diagnosis"))
 
     def test_ai_output_missing_required_fault_field_fails_closed(self):
         def incomplete_ai(incident):
@@ -1155,7 +1184,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(len(self.runner.send_calls()), 1)
         self.assertEqual(result["active_incidents"][0]["ai_severity"], "P1")
 
-    def test_ai_fault_time_must_match_observed_evidence(self):
+    def test_ai_cannot_override_program_locked_fault_time(self):
         def wrong_time_ai(incident):
             payload = self._ai(incident)
             payload["fault_time_hkt"] = "2026-08-15T01:00:00+08:00"
@@ -1164,16 +1193,18 @@ class ProjectMonitorTests(unittest.TestCase):
         monitor = self._monitor(enabled=True, ai=wrong_time_ai)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         result = monitor.run_cycle()
-        self.assertEqual(self.runner.send_calls(), [])
-        self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+        self.assertEqual(len(self.runner.send_calls()), 1)
+        self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "completed")
+        incident = next(iter(monitor.state["incidents"].values()))
+        self.assertEqual(incident["diagnosis"]["fault_time_hkt"], incident["occurred_at_hkt"])
 
-    def test_repeated_ai_contract_failure_uses_bounded_deterministic_fallback(self):
-        def wrong_time_ai(incident):
+    def test_repeated_ai_contract_failure_never_uses_deterministic_fallback(self):
+        def incomplete_ai(incident):
             payload = self._ai(incident)
-            payload["fault_time_hkt"] = "2026-08-15T01:00:00+08:00"
+            payload.pop("fault_impact")
             return payload
 
-        monitor = self._monitor(enabled=True, ai=wrong_time_ai)
+        monitor = self._monitor(enabled=True, ai=incomplete_ai)
         monitor.collect_issues = lambda: [self._issue(monitor)]
         first = monitor.run_cycle()
         self.assertEqual(first["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
@@ -1186,13 +1217,8 @@ class ProjectMonitorTests(unittest.TestCase):
 
         third = monitor.run_cycle()
 
-        self.assertEqual(third["active_incidents"][0]["diagnosis_status"], "completed_with_deterministic_fallback")
-        incident_id = third["active_incidents"][0]["incident_id"]
-        self.assertEqual(
-            monitor.state["incidents"][incident_id]["diagnosis"]["model"],
-            "deterministic-alert-fallback",
-        )
-        self.assertEqual(len(self.runner.send_calls()), 1)
+        self.assertEqual(third["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
+        self.assertEqual(len(self.runner.send_calls()), 0)
 
     def test_incident_first_seen_while_disabled_is_never_replayed_when_gate_enables(self):
         monitor = self._monitor(enabled=False)
@@ -1350,10 +1376,18 @@ class ProjectMonitorTests(unittest.TestCase):
     def test_resolved_condition_updates_original_card_without_sending_recovery(self):
         monitor = self._monitor(enabled=True)
         issues = [self._issue(monitor)]
+        issues[0]["condition_key"] = "frequency-scheduler-heartbeat-stale"
         issues[0]["terminal"] = False
         monitor.collect_issues = lambda: list(issues)
         monitor.run_cycle()
         self.assertEqual(len(self.runner.send_calls()), 1)
+        heartbeat_path = self.root / "var" / "frequency_scheduler" / "heartbeat.json"
+        heartbeat_path.parent.mkdir(parents=True, exist_ok=True)
+        heartbeat_path.write_text(json.dumps({
+            "service": "frequency-scheduler", "pid": 1234, "status": "running",
+            "stage": "crawl_running", "crawl_run_id": "run-1",
+            "updated_at_hkt": self.now.isoformat(timespec="seconds"),
+        }))
         issues.clear()
         result = monitor.run_cycle()
         self.assertEqual(result["active_incidents"], [])
@@ -1362,13 +1396,16 @@ class ProjectMonitorTests(unittest.TestCase):
         message_id = next(iter(self.runner.updated_messages))
         updated_card = json.loads(self.runner.updated_messages[message_id])
         self.assertEqual(updated_card["header"]["template"], "green")
-        self.assertIn("已自动恢复", updated_card["header"]["title"]["content"])
+        self.assertIn("已确认任务正常", updated_card["header"]["title"]["content"])
         self.assertEqual(updated_card["header"]["icon"]["token"], "done_outlined")
         self.assertNotIn(
             "resolveButton",
             json.dumps(updated_card, ensure_ascii=False),
         )
         incident = next(iter(monitor.state["incidents"].values()))
+        self.assertEqual(incident["resolution"]["type"], "normal_task_progress")
+        self.assertFalse(incident["resolution"]["action"]["performed"])
+        self.assertEqual(incident["resolution"]["ai_summary"]["source"], "llm")
         delivery = incident["delivery"][INCIDENT_CHAT_ID]
         self.assertEqual(delivery["resolution_update"]["state"], "verified")
         self.assertEqual(result["recovery_messages_sent"], 0)
@@ -1380,10 +1417,18 @@ class ProjectMonitorTests(unittest.TestCase):
     def test_failed_resolution_update_retries_without_sending_new_message(self):
         monitor = self._monitor(enabled=True)
         issues = [self._issue(monitor)]
+        issues[0]["condition_key"] = "frequency-scheduler-heartbeat-stale"
         issues[0]["terminal"] = False
         monitor.collect_issues = lambda: list(issues)
         monitor.run_cycle()
         self.runner.fail_resolution_update = True
+        heartbeat_path = self.root / "var" / "frequency_scheduler" / "heartbeat.json"
+        heartbeat_path.parent.mkdir(parents=True, exist_ok=True)
+        heartbeat_path.write_text(json.dumps({
+            "service": "frequency-scheduler", "pid": 1234, "status": "running",
+            "stage": "crawl_running", "crawl_run_id": "run-1",
+            "updated_at_hkt": self.now.isoformat(timespec="seconds"),
+        }))
         issues.clear()
         monitor.run_cycle()
         self.assertEqual(len(self.runner.send_calls()), 1)

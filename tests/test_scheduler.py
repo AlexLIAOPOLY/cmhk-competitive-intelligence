@@ -798,5 +798,20 @@ class TaskLogScrollTests(unittest.TestCase):
         self.assertNotIn("wasNearBottom", running_branch)
 
 
+class SchedulerHeartbeatTests(unittest.TestCase):
+    def test_heartbeat_records_process_and_long_running_stage(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "heartbeat.json"
+            heartbeat = scheduler.SchedulerHeartbeat(interval_seconds=30)
+            with mock.patch.object(scheduler, "HEARTBEAT_PATH", path):
+                heartbeat.update(status="running", stage="crawl_running", crawl_run_id="run-1")
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(payload["service"], "frequency-scheduler")
+        self.assertEqual(payload["pid"], scheduler.os.getpid())
+        self.assertEqual(payload["stage"], "crawl_running")
+        self.assertEqual(payload["crawl_run_id"], "run-1")
+        self.assertTrue(payload["updated_at_hkt"])
+
+
 if __name__ == "__main__":
     unittest.main()

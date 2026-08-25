@@ -3926,15 +3926,38 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
         if not incident_id:
             continue
         diagnosis = incident.get("diagnosis") if isinstance(incident.get("diagnosis"), dict) else {}
+        resolution = incident.get("resolution") if isinstance(incident.get("resolution"), dict) else {}
+        resolution_ai = resolution.get("ai_summary") if isinstance(resolution.get("ai_summary"), dict) else {}
         severity = str(diagnosis.get("severity") or incident.get("severity") or "P2").upper()
         if severity not in severity_labels:
             severity = "P2"
         handled = handlers.get(incident_id, {})
-        suggestions = diagnosis.get("solutions") or diagnosis.get("suggestions") or incident.get("suggestions") or []
+        suggestions = diagnosis.get("recommended_solutions") or incident.get("suggestions") or []
         if not isinstance(suggestions, list):
             suggestions = [str(suggestions)] if suggestions else []
         evidence = incident.get("evidence") if isinstance(incident.get("evidence"), list) else []
         status = str(incident.get("status") or "open")
+        resolution_type = str(resolution.get("type") or "")
+        phase_labels = {
+            "automatic_recovery": "自动修复后恢复",
+            "normal_task_progress": "已确认任务正常",
+            "service_restarted": "服务重启后恢复",
+            "condition_cleared": "恢复证据已确认",
+            "false_positive": "已确认为误报",
+            "superseded": "已由新口径接管",
+        }
+        if handled:
+            phase = "人工修复"
+        elif status == "open":
+            phase = "待处理"
+        elif status == "recovery_pending" or resolution.get("status") == "awaiting_evidence":
+            phase = "恢复待验证"
+        elif resolution.get("ai_status") != "completed" and resolution.get("status") == "evidence_verified":
+            phase = "证据已确认，等待LLM结案"
+        elif resolution_type:
+            phase = phase_labels.get(resolution_type, "已验证结案")
+        else:
+            phase = "历史结案（旧口径）"
         records.append({
             "task_id": f"incident:{incident_id}",
             "incident_id": incident_id,
@@ -3952,12 +3975,29 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "impact": str(diagnosis.get("fault_impact") or incident.get("impact") or ""),
             "suggestions": [str(item) for item in suggestions if str(item).strip()],
             "evidence": [str(item) for item in evidence if str(item).strip()],
-            "phase": "人工修复" if handled else ("待处理" if status == "open" else "自动恢复"),
+            "diagnosis_summary": str(diagnosis.get("diagnosis_summary") or ""),
+            "diagnosis_status": str(incident.get("diagnosis_status") or ""),
+            "diagnosis_model": str(diagnosis.get("model") or ""),
+            "diagnosis_source": str(diagnosis.get("source") or ""),
+            "severity_reason": str(diagnosis.get("severity_reason") or ""),
+            "confirmed_facts": diagnosis.get("confirmed_facts") if isinstance(diagnosis.get("confirmed_facts"), list) else [],
+            "inferences": diagnosis.get("inferences") if isinstance(diagnosis.get("inferences"), list) else [],
+            "resolution_status": str(resolution.get("status") or ""),
+            "resolution_type": resolution_type,
+            "resolution_summary": str(resolution_ai.get("resolution_summary") or ""),
+            "recovery_cause": str(resolution_ai.get("recovery_cause") or ""),
+            "verification_summary": str(resolution_ai.get("verification_summary") or ""),
+            "remaining_risk": str(resolution_ai.get("remaining_risk") or ""),
+            "resolution_model": str(resolution_ai.get("model") or ""),
+            "resolution_evidence": resolution.get("evidence") if isinstance(resolution.get("evidence"), list) else [],
+            "resolution_action": resolution.get("action") if isinstance(resolution.get("action"), dict) else {},
+            "phase": phase,
             "occurred_at_hkt": str(incident.get("occurred_at_hkt") or incident.get("first_seen_at_hkt") or ""),
             "started_at_hkt": str(incident.get("first_seen_at_hkt") or incident.get("occurred_at_hkt") or ""),
             "heartbeat_at_hkt": str(incident.get("last_seen_at_hkt") or ""),
             "completed_at_hkt": str(incident.get("resolved_at_hkt") or ""),
-            "auto_repaired_at_hkt": str(incident.get("resolved_at_hkt") or ""),
+            "resolved_at_hkt": str(incident.get("resolved_at_hkt") or ""),
+            "auto_repaired_at_hkt": str(incident.get("resolved_at_hkt") or "") if resolution_type == "automatic_recovery" else "",
             "source": "project-monitor",
         })
     records.sort(

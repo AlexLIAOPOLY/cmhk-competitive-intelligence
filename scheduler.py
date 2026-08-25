@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 STATE_PATH = ROOT / "scheduler_state.json"
 PENDING_RUN_PATH = ROOT / "scheduler_pending_run.json"
+HEARTBEAT_PATH = ROOT / "var" / "frequency_scheduler" / "heartbeat.json"
 RUN_LOG_PATH = ROOT / "run_log.json"
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
@@ -55,6 +56,7 @@ REQUIRED_AGENT_NODES = {
 FINANCIAL_RESULT_ROWS = frozenset({2, 5, 8, 11, 15, 17})
 FINANCIAL_RESULT_DAILY_FREQUENCY = "每天 03:00"
 FINANCIAL_FRONTEND_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
+_SCHEDULER_HEARTBEAT: "SchedulerHeartbeat | None" = None
 
 
 logging.basicConfig(
@@ -267,6 +269,48 @@ def save_state(state: dict[str, object]) -> None:
     temporary.replace(STATE_PATH)
 
 
+class SchedulerHeartbeat:
+    """Write liveness independently from long-running crawl subprocesses."""
+
+    def __init__(self, interval_seconds: int = 30) -> None:
+        self.interval_seconds = max(10, interval_seconds)
+        self.started_at_hkt = datetime.now(HKT).isoformat(timespec="seconds")
+        self._lock = threading.Lock()
+        self._state: dict[str, object] = {"status": "idle", "stage": "polling", "crawl_run_id": ""}
+        self._stop = threading.Event()
+
+    def update(self, **values: object) -> None:
+        with self._lock:
+            self._state.update(values)
+        self.write()
+
+    def write(self) -> None:
+        with self._lock:
+            payload = dict(self._state)
+        payload.update({
+            "schema_version": 1,
+            "service": "frequency-scheduler",
+            "pid": os.getpid(),
+            "started_at_hkt": self.started_at_hkt,
+            "updated_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"),
+        })
+        HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        temporary = HEARTBEAT_PATH.with_name(HEARTBEAT_PATH.name + ".tmp")
+        temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(temporary, HEARTBEAT_PATH)
+
+    def start(self) -> None:
+        self.write()
+        threading.Thread(target=self._run, name="scheduler-heartbeat", daemon=True).start()
+
+    def _run(self) -> None:
+        while not self._stop.wait(self.interval_seconds):
+            try:
+                self.write()
+            except Exception:
+                logging.exception("调度器心跳写入失败")
+
+
 def _write_pending_run(payload: dict[str, object]) -> None:
     temporary = PENDING_RUN_PATH.with_suffix(".tmp")
     temporary.write_text(
@@ -274,6 +318,12 @@ def _write_pending_run(payload: dict[str, object]) -> None:
         encoding="utf-8",
     )
     temporary.replace(PENDING_RUN_PATH)
+    if _SCHEDULER_HEARTBEAT is not None:
+        _SCHEDULER_HEARTBEAT.update(
+            status="running",
+            stage=str(payload.get("stage") or "running"),
+            crawl_run_id=str(payload.get("crawl_run_id") or ""),
+        )
 
 
 def _load_pending_run() -> dict[str, object]:
@@ -288,6 +338,8 @@ def _load_pending_run() -> dict[str, object]:
 
 def _clear_pending_run() -> None:
     PENDING_RUN_PATH.unlink(missing_ok=True)
+    if _SCHEDULER_HEARTBEAT is not None:
+        _SCHEDULER_HEARTBEAT.update(status="idle", stage="polling", crawl_run_id="")
 
 
 def _scope_rows(scope: str) -> list[int]:
@@ -1687,6 +1739,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
 
 
 def main() -> None:
+    global _SCHEDULER_HEARTBEAT
     parser = argparse.ArgumentParser(description="CMHK 飞书频率调度器")
     parser.add_argument("--once", action="store_true", help="只检查一次")
     parser.add_argument("--dry-run", action="store_true", help="只输出到期判断，不执行爬虫")
@@ -1694,6 +1747,8 @@ def main() -> None:
     if args.once or args.dry_run:
         print(json.dumps(run_cycle(dry_run=args.dry_run), ensure_ascii=False, indent=2))
         return
+    _SCHEDULER_HEARTBEAT = SchedulerHeartbeat()
+    _SCHEDULER_HEARTBEAT.start()
     logging.info("飞书频率调度器启动，时区 Asia/Hong_Kong，每 %s 秒检查一次", POLL_SECONDS)
     while True:
         try:
