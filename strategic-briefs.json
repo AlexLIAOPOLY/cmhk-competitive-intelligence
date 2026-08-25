@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T14:35:48+08:00",
+  "generated_at": "2026-08-25T14:46:28+08:00",
   "items": [
     {
       "id": "NEWS-880E1FBB515DE8",
@@ -43,6 +43,14 @@
       "published_at": "2026-08-22T16:49:31+08:00"
     },
     {
+      "id": "NEWS-368D370FF8C415",
+      "title": "花旗维持中国电信「买入」评级，二季度纯利胜预期",
+      "summary": "花旗发布研报称，中国电信二季度纯利胜预期，维持「买入」评级。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBMTlpwODg5STlER3cxaUpJdnR2TGZFVExKd2FGd2k4QUpOakVTb28yU0F0NjlETVpMUGJjWENCNlFCOG9wcXJTWkhBakpPaDh1WEF5Y3habFZlSmxCZTdoOElnSkU1RFlGREJBRmI0b1g?oc=5",
+      "published_at": "2026-08-21T17:49:05+08:00"
+    },
+    {
       "id": "NEWS-C0478CC374E9EB",
       "title": "香港7月通胀放缓至1.7%",
       "summary": "香港7月消费者价格通胀如预期放缓至三个月低位，统计处数据显示同比升幅为1.7%。",
@@ -57,14 +65,6 @@
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
       "published_at": "2026-08-20T04:09:00+08:00"
-    },
-    {
-      "id": "NEWS-FF04B6947DF03F",
-      "title": "港铁今起西九龙地区展开自动车路面测试 拟明年第二季推出服务",
-      "summary": "港铁今（19日）起于西九地区展开自动车路面测试，以便日后高铁乘客转乘机铁。港铁指，自运输署发出自动车先导牌照后，已安排四辆百度Apollo第六代自动私家车参与测试，于两个车站之间的指定路段行驶",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60381647/%E6%B8%AF%E9%90%B5%E4%BB%8A%E8%B5%B7%E8%A5%BF%E4%B9%9D%E9%BE%8D%E5%9C%B0%E5%8D%80%E5%B1%95%E9%96%8B%E8%87%AA%E5%8B%95%E8%BB%8A%E8%B7%AF%E9%9D%A2%E6%B8%AC%E8%A9%A6-%E6%93%AC%E6%98%8E%E5%B9%B4%E7%AC%AC%E4%BA%8C%E5%AD%A3%E6%8E%A8%E5%87%BA%E6%9C%8D%E5%8B%99",
-      "published_at": "2026-08-19T19:02:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "d36be2ca019441df3f1a454fcfe0f7e607555e1065f569b0d6494f9295f1e709"
+  "site_version": "6736feedce6af19290f1dd7b57d5afd8b7f915aa6d64e0700d2b7317e2bf26fb"
 }
