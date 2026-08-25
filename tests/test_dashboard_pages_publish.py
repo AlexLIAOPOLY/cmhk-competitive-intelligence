@@ -186,8 +186,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("function lineChart", script)
         self.assertIn("function divergingChart", script)
         self.assertIn("缺失值留空", script)
-        for combined_title in ("移动业务", "家庭业务", "政企业务", "线下与数字触达", "经营规模与盈利"):
+        for combined_title in ("移动业务", "家庭业务", "政企业务", "经营规模与盈利"):
             self.assertIn(f'title: "{combined_title}"', script)
+        self.assertNotIn('title: "线下与数字触达"', script)
         self.assertIn("function combinedMetricCard", script)
         self.assertIn("comparison-chart-only", script)
         self.assertIn("chart-direct-value", script)
@@ -636,6 +637,11 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertNotIn("data-source", script)
             self.assertNotIn("来源：HKT官方公开数据", script)
             self.assertIn("[17.322, 19.231, 18.685]", script)
+            self.assertIn('currentMetric("基站总数（4G）", "6200", "座")', script)
+            self.assertIn('currentMetric("官方手机应用程式 (如MyLink) 活跃用户数", "2.8", "百万户"', script)
+            self.assertIn('{ indices: [0] },', script)
+            self.assertIn('{ indices: [1] }', script)
+            self.assertIn(".comparison-metric-grid-reach { grid-template-columns: repeat(2, minmax(0, 1fr)); }", style)
             self.assertNotIn("chinamobileltd.com", script)
             self.assertNotIn("342.8", script)
             self.assertNotIn("6,880", script)
