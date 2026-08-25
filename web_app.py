@@ -162,6 +162,144 @@ def subscription_service() -> SubscriptionService:
     return SubscriptionService(runtime_root=ROOT)
 
 
+SUBSCRIPTION_OPERATION_ACTIONS = {
+    "publish": "subscription.card_send",
+    "update": "subscription.settings_update",
+    "updateReportSchedule": "subscription.report_schedule_update",
+    "updateNewsSchedule": "subscription.news_schedule_update",
+    "refreshDirectory": "subscription.directory_refresh",
+    "addCandidates": "subscription.candidate_add",
+    "invite": "subscription.invite_send",
+    "inviteTarget": "subscription.invite_send",
+    "pushLatest": "subscription.content_send",
+    "push": "subscription.content_send",
+}
+
+
+def subscription_operation_audit_payload(
+    action: str,
+    payload: dict,
+    result: dict | None = None,
+) -> dict | None:
+    """Build a sanitized footprint for mutations and sends on the subscription page."""
+    audit_action = SUBSCRIPTION_OPERATION_ACTIONS.get(str(action or ""))
+    if not audit_action:
+        return None
+    result = result if isinstance(result, dict) else {}
+    details: dict[str, object] = {
+        "source_label": "订阅管理页",
+        "page": "subscriptions",
+        "page_action": action,
+    }
+    target = "subscriptions"
+    target_label = "订阅管理"
+
+    if action == "update":
+        target = str(payload.get("openId") or "subscriber")
+        target_label = str(result.get("display_name") or "订阅者设置")[:240]
+        details.update({
+            "services": [str(item)[:40] for item in (payload.get("services") or [])[:10]],
+            "news_categories": [str(item)[:40] for item in (payload.get("newsCategories") or [])[:20]],
+            "news_frequency": str(payload.get("newsFrequency") or "")[:40],
+            "news_item_limit": payload.get("newsItemLimit"),
+            "report_mode": str(payload.get("reportMode") or "")[:40],
+            "status": str(payload.get("status") or "")[:40],
+        })
+    elif action == "updateNewsSchedule":
+        target = "strategic-news-schedule"
+        target_label = "战略新闻排期"
+        details["enabled"] = payload.get("enabled") is True
+    elif action == "updateReportSchedule":
+        target = "weekly-report-schedule"
+        target_label = "周报排期"
+        details.update({
+            "days": result.get("days") or payload.get("days"),
+            "time": str(result.get("time") or payload.get("time") or "")[:20],
+            "enabled": payload.get("enabled") is True,
+        })
+    elif action == "refreshDirectory":
+        target = "feishu-directory"
+        target_label = "飞书通讯录"
+        details.update({
+            "people_count": int(result.get("people_count") or 0),
+            "department_count": int(result.get("department_count") or 0),
+        })
+    elif action == "addCandidates":
+        target = "subscription-invite-candidates"
+        target_label = "待邀请名单"
+        details["added_count"] = int(result.get("added_count") or len(payload.get("directoryOpenIds") or []))
+    elif action == "invite":
+        recipients = result.get("results") if isinstance(result.get("results"), list) else []
+        names = [str(item.get("display_name") or "").strip() for item in recipients if isinstance(item, dict)]
+        requested_count = int(result.get("requested_count") or len(payload.get("callbackOpenIds") or []))
+        target = "subscription-invites"
+        target_label = "、".join(name for name in names if name)[:240] or f"订阅邀请（{requested_count} 人）"
+        details.update({
+            "recipient_count": requested_count,
+            "sent_count": int(result.get("sent_count") or 0),
+            "failed_count": int(result.get("failed_count") or 0),
+        })
+    elif action == "inviteTarget":
+        target = str(payload.get("targetId") or "subscription-invite-target")
+        target_label = str(result.get("target_name") or "订阅邀请目标")[:240]
+        details.update({
+            "target_type": str(result.get("target_type") or payload.get("targetType") or "")[:20],
+            "message_id": str(result.get("message_id") or "")[:120],
+        })
+    elif action == "publish":
+        target = str(result.get("target_id") or payload.get("targetId") or "subscription-card-target")
+        target_label = "订阅入口卡片接收人" if str(payload.get("targetType") or "") == "user" else "订阅入口卡片群聊"
+        details.update({
+            "target_type": str(result.get("target_type") or payload.get("targetType") or "")[:20],
+            "message_id": str(result.get("message_id") or "")[:120],
+            "readback_verified": bool(result.get("verified")),
+        })
+    else:
+        target_open_id = str(payload.get("targetOpenId") or payload.get("testOpenId") or "")
+        target = target_open_id or "all-active-subscribers"
+        target_label = "指定订阅者" if target_open_id else "全部有效订阅者"
+        details.update({
+            "service": str(result.get("service") or payload.get("service") or "latest")[:40],
+            "recipient_count": int(result.get("recipient_count") or 0),
+            "verified_count": int(result.get("verified_count") or 0),
+            "queued_count": int(result.get("queued_count") or 0),
+            "failed_count": int(result.get("failed_count") or 0),
+            "batch_id": str(result.get("batch_id") or "")[:120],
+        })
+
+    details["target_label"] = target_label
+    return {
+        "action": audit_action,
+        "target": target[:240],
+        "details": details,
+    }
+
+
+def record_subscription_operation_footprint(
+    *,
+    actor: dict | None,
+    action: str,
+    payload: dict,
+    operation_result: dict | None = None,
+    audit_result: str = "success",
+    error: str = "",
+) -> dict | None:
+    """Write a subscription footprint without turning a completed send into a retry risk."""
+    audit_payload = subscription_operation_audit_payload(action, payload, operation_result)
+    if not audit_payload:
+        return None
+    if error:
+        audit_payload = {
+            **audit_payload,
+            "details": {**audit_payload["details"], "error": str(error)[:240]},
+        }
+    try:
+        return AUTH.record_operation(actor=actor, result=audit_result, **audit_payload)
+    except Exception:
+        logging.exception("failed to record subscription operation footprint: %s", action)
+        return None
+
+
 def is_loopback_client(address: str) -> bool:
     try:
         parsed = ipaddress.ip_address(address)
@@ -5099,6 +5237,10 @@ class AppHandler(BaseHTTPRequestHandler):
             if not is_loopback_client(str(self.client_address[0])):
                 json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, 403)
                 return
+            actor = AUTH.current_actor(self)
+            payload: dict = {}
+            action = ""
+            operation_completed = False
             try:
                 payload = read_request_json(self)
                 action = str(payload.get("action") or "")
@@ -5178,10 +5320,34 @@ class AppHandler(BaseHTTPRequestHandler):
                     )
                 else:
                     raise ValueError("未知订阅管理动作")
-                json_response(self, {"ok": True, "result": result, "subscriptions": service.list_summary()})
+                operation_completed = True
+                record_subscription_operation_footprint(
+                    actor=actor,
+                    action=action,
+                    payload=payload,
+                    operation_result=result,
+                )
+                subscriptions = service.list_summary()
+                json_response(self, {"ok": True, "result": result, "subscriptions": subscriptions})
             except ValueError as exc:
+                if not operation_completed:
+                    record_subscription_operation_footprint(
+                        actor=actor,
+                        action=action,
+                        payload=payload,
+                        audit_result="failure",
+                        error=str(exc),
+                    )
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             except Exception as exc:
+                if not operation_completed:
+                    record_subscription_operation_footprint(
+                        actor=actor,
+                        action=action,
+                        payload=payload,
+                        audit_result="failure",
+                        error=str(exc),
+                    )
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
         if parsed.path == "/api/executive-intelligence/regenerate-discovery":

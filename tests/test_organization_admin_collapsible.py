@@ -10,7 +10,7 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=24', INDEX)
+        self.assertIn('/static/organization-admin.js?v=25', INDEX)
         self.assertIn('/static/organization-admin.css?v=23', INDEX)
 
     def test_member_detail_starts_empty_until_a_member_is_selected(self):
@@ -76,6 +76,12 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn('class="organization-event-card" role="dialog"', SCRIPT)
         self.assertIn('data-event-close', SCRIPT)
         self.assertIn('.organization-event-button:focus-visible', STYLE)
+
+    def test_subscription_page_changes_and_messages_have_readable_footprint_actions(self):
+        self.assertIn('"subscription.settings_update": "修改订阅设置"', SCRIPT)
+        self.assertIn('"subscription.news_schedule_update": "修改新闻排期"', SCRIPT)
+        self.assertIn('"subscription.invite_send": "发送订阅邀请"', SCRIPT)
+        self.assertIn('"subscription.content_send": "发送订阅内容"', SCRIPT)
 
     def test_footprint_separates_clickable_action_and_target_with_filters(self):
         self.assertIn('<th>动作</th><th>处理对象</th>', SCRIPT)

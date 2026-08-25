@@ -109,7 +109,14 @@
   }
 
   function auditAction(event) {
-    return ({ "fault.mark_handled": "处理告警", "news_review.update": "复核新闻", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员", "organization.user_delete": "删除组织成员" })[event.action] || event.action || "系统操作";
+    return ({
+      "fault.mark_handled": "处理告警", "news_review.update": "复核新闻",
+      "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员", "organization.user_delete": "删除组织成员",
+      "subscription.card_send": "发送订阅卡片", "subscription.settings_update": "修改订阅设置",
+      "subscription.report_schedule_update": "修改周报排期", "subscription.news_schedule_update": "修改新闻排期",
+      "subscription.directory_refresh": "刷新订阅通讯录", "subscription.candidate_add": "添加待邀请人员",
+      "subscription.invite_send": "发送订阅邀请", "subscription.content_send": "发送订阅内容",
+    })[event.action] || event.action || "系统操作";
   }
 
   function eventSource(event) {
