@@ -26,7 +26,7 @@
   const makeBusinessGroups = (metrics = {}) => [
     { title: "移动业务", accent: "blue", metrics: [metrics.totalMobile || missingMetric("总移动用户数"), metrics.mobileArpu || missingMetric("移动综合ARPU")] },
     { title: "家庭业务", accent: "green", metrics: [metrics.homeBroadband || missingMetric("家庭宽带用户数"), metrics.homeArpu || missingMetric("家庭户均收益（ARPU）")] },
-    { title: "政企业务", accent: "amber", metrics: [metrics.enterpriseCustomers || missingMetric("客户数（大中型企业/中小企业-参考政府公布的分类）"), metrics.projectValue || missingMetric("项目签约额")] }
+    { title: "政企业务", accent: "amber", metrics: [metrics.enterpriseCustomers || missingMetric("客户数"), metrics.projectValue || missingMetric("项目签约额")] }
   ];
   const makeReachMetrics = () => [
     missingMetric("全港实体门市数量", { dial: 0, color: "#55d9ff" }),
@@ -78,7 +78,7 @@
       mobileArpu: currentMetric("移动综合ARPU", "121", "港元/月"),
       homeBroadband: { label: "家庭宽带用户数", value: "1.497", unit: "百万户", trend: "同比 +1%", periods: ["2025年6月", "2025年12月", "2026年6月"], values: [1.482, 1.488, 1.497] },
       homeArpu: currentMetric("家庭户均收益（ARPU）", "226", "港元/月"),
-      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "4.6", "万户"),
+      enterpriseCustomers: currentMetric("客户数", "4.6", "万户"),
       projectValue: { label: "项目签约额", value: ">2.2", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [2.2], valueLabels: [">2.2"] }
     }), reachMetrics: [
       currentMetric("全港实体门市数量", "36", "间", { dial: 72, color: "#55d9ff" }),
@@ -93,7 +93,7 @@
       mobileArpu: currentMetric("移动综合ARPU", "88", "港元/月"),
       homeBroadband: currentMetric("家庭宽带用户数", "0.310", "百万户"),
       homeArpu: currentMetric("家庭户均收益（ARPU）", "169", "港元/月"),
-      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "2.9", "万户"),
+      enterpriseCustomers: currentMetric("客户数", "2.9", "万户"),
       projectValue: currentMetric("项目签约额", "1.4", "十亿港元")
     }), reachMetrics: [
       currentMetric("全港实体门市数量", "42", "间", { dial: 76, color: "#55d9ff" }),
@@ -118,7 +118,7 @@
       mobileArpu: currentMetric("移动综合ARPU", "96", "港元/月"),
       homeBroadband: currentMetric("家庭宽带用户数", "0.420", "百万户"),
       homeArpu: currentMetric("家庭户均收益（ARPU）", "148", "港元/月"),
-      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "3.8", "万户"),
+      enterpriseCustomers: currentMetric("客户数", "3.8", "万户"),
       projectValue: currentMetric("项目签约额", "1.9", "十亿港元")
     }), reachMetrics: [
       { label: "全港实体门市数量", value: "49", unit: "间", trend: "当前列示", periods: ["当前列示"], values: [49], dial: 82, color: "#55d9ff", source: SOURCES.cmhkStores },
@@ -134,12 +134,12 @@
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "dot", "column", "lollipop", "bubble", "column"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "bar", "column", "lollipop", "column", "column"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bubble"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bar"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
@@ -149,7 +149,7 @@
     ] }
   ];
   const chartColors = ["#64cdf4", "#5c9cff", "#60d9aa", "#efb354", "#b68cff", "#f37f8c"];
-  const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", dot: "点图", bubble: "气泡图", radial: "百分比环形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
+  const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", radial: "百分比环形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
   const comparisonEchartSpecs = new Map();
   let comparisonEchartInstances = [];
   let comparisonEchartResizeObserver = null;
@@ -340,61 +340,6 @@
     };
   }
 
-  function echartDotOption(spec) {
-    const rows = spec.rows;
-    const values = rows.filter((row) => row.value !== null).map((row) => row.value);
-    const min = Math.min(...values, 0);
-    const max = Math.max(...values, 1);
-    const padding = Math.max((max - min) * .22, max * .08, 1);
-    return {
-      ...echartBaseOption(spec),
-      grid: { left: 18, right: 18, top: 28, bottom: 27 },
-      xAxis: {
-        type: "category", data: rows.map((row) => row.company),
-        axisLine: { lineStyle: { color: "rgba(135, 180, 200, .18)" } }, axisTick: { show: false },
-        axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
-      },
-      yAxis: { type: "value", min: Math.max(0, min - padding), max: max + padding, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, splitLine: { show: false } },
-      series: [{
-        name: spec.metricLabel,
-        type: "scatter",
-        symbolSize: 15,
-        data: rows.map((row, index) => ({ value: [row.company, row.value], itemStyle: { color: chartColors[index] } })),
-        label: {
-          show: true, position: "top", distance: 7, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
-          formatter(params) { return rows[params.dataIndex].chartDisplay; }
-        },
-        emphasis: { scale: 1.3, itemStyle: { shadowBlur: 12, shadowColor: "rgba(100,205,244,.5)" } }
-      }]
-    };
-  }
-
-  function echartBubbleOption(spec) {
-    const rows = spec.rows;
-    const max = Math.max(...rows.filter((row) => row.value !== null).map((row) => Math.abs(row.value)), 1);
-    return {
-      ...echartBaseOption(spec),
-      grid: { left: 14, right: 14, top: 24, bottom: 27 },
-      xAxis: {
-        type: "category", data: rows.map((row) => row.company),
-        axisLine: { show: false }, axisTick: { show: false },
-        axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
-      },
-      yAxis: { type: "value", min: 0, max: 2, show: false },
-      series: [{
-        name: spec.metricLabel,
-        type: "scatter",
-        data: rows.map((row, index) => ({ value: [row.company, 1, row.value], itemStyle: { color: chartColors[index] } })),
-        symbolSize(value) { return value[2] === null ? 0 : 22 + (Math.sqrt(Math.abs(value[2]) / max) * 20); },
-        label: {
-          show: true, position: "top", distance: 6, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
-          formatter(params) { return rows[params.dataIndex].chartDisplay; }
-        },
-        emphasis: { scale: 1.16, itemStyle: { shadowBlur: 16, shadowColor: "rgba(100,205,244,.45)" } }
-      }]
-    };
-  }
-
   function echartRadialOption(spec) {
     const rows = spec.rows;
     const radii = [["19%", "27%"], ["34%", "42%"], ["49%", "57%"]];
@@ -429,8 +374,6 @@
   function echartOption(spec) {
     if (spec.kind === "grouped-column") return echartGroupedColumnOption(spec);
     if (spec.kind === "column") return echartColumnOption(spec);
-    if (spec.kind === "dot") return echartDotOption(spec);
-    if (spec.kind === "bubble") return echartBubbleOption(spec);
     if (spec.kind === "radial") return echartRadialOption(spec);
     return echartHorizontalOption(spec);
   }
@@ -701,13 +644,11 @@
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
-    if (window.echarts && ["column", "lollipop", "bar", "dot", "bubble", "radial", "diverging"].includes(chartType)) {
+    if (window.echarts && ["column", "lollipop", "bar", "radial", "diverging"].includes(chartType)) {
       return echartHost({ kind: chartType, rows, metricLabel });
     }
     if (chartType === "column") return columnChart(rows, metricLabel);
     if (chartType === "lollipop" || chartType === "bar") return horizontalChart(rows, metricLabel, chartType);
-    if (chartType === "dot") return lineChart(rows, metricLabel);
-    if (chartType === "bubble") return columnChart(rows, metricLabel);
     if (chartType === "radial") return horizontalChart(rows, metricLabel, "bar");
     if (chartType === "donut") return donutChart(rows, metricLabel);
     if (chartType === "diverging") return divergingChart(rows, metricLabel);
@@ -780,18 +721,6 @@
     </article>`;
   }
 
-  function comparisonBoardHeader() {
-    return `<header class="comparison-board-header">
-      <div class="comparison-board-copy">
-        <strong>三家运营商关键指标总览</strong>
-        <span>4 个主题 · 14 项指标</span>
-      </div>
-      <div class="comparison-board-legend" aria-label="运营商颜色图例">
-        ${comparisonOperatorKeys.map((key, index) => `<span style="--series-color:${chartColors[index]}"><i></i>${escapeHtml(comparisonCompanyNames[key])}</span>`).join("")}
-      </div>
-    </header>`;
-  }
-
   function setupChartTooltips(root) {
     if (root.dataset.chartTooltipsReady === "1") return;
     root.dataset.chartTooltipsReady = "1";
@@ -857,7 +786,7 @@
     disposeComparisonEcharts();
     comparisonEchartSpecs.clear();
     comparisonEchartSequence = 0;
-    target.innerHTML = `${comparisonBoardHeader()}${comparisonSections.map(comparisonPanel).join("")}`;
+    target.innerHTML = comparisonSections.map(comparisonPanel).join("");
     initializeEcharts(target);
     setupChartTooltips(target);
   }

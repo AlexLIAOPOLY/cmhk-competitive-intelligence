@@ -453,6 +453,9 @@
 @keyframes competitor-option-appear { from { max-width: 0; opacity: 0; transform: scale(.78); } to { max-width: 220px; opacity: 1; transform: scale(1); } }
 .competitor-chart-card { position: relative; display: flex; min-width: 0; margin: 0; padding: 10px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .competitor-chart-type-toggle { position: absolute; top: 10px; right: 18px; z-index: 7; display: grid; width: 27px; height: 27px; padding: 0; place-items: center; border: 1px solid rgba(89,145,162,.24); border-radius: 6px; color: #79a2ae; background: rgba(5,25,34,.34); opacity: .54; cursor: pointer; transition: opacity .16s ease,color .16s ease,border-color .16s ease,background .16s ease; }
+.competitor-chart-type-toggle[data-next-chart-type="bar"] { color: #d2a753; }
+.competitor-chart-type-toggle[data-next-chart-type="combo"] { color: #aa9be8; }
+.competitor-chart-type-toggle[data-next-chart-type="line"] { color: #71c8d8; }
 .competitor-chart-type-toggle:hover,.competitor-chart-type-toggle:focus-visible { border-color: rgba(97,194,211,.58); color: #9edce6; background: rgba(9,39,50,.8); opacity: 1; outline: 0; }
 .competitor-chart-type-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .competitor-chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px 13px; }
@@ -466,6 +469,9 @@
 .competitor-chart-year line { stroke: #527483; stroke-width: 1; }
 .competitor-chart-year text { fill: #7697a3; font-size: 10px; text-anchor: middle; }
 .competitor-chart-series > path { fill: none; stroke: var(--series-color); stroke-width: 2.4; stroke-dasharray: var(--series-dash); stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.competitor-chart-combo-series { pointer-events: none; }
+.competitor-chart-combo-series > path { fill: none; stroke: var(--series-color); stroke-width: 2.2; stroke-dasharray: var(--series-dash); stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(4,18,26,.82)); vector-effect: non-scaling-stroke; }
+.competitor-chart-combo-series > circle { fill: #071d28; stroke: var(--series-color); stroke-width: 1.8; vector-effect: non-scaling-stroke; }
 .competitor-chart-zero { stroke: rgba(125,176,190,.42); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .competitor-chart-bar { fill: color-mix(in srgb,var(--series-color) 72%,transparent); stroke: var(--series-color); stroke-width: .8; cursor: crosshair; transform-box: fill-box; transform-origin: center bottom; transition: fill .14s ease,stroke .14s ease,filter .14s ease; vector-effect: non-scaling-stroke; }
 .competitor-chart-bar.is-bound { fill: color-mix(in srgb,var(--series-color) 48%,transparent); stroke-dasharray: 2 1; }
