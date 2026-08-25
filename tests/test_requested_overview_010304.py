@@ -236,6 +236,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn('gapStatus === "public_not_found" ? "未见公开披露" : "待核验"', app)
         self.assertIn('board.dataset.refreshAligned', app)
         self.assertIn('四域与AI已对齐', app)
+        self.assertIn('["≈", "~", "approx"].includes(comparator) ? "约"', app)
 
     def test_manual_regeneration_falls_back_to_current_evidence_when_model_times_out(self):
         current = pipeline._read_json(pipeline.AI_ANALYSIS_PATH, {})
