@@ -15950,6 +15950,12 @@ body.report-library-open::before {
   font-size: 7px;
 }
 
+/* Cloud capex values combine long figures with “百万美元”. Let the value
+   track use its intrinsic width so the final currency character is not clipped. */
+.intelligence-domain-cloud .intelligence-viz-rows li {
+  grid-template-columns: 78px minmax(40px, 1fr) max-content;
+}
+
 .intelligence-viz-trends li svg {
   width: 100%;
   height: 20px;
@@ -16034,6 +16040,10 @@ body.report-library-open::before {
   .intelligence-viz-ranges li,
   .intelligence-viz-trends li {
     grid-template-columns: 72px minmax(52px, 1fr) 66px;
+  }
+
+  .intelligence-domain-cloud .intelligence-viz-rows li {
+    grid-template-columns: 72px minmax(36px, 1fr) max-content;
   }
 }
 
