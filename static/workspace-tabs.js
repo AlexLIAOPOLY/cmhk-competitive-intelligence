@@ -1315,8 +1315,7 @@
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "news-db-signal", label: "01:00 四库资料搜索", value: number(intelligenceRun.operational_summary?.news_database_signals?.signal_count || 0), unit: "条线索", note: "独立搜索 Agent 交接 03:00", health: intelligenceHealth, variant: "source", compact: true, position: [230, 520], details: ["按四库主体与指标字段检索最近24小时资料", "合并前一天09:00/14:00两次新闻任务内容作参考", "搜索与新闻结果只作线索，不直接写库", "按主体转到官方 IR / 监管披露入口"], evidence: intelligenceRun.operational_summary?.news_database_signals?.audit_path || "当天未留下01:00资料搜索审计" },
-      { key: "database-hub", label: "数据入库", value: "4", unit: "个库", note: "解析成功且值有变化才写库", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["固定官方入口与01:00搜索资料合并", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败或仅页面变化不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "database-hub", label: "数据入库", value: "4", unit: "个库", note: "按业务域更新四库", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["已审核证据按业务域分流并写入四库", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [630, 342], "database-local"),
       domainNode("international", "国际运营商", [812, 342], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
@@ -1325,7 +1324,7 @@
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
-      ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["news-db-signal", "database-hub", "03:00追官方原文", "amber"], ["agent", "database-hub", "", "cyan"],
+      ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["agent", "database-hub", "", "cyan"],
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
     ];
@@ -1879,7 +1878,7 @@
   }
 
   function taskLabel(kind) {
-    return ({ crawl: "定期数据爬虫", "strategic-news": "战略新闻监测", "four-database-source-discovery": "01:00四库资料搜索", "weekly-report": "战略周报生成", "carrier-performance": "业绩摘要生成", "executive-intelligence-refresh": "四域数据刷新", "audio-generation": "音频摘要生成" })[kind] || kind || "后台任务";
+    return ({ crawl: "定期数据爬虫", "strategic-news": "战略新闻监测", "weekly-report": "战略周报生成", "carrier-performance": "业绩摘要生成", "executive-intelligence-refresh": "四域数据刷新", "audio-generation": "音频摘要生成" })[kind] || kind || "后台任务";
   }
 
   function faultSortableHeader(key, label) {
