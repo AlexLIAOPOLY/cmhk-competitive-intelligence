@@ -15014,6 +15014,16 @@ body.report-library-open::before {
   font-weight: 650;
 }
 
+.intelligence-entity-focus > strong .intelligence-entity-period-note {
+  margin-left: 7px;
+  color: #7898a4;
+  font-family: var(--font-ui, inherit);
+  font-size: 9px;
+  font-weight: 560;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 .intelligence-entity-focus > p {
   display: -webkit-box;
   margin: 6px 0 0;

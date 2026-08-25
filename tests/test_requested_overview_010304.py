@@ -70,6 +70,8 @@ class RequestedOverview010304Tests(unittest.TestCase):
         styles = (Path(__file__).resolve().parents[1] / "web/static/styles.css").read_text(encoding="utf-8")
         self.assertIn("Math.min(8, components.length)", app)
         self.assertIn("components.slice(0, 8)", app)
+        self.assertIn('entity.period === "2026首7月" ? "2026首7月累计"', app)
+        self.assertIn("intelligence-entity-period-note", styles)
         self.assertIn(".intelligence-domain-local .intelligence-entity-focus:not(.is-overview)", styles)
 
     def test_cloud_currency_values_are_normalized_to_usd(self):

@@ -8150,11 +8150,14 @@ document.addEventListener("keydown", (event) => {
     const source = /^https?:\/\//i.test(String(entity.source_url || ""))
       ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
+    const periodNote = entity.name === "CMHK" && entity.period
+      ? `<small class="intelligence-entity-period-note">${safe(entity.period === "2026首7月" ? "2026首7月累计" : entity.period)}</small>`
+      : "";
     const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "-");
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
-        <strong>${formatMetricValue(entity.value, entity.unit, entity.gap_status)}<i>${formatMetricUnit(entity.value, entity.unit)}</i></strong>
+        <strong>${formatMetricValue(entity.value, entity.unit, entity.gap_status)}<i>${formatMetricUnit(entity.value, entity.unit)}</i>${periodNote}</strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
           ${renderEntityComponents(entity)}
         </div>
