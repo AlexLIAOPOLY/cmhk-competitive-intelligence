@@ -457,11 +457,15 @@
 .competitor-chart-point.is-bound .competitor-chart-point-marker { fill: color-mix(in srgb,var(--series-color) 30%,#071d28); stroke-dasharray: 2 1; }
 .competitor-chart-point:focus { outline: none; }
 .competitor-chart-point:is(:hover,:focus,.is-active) .competitor-chart-point-marker { fill: var(--series-color); stroke: #eaf9fb; stroke-width: 3; transform: scale(1.35); }
-.competitor-chart-tooltip { position: absolute; z-index: 8; display: grid; min-width: 152px; padding: 10px 12px; gap: 3px; border: 1px solid rgba(110,213,223,.58); border-radius: 8px; color: #dff4f6; background: rgba(4,22,31,.96); box-shadow: 0 10px 28px rgba(0,8,14,.45),inset 0 1px rgba(222,255,255,.08); pointer-events: none; transform: translate(-50%,-100%); backdrop-filter: blur(10px); }
+.competitor-chart-tooltip { position: absolute; z-index: 8; display: grid; width: max-content; min-width: 184px; max-width: min(320px,calc(100% - 12px)); padding: 10px 12px; gap: 7px; border: 1px solid rgba(110,213,223,.58); border-radius: 8px; color: #dff4f6; background: rgba(4,22,31,.96); box-shadow: 0 10px 28px rgba(0,8,14,.45),inset 0 1px rgba(222,255,255,.08); pointer-events: none; transform: translate(-50%,-100%); backdrop-filter: blur(10px); }
+.competitor-chart-tooltip.is-below { transform: translate(-50%,0); }
 .competitor-chart-tooltip[hidden] { display: none; }
-.competitor-chart-tooltip strong { color: #b8d0d7; font-size: 10px; font-weight: 650; }
-.competitor-chart-tooltip span { color: #789da8; font-size: 9px; }
-.competitor-chart-tooltip b { margin-top: 2px; color: #f0fbfc; font-size: 15px; line-height: 1.2; }
+.competitor-chart-tooltip-period { color: #789da8; font-size: 9px; }
+.competitor-chart-tooltip-list { display: grid; gap: 7px; }
+.competitor-chart-tooltip-list > div { display: grid; min-width: 0; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; gap: 14px; }
+.competitor-chart-tooltip-list strong { overflow: hidden; color: #b8d0d7; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.competitor-chart-tooltip-list b { color: #f0fbfc; font-size: 13px; line-height: 1.2; white-space: nowrap; }
+.competitor-chart-tooltip small { padding-top: 6px; border-top: 1px solid rgba(110,213,223,.16); color: #76a0aa; font-size: 8px; line-height: 1.45; }
 .competitor-chart-card > p { margin: 6px 2px 0; color: #7598a5; font-size: 9px; line-height: 1.5; }
 .competitor-data-details { width: min(calc(100% - 28px),1600px); margin: 0 auto 14px; border: 1px solid rgba(66,103,118,.5); border-radius: 9px; background: rgba(8,29,40,.7); overflow: hidden; }
 .competitor-data-details summary { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 13px; cursor: pointer; color: #b8d0d7; font-size: 10px; list-style: none; }

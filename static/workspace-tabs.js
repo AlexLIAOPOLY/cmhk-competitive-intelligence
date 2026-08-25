@@ -493,22 +493,20 @@
   }
 
   function buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit, coincidentGroups = [] }) {
-    const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
     const lastYear = visibleYears.at(-1);
     const latest = companies.map((company) => ({ company, cell: lookup.get(`${company}|${lastYear}`) })).filter((item) => Number.isFinite(item.cell?.value));
     const sharedOverlap = coincidentGroups.find((group) => group.sharedScope);
     if (sharedOverlap) {
-      const sharedCell = lookup.get(`${sharedOverlap.companies[0]}|${lastYear}`);
       const sharedLabels = sharedOverlap.companies.map(companyLabel).join("与");
       const others = latest.filter((item) => !sharedOverlap.companies.includes(item.company)).sort((a, b) => b.cell.value - a.cell.value);
-      const otherCopy = others.length ? `${companyLabel(others[0].company)}披露${competitorComparator(others[0].cell.comparator)}${format(others[0].cell.value)}${unit}；` : "";
-      return `${lastYear}年，${otherCopy}${sharedLabels}按共建共享口径均为${competitorComparator(sharedCell.comparator)}${format(sharedCell.value)}${unit}，两条曲线完全重合。`;
+      const leaderCopy = others.length ? `${companyLabel(others[0].company)}保持独立建设规模领先；` : "";
+      return `${leaderCopy}${sharedLabels}共用同一张网络，双方的竞争焦点不在基站数量差异，而在共享网络的运营效率和业务转化能力。`;
     }
     const ranked = [...latest].sort((a, b) => b.cell.value - a.cell.value);
     if (!ranked.length) return "当前窗口暂无可用的共同披露值。";
     const leader = ranked[0];
-    const overlap = coincidentGroups.length ? `；${coincidentGroups[0].companies.map(companyLabel).join("与")}曲线完全重合` : "";
-    return `${lastYear}年，${companyLabel(leader.company)}在所选公司中最高，披露${competitorComparator(leader.cell.comparator)}${format(leader.cell.value)}${unit}${overlap}。`;
+    const overlap = coincidentGroups.length ? `；${coincidentGroups[0].companies.map(companyLabel).join("与")}暂未形成可区分的位置` : "";
+    return `${companyLabel(leader.company)}当前处于领先位置，其他公司能否缩小差距，将决定后续竞争格局${overlap}。`;
   }
 
   function buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit }) {
@@ -617,40 +615,72 @@
       const dots = points.map(({ year, cell }) => {
         const period = cell.period || `${year}年`;
         const value = `${competitorComparator(cell.comparator)}${format(cell.value)} ${unit}`;
-        const description = `${companyLabel(company)} · ${period} · ${value} · ${cell.scope || "以官方披露为准"}`;
-        return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}" data-chart-company="${esc(companyLabel(company))}" data-chart-period="${esc(period)}" data-chart-value="${esc(value)}"><circle class="competitor-chart-point-hit" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="13"></circle><circle class="competitor-chart-point-marker" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle></g>`;
+        const coincidentItems = companies.map((peer) => ({ company: peer, cell: lookup.get(`${peer}|${year}`) }))
+          .filter((item) => Number.isFinite(item.cell?.value) && item.cell.value === cell.value && String(item.cell.comparator || "=") === String(cell.comparator || "="))
+          .map((item) => ({
+            company: companyLabel(item.company),
+            period: item.cell.period || `${year}年`,
+            value: `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}`,
+            shared: /shared|共建|共享/i.test(String(item.cell.scope || "")),
+          }));
+        const description = coincidentItems.map((item) => `${item.company} · ${item.period} · ${item.value}`).join("；");
+        const pointKey = `${year}|${cell.comparator || "="}|${cell.value}`;
+        return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}" data-chart-point-key="${esc(pointKey)}" data-chart-items="${esc(JSON.stringify(coincidentItems))}"><circle class="competitor-chart-point-hit" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="13"></circle><circle class="competitor-chart-point-marker" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle></g>`;
       }).join("");
       return `<g class="competitor-chart-series">${paths}${dots}</g>`;
     }).join("");
-    return `<figure class="competitor-chart-card"><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden><strong data-chart-tooltip-company></strong><span data-chart-tooltip-period></span><b data-chart-tooltip-value></b></div><p>注：将鼠标移到数据点可查看具体数值；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+    return `<figure class="competitor-chart-card"><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden></div><p>注：将鼠标移到数据点可查看具体数值；重合点会同时显示全部公司；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
   }
 
   function bindCompetitorChartTooltip(scope) {
     const card = scope.querySelector(".competitor-chart-card");
     const tooltip = card?.querySelector(".competitor-chart-tooltip");
     if (!card || !tooltip) return;
-    const company = tooltip.querySelector("[data-chart-tooltip-company]");
-    const period = tooltip.querySelector("[data-chart-tooltip-period]");
-    const value = tooltip.querySelector("[data-chart-tooltip-value]");
     const position = (point, clientX = null) => {
       const cardRect = card.getBoundingClientRect();
       const pointRect = point.getBoundingClientRect();
       const rawLeft = clientX == null ? pointRect.left + pointRect.width / 2 - cardRect.left : clientX - cardRect.left;
-      const halfWidth = Math.max(76, tooltip.offsetWidth / 2);
+      const halfWidth = Math.max(76, Math.min(tooltip.offsetWidth, cardRect.width - 12) / 2);
       tooltip.style.left = `${Math.min(cardRect.width - halfWidth - 6, Math.max(halfWidth + 6, rawLeft))}px`;
-      tooltip.style.top = `${Math.max(8, pointRect.top - cardRect.top - 10)}px`;
+      const pointTop = pointRect.top - cardRect.top;
+      const showBelow = pointTop < tooltip.offsetHeight + 18;
+      tooltip.classList.toggle("is-below", showBelow);
+      tooltip.style.top = `${showBelow ? pointRect.bottom - cardRect.top + 10 : pointTop - 10}px`;
     };
     const show = (point, event = null) => {
-      company.textContent = point.dataset.chartCompany || "";
-      period.textContent = point.dataset.chartPeriod || "";
-      value.textContent = point.dataset.chartValue || "";
+      let items = [];
+      try { items = JSON.parse(point.dataset.chartItems || "[]"); } catch (_error) { items = []; }
+      const header = document.createElement("span");
+      header.className = "competitor-chart-tooltip-period";
+      header.textContent = `${items.length > 1 ? "重合数据点 · " : ""}${items[0]?.period || ""}`;
+      const list = document.createElement("div");
+      list.className = "competitor-chart-tooltip-list";
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        const label = document.createElement("strong");
+        const itemValue = document.createElement("b");
+        label.textContent = item.company || "";
+        itemValue.textContent = item.value || "";
+        row.append(label, itemValue);
+        list.append(row);
+      });
+      const children = [header, list];
+      if (items.length > 1 && items.every((item) => item.shared)) {
+        const note = document.createElement("small");
+        note.textContent = "共建共享网络口径，数值不可相加";
+        children.push(note);
+      }
+      tooltip.replaceChildren(...children);
       tooltip.hidden = false;
       position(point, event?.clientX ?? null);
-      point.classList.add("is-active");
+      card.querySelectorAll(".competitor-chart-point.is-active").forEach((item) => item.classList.remove("is-active"));
+      card.querySelectorAll(".competitor-chart-point").forEach((item) => {
+        if (item.dataset.chartPointKey === point.dataset.chartPointKey) item.classList.add("is-active");
+      });
     };
-    const hide = (point) => {
+    const hide = () => {
       tooltip.hidden = true;
-      point?.classList.remove("is-active");
+      card.querySelectorAll(".competitor-chart-point.is-active").forEach((item) => item.classList.remove("is-active"));
     };
     card.querySelectorAll(".competitor-chart-point").forEach((point) => {
       point.addEventListener("pointerenter", (event) => show(point, event));
