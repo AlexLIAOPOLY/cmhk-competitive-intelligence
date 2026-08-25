@@ -29,6 +29,7 @@
     schedulerOverview: null,
     executiveIntelligence: null,
     previewRequest: { weekly: 0, performance: 0 },
+    activeReportPreview: { weekly: "", performance: "" },
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultPage: 1,
@@ -1552,6 +1553,7 @@
     panel.innerHTML = `<div class="workspace-module-inner">
       <div class="workspace-grid"><div class="workspace-report-host" id="workspaceReportHost-${kind}"></div>
       <aside class="workspace-report-side" id="workspaceReportSide-${kind}">${reportPreviewPlaceholder()}</aside></div></div>`;
+    state.activeReportPreview[kind] = "";
     const outputBlock = document.querySelector(weekly ? "#weeklyOutputBlock" : "#performanceOutputBlock");
     if (outputBlock) {
       outputBlock.hidden = false;
@@ -1601,15 +1603,37 @@
     return `./static/report-previews/${key}.pdf`;
   }
 
+  function setReportPreviewRowState(kind, path = "") {
+    document.querySelectorAll(`#workspaceReportHost-${kind} .file-row[data-path]`).forEach((row) => {
+      const active = row.dataset.path === path;
+      row.classList.toggle("is-previewing", active);
+      row.setAttribute("aria-pressed", String(active));
+      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.path || ""}`);
+    });
+  }
+
+  function clearReportPreview(kind) {
+    state.previewRequest[kind] += 1;
+    state.activeReportPreview[kind] = "";
+    setReportPreviewRowState(kind);
+    const side = document.querySelector(`#workspaceReportSide-${kind}`);
+    if (side) side.innerHTML = reportPreviewPlaceholder();
+    document.body.classList.remove("has-maximized-report-preview");
+  }
+
   async function showReportPreview(path) {
     const resolved = reportKindForPath(path);
     if (!resolved) return;
     const { item, kind } = resolved;
     const side = document.querySelector(`#workspaceReportSide-${kind}`);
     if (!side) return;
+    if (state.activeReportPreview[kind] === path) {
+      clearReportPreview(kind);
+      return;
+    }
     const requestId = ++state.previewRequest[kind];
-    document.querySelectorAll(`#workspaceReportHost-${kind} .file-row.is-previewing`).forEach((row) => row.classList.remove("is-previewing"));
-    document.querySelector(`#workspaceReportHost-${kind} .file-row[data-path="${CSS.escape(path)}"]`)?.classList.add("is-previewing");
+    state.activeReportPreview[kind] = path;
+    setReportPreviewRowState(kind, path);
     side.innerHTML = previewShell(item, '<div class="report-preview-loading" role="status">正在读取 PDF 版式预览…</div>');
     try {
       const pdfUrl = reportPreviewPdfUrl(item);
@@ -2065,9 +2089,12 @@
 
   const reportRowObserver = new MutationObserver(() => {
     document.querySelectorAll(".workspace-report-host .file-row[data-path]").forEach((row) => {
+      const resolved = reportKindForPath(row.dataset.path);
+      const active = Boolean(resolved && state.activeReportPreview[resolved.kind] === row.dataset.path);
       row.tabIndex = 0;
       row.setAttribute("role", "button");
-      row.setAttribute("aria-label", `预览报告 ${row.dataset.path || ""}`);
+      row.setAttribute("aria-pressed", String(active));
+      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.path || ""}`);
     });
   });
   if (document.body) reportRowObserver.observe(document.body, { childList: true, subtree: true });
