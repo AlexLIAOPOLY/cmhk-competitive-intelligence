@@ -104,9 +104,10 @@
   }
 
   function eventSource(event) {
-    return event.source === "feishu_sheet"
-      ? { label: "飞书表格", className: "is-feishu" }
-      : { label: "本地 APP", className: "is-app" };
+    const source = event.source || event.details?.source;
+    if (source === "feishu_sheet") return { label: "飞书表格", className: "is-feishu" };
+    if (source === "feishu_card") return { label: "飞书卡片", className: "is-feishu" };
+    return { label: "本地 APP", className: "is-app" };
   }
 
   function actionIcon(action) {
