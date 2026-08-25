@@ -7848,11 +7848,11 @@ document.addEventListener("keydown", (event) => {
   const selectedFocusByDomain = new Map();
   const selectedFinancialMetricByDomain = new Map();
   const financialMetricDefinitions = [
-    ["revenue", "收入对比", "亿港元", "columns"],
+    ["revenue", "收入对比", "亿港元", "ranking"],
     ["net_profit", "净利润对比", "亿港元", "ranking"],
-    ["ebitda", "EBITDA", "亿港元", "lollipop"],
+    ["ebitda", "EBITDA", "亿港元", "ranking"],
     ["capital_expenditure", "资本开支", "亿港元", "disclosure"],
-    ["dividend", "派息", "港仙", "dots"],
+    ["dividend", "派息", "港仙", "ranking"],
     ["5g_customers", "5G用户", "万户", "disclosure"],
   ];
   const manualFocusPauseUntil = new Map();
