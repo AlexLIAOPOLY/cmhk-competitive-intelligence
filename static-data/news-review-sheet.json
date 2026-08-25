@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-25T15:24:48+08:00",
+  "updatedAt": "2026-08-25T15:29:45+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -708,13 +708,7 @@
         "",
         "中国进口数据反映全球供应链需求端变化，与算力、服务器等基础设施相关的进口需求趋势可间接影响电信行业供应链成本与投资决策。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "feishu-review-sheet-collaborator",
-        "name": "飞书表格协作者",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-25T06:13:33+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 40,
@@ -1645,13 +1639,7 @@
         "",
         "京东将在洪水桥片区注入智慧物流产业并创造逾2,500个就业岗位，带动本地物流与企业客户需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "feishu-review-sheet-collaborator",
-        "name": "飞书表格协作者",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-25T06:17:49+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 89,
@@ -4121,13 +4109,7 @@
         "SK Telecom",
         "SK电讯与首尔大学合作推出AI人才培养课程，反映竞对在AI人才领域的战略投入和产学合作布局。",
         "后台固定战略词库（模块：竞争对手；命中：SK Telecom） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "feishu-review-sheet-collaborator",
-        "name": "飞书表格协作者",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-25T06:30:01+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 222,
@@ -4355,13 +4337,7 @@
         "算力",
         "乌兰察布数据中心12.5GW规划是具体的算力基础设施部署事件，涉及大规模AI算力建设，可影响行业算力供给格局与数据中心投资趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "feishu-review-sheet-collaborator",
-        "name": "飞书表格协作者",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-25T06:30:01+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 234,
@@ -7002,13 +6978,7 @@
         "港澳",
         "吉港澳三地经贸交流活动将启幕，推动常态化合作，可能带来跨境经贸与商业需求变化。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "feishu-review-sheet-collaborator",
-        "name": "飞书表格协作者",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-25T06:35:52+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 376,

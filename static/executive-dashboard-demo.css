@@ -563,16 +563,16 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
   .comparison-board-copy { width: 100%; justify-content: space-between; gap: 10px; }
   .comparison-board-copy strong { font-size: 14px; }
   .comparison-board-copy span, .comparison-board-legend { font-size: 11px; }
-  .comparison-grid .panel-network { min-height: 510px; }
+  .comparison-grid .panel-network { min-height: 520px; }
   .comparison-grid .panel-business { min-height: 1140px; }
   .comparison-grid .panel-reach { min-height: 450px; }
   .comparison-grid .panel-finance { min-height: 620px; }
   .comparison-content { height: calc(100% - 46px); padding: 8px; }
   .comparison-metric-grid { align-content: start; }
   .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-reach, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }
-  .comparison-metric-card { height: 190px; min-height: 190px; grid-template-rows: 40px minmax(0, 1fr); }
-  .comparison-combined-card { height: 350px; min-height: 350px; }
-  .comparison-combined-card[data-chart-type="grouped-column"] { height: 260px; min-height: 260px; }
+  .comparison-metric-grid .comparison-metric-card { height: 190px; min-height: 190px; grid-template-rows: 40px minmax(0, 1fr); }
+  .comparison-metric-grid .comparison-combined-card { height: 350px; min-height: 350px; }
+  .comparison-metric-grid .comparison-combined-card[data-chart-type="grouped-column"] { height: 260px; min-height: 260px; }
   .comparison-metric-card h3 { font-size: 13px; }
   .comparison-chart .chart-direct-value { font-size: 12px; }
   .comparison-chart-layout { grid-template-columns: minmax(132px, .9fr) minmax(174px, 1.1fr); }
