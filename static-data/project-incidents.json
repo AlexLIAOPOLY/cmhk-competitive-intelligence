@@ -36,7 +36,7 @@
       "scope": "strategic-news",
       "incident_status": "recovery_pending",
       "run_status": "completed",
-      "phase": "恢复待验证",
+      "phase": "人工修复",
       "severity": "P2",
       "severity_label": "高",
       "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
@@ -49,7 +49,7 @@
       "started_at_hkt": "2026-08-25T10:04:58+08:00",
       "heartbeat_at_hkt": "2026-08-25T10:06:34+08:00",
       "completed_at_hkt": "",
-      "handled_at_hkt": ""
+      "handled_at_hkt": "2026-08-25T11:06:22+08:00"
     },
     {
       "incident_id": "eecb48b0dab43ea041678627",

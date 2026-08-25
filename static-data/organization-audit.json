@@ -3,6 +3,20 @@
   "events": [
     {
       "id": "event-001",
+      "at": "2026-08-25T03:06:22+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "fault.mark_handled",
+      "target": "93254e57e7eec8887687113d",
+      "target_type": "fault",
+      "target_label": "战略新闻AI补审队列",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-002",
       "at": "2026-08-24T09:18:38+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -16,7 +30,7 @@
       "details": {}
     },
     {
-      "id": "event-002",
+      "id": "event-003",
       "at": "2026-08-20T06:51:21+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -30,7 +44,7 @@
       "details": {}
     },
     {
-      "id": "event-003",
+      "id": "event-004",
       "at": "2026-08-20T03:38:07+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -44,7 +58,7 @@
       "details": {}
     },
     {
-      "id": "event-004",
+      "id": "event-005",
       "at": "2026-08-20T03:28:16+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -58,7 +72,7 @@
       "details": {}
     },
     {
-      "id": "event-005",
+      "id": "event-006",
       "at": "2026-08-20T02:31:50+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -72,7 +86,7 @@
       "details": {}
     },
     {
-      "id": "event-006",
+      "id": "event-007",
       "at": "2026-08-20T02:18:40+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -86,7 +100,7 @@
       "details": {}
     },
     {
-      "id": "event-007",
+      "id": "event-008",
       "at": "2026-08-20T02:18:31+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -100,7 +114,7 @@
       "details": {}
     },
     {
-      "id": "event-008",
+      "id": "event-009",
       "at": "2026-08-20T02:10:21+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -114,7 +128,7 @@
       "details": {}
     },
     {
-      "id": "event-009",
+      "id": "event-010",
       "at": "2026-08-20T02:10:09+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -128,7 +142,7 @@
       "details": {}
     },
     {
-      "id": "event-010",
+      "id": "event-011",
       "at": "2026-08-20T02:10:06+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
