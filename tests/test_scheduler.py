@@ -739,6 +739,22 @@ class FinancialResultScheduleTests(unittest.TestCase):
         self.assertEqual(audit[0]["configured_frequency"], "每周一 03:00")
         self.assertEqual(audit[0]["schedule_policy"], "financial_results_next_day_sla")
 
+    def test_0100_source_discovery_runs_once_and_records_handoff(self) -> None:
+        now = scheduler.datetime(2026, 8, 25, 1, 1, tzinfo=scheduler.HKT)
+        state: dict[str, object] = {}
+        with (
+            mock.patch.object(scheduler, "crawl_process_running", return_value=False),
+            mock.patch.object(scheduler, "agent_audit_process_running", return_value=False),
+            mock.patch("four_database_source_discovery.run_discovery", return_value={"ok": True, "run_id": "source-1", "signal_count": 2}),
+            mock.patch.object(scheduler, "save_state") as save,
+        ):
+            result = scheduler.run_due_four_database_source_discovery(now, state)
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(state["four_database_source_discovery_date"], "2026-08-25")
+        self.assertEqual(state["four_database_source_discovery_run_id"], "source-1")
+        save.assert_called_once_with(state)
+
 
 class SubscriptionDispatchScheduleTests(unittest.TestCase):
     def test_frequency_scheduler_flushes_due_subscription_queue(self) -> None:

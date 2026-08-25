@@ -3922,6 +3922,7 @@ def _normalize_crawl_task(run: dict) -> dict:
     task_kind = str(run.get("task_kind") or "crawl")
     kind_labels = {
         "strategic-news": "新闻爬虫",
+        "four-database-source-discovery": "01:00四库资料搜索",
         "executive-intelligence-refresh": "四库刷新",
         "crawl": "爬虫",
     }

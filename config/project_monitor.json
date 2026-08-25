@@ -50,6 +50,11 @@
       "stale_after_seconds": 4200
     },
     {
+      "id": "four-database-source-discovery",
+      "name": "01:00四库资料搜索Agent",
+      "stale_after_seconds": 2400
+    },
+    {
       "id": "executive-intelligence-refresh",
       "name": "四库与AI观察结论刷新",
       "stale_after_seconds": 2400
@@ -83,6 +88,7 @@
     "financial_frontend_publish",
     "news_bridge",
     "strategic_news",
+    "four_database_source_discovery",
     "executive_intelligence_refresh"
   ],
   "strategic_scan_times": [

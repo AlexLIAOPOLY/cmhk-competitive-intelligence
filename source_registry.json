@@ -83,6 +83,13 @@
       "tos_status": "public_disclosure",
       "notes": "SEC EDGAR public company filings; use identified filing pages at low request volume."
     },
+    "group.ntt": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "JP",
+      "tos_status": "public_investor_relations",
+      "notes": "NTT Group official financial-results library; public IR pages only and low request volume."
+    },
     "www.ril.com": {
       "policy": "allow",
       "type": "company_official",

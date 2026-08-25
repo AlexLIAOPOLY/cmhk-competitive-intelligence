@@ -173,6 +173,48 @@ class CrawlRecoveryTests(unittest.TestCase):
             ["中国联通"],
         )
 
+    def test_cloud_source_owner_does_not_expand_from_competitor_mentions(self):
+        entities = [
+            "AWS",
+            "Microsoft Azure",
+            "Google Cloud",
+            "Alibaba Cloud",
+            "Tencent Cloud",
+            "Huawei Cloud",
+            "Oracle Cloud",
+        ]
+        targets = crawl.candidate_targets(
+            50,
+            "https://www.tencent.com/investors/results/\n"
+            "https://www.huawei.com/en/annual-report\n"
+            "https://investor.oracle.com/financials/",
+            entities,
+        )
+        owners_by_url = {url: owners for url, owners in targets}
+        self.assertEqual(
+            owners_by_url["https://www.tencent.com/investors/results/"],
+            ["Tencent Cloud"],
+        )
+        self.assertEqual(
+            owners_by_url["https://www.huawei.com/en/annual-report"],
+            ["Huawei Cloud"],
+        )
+        self.assertEqual(
+            owners_by_url["https://investor.oracle.com/financials/"],
+            ["Oracle Cloud"],
+        )
+
+        huawei_report = {
+            "url": "https://www-file.huawei.com/annual-report.pdf",
+            "final_url": "https://www-file.huawei.com/annual-report.pdf",
+            "title": "Annual Report",
+            "text": "AWS, Azure, Google Cloud, Tencent Cloud and Oracle Cloud are competitors.",
+        }
+        self.assertEqual(
+            crawl.matched_entities(50, entities, huawei_report),
+            ["Huawei Cloud"],
+        )
+
     def test_entity_candidate_dedup_preserves_all_expected_owners(self):
         targets = crawl.candidate_targets(
             20,

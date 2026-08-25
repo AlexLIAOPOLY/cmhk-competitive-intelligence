@@ -1674,6 +1674,54 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(fact["value"], "2025: 1,508百万港元；2024: 1,511百万港元")
         self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
 
+    def test_quality_audit_rejects_group_total_as_cloud_metric(self) -> None:
+        result = audit_quality(
+            {
+                "run_id": "unit-test",
+                "candidates": [
+                    {
+                        "id": "huawei-group-growth",
+                        "company": "Huawei Cloud",
+                        "metric": "同比增速",
+                        "value": "总收入862,072百万元人民币（同比增长22.4%）",
+                        "basis": "Huawei's annual sales revenue increased 22.4% year-over-year.",
+                        "note": "",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.95,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_50",
+                        "sources": ["https://www.huawei.com/en/annual-report"],
+                    },
+                    {
+                        "id": "hkbn-user-percent-only",
+                        "company": "HKBN",
+                        "metric": "用户数",
+                        "value": "-2%；-6%",
+                        "basis": "Residential broadband customers declined 2%; enterprise customers declined 6%.",
+                        "note": "",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.9,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_47",
+                        "sources": ["https://www.hkbn.net/group/en/investor-engagement/financial-results"],
+                    },
+                ],
+            }
+        )
+        by_id = {item["id"]: item for item in result["candidates"]}
+        self.assertEqual(by_id["huawei-group-growth"]["decision"], "rejected")
+        self.assertIn("云指标缺少云业务专属口径", by_id["huawei-group-growth"]["reasons"])
+        self.assertEqual(by_id["hkbn-user-percent-only"]["decision"], "rejected")
+        self.assertIn("用户数仅有比例变化而无客户规模", by_id["hkbn-user-percent-only"]["reasons"])
+
     def test_gap_targets_restrict_recrawl_entities_and_metrics(self) -> None:
         rows = [
             {

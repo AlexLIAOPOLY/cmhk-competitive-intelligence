@@ -71,6 +71,23 @@ FINANCIAL_IR_INDEX_URLS: Dict[int, List[str]] = {
 }
 
 
+def is_database_update_row(source_row: Dict[str, Any], row: int | str = 0) -> bool:
+    """Return whether a row must discover and follow new official reports."""
+    try:
+        row_number = int(row)
+    except (TypeError, ValueError):
+        row_number = 0
+    text = " ".join(
+        str(source_row.get(key) or "")
+        for key in ("block", "package", "need", "channel")
+    )
+    return (
+        row_number in FINANCIAL_RESULT_ROWS
+        or "四库自动更新" in text
+        or str(source_row.get("block") or "").strip() == "云厂商"
+    )
+
+
 RECOVERABLE_URL_REWRITES: Dict[str, str] = {
     "https://www.netvigator.com/eng/": "https://www.netvigator.com/eng/index.html",
 }
@@ -240,7 +257,7 @@ ENTITY_HINTS: Dict[str, List[str]] = {
     "HKT": ["hkt.com", "hkt ", "hkt-", "hkt enterprise", "pccw", "6823"],
     "csl": ["hkcsl", "csl", "hkt.com/on-the-go/csl", "1o1o and csl"],
     "1O1O": ["1010", "1o1o", "csl1010"],
-    "3HK": ["three.com.hk", "3hk", "3business", "sosim", "three hong kong"],
+    "3HK": ["three.com.hk", "hthkh.com", "3hk", "3business", "sosim", "three hong kong"],
     "Hutchison": ["hutchison", "hthkh", "hutchison telecommunications", "215"],
     "SmarTone": ["smartone", "00315"],
     "HKBN": ["hkbn", "01310"],
@@ -273,8 +290,8 @@ ENTITY_HINTS: Dict[str, List[str]] = {
     "Microsoft Azure": ["microsoft azure", "azure", "microsoft.com/en-us/investor"],
     "Google Cloud": ["google cloud", "alphabet", "abc.xyz/investor"],
     "Alibaba Cloud": ["alibaba cloud", "阿里云", "alibabagroup.com"],
-    "Tencent Cloud": ["tencent cloud", "腾讯云", "tencent.com/en-us/investors"],
-    "Huawei Cloud": ["huawei cloud", "华为云", "huawei.com/en/annual-report"],
+    "Tencent Cloud": ["tencent cloud", "腾讯云", "tencent.com"],
+    "Huawei Cloud": ["huawei cloud", "华为云", "huawei.com", "www-file.huawei.com"],
     "Oracle Cloud": ["oracle cloud", "investor.oracle.com"],
 }
 
@@ -297,9 +314,7 @@ def split_entities(value: str) -> List[str]:
 def row_entities(row: int, effective_object: str) -> List[str]:
     if row in ROW_ENTITY_OVERRIDES:
         return ROW_ENTITY_OVERRIDES[row]
-    if "/" in (effective_object or ""):
-        return split_entities(effective_object)
-    return [effective_object.strip()] if effective_object.strip() else []
+    return split_entities(effective_object)
 
 
 def entity_hints(entity: str) -> List[str]:
@@ -337,21 +352,46 @@ def filter_metric_fields(row: int, fields: List[str], entities: List[str]) -> Tu
 
 
 def matched_entities(row: int, entities: List[str], result: Dict[str, Any]) -> List[str]:
-    haystack = " ".join(
+    # Source ownership must be decided from the URL/title before looking at the
+    # document body. Annual reports routinely mention competitors; treating
+    # those mentions as ownership mixes one company's figures into another.
+    source_surface = " ".join(
         [
             str(result.get("url", "")),
             str(result.get("final_url", "")),
             str(result.get("title", "")),
-            str(result.get("text", ""))[:120000],
         ]
     ).lower()
-    hits = []
+    surface_hits = []
     for entity in entities:
-        if any(hint and hint in haystack for hint in entity_hints(entity)):
-            hits.append(entity)
-    if not hits and len(entities) == 1:
-        hits = entities[:]
-    return hits
+        if any(hint and hint in source_surface for hint in entity_hints(entity)):
+            surface_hits.append(entity)
+    if surface_hits:
+        return surface_hits
+
+    body = str(result.get("text", ""))[:120000].lower()
+    body_hits = [
+        entity
+        for entity in entities
+        if any(hint and hint in body for hint in entity_hints(entity))
+    ]
+    # Only a unique body match is safe. Multiple company names normally mean a
+    # comparison, partner list or competitor reference rather than ownership.
+    if len(body_hits) == 1:
+        return body_hits
+    if not body_hits and len(entities) == 1:
+        return entities[:]
+    return []
+
+
+def source_owner_entities(url: str, entities: List[str]) -> List[str]:
+    """Infer the entity that owns a configured source from its URL alone."""
+    surface = str(url or "").casefold()
+    return [
+        entity
+        for entity in entities
+        if any(hint and hint in surface for hint in entity_hints(entity))
+    ]
 
 
 def urls_for_entity(entity_result: Dict[str, Any]) -> List[str]:
@@ -1012,7 +1052,7 @@ def candidate_targets(
         append_url(RECOVERABLE_URL_REWRITES.get(url, url), expected_entities)
 
     for url in urls_from_sources(sources):
-        append_recovered_url(url)
+        append_recovered_url(url, source_owner_entities(url, entities or []))
     for url in FINANCIAL_IR_INDEX_URLS.get(row, []):
         append_recovered_url(url)
     for url in EXTRA_CANDIDATES.get(row, []):
@@ -1174,7 +1214,7 @@ def extract_financial_report_links(
     soup = BeautifulSoup(decoded, "lxml")
     markers = re.compile(
         r"annual (?:report|results?)|interim (?:report|results?)|quarter(?:ly|[^\n]{0,24}) results?|"
-        r"earnings (?:release|results?)|financial results?|results? (?:announcement|presentation)|"
+        r"earnings (?:release|results?)|quarter(?:ly)? earnings|financial results?|results? (?:announcement|presentation)|"
         r"form 10-[qk]|20-f|全年业绩|季度业绩|年度报告|中期报告",
         re.I,
     )
@@ -1987,6 +2027,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_urls: Dict[str, List[str]] = {entity: [] for entity in entities}
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
     report_discoveries: List[Dict[str, str]] = []
+    report_entities: Dict[str, List[str]] = {}
     
     with ThreadPoolExecutor(max_workers=URL_WORKERS) as executor:
         future_to_target = {
@@ -2000,8 +2041,17 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             print(f"  -> 抓取完成: {url}", flush=True)
             try:
                 result = future.result()
-                if source_row.get("block") == "云厂商" or row in FINANCIAL_RESULT_ROWS:
-                    report_discoveries.extend(result.get("discovered_report_links") or [])
+                if is_database_update_row(source_row, row):
+                    discovery_hits = (
+                        [entity for entity in expected_entities if entity in entities]
+                        if expected_entities
+                        else matched_entities(row, entities, result)
+                    )
+                    for item in (result.get("discovered_report_links") or []):
+                        if not isinstance(item, dict):
+                            continue
+                        report_discoveries.append({**item, "discovered_from": url})
+                        report_entities[str(item.get("url") or "").strip()] = discovery_hits
                 record = raw_record(row, result)
                 if is_successful_fetch(result):
                     successful_urls.append(url)
@@ -2050,7 +2100,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             except Exception as e:
                 print(f"    [异常] {url}: {e}", flush=True)
 
-    if (source_row.get("block") == "云厂商" or row in FINANCIAL_RESULT_ROWS) and report_discoveries:
+    if is_database_update_row(source_row, row) and report_discoveries:
         seen_report_urls = set(urls)
         report_targets: List[str] = []
         ranked_discoveries = sorted(
@@ -2070,7 +2120,18 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                 continue
             seen_report_urls.add(report_url)
             report_targets.append(report_url)
-            if len(report_targets) >= (4 if row in FINANCIAL_RESULT_ROWS else 3):
+            source = str(item.get("discovered_from") or "")
+            source_count = sum(
+                1
+                for selected in ranked_discoveries[: ranked_discoveries.index(item)]
+                if str(selected.get("discovered_from") or "") == source
+                and str(selected.get("url") or "").strip() in report_targets
+            )
+            if source and source_count >= 2:
+                report_targets.pop()
+                seen_report_urls.discard(report_url)
+                continue
+            if len(report_targets) >= max(4, len(entities) * 2):
                 break
         for report_url in report_targets:
             if time.monotonic() > deadline:
@@ -2081,8 +2142,9 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             if is_successful_fetch(result):
                 successful_urls.append(report_url)
                 combined_text += "\n\nSOURCE: " + report_url + "\n" + result["text"]
-                record["entity_hits"] = entities
-                for entity in entities:
+                report_hits = report_entities.get(report_url) or matched_entities(row, entities, result)
+                record["entity_hits"] = report_hits
+                for entity in report_hits:
                     if report_url not in entity_urls[entity]:
                         entity_urls[entity].append(report_url)
                     entity_records[entity].append(record)
@@ -2172,21 +2234,31 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
         if entity_compact:
             verification_result = verify_extraction(text, entity_compact)
             
+        confidence_score = float(verification_result.get("confidence_score") or 0.0)
+        if not entity_compact:
+            entity_status = "no_extraction"
+        elif confidence_score < 0.8:
+            entity_status = "quality_rejected"
+        else:
+            entity_status = "ok" if not entity_missing else "partial"
         entity_results.append(
             {
                 "entity": entity,
-                "status": "ok" if entity_compact and not entity_missing else ("partial" if entity_compact else "no_extraction"),
+                "status": entity_status,
                 "source_urls": entity_urls.get(entity) or ([] if multi_entity else successful_urls),
                 "extracted": entity_compact,
                 "missing_fields": entity_missing,
                 "raw_records": entity_records.get(entity) or ([] if multi_entity else [rec for rec in fetched if rec.get("text_sample")][:2]),
-                "confidence_score": verification_result["confidence_score"],
+                "confidence_score": confidence_score,
                 "verification_reason": verification_result["verification_reason"]
             }
         )
-    status = "ok" if compact else "no_extraction"
+    accepted_entities = [
+        item for item in entity_results if item.get("status") in {"ok", "partial"}
+    ]
+    status = "ok" if compact and accepted_entities else ("quality_rejected" if compact else "no_extraction")
     entity_missing_any = [f"{e['entity']}:{','.join(e['missing_fields'])}" for e in entity_results if e["missing_fields"]]
-    if compact and (missing or entity_missing_any):
+    if compact and accepted_entities and (missing or entity_missing_any):
         status = "partial"
     if not successful_urls and not fallback_fields:
         status = "fetch_failed"

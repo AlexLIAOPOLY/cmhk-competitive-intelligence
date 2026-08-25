@@ -93,7 +93,7 @@ def read_live_schedule() -> list[dict[str, object]]:
             "--spreadsheet-token",
             SPREADSHEET_TOKEN,
             "--range",
-            f"{MAIN_SHEET_ID}!A1:Z34",
+            f"{MAIN_SHEET_ID}!A1:Z200",
             "--value-render-option",
             "FormattedValue",
         ],
@@ -116,10 +116,18 @@ def read_live_schedule() -> list[dict[str, object]]:
     if frequency_index is None:
         raise RuntimeError(f"找不到更新频率列，当前表头：{headers}")
     rows: list[dict[str, object]] = []
-    for row_no in range(2, 35):
+    project_index = headers.index("项目名称") if "项目名称" in headers else 0
+    active_project = ""
+    for row_no in range(2, len(values) + 1):
         row = values[row_no - 1] if row_no - 1 < len(values) else []
+        project = cell_text(row[project_index] if project_index < len(row) else None).strip()
+        if project:
+            active_project = project
+        if active_project != "竞争对手与行业情报监测":
+            continue
         frequency = cell_text(row[frequency_index] if frequency_index < len(row) else None).strip()
-        rows.append({"row": row_no, "frequency": frequency})
+        if frequency:
+            rows.append({"row": row_no, "frequency": frequency})
     return rows
 
 
@@ -1662,9 +1670,36 @@ def dispatch_scheduled_weekly_report(*, dry_run: bool = False, now: datetime | N
         return {"ok": False, "error": str(exc)[:1200]}
 
 
+def run_due_four_database_source_discovery(
+    now: datetime,
+    state: dict[str, object],
+    *,
+    dry_run: bool = False,
+) -> dict[str, object]:
+    """Run the independent 01:00 search-agent handoff once per HKT day."""
+    today = now.astimezone(HKT).date().isoformat()
+    due = now.hour >= 1 and str(state.get("four_database_source_discovery_date") or "") != today
+    if not due:
+        return {"ok": True, "due": False, "scheduled_for": f"{today}T01:00:00+08:00"}
+    if dry_run:
+        return {"ok": True, "due": True, "dry_run": True, "scheduled_for": f"{today}T01:00:00+08:00"}
+    if crawl_process_running() or agent_audit_process_running():
+        return {"ok": True, "due": True, "skipped": "crawler_or_agent_audit_running"}
+    from four_database_source_discovery import run_discovery
+
+    result = run_discovery(now)
+    if result.get("ok"):
+        state["four_database_source_discovery_date"] = today
+        state["four_database_source_discovery_run_id"] = result.get("run_id")
+        save_state(state)
+    return {"due": True, **result}
+
+
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
+    resume_state = dict(state)
+    source_discovery = run_due_four_database_source_discovery(now, state, dry_run=dry_run)
     subscription_dispatch = dispatch_subscription_queue(dry_run=dry_run)
     weekly_report_dispatch = dispatch_scheduled_weekly_report(dry_run=True, now=now)
     watchdog = (
@@ -1682,6 +1717,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             "executive_intelligence_watchdog": watchdog,
             "subscription_dispatch": subscription_dispatch,
             "weekly_report_dispatch": weekly_report_dispatch,
+            "four_database_source_discovery": source_discovery,
             "pending_run_id": pending.get("crawl_run_id"),
             "pending_stage": pending.get("stage"),
         }
@@ -1706,7 +1742,11 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             result["resume_skipped"] = "agent_audit_already_running"
             return result
         else:
-            result["resumed"] = resume_pending_run(pending, state)
+            # The independent 01:00 handoff may update scheduler bookkeeping in
+            # this same cycle. A pending 03:00 crawl resumes against the state
+            # snapshot it originally loaded, so unrelated discovery metadata
+            # cannot alter its recovery contract.
+            result["resumed"] = resume_pending_run(pending, resume_state)
             return result
     due, audit = due_rows(now, state)
     result: dict[str, object] = {
@@ -1715,6 +1755,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
         "executive_intelligence_watchdog": watchdog,
         "subscription_dispatch": subscription_dispatch,
         "weekly_report_dispatch": weekly_report_dispatch,
+        "four_database_source_discovery": source_discovery,
         "due_rows": due,
         "rows": audit,
     }

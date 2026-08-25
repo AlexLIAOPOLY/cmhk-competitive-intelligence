@@ -78,6 +78,33 @@ DOMAIN_LABELS = {
 }
 UI_DOMAIN_IDS = ("local", "international", "mainland", "cloud")
 SUPPORTING_DOMAIN_IDS = ("macro",)
+NEWS_DATABASE_SIGNALS_PATH = STATE_DIR / "news_database_signals.json"
+SOURCE_DISCOVERY_PATH = STATE_DIR / "source_discovery_latest.json"
+NEWS_METRIC_RE = re.compile(
+    r"财报|业绩|营收|收入|利润|EBITDA|ARPU|用户数|客户数|订户|资本开支|capex|"
+    r"earnings|revenue|profit|subscriber|customer|cloud revenue|云收入|云业务",
+    re.I,
+)
+NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ...] = (
+    ("local", "HKT", ("HKT", "香港电讯", "香港電訊"), ("https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",)),
+    ("local", "SmarTone", ("SmarTone", "数码通", "數碼通"), ("https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",)),
+    ("local", "3HK", ("3HK", "3 Hong Kong", "和记电讯香港", "和記電訊香港"), ("https://www.hthkh.com/en/ir/reports.php",)),
+    ("local", "HKBN", ("HKBN", "香港宽频", "香港寬頻"), ("https://www.hkbn.net/group/en/investor-engagement/financial-results",)),
+    ("international", "Verizon", ("Verizon",), ("https://www.verizon.com/about/investors/financial-reporting", "https://www.verizon.com/about/news/verizon-delivers-record-2q26-results")),
+    ("international", "AT&T", ("AT&T",), ("https://investors.att.com/", "https://investors.att.com/financial-reports/quarterly-earnings/2026")),
+    ("international", "Deutsche Telekom", ("Deutsche Telekom",), ("https://www.telekom.com/en/investor-relations/publications/financial-results",)),
+    ("international", "NTT", ("NTT",), ("https://group.ntt/en/ir/library/results/",)),
+    ("mainland", "中国移动", ("中国移动", "中國移動", "China Mobile"), ("https://www.chinamobileltd.com/en/ir/reports.php",)),
+    ("mainland", "中国电信", ("中国电信", "中國電信", "China Telecom"), ("https://www.chinatelecom-h.com/en/ir/reports.php",)),
+    ("mainland", "中国联通", ("中国联通", "中國聯通", "China Unicom"), ("https://www.chinaunicom.com.hk/en/ir/reports.php",)),
+    ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://ir.aboutamazon.com/quarterly-results/default.aspx",)),
+    ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/Investor/earnings",)),
+    ("cloud", "Google Cloud", ("Google Cloud", "Alphabet"), ("https://abc.xyz/investor/",)),
+    ("cloud", "Alibaba Cloud", ("Alibaba Cloud", "阿里云", "阿里雲"), ("https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",)),
+    ("cloud", "Tencent Cloud", ("Tencent Cloud", "腾讯云", "騰訊雲"), ("https://www.tencent.com/investors/results/",)),
+    ("cloud", "Huawei Cloud", ("Huawei Cloud", "华为云", "華為雲"), ("https://www.huawei.com/en/annual-report",)),
+    ("cloud", "Oracle Cloud", ("Oracle Cloud",), ("https://investor.oracle.com/financials/",)),
+)
 FACT_DOMAIN_IDS = (*UI_DOMAIN_IDS, *SUPPORTING_DOMAIN_IDS)
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
@@ -85,6 +112,7 @@ LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/loc
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
 INTERNATIONAL_PATH = INTERNATIONAL_DIR / "quarterly_metrics.json"
 GLOBAL_OPERATOR_DIR = ROOT / "agent_knowledge/global_top5_operators_2016_2025"
+GLOBAL_OPERATOR_PATH = GLOBAL_OPERATOR_DIR / "annual_metrics.json"
 CLOUD_DIR = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17"
 CLOUD_PATH = CLOUD_DIR / "cloud_vendor_metrics_2023_2025.json"
 MACRO_DIR = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19"
@@ -266,6 +294,15 @@ def _content_hash(payload: Any) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def _fact_content(payload: dict[str, Any]) -> dict[str, Any]:
+    """Return durable fact content, excluding run provenance fields."""
+    return {
+        key: value
+        for key, value in payload.items()
+        if key not in {"generated_at_hkt", "agent_run_id"}
+    }
+
+
 def _first_source(fact: dict[str, Any]) -> str:
     for source in fact.get("sources") or []:
         value = str(source or "").strip()
@@ -392,8 +429,8 @@ def publish_ai_analysis(
     previous = _read_json(output_path, {}) or {}
     if previous.get("model_analysis"):
         payload["model_analysis"] = previous["model_analysis"]
-    comparable = {key: value for key, value in payload.items() if key != "generated_at_hkt"}
-    old_comparable = {key: value for key, value in previous.items() if key != "generated_at_hkt"}
+    comparable = _fact_content(payload)
+    old_comparable = _fact_content(previous)
     changed = _content_hash(comparable) != _content_hash(old_comparable)
     if changed or not output_path.exists():
         _atomic_write_json(output_path, payload)
@@ -434,8 +471,8 @@ def publish_domain_fact_sidecars(
         }
         path = paths[domain]
         previous = _read_json(path, {}) or {}
-        comparable = {key: value for key, value in payload.items() if key != "generated_at_hkt"}
-        old_comparable = {key: value for key, value in previous.items() if key != "generated_at_hkt"}
+        comparable = _fact_content(payload)
+        old_comparable = _fact_content(previous)
         changed = _content_hash(comparable) != _content_hash(old_comparable)
         if changed and not dry_run:
             _atomic_write_json(path, payload)
@@ -4446,7 +4483,39 @@ def _run_overview_source_recrawl(*, dry_run: bool = False) -> dict[str, Any]:
         raise RuntimeError(f"战略总览官方来源复查结果无法解析：{(completed.stdout or completed.stderr)[-1200:]}") from exc
     if not output.is_file() or int(summary.get("retrieved") or 0) <= 0:
         raise RuntimeError(f"战略总览官方来源复查没有形成有效读回：{summary}")
+    domain_summary = summary.get("domains") or {}
+    missing_domains = [
+        domain
+        for domain in UI_DOMAIN_IDS
+        if int((domain_summary.get(domain) or {}).get("retrieved") or 0) <= 0
+    ]
+    if missing_domains:
+        raise RuntimeError(f"战略总览官方来源复查缺少真实网络读回域：{missing_domains}；结果：{summary}")
     return {"ok": True, "path": str(output), **summary}
+
+
+def load_0100_source_discovery_handoff(
+    *,
+    now: datetime | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Load today's independent 01:00 search-agent packet for the 03:00 run."""
+    reference = (now or datetime.now(HKT)).astimezone(HKT)
+    today = reference.date().isoformat()
+    payload = _read_json(SOURCE_DISCOVERY_PATH, {}) or {}
+    handoff_date = str(payload.get("handoff_for_date") or "")
+    available = bool(payload and handoff_date == today)
+    result = {
+        **payload,
+        "ok": available,
+        "available": available,
+        "expected_handoff_date": today,
+        "audit_path": str(SOURCE_DISCOVERY_PATH),
+        "reason": "" if available else "today_0100_source_discovery_missing",
+    }
+    if not dry_run:
+        _atomic_write_json(NEWS_DATABASE_SIGNALS_PATH, result)
+    return result
 
 
 def run_pipeline(
@@ -4489,12 +4558,30 @@ def run_pipeline(
         f"第 {attempt} 次执行开始，正在发布Agent已通过事实并校验本地竞对库。",
     )
     try:
+        source_discovery = load_0100_source_discovery_handoff(dry_run=dry_run)
+        state["news_database_signals"] = source_discovery
+        if source_discovery.get("available"):
+            _task_event(
+                task_run_id,
+                "01:00四库资料搜索交接",
+                f"已读取01:00资料包：{int(source_discovery.get('query_count') or 0)}个查询、"
+                f"{int(source_discovery.get('search_result_count') or 0)}条结果、"
+                f"前一日两次新闻任务参考{int(source_discovery.get('previous_day_reference_count') or 0)}条、"
+                f"{int(source_discovery.get('signal_count') or 0)}条需追官方原文的四库线索。",
+            )
+        else:
+            _task_event(
+                task_run_id,
+                "01:00四库资料搜索交接",
+                "未找到当天01:00资料包；固定官方入口仍会检查，但本轮不得声明搜索补缺链路完成。",
+                level="critical",
+            )
         if dry_run:
             ai_payload = build_ai_analysis(agent_run_id=agent_run_id, curation_summary=curation_summary)
             ai_result = {
                 "ok": True,
-                "changed": _content_hash({key: value for key, value in ai_payload.items() if key != "generated_at_hkt"})
-                != _content_hash({key: value for key, value in (_read_json(AI_ANALYSIS_PATH, {}) or {}).items() if key != "generated_at_hkt"}),
+                "changed": _content_hash(_fact_content(ai_payload))
+                != _content_hash(_fact_content(_read_json(AI_ANALYSIS_PATH, {}) or {})),
                 "domain_counts": ai_payload["domain_counts"],
                 "path": str(AI_ANALYSIS_PATH),
             }
@@ -4536,7 +4623,11 @@ def run_pipeline(
         if refresh_builders:
             for domain in ("international", "cloud", "macro"):
                 label = DOMAIN_LABELS[domain]
-                _task_event(task_run_id, label, f"正在联网重建{label}数据库并执行发布门禁。")
+                _task_event(
+                    task_run_id,
+                    label,
+                    f"正在重建{label}数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
+                )
                 try:
                     state["domains"][domain] = _refresh_builder_domain(domain, dry_run=dry_run)
                     _append_log(f"{domain} ok changed={state['domains'][domain]['changed']}")
@@ -4574,10 +4665,19 @@ def run_pipeline(
             try:
                 state["overview_source_recrawl"] = _run_overview_source_recrawl(dry_run=dry_run)
                 recrawl = state["overview_source_recrawl"]
+                for domain in UI_DOMAIN_IDS:
+                    state["domains"].setdefault(domain, {"ok": True, "changed": False})
+                    state["domains"][domain]["source_crawl"] = (recrawl.get("domains") or {}).get(domain) or {}
                 _task_event(
                     task_run_id,
                     "战略总览来源复查",
-                    f"官方来源复查完成：成功 {int(recrawl.get('retrieved') or 0)}，失败 {int(recrawl.get('failed') or 0)}。",
+                    f"官方来源复查完成：本次真实请求 {int(recrawl.get('official_urls') or 0)} 个URL，"
+                    f"成功 {int(recrawl.get('retrieved') or 0)}，失败 {int(recrawl.get('failed') or 0)}；"
+                    + "、".join(
+                        f"{DOMAIN_LABELS[domain]}{int(((recrawl.get('domains') or {}).get(domain) or {}).get('retrieved') or 0)}个"
+                        for domain in UI_DOMAIN_IDS
+                    )
+                    + "。",
                 )
             except Exception as exc:
                 state["overview_source_recrawl"] = {"ok": False, "error": str(exc)}
@@ -4655,11 +4755,23 @@ def run_pipeline(
                 }
                 _append_log(f"model analysis failed {exc}")
                 _task_event(task_run_id, "生成AI洞察", f"AI洞察生成失败：{exc}", level="critical")
+        for domain in UI_DOMAIN_IDS:
+            sidecar = (state.get("domain_fact_sidecars") or {}).get(domain) or {}
+            state["domains"].setdefault(domain, {"ok": True, "changed": False})
+            state["domains"][domain]["agent_fact_update"] = {
+                "facts": int(sidecar.get("facts") or 0),
+                "changed": bool(sidecar.get("changed")),
+                "published": bool(sidecar.get("published")),
+            }
+            state["domains"][domain]["database_changed"] = bool(
+                state["domains"][domain].get("changed") or sidecar.get("published")
+            )
         failed = [key for key, value in state["domains"].items() if not value.get("ok")]
         model_ok = bool(state.get("model_analysis", {}).get("ok"))
         recrawl_ok = bool(state.get("overview_source_recrawl", {}).get("ok"))
         ui_contract_ok = bool(dry_run or state.get("ui_contract", {}).get("aligned"))
-        core_ok = not failed and model_ok and recrawl_ok and ui_contract_ok
+        source_discovery_ok = bool(dry_run or state.get("news_database_signals", {}).get("available"))
+        core_ok = not failed and model_ok and recrawl_ok and ui_contract_ok and source_discovery_ok
         if dry_run:
             state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         elif core_ok:
@@ -4700,6 +4812,17 @@ def run_pipeline(
                 "completed_at_hkt": _now(),
                 "duration_ms": round((time.monotonic() - started) * 1000),
                 "fallback_preserved": bool(failed or not model_ok or used_fallback or not pages_ok),
+                "change_summary": {
+                    "database_changed_domains": [
+                        domain for domain in UI_DOMAIN_IDS
+                        if bool((state.get("domains") or {}).get(domain, {}).get("database_changed"))
+                    ],
+                    "source_content_changed_domains": [
+                        domain for domain in UI_DOMAIN_IDS
+                        if int((((state.get("overview_source_recrawl") or {}).get("domains") or {}).get(domain) or {}).get("content_changed") or 0) > 0
+                    ],
+                    "ui_verified": pages_ok,
+                },
             }
         )
     except Exception as exc:

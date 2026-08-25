@@ -17,6 +17,7 @@ import ssl
 import urllib.error
 import urllib.request
 from datetime import datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,7 @@ LOCAL_SOURCES = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016
 GLOBAL = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
 GLOBAL_SOURCES = ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
 CLOUD = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json"
+SOURCE_DISCOVERY = ROOT / "agent_knowledge/executive_intelligence_refresh/source_discovery_latest.json"
 
 
 def read(path: Path) -> dict[str, Any]:
@@ -75,14 +77,20 @@ def year_from_period(value: Any) -> int | None:
     return int(match.group()) if match else None
 
 
-def collect() -> tuple[list[str], list[dict[str, Any]]]:
-    urls: list[str] = []
+def collect() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    url_domains: dict[str, set[str]] = {}
     coverage: list[dict[str, Any]] = []
+
+    def add(urls: list[str], domain: str) -> None:
+        for url in urls:
+            if url.startswith(("https://", "http://")):
+                url_domains.setdefault(url, set()).add(domain)
+
     financial_rows = read(FINANCIAL).get("rows", [])
-    financial_subjects = (
+    financial_subjects = {
         "HKT / csl / 1O1O", "SmarTone", "3HK / Hutchison",
         "中国移动", "中国电信", "中国联通", "中国广电",
-    )
+    }
     for row in financial_rows:
         year = year_from_period(row.get("period"))
         if (
@@ -92,7 +100,8 @@ def collect() -> tuple[list[str], list[dict[str, Any]]]:
             and row.get("verification_status") in SAFE
             and row.get("value") not in (None, "")
         ):
-            urls.extend(source_urls(row))
+            domain = "local" if row.get("subject") in {"HKT / csl / 1O1O", "SmarTone", "3HK / Hutchison"} else "mainland"
+            add(source_urls(row), domain)
 
     local_rows = read(LOCAL).get("rows", [])
     local_registry = registry(LOCAL_SOURCES)
@@ -100,7 +109,7 @@ def collect() -> tuple[list[str], list[dict[str, Any]]]:
         for year in YEARS:
             row = next((item for item in local_rows if item.get("operator") == operator and item.get("metric_key") == "mobile_postpaid_customers" and int(item.get("year") or 0) == year), {})
             row_urls = source_urls(row, local_registry)
-            urls.extend(row_urls)
+            add(row_urls, "local")
             coverage.append({
                 "domain": "01", "entity": operator, "year": year, "metric": "postpaid_subscribers",
                 "value": row.get("value"), "unit": row.get("unit") or "million_subscribers",
@@ -110,14 +119,17 @@ def collect() -> tuple[list[str], list[dict[str, Any]]]:
 
     global_rows = read(GLOBAL).get("rows", [])
     global_registry = registry(GLOBAL_SOURCES)
-    for operator in ("中国移动", "中国电信", "中国联通", "中国广电"):
+    mainland_operators = {"中国移动", "中国电信", "中国联通", "中国广电"}
+    international_operators = {"Bharti Airtel", "Reliance Jio", "Verizon", "Deutsche Telekom", "AT&T", "NTT Group"}
+    for operator in sorted(mainland_operators | international_operators):
         for year in YEARS:
             postpaid = next((item for item in global_rows if item.get("operator") == operator and item.get("metric_key") == "mobile_postpaid_customers" and int(item.get("year") or 0) == year), None)
             evidence_rows = [item for item in global_rows if item.get("operator") == operator and int(item.get("year") or 0) == year]
             row_urls = list(dict.fromkeys(url for item in evidence_rows for url in source_urls(item, global_registry)))[:6]
-            urls.extend(row_urls)
+            domain = "mainland" if operator in mainland_operators else "international"
+            add(row_urls, domain)
             coverage.append({
-                "domain": "03", "entity": operator, "year": year, "metric": "postpaid_subscribers",
+                "domain": "03" if domain == "mainland" else "02", "entity": operator, "year": year, "metric": "postpaid_subscribers",
                 "value": (postpaid or {}).get("value"), "unit": (postpaid or {}).get("unit") or "million_subscribers",
                 "status": (postpaid or {}).get("verification_status") or "official_not_separately_disclosed",
                 "source_count": len(row_urls), "source_urls": row_urls,
@@ -131,9 +143,57 @@ def collect() -> tuple[list[str], list[dict[str, Any]]]:
     }
     for row in cloud_rows:
         if str(row.get("fiscal_year") or "") in {str(year) for year in YEARS} and row.get("metric_key") in cloud_keys:
-            urls.extend(source_urls(row))
+            add(source_urls(row), "cloud")
 
-    return list(dict.fromkeys(urls)), coverage
+    try:
+        discovery = read(SOURCE_DISCOVERY)
+    except (OSError, json.JSONDecodeError):
+        discovery = {}
+    for signal in discovery.get("signals", []) if isinstance(discovery, dict) else []:
+        if not isinstance(signal, dict) or signal.get("domain") not in {"local", "international", "mainland", "cloud"}:
+            continue
+        add(
+            [str(url) for url in signal.get("official_followup_urls", []) if str(url).startswith(("https://", "http://"))],
+            str(signal["domain"]),
+        )
+
+    return [
+        {"url": url, "domains": sorted(domains)}
+        for url, domains in url_domains.items()
+    ], coverage
+
+
+class VisibleTextParser(HTMLParser):
+    """Extract stable visible text while ignoring script/style/session attributes."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.hidden_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        del attrs
+        if tag.lower() in {"script", "style", "noscript", "svg"}:
+            self.hidden_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in {"script", "style", "noscript", "svg"} and self.hidden_depth:
+            self.hidden_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self.hidden_depth:
+            clean = " ".join(data.split())
+            if clean:
+                self.parts.append(clean)
+
+
+def content_fingerprint(body: bytes, content_type: str) -> tuple[str, str]:
+    if body.startswith(b"%PDF") or "application/pdf" in content_type.lower():
+        return hashlib.sha256(body).hexdigest(), "raw_pdf_sample"
+    parser = VisibleTextParser()
+    parser.feed(body.decode("utf-8", "ignore"))
+    visible_text = "\n".join(parser.parts)
+    return hashlib.sha256(visible_text.encode("utf-8")).hexdigest(), "visible_text"
 
 
 def fetch(url: str) -> dict[str, Any]:
@@ -146,10 +206,14 @@ def fetch(url: str) -> dict[str, Any]:
     try:
         with urllib.request.urlopen(request, timeout=18, context=context) as response:
             body = response.read(131072)
+            content_type = str(response.headers.get("Content-Type") or "")
+            fingerprint, fingerprint_kind = content_fingerprint(body, content_type)
             return {
                 "url": url, "ok": True, "status": int(response.status),
-                "content_type": str(response.headers.get("Content-Type") or ""),
+                "content_type": content_type,
                 "bytes_sampled": len(body), "sha256_sample": hashlib.sha256(body).hexdigest(),
+                "content_fingerprint": fingerprint, "fingerprint_kind": fingerprint_kind,
+                "retrieved_at": datetime.now().astimezone().isoformat(),
             }
     except urllib.error.HTTPError as exc:
         return {"url": url, "ok": False, "status": int(exc.code), "error": str(exc.reason)}
@@ -162,20 +226,55 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--limit", type=int, default=0, help="0 means all collected official URLs")
     args = parser.parse_args()
-    urls, coverage = collect()
+    targets, coverage = collect()
     if args.limit > 0:
-        urls = urls[: args.limit]
+        targets = targets[: args.limit]
+    previous_path = OUT_DIR / "official_source_recrawl.json"
+    try:
+        previous = read(previous_path)
+    except (OSError, json.JSONDecodeError):
+        previous = {}
+    previous_items = {
+        str(item.get("url") or ""): item
+        for item in previous.get("source_crawl", [])
+        if item.get("ok") and item.get("url")
+    }
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
-        crawled = list(pool.map(fetch, urls))
+        crawled = list(pool.map(fetch, [item["url"] for item in targets]))
+    domains_by_url = {item["url"]: item["domains"] for item in targets}
+    for item in crawled:
+        item["domains"] = domains_by_url.get(item["url"], [])
+        previous_item = previous_items.get(item["url"]) or {}
+        old_fingerprint = str(previous_item.get("content_fingerprint") or "")
+        item["content_changed"] = bool(
+            item.get("ok") and old_fingerprint and old_fingerprint != item.get("content_fingerprint")
+        )
+        item["first_observation"] = bool(item.get("ok") and not previous_item)
+        item["fingerprint_baseline_upgraded"] = bool(item.get("ok") and previous_item and not old_fingerprint)
+    domain_summary: dict[str, dict[str, int]] = {}
+    for domain in ("local", "international", "mainland", "cloud"):
+        items = [item for item in crawled if domain in item.get("domains", [])]
+        domain_summary[domain] = {
+            "official_urls": len(items),
+            "retrieved": sum(1 for item in items if item.get("ok")),
+            "failed": sum(1 for item in items if not item.get("ok")),
+            "content_changed": sum(1 for item in items if item.get("content_changed")),
+            "first_observation": sum(1 for item in items if item.get("first_observation")),
+            "fingerprint_baseline_upgraded": sum(1 for item in items if item.get("fingerprint_baseline_upgraded")),
+        }
     payload = {
         "dataset_id": "requested_overview_010304_official_recrawl_2016_2025",
         "generated_at": datetime.now().astimezone().isoformat(),
         "period": {"start_year": 2016, "end_year": 2025},
         "policy": "official documents only; absolute values only; missing postpaid disclosures remain gaps",
         "summary": {
-            "official_urls": len(urls), "retrieved": sum(1 for item in crawled if item["ok"]),
+            "official_urls": len(targets), "retrieved": sum(1 for item in crawled if item["ok"]),
             "failed": sum(1 for item in crawled if not item["ok"]),
             "postpaid_rows": len(coverage), "postpaid_values": sum(1 for item in coverage if item.get("value") not in (None, "")),
+            "content_changed": sum(1 for item in crawled if item.get("content_changed")),
+            "first_observation": sum(1 for item in crawled if item.get("first_observation")),
+            "fingerprint_baseline_upgraded": sum(1 for item in crawled if item.get("fingerprint_baseline_upgraded")),
+            "domains": domain_summary,
         },
         "postpaid_coverage": coverage,
         "source_crawl": crawled,

@@ -97,6 +97,10 @@ OFFICIAL_HOST_TERMS = (
     "hkbn.net",
     "hgc.com.hk",
     "i-cablecomm.com",
+    "verizon.com",
+    "att.com",
+    "telekom.com",
+    "group.ntt",
     "aboutamazon.com",
     "microsoft.com",
     "abc.xyz",
@@ -125,7 +129,43 @@ AUDIT_REASON_TEXTS = {
     "缺少可核验公开来源",
     "置信度低于80%",
     "在线模型不可用，离线结果不直接发布",
+    "云指标缺少云业务专属口径",
+    "用户数仅有比例变化而无客户规模",
 }
+
+CLOUD_METRIC_COMPANIES = {
+    "AWS",
+    "Microsoft Azure",
+    "Google Cloud",
+    "Alibaba Cloud",
+    "Tencent Cloud",
+    "Huawei Cloud",
+    "Oracle Cloud",
+}
+
+
+def _metric_scope_issue(fact: CandidateFact) -> str:
+    context = clean_text(f"{fact.value} {fact.basis} {fact.note}", 1800)
+    if fact.company in CLOUD_METRIC_COMPANIES and fact.metric in {
+        "云收入",
+        "同比增速",
+        "经营利润或利润率",
+        "积压订单或RPO",
+    }:
+        if not re.search(
+            r"\bcloud\b|\bAWS\b|\bAzure\b|Google Cloud|Alibaba Cloud|Tencent Cloud|"
+            r"Huawei Cloud|Oracle Cloud|\bOCI\b|云业务|云服务|云计算|阿里云|腾讯云|华为云",
+            context,
+            re.IGNORECASE,
+        ):
+            return "云指标缺少云业务专属口径"
+    if re.search(r"用户数|客户数", fact.metric) and not re.search(
+        r"\d[\d,.]*\s*(?:万户|亿户|户|万|亿|million|thousand|customers?|subscribers?|users?)\b",
+        context,
+        re.IGNORECASE,
+    ):
+        return "用户数仅有比例变化而无客户规模"
+    return ""
 
 
 class CurationState(TypedDict, total=False):
@@ -288,6 +328,18 @@ def _accepted_cache_items(items: dict[str, dict[str, Any]]) -> dict[str, dict[st
 def _cache_item_metric_semantically_valid(item: dict[str, Any]) -> bool:
     metric = str(item.get("metric") or "")
     evidence = f"{item.get('value', '')}\n{item.get('basis', '')}"
+    company = str(item.get("company") or "")
+    scope_probe = CandidateFact(
+        id=str(item.get("id") or "cache-policy-check"),
+        company=company,
+        metric=metric,
+        value=str(item.get("value") or ""),
+        basis=str(item.get("basis") or ""),
+        note=str(item.get("note") or ""),
+        row_ref=str(item.get("row_ref") or ""),
+    )
+    if _metric_scope_issue(scope_probe):
+        return False
     if metric == "5G-A":
         return bool(re.search(r"\b5G[\s-]?(?:A|Advanced)\b|\b5\.5G\b", evidence, re.IGNORECASE))
     if metric == "Open RAN":
@@ -1063,6 +1115,9 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
             fact.reasons.append("置信度低于80%")
         if "AI不可用" in fact.note:
             fact.reasons.append("在线模型不可用，离线结果不直接发布")
+        scope_issue = _metric_scope_issue(fact)
+        if scope_issue:
+            fact.reasons.append(scope_issue)
 
         fact.reasons = list(dict.fromkeys(fact.reasons))
         fact.quality_score = round(

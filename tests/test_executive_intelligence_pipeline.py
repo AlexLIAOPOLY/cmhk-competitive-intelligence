@@ -15,6 +15,23 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_0100_handoff_requires_current_hkt_date(self):
+        now = datetime(2026, 8, 25, 3, 0, tzinfo=pipeline.HKT)
+        with patch.object(
+            pipeline,
+            "_read_json",
+            return_value={"handoff_for_date": "2026-08-25", "signal_count": 3},
+        ):
+            result = pipeline.load_0100_source_discovery_handoff(now=now, dry_run=True)
+
+        self.assertTrue(result["available"])
+        self.assertEqual(result["signal_count"], 3)
+
+    def test_four_database_sheet_rows_follow_discovered_reports(self):
+        row = {"block": "国际运营商", "package": "四库自动更新｜财报经营指标"}
+        self.assertTrue(crawl.is_database_update_row(row, 48))
+        self.assertFalse(crawl.is_database_update_row({"block": "政策", "package": "法规"}, 23))
+
     def test_focus_prompts_use_relation_few_shots_and_forbid_free_form_causality(self):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
@@ -1159,6 +1176,62 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(international["facts"][0]["company"], "Verizon")
         self.assertEqual(mainland["facts"], [])
         self.assertEqual(cloud["facts"][0]["company"], "AWS")
+
+    def test_domain_sidecar_does_not_claim_change_for_new_run_id_only(self):
+        facts = [{
+            "company": "AWS",
+            "source_tier": "official",
+            "source_url": "https://example.com/aws",
+            "analysis": "same fact",
+        }]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            paths = {domain: root / f"{domain}.json" for domain in pipeline.FACT_DOMAIN_IDS}
+            first = {
+                "agent_run_id": "run-one",
+                "generated_at_hkt": "2026-08-25T01:00:00+08:00",
+                "domains": {domain: facts if domain == "cloud" else [] for domain in pipeline.FACT_DOMAIN_IDS},
+            }
+            second = {
+                **first,
+                "agent_run_id": "run-two",
+                "generated_at_hkt": "2026-08-25T02:00:00+08:00",
+            }
+            pipeline.publish_domain_fact_sidecars(first, output_paths=paths)
+            result = pipeline.publish_domain_fact_sidecars(second, output_paths=paths)
+        self.assertFalse(result["cloud"]["changed"])
+        self.assertFalse(result["cloud"]["published"])
+
+    def test_source_recrawl_requires_live_readback_for_every_ui_domain(self):
+        completed = mock.Mock(
+            returncode=0,
+            stdout=json.dumps({
+                "official_urls": 4,
+                "retrieved": 3,
+                "failed": 1,
+                "domains": {
+                    "local": {"retrieved": 1},
+                    "international": {"retrieved": 1},
+                    "mainland": {"retrieved": 1},
+                    "cloud": {"retrieved": 0},
+                },
+            }),
+            stderr="",
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            script = root / "scripts" / "crawl_requested_overview_010304_official_sources.py"
+            output = root / "agent_knowledge" / "requested_overview_010304_2016_2025" / "official_source_recrawl.json"
+            script.parent.mkdir(parents=True)
+            output.parent.mkdir(parents=True)
+            script.write_text("", encoding="utf-8")
+            output.write_text("{}", encoding="utf-8")
+            with (
+                patch.object(pipeline, "ROOT", root),
+                patch("executive_intelligence_pipeline.subprocess.run", return_value=completed),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "cloud"):
+                    pipeline._run_overview_source_recrawl()
 
     def test_database_gate_rejects_unverified_local_rows(self):
         with tempfile.TemporaryDirectory() as temp_dir:
