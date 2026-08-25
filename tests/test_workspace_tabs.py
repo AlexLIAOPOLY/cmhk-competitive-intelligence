@@ -53,8 +53,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=22', INDEX)
         self.assertIn('/static/organization-admin.css?v=22', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=98', INDEX)
-        self.assertIn('/static/app.js?v=295', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=99', INDEX)
+        self.assertIn('/static/app.js?v=297', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -550,10 +550,10 @@ class WorkspaceTabsTests(unittest.TestCase):
             "03:00 主爬虫",
             "Agent 证据审核",
             "本地运营商",
-            "内地电讯企业",
+            "国际运营商",
+            "内地运营商",
             "全球云厂商",
-            "香港电讯市场",
-            "17项AI洞察",
+            "expectedInsightCount",
             "情报进入业务入口",
         ):
             self.assertIn(label, SCRIPT)
@@ -562,7 +562,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=98', INDEX)
+        self.assertIn('workspace-tabs.js?v=99', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=108', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
@@ -599,7 +599,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(".news-lineage.is-global .news-lineage-node.is-compact", STYLE)
         self.assertIn("animation-name: news-lineage-flow-global", STYLE)
         self.assertIn("to { stroke-dashoffset: -104; }", STYLE)
-        for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-macro", "is-insight", "is-delivery"):
+        for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-mainland", "is-insight", "is-delivery"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.{variant}", STYLE)
         self.assertIn('feedbackLabel: "历史记录用于下一轮去重"', SCRIPT)
         self.assertNotIn("历史记忆影响下一轮", SCRIPT)
@@ -607,7 +607,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)
         for key in ("strategic", "news-search", "news-ai", "news-dedupe", "news-output", "main", "agent", "insights", "consumers"):
             self.assertIn(f'key: "{key}"', SCRIPT)
-        for domain in ("local", "international", "cloud", "macro"):
+        for domain in ("local", "international", "cloud", "mainland"):
             self.assertIn(f'domainNode("{domain}"', SCRIPT)
 
     def test_news_lineage_uses_semantic_health_colours_instead_of_node_type_colours(self):

@@ -3262,10 +3262,10 @@ function renderCrawlRunArchive(data) {
   if (parsed.fourDomainRefresh) {
     const refresh = parsed.fourDomainRefresh;
     const domainLabels = { local: "香港运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
-    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项战略解读", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
-    const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "cloud", "macro"])
+    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", official_source_recrawl: "官方来源复查", "15_focus_analysis": "15项战略解读", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项分析（旧记录）", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
+    const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "mainland", "cloud"])
       .map((item) => domainLabels[item] || item);
-    const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "17_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
+    const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "official_source_recrawl", "15_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
       .map((item) => stageLabels[item] || item);
     const refreshAudit = document.createElement("section");
     refreshAudit.className = "financial-results-run-audit four-domain-run-audit";
@@ -7817,7 +7817,7 @@ document.addEventListener("keydown", (event) => {
       mutation.addedNodes.forEach(scan);
     });
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  if (document.body) observer.observe(document.body, { childList: true, subtree: true });
 })();
 
 /* Four-domain executive intelligence board: data comes from the four local databases. */
@@ -8948,7 +8948,11 @@ document.addEventListener("keydown", (event) => {
         if (!focusRotationTimer) startFocusRotation();
         const refreshStatus = data.refresh?.status;
         const refreshTime = String(data.refresh?.completed_at_hkt || data.ai?.updated_at || "").replace("T", " ").slice(0, 19);
+        const uiContract = data.ui_contract || {};
+        board.dataset.refreshAligned = uiContract.aligned ? "true" : "false";
         method.textContent = (data.method || "四库同口径对齐")
+          + ` · ${uiContract.aligned ? "四域与AI已对齐" : "四域与AI待对齐"}`
+          + (uiContract.focuses_expected ? ` ${uiContract.focuses_summarized || 0}/${uiContract.focuses_expected}` : "")
           + (refreshStatus ? ` · 更新：${refreshStatus}${refreshTime ? ` ${refreshTime}` : ""}` : "");
         const requested = new URL(window.location.href).searchParams.get("intelligence");
         if (requested) openDrawer(requested, false);

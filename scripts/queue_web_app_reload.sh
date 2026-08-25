@@ -112,6 +112,7 @@ rsync -a \
   --exclude='agent_knowledge/cloud_vendor_metrics_2026-06-17/' \
   --exclude='agent_knowledge/cmhk_macro_policy_2026-06-19/' \
   --exclude='agent_knowledge/executive_intelligence_refresh/' \
+  --exclude='agent_knowledge/requested_overview_010304_2016_2025/' \
   --exclude='results/' \
   --exclude='curation_data/' \
   --exclude='crawl_runs/' \

@@ -587,7 +587,7 @@
 .news-lineage.is-global .news-lineage-node.is-database-local { --node-accent:#4fcab1; border-color: rgba(70,188,157,.86); background: linear-gradient(155deg,rgba(19,70,61,.97),rgba(6,34,36,.99)); }
 .news-lineage.is-global .news-lineage-node.is-database-international { --node-accent:#5b9ee8; border-color: rgba(82,143,211,.86); background: linear-gradient(155deg,rgba(22,55,91,.97),rgba(7,30,48,.99)); }
 .news-lineage.is-global .news-lineage-node.is-database-cloud { --node-accent:#9a83e5; border-color: rgba(137,113,211,.86); background: linear-gradient(155deg,rgba(52,43,87,.97),rgba(19,27,49,.99)); }
-.news-lineage.is-global .news-lineage-node.is-database-macro { --node-accent:#d9a554; border-color: rgba(205,147,67,.86); background: linear-gradient(155deg,rgba(77,57,28,.97),rgba(35,31,24,.99)); }
+.news-lineage.is-global .news-lineage-node.is-database-mainland { --node-accent:#d9a554; border-color: rgba(205,147,67,.86); background: linear-gradient(155deg,rgba(77,57,28,.97),rgba(35,31,24,.99)); }
 .news-lineage.is-global .news-lineage-node.is-insight { --node-accent:#a786ef; border-color: rgba(148,118,224,.88); background: linear-gradient(155deg,rgba(56,43,94,.97),rgba(20,27,52,.99)); }
 .news-lineage.is-global .news-lineage-node.is-delivery { --node-accent:#5fcc9a; border-color: rgba(82,190,140,.88); background: linear-gradient(155deg,rgba(20,72,55,.97),rgba(6,34,35,.99)); }
 .news-health-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; margin-left: auto; color: #8facb5; font-size: 10px; }

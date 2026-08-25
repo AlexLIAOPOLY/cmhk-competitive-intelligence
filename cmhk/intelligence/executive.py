@@ -2311,12 +2311,42 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     ] if len(model_discoveries) >= 4 else deterministic_relations
     relations = _reader_facing_copy(_reader_percent_units(relations))
     refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
+    ui_domain_ids = [str(domain.get("id") or "") for domain in domains]
+    summary_domain_ids = [
+        str(item.get("domain") or "")
+        for item in (model_analysis.get("summaries") or [])
+        if isinstance(item, dict)
+    ]
+    focus_count = sum(len(domain.get("focuses") or []) for domain in domains)
+    summarized_focus_count = sum(
+        len(item.get("focuses") or [])
+        for item in (model_analysis.get("summaries") or [])
+        if isinstance(item, dict)
+    )
+    ui_contract = {
+        "domain_ids": ui_domain_ids,
+        "summary_domain_ids": summary_domain_ids,
+        "focuses_expected": focus_count,
+        "focuses_summarized": summarized_focus_count,
+        "model_analysis_fresh": model_analysis_fresh,
+        "aligned": bool(
+            model_analysis_fresh
+            and summary_domain_ids == ui_domain_ids
+            and summarized_focus_count == focus_count
+            and len(model_discoveries) >= 4
+        ),
+        "last_checked_at_hkt": (
+            str(refresh_state.get("completed_at_hkt") or refresh_state.get("started_at_hkt") or "")
+            if isinstance(refresh_state, dict) else ""
+        ),
+    }
     return {
         "domains": domains,
         "relations": relations,
         "method": "页面数值只从本地知识库取用；本地库待核验不等于互联网未披露，只有完成官网、年报、业绩公告与业绩演示复核的空值才标记为未见公开披露。",
         "data_audit": online_gap_audit,
         "refresh": refresh_state if isinstance(refresh_state, dict) else {},
+        "ui_contract": ui_contract,
         "ai": {
             "agent_run_id": ai_payload.get("agent_run_id", "") if isinstance(ai_payload, dict) else "",
             "updated_at": ai_payload.get("generated_at_hkt", "") if isinstance(ai_payload, dict) else "",

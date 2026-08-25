@@ -826,11 +826,12 @@ def _launch_executive_intelligence_refresh(
     curation: dict[str, object],
 ) -> dict[str, object]:
     """Launch the linked four-domain refresh and record its complete coverage contract."""
-    domains = ["local", "international", "cloud", "macro"]
+    domains = ["local", "international", "mainland", "cloud"]
     stages = [
         "database_refresh",
         "quality_gate",
-        "17_focus_analysis",
+        "official_source_recrawl",
+        "15_focus_analysis",
         "homepage_ui_refresh",
         "public_frontend_publish",
     ]
@@ -879,13 +880,13 @@ def _launch_executive_intelligence_refresh(
             "agentRunId": agent_run_id,
             "domains": domains,
             "stages": stages,
-            "completionContract": "four_domains_database_quality_17_focus_homepage_ui_public_frontend",
+            "completionContract": "current_ui_four_domains_database_quality_source_recrawl_15_focus_homepage_public_frontend",
             "error": result.get("error", ""),
         },
     )
     result = {**result, "domains": domains, "stages": stages}
     if result.get("ok"):
-        logging.info("四域数据库、质量门禁、17项战略解读、主页UI与公开前端刷新已启动：%s", result)
+        logging.info("当前UI四域数据库、质量门禁、官方来源复查、15项战略解读、主页与公开前端刷新已启动：%s", result)
     else:
         logging.warning("四域数据库与前端刷新未启动；守护进程将依据本轮爬虫日志补跑：%s", result)
     return result

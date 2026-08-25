@@ -174,6 +174,14 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertTrue(self.snapshot["ai"]["model_analysis_fresh"])
         self.assertTrue(all(focus.get("ai_summary") for domain in self.snapshot["domains"] for focus in domain["focuses"]))
 
+    def test_runtime_contract_proves_the_daily_summary_matches_the_current_ui(self):
+        contract = self.snapshot["ui_contract"]
+        self.assertEqual(contract["domain_ids"], ["local", "international", "mainland", "cloud"])
+        self.assertEqual(contract["summary_domain_ids"], contract["domain_ids"])
+        self.assertEqual(contract["focuses_expected"], 15)
+        self.assertEqual(contract["focuses_summarized"], 15)
+        self.assertTrue(contract["aligned"])
+
     def test_every_missing_value_has_an_audited_gap_status(self):
         missing = [
             item
@@ -226,6 +234,8 @@ class RequestedOverview010304Tests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('gapStatus === "public_not_found" ? "未见公开披露" : "待核验"', app)
+        self.assertIn('board.dataset.refreshAligned', app)
+        self.assertIn('四域与AI已对齐', app)
 
     def test_manual_regeneration_falls_back_to_current_evidence_when_model_times_out(self):
         current = pipeline._read_json(pipeline.AI_ANALYSIS_PATH, {})

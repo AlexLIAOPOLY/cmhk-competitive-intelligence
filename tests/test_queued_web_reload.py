@@ -43,6 +43,7 @@ class QueuedWebReloadTests(unittest.TestCase):
             worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
         )
         self.assertIn("web-reload-releases", queue)
+        self.assertIn("agent_knowledge/requested_overview_010304_2016_2025/", queue)
         self.assertIn("WORKER_COPY", queue)
         self.assertNotIn("/Desktop/", worker)
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)

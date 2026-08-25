@@ -203,7 +203,9 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
   }
   function startPrivateControlLock() {
     lockPrivateControls();
-    new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
+    if (document.documentElement) {
+      new MutationObserver(lockPrivateControls).observe(document.documentElement, { childList: true, subtree: true });
+    }
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", startPrivateControlLock, { once: true });
@@ -818,7 +820,7 @@ def _build_site(
     )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
-        'src="./static/workspace-tabs.js?v=public-6"',
+        'src="./static/workspace-tabs.js?v=public-7"',
         html,
     )
     html = re.sub(
@@ -828,7 +830,7 @@ def _build_site(
     )
     html = html.replace(
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-        '    <script src="./static/public-snapshot-bootstrap.js?v=5"></script>\n'
+        '    <script src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
         '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
     )
     html = html.replace(

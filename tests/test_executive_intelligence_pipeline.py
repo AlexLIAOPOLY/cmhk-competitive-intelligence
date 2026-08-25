@@ -38,10 +38,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_manual_discovery_uses_two_explicit_numeric_anchors_per_pair(self):
         evidence = pipeline._analysis_input_snapshot()
         expected = {
-            ("macro", "local"): {"23.6%", "84个产品"},
-            ("international", "cloud"): {"1.5%", "35.8%"},
-            ("local", "cloud"): {"84个产品", "35.8%"},
-            ("macro", "international"): {"超过99%", "1.5%"},
+            ("mainland", "local"): {"10501.9亿元", "36553百万港元"},
+            ("international", "cloud"): {"138.19十亿美元", "128725百万美元"},
+            ("local", "cloud"): {"36553百万港元", "128725百万美元"},
+            ("mainland", "international"): {"10501.9亿元", "138.19十亿美元"},
         }
         for pair, values in expected.items():
             scoped = pipeline._manual_discovery_evidence(evidence, *pair)
@@ -51,10 +51,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
     def test_manual_discovery_regeneration_bypasses_cache_and_retries_identical_result(self):
         discoveries = [
-            {"from": "macro", "to": "international", "title": "旧标题", "detail": "旧正文", "kind": "AI综合研判"},
+            {"from": "mainland", "to": "international", "title": "旧标题", "detail": "旧正文", "kind": "AI综合研判"},
             {"from": "local", "to": "cloud", "title": "二", "detail": "正文二", "kind": "AI综合研判"},
             {"from": "international", "to": "cloud", "title": "三", "detail": "正文三", "kind": "AI综合研判"},
-            {"from": "local", "to": "macro", "title": "四", "detail": "正文四", "kind": "AI综合研判"},
+            {"from": "local", "to": "mainland", "title": "四", "detail": "正文四", "kind": "AI综合研判"},
         ]
         cached = json.dumps(discoveries[0], ensure_ascii=False)
         fresh = json.dumps({**discoveries[0], "title": "新标题", "detail": "新正文"}, ensure_ascii=False)
@@ -88,7 +88,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
             ):
                 result = pipeline.regenerate_model_discovery(
-                    0, "macro", "international", path=output_path
+                    0, "mainland", "international", path=output_path
                 )
 
         requests = [call.args[0] for call in request.call_args_list]
@@ -97,12 +97,18 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         request_ids = [item.get_header("X-request-id") for item in requests]
         self.assertNotEqual(request_ids[0], request_ids[1])
         self.assertIn(request_ids[0], bodies[0]["messages"][-1]["content"])
-        self.assertIn("网络高覆盖与企业营收增速属于不同层面", bodies[0]["messages"][-1]["content"])
-        self.assertIn("网络可达性不等于收入增长速度", bodies[1]["messages"][-1]["content"])
+        self.assertIn("内地移动用户与国际后付费口径属于不同层面", bodies[0]["messages"][-1]["content"])
+        self.assertIn("用户总量不能替代客户价值判断", bodies[1]["messages"][-1]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
         self.assertEqual(request.call_args_list[0].kwargs["timeout"], 15)
         self.assertEqual(result["title"], "新标题")
         self.assertEqual(result["model"], "GLM")
+
+    def test_discovery_generation_contract_uses_current_ui_domains(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+        self.assertIn("local、international、mainland、cloud四个战略总览数据域", source)
+        self.assertNotIn("local、international、cloud、macro四库证据", source)
+        self.assertEqual(pipeline.UI_DOMAIN_IDS, ("local", "international", "mainland", "cloud"))
 
     def test_manual_discovery_regeneration_falls_back_for_all_four_pairs(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1104,8 +1110,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 encoding="utf-8",
             )
             payload = pipeline.build_ai_analysis(agent_run_id="run-test", verified_facts_path=source)
-        self.assertEqual(payload["domain_counts"]["international"], 1)
-        self.assertEqual(payload["domains"]["international"][0]["company"], "中国移动")
+        self.assertEqual(payload["domain_counts"]["mainland"], 1)
+        self.assertEqual(payload["domains"]["mainland"][0]["company"], "中国移动")
+        self.assertEqual(payload["domain_counts"]["international"], 0)
 
     def test_ai_analysis_publish_is_idempotent_for_same_agent_output(self):
         fact = {
@@ -1132,7 +1139,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "generated_at_hkt": "2026-08-04T12:00:00+08:00",
             "domains": {
                 "local": [{"company": "HKBN", "source_tier": "official", "source_url": "https://example.com/hkbn"}],
-                "international": [{"company": "中国移动", "source_tier": "media", "source_url": "https://example.com/media"}],
+                "international": [{"company": "Verizon", "source_tier": "official", "source_url": "https://example.com/verizon"}],
+                "mainland": [{"company": "中国移动", "source_tier": "media", "source_url": "https://example.com/media"}],
                 "cloud": [{"company": "AWS", "source_tier": "official", "source_url": "https://example.com/aws"}],
                 "macro": [],
             },
@@ -1143,10 +1151,12 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             result = pipeline.publish_domain_fact_sidecars(analysis, output_paths=paths)
             local = json.loads(paths["local"].read_text(encoding="utf-8"))
             international = json.loads(paths["international"].read_text(encoding="utf-8"))
+            mainland = json.loads(paths["mainland"].read_text(encoding="utf-8"))
             cloud = json.loads(paths["cloud"].read_text(encoding="utf-8"))
         self.assertEqual(result["local"]["facts"], 1)
         self.assertEqual(local["facts"][0]["company"], "HKBN")
-        self.assertEqual(international["facts"], [])
+        self.assertEqual(international["facts"][0]["company"], "Verizon")
+        self.assertEqual(mainland["facts"], [])
         self.assertEqual(cloud["facts"][0]["company"], "AWS")
 
     def test_database_gate_rejects_unverified_local_rows(self):
@@ -2000,10 +2010,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 )
         self.assertFalse(result["ok"])
         self.assertFalse(result["launched"])
-        self.assertEqual(result["domains"], ["local", "international", "cloud", "macro"])
+        self.assertEqual(result["domains"], ["local", "international", "mainland", "cloud"])
         self.assertEqual(
             result["stages"],
-            ["database_refresh", "quality_gate", "17_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
+            ["database_refresh", "quality_gate", "official_source_recrawl", "15_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
         )
 
 

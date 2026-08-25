@@ -67,15 +67,20 @@ MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
 DOMAIN_LABELS = {
     "local": "本地运营商",
-    "international": "内地电讯企业",
+    "international": "国际运营商",
+    "mainland": "内地运营商",
     "cloud": "全球云厂商",
-    "macro": "香港电讯市场",
+    "macro": "宏观政策支撑库",
 }
+UI_DOMAIN_IDS = ("local", "international", "mainland", "cloud")
+SUPPORTING_DOMAIN_IDS = ("macro",)
+FACT_DOMAIN_IDS = (*UI_DOMAIN_IDS, *SUPPORTING_DOMAIN_IDS)
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
 INTERNATIONAL_PATH = INTERNATIONAL_DIR / "quarterly_metrics.json"
+GLOBAL_OPERATOR_DIR = ROOT / "agent_knowledge/global_top5_operators_2016_2025"
 CLOUD_DIR = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17"
 CLOUD_PATH = CLOUD_DIR / "cloud_vendor_metrics_2023_2025.json"
 MACRO_DIR = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19"
@@ -83,7 +88,8 @@ MACRO_PATH = MACRO_DIR / "macro_policy_metrics.json"
 VERIFIED_FACTS_PATH = ROOT / "curation_data/verified_facts.jsonl"
 DOMAIN_FACT_PATHS = {
     "local": LOCAL_PATH.parent / "agent_verified_facts.json",
-    "international": INTERNATIONAL_DIR / "agent_verified_facts.json",
+    "international": GLOBAL_OPERATOR_DIR / "agent_verified_facts.json",
+    "mainland": INTERNATIONAL_DIR / "agent_verified_facts.json",
     "cloud": CLOUD_DIR / "agent_verified_facts.json",
     "macro": MACRO_DIR / "agent_verified_facts.json",
 }
@@ -91,9 +97,11 @@ DOMAIN_FACT_PATHS = {
 LOCAL_COMPANIES = {
     "HKT", "csl", "1O1O", "3HK / Hutchison", "Hutchison", "SmarTone", "HKBN", "HGC", "i-CABLE"
 }
+MAINLAND_COMPANIES = {"中国移动", "中国电信", "中国联通", "中国铁塔", "中国广电"}
 INTERNATIONAL_COMPANIES = {
-    "中国移动", "中国电信", "中国联通", "中国铁塔", "KDDI", "SoftBank", "Telstra", "Jio",
-    "T-Mobile US", "AT&T", "Orange", "Telefonica",
+    "KDDI", "SoftBank", "Telstra", "Jio", "Reliance Jio", "Bharti Airtel",
+    "T-Mobile US", "AT&T", "Verizon", "Orange", "Telefonica", "Vodafone",
+    "SK Telecom", "Deutsche Telekom", "NTT", "NTT Group",
 }
 CLOUD_COMPANIES = {
     "AWS", "Amazon Web Services", "Microsoft Azure", "Azure", "Google Cloud", "Alibaba Cloud",
@@ -194,7 +202,10 @@ def _start_refresh_task(
         task_kind=TASK_KIND,
         parent_crawl_run_id=parent_crawl_run_id,
         phase="等待刷新进程",
-        progress_detail="任务已归档，正在启动本地竞对、国际竞对、云厂商和宏观政策更新。",
+        progress_detail=(
+            "任务已归档，正在更新战略总览的本地运营商、国际运营商、内地运营商和全球云厂商四域；"
+            "宏观政策库继续作为支撑数据维护。"
+        ),
     )
     task_run_id = str(task["crawl_run_id"])
     append_crawl_run_event(
@@ -265,6 +276,8 @@ def _fact_domain(fact: dict[str, Any]) -> str | None:
         return "local"
     if company in CLOUD_COMPANIES:
         return "cloud"
+    if company in MAINLAND_COMPANIES:
+        return "mainland"
     if company in INTERNATIONAL_COMPANIES:
         return "international"
     if company in MACRO_COMPANIES:
@@ -308,7 +321,7 @@ def build_ai_analysis(
             if _accepted_fact(fact) and _fact_domain(fact):
                 facts.append(fact)
 
-    domains: dict[str, list[dict[str, Any]]] = {key: [] for key in ("local", "international", "cloud", "macro")}
+    domains: dict[str, list[dict[str, Any]]] = {key: [] for key in FACT_DOMAIN_IDS}
     seen: set[tuple[str, str, str]] = set()
     facts.sort(
         key=lambda item: (
@@ -398,7 +411,7 @@ def publish_domain_fact_sidecars(
     """
     paths = output_paths or DOMAIN_FACT_PATHS
     results: dict[str, Any] = {}
-    for domain in ("local", "international", "cloud", "macro"):
+    for domain in FACT_DOMAIN_IDS:
         facts = [
             item for item in ((analysis.get("domains") or {}).get(domain) or [])
             if str(item.get("source_tier") or "").strip().lower() == "official"
@@ -1988,78 +2001,77 @@ def _safe_discovery_regeneration_fallback(
                 return f"{_display_number(item.get('value'))}{str(item.get('unit') or '')}"
         return ""
 
-    local_scale = metric("local", "revenue")
-    international_profit_coverage = metric("international", "net_profit")
-    cloud_growth = metric("cloud", "revenue")
-    macro_connections = metric("macro", "connections")
-    macro_coverage = item_value("macro", "service", "5G人口覆盖")
+    local_revenue = metric("local", "revenue")
+    international_revenue = metric("international", "revenue")
+    mainland_revenue = metric("mainland", "revenue")
+    cloud_revenue = metric("cloud", "revenue")
     variants: dict[tuple[str, str], list[tuple[str, str]]] = {
-        ("macro", "local"): [
+        ("mainland", "local"): [
             (
-                "连接变化与方案供给分层",
-                f"手机卡及设备同比{macro_connections}与本地在售方案{local_scale}分属需求变化和供给数量口径，"
-                "说明两者存在结构性差异，方案数量不能直接解释连接变化。",
+                "香港与内地财务分口径",
+                f"内地营收卡片{mainland_revenue}与香港营收卡片{local_revenue}分属不同币种和主体范围，"
+                "说明绝对规模不能直接等同经营质量。",
             ),
             (
-                "需求变化不等同方案规模",
-                f"本地在售方案{local_scale}反映供给广度，手机卡及设备同比{macro_connections}反映需求变化，"
-                "说明两项口径不同，产品数量不代表连接需求强弱。",
+                "两地营收规模不能混排",
+                f"香港营收卡片{local_revenue}与内地营收卡片{mainland_revenue}采用不同货币和企业范围，"
+                "表明两组绝对值存在结构差异，只能在各自市场内解释。",
             ),
             (
-                "连接与产品数量口径错位",
-                f"手机卡及设备同比{macro_connections}、本地在售方案{local_scale}分别描述需求增量与产品数量，"
-                "表明两域指标存在结构差异且不能直接比较，竞争关系出现口径错位。",
+                "香港与内地主体边界不同",
+                f"内地营收{mainland_revenue}描述内地运营商集团，香港营收{local_revenue}描述本地运营主体，"
+                "说明市场边界不同，金额高低不能直接比较。",
             ),
         ],
         ("international", "cloud"): [
             (
                 "运营商与云收入分口径",
-                f"国际运营商净利润卡片{international_profit_coverage}，云收入卡片{cloud_growth}，"
-                "说明两域指标结构不同，不能直接换算盈利能力。",
+                f"国际运营商营收卡片{international_revenue}与云收入卡片{cloud_revenue}分属集团和分部口径，"
+                "说明两域主体结构不同，绝对规模不能直接换算经营能力。",
             ),
             (
-                "电信利润与云收入分层",
-                f"国际运营商净利润{international_profit_coverage}与云收入{cloud_growth}分属集团利润和分部收入，"
-                "表明两者结构不同，不能按同一维度混排。",
+                "集团营收与云分部收入分层",
+                f"国际运营商营收{international_revenue}与云收入{cloud_revenue}分属集团财务和业务分部，"
+                "表明两者范围不同，不能按同一维度混排。",
             ),
             (
                 "两类市场绝对规模分层",
-                f"云收入{cloud_growth}与国际运营商净利润{international_profit_coverage}分属不同口径，"
+                f"云收入{cloud_revenue}与国际运营商营收{international_revenue}分属不同主体和币种口径，"
                 "说明两域形成分层信号，不能直接作经营效率比较。",
             ),
         ],
         ("local", "cloud"): [
             (
                 "香港与云收入边界不同",
-                f"香港营收卡片{local_scale}衡量公司收入，云收入卡片{cloud_growth}衡量云分部规模，"
+                f"香港营收卡片{local_revenue}衡量公司收入，云收入卡片{cloud_revenue}衡量云分部规模，"
                 "说明两项指标存在主体和币种差异，不能直接比较。",
             ),
             (
                 "公司营收不等同云分部收入",
-                f"香港营收卡片为{local_scale}，云收入卡片为{cloud_growth}，"
+                f"香港营收卡片为{local_revenue}，云收入卡片为{cloud_revenue}，"
                 "表明公司整体与云分部属于不同口径，两者不能直接换算。",
             ),
             (
                 "两类收入绝对值不能混排",
-                f"香港营收{local_scale}与云收入{cloud_growth}分别描述公司整体和云分部绝对规模，"
+                f"香港营收{local_revenue}与云收入{cloud_revenue}分别描述公司整体和云分部绝对规模，"
                 "说明两域指标主体、币种与范围不同。",
             ),
         ],
-        ("macro", "international"): [
+        ("mainland", "international"): [
             (
-                "覆盖高位与营收增长脱钩",
-                f"5G人口覆盖{macro_coverage}，国际运营商净利润样本{international_profit_coverage}，"
-                "说明网络可达性与公司利润分属不同口径，不可直接建立因果。",
+                "内地与国际客户口径分开",
+                f"内地运营商营收卡片{mainland_revenue}与国际运营商营收卡片{international_revenue}采用不同币种和集团范围，"
+                "说明绝对金额不能替代跨市场客户价值判断。",
             ),
             (
-                "网络覆盖不等同增长动量",
-                f"5G人口覆盖{macro_coverage}反映网络供给，国际运营商样本{international_profit_coverage}反映分析范围，"
-                "表明两项指标结构性差异明显，不能直接推导利润变化。",
+                "两类运营商披露边界不同",
+                f"内地营收{mainland_revenue}与国际营收{international_revenue}覆盖不同企业和币种，"
+                "表明两组集团收入不能混作统一客户价值排名。",
             ),
             (
-                "覆盖成熟与收入表现分层",
-                f"5G人口覆盖{macro_coverage}与国际运营商样本{international_profit_coverage}分属网络和公司口径，"
-                "说明两者结构不同，不能直接推导盈利表现。",
+                "内地与国际指标不可替代",
+                f"国际营收卡片{international_revenue}与内地营收卡片{mainland_revenue}分属不同市场，"
+                "说明两域收入规模不能用来互相替代用户质量判断。",
             ),
         ],
     }
@@ -3298,10 +3310,10 @@ def _manual_discovery_evidence(
         if isinstance(focus, dict)
     }
     anchor_focus_ids = {
-        ("macro", "local"): (("macro", "connections"), ("local", "scale")),
+        ("mainland", "local"): (("mainland", "revenue"), ("local", "revenue")),
         ("international", "cloud"): (("international", "revenue"), ("cloud", "revenue")),
         ("local", "cloud"): (("local", "revenue"), ("cloud", "revenue")),
-        ("macro", "international"): (("macro", "service"), ("international", "growth")),
+        ("mainland", "international"): (("mainland", "revenue"), ("international", "revenue")),
     }
     selected = anchor_focus_ids.get((source_domain, target_domain))
     if not selected:
@@ -3311,20 +3323,13 @@ def _manual_discovery_evidence(
         focus = focus_map.get((domain_id, focus_id)) or {}
         metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
         items = [item for item in focus.get("items") or [] if isinstance(item, dict)]
-        if (domain_id, focus_id) == ("macro", "service"):
-            coverage = next((item for item in items if "5G人口覆盖" in str(item.get("name") or "")), {})
-            raw_value = coverage.get("value")
-            unit = str(coverage.get("unit") or "")
-            label = str(coverage.get("name") or "5G人口覆盖")
-            source_url = str(coverage.get("source_url") or "")
-        else:
-            raw_value = metric.get("value")
-            unit = str(metric.get("unit") or "")
-            label = str(metric.get("label") or focus.get("title") or focus_id)
-            source_url = next(
-                (str(item.get("source_url") or "") for item in items if str(item.get("source_url") or "")),
-                "",
-            )
+        raw_value = metric.get("value")
+        unit = str(metric.get("unit") or "")
+        label = str(metric.get("label") or focus.get("title") or focus_id)
+        source_url = next(
+            (str(item.get("source_url") or "") for item in items if str(item.get("source_url") or "")),
+            "",
+        )
         value = f"{_display_number(raw_value)}{unit}"
         anchors.append({
             "domain": domain_id,
@@ -3334,10 +3339,10 @@ def _manual_discovery_evidence(
             "source_url": source_url,
         })
     required_lens = {
-        ("macro", "local"): "区分需求变化与本地产品选择宽度，明确两种口径的边界，不虚构因果。",
+        ("mainland", "local"): "区分内地与香港运营主体、币种和市场范围，不能用绝对金额直接判断经营质量。",
         ("international", "cloud"): "判断传统运营商与云业务所处增长阶段是否分层，不把增速差直接等同经营效率。",
-        ("local", "cloud"): "区分本地产品供给广度与全球云收入增速，解释范围错配而不是笼统写脱钩。",
-        ("macro", "international"): "比较成熟网络覆盖与运营商收入增速，解释网络可达性和变现阶段的边界。",
+        ("local", "cloud"): "区分香港运营商整体财务与全球云分部收入，解释主体、币种和范围边界。",
+        ("mainland", "international"): "区分内地移动用户披露与国际后付费、订阅及集团财务口径，不能互相替代。",
     }.get((source_domain, target_domain), "解释两项指标的口径和市场阶段边界。")
     return {
         "required_values": [item["value"] for item in anchors],
@@ -3358,7 +3363,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
-        "你是电信竞争情报分析员。从local、international、cloud、macro四库证据中提炼恰好四条跨库发现。"
+        "你是电信竞争情报分析员。从local、international、mainland、cloud四个战略总览数据域中提炼恰好四条跨库发现。"
         "每条必须联系两个不同领域，四条不得重复同一领域组合，且四个领域都要被覆盖。"
         "不要逐库摘要，不要写论文，不要复述发生了什么；标题写数据关系结论，detail只解释背后的结构、驱动、"
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
@@ -3459,7 +3464,7 @@ def regenerate_model_discovery(
 
     if index not in range(4):
         raise ValueError("跨库洞察序号必须为0至3")
-    expected_domains = {"local", "international", "cloud", "macro"}
+    expected_domains = set(UI_DOMAIN_IDS)
     if source_domain not in expected_domains or target_domain not in expected_domains or source_domain == target_domain:
         raise ValueError("跨库洞察领域组合无效")
 
@@ -3542,11 +3547,11 @@ def regenerate_model_discovery(
     fallback_used = False
     report("正在生成新的跨库判断")
     regeneration_angles = {
-        ("macro", "local"): (
-            "需求变化与产品选择宽度属于不同测量层",
-            "宏观百分比与本地产品数量不能互相解释",
-            "市场总体变化与厂商供给广度存在范围边界",
-            "产品数量不等于连接需求强弱",
+        ("mainland", "local"): (
+            "内地与香港运营主体属于不同市场范围",
+            "人民币与港元绝对金额不能直接混排",
+            "集团范围与本地运营主体存在披露边界",
+            "收入规模不等于经营质量",
         ),
         ("international", "cloud"): (
             "传统运营商与云业务处于不同增长阶段",
@@ -3555,16 +3560,16 @@ def regenerate_model_discovery(
             "低个位数增长与高双位数增长形成阶段梯队",
         ),
         ("local", "cloud"): (
-            "本地产品数量与全球云收入增速属于不同口径",
-            "产品广度不等于收入增长动量",
+            "香港公司整体与全球云分部属于不同口径",
+            "公司营收不等于云业务收入",
             "本地市场范围与全球业务范围不能直接换算",
-            "数量指标与百分比指标只能说明测量边界",
+            "港元与美元绝对金额只能说明各自规模",
         ),
-        ("macro", "international"): (
-            "网络高覆盖与企业营收增速属于不同层面",
-            "网络可达性不等于收入增长速度",
-            "成熟覆盖与低个位数增长处于不同市场阶段",
-            "覆盖范围指标不能直接推导企业变现表现",
+        ("mainland", "international"): (
+            "内地移动用户与国际后付费口径属于不同层面",
+            "用户总量不能替代客户价值判断",
+            "集团营收与后付费客户指标不能混排",
+            "披露缺口限制跨市场客户质量比较",
         ),
     }.get((source_domain, target_domain), ("口径边界", "市场阶段", "范围差异", "测量层次"))
     grounded_seed = _safe_discovery_regeneration_fallback(
@@ -4361,6 +4366,39 @@ def _publish_and_verify_github_pages() -> dict[str, Any]:
     return {"ok": True, "attempts": attempt, **result}
 
 
+def _run_overview_source_recrawl(*, dry_run: bool = False) -> dict[str, Any]:
+    """Recheck the official documents that feed the four domains shown in the UI."""
+    script = ROOT / "scripts" / "crawl_requested_overview_010304_official_sources.py"
+    output = ROOT / "agent_knowledge" / "requested_overview_010304_2016_2025" / "official_source_recrawl.json"
+    if not script.is_file():
+        raise RuntimeError(f"战略总览官方来源复查脚本不存在：{script}")
+    if dry_run:
+        return {"ok": True, "skipped": True, "reason": "dry_run", "path": str(output)}
+    environment = os.environ.copy()
+    for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
+        environment.pop(key, None)
+    completed = subprocess.run(
+        [_builder_python(), str(script)],
+        cwd=ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=1800,
+        check=False,
+    )
+    if completed.returncode:
+        raise RuntimeError(
+            f"战略总览官方来源复查失败({completed.returncode})：{(completed.stderr or completed.stdout)[-1200:]}"
+        )
+    try:
+        summary = json.loads((completed.stdout or "").strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError) as exc:
+        raise RuntimeError(f"战略总览官方来源复查结果无法解析：{(completed.stdout or completed.stderr)[-1200:]}") from exc
+    if not output.is_file() or int(summary.get("retrieved") or 0) <= 0:
+        raise RuntimeError(f"战略总览官方来源复查没有形成有效读回：{summary}")
+    return {"ok": True, "path": str(output), **summary}
+
+
 def run_pipeline(
     *,
     agent_run_id: str,
@@ -4388,6 +4426,10 @@ def run_pipeline(
         "task_run_id": task_run_id,
         "attempt": attempt,
         "domains": {},
+        "ui_contract": {
+            "domain_ids": list(UI_DOMAIN_IDS),
+            "supporting_database_ids": list(SUPPORTING_DOMAIN_IDS),
+        },
     }
     _atomic_write_json(STATE_PATH, state)
     _append_log(f"start agent_run_id={agent_run_id} dry_run={dry_run}")
@@ -4473,6 +4515,30 @@ def run_pipeline(
                     DOMAIN_LABELS[domain],
                     f"仅校验现有数据库通过，共 {int(validation.get('rows') or 0)} 条记录。",
                 )
+        if refresh_builders:
+            _task_event(
+                task_run_id,
+                "战略总览来源复查",
+                "正在逐一复查当前战略总览四域所引用的官方文件，结果只写审计旁路，不覆盖已核验数值。",
+            )
+            try:
+                state["overview_source_recrawl"] = _run_overview_source_recrawl(dry_run=dry_run)
+                recrawl = state["overview_source_recrawl"]
+                _task_event(
+                    task_run_id,
+                    "战略总览来源复查",
+                    f"官方来源复查完成：成功 {int(recrawl.get('retrieved') or 0)}，失败 {int(recrawl.get('failed') or 0)}。",
+                )
+            except Exception as exc:
+                state["overview_source_recrawl"] = {"ok": False, "error": str(exc)}
+                _append_log(f"overview source recrawl failed {exc}")
+                _task_event(task_run_id, "战略总览来源复查", f"官方来源复查失败：{exc}", level="critical")
+        else:
+            state["overview_source_recrawl"] = {
+                "ok": True,
+                "skipped": True,
+                "reason": "refresh_builders_disabled",
+            }
         if dry_run:
             state["model_analysis"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         else:
@@ -4507,6 +4573,20 @@ def run_pipeline(
                     "discovery_fallback_used": bool(model_analysis.get("discovery_fallback_used")),
                     "discovery_fallback_reason": str(model_analysis.get("discovery_fallback_reason") or ""),
                 }
+                state["ui_contract"].update(
+                    {
+                        "focuses_expected": expected_focus_count,
+                        "focuses_passed": passed_focus_count,
+                        "summary_domain_ids": [
+                            str(summary.get("domain") or "") for summary in model_analysis.get("summaries") or []
+                        ],
+                        "aligned": (
+                            [str(summary.get("domain") or "") for summary in model_analysis.get("summaries") or []]
+                            == list(UI_DOMAIN_IDS)
+                            and passed_focus_count == expected_focus_count
+                        ),
+                    }
+                )
                 fallback_note = (
                     f"；回退原因：{state['model_analysis']['fallback_reason']}"
                     if model_analysis.get("fallback_used") else "；未触发回退"
@@ -4527,7 +4607,9 @@ def run_pipeline(
                 _task_event(task_run_id, "生成AI洞察", f"AI洞察生成失败：{exc}", level="critical")
         failed = [key for key, value in state["domains"].items() if not value.get("ok")]
         model_ok = bool(state.get("model_analysis", {}).get("ok"))
-        core_ok = not failed and model_ok
+        recrawl_ok = bool(state.get("overview_source_recrawl", {}).get("ok"))
+        ui_contract_ok = bool(dry_run or state.get("ui_contract", {}).get("aligned"))
+        core_ok = not failed and model_ok and recrawl_ok and ui_contract_ok
         if dry_run:
             state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         elif core_ok:
