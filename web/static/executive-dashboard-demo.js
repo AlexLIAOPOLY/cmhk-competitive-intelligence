@@ -130,20 +130,20 @@
   let financeCompaniesData = financeCompanyFallbacks;
 
   const comparisonSections = [
-    { key: "network", number: "01", title: "资源与基础设施层", metricCount: 3, chartTypes: ["column", "column", "bar"], groups: [
+    { key: "network", number: "01", title: "资源与基础设施层", metricCount: 3, chartTypes: ["column", "column", "lollipop"], groups: [
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["bar", "lollipop", "bar", "lollipop", "bar", "bar"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["lollipop", "lollipop", "lollipop", "lollipop", "lollipop", "lollipop"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["bar", "bar"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["lollipop", "lollipop"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "lollipop", "diverging"], groups: [
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["lollipop", "lollipop", "diverging"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
       { indices: [1] }
     ] }
@@ -454,6 +454,18 @@
     </article>`;
   }
 
+  function comparisonBoardHeader() {
+    return `<header class="comparison-board-header">
+      <div class="comparison-board-copy">
+        <strong>三家运营商关键指标总览</strong>
+        <span>4 个主题 · 14 项指标</span>
+      </div>
+      <div class="comparison-board-legend" aria-label="运营商颜色图例">
+        ${comparisonOperatorKeys.map((key, index) => `<span style="--series-color:${chartColors[index]}"><i></i>${escapeHtml(comparisonCompanyNames[key])}</span>`).join("")}
+      </div>
+    </header>`;
+  }
+
   function setupChartTooltips(root) {
     if (root.dataset.chartTooltipsReady === "1") return;
     root.dataset.chartTooltipsReady = "1";
@@ -516,7 +528,7 @@
 
   function renderComparison() {
     const target = document.querySelector("[data-comparison-view]");
-    target.innerHTML = comparisonSections.map(comparisonPanel).join("");
+    target.innerHTML = `${comparisonBoardHeader()}${comparisonSections.map(comparisonPanel).join("")}`;
     setupChartTooltips(target);
   }
 
