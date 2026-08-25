@@ -73,6 +73,10 @@ class AuthServiceTest(unittest.TestCase):
         static_root = Path(__file__).resolve().parents[1] / "web" / "static"
         page = (static_root / "login.html").read_text(encoding="utf-8")
         self.assertIn('id="feishuLogin"', page)
+        self.assertIn('class="scan-visual"', page)
+        self.assertIn("打开飞书扫码登录", page)
+        self.assertIn("min-height:610px", page)
+        self.assertIn("minmax(400px,520px)", page)
         self.assertIn("login-hong-kong-network-bg-v1.webp", page)
         self.assertTrue((static_root / "assets" / "login-hong-kong-network-bg-v1.webp").is_file())
         self.assertNotIn("测试身份", page)

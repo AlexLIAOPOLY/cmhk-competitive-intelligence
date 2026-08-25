@@ -13,26 +13,32 @@
         url("/static/assets/login-hong-kong-network-bg-v1.webp");
         background-size:cover; background-position:center bottom; background-repeat:no-repeat; background-attachment:fixed; }
       body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.2; background-image:linear-gradient(rgba(95,201,224,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(95,201,224,.06) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(to bottom,black,transparent 72%); }
-      .login-page { position:relative; z-index:1; min-height:100dvh; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(360px,460px); align-items:center; gap:clamp(40px,6vw,96px); width:min(1480px,calc(100% - 48px)); margin:auto; padding:48px 0; }
+      .login-page { position:relative; z-index:1; min-height:100dvh; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(400px,520px); align-items:center; gap:clamp(40px,6vw,96px); width:min(1480px,calc(100% - 48px)); margin:auto; padding:48px 0; }
       .brand img { width:148px; height:auto; filter:drop-shadow(0 10px 24px rgba(27,166,202,.18)); }
       .eyebrow { display:block; margin-top:44px; color:#6ed9eb; font:600 12px/1.4 ui-monospace,SFMono-Regular,monospace; letter-spacing:.18em; }
       h1 { max-width:none; margin:12px 0 20px; font-size:clamp(38px,4.4vw,66px); line-height:1.08; letter-spacing:-.04em; white-space:nowrap; }
       .intro { max-width:620px; margin:0; color:#9abac5; font-size:16px; line-height:1.8; }
       .signals { display:flex; flex-wrap:wrap; gap:10px; margin-top:32px; padding:0; list-style:none; }
       .signals li { border:1px solid rgba(103,208,225,.18); border-radius:999px; padding:8px 12px; color:#bcd5dc; background:rgba(6,35,49,.56); font-size:12px; }
-      .login-card { position:relative; border:1px solid rgba(107,218,232,.23); border-radius:22px; padding:34px; background:rgba(7,31,43,.82); box-shadow:0 28px 80px rgba(0,8,14,.38); backdrop-filter:blur(22px) saturate(130%); }
+      .login-card { position:relative; min-height:610px; display:flex; flex-direction:column; border:1px solid rgba(107,218,232,.23); border-radius:24px; padding:42px 44px 38px; background:rgba(7,31,43,.86); box-shadow:0 28px 80px rgba(0,8,14,.38); backdrop-filter:blur(22px) saturate(130%); }
       .login-card::before { content:""; position:absolute; inset:0 26px auto; height:1px; background:linear-gradient(90deg,transparent,#6ed9eb,transparent); }
-      .login-card h2 { margin:0 0 8px; font-size:24px; }
-      .login-card > p { margin:0 0 26px; color:#8eaeba; font-size:14px; line-height:1.6; }
+      .login-card h2 { margin:0 0 8px; text-align:center; font-size:28px; }
+      .login-card > .login-hint { margin:0; color:#9bb8c2; text-align:center; font-size:14px; line-height:1.65; }
+      .login-card > .login-hint strong { color:#e9f7fb; font-weight:650; }
+      .scan-stage { flex:1; display:grid; place-items:center; padding:30px 0 26px; }
+      .scan-visual { position:relative; width:220px; aspect-ratio:1; display:grid; place-items:center; border:1px solid rgba(121,219,233,.28); border-radius:24px; color:#7ce2ed; background:linear-gradient(145deg,rgba(230,252,255,.96),rgba(200,239,241,.88)); box-shadow:0 20px 44px rgba(0,9,15,.3),inset 0 0 0 8px rgba(255,255,255,.18); }
+      .scan-visual::after { content:""; position:absolute; inset:16px; border:1px solid rgba(18,112,129,.14); border-radius:15px; }
+      .scan-visual svg { width:150px; height:150px; filter:drop-shadow(0 8px 16px rgba(5,64,73,.13)); }
+      .scan-caption { margin:-12px 0 26px; color:#8eaeba; text-align:center; font-size:12px; line-height:1.6; }
       button { width:100%; min-height:46px; border-radius:10px; font:inherit; }
       button { border:1px solid transparent; cursor:pointer; font-weight:650; }
       button:disabled { cursor:not-allowed; opacity:.52; }
       .feishu { color:#03202b; background:linear-gradient(135deg,#76dff0,#49cbaa 88%); box-shadow:0 10px 28px rgba(70,204,205,.2); }
       .feishu:hover:not(:disabled) { filter:brightness(1.06); }
-      .status { min-height:22px; margin:16px 0 0; color:#8db2bd; font-size:12px; line-height:1.55; }
+      .status { min-height:19px; margin:12px 0 0; color:#8db2bd; text-align:center; font-size:12px; line-height:1.55; }
       .status:empty { display:none; }
       .status.is-error { color:#ffad9e; }
-      @media (max-width:980px) { body { background-position:62% bottom; background-attachment:scroll; } .login-page { grid-template-columns:1fr; width:min(640px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:clamp(28px,8.5vw,48px)}.intro{font-size:14px}.signals{margin-top:22px}.login-card{padding:26px} }
+      @media (max-width:980px) { body { background-position:62% bottom; background-attachment:scroll; } .login-page { grid-template-columns:1fr; width:min(640px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:clamp(28px,8.5vw,48px)}.intro{font-size:14px}.signals{margin-top:22px}.login-card{min-height:520px;padding:32px 26px 28px}.scan-stage{padding:24px 0 20px}.scan-visual{width:min(200px,62vw)} }
       @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
     </style>
   </head>
@@ -46,8 +52,20 @@
         <ul class="signals" aria-label="平台能力"><li>经营驾驶舱</li><li>战略情报生产</li><li>分角色权限</li><li>飞书统一身份</li></ul>
       </section>
       <section class="login-card" aria-labelledby="signInTitle">
-        <h2 id="signInTitle">登录工作台</h2>
-        <p>使用 CMHK 飞书账号完成身份验证。</p>
+        <h2 id="signInTitle">扫码登录</h2>
+        <p class="login-hint">请使用 <strong>飞书移动端</strong> 完成身份验证</p>
+        <div class="scan-stage" aria-hidden="true">
+          <div class="scan-visual">
+            <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17 56V25a8 8 0 0 1 8-8h31M94 17h31a8 8 0 0 1 8 8v31M133 94v31a8 8 0 0 1-8 8H94M56 133H25a8 8 0 0 1-8-8V94" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+              <rect x="35" y="35" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
+              <rect x="85" y="35" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
+              <rect x="35" y="85" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
+              <path d="M86 85h12v12H86zM103 85h12v12h-12zM86 102h12v13H86zM103 103h12v12h-12zM72 72h13v13H72z" fill="#123A44"/>
+            </svg>
+          </div>
+        </div>
+        <p class="scan-caption">点击下方按钮后，将在飞书官方页面显示动态二维码</p>
         <button class="feishu" id="feishuLogin" type="button" disabled>正在检查飞书登录…</button>
         <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
       </section>
@@ -78,7 +96,7 @@
         fetch("/api/auth/config", { cache:"no-store", credentials:"same-origin" }).then(async (response) => {
           const payload = await response.json().catch(() => ({}));
           if (!response.ok || payload.ok === false) throw new Error(payload.message || "无法读取登录配置");
-          if (payload.feishu?.configured) { feishuButton.disabled = false; feishuButton.textContent = "使用飞书账号登录"; }
+          if (payload.feishu?.configured) { feishuButton.disabled = false; feishuButton.textContent = "打开飞书扫码登录"; }
           else { feishuButton.textContent = "飞书登录尚未配置"; }
         }).catch(fail);
         feishuButton.addEventListener("click", () => { setBusy(true,"正在前往飞书完成身份验证…"); location.assign(`/api/auth/feishu/start?next=${encodeURIComponent(next)}`); });
