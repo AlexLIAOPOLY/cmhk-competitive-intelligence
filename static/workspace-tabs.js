@@ -1003,6 +1003,11 @@
     const mainHealth = runHealth(mainRun);
     const intelligenceHealth = runHealth(intelligenceRun);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
+    const expectedInsightCount = Number(
+      intelligenceRun.operational_summary?.model_analysis?.focuses_expected
+      || state.executiveIntelligence?.ui_contract?.focuses_expected
+      || 15
+    );
     const domainNode = (key, fallbackLabel, position, variant) => {
       const domain = domains.get(key) || {};
       return {
@@ -1048,17 +1053,17 @@
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
       { key: "database-hub", label: "四库分流", value: "4", unit: "个库", note: "按业务域分别更新", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["同一批已审核证据按业务域分流", "四个数据库分别保留来源与质量状态"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下四库分流记录" },
       domainNode("local", "本地运营商", [630, 342], "database-local"),
-      domainNode("international", "内地电讯企业", [812, 342], "database-international"),
+      domainNode("international", "国际运营商", [812, 342], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
-      domainNode("macro", "香港电讯市场", [812, 480], "database-macro"),
-      { key: "insights", label: "17项AI洞察", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1035, 390], details: intelligenceRun.crawl_run_id ? [`模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
+      domainNode("mainland", "内地运营商", [812, 480], "database-mainland"),
+      { key: "insights", label: `${expectedInsightCount}项AI洞察`, value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项通过" : "", note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1035, 390], details: intelligenceRun.crawl_run_id ? [`目标 ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, `回退 ${intelligenceRun.operational_summary?.model_analysis?.fallback_used ? "是" : "否"}`] : ["所选日期没有洞察运行归档"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下AI洞察运行证据" },
       { key: "consumers", label: "情报进入业务入口", value: intelligenceRun.operational_summary?.pages_publish?.ok ? "2" : "—", unit: intelligenceRun.operational_summary?.pages_publish?.ok ? "项已验证" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页" : "当天未留下发布记录", health: intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "delivery", position: [1280, 390], details: intelligenceRun.operational_summary?.pages_publish?.ok ? [`站点版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}`, `公开地址 ${intelligenceRun.operational_summary.pages_publish.public_url || "未记录"}`] : ["所选日期没有可核对的交付记录"], evidence: intelligenceRun.operational_summary?.pages_publish?.public_url || intelligenceRun.progress_detail || "当天未留下业务入口发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
       ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["agent", "database-hub", "", "cyan"],
-      ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-macro", "", "branch"],
-      ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-macro", "insights", "", "merge"], ["insights", "consumers", "", "cyan"],
+      ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
+      ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"], ["insights", "consumers", "", "cyan"],
     ];
     return {
       nodes,
@@ -1162,9 +1167,9 @@
     "weekly-result": /飞书分批写入|飞书逐格回读|审核周期完成/,
     agent: /\[数据整理\]/,
     "database-local": /\[本地竞对\]|\[发布审核事实\]/,
-    "database-international": /\[内地电讯企业\]|\[发布审核事实\]/,
+    "database-international": /\[国际运营商\]|\[发布审核事实\]/,
     "database-cloud": /\[全球云厂商\]|\[发布审核事实\]/,
-    "database-macro": /\[香港电讯市场\]|\[发布审核事实\]/,
+    "database-mainland": /\[内地运营商\]|\[发布审核事实\]/,
     insights: /\[生成AI洞察\]/,
     consumers: /\[更新主页UI\]|\[任务完成\]/,
   };
