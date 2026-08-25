@@ -1040,6 +1040,67 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(record["status"], "resolved")
         self.assertEqual(record["resolution_reason"], "log_condition_cleared")
 
+    def test_media_metrics_log_incident_closes_after_verified_slot_delivery(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "media-rate-limit"
+        monitor.state["conditions"] = {"feishu-media-metrics-error": incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": "feishu-media-metrics-error",
+                "component": "feishu-media-metrics",
+                "status": "open",
+                "terminal": True,
+                "occurred_at_hkt": "2026-08-16T17:00:33+08:00",
+            }
+        }
+        state_path = self.root / "var" / "feishu_media_metrics" / "state.json"
+        state_path.write_text(
+            json.dumps(
+                {
+                    "sent_slots": {"20260816-1700": "om_verified"},
+                    "slot_deliveries": {
+                        "20260816-1700": {
+                            "message_id": "om_verified",
+                            "chat_id": "oc_destination",
+                            "verified_at_hkt": "2026-08-16T17:02:49+08:00",
+                            "readback_verified": True,
+                        }
+                    },
+                }
+            )
+        )
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "media_metrics_delivery_verified")
+        self.assertIn("om_verified", " ".join(record["resolution"]["evidence"]))
+
+    def test_media_metrics_log_incident_stays_open_without_slot_delivery(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "media-rate-limit"
+        monitor.state["conditions"] = {"feishu-media-metrics-error": incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": "feishu-media-metrics-error",
+                "component": "feishu-media-metrics",
+                "status": "open",
+                "terminal": True,
+                "occurred_at_hkt": "2026-08-16T17:00:33+08:00",
+            }
+        }
+        state_path = self.root / "var" / "feishu_media_metrics" / "state.json"
+        state_path.write_text(json.dumps({"sent_slots": {}}))
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual([item["incident_id"] for item in active], [incident_id])
+        self.assertEqual(monitor.state["incidents"][incident_id]["status"], "open")
+
     def test_strategic_slot_accepts_same_day_migrated_morning_archive(self):
         expected = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
         expected.unlink()

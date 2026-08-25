@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -14,6 +16,54 @@ SPEC.loader.exec_module(MODULE)
 
 
 class FeishuMediaMetricsReportTests(unittest.TestCase):
+    def test_run_lark_retries_rate_limit_with_exponential_backoff(self):
+        rate_limited = subprocess.CompletedProcess(
+            ["lark-cli"],
+            1,
+            "",
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": {
+                        "subtype": "rate_limit",
+                        "code": 429,
+                        "message": "TAT endpoint rate limited (HTTP 429)",
+                        "retryable": True,
+                    },
+                }
+            ),
+        )
+        succeeded = subprocess.CompletedProcess(
+            ["lark-cli"],
+            0,
+            json.dumps({"ok": True, "data": {"message_id": "om_recovered"}}),
+            "",
+        )
+        with patch.object(MODULE.subprocess, "run", side_effect=[rate_limited, succeeded]) as runner, patch.object(
+            MODULE.random, "uniform", return_value=0.0
+        ), patch.object(MODULE.time, "sleep") as sleeper:
+            result = MODULE.run_lark(["im", "+messages-mget", "--message-ids", "om_test"])
+
+        self.assertTrue(result.payload["ok"])
+        self.assertEqual(runner.call_count, 2)
+        sleeper.assert_called_once_with(1.0)
+
+    def test_run_lark_does_not_retry_non_rate_limit_error(self):
+        failed = subprocess.CompletedProcess(
+            ["lark-cli"],
+            1,
+            "",
+            json.dumps({"ok": False, "error": {"code": 403, "message": "forbidden"}}),
+        )
+        with patch.object(MODULE.subprocess, "run", return_value=failed) as runner, patch.object(
+            MODULE.time, "sleep"
+        ) as sleeper:
+            with self.assertRaises(MODULE.ReportError):
+                MODULE.run_lark(["im", "+messages-mget", "--message-ids", "om_test"])
+
+        runner.assert_called_once()
+        sleeper.assert_not_called()
+
     def test_render_exact_table(self):
         rows = [
             {

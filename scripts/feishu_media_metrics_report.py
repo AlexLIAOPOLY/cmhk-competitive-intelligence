@@ -4,8 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
+import random
+import re
 import subprocess
 import sys
 import time
@@ -40,6 +43,9 @@ NO_PROXY_KEYS = (
     "http_proxy",
     "all_proxy",
 )
+LARK_RATE_LIMIT_MAX_ATTEMPTS = 5
+LARK_RATE_LIMIT_BACKOFF_SECONDS = 1.0
+LARK_RATE_LIMIT_BACKOFF_CAP_SECONDS = 8.0
 
 
 class ReportError(RuntimeError):
@@ -70,6 +76,31 @@ def save_json(path: Path, payload: Any) -> None:
     temporary.replace(path)
 
 
+def _cli_payload(text: str) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(text)
+    except (TypeError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _is_rate_limit_error(payload: dict[str, Any] | None, text: str) -> bool:
+    error = payload.get("error") if isinstance(payload, dict) else None
+    error = error if isinstance(error, dict) else {}
+    code = error.get("code")
+    subtype = str(error.get("subtype") or "").lower()
+    message = f"{error.get('message') or ''} {text}".lower()
+    return code == 429 or subtype == "rate_limit" or "http 429" in message
+
+
+def _rate_limit_backoff(attempt: int) -> float:
+    base = min(
+        LARK_RATE_LIMIT_BACKOFF_CAP_SECONDS,
+        LARK_RATE_LIMIT_BACKOFF_SECONDS * (2**attempt),
+    )
+    return base + random.uniform(0.0, base * 0.25)
+
+
 def run_lark(args: list[str], *, profile: str | None = None, timeout: int = 180) -> CommandResult:
     env = os.environ.copy()
     for key in NO_PROXY_KEYS:
@@ -84,25 +115,33 @@ def run_lark(args: list[str], *, profile: str | None = None, timeout: int = 180)
     command = ["lark-cli", *args]
     if profile:
         command.extend(["--profile", profile])
-    completed = subprocess.run(
-        command,
-        cwd=ROOT,
-        env=env,
-        text=True,
-        capture_output=True,
-        timeout=timeout,
-        check=False,
-    )
-    if completed.returncode != 0:
-        raise ReportError(f"飞书命令失败：{_safe_error(completed.stderr or completed.stdout)}")
-    try:
-        payload = json.loads(completed.stdout)
-    except json.JSONDecodeError as exc:
-        raise ReportError("飞书命令未返回有效 JSON") from exc
-    if isinstance(payload, dict) and payload.get("ok") is False:
-        error = payload.get("error") or {}
-        raise ReportError(f"飞书接口失败：{_safe_error(error.get('message') or payload)}")
-    return CommandResult(payload=payload, stderr=completed.stderr)
+    for attempt in range(LARK_RATE_LIMIT_MAX_ATTEMPTS):
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+            check=False,
+        )
+        raw_error = completed.stderr or completed.stdout
+        payload = _cli_payload(completed.stdout) or _cli_payload(completed.stderr)
+        rate_limited = (
+            completed.returncode != 0 or (isinstance(payload, dict) and payload.get("ok") is False)
+        ) and _is_rate_limit_error(payload, raw_error)
+        if rate_limited and attempt + 1 < LARK_RATE_LIMIT_MAX_ATTEMPTS:
+            time.sleep(_rate_limit_backoff(attempt))
+            continue
+        if completed.returncode != 0:
+            raise ReportError(f"飞书命令失败：{_safe_error(raw_error)}")
+        if payload is None:
+            raise ReportError("飞书命令未返回有效 JSON")
+        if payload.get("ok") is False:
+            error = payload.get("error") or {}
+            raise ReportError(f"飞书接口失败：{_safe_error(error.get('message') or payload)}")
+        return CommandResult(payload=payload, stderr=completed.stderr)
+    raise ReportError("飞书命令重试次数已耗尽")
 
 
 def _data(payload: dict[str, Any]) -> dict[str, Any]:
@@ -172,22 +211,200 @@ def get_read_count(message_id: str, profile: str) -> int:
 
 
 def get_message_metadata(message_ids: list[str], profile: str) -> dict[str, dict[str, Any]]:
-    result = run_lark(
-        [
+    metadata: dict[str, dict[str, Any]] = {}
+    for offset in range(0, len(message_ids), 50):
+        batch = message_ids[offset : offset + 50]
+        result = run_lark(
+            [
+                "im",
+                "+messages-mget",
+                "--as",
+                "bot",
+                "--message-ids",
+                ",".join(batch),
+                "--format",
+                "json",
+            ],
+            profile=profile,
+        )
+        data = _data(result.payload)
+        items = data.get("items") or data.get("messages") or []
+        metadata.update({str(item.get("message_id")): item for item in items if item.get("message_id")})
+    return metadata
+
+
+def list_chat_messages(chat_id: str, profile: str, start: str) -> list[dict[str, Any]]:
+    messages: list[dict[str, Any]] = []
+    page_token = ""
+    for _ in range(100):
+        args = [
             "im",
-            "+messages-mget",
+            "+chat-messages-list",
             "--as",
             "bot",
-            "--message-ids",
-            ",".join(message_ids),
+            "--chat-id",
+            chat_id,
+            "--start",
+            start,
+            "--sort",
+            "asc",
+            "--page-size",
+            "50",
+            "--format",
+            "json",
+        ]
+        if page_token:
+            args.extend(["--page-token", page_token])
+        result = run_lark(args, profile=profile)
+        data = _data(result.payload)
+        messages.extend(data.get("messages") or data.get("items") or [])
+        if not data.get("has_more"):
+            return messages
+        next_token = str(data.get("page_token") or "")
+        if not next_token or next_token == page_token:
+            raise ReportError("CMHK 历史消息分页游标无效")
+        page_token = next_token
+    raise ReportError("CMHK 历史消息超过安全分页上限")
+
+
+def compact_card_title(message: dict[str, Any]) -> str:
+    content = html.unescape(str(message.get("content") or ""))
+    match = re.search(r'<card\s+title=["\']([^"\']+)["\']', content)
+    return html.unescape(match.group(1)).strip() if match else ""
+
+
+def tracked_publication_title(title: str, discovery: dict[str, Any]) -> bool:
+    value = str(title or "").strip()
+    markers = [str(item) for item in discovery.get("title_markers") or ["科普系列"]]
+    if any(marker and marker in value for marker in markers):
+        return True
+    if discovery.get("include_series_launch", True):
+        return ("正式啟動" in value or "正式启动" in value) and "小科" in value and "小新" in value
+    return False
+
+
+def publication_display_title(title: str) -> str:
+    value = str(title or "").strip()
+    match = re.match(r"^【([^】]+)】\s*(.+)$", value)
+    if not match:
+        return value
+    heading, subject = match.groups()
+    series = re.search(r"(?:^|｜)([^｜]+?)科普系列(?:$|｜)", heading)
+    if series:
+        return f"{series.group(1)}科普｜{subject}"
+    if "正式啟動" in heading or "正式启动" in heading:
+        return "引子篇｜系列正式启动"
+    return subject
+
+
+def get_card_payload(message_id: str, profile: str) -> dict[str, Any]:
+    result = run_lark(
+        [
+            "api",
+            "GET",
+            f"/open-apis/im/v1/messages/{message_id}",
+            "--as",
+            "bot",
+            "--params",
+            json.dumps({"card_msg_content_type": "user_card_content", "user_id_type": "open_id"}),
             "--format",
             "json",
         ],
         profile=profile,
     )
-    data = _data(result.payload)
-    items = data.get("items") or data.get("messages") or []
-    return {str(item.get("message_id")): item for item in items if item.get("message_id")}
+    items = _data(result.payload).get("items") or []
+    item = items[0] if items else {}
+    content = ((item.get("body") or {}).get("content") or "")
+    try:
+        payload = json.loads(content)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise ReportError(f"正式发布卡片内容无效：{message_id}") from exc
+    return payload if isinstance(payload, dict) else {}
+
+
+def drive_token_from_card(payload: dict[str, Any]) -> str:
+    url = str((payload.get("card_link") or {}).get("url") or "")
+    match = re.search(r"/file/([A-Za-z0-9_-]+)", url)
+    return match.group(1) if match else ""
+
+
+def discover_publications(config: dict[str, Any], state: dict[str, Any]) -> list[dict[str, Any]]:
+    seeded = list(config.get("publications") or [])
+    discovery = config.get("auto_discovery") or {}
+    if discovery.get("enabled", True) is False:
+        return seeded
+    sender = config["sender"]
+    profile = str(sender["profile"])
+    source_chat_id = str(config["source_chat"]["chat_id"])
+    history = list_chat_messages(source_chat_id, profile, str(discovery.get("start") or "2026-08-01"))
+    active_messages = {
+        str(item.get("message_id")): item
+        for item in history
+        if item.get("deleted") is not True
+        and item.get("chat_id") == source_chat_id
+        and str((item.get("sender") or {}).get("id") or "") == str(sender["app_id"])
+    }
+    discovered = []
+    for publication in state.get("discovered_publications") or []:
+        messages = publication.get("messages") or []
+        if messages and str(messages[0].get("message_id") or "") in active_messages:
+            discovered.append(publication)
+    known_ids = {
+        str(message.get("message_id") or "")
+        for publication in [*seeded, *discovered]
+        for message in publication.get("messages") or []
+    }
+    known_titles = {str(publication.get("title") or "") for publication in [*seeded, *discovered]}
+    ordered = sorted(
+        active_messages.values(),
+        key=lambda item: (int(item.get("message_position") or 0), str(item.get("message_id") or "")),
+    )
+    for item in ordered:
+        message_id = str(item.get("message_id") or "")
+        if message_id in known_ids or item.get("msg_type") != "interactive":
+            continue
+        exact_title = compact_card_title(item)
+        if not tracked_publication_title(exact_title, discovery):
+            continue
+        title = publication_display_title(exact_title)
+        if not title or title in known_titles:
+            continue
+        card = get_card_payload(message_id, profile)
+        messages = [{"message_id": message_id, "label": ""}]
+        position = int(item.get("message_position") or 0)
+        companion = next(
+            (
+                candidate
+                for candidate in ordered
+                if candidate.get("msg_type") == "media"
+                and int(candidate.get("message_position") or 0) == position + 1
+            ),
+            None,
+        )
+        if companion:
+            messages[0]["label"] = "图文"
+            companion_id = str(companion.get("message_id") or "")
+            messages.append({"message_id": companion_id, "label": "视频"})
+            known_ids.add(companion_id)
+        publication = {
+            "title": title,
+            "source_title": exact_title,
+            "messages": messages,
+            "drive_file_token": drive_token_from_card(card),
+            "drive_file_type": "file",
+            "discovered_at": datetime.now(HKT).isoformat(timespec="seconds"),
+        }
+        discovered.append(publication)
+        known_ids.add(message_id)
+        known_titles.add(title)
+    state["discovered_publications"] = discovered
+    state["auto_discovery"] = {
+        "last_scan_at": datetime.now(HKT).isoformat(timespec="seconds"),
+        "history_messages": len(history),
+        "tracked_publications": len(seeded) + len(discovered),
+        "discovered_publications": len(discovered),
+    }
+    return [*seeded, *discovered]
 
 
 def get_file_statistics(token: str, file_type: str) -> dict[str, int]:
@@ -212,10 +429,11 @@ def collect(config: dict[str, Any], state: dict[str, Any]) -> tuple[list[dict[st
     source_chat = get_chat(str(source["chat_id"]), profile)
     group_count = require_group(source_chat, str(source["name"]), tenant_only=True)
     cached = state.setdefault("metrics", {})
-    first_message_ids = [str(item["messages"][0]["message_id"]) for item in config["publications"]]
+    publications = discover_publications(config, state)
+    first_message_ids = [str(item["messages"][0]["message_id"]) for item in publications]
     metadata = get_message_metadata(first_message_ids, profile)
     rows: list[dict[str, Any]] = []
-    for publication in config["publications"]:
+    for publication in publications:
         title = str(publication["title"])
         first_message_id = str(publication["messages"][0]["message_id"])
         message_meta = metadata.get(first_message_id) or {}
@@ -344,10 +562,11 @@ def _wrap_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont, 
 
 
 def render_image(rows: list[dict[str, Any]], group_count: int, output: Path) -> Path:
-    width, height = 1920, 780
     margin = 48
     header_height = 112
     row_height = 190
+    width = 1920
+    height = max(780, margin + header_height + row_height * len(rows) + margin)
     columns = [410, 300, 510, 360, 244]
     headers = ["发布内容", "发布时间", "消息已读人数 / 比例", "文件打开人数 / 占全群", "文件打开 / 已读"]
     image = Image.new("RGB", (width, height), "#F4F7FC")
@@ -589,7 +808,14 @@ def execute(config_path: Path, state_path: Path, mode: str, *, slot: str | None 
     message_id, image_key = send_report(str(target["chat_id"]), image_path, config, actual_slot, as_of)
     readback(message_id, str(target["chat_id"]), config, brief, image_key)
     if mode == "group":
+        verified_at = datetime.now(HKT).isoformat(timespec="seconds")
         sent_slots[actual_slot] = message_id
+        state.setdefault("slot_deliveries", {})[actual_slot] = {
+            "message_id": message_id,
+            "chat_id": str(target["chat_id"]),
+            "verified_at_hkt": verified_at,
+            "readback_verified": True,
+        }
         save_json(state_path, state)
     return {"ok": True, "mode": mode, "message_id": message_id, "markdown": markdown}
 

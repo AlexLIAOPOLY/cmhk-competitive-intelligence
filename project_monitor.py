@@ -1260,6 +1260,47 @@ class ProjectMonitor:
             )
         return issues
 
+    def _feishu_media_metrics_recovery_evidence(self, record: dict[str, Any]) -> list[str]:
+        occurred = _parse_datetime(record.get("occurred_at_hkt")) or _parse_datetime(
+            record.get("first_seen_at_hkt")
+        )
+        if occurred is None:
+            return []
+        scheduled_slots: list[datetime] = []
+        for raw in self.config.get("media_metrics_scan_times") or []:
+            try:
+                hour, minute = [int(value) for value in str(raw).split(":", 1)]
+                scheduled = datetime.combine(occurred.date(), clock_time(hour, minute), HKT)
+            except (TypeError, ValueError):
+                continue
+            if scheduled <= occurred and occurred - scheduled <= timedelta(hours=12):
+                scheduled_slots.append(scheduled)
+        if not scheduled_slots:
+            return []
+        slot = max(scheduled_slots)
+        slot_key = slot.strftime("%Y%m%d-%H%M")
+        state_path = self._source_root() / "var" / "feishu_media_metrics" / "state.json"
+        state = _read_json(state_path, {})
+        if not isinstance(state, dict):
+            return []
+        sent_slots = state.get("sent_slots") if isinstance(state.get("sent_slots"), dict) else {}
+        message_id = str(sent_slots.get(slot_key) or "").strip()
+        if not message_id:
+            return []
+        deliveries = state.get("slot_deliveries") if isinstance(state.get("slot_deliveries"), dict) else {}
+        delivery = deliveries.get(slot_key) if isinstance(deliveries.get(slot_key), dict) else {}
+        evidence = [
+            str(state_path),
+            f"时段 {slot_key} 已在发送后回读账本登记消息 {message_id}。",
+        ]
+        if delivery.get("readback_verified") is True:
+            evidence.append(
+                f"发送后回读 verified_at={delivery.get('verified_at_hkt') or '-'}，chat_id={delivery.get('chat_id') or '-'}。"
+            )
+        else:
+            evidence.append("该账本仅在群消息发送并通过目标、正文和图片回读后写入。")
+        return evidence
+
     def _read_new_log_text(self, path: Path, *, initial_tail_bytes: int = 131072) -> str:
         offsets = self.state.setdefault("log_offsets", {})
         key = str(path)
@@ -1645,6 +1686,27 @@ class ProjectMonitor:
                 "",
             )
             if stable_log_key:
+                if stable_log_key == "feishu-media-metrics-error":
+                    recovery_evidence = self._feishu_media_metrics_recovery_evidence(record)
+                    if recovery_evidence:
+                        self._mark_resolved(
+                            record,
+                            resolution_type="normal_task_progress",
+                            reason="media_metrics_delivery_verified",
+                            evidence=recovery_evidence,
+                        )
+                        conditions.pop(key, None)
+                        _append_jsonl(
+                            self.events_path,
+                            {
+                                "type": "incident_resolved_local_only",
+                                "at_hkt": now_text,
+                                "incident_id": record.get("incident_id"),
+                                "condition_key": key,
+                                "reason": "media_metrics_delivery_verified",
+                            },
+                        )
+                        continue
                 service_id = LOG_CONDITION_SERVICE_IDS.get(stable_log_key, "")
                 instances = self.state.get("service_instances") or {}
                 starts = [
@@ -2385,6 +2447,7 @@ class ProjectMonitor:
         reason = str(incident.get("resolution_reason") or "")
         messages = {
             "log_condition_cleared": "后续巡检未再发现同一类新增错误。",
+            "media_metrics_delivery_verified": "对应时段汇总已发送并完成消息回读。",
             "condition_no_longer_current": "后续任务归档或状态记录已不再显示该故障。",
             "service_restarted_after_error": "相关服务在故障后已重新启动，后续巡检未再命中该错误。",
             "superseded_by_stable_log_condition": "旧版重复日志告警已由稳定的同类故障状态取代。",
