@@ -2036,18 +2036,26 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
                         _component("ARPU/ARPA", round(arpu_usd, 2), "美元/月", "FY2025")],
         ))
 
+    def leader_metric(items: list[dict[str, Any]]) -> dict[str, Any]:
+        leader = max(items, key=lambda item: float(item["value"]))
+        return {
+            "value": leader["value"],
+            "unit": leader["unit"],
+            "label": f"{leader['name']} FY2025",
+        }
+
     focuses = [
         {"id": "revenue", "label": "营收", "visual": "rows", "headline": "跨国资源底盘形成分层",
-         "metric": {"value": len(revenue_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
+         "metric": leader_metric(revenue_items),
          "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同，但营收规模不等同盈利能力。", "items": revenue_items},
         {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "经营缓冲厚度明显分化",
-         "metric": {"value": len(ebitda_items), "unit": "家", "label": "FY2025已披露"},
+         "metric": leader_metric(ebitda_items),
          "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；盈利缓冲分层意味着网络投入与价格竞争的经营容错不同。", "items": ebitda_items},
         {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "利润池控制力出现分化",
-         "metric": {"value": len(profit_items), "unit": "家", "label": "FY2016–FY2025完整覆盖"},
+         "metric": leader_metric(profit_items),
          "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分层意味着自我融资、再投资与周期防守空间不同，但绝对值不等同盈利效率。", "items": profit_items},
         {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "客户规模与价值信号错位",
-         "metric": {"value": len(postpaid_items), "unit": "家", "label": "口径差异已明示"},
+         "metric": leader_metric(postpaid_items),
          "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。", "items": postpaid_items},
     ]
     all_items = revenue_items + ebitda_items + profit_items + postpaid_items

@@ -35,6 +35,13 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertEqual([focus["id"] for focus in domain["focuses"]], ["revenue", "ebitda", "net_profit", "postpaid_arpu"])
         self.assertEqual([item["name"] for item in domain["focuses"][0]["items"]], ["Verizon", "Deutsche Telekom", "AT&T", "NTT Group"])
 
+    def test_domain_02_top_right_metrics_show_the_current_leader(self):
+        for focus in self.domains["international"]["focuses"]:
+            leader = max(focus["items"], key=lambda item: item["value"])
+            self.assertEqual(focus["metric"]["value"], leader["value"])
+            self.assertEqual(focus["metric"]["unit"], leader["unit"])
+            self.assertEqual(focus["metric"]["label"], f"{leader['name']} FY2025")
+
     def test_hong_kong_and_mainland_units_are_consistent(self):
         local = {focus["id"]: focus for focus in self.domains["local"]["focuses"]}
         mainland = {focus["id"]: focus for focus in self.domains["mainland"]["focuses"]}
