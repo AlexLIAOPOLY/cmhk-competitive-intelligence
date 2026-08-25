@@ -925,6 +925,10 @@ def _build_site(
         "executive-dashboard-demo.js",
     ):
         shutil.copy2(STATIC_DIR / name, static_destination / name)
+    vendor_destination = static_destination / "vendor"
+    vendor_destination.mkdir()
+    for name in ("echarts-6.1.0.min.js", "echarts-LICENSE.txt"):
+        shutil.copy2(STATIC_DIR / "vendor" / name, vendor_destination / name)
 
     data_destination = destination / "static-data"
     data_destination.mkdir()

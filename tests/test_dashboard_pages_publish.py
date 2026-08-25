@@ -168,6 +168,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
 
         self.assertIn('aria-label="CMHK、HKT、3HK三家重点运营商四层完整指标对比"', html)
         self.assertRegex(html, r'src="/static/executive-dashboard-demo\.js\?v=\d+"')
+        self.assertIn('src="/static/vendor/echarts-6.1.0.min.js?v=1"', html)
+        vendor = publisher.STATIC_DIR / "vendor" / "echarts-6.1.0.min.js"
+        self.assertGreater(vendor.stat().st_size, 500_000)
+        self.assertIn(
+            "Apache License",
+            (vendor.parent / "echarts-LICENSE.txt").read_text(encoding="utf-8"),
+        )
         self.assertNotIn('role="tablist"', html)
         self.assertNotIn("data-monitor-view", html)
         self.assertNotIn("data-overview-view", html)
@@ -199,6 +206,11 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("chart-donut-legend", script)
         self.assertIn("data-company", script)
         self.assertIn("function setupChartTooltips", script)
+        self.assertIn("function initializeEcharts", script)
+        self.assertIn('renderer: "svg"', script)
+        self.assertIn("ResizeObserver", script)
+        self.assertIn("aria: { enabled: true", script)
+        self.assertIn(".comparison-echart", style)
         self.assertIn('root.addEventListener("pointerover"', script)
         self.assertIn('root.addEventListener("focusin"', script)
         self.assertNotIn("setLinkedCompany", script)
@@ -223,7 +235,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("font: 600 13.5px/1.25 var(--font-ui)", style)
         self.assertIn(".comparison-mini-chart > span { padding: 9px 12px 0", style)
         self.assertIn("font-weight: 650; letter-spacing: 0", style)
-        self.assertIn("Other comparisons use", style)
+        self.assertIn("ECharts uses its SVG renderer", style)
         self.assertIn(".panel-network .comparison-metric-card:first-child .comparison-chart text { font-size: 7px; }", style)
         self.assertIn(".comparison-bar-row { min-width: 0; display: grid", style)
         self.assertIn(".comparison-bar-row.chart-interactive-mark { pointer-events: auto; }", style)
@@ -534,6 +546,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertRegex(html, r'src="\./executive-dashboard-demo\.js\?v=\d+"')
+            self.assertIn('src="./vendor/echarts-6.1.0.min.js?v=1"', html)
+            self.assertTrue((first / "vendor" / "echarts-6.1.0.min.js").is_file())
+            self.assertTrue((first / "vendor" / "echarts-LICENSE.txt").is_file())
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)

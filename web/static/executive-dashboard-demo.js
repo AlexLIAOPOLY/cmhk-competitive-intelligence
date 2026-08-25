@@ -150,11 +150,210 @@
   ];
   const chartColors = ["#64cdf4", "#5c9cff", "#60d9aa", "#efb354", "#b68cff", "#f37f8c"];
   const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
+  const comparisonEchartSpecs = new Map();
+  let comparisonEchartInstances = [];
+  let comparisonEchartResizeObserver = null;
+  let comparisonEchartSequence = 0;
 
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const metricTitle = (metric) => `${metric.label}${metric.unit ? `（${metric.unit}）` : ""}`;
   const tooltipAttributes = (text, company) => `tabindex="0" data-company="${escapeHtml(company)}" data-chart-tooltip="${escapeHtml(text)}" aria-label="${escapeHtml(text)}"`;
   const metricTooltip = (item, metricLabel) => tooltipAttributes(`${item.company}｜${metricLabel}：${item.display}｜${item.status}`, item.company);
+
+  function echartDescription(spec) {
+    if (spec.kind === "grouped-column") {
+      return `${spec.title}。${spec.metrics[0].rows.map((row, index) => `${row.company}：${spec.metrics.map((metric) => `${metric.label}${metric.rows[index].display}`).join("，")}`).join("；")}`;
+    }
+    return `${spec.metricLabel}。${spec.rows.map((row) => `${row.company}${row.display}，${row.status}`).join("；")}`;
+  }
+
+  function echartHost(spec) {
+    const id = `comparison-echart-${++comparisonEchartSequence}`;
+    const description = echartDescription(spec);
+    comparisonEchartSpecs.set(id, { ...spec, description });
+    return `<div id="${id}" class="comparison-echart" tabindex="0" role="img" aria-label="${escapeHtml(description)}"></div>`;
+  }
+
+  function echartTooltip(spec) {
+    return {
+      trigger: "item",
+      confine: true,
+      backgroundColor: "rgba(5, 18, 30, .96)",
+      borderColor: "rgba(100, 205, 244, .42)",
+      borderWidth: 1,
+      padding: [9, 11],
+      textStyle: { color: "#dcecf4", fontSize: 12, lineHeight: 19 },
+      extraCssText: "border-radius:8px;box-shadow:0 12px 34px rgba(0,0,0,.34)",
+      formatter(params) {
+        const index = Number(params.dataIndex) || 0;
+        if (spec.kind === "grouped-column") {
+          const row = spec.metrics[0].rows[index];
+          return `<strong style="color:#fff">${escapeHtml(row.company)}</strong><br>${spec.metrics.map((metric) => `${escapeHtml(metric.label)}：${escapeHtml(metric.rows[index].display)}`).join("<br>")}`;
+        }
+        const row = spec.rows[index];
+        return `<strong style="color:#fff">${escapeHtml(row.company)}</strong><br>${escapeHtml(spec.metricLabel)}：${escapeHtml(row.display)}<br><span style="color:#86a8b8">${escapeHtml(row.status)}</span>`;
+      }
+    };
+  }
+
+  function echartBaseOption(spec) {
+    return {
+      animation: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      animationDuration: 420,
+      animationEasing: "cubicOut",
+      backgroundColor: "transparent",
+      textStyle: { fontFamily: '"SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif' },
+      aria: { enabled: true, decal: { show: false }, description: spec.description },
+      tooltip: echartTooltip(spec)
+    };
+  }
+
+  function echartAxisLabel(rows) {
+    const rich = {};
+    rows.forEach((row, index) => {
+      rich[`dot${index}`] = { color: chartColors[index], fontSize: 14, lineHeight: 20 };
+    });
+    rich.name = { color: "#a9c0cb", fontSize: 11, fontWeight: 600, lineHeight: 20 };
+    return {
+      color: "#a9c0cb",
+      margin: 9,
+      formatter(value, index) { return `{dot${index}|●}  {name|${value}}`; },
+      rich
+    };
+  }
+
+  function echartHorizontalOption(spec) {
+    const rows = spec.rows;
+    const disclosed = rows.filter((row) => row.value !== null);
+    const absoluteMax = Math.max(...disclosed.map((row) => Math.abs(row.value)), 1);
+    const diverging = spec.kind === "diverging";
+    const barData = rows.map((row, index) => ({
+      value: row.value === null ? 0 : row.value,
+      itemStyle: { color: row.value === null ? "transparent" : (row.value < 0 ? "#efb354" : chartColors[index]) },
+      label: { color: row.value === null ? "#718e9b" : "#eaf6fb" }
+    }));
+    const pointData = rows.map((row, index) => ({
+      value: [row.value, row.company],
+      itemStyle: { color: row.value < 0 ? "#efb354" : chartColors[index] }
+    }));
+    return {
+      ...echartBaseOption(spec),
+      grid: { left: 72, right: 58, top: 9, bottom: 8 },
+      xAxis: {
+        type: "value",
+        min: diverging ? -absoluteMax * 1.18 : 0,
+        max: absoluteMax * 1.18,
+        axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, splitLine: { show: false }
+      },
+      yAxis: {
+        type: "category", inverse: true, data: rows.map((row) => row.company),
+        axisLine: { show: false }, axisTick: { show: false }, axisLabel: echartAxisLabel(rows)
+      },
+      series: [
+        {
+          name: spec.metricLabel,
+          type: "bar",
+          data: barData,
+          barWidth: diverging ? 4 : 3,
+          showBackground: !diverging,
+          backgroundStyle: { color: "rgba(90, 132, 151, .14)", borderRadius: 3 },
+          itemStyle: { borderRadius: 3 },
+          label: {
+            show: true,
+            position: "right",
+            distance: 8,
+            fontSize: 11,
+            fontWeight: 700,
+            formatter(params) { return rows[params.dataIndex].chartDisplay; }
+          },
+          emphasis: { focus: "self", itemStyle: { shadowBlur: 10, shadowColor: "rgba(100, 205, 244, .45)" } },
+          markLine: diverging ? { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: "rgba(153, 190, 207, .34)", width: 1 }, data: [{ xAxis: 0 }] } : undefined,
+          z: 2
+        },
+        {
+          type: "scatter",
+          data: pointData,
+          symbolSize: 8,
+          tooltip: { show: false },
+          emphasis: { scale: 1.35 },
+          z: 3
+        }
+      ]
+    };
+  }
+
+  function echartGroupedColumnOption(spec) {
+    const rows = spec.metrics[0].rows;
+    return {
+      ...echartBaseOption(spec),
+      grid: { left: 18, right: 12, top: 34, bottom: 27 },
+      legend: {
+        top: 3, right: 8, itemWidth: 10, itemHeight: 7, itemGap: 16, icon: "roundRect",
+        textStyle: { color: "#a9c0cb", fontSize: 11, fontWeight: 600 }
+      },
+      xAxis: {
+        type: "category", data: rows.map((row) => row.company),
+        axisLine: { lineStyle: { color: "rgba(135, 180, 200, .2)" } },
+        axisTick: { show: false }, axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
+      },
+      yAxis: { type: "value", axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, splitLine: { show: false } },
+      series: spec.metrics.map((metric, metricIndex) => ({
+        name: metricIndex === 0 ? "4G" : "5G",
+        type: "bar",
+        data: metric.rows.map((row) => row.value),
+        barWidth: 17,
+        barGap: "30%",
+        itemStyle: { color: metricIndex === 0 ? "#64cdf4" : "#60d9aa", borderRadius: [4, 4, 1, 1] },
+        label: {
+          show: true, position: "top", distance: 5, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
+          formatter(params) { return metric.rows[params.dataIndex].chartDisplay; }
+        },
+        emphasis: { focus: "series", itemStyle: { shadowBlur: 12, shadowColor: metricIndex === 0 ? "rgba(100,205,244,.45)" : "rgba(96,217,170,.42)" } }
+      }))
+    };
+  }
+
+  function echartOption(spec) {
+    return spec.kind === "grouped-column" ? echartGroupedColumnOption(spec) : echartHorizontalOption(spec);
+  }
+
+  function disposeComparisonEcharts() {
+    comparisonEchartResizeObserver?.disconnect();
+    comparisonEchartResizeObserver = null;
+    comparisonEchartInstances.forEach((chart) => chart.dispose());
+    comparisonEchartInstances = [];
+  }
+
+  function initializeEcharts(root) {
+    if (!window.echarts) return;
+    comparisonEchartResizeObserver = "ResizeObserver" in window ? new ResizeObserver((entries) => {
+      entries.forEach((entry) => window.echarts.getInstanceByDom(entry.target)?.resize());
+    }) : null;
+    comparisonEchartSpecs.forEach((spec, id) => {
+      const element = root.querySelector(`#${id}`);
+      if (!element) return;
+      const chart = window.echarts.init(element, null, { renderer: "svg" });
+      chart.setOption(echartOption(spec));
+      element.dataset.echartReady = "1";
+      let activeIndex = 0;
+      const rowCount = spec.kind === "grouped-column" ? spec.metrics[0].rows.length : spec.rows.length;
+      const showActive = () => {
+        chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
+        chart.dispatchAction({ type: "highlight", seriesIndex: 0, dataIndex: activeIndex });
+        chart.dispatchAction({ type: "showTip", seriesIndex: 0, dataIndex: activeIndex });
+      };
+      element.addEventListener("focus", showActive);
+      element.addEventListener("blur", () => chart.dispatchAction({ type: "hideTip" }));
+      element.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+        event.preventDefault();
+        activeIndex = (activeIndex + (["ArrowRight", "ArrowDown"].includes(event.key) ? 1 : -1) + rowCount) % rowCount;
+        showActive();
+      });
+      comparisonEchartResizeObserver?.observe(element);
+      comparisonEchartInstances.push(chart);
+    });
+  }
 
   function metricNumber(value) {
     const text = String(value || "").replace(/,/g, "");
@@ -258,6 +457,7 @@
   }
 
   function groupedColumnChart(metrics, title) {
+    if (window.echarts) return echartHost({ kind: "grouped-column", metrics, title });
     const disclosed = metrics.flatMap((metric) => metric.rows).filter((item) => item.value !== null);
     if (!disclosed.length) {
       return `<svg class="comparison-chart comparison-grouped-chart comparison-chart-empty" viewBox="0 0 300 116" role="img" aria-label="${escapeHtml(`${title}三家重点运营商分组柱状图，暂无披露数据`)}">
@@ -381,6 +581,9 @@
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
+    if (window.echarts && ["column", "lollipop", "bar", "diverging"].includes(chartType)) {
+      return echartHost({ kind: chartType, rows, metricLabel });
+    }
     if (chartType === "column") return columnChart(rows, metricLabel);
     if (chartType === "lollipop" || chartType === "bar") return horizontalChart(rows, metricLabel, chartType);
     if (chartType === "donut") return donutChart(rows, metricLabel);
@@ -528,7 +731,11 @@
 
   function renderComparison() {
     const target = document.querySelector("[data-comparison-view]");
+    disposeComparisonEcharts();
+    comparisonEchartSpecs.clear();
+    comparisonEchartSequence = 0;
     target.innerHTML = `${comparisonBoardHeader()}${comparisonSections.map(comparisonPanel).join("")}`;
+    initializeEcharts(target);
     setupChartTooltips(target);
   }
 
