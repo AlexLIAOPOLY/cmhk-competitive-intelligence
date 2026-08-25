@@ -63,6 +63,95 @@
   };
 
   const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
+  let competitorParticleFrame = 0;
+
+  function animateCompetitorOptionParticles(elements, { mode = "scatter", onComplete } = {}) {
+    const targets = [...elements].filter((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    if (!targets.length || motionPreference.matches) {
+      onComplete?.();
+      return;
+    }
+    let canvas = document.querySelector("[data-competitor-particle-layer]");
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.className = "competitor-particle-layer";
+      canvas.dataset.competitorParticleLayer = "";
+      canvas.setAttribute("aria-hidden", "true");
+      document.body.append(canvas);
+    }
+    window.cancelAnimationFrame(competitorParticleFrame);
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * ratio);
+    canvas.height = Math.round(window.innerHeight * ratio);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    canvas.hidden = false;
+    const context = canvas.getContext("2d");
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const colors = ["#66d9ee", "#42a9cf", "#86f0d1", "#d9fbff"];
+    const mobile = window.innerWidth < 620;
+    const particles = targets.flatMap((element, elementIndex) => {
+      const rect = element.getBoundingClientRect();
+      const count = Math.max(14, Math.min(mobile ? 24 : 34, Math.round(rect.width * rect.height / (mobile ? 105 : 82))));
+      return Array.from({ length: count }, (_item, index) => {
+        const targetX = rect.left + Math.random() * rect.width;
+        const targetY = rect.top + Math.random() * rect.height;
+        const direction = (Math.random() - .5) * 2;
+        const travel = (mobile ? 16 : 24) + Math.random() * (mobile ? 22 : 38);
+        const driftX = travel * (.55 + Math.random() * .55);
+        const driftY = direction * travel * (.28 + Math.random() * .58);
+        const scatteredX = targetX + driftX;
+        const scatteredY = targetY + driftY;
+        return {
+          startX: mode === "scatter" ? targetX : scatteredX,
+          startY: mode === "scatter" ? targetY : scatteredY,
+          endX: mode === "scatter" ? scatteredX : targetX,
+          endY: mode === "scatter" ? scatteredY : targetY,
+          delay: elementIndex * 18 + Math.random() * 72 + index % 3 * 5,
+          size: .8 + Math.random() * 1.7,
+          color: colors[Math.floor(Math.random() * colors.length)],
+        };
+      });
+    });
+    const startedAt = performance.now();
+    const duration = mode === "scatter" ? 390 : 430;
+    const draw = (now) => {
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      context.globalCompositeOperation = "lighter";
+      let active = false;
+      particles.forEach((particle) => {
+        const progress = Math.max(0, Math.min(1, (now - startedAt - particle.delay) / duration));
+        if (progress < 1) active = true;
+        const eased = mode === "scatter"
+          ? 1 - Math.pow(1 - progress, 3)
+          : 1 - Math.pow(1 - progress, 4);
+        const x = particle.startX + (particle.endX - particle.startX) * eased;
+        const y = particle.startY + (particle.endY - particle.startY) * eased;
+        const alpha = mode === "scatter" ? 1 - progress : Math.sin(progress * Math.PI) * .78;
+        if (alpha <= 0) return;
+        context.globalAlpha = alpha * .28;
+        context.fillStyle = particle.color;
+        context.beginPath();
+        context.arc(x, y, particle.size * 2.7, 0, Math.PI * 2);
+        context.fill();
+        context.globalAlpha = Math.min(1, alpha + .14);
+        context.beginPath();
+        context.arc(x, y, particle.size, 0, Math.PI * 2);
+        context.fill();
+      });
+      if (active) {
+        competitorParticleFrame = window.requestAnimationFrame(draw);
+      } else {
+        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        canvas.hidden = true;
+        onComplete?.();
+      }
+    };
+    competitorParticleFrame = window.requestAnimationFrame(draw);
+  }
 
   function workspaceSignalDot(tab) {
     let dot = tab?.querySelector("[data-workspace-indicator]");
@@ -389,6 +478,10 @@
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>仅可选择至少有 2 个共同披露年的窗口</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${selection.companies.length && !validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${selection.companies.length && !validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
+    const appearingOptions = [...panel.querySelectorAll("[data-competitor-option].is-appearing")];
+    if (appearingOptions.length) {
+      window.requestAnimationFrame(() => animateCompetitorOptionParticles(appearingOptions, { mode: "assemble" }));
+    }
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
       const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
@@ -406,7 +499,7 @@
         const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
         if (!remaining) group.classList.add("is-disappearing");
       });
-      window.setTimeout(() => renderCompetitor(), 220);
+      animateCompetitorOptionParticles(disappearing, { mode: "scatter", onComplete: () => renderCompetitor() });
     }));
     panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => { state.competitorSelection.metric = event.target.value; renderCompetitor(); });
     panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitor(); }));
