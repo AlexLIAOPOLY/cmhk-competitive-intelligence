@@ -1626,10 +1626,14 @@
           ],
           "ai_summary": {
             "id": "ebitda",
-            "headline": "现金创造断层式集中",
-            "analysis": "HKT的EBITDA为14234百万港元，SmarTone和3HK分别为2445.1和1508.0百万港元，可比较的经营现金创造代理形成头尾断层，表明HKT的盈利缓冲和自我融资能力与后两者不在同一量级，CMHK未公开独立公司口径。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "持续投入能力形成断层",
+            "analysis": "HKT FY2025 EBITDA为14234百万港元，3HK1508百万港元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -2966,10 +2970,14 @@
           },
           {
             "id": "ebitda",
-            "headline": "现金创造断层式集中",
-            "analysis": "HKT的EBITDA为14234百万港元，SmarTone和3HK分别为2445.1和1508.0百万港元，可比较的经营现金创造代理形成头尾断层，表明HKT的盈利缓冲和自我融资能力与后两者不在同一量级，CMHK未公开独立公司口径。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "持续投入能力形成断层",
+            "analysis": "HKT FY2025 EBITDA为14234百万港元，3HK1508百万港元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -6167,14 +6175,10 @@
           ],
           "ai_summary": {
             "id": "revenue",
-            "headline": "规模优势固化资源壁垒",
-            "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
-            ],
+            "headline": "经营防守资源拉开层次",
+            "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元，收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，中国电信5296.0亿元，表明竞争资源承载力不在同一量级，但绝对规模不能等同盈利韧性或投入转化效率。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "中国移动",
@@ -7757,14 +7761,10 @@
         "focuses": [
           {
             "id": "revenue",
-            "headline": "规模优势固化资源壁垒",
-            "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
-            ],
+            "headline": "经营防守资源拉开层次",
+            "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元，收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，中国电信5296.0亿元，表明竞争资源承载力不在同一量级，但绝对规模不能等同盈利韧性或投入转化效率。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "中国移动",
@@ -12703,7 +12703,7 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-25T11:10:37+08:00",
+      "generated_at_hkt": "2026-08-25T15:59:23+08:00",
       "model": "DeepSeek-V4-Pro",
       "summaries": [
         {
@@ -12778,10 +12778,14 @@
             },
             {
               "id": "ebitda",
-              "headline": "现金创造断层式集中",
-              "analysis": "HKT的EBITDA为14234百万港元，SmarTone和3HK分别为2445.1和1508.0百万港元，可比较的经营现金创造代理形成头尾断层，表明HKT的盈利缓冲和自我融资能力与后两者不在同一量级，CMHK未公开独立公司口径。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "持续投入能力形成断层",
+              "analysis": "HKT FY2025 EBITDA为14234百万港元，3HK1508百万港元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
               "entities": [
                 {
                   "name": "CMHK",
@@ -13225,14 +13229,10 @@
           "focuses": [
             {
               "id": "revenue",
-              "headline": "规模优势固化资源壁垒",
-              "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-              "source_urls": [
-                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
-              ],
+              "headline": "经营防守资源拉开层次",
+              "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元，收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，中国电信5296.0亿元，表明竞争资源承载力不在同一量级，但绝对规模不能等同盈利韧性或投入转化效率。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+              "source_urls": [],
               "entities": [
                 {
                   "name": "中国移动",
@@ -13816,22 +13816,33 @@
           "HKT FY2025 EBITDA为14234百万港元，3HK1508百万港元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
           "HKT FY2025 EBITDA为14234百万港元，盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，SmarTone与3HK分别为2445.1和1508.0百万港元，表明可比较的三家已形成明显的盈利缓冲分层。",
           "HKT的EBITDA为14234百万港元，SmarTone和3HK分别为2445.1和1508.0百万港元，可比较的经营现金创造代理形成头尾断层，表明HKT的盈利缓冲和自我融资能力与后两者不在同一量级，CMHK未公开独立公司口径。"
+        ],
+        "mainland.revenue": [
+          "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
+          "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元，收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，规模不等同效率，资源承载力明显分层，中国电信5296.0亿元居于中间，并非与移动同层。",
+          "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元，收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，中国电信5296.0亿元，表明竞争资源承载力不在同一量级，但绝对规模不能等同盈利韧性或投入转化效率。"
         ]
       },
       "manual_focus_regeneration_counts": {
-        "local.ebitda": 2
+        "local.ebitda": 2,
+        "mainland.revenue": 2
       },
       "manual_focus_regeneration_title_history": {
         "local.ebitda": [
           "持续投入能力形成断层",
           "盈利缓冲形成头尾分层",
           "现金创造断层式集中"
+        ],
+        "mainland.revenue": [
+          "规模优势固化资源壁垒",
+          "网络与获客投入能力分层",
+          "经营防守资源拉开层次"
         ]
       },
       "manual_focus_regeneration": {
-        "domain": "local",
-        "focus": "ebitda",
-        "generated_at_hkt": "2026-08-25T11:10:37+08:00"
+        "domain": "mainland",
+        "focus": "revenue",
+        "generated_at_hkt": "2026-08-25T15:59:23+08:00"
       }
     },
     "evidence_hash": "86888620bbc7c5be441cb199ea0196b176b3cd19989248ab89722e2dd15ee5d7",
