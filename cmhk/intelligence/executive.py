@@ -20,8 +20,8 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
-DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/display_reference_data.json"
-ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/online_gap_audit_2026-08-25.json"
+DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/display_reference_data.json"
+ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json"
 INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
 
 DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
