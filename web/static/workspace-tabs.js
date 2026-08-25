@@ -11,6 +11,7 @@
     faultTotal: 0,
     competitorData: null,
     competitorSelection: { companies: [], metric: "", years: null },
+    competitorChartTypes: {},
     competitorInsightRequest: 0,
     competitorInsightController: null,
     competitorInsightRetryTimer: null,
@@ -452,7 +453,10 @@
     const coincidentMembers = new Set(coincidentGroups.flatMap((group) => group.companies));
     const chartLegend = companies.map((company, index) => `<span class="${coincidentMembers.has(company) ? "is-coincident" : ""}"><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}${coincidentMembers.has(company) ? "<em>曲线重合</em>" : ""}</span>`).join("");
     const coreSummary = buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit: unitLabel, coincidentGroups });
-    const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
+    const chartKey = `${companies.join("|")}|${metric}|${years}`;
+    const chartType = state.competitorChartTypes[chartKey] || competitorDefaultChartType(metricMeta);
+    const chartPayload = { companies, companyLabel, visibleYears, lookup, unit: unitLabel, chartType };
+    const chart = buildCompetitorChart(chartPayload);
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
     host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
       <div class="competitor-core-summary is-loading" role="status" aria-live="polite" aria-busy="true" data-competitor-core-summary-shell data-fallback="${esc(coreSummary)}"><span>战略指标</span><strong data-competitor-core-summary><em>AI 正在提炼一句话战略判断</em><i aria-hidden="true"><u></u><u></u><u></u></i></strong></div>
@@ -470,6 +474,7 @@
       </section></div>
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     bindCompetitorChartTooltip(host);
+    bindCompetitorChartTypeToggle(host, chartPayload, chartKey);
     requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
   }
 
@@ -584,7 +589,33 @@
     };
   }
 
-  function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit }) {
+  function competitorDefaultChartType(metric) {
+    const text = `${metric?.label || ""} ${metric?.unit || ""} ${(metric?.units || []).join(" ")}`;
+    return /率|ARPU|ARPA|ARPH|DOU|增长|覆盖|percent|percentage/i.test(text) ? "line" : "bar";
+  }
+
+  function competitorChartPointItems({ companies, companyLabel, lookup, year, cell, unit, format }) {
+    return companies.map((peer) => ({ company: peer, cell: lookup.get(`${peer}|${year}`) }))
+      .filter((item) => Number.isFinite(item.cell?.value) && item.cell.value === cell.value && String(item.cell.comparator || "=") === String(cell.comparator || "="))
+      .map((item) => ({
+        company: companyLabel(item.company),
+        period: item.cell.period || `${year}年`,
+        value: `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}`,
+        shared: /shared|共建|共享/i.test(String(item.cell.scope || "")),
+      }));
+  }
+
+  function competitorChartToggle(chartType) {
+    const nextType = chartType === "line" ? "bar" : "line";
+    const label = nextType === "bar" ? "切换为柱状图" : "切换为折线图";
+    const icon = nextType === "bar"
+      ? '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 16.5V10h3v6.5m2-9h3v9m2-12h3v12M2.5 16.5h15"/></svg>'
+      : '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3 14 4-4 3 2 6-7"/><circle cx="3" cy="14" r="1"/><circle cx="7" cy="10" r="1"/><circle cx="10" cy="12" r="1"/><circle cx="16" cy="5" r="1"/></svg>';
+    return `<button class="competitor-chart-type-toggle" type="button" data-competitor-chart-toggle data-next-chart-type="${nextType}" aria-label="${label}" title="${label}">${icon}</button>`;
+  }
+
+  function buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit, chartType = "line" }) {
+    if (chartType === "bar") return buildCompetitorBarChart({ companies, companyLabel, visibleYears, lookup, unit, chartType });
     const width = 960;
     const height = 390;
     const margin = { top: 26, right: 24, bottom: 42, left: 66 };
@@ -616,21 +647,72 @@
       const dots = points.map(({ year, cell }) => {
         const period = cell.period || `${year}年`;
         const value = `${competitorComparator(cell.comparator)}${format(cell.value)} ${unit}`;
-        const coincidentItems = companies.map((peer) => ({ company: peer, cell: lookup.get(`${peer}|${year}`) }))
-          .filter((item) => Number.isFinite(item.cell?.value) && item.cell.value === cell.value && String(item.cell.comparator || "=") === String(cell.comparator || "="))
-          .map((item) => ({
-            company: companyLabel(item.company),
-            period: item.cell.period || `${year}年`,
-            value: `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}`,
-            shared: /shared|共建|共享/i.test(String(item.cell.scope || "")),
-          }));
+        const coincidentItems = competitorChartPointItems({ companies, companyLabel, lookup, year, cell, unit, format });
         const description = coincidentItems.map((item) => `${item.company} · ${item.period} · ${item.value}`).join("；");
         const pointKey = `${year}|${cell.comparator || "="}|${cell.value}`;
         return `<g class="competitor-chart-point ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}" data-chart-point-key="${esc(pointKey)}" data-chart-items="${esc(JSON.stringify(coincidentItems))}"><circle class="competitor-chart-point-hit" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="13"></circle><circle class="competitor-chart-point-marker" cx="${x(year).toFixed(1)}" cy="${y(cell.value).toFixed(1)}" r="4.5" style="--series-color:${color}"></circle></g>`;
       }).join("");
       return `<g class="competitor-chart-series">${paths}${dots}</g>`;
     }).join("");
-    return `<figure class="competitor-chart-card"><div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden></div><p>注：将鼠标移到数据点可查看具体数值；重合点会同时显示全部公司；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+    return `<figure class="competitor-chart-card" data-chart-type="line">${competitorChartToggle("line")}<div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的趋势对比图`)}">${grid}${years}${series}</svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden></div><p>注：将鼠标移到数据点可查看具体数值；重合点会同时显示全部公司；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+  }
+
+  function buildCompetitorBarChart({ companies, companyLabel, visibleYears, lookup, unit }) {
+    const width = 960;
+    const height = 390;
+    const margin = { top: 26, right: 24, bottom: 42, left: 66 };
+    const values = companies.flatMap((company) => visibleYears.map((year) => lookup.get(`${company}|${year}`)?.value).filter((value) => Number.isFinite(value)));
+    let min = Math.min(0, ...values);
+    let max = Math.max(0, ...values);
+    if (min === max) max = Math.abs(max || 1);
+    const pad = (max - min) * .1;
+    if (min < 0) min -= pad;
+    max += pad;
+    const plotWidth = width - margin.left - margin.right;
+    const groupStep = plotWidth / visibleYears.length;
+    const barGap = 2;
+    const groupWidth = Math.min(groupStep * .72, 58);
+    const barWidth = Math.max(3, (groupWidth - barGap * (companies.length - 1)) / companies.length);
+    const barTotalWidth = barWidth * companies.length + barGap * (companies.length - 1);
+    const x = (year, companyIndex) => margin.left + (visibleYears.indexOf(year) + .5) * groupStep - barTotalWidth / 2 + companyIndex * (barWidth + barGap);
+    const y = (value) => margin.top + ((max - value) / (max - min)) * (height - margin.top - margin.bottom);
+    const baseline = y(0);
+    const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
+    const ticks = Array.from({ length: 5 }, (_, index) => max - ((max - min) * index / 4));
+    const grid = ticks.map((value) => `<g class="competitor-chart-grid"><line x1="${margin.left}" x2="${width - margin.right}" y1="${y(value).toFixed(1)}" y2="${y(value).toFixed(1)}"></line><text x="${margin.left - 12}" y="${(y(value) + 4).toFixed(1)}">${esc(format(value))}</text></g>`).join("");
+    const axis = `<line class="competitor-chart-zero" x1="${margin.left}" x2="${width - margin.right}" y1="${baseline.toFixed(1)}" y2="${baseline.toFixed(1)}"></line>`;
+    const years = visibleYears.map((year) => { const center = margin.left + (visibleYears.indexOf(year) + .5) * groupStep; return `<g class="competitor-chart-year"><line x1="${center.toFixed(1)}" x2="${center.toFixed(1)}" y1="${height - margin.bottom}" y2="${height - margin.bottom + 5}"></line><text x="${center.toFixed(1)}" y="${height - 18}">${esc(year)}</text></g>`; }).join("");
+    const bars = companies.map((company, companyIndex) => {
+      const color = COMPETITOR_CHART_PALETTE[companyIndex % COMPETITOR_CHART_PALETTE.length];
+      return visibleYears.map((year) => {
+        const cell = lookup.get(`${company}|${year}`);
+        if (!Number.isFinite(cell?.value)) return "";
+        const valueY = y(cell.value);
+        const top = Math.min(valueY, baseline);
+        const barHeight = Math.max(1, Math.abs(baseline - valueY));
+        const coincidentItems = competitorChartPointItems({ companies, companyLabel, lookup, year, cell, unit, format });
+        const description = coincidentItems.map((item) => `${item.company} · ${item.period} · ${item.value}`).join("；");
+        const pointKey = `${year}|${cell.comparator || "="}|${cell.value}`;
+        return `<rect class="competitor-chart-point competitor-chart-bar ${cell.comparator && cell.comparator !== "=" ? "is-bound" : ""}" tabindex="0" role="img" aria-label="${esc(description)}" data-chart-point-key="${esc(pointKey)}" data-chart-items="${esc(JSON.stringify(coincidentItems))}" x="${x(year, companyIndex).toFixed(1)}" y="${top.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" rx="1.5" style="--series-color:${color}"></rect>`;
+      }).join("");
+    }).join("");
+    return `<figure class="competitor-chart-card" data-chart-type="bar">${competitorChartToggle("bar")}<div class="competitor-chart-scroll"><svg class="competitor-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`所选 ${companies.length} 家竞对在 ${visibleYears[0]} 至 ${visibleYears.at(-1)} 年的年度分组对比图`)}">${grid}${axis}${years}<g class="competitor-chart-bars">${bars}</g></svg></div><div class="competitor-chart-tooltip" role="tooltip" hidden></div><p>注：将鼠标移到柱形可查看具体数值；重合值会同时显示全部公司；财年与自然年口径差异请以数据明细中的官方来源为准。</p></figure>`;
+  }
+
+  function bindCompetitorChartTypeToggle(scope, payload, chartKey) {
+    const button = scope.querySelector("[data-competitor-chart-toggle]");
+    if (!button) return;
+    button.addEventListener("click", () => {
+      const chartType = button.dataset.nextChartType === "line" ? "line" : "bar";
+      state.competitorChartTypes[chartKey] = chartType;
+      const current = scope.querySelector(".competitor-chart-card");
+      if (!current) return;
+      const template = document.createElement("template");
+      template.innerHTML = buildCompetitorChart({ ...payload, chartType });
+      current.replaceWith(template.content.firstElementChild);
+      bindCompetitorChartTooltip(scope);
+      bindCompetitorChartTypeToggle(scope, { ...payload, chartType }, chartKey);
+    });
   }
 
   function bindCompetitorChartTooltip(scope) {

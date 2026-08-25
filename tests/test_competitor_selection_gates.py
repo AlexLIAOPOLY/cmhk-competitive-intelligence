@@ -65,7 +65,8 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn("function competitorComparableWindow", SCRIPT)
         self.assertIn("sharedVisibleYears.length >= 2", SCRIPT)
         self.assertIn("competitorHasCommonMetric(data, [...selectedCompanies, company.id], years, metricKey)", SCRIPT)
-        self.assertIn("competitorComparableWindow(data, selection.companies, metric.key, selection.years).ok", SCRIPT)
+        self.assertIn("competitorHasCommonMetric(data, selection.companies, selection.years, metric.key)", SCRIPT)
+        self.assertIn("const windows = years ? [years] : [3, 5, 10, 99];", SCRIPT)
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
 
