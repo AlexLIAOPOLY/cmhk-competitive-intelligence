@@ -185,12 +185,12 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("comparison-metric-card", script)
         self.assertIn('title: "基站总数（4G / 5G）"', script)
         self.assertIn('sharedChart: "grouped-column"', script)
-        self.assertIn('chartTypes: ["column", "dot", "column", "lollipop", "bubble", "column"]', script)
-        self.assertIn('key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bubble"]', script)
+        self.assertIn('chartTypes: ["column", "bar", "column", "lollipop", "column", "column"]', script)
+        self.assertIn('key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bar"]', script)
         self.assertIn('chartTypes: ["bar", "radial", "diverging"]', script)
         self.assertIn("function echartColumnOption", script)
-        self.assertIn("function echartDotOption", script)
-        self.assertIn("function echartBubbleOption", script)
+        self.assertNotIn("function echartDotOption", script)
+        self.assertNotIn("function echartBubbleOption", script)
         self.assertIn("function echartRadialOption", script)
         self.assertIn('type: "pie"', script)
         self.assertIn('barWidth: diverging ? 8 : (lollipop ? 7 : 10)', script)
@@ -276,7 +276,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             "移动综合ARPU",
             "家庭宽带用户数",
             "家庭户均收益（ARPU）",
-            "客户数（大中型企业/中小企业-参考政府公布的分类）",
+            "客户数",
             "项目签约额",
             "全港实体门市数量",
             "官方手机应用程式 (如MyLink) 活跃用户数",
@@ -631,7 +631,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 "移动综合ARPU",
                 "家庭宽带用户数",
                 "家庭户均收益（ARPU）",
-                "客户数（大中型企业/中小企业-参考政府公布的分类）",
+                "客户数",
                 "项目签约额",
                 "全港实体门市数量",
                 "官方手机应用程式 (如MyLink) 活跃用户数",
