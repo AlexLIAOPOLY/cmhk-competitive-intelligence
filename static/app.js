@@ -7911,6 +7911,11 @@ document.addEventListener("keydown", (event) => {
 
   function localizeChineseMagnitudeText(value) {
     return String(value == null ? "" : value)
+      .replace(/(分别为|分別為)\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*(和|及|与|與|、)\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*(百万港元|百萬港元|百万美元|百萬美元|百万元人民币|百萬元人民幣|百万元|百萬元|十亿美元|十億美元|十亿港元|十億港元|十亿元|十億元|百万户|百萬戶|百万连接|百萬連接|百万订阅|百萬訂閱|百万|百萬)/g, (_, prefix, first, connector, second, unit) => {
+        const firstDisplay = localizedMetricParts(first, unit);
+        const secondDisplay = localizedMetricParts(second, unit);
+        return `${prefix}${firstDisplay.value}${firstDisplay.unit}${connector}${secondDisplay.value}${secondDisplay.unit}`;
+      })
       .replace(/HK\$\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*million\b/gi, (_, number) => {
         const display = localizedMetricParts(number, "百万港元");
         return `${display.value}${display.unit}`;
