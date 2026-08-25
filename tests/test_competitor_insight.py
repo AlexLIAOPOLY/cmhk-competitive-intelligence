@@ -296,6 +296,22 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertTrue(items[1].startswith("公司定位｜"))
         self.assertEqual(sum("第一段已完整生成" in item for item in items), 1)
 
+    def test_wrapped_first_paragraph_never_preoccupies_or_gets_overwritten_by_second_row(self):
+        first_partial = (
+            "战略指标｜基础设施投资加速，竞争焦点转向投入转化。\n"
+            "竞争格局｜Azure资本开支快速增长，\n"
+            "与Google的差距正在收窄。"
+        )
+        completed = first_partial + "\n公司定位｜Azure加速追赶，Google保持领先。"
+
+        partial_items = web_app._parse_competitor_insight_items(first_partial)
+        completed_items = web_app._parse_competitor_insight_items(completed)
+
+        self.assertEqual(partial_items, ["竞争格局｜Azure资本开支快速增长，与Google的差距正在收窄。"])
+        self.assertEqual(len(completed_items), 2)
+        self.assertEqual(completed_items[0], partial_items[0])
+        self.assertTrue(completed_items[1].startswith("公司定位｜"))
+
     def test_only_empty_model_content_is_rejected(self):
         with self.assertRaisesRegex(RuntimeError, "未返回可用洞察"):
             web_app._competitor_insight_content(" \n ")

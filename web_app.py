@@ -281,20 +281,27 @@ def _parse_competitor_insight_items(content: object) -> list[str]:
     aliases = {"竞争格局": 0, "公司分化": 1, "公司定位": 1, "业务含义": 2}
     labelled: dict[int, str] = {}
     candidates: list[str] = []
+    active_label_index: int | None = None
     for raw_line in text.splitlines():
         line = re.sub(r"^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)", "", raw_line).strip()
         line = re.sub(r"^\*\*(.*?)\**$", r"\1", line).strip()
         if not line or re.fullmatch(r"\|?\s*:?-{2,}[-| :]*", line):
             continue
         if re.match(r"^(?:战略指标|核心结论)[：|｜]", line):
+            active_label_index = None
             continue
         match = re.match(r"^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$", line)
         if match:
-            labelled.setdefault(aliases[match.group(1)], match.group(2).strip())
+            label_index = aliases[match.group(1)]
+            value = match.group(2).strip()
+            labelled.setdefault(label_index, value)
+            active_label_index = None if re.search(r"[。！？!?；;]$", value) else label_index
             continue
-        if len(line) < 12 and not re.search(r"[\d。！？!?；;，,]", line):
+        if active_label_index is not None:
+            labelled[active_label_index] = f"{labelled.get(active_label_index, '')}{line}".strip()
+        elif len(line) < 12 and not re.search(r"[\d。！？!?；;，,]", line):
             continue
-        if not (line.startswith("|") and line.endswith("|")):
+        elif not (line.startswith("|") and line.endswith("|")):
             candidates.append(line)
     if len(candidates) < 3 and not labelled:
         sentences = [part.strip() for part in re.split(r"(?<=[。！？!?])\s*", " ".join(candidates) or text) if part.strip()]

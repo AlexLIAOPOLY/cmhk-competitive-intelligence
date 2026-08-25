@@ -774,17 +774,25 @@
     if (!text) return [];
     const labelled = new Map();
     const candidates = [];
+    let activeLabelIndex = null;
     text.split(/\n+/).forEach((rawLine) => {
       const line = rawLine
         .replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "")
         .replace(/^\*\*(.*?)\**$/, "$1")
         .trim();
       if (!line || /^\|?\s*:?-{2,}[-| :]*$/.test(line)) return;
-      if (/^(战略指标|核心结论)[：|｜]/.test(line)) return;
+      if (/^(战略指标|核心结论)[：|｜]/.test(line)) {
+        activeLabelIndex = null;
+        return;
+      }
       const match = line.match(/^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$/);
       if (match) {
         const index = match[1] === "竞争格局" ? 0 : match[1] === "业务含义" ? 2 : 1;
-        if (!labelled.has(index)) labelled.set(index, match[2].trim());
+        const value = match[2].trim();
+        activeLabelIndex = /[。！？!?；;]$/.test(value) ? null : index;
+        if (!labelled.has(index)) labelled.set(index, value);
+      } else if (activeLabelIndex !== null) {
+        labelled.set(activeLabelIndex, `${labelled.get(activeLabelIndex) || ""}${line}`.trim());
       } else if (line.length < 12 && !/[\d。！？!?；;，,]/.test(line)) {
         return;
       } else if (!(line.startsWith("|") && line.endsWith("|"))) {
@@ -799,7 +807,7 @@
     let candidateIndex = 0;
     return labels.flatMap((label, index) => {
       let value = labelled.get(index) || "";
-      if (!value) value = candidates[candidateIndex++] || "";
+      if (!labelled.size && !value) value = candidates[candidateIndex++] || "";
       value = value.replace(/^(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*/, "").trim();
       if (!value) return [];
       if (value.length > 180) value = `${value.slice(0, 179).replace(/[，,；;\s]+$/, "")}…`;
