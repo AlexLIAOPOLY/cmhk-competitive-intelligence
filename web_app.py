@@ -462,8 +462,8 @@ def _parse_competitor_insight_items(content: object) -> list[str]:
     return result
 
 
-def _parse_competitor_strategic_indicator(content: object) -> str:
-    """Extract the AI-generated one-sentence strategic signal from the shared response."""
+def _parse_competitor_strategic_signal(content: object) -> tuple[str, list[str]]:
+    """Extract the strategic sentence and the short phrases selected by the model."""
     text = _competitor_insight_content(content).strip()
     text = re.sub(r"^```(?:json|text|markdown)?\s*|\s*```$", "", text, flags=re.I)
     for raw_line in text.splitlines():
@@ -471,11 +471,24 @@ def _parse_competitor_strategic_indicator(content: object) -> str:
         match = re.match(r"^(?:战略指标|核心结论)[：|｜]\s*(.+)$", line)
         if not match:
             continue
-        value = match.group(1).strip()
+        marked_value = match.group(1).strip()
+        highlights: list[str] = []
+        for highlighted in re.findall(r"【([^【】]{2,12})】", marked_value):
+            value = highlighted.strip()
+            if value and value not in highlights:
+                highlights.append(value)
+            if len(highlights) == 3:
+                break
+        value = re.sub(r"[【】]", "", marked_value).strip()
         if len(value) > 100:
             value = value[:99].rstrip("，,；; ") + "…"
-        return value
-    return ""
+        return value, [item for item in highlights if item in value]
+    return "", []
+
+
+def _parse_competitor_strategic_indicator(content: object) -> str:
+    """Compatibility wrapper returning only the clean strategic sentence."""
+    return _parse_competitor_strategic_signal(content)[0]
 
 
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
@@ -553,7 +566,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值；其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
+            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值；并由你从公司、竞争动作、趋势拐点或胜负判断中选出1—3个最值得决策者关注的短语，每个2—10字，仅在该短语两侧加【】用于视觉强调，不包裹标点或整句。其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
             {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,
@@ -699,13 +712,14 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     finally:
         reset_internal_ai_priority(priority_token)
     insight = _competitor_insight_content(raw_content)
-    strategic_indicator = _parse_competitor_strategic_indicator(insight)
+    strategic_indicator, strategic_highlights = _parse_competitor_strategic_signal(insight)
     if not strategic_indicator:
         raise RuntimeError("AI 未返回战略指标")
     insights = _parse_competitor_insight_items(insight)
     return {
         "requestId": request_id,
         "strategicIndicator": strategic_indicator,
+        "strategicHighlights": strategic_highlights,
         "insight": insight,
         "insights": insights,
         "model": model,

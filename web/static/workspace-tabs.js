@@ -774,7 +774,7 @@
     });
   }
 
-  function settleCompetitorInsight(card, { mode, strategicIndicator = "", insight = "", insights = [], status = "" }) {
+  function settleCompetitorInsight(card, { mode, strategicIndicator = "", strategicHighlights = [], insight = "", insights = [], status = "" }) {
     if (!card) return;
     const isAi = mode === "ai";
     card.classList.remove("is-loading", "is-streaming");
@@ -786,8 +786,10 @@
     const sourceItems = Array.isArray(insights) && insights.length ? insights : parseCompetitorInsightItems(insight);
     const items = sourceItems.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3);
     syncCompetitorInsightRows(card, items);
-    const generatedIndicator = String(strategicIndicator || parseCompetitorStrategicIndicator(insight)).trim();
-    settleCompetitorStrategicIndicator(generatedIndicator, { fallback: !generatedIndicator });
+    const parsedSignal = parseCompetitorStrategicSignal(insight);
+    const generatedIndicator = String(strategicIndicator || parsedSignal.text).trim();
+    const generatedHighlights = Array.isArray(strategicHighlights) && strategicHighlights.length ? strategicHighlights : parsedSignal.highlights;
+    settleCompetitorStrategicIndicator(generatedIndicator, { fallback: !generatedIndicator, highlights: generatedHighlights });
   }
 
   function competitorStrategicSummaryElements() {
@@ -804,16 +806,38 @@
     copy.innerHTML = '<i aria-hidden="true"><u></u><u></u><u></u></i>';
   }
 
-  function streamCompetitorStrategicIndicator(text) {
+  function renderCompetitorStrategicIndicatorCopy(copy, text, highlights = []) {
+    const value = String(text || "");
+    const phrases = [...new Set((Array.isArray(highlights) ? highlights : []).map((item) => String(item || "").trim()).filter((item) => item.length >= 2 && value.includes(item)))].slice(0, 3);
+    if (!phrases.length) {
+      copy.textContent = value;
+      return;
+    }
+    const pattern = new RegExp(`(${phrases.map((item) => item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
+    const phraseSet = new Set(phrases);
+    const fragment = document.createDocumentFragment();
+    value.split(pattern).filter(Boolean).forEach((part) => {
+      if (!phraseSet.has(part)) {
+        fragment.append(document.createTextNode(part));
+        return;
+      }
+      const mark = document.createElement("mark");
+      mark.textContent = part;
+      fragment.append(mark);
+    });
+    copy.replaceChildren(fragment);
+  }
+
+  function streamCompetitorStrategicIndicator(text, highlights = []) {
     const { shell, copy } = competitorStrategicSummaryElements();
     if (!shell || !copy || !text) return;
     shell.classList.remove("is-loading", "is-ready", "is-fallback");
     shell.classList.add("is-streaming");
     shell.setAttribute("aria-busy", "true");
-    copy.textContent = text;
+    renderCompetitorStrategicIndicatorCopy(copy, text, highlights);
   }
 
-  function settleCompetitorStrategicIndicator(text, { fallback = false } = {}) {
+  function settleCompetitorStrategicIndicator(text, { fallback = false, highlights = [] } = {}) {
     const { shell, copy } = competitorStrategicSummaryElements();
     if (!shell || !copy) return;
     const finalText = String(text || shell.dataset.fallback || "当前暂未形成可用战略判断。").trim();
@@ -821,7 +845,7 @@
     shell.classList.add("is-ready");
     shell.classList.toggle("is-fallback", fallback);
     shell.setAttribute("aria-busy", "false");
-    copy.textContent = finalText;
+    renderCompetitorStrategicIndicatorCopy(copy, finalText, fallback ? [] : highlights);
   }
 
   function syncCompetitorInsightRows(card, items) {
@@ -897,11 +921,18 @@
     });
   }
 
-  function parseCompetitorStrategicIndicator(content) {
+  function parseCompetitorStrategicSignal(content) {
     const text = String(content || "").replace(/^```(?:json|text|markdown)?\s*|\s*```$/gi, "");
     const line = text.split(/\n/).find((item) => /^(?:\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*))?(战略指标|核心结论)[：|｜]/.test(item));
-    if (!line) return "";
-    return line.replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "").replace(/^(战略指标|核心结论)[：|｜]\s*/, "").trim().slice(0, 100);
+    if (!line) return { text: "", highlights: [] };
+    const marked = line.replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "").replace(/^(战略指标|核心结论)[：|｜]\s*/, "").trim();
+    const highlights = [...marked.matchAll(/【([^【】]{2,12})】/g)].map((match) => match[1].trim()).filter(Boolean).slice(0, 3);
+    const value = marked.replace(/[【】]/g, "").trim().slice(0, 100);
+    return { text: value, highlights: [...new Set(highlights)].filter((item) => value.includes(item)) };
+  }
+
+  function parseCompetitorStrategicIndicator(content) {
+    return parseCompetitorStrategicSignal(content).text;
   }
 
   function setCompetitorInsightStatus(card, message = "") {
@@ -923,8 +954,8 @@
   }
 
   function renderCompetitorInsightDraft(card, text) {
-    const strategicIndicator = parseCompetitorStrategicIndicator(text);
-    if (strategicIndicator) streamCompetitorStrategicIndicator(strategicIndicator);
+    const strategicSignal = parseCompetitorStrategicSignal(text);
+    if (strategicSignal.text) streamCompetitorStrategicIndicator(strategicSignal.text, strategicSignal.highlights);
     const drafts = parseCompetitorInsightItems(text);
     if (!card || !drafts.length) return;
     card.classList.remove("is-loading");
@@ -988,7 +1019,7 @@
             state.competitorInsightRetryAttempt = 0;
             window.clearTimeout(state.competitorInsightRetryTimer);
             state.competitorInsightRetryTimer = null;
-            settleCompetitorInsight(card, { mode: "ai", strategicIndicator: event.strategicIndicator, insight: event.insight, insights: event.insights });
+            settleCompetitorInsight(card, { mode: "ai", strategicIndicator: event.strategicIndicator, strategicHighlights: event.strategicHighlights, insight: event.insight, insights: event.insights });
           } else if (event.type === "error") {
             throw new Error(event.error || "AI生成失败");
           }
@@ -1000,9 +1031,11 @@
       if (error.name === "AbortError") return;
       if (requestId === state.competitorInsightRequest && card) {
         const partial = parseCompetitorInsightItems(generated);
+        const partialSignal = parseCompetitorStrategicSignal(generated);
         settleCompetitorInsight(card, {
           mode: partial.length ? "ai" : "unavailable",
-          strategicIndicator: parseCompetitorStrategicIndicator(generated),
+          strategicIndicator: partialSignal.text,
+          strategicHighlights: partialSignal.highlights,
           insight: generated,
           insights: partial,
           status: partial.length ? "本次生成提前结束，已保留 AI 返回内容；故障已告警" : "AI 生成失败，已告警并启动自动恢复",
