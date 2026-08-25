@@ -89,7 +89,8 @@
     "news_bridge",
     "strategic_news",
     "four_database_source_discovery",
-    "executive_intelligence_refresh"
+    "executive_intelligence_refresh",
+    "four_database_feishu_log"
   ],
   "strategic_scan_times": [
     "09:00",

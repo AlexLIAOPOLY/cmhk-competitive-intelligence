@@ -14,6 +14,7 @@ from cmhk.crawl.run_registry import (
     start_crawl_run,
 )
 from executive_intelligence_pipeline import NEWS_ENTITY_SOURCES, NEWS_METRIC_RE
+from cmhk.integrations.four_database_crawl_sheet import append_rows, discovery_rows
 
 
 ROOT = Path(__file__).resolve().parent
@@ -129,7 +130,13 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             "signals": signals,
         }
         _write_json(OUTPUT, payload)
+        try:
+            payload["feishu_detail_log"] = append_rows(discovery_rows(payload, plans=plans, search_items=items))
+        except Exception as exc:
+            payload["feishu_detail_log"] = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        _write_json(OUTPUT, payload)
         append_crawl_run_event(log_path, {"type": "source_discovery", **{key: payload[key] for key in ("query_count", "search_result_count", "signal_count", "domains")}})
+        append_crawl_run_event(log_path, {"type": "feishu_detail_log", **payload["feishu_detail_log"]})
         detail = f"01:00资料搜索完成：{payload['query_count']}个查询、{payload['search_result_count']}条搜索结果、前一日两次任务参考{payload['previous_day_reference_count']}条、{payload['signal_count']}条四库线索；已交接03:00官方来源复核。"
         finalize_operational_crawl_run(run_id, ok=True, duration_ms=round((time.monotonic() - started) * 1000), progress_detail=detail, summary={**payload, "audit_path": str(OUTPUT)})
         return {"ok": True, **payload, "audit_path": str(OUTPUT)}

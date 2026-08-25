@@ -4837,6 +4837,20 @@ def run_pipeline(
             }
         )
         _append_log(f"pipeline failed {exc}")
+    if not dry_run:
+        try:
+            from cmhk.integrations.four_database_crawl_sheet import append_pipeline_artifacts
+
+            state["feishu_detail_log"] = append_pipeline_artifacts(state)
+            _task_event(
+                task_run_id,
+                "飞书四库爬虫明细日志",
+                f"已写入{int(state['feishu_detail_log'].get('written') or 0)}条详细日志，"
+                f"跳过{int(state['feishu_detail_log'].get('skipped') or 0)}条重复记录。",
+            )
+        except Exception as exc:
+            state["feishu_detail_log"] = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+            _task_event(task_run_id, "飞书四库爬虫明细日志", f"详细日志写入失败：{exc}", level="critical")
     _atomic_write_json(STATE_PATH, state)
     _append_log(f"done status={state['status']} duration_ms={state['duration_ms']}")
     fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
