@@ -25,21 +25,36 @@
       .login-card h2 { margin:0 0 8px; text-align:center; font-size:28px; }
       .login-card > .login-hint { margin:0; color:#9bb8c2; text-align:center; font-size:14px; line-height:1.65; }
       .login-card > .login-hint strong { color:#e9f7fb; font-weight:650; }
-      .scan-stage { flex:1; display:grid; place-items:center; padding:30px 0 26px; }
-      .scan-visual { position:relative; width:220px; aspect-ratio:1; display:grid; place-items:center; border:1px solid rgba(121,219,233,.28); border-radius:24px; color:#7ce2ed; background:linear-gradient(145deg,rgba(230,252,255,.96),rgba(200,239,241,.88)); box-shadow:0 20px 44px rgba(0,9,15,.3),inset 0 0 0 8px rgba(255,255,255,.18); }
-      .scan-visual::after { content:""; position:absolute; inset:16px; border:1px solid rgba(18,112,129,.14); border-radius:15px; }
-      .scan-visual svg { width:150px; height:150px; filter:drop-shadow(0 8px 16px rgba(5,64,73,.13)); }
-      .scan-caption { margin:-12px 0 26px; color:#8eaeba; text-align:center; font-size:12px; line-height:1.6; }
+      .motion-stage { flex:1; display:grid; place-items:center; padding:30px 0 26px; }
+      .login-motion { position:relative; width:240px; aspect-ratio:1; display:grid; place-items:center; }
+      .motion-halo { position:absolute; inset:35px; border-radius:50%; background:radial-gradient(circle,rgba(93,221,231,.28),rgba(51,174,199,.08) 52%,transparent 72%); animation:halo-breathe 3.2s ease-in-out infinite; }
+      .motion-orbit { position:absolute; border:1px solid rgba(111,222,234,.32); border-radius:50%; }
+      .motion-orbit::after { content:""; position:absolute; top:50%; right:-4px; width:8px; height:8px; margin-top:-4px; border-radius:50%; background:#79e4ed; box-shadow:0 0 16px rgba(121,228,237,.9); }
+      .motion-orbit.is-one { inset:24px; animation:orbit-spin 8s linear infinite; }
+      .motion-orbit.is-two { inset:50px; border-color:rgba(73,203,170,.28); animation:orbit-spin 6s linear infinite reverse; }
+      .motion-orbit.is-two::after { background:#55d2ad; box-shadow:0 0 16px rgba(85,210,173,.85); }
+      .motion-core { position:relative; z-index:2; width:112px; height:112px; display:grid; place-items:center; border:1px solid rgba(142,233,241,.5); border-radius:32px; color:#dffcff; background:linear-gradient(145deg,rgba(47,154,179,.92),rgba(30,105,130,.96)); box-shadow:0 22px 45px rgba(0,9,15,.35),inset 0 1px 0 rgba(255,255,255,.22); animation:core-float 3.2s ease-in-out infinite; }
+      .motion-core svg { width:64px; height:64px; }
+      .motion-node { position:absolute; z-index:3; width:9px; height:9px; border:2px solid rgba(224,253,255,.9); border-radius:3px; background:#42c7dc; box-shadow:0 0 14px rgba(66,199,220,.75); animation:node-pulse 2.4s ease-in-out infinite; }
+      .motion-node.is-a { top:31px; left:55px; }
+      .motion-node.is-b { top:58px; right:28px; animation-delay:-.8s; }
+      .motion-node.is-c { right:58px; bottom:27px; animation-delay:-1.6s; }
+      .motion-caption { margin:-12px 0 26px; color:#8eaeba; text-align:center; font-size:12px; line-height:1.6; }
       button { width:100%; min-height:46px; border-radius:10px; font:inherit; }
       button { border:1px solid transparent; cursor:pointer; font-weight:650; }
       button:disabled { cursor:not-allowed; opacity:.52; }
       .feishu { color:#03202b; background:linear-gradient(135deg,#76dff0,#49cbaa 88%); box-shadow:0 10px 28px rgba(70,204,205,.2); }
       .feishu:hover:not(:disabled) { filter:brightness(1.06); }
+      .feishu:focus-visible { outline:3px solid rgba(119,226,237,.42); outline-offset:3px; }
       .status { min-height:19px; margin:12px 0 0; color:#8db2bd; text-align:center; font-size:12px; line-height:1.55; }
       .status:empty { display:none; }
       .status.is-error { color:#ffad9e; }
-      @media (max-width:980px) { body { background-position:62% bottom; background-attachment:scroll; } .login-page { grid-template-columns:1fr; width:min(640px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:clamp(28px,8.5vw,48px)}.intro{font-size:14px}.signals{margin-top:22px}.login-card{min-height:520px;padding:32px 26px 28px}.scan-stage{padding:24px 0 20px}.scan-visual{width:min(200px,62vw)} }
-      @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
+      @keyframes orbit-spin { to { transform:rotate(360deg); } }
+      @keyframes halo-breathe { 0%,100% { opacity:.62; transform:scale(.94); } 50% { opacity:1; transform:scale(1.08); } }
+      @keyframes core-float { 0%,100% { transform:translateY(4px); } 50% { transform:translateY(-6px); } }
+      @keyframes node-pulse { 0%,100% { opacity:.45; transform:scale(.75); } 50% { opacity:1; transform:scale(1.15); } }
+      @media (max-width:980px) { body { background-position:62% bottom; background-attachment:scroll; } .login-page { grid-template-columns:1fr; width:min(640px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:clamp(28px,8.5vw,48px)}.intro{font-size:14px}.signals{margin-top:22px}.login-card{min-height:520px;padding:32px 26px 28px}.motion-stage{padding:20px 0 16px}.login-motion{width:min(210px,64vw);transform:scale(.9)} }
+      @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
     </style>
   </head>
   <body>
@@ -52,20 +67,26 @@
         <ul class="signals" aria-label="平台能力"><li>经营驾驶舱</li><li>战略情报生产</li><li>分角色权限</li><li>飞书统一身份</li></ul>
       </section>
       <section class="login-card" aria-labelledby="signInTitle">
-        <h2 id="signInTitle">扫码登录</h2>
-        <p class="login-hint">请使用 <strong>飞书移动端</strong> 完成身份验证</p>
-        <div class="scan-stage" aria-hidden="true">
-          <div class="scan-visual">
-            <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17 56V25a8 8 0 0 1 8-8h31M94 17h31a8 8 0 0 1 8 8v31M133 94v31a8 8 0 0 1-8 8H94M56 133H25a8 8 0 0 1-8-8V94" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-              <rect x="35" y="35" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
-              <rect x="85" y="35" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
-              <rect x="35" y="85" width="30" height="30" rx="5" stroke="#123A44" stroke-width="7"/>
-              <path d="M86 85h12v12H86zM103 85h12v12h-12zM86 102h12v13H86zM103 103h12v12h-12zM72 72h13v13H72z" fill="#123A44"/>
-            </svg>
+        <h2 id="signInTitle">登录工作台</h2>
+        <p class="login-hint">使用 <strong>CMHK 飞书账号</strong> 完成身份验证</p>
+        <div class="motion-stage" aria-hidden="true">
+          <div class="login-motion">
+            <span class="motion-halo"></span>
+            <span class="motion-orbit is-one"></span>
+            <span class="motion-orbit is-two"></span>
+            <span class="motion-node is-a"></span>
+            <span class="motion-node is-b"></span>
+            <span class="motion-node is-c"></span>
+            <div class="motion-core">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 7 51 15v13c0 13-7.8 23.8-19 29-11.2-5.2-19-16-19-29V15L32 7Z" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+                <circle cx="29" cy="27" r="6" stroke="currentColor" stroke-width="3"/>
+                <path d="M19 43c2-6 6-9 10-9 2.7 0 5.2 1.4 7.1 4M39 42l4 4 8-10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
           </div>
         </div>
-        <p class="scan-caption">点击下方按钮后，将在飞书官方页面显示动态二维码</p>
+        <p class="motion-caption">飞书统一身份认证 · 安全接入</p>
         <button class="feishu" id="feishuLogin" type="button" disabled>正在检查飞书登录…</button>
         <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
       </section>
@@ -96,7 +117,7 @@
         fetch("/api/auth/config", { cache:"no-store", credentials:"same-origin" }).then(async (response) => {
           const payload = await response.json().catch(() => ({}));
           if (!response.ok || payload.ok === false) throw new Error(payload.message || "无法读取登录配置");
-          if (payload.feishu?.configured) { feishuButton.disabled = false; feishuButton.textContent = "打开飞书扫码登录"; }
+          if (payload.feishu?.configured) { feishuButton.disabled = false; feishuButton.textContent = "使用飞书账号登录"; }
           else { feishuButton.textContent = "飞书登录尚未配置"; }
         }).catch(fail);
         feishuButton.addEventListener("click", () => { setBusy(true,"正在前往飞书完成身份验证…"); location.assign(`/api/auth/feishu/start?next=${encodeURIComponent(next)}`); });
