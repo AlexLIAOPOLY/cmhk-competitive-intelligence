@@ -391,9 +391,17 @@
 .competitor-result-header { min-height: 72px; padding-block: 12px; }
 .competitor-result-header > div:first-child { display: grid; gap: 5px; }
 .competitor-result-header .competitor-chart-legend { margin-left: auto; }
-.competitor-core-summary { display: flex; width: min(calc(100% - 28px),1600px); min-height: 48px; align-items: center; justify-content: center; gap: 13px; margin: 12px auto 6px; padding: 9px 18px; border: 1px solid rgba(91,190,209,.32); border-radius: 8px; background: linear-gradient(90deg,rgba(17,56,70,.52),rgba(9,35,47,.8),rgba(17,56,70,.52)); text-align: center; }
+.competitor-core-summary { display: flex; width: min(calc(100% - 28px),1600px); min-height: 54px; align-items: center; justify-content: center; gap: 15px; margin: 12px auto 6px; padding: 10px 20px; border: 1px solid rgba(91,190,209,.32); border-radius: 8px; background: linear-gradient(90deg,rgba(17,56,70,.52),rgba(9,35,47,.8),rgba(17,56,70,.52)); text-align: center; }
 .competitor-core-summary span { flex: 0 0 auto; color: #66c9db; font-size: 9px; font-weight: 750; letter-spacing: .14em; }
-.competitor-core-summary strong { color: #eaf6f8; font-size: 13px; font-weight: 650; line-height: 1.55; }
+.competitor-core-summary strong { position: relative; color: #f1fafb; font-family: "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; font-size: clamp(14px,1.08vw,17px); font-weight: 680; line-height: 1.55; letter-spacing: .018em; text-wrap: balance; }
+.competitor-core-summary strong > em { color: #8fb3bd; font-size: 11px; font-style: normal; font-weight: 560; letter-spacing: .05em; }
+.competitor-core-summary strong > i { display: flex; width: min(42vw,360px); gap: 7px; align-items: center; margin-top: 6px; }
+.competitor-core-summary strong > i u { display: block; height: 3px; flex: 1 1 auto; border-radius: 999px; background: linear-gradient(90deg,rgba(89,143,158,.1),rgba(109,213,230,.58),rgba(89,143,158,.1)); background-size: 220% 100%; text-decoration: none; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
+.competitor-core-summary strong > i u:nth-child(2) { flex-grow: .7; animation-delay: .12s; }
+.competitor-core-summary strong > i u:nth-child(3) { flex-grow: .42; animation-delay: .24s; }
+.competitor-core-summary.is-streaming strong::after { display: inline-block; width: 1px; height: 1.05em; margin-left: 4px; vertical-align: -.12em; background: #76d6e7; content: ""; animation: competitor-strategic-caret .8s steps(2,end) infinite; }
+.competitor-core-summary.is-ready { border-color: rgba(102,201,219,.42); box-shadow: inset 0 1px 0 rgba(255,255,255,.025),0 8px 28px rgba(0,17,25,.12); }
+.competitor-core-summary.is-fallback strong { color: #c8dce1; }
 .competitor-result-overview { display: grid; width: min(calc(100% - 28px),1600px); grid-template-columns: minmax(0,1fr) clamp(340px,25vw,410px); gap: 16px; align-items: stretch; margin: 0 auto 14px; }
 .competitor-empty { display: grid; min-height: 100%; place-content: center; justify-items: center; padding: 40px 20px; text-align: center; }
 .competitor-empty span { color: #4daec2; font: 700 10px/1 system-ui; letter-spacing: .24em; }
@@ -422,6 +430,9 @@
 .competitor-insight-list > li { display: grid; grid-template-columns: 76px minmax(0,1fr); gap: 12px; align-items: start; }
 .competitor-insight-list > li > b { padding-top: 3px; color: #71d1e2; font-size: 11px; letter-spacing: .08em; }
 .competitor-insight-list > li > span { min-width: 0; color: #e7f3f5; font-size: 14px; font-weight: 620; line-height: 1.7; letter-spacing: .01em; overflow-wrap: anywhere; white-space: pre-wrap; }
+.competitor-insight.is-streaming .competitor-insight-list > li { animation: competitor-insight-paragraph-in .36s ease-out both; }
+.competitor-insight.is-streaming .competitor-insight-list > li:nth-child(2) { animation-delay: .08s; }
+.competitor-insight.is-streaming .competitor-insight-list > li:nth-child(3) { animation-delay: .16s; }
 .competitor-insight-loading { display: none; gap: 9px; }
 .competitor-insight-loading span { display: block; height: 13px; border-radius: 4px; background: linear-gradient(90deg,rgba(89,143,158,.12),rgba(109,196,214,.32),rgba(89,143,158,.12)); background-size: 220% 100%; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-insight-loading span:nth-child(1) { width: 78%; }
@@ -436,6 +447,8 @@
 .competitor-insight.is-ai::before { opacity: 1; }
 @keyframes competitor-insight-aura { from { opacity: .68; transform: translate3d(-1%,0,0) scale(.98); } to { opacity: 1; transform: translate3d(1%,-1%,0) scale(1.03); } }
 @keyframes competitor-insight-shimmer { 0% { background-position: 110% 0; } 100% { background-position: -110% 0; } }
+@keyframes competitor-strategic-caret { 0%,45% { opacity: 1; } 46%,100% { opacity: .12; } }
+@keyframes competitor-insight-paragraph-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes competitor-insight-star-twinkle { 0%,100% { opacity: .58; transform: scale(.84); } 50% { opacity: 1; transform: scale(1.08); } }
 @keyframes competitor-insight-dots { 0% { clip-path: inset(0 100% 0 0); } 100% { clip-path: inset(0 0 0 0); } }
 @keyframes competitor-option-appear { from { max-width: 0; opacity: 0; transform: scale(.78); } to { max-width: 220px; opacity: 1; transform: scale(1); } }
@@ -1536,7 +1549,7 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .news-flow-stage,.news-stage-retention::after { transition: none !important; }
   .fault-resolve-cell input[aria-busy="true"],
   .fault-action-feedback.is-progress > i { animation: none !important; }
-  .competitor-insight::before,.competitor-insight-loading span,.competitor-insight:is(.is-loading,.is-streaming) .competitor-insight-identity svg path,.competitor-insight.is-streaming .competitor-insight-badge::after,.competitor-option-group label.is-appearing { animation: none !important; }
+  .competitor-core-summary strong > i u,.competitor-core-summary.is-streaming strong::after,.competitor-insight::before,.competitor-insight-loading span,.competitor-insight.is-streaming .competitor-insight-list > li,.competitor-insight:is(.is-loading,.is-streaming) .competitor-insight-identity svg path,.competitor-insight.is-streaming .competitor-insight-badge::after,.competitor-option-group label.is-appearing { animation: none !important; }
   .competitor-option-group,.competitor-option-group label { transition: none !important; }
 }
 

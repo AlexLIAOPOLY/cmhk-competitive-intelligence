@@ -286,6 +286,8 @@ def _parse_competitor_insight_items(content: object) -> list[str]:
         line = re.sub(r"^\*\*(.*?)\**$", r"\1", line).strip()
         if not line or re.fullmatch(r"\|?\s*:?-{2,}[-| :]*", line):
             continue
+        if re.match(r"^(?:战略指标|核心结论)[：|｜]", line):
+            continue
         match = re.match(r"^(?:一|二|三)?[、.\s]*(竞争格局|公司分化|公司定位|业务含义)[：|｜]\s*(.+)$", line)
         if match:
             labelled.setdefault(aliases[match.group(1)], match.group(2).strip())
@@ -313,6 +315,22 @@ def _parse_competitor_insight_items(content: object) -> list[str]:
             value = value[:179].rstrip("，,；; ") + "…"
         result.append(f"{label}｜{value}")
     return result
+
+
+def _parse_competitor_strategic_indicator(content: object) -> str:
+    """Extract the AI-generated one-sentence strategic signal from the shared response."""
+    text = _competitor_insight_content(content).strip()
+    text = re.sub(r"^```(?:json|text|markdown)?\s*|\s*```$", "", text, flags=re.I)
+    for raw_line in text.splitlines():
+        line = re.sub(r"^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)", "", raw_line).strip()
+        match = re.match(r"^(?:战略指标|核心结论)[：|｜]\s*(.+)$", line)
+        if not match:
+            continue
+        value = match.group(1).strip()
+        if len(value) > 100:
+            value = value[:99].rstrip("，,；; ") + "…"
+        return value
+    return ""
 
 
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
@@ -390,13 +408,13 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "只输出三行简体中文，每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。只基于输入判断趋势、位置和业务意义；保留比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
+            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值；其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
             {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,
         # The current internal V4 gateway may still emit hidden reasoning even
         # when both supported non-thinking switches are present.  Keep enough
-        # headroom for the required final three lines instead of ending after
+        # headroom for the required final four lines instead of ending after
         # reasoning-only tokens; the final-output gate below remains strict.
         "max_tokens": 1800,
         "chat_template_kwargs": {"enable_thinking": False},
@@ -536,8 +554,17 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     finally:
         reset_internal_ai_priority(priority_token)
     insight = _competitor_insight_content(raw_content)
+    strategic_indicator = _parse_competitor_strategic_indicator(insight)
+    if not strategic_indicator:
+        raise RuntimeError("AI 未返回战略指标")
     insights = _parse_competitor_insight_items(insight)
-    return {"requestId": request_id, "insight": insight, "insights": insights, "model": model}
+    return {
+        "requestId": request_id,
+        "strategicIndicator": strategic_indicator,
+        "insight": insight,
+        "insights": insights,
+        "model": model,
+    }
 
 
 def transcribe_chat_audio(payload: dict) -> dict:

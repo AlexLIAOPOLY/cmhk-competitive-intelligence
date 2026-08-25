@@ -7,6 +7,7 @@ import web_app
 
 
 MODEL_CONTENT = (
+    "战略指标｜客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。\n"
     "竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛。\n"
     "公司定位｜HKT由0.9%降至0.8%，SmarTone由0.8%降至0.7%，双方留存压力均缓和。\n"
     "业务含义｜较低流失率可能反映后付客户稳定性增强，但不单独代表整体经营优劣。"
@@ -91,8 +92,10 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("https://", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
         self.assertEqual(result["insight"], MODEL_CONTENT)
+        self.assertEqual(result["strategicIndicator"], "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。")
         self.assertEqual(len(result["insights"]), 3)
-        self.assertIn("只输出三行", captured["body"]["messages"][0]["content"])
+        self.assertIn("只输出四行", captured["body"]["messages"][0]["content"])
+        self.assertIn("战略指标｜", captured["body"]["messages"][0]["content"])
         self.assertIn("竞争格局｜", captured["body"]["messages"][0]["content"])
         self.assertEqual(captured["body"]["max_tokens"], 1800)
         self.assertEqual(captured["body"]["temperature"], 0.1)
@@ -267,6 +270,14 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertTrue(items[1].startswith("公司定位｜"))
         self.assertTrue(items[2].startswith("业务含义｜"))
         self.assertNotIn("#", " ".join(items))
+
+    def test_strategic_indicator_is_extracted_separately_from_three_insight_rows(self):
+        self.assertEqual(
+            web_app._parse_competitor_strategic_indicator(MODEL_CONTENT),
+            "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。",
+        )
+        self.assertEqual(len(web_app._parse_competitor_insight_items(MODEL_CONTENT)), 3)
+        self.assertFalse(any("战略指标" in item for item in web_app._parse_competitor_insight_items(MODEL_CONTENT)))
 
     def test_missing_scope_wording_does_not_reject_usable_model_content(self):
         content = "竞争格局｜数值持续增长。\n公司定位｜两家趋势接近。\n业务含义｜竞争重心转向使用体验。"
