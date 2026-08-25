@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "89f39d02ab91212b024f4e3a",
+      "task_id": "incident:89f39d02ab91212b024f4e3a",
+      "title": "主爬虫与定时爬虫",
+      "kind": "crawl",
+      "kind_label": "主爬虫与定时爬虫",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "任务失败：定时爬虫",
+      "impact": "已确认：本轮定时爬虫任务未完全成功，i-CABLE来源的财报数据未能更新，但旧数据被保留，其他成功阶段不受影响。推断：若持续失败，可能导致i-CABLE相关财报数据过时，影响下游分析或报表的时效性。",
+      "suggestions": [
+        "检查i-CABLE目标网站的当前可访问性，包括网络连通性、DNS解析和页面响应状态。",
+        "对比历史成功抓取时的页面结构，确认i-CABLE官方财报页面是否发生变更，并调整解析逻辑。",
+        "查看本轮完整流日志，确认第17行之前的处理状态和其他来源的成功情况，以排除级联故障。",
+        "若确认为临时性访问问题，等待系统自动重试；若为结构性变更，更新爬虫配置后，仅针对i-CABLE来源进行增量重跑，并验证数据完整性。"
+      ],
+      "occurred_at_hkt": "2026-08-26T04:01:39+08:00",
+      "started_at_hkt": "2026-08-26T03:31:41+08:00",
+      "heartbeat_at_hkt": "2026-08-26T04:03:13+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "eaaf72a7bdaadfc4a9280cc3",
       "task_id": "incident:eaaf72a7bdaadfc4a9280cc3",
       "title": "飞书频率调度器",
@@ -21,31 +47,7 @@
       ],
       "occurred_at_hkt": "2026-08-26T03:36:36+08:00",
       "started_at_hkt": "2026-08-26T03:36:41+08:00",
-      "heartbeat_at_hkt": "2026-08-26T03:58:12+08:00",
-      "completed_at_hkt": "",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "89f39d02ab91212b024f4e3a",
-      "task_id": "incident:89f39d02ab91212b024f4e3a",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "查看本轮完整流日志，定位失败行和来源，不要先重跑全部来源。",
-        "检查网络、DNS、目标站结构与历史结果回退状态。"
-      ],
-      "occurred_at_hkt": "2026-08-26T03:31:36+08:00",
-      "started_at_hkt": "2026-08-26T03:31:41+08:00",
-      "heartbeat_at_hkt": "2026-08-26T03:58:12+08:00",
+      "heartbeat_at_hkt": "2026-08-26T04:03:13+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -147,7 +149,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 03:07:17",
       "started_at_hkt": "2026-08-26T03:21:09+08:00",
-      "heartbeat_at_hkt": "2026-08-26T03:58:12+08:00",
+      "heartbeat_at_hkt": "2026-08-26T04:03:13+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
