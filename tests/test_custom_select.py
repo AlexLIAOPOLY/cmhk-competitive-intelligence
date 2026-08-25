@@ -11,10 +11,10 @@ class CustomSelectAssetTests(unittest.TestCase):
         index = (STATIC / "index.html").read_text(encoding="utf-8")
         company = (STATIC / "company-data.html").read_text(encoding="utf-8")
 
-        self.assertIn('/static/custom-select.css?v=1', index)
-        self.assertIn('/static/custom-select.css?v=1', company)
-        self.assertLess(index.index('/static/custom-select.js?v=1'), index.index('/static/app.js?v=300'))
-        self.assertLess(company.index('/static/custom-select.js?v=1'), company.index('/static/company-data.js?v=14'))
+        self.assertIn('/static/custom-select.css?v=2', index)
+        self.assertIn('/static/custom-select.css?v=2', company)
+        self.assertLess(index.index('/static/custom-select.js?v=2'), index.index('/static/app.js?v=300'))
+        self.assertLess(company.index('/static/custom-select.js?v=2'), company.index('/static/company-data.js?v=14'))
 
     def test_component_covers_dynamic_selects_and_accessible_interaction(self):
         source = (STATIC / "custom-select.js").read_text(encoding="utf-8")
@@ -24,6 +24,7 @@ class CustomSelectAssetTests(unittest.TestCase):
         self.assertIn('role", "listbox', source)
         self.assertIn('role", "option', source)
         self.assertIn('select.setAttribute("aria-hidden", "true")', source)
+        self.assertIn('select.setAttribute("data-cmhk-select-source", "")', source)
         self.assertIn('event.key === "Escape"', source)
         self.assertIn('event.key === "ArrowDown"', source)
         self.assertIn('dispatchEvent(new Event("change", { bubbles: true }))', source)

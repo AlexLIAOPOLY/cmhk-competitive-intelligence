@@ -191,6 +191,7 @@
     wrapper.append(trigger, select);
     document.body.appendChild(list);
     select.classList.add("cmhk-select-source");
+    select.setAttribute("data-cmhk-select-source", "");
     select.setAttribute("aria-hidden", "true");
     select.tabIndex = -1;
 
