@@ -1,46 +1,14 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T10:16:06+08:00",
+  "generated_at": "2026-08-23T19:43:33+08:00",
   "items": [
-    {
-      "id": "NEWS-C0478CC374E9EB",
-      "title": "香港7月通胀放缓至1.7%",
-      "summary": "香港7月消费者价格通胀如预期放缓至三个月低位，统计处数据显示同比升幅为1.7%。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.finanzen.at/nachrichten/zinsen/hong-kong-inflation-eases-to-1-7percent-1036478278",
-      "published_at": "2026-08-20T14:01:00+08:00"
-    },
     {
       "id": "NEWS-6B1134F856EB3F",
       "title": "世界机器人大会开幕，逾10%参展商为粤企",
       "summary": "世界机器人大会展示约3000件产品，超过10%的参展商来自广东，凸显大湾区在机器人产业链上的优势。",
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
-      "published_at": "2026-08-20T04:09:00+08:00"
-    },
-    {
-      "id": "NEWS-FF04B6947DF03F",
-      "title": "港铁今起西九龙地区展开自动车路面测试 拟明年第二季推出服务",
-      "summary": "港铁今（19日）起于西九地区展开自动车路面测试，以便日后高铁乘客转乘机铁。港铁指，自运输署发出自动车先导牌照后，已安排四辆百度Apollo第六代自动私家车参与测试，于两个车站之间的指定路段行驶",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60381647/%E6%B8%AF%E9%90%B5%E4%BB%8A%E8%B5%B7%E8%A5%BF%E4%B9%9D%E9%BE%8D%E5%9C%B0%E5%8D%80%E5%B1%95%E9%96%8B%E8%87%AA%E5%8B%95%E8%BB%8A%E8%B7%AF%E9%9D%A2%E6%B8%AC%E8%A9%A6-%E6%93%AC%E6%98%8E%E5%B9%B4%E7%AC%AC%E4%BA%8C%E5%AD%A3%E6%8E%A8%E5%87%BA%E6%9C%8D%E5%8B%99",
-      "published_at": "2026-08-19T19:02:00+08:00"
-    },
-    {
-      "id": "NEWS-2FA8D4DB71BA6F",
-      "title": "广州南沙新增一项通行粤港澳的职业资质",
-      "summary": "广州南沙新增一项可在粤港澳地区通行的职业资质，促进大湾区人才流动。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQYXE0bDZwRVBSZF90TzZjYkotUVlmT3lkZ0RRNHdfemtrOU0zeG1ZU0UzMmNkN3NDUmg5T3pkbi0yWWtGX0VScGJYdVBEV25EeEM4a1gtdDBhLW9Oc0F4UllxT0lRNF9TZDVBQkZjbHFyel9pUzBtTUZyRlRlcXBVcWphOURhVXdybkdDWXltX3ZXTUZXS1JVRkJwTkdKUQ?oc=5",
-      "published_at": "2026-08-19T17:40:24+08:00"
-    },
-    {
-      "id": "NEWS-E80E7073E9341C",
-      "title": "澳门五年规划拟降低博彩业增加值比重 加强与香港合作",
-      "summary": "澳门发布五年规划，拟降低博彩业在经济中的增加值比重，并加强与香港的合作。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMi6gJBVV95cUxQcjNINTFBNHI4R2VTMUhKeDhzYk9rMGFuX2VtVTUySmhTQ1VISlFGV3hJclVMVFN4SzFMYkZrWHFvZmdBRUpaT1BkbGZBeWt5SGZIeXRrczlBdHE1TkR5SFN6UDdVRGVRVUpFWjZQTVlmcFkxckhCMWJlTFhueWUzSkJlckJpWGFuVE1IOVhDamFRYzItU3p4RDhPRjNkWFJULVRnTDRRbXhYWW9JQmVaWjZVbFl1SW9UcWhuQ19mZ1JuU01mT1Y3ZWxjWnJFUXUtT0ZUQWR6NnNjTHpwbjBHNDdvNGh2QVRoVGVnenBOMmU5Z0N5MmdzV1BiSjlRLUw1X3VqdGZxSmFaTFByX0hwUVV2cjJ3REJ2cnhqWmNzLWFPN2V0QjdieDlsRXdhTVFFNWwxMGExZDluUDA4bm1VV0V4anp5b2MyWnduMnI5RTBJZHVNWjV0cXlPeFpYN2MyUUFyN3BWN0JFUQ?oc=5",
-      "published_at": "2026-08-19T16:18:54+08:00"
+      "published_at": "2026-08-20"
     },
     {
       "id": "NEWS-3A40133739FCB4",
@@ -48,23 +16,55 @@
       "summary": "港怡医院与数码通合作在元朗设立首个遥距医健站，提供视像诊症及送药服务，计划明年扩展至10个屋苑。",
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
-      "published_at": "2026-08-19T04:41:28+08:00"
+      "published_at": "2026-08-19"
     },
     {
-      "id": "NEWS-498C3B6CDD7D64",
-      "title": "有线宽频通过改名 「周大福媒体娱乐有限公司」 保留有线新闻及 HOY 品牌不变",
-      "summary": "有线宽频（1097）8 月 17 日于尖沙咀 K11 ATELIER 举行股东大会，全数出席股东投下赞成票，正式通过将公司名称由「有线宽频通讯有限公司」更改为「周大福媒体娱乐有限公司」，英文名",
-      "category": "竞对动态",
-      "source_url": "https://unwire.hk/2026/08/18/i-cable-rename-ctf-media/movie-2/",
-      "published_at": "2026-08-18T07:40:00+08:00"
-    },
-    {
-      "id": "NEWS-10F096217DA313",
-      "title": "香港一带一路办公室：赋能企业把握大湾区与东盟双循环机遇",
-      "summary": "香港一带一路办公室表示，香港可赋能企业把握粤港澳大湾区与东盟市场的双循环发展机遇。",
+      "id": "NEWS-B68F4E938DEEB7",
+      "title": "河套深港科技创新合作区启航 谱写创科新篇",
+      "summary": "评论文章指出河套深港科技创新合作区建设正当其时，将推动香港创科发展。",
       "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBuczZacHNGNkEwb1dNNHRYS1lHc2QwQlRmYlAydFdVeVJYRllNNUtKMFU3dzhhd1lOMjU3QndrbnV5U0RtNXVwYThScnRZbU84dTFhVXd2NW1ZWVo4WmZIWExXcUVTVGtFSHRz?oc=5",
-      "published_at": "2026-08-16T17:59:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
+      "published_at": "2026-08-16"
+    },
+    {
+      "id": "NEWS-53C6DA08A6825E",
+      "title": "企业深化产业布局 算力网有望拉动4万亿元投资",
+      "summary": "多家企业正谋划算力领域大项目，中国移动等公司算力投资持续增长，机构测算算力网建设将新增直接投资4万亿元。",
+      "category": "行业动态",
+      "source_url": "https://news.online.sh.cn/news/gb/content/2026-08/15/content_10478477.htm",
+      "published_at": "2026-08-15"
+    },
+    {
+      "id": "NEWS-04F9F16E7A143B",
+      "title": "广州海珠区发布“Token贷”及“词元八条”",
+      "summary": "广州市海珠区率先搭建词元经济工具箱，发布“Token贷”和“词元八条”政策。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE54cjF2dnBLQmUyek13Q3B3eWFBOFp2VzNnQ2FlNXhTVDhTTTRlREN6QVpoS1pMZVE3bzhYMFpUeGhaWXdScXFQNGNpeXFnandkVlRGTTI1WHUzcWc3MEE?oc=5",
+      "published_at": "2026-08-15"
+    },
+    {
+      "id": "NEWS-313858988152EE",
+      "title": "粤车南下验车中心持续拓展覆盖湾区九市",
+      "summary": "粤车南下验车中心服务范围持续扩大，已覆盖粤港澳大湾区九个内地城市。",
+      "category": "市场/产品类",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE14MUZHSUR0UXhvRnRkY05lRVc2T3ozYWpKbnU1dXJ5cFllYkdwM3FCYV81bWEwZW5sZjR5STNJNUlnYlNVRnJJSEVFUnF0NEg3RWotNkV5ZS01Tnd4UHQyMDZDYVRDUFJtOGhRMkRiYzhicWR3WXo0?oc=5",
+      "published_at": "2026-08-15"
+    },
+    {
+      "id": "NEWS-F72A73AB64FB34",
+      "title": "香港中文大学研发AI气象预报系统“风乌”",
+      "summary": "香港中文大学研发名为“风乌”的AI气象预报系统，旨在提升极端天气预测的准确度和时效性。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9OY2VOel9RUUw2azhrX0xuRHVFMnc5RUhHUFpqTkh4aWl2VnNsME5TVFU3TzBZZDNRYTNMOElIakwyemNhMDB5Qi01Ung1eEFUem9IMFBHVEdUTHo2UHJ6SlNpdXFoYVlsZnlONEFOZzI2RFNNQXh3?oc=5",
+      "published_at": "2026-08-15"
+    },
+    {
+      "id": "NEWS-C9ADADDEFEBE7B",
+      "title": "数码港主席陈细明：扩建后写字楼半数租出，盼提供更多AI算力",
+      "summary": "数码港主席陈细明表示扩建后写字楼已有一半租出，并期望未来能提供更多AI算力。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMimwNBVV95cUxPQnNjS1pkUmsyejRvT2N0X0NZNmVVM0JHMjU2clVUc2Y1MkJfcmluRU5XLWdiSFlEUDBkQzJWRG14VVlTR1FKTlV3NE50N2NCcDVNMlBiR2I1aGRJOXlySUtKaWpHWkRHMEgtMWRwWUdIN3I5YzRmWEtsTnViLUZBU042TzJleU5UbkVZSWl6YUp6enFibmg5UFlPamFUYjZrN1VjVlVOV21yMk5MaWpfYjgwSE9RVll0ZDF1QlM0WV9mRFBkZWJIZGpjSFhHbjBSVDkxVGp5WnVNdmpGQ2Y5RGhoTVhXZi1kamhjY1djelZQSXFPN0ppTFNseXNTM3VkbUF5TTMtNXp6eDJCdHM2cGNkYzVvcjJUNWtiOWZHNk1uV19aT3VEWjdWV0ZUS0dUM21mYnFFWUFPSWZsS1VHSEp3Zm8yckVyWDl0Q0lVTzVXQVk1UXAtVmlydEJsaUlnVzhNNk54ZVBQSlhTcEJOOHRJWEtwVVM0MEpIajNYV01fVTN4V1pFNmpkNDFnVFUxMll6NUR0RXNfYkk?oc=5",
+      "published_at": "2026-08-15"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "41cabb2e4c42d035f1c433f7733ae92fdd62520f24c09b47fe60fe1acc23cd74"
+  "site_version": "59f639d37d71364dd848c7adddc5c9d1b8c24f2a215efad7d7919fd2f3d7eb77"
 }
