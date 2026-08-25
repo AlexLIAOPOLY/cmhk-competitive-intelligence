@@ -276,7 +276,7 @@ def _finalize_refresh_task(
         ok=ok,
         duration_ms=int(result.get("total_duration_ms") or result.get("duration_ms") or 0),
         progress_detail=detail,
-        failure_stage="" if ok else "executive_intelligence_refresh",
+        failure_stage="" if ok else str(result.get("failure_stage") or "executive_intelligence_refresh"),
         summary={
             "attempts": attempts,
             "agent_run_id": result.get("agent_run_id", ""),
@@ -285,6 +285,9 @@ def _finalize_refresh_task(
             "notification_policy": "local_log_only",
             "model_analysis": result.get("model_analysis", {}),
             "pages_publish": result.get("pages_publish", {}),
+            "feishu_detail_log": result.get("feishu_detail_log", {}),
+            "failure_stage": result.get("failure_stage", ""),
+            "overview_source_recrawl": result.get("overview_source_recrawl", {}),
         },
     )
 
@@ -4850,6 +4853,9 @@ def run_pipeline(
             )
         except Exception as exc:
             state["feishu_detail_log"] = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+            state["ok"] = False
+            state["status"] = "failed_feishu_detail_log"
+            state["failure_stage"] = "four_database_feishu_log"
             _task_event(task_run_id, "飞书四库爬虫明细日志", f"详细日志写入失败：{exc}", level="critical")
     _atomic_write_json(STATE_PATH, state)
     _append_log(f"done status={state['status']} duration_ms={state['duration_ms']}")
@@ -4914,6 +4920,8 @@ def run_pipeline_with_recovery(
             task_run_id=task_run_id,
             attempt=attempt,
         )
+        if result.get("status") == "failed_feishu_detail_log":
+            break
         if result.get("ok") or result.get("skipped"):
             break
         if attempt < attempts_limit:
@@ -4960,7 +4968,14 @@ def run_pipeline_with_recovery(
             )
     else:
         failed = "、".join(DOMAIN_LABELS.get(item, item) for item in result.get("failed_domains") or [])
-        detail = f"连续 {attempts} 次未通过，失败范围：{failed or result.get('error') or '观察结论'}；旧数据已保留。"
+        if result.get("failure_stage") == "four_database_feishu_log":
+            log_error = str((result.get("feishu_detail_log") or {}).get("error") or "未取得写后回读证据")
+            detail = (
+                "四库、AI洞察与页面阶段已完成，但飞书“四库爬虫明细日志”未通过写后回读，"
+                f"本轮按失败归档并触发预警；错误：{log_error}；本地完整来源审计仍保留。"
+            )
+        else:
+            detail = f"连续 {attempts} 次未通过，失败范围：{failed or result.get('error') or '观察结论'}；旧数据已保留。"
     result["notification_policy"] = "local_log_only"
     _finalize_refresh_task(
         task_run_id,

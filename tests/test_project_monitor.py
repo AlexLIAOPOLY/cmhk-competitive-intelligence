@@ -635,6 +635,7 @@ class ProjectMonitorTests(unittest.TestCase):
             {
                 "crawl",
                 "strategic-news",
+                "four-database-source-discovery",
                 "executive-intelligence-refresh",
                 "weekly-report",
                 "carrier-performance",
@@ -695,6 +696,57 @@ class ProjectMonitorTests(unittest.TestCase):
         issue = next(item for item in issues if item["condition_key"] == "crawl-task-failed:run-1")
         self.assertEqual(issue["severity"], "P1")
         self.assertIn("飞书同步", issue["error"])
+
+    def test_four_database_feishu_log_failure_is_alerted_with_audit_evidence(self):
+        path = self.root / "agent_knowledge" / "crawl_run_logs" / "index.json"
+        path.write_text(json.dumps([{
+            "crawl_run_id": "four-db-log-failed",
+            "task_kind": "executive-intelligence-refresh",
+            "trigger": "四库与观察结论自动更新",
+            "run_status": "failed",
+            "failure_stage": "four_database_feishu_log",
+            "started_at_hkt": "2026-08-16T03:00:00+08:00",
+            "completed_at_hkt": "2026-08-16T03:20:00+08:00",
+            "progress_detail": "四库与页面已完成，但飞书日志写后回读失败",
+            "operational_summary": {
+                "feishu_detail_log": {"ok": False, "error": "readback mismatch", "written": 602, "readback_verified": False},
+                "overview_source_recrawl": {"path": "agent_knowledge/source_audit.json"},
+            },
+            "local_files": {"stream_log": "agent_knowledge/log.jsonl"},
+        }]))
+
+        issue = next(item for item in self._monitor().collect_issues() if item["condition_key"] == "crawl-task-failed:four-db-log-failed")
+
+        self.assertEqual(issue["severity"], "P2")
+        self.assertIn("feishu_log_error=readback mismatch", issue["evidence"])
+        self.assertIn("readback_verified=False", " ".join(issue["evidence"]))
+        self.assertTrue(any("只补写缺失日志" in item for item in issue["suggestions"]))
+
+    def test_four_database_log_recovery_requires_positive_event_id_readback(self):
+        path = self.root / "agent_knowledge" / "crawl_run_logs" / "index.json"
+        record = {
+            "component": "executive-intelligence-refresh",
+            "occurred_at_hkt": "2026-08-16T03:20:00+08:00",
+        }
+        run = {
+            "crawl_run_id": "four-db-log-recovered",
+            "task_kind": "executive-intelligence-refresh",
+            "run_status": "completed",
+            "completed_at_hkt": "2026-08-16T04:20:00+08:00",
+            "operational_summary": {
+                "feishu_detail_log": {"ok": True, "written": 603, "row_start": 672, "row_end": 1274, "readback_verified": False},
+            },
+        }
+        path.write_text(json.dumps([run]))
+        monitor = self._monitor()
+        self.assertEqual(monitor._four_database_log_recovery_evidence(record), [])
+        run["operational_summary"]["feishu_detail_log"]["readback_verified"] = True
+        path.write_text(json.dumps([run]))
+
+        evidence = monitor._four_database_log_recovery_evidence(record)
+
+        self.assertTrue(any("readback_verified=true" in item for item in evidence))
+        self.assertTrue(any("672-1274" in item for item in evidence))
 
     def test_newer_success_supersedes_older_failed_crawl(self):
         path = self.root / "agent_knowledge" / "crawl_run_logs" / "index.json"

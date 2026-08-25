@@ -37,12 +37,15 @@ class FourDatabaseCrawlSheetTests(unittest.TestCase):
 
     def test_append_uses_next_real_data_row_not_physical_sheet_size(self) -> None:
         calls = []
+        row = sheet._row(run_id="r1", stage="测试", action="真实事件", discriminator="1")
 
         def fake_run(args, *, input_text=""):
             calls.append((args, input_text))
             if "+workbook-info" in args:
                 return {"ok": True, "data": {"sheets": [{"sheet_name": sheet.SHEET_TITLE, "sheet_id": "s1"}]}}
             if "+csv-get" in args:
+                if "--range" in args:
+                    return {"ok": True, "data": {"annotated_csv": f"[row=672] {row['事件ID']}"}}
                 return {"ok": True, "data": {"current_region": "A1:Q671"}}
             return {"ok": True, "data": {}}
 
@@ -50,13 +53,32 @@ class FourDatabaseCrawlSheetTests(unittest.TestCase):
              mock.patch.object(sheet, "STATE_PATH", Path(temp_dir) / "state.json"), \
              mock.patch.object(sheet, "LOCK_PATH", Path(temp_dir) / "write.lock"), \
              mock.patch.object(sheet, "_run", side_effect=fake_run):
-            result = sheet.append_rows([sheet._row(run_id="r1", stage="测试", action="真实事件", discriminator="1")])
+            result = sheet.append_rows([row])
         self.assertEqual(result["written"], 1)
+        self.assertTrue(result["readback_verified"])
+        self.assertEqual((result["row_start"], result["row_end"]), (672, 672))
         table_call = next((args, body) for args, body in calls if "+table-put" in args)
         payload = __import__("json").loads(table_call[1])
         self.assertEqual(payload["sheets"][0]["start_cell"], "A672")
         self.assertEqual(payload["sheets"][0]["mode"], "overwrite")
         self.assertFalse(payload["sheets"][0]["header"])
+
+    def test_duplicate_events_reuse_prior_positive_readback(self) -> None:
+        row = sheet._row(run_id="r2", stage="测试", action="重复保护", discriminator="1")
+        with TemporaryDirectory() as temp_dir:
+            state_path = Path(temp_dir) / "state.json"
+            state_path.write_text(__import__("json").dumps({
+                "event_ids": [row["事件ID"]], "last_readback_verified": True,
+                "last_row_start": 20, "last_row_end": 20,
+            }))
+            with mock.patch.object(sheet, "STATE_PATH", state_path), \
+                 mock.patch.object(sheet, "LOCK_PATH", Path(temp_dir) / "write.lock"), \
+                 mock.patch.object(sheet, "_run") as run:
+                result = sheet.append_rows([row])
+        run.assert_not_called()
+        self.assertEqual(result["skipped"], 1)
+        self.assertTrue(result["readback_verified"])
+        self.assertEqual(result["readback_reason"], "previously_verified_event_ids")
 
 
 if __name__ == "__main__":

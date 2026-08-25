@@ -172,7 +172,12 @@ def append_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
             logged = set(state.get("event_ids") or [])
             pending = [row for row in rows if row["事件ID"] not in logged]
             if not pending:
-                return {"ok": True, "written": 0, "skipped": len(rows), "sheet_title": SHEET_TITLE}
+                return {
+                    "ok": True, "written": 0, "skipped": len(rows), "sheet_title": SHEET_TITLE,
+                    "row_start": state.get("last_row_start"), "row_end": state.get("last_row_end"),
+                    "readback_verified": bool(state.get("last_readback_verified")),
+                    "readback_reason": "previously_verified_event_ids",
+                }
             info = _run(["sheets", "+workbook-info", "--spreadsheet-token", SPREADSHEET_TOKEN])
             sheet = next((item for item in _sheet_items(info) if _text(item.get("sheet_name") or item.get("title")) == SHEET_TITLE), None)
             created = sheet is None
@@ -213,16 +218,40 @@ def append_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
                 }]}
                 _run(["sheets", "+styles-put", "--spreadsheet-token", SPREADSHEET_TOKEN, "--styles", "-"],
                      input_text=json.dumps(styles, ensure_ascii=False))
+            start_row = int(re.search(r"\d+", start_cell).group())
+            data_start_row = start_row + (1 if created else 0)
+            data_end_row = data_start_row + len(pending) - 1
+            first_readback = _run([
+                "sheets", "+csv-get", "--spreadsheet-token", SPREADSHEET_TOKEN,
+                "--sheet-name", SHEET_TITLE, "--range", f"B{data_start_row}:B{data_start_row}",
+            ])
+            last_readback = _run([
+                "sheets", "+csv-get", "--spreadsheet-token", SPREADSHEET_TOKEN,
+                "--sheet-name", SHEET_TITLE, "--range", f"B{data_end_row}:B{data_end_row}",
+            ])
+            first_text = _text((first_readback.get("data") or {}).get("annotated_csv"), 5000)
+            last_text = _text((last_readback.get("data") or {}).get("annotated_csv"), 5000)
+            readback_verified = pending[0]["事件ID"] in first_text and pending[-1]["事件ID"] in last_text
+            if not readback_verified:
+                raise RuntimeError(
+                    f"飞书明细日志写入后回读不一致：range=B{data_start_row}:B{data_end_row}; "
+                    f"first={pending[0]['事件ID']}; last={pending[-1]['事件ID']}"
+                )
             logged.update(row["事件ID"] for row in pending)
             state.update({
                 "sheet_title": SHEET_TITLE, "event_ids": sorted(logged)[-20000:],
                 "last_written_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"), "last_written": len(pending),
+                "last_readback_verified": True, "last_row_start": data_start_row, "last_row_end": data_end_row,
             })
             STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
             temporary = STATE_PATH.with_suffix(".tmp")
             temporary.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
             temporary.replace(STATE_PATH)
-            return {"ok": True, "written": len(pending), "skipped": len(rows) - len(pending), "created": created, "sheet_title": SHEET_TITLE}
+            return {
+                "ok": True, "written": len(pending), "skipped": len(rows) - len(pending), "created": created,
+                "sheet_title": SHEET_TITLE, "sheet_url": f"https://cmhk-try.feishu.cn/sheets/{SPREADSHEET_TOKEN}",
+                "row_start": data_start_row, "row_end": data_end_row, "readback_verified": True,
+            }
         finally:
             fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 

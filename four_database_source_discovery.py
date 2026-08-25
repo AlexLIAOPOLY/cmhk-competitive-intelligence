@@ -137,9 +137,17 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
         _write_json(OUTPUT, payload)
         append_crawl_run_event(log_path, {"type": "source_discovery", **{key: payload[key] for key in ("query_count", "search_result_count", "signal_count", "domains")}})
         append_crawl_run_event(log_path, {"type": "feishu_detail_log", **payload["feishu_detail_log"]})
+        log_ok = bool((payload.get("feishu_detail_log") or {}).get("readback_verified"))
         detail = f"01:00资料搜索完成：{payload['query_count']}个查询、{payload['search_result_count']}条搜索结果、前一日两次任务参考{payload['previous_day_reference_count']}条、{payload['signal_count']}条四库线索；已交接03:00官方来源复核。"
-        finalize_operational_crawl_run(run_id, ok=True, duration_ms=round((time.monotonic() - started) * 1000), progress_detail=detail, summary={**payload, "audit_path": str(OUTPUT)})
-        return {"ok": True, **payload, "audit_path": str(OUTPUT)}
+        if not log_ok:
+            detail += f" 飞书四库爬虫明细日志写入或回读失败：{(payload.get('feishu_detail_log') or {}).get('error') or '未取得正向回读证据'}。"
+        payload["ok"] = log_ok
+        _write_json(OUTPUT, payload)
+        finalize_operational_crawl_run(
+            run_id, ok=log_ok, duration_ms=round((time.monotonic() - started) * 1000), progress_detail=detail,
+            failure_stage="" if log_ok else "four_database_feishu_log", summary={**payload, "audit_path": str(OUTPUT)},
+        )
+        return {**payload, "audit_path": str(OUTPUT)}
     except Exception as exc:
         detail = f"01:00四库资料搜索失败：{type(exc).__name__}: {exc}"
         append_crawl_run_event(log_path, {"type": "done", "ok": False, "error": detail})

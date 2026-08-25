@@ -644,6 +644,10 @@ class ProjectMonitor:
                 "使用无代理环境检查飞书认证、DNS、表格权限和目标字段。",
                 "先读回任务归档确认是否已写入，避免重复写入或重复通知。",
             ],
+            "four_database_feishu_log": [
+                "检查飞书“四库爬虫明细日志”的认证、权限、DNS、真实数据末行和写后回读范围。",
+                "先用事件ID回读确认是否已经写入；只补写缺失日志，禁止重跑已完成的官方来源抓取、AI洞察或页面发布。",
+            ],
             "agent_review": [
                 "检查 Agent run_id、节点完整性、超时和待恢复状态。",
                 "保留抓取结果，只恢复审核阶段，不重新触发已完成抓取。",
@@ -732,6 +736,8 @@ class ProjectMonitor:
                     continue
                 if timestamp and latest_success_by_kind.get(kind) and timestamp < latest_success_by_kind[kind]:
                     continue
+                operational_summary = run.get("operational_summary") if isinstance(run.get("operational_summary"), dict) else {}
+                feishu_detail_log = operational_summary.get("feishu_detail_log") if isinstance(operational_summary.get("feishu_detail_log"), dict) else {}
                 issues.append(
                     self._issue(
                         condition_key=f"crawl-task-failed:{run_id}",
@@ -749,6 +755,9 @@ class ProjectMonitor:
                         evidence=[
                             f"crawl_run_id={run_id}",
                             f"failure_stage={stage or '-'}",
+                            f"feishu_log_error={feishu_detail_log.get('error') or '-'}",
+                            f"feishu_log_written={feishu_detail_log.get('written', '-')}; readback_verified={feishu_detail_log.get('readback_verified', False)}",
+                            f"local_source_audit={(operational_summary.get('overview_source_recrawl') or {}).get('path') if isinstance(operational_summary.get('overview_source_recrawl'), dict) else '-'}",
                             str((run.get("local_files") or {}).get("stream_log") or ""),
                         ],
                     )
@@ -1603,6 +1612,30 @@ class ProjectMonitor:
             "ai_status": "pending",
         }
 
+    def _four_database_log_recovery_evidence(self, record: dict[str, Any]) -> list[str]:
+        occurred = _parse_datetime(record.get("occurred_at_hkt")) or _parse_datetime(record.get("first_seen_at_hkt"))
+        component = str(record.get("component") or "")
+        path = self.runtime_root / "agent_knowledge" / "crawl_run_logs" / "index.json"
+        payload = _read_json(path, [])
+        runs = payload if isinstance(payload, list) else []
+        for run in sorted(runs, key=lambda item: str(item.get("completed_at_hkt") or ""), reverse=True):
+            if not isinstance(run, dict) or str(run.get("task_kind") or "") != component:
+                continue
+            completed = _parse_datetime(run.get("completed_at_hkt"))
+            if str(run.get("run_status") or "") != "completed" or not completed or (occurred and completed <= occurred):
+                continue
+            summary = run.get("operational_summary") if isinstance(run.get("operational_summary"), dict) else {}
+            log = summary.get("feishu_detail_log") if isinstance(summary.get("feishu_detail_log"), dict) else {}
+            if not (log.get("ok") and log.get("readback_verified")):
+                continue
+            return [
+                f"后续运行 crawl_run_id={run.get('crawl_run_id')} 于 {_iso(completed)} 完成。",
+                f"飞书子表={log.get('sheet_title') or '四库爬虫明细日志'}；写入{log.get('written', 0)}条；"
+                f"回读行={log.get('row_start', '-')}-{log.get('row_end', '-')}。",
+                "readback_verified=true；以首尾事件ID正向回读为恢复证据。",
+            ]
+        return []
+
     def _upsert_incidents(self, issues: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         now_text = _iso(self.now())
         incidents = self.state.setdefault("incidents", {})
@@ -1759,6 +1792,39 @@ class ProjectMonitor:
                         },
                     )
                     continue
+            if key.startswith("crawl-task-failed:") and any(
+                "failure_stage=four_database_feishu_log" in str(item)
+                for item in record.get("evidence") or []
+            ):
+                recovery_evidence = self._four_database_log_recovery_evidence(record)
+                if recovery_evidence:
+                    self._mark_resolved(
+                        record,
+                        resolution_type="normal_task_progress",
+                        reason="four_database_feishu_log_readback_verified",
+                        evidence=recovery_evidence,
+                    )
+                    conditions.pop(key, None)
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "incident_resolved_local_only",
+                            "at_hkt": now_text,
+                            "incident_id": record.get("incident_id"),
+                            "condition_key": key,
+                            "reason": "four_database_feishu_log_readback_verified",
+                        },
+                    )
+                else:
+                    record["status"] = "recovery_pending"
+                    record["resolution"] = {
+                        "status": "awaiting_evidence",
+                        "type": "unverified",
+                        "evidence": ["告警条件本轮未出现，但尚无后续飞书首尾事件ID写后回读证据。"],
+                        "action": {"type": "none", "performed": False},
+                    }
+                    conditions.pop(key, None)
+                continue
             if key.startswith(STATEFUL_CONDITION_PREFIXES):
                 self._mark_resolved(
                     record,
