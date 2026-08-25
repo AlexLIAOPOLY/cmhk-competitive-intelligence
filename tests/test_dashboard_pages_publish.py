@@ -197,6 +197,16 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("operatorProfiles", script)
         self.assertIn("comparison-metric-grid", script)
         self.assertIn("comparison-metric-card", script)
+        self.assertIn("comparisonCardThemes", script)
+        for card_theme in (
+            "base-stations", "ai-compute", "mobile-service", "home-broadband",
+            "enterprise-service", "retail-stores", "mobile-app", "financial-scale",
+            "ebitda-margin",
+        ):
+            self.assertIn(f'"{card_theme}"', script)
+            self.assertTrue(
+                (publisher.STATIC_DIR / "assets" / "executive-dashboard" / "metric-card-backgrounds" / f"{card_theme}-v1.webp").is_file()
+            )
         self.assertIn('title: "基站总数（4G / 5G）"', script)
         self.assertIn('sharedChart: "grouped-column"', script)
         self.assertIn('chartTypes: ["column", "bar", "column", "lollipop", "column", "column"]', script)
@@ -244,6 +254,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("font-size: clamp(36px, 2.35vw, 58px)", style)
         self.assertIn("font-size: clamp(23px, 1.5vw, 37px)", style)
         self.assertIn(".comparison-metric-grid-business .comparison-metric-card", style)
+        self.assertIn(".comparison-metric-card::before", style)
+        self.assertIn("opacity: .38", style)
+        self.assertIn('data-card-theme="ai-compute"', style)
         self.assertIn(".comparison-bars { width: 100%; height: 100%", style)
         self.assertIn(".comparison-mini-charts { height: 100%; grid-template-columns: 1fr", style)
         self.assertIn(".chart-interactive-mark { outline: none; pointer-events: none; }", style)
@@ -575,6 +588,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertTrue((first / "vendor" / "echarts-LICENSE.txt").is_file())
             self.assertTrue((first / "fonts" / "SmileySans-Oblique.ttf.woff2").is_file())
             self.assertTrue((first / "fonts" / "SmileySans-OFL.txt").is_file())
+            self.assertTrue(
+                (first / "assets" / "executive-dashboard" / "metric-card-backgrounds" / "ai-compute-v1.webp").is_file()
+            )
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)

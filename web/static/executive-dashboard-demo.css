@@ -370,6 +370,22 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 
 /* Chart-only comparison: values are labeled directly on marks; no duplicate tables. */
 .comparison-metric-card { position: relative; isolation: isolate; grid-template-rows: 40px minmax(0, 1fr); transition: border-color 160ms ease, background 160ms ease; }
+.comparison-metric-card::before,
+.comparison-metric-card::after { content: ""; position: absolute; inset: 40px 0 0; z-index: 0; pointer-events: none; }
+.comparison-metric-card::before { background: var(--metric-card-bg) center / cover no-repeat; opacity: .38; filter: saturate(.82) contrast(.94) brightness(1.18); }
+.comparison-metric-card::after { background: linear-gradient(90deg, rgba(5, 18, 30, .72) 0%, rgba(5, 18, 30, .44) 48%, rgba(5, 18, 30, .18) 100%); }
+.comparison-metric-card[data-card-theme="base-stations"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/base-stations-v1.webp"); }
+.comparison-metric-card[data-card-theme="ai-compute"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/ai-compute-v1.webp"); }
+.comparison-metric-card[data-card-theme="mobile-service"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/mobile-service-v1.webp"); }
+.comparison-metric-card[data-card-theme="home-broadband"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/home-broadband-v1.webp"); }
+.comparison-metric-card[data-card-theme="enterprise-service"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/enterprise-service-v1.webp"); }
+.comparison-metric-card[data-card-theme="retail-stores"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/retail-stores-v1.webp"); }
+.comparison-metric-card[data-card-theme="mobile-app"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/mobile-app-v1.webp"); }
+.comparison-metric-card[data-card-theme="financial-scale"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/financial-scale-v1.webp"); }
+.comparison-metric-card[data-card-theme="ebitda-margin"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/ebitda-margin-v1.webp"); }
+.comparison-metric-card[data-card-theme="base-stations"]::before,
+.comparison-metric-card[data-card-theme="ai-compute"]::before,
+.comparison-metric-card[data-card-theme="enterprise-service"]::before { background-position: right center; }
 .comparison-metric-card > header,
 .comparison-chart-only { position: relative; z-index: 1; }
 .comparison-metric-card:hover { border-color: rgba(125, 181, 205, .24); background: rgba(8, 25, 39, .82); }
