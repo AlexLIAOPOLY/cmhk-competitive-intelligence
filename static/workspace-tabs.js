@@ -66,10 +66,17 @@
   let competitorParticleFrame = 0;
 
   function animateCompetitorOptionParticles(elements, { mode = "scatter", onComplete } = {}) {
-    const targets = [...elements].filter((element) => {
-      const rect = element.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
-    });
+    const targets = [...elements].map((element) => {
+      const rect = (mode === "assemble" ? element.querySelector(":scope > b") : element)?.getBoundingClientRect();
+      if (!rect) return null;
+      const builderClip = element.closest(".competitor-builder")?.getBoundingClientRect() || rect;
+      const fieldsetClip = element.closest("fieldset")?.getBoundingClientRect() || builderClip;
+      const left = Math.max(rect.left, builderClip.left, fieldsetClip.left, 0);
+      const right = Math.min(rect.right, builderClip.right, fieldsetClip.right, window.innerWidth);
+      const top = Math.max(rect.top, builderClip.top, fieldsetClip.top, 0);
+      const bottom = Math.min(rect.bottom, builderClip.bottom, fieldsetClip.bottom, window.innerHeight);
+      return { left, right, top, bottom, width: right - left, height: bottom - top };
+    }).filter((rect) => rect && rect.width > 1 && rect.height > 1);
     if (!targets.length || motionPreference.matches) {
       onComplete?.();
       return;
@@ -93,9 +100,10 @@
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     const colors = ["#66d9ee", "#42a9cf", "#86f0d1", "#d9fbff"];
     const mobile = window.innerWidth < 620;
-    const particles = targets.flatMap((element, elementIndex) => {
-      const rect = element.getBoundingClientRect();
-      const count = Math.max(14, Math.min(mobile ? 24 : 34, Math.round(rect.width * rect.height / (mobile ? 105 : 82))));
+    const particles = targets.flatMap((rect, elementIndex) => {
+      const count = mobile
+        ? Math.max(8, Math.min(14, Math.round(rect.width * rect.height / 150)))
+        : Math.max(14, Math.min(34, Math.round(rect.width * rect.height / 82)));
       return Array.from({ length: count }, (_item, index) => {
         const targetX = rect.left + Math.random() * rect.width;
         const targetY = rect.top + Math.random() * rect.height;
@@ -494,12 +502,12 @@
         return;
       }
       panel.querySelectorAll("[data-competitor-company]").forEach((item) => { item.disabled = true; });
+      animateCompetitorOptionParticles(disappearing, { mode: "scatter", onComplete: () => renderCompetitor() });
       disappearing.forEach((item) => item.classList.add("is-disappearing"));
       panel.querySelectorAll(".competitor-option-group").forEach((group) => {
         const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
         if (!remaining) group.classList.add("is-disappearing");
       });
-      animateCompetitorOptionParticles(disappearing, { mode: "scatter", onComplete: () => renderCompetitor() });
     }));
     panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => { state.competitorSelection.metric = event.target.value; renderCompetitor(); });
     panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitor(); }));
