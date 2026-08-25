@@ -2115,7 +2115,7 @@
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
-      ["reviewSheet", "review", () => fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`)))],
+      ["reviewSheet", "review", () => window.CMHKSyncNewsReviewSheet ? window.CMHKSyncNewsReviewSheet() : fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`)))],
       ["newsFallback", "news", () => fetch("/static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {})],
       ["workbench", "competitor", () => fetch("/static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
     ];

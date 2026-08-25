@@ -51,9 +51,9 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=23', INDEX)
+        self.assertIn('/static/organization-admin.js?v=24', INDEX)
         self.assertIn('/static/organization-admin.css?v=23', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=100', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=101', INDEX)
         self.assertIn('/static/app.js?v=298', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -569,7 +569,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=100', INDEX)
+        self.assertIn('workspace-tabs.js?v=101', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=109', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)

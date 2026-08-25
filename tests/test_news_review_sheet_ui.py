@@ -139,6 +139,8 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn('<th>来源</th>', organization_script)
         self.assertIn('label: "飞书表格"', organization_script)
         self.assertIn('label: "本地 APP"', organization_script)
+        self.assertIn("CMHKNewsReviewSheetSyncPromise", organization_script)
+        self.assertIn("window.CMHKSyncNewsReviewSheet", organization_script)
         self.assertIn("organization-audit-source.is-feishu", organization_css)
 
 
