@@ -10,7 +10,8 @@ STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf
 class WorkspaceBrandLogoTests(unittest.TestCase):
     def test_china_mobile_logo_stays_visible_in_every_workspace(self):
         self.assertIn('class="brand-mark" href="/"', INDEX)
-        self.assertIn('src="/static/assets/china-mobile-blue-logo.png"', INDEX)
+        self.assertIn('src="/static/assets/china-mobile-blue-logo.png?v=2"', INDEX)
+        self.assertIn('alt="中國移動 China Mobile"', INDEX)
         self.assertRegex(INDEX, r'/static/workspace-tabs\.css\?v=\d+')
         self.assertIn(
             ".dashboard-page:not(.workspace-dashboard-active) .brand-mark { visibility: visible !important; }",

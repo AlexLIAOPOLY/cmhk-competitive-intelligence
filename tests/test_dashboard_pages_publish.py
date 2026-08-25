@@ -576,7 +576,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
             self.assertIn('class="brand" href="./" aria-label="返回主页"', html)
             self.assertIn(
-                'src="./assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile"',
+                'src="./assets/china-mobile-blue-logo.png?v=2" alt="中國移動 China Mobile"',
                 html,
             )
             self.assertIn(".brand:focus-visible", style)

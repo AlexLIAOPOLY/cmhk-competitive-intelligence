@@ -7848,12 +7848,12 @@ document.addEventListener("keydown", (event) => {
   const selectedFocusByDomain = new Map();
   const selectedFinancialMetricByDomain = new Map();
   const financialMetricDefinitions = [
-    ["revenue", "收入对比", "HK$m", "columns"],
-    ["net_profit", "净利润对比", "HK$m", "ranking"],
-    ["ebitda", "EBITDA", "HK$m", "lollipop"],
-    ["capital_expenditure", "资本开支", "HK$m", "disclosure"],
+    ["revenue", "收入对比", "亿港元", "columns"],
+    ["net_profit", "净利润对比", "亿港元", "ranking"],
+    ["ebitda", "EBITDA", "亿港元", "lollipop"],
+    ["capital_expenditure", "资本开支", "亿港元", "disclosure"],
     ["dividend", "派息", "港仙", "dots"],
-    ["5g_customers", "5G用户", "百万户", "disclosure"],
+    ["5g_customers", "5G用户", "万户", "disclosure"],
   ];
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
@@ -7862,8 +7862,81 @@ document.addEventListener("keydown", (event) => {
   let focusRotationTimer = null;
   let payloadSignature = "";
 
-  function safe(value) {
+  function compactChineseNumber(value) {
+    return new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 3 }).format(value);
+  }
+
+  function localizedMetricParts(value, unit = "") {
+    const normalizedUnit = String(unit || "").trim();
+    const rawValue = String(value == null ? "" : value).trim();
+    const numericMatch = rawValue.match(/^([><≈~]?\s*)(-?[\d,]+(?:\.\d+)?)$/);
+    if (!numericMatch) return { value, unit: normalizedUnit };
+    const prefix = numericMatch[1] || "";
+    const numeric = Number(numericMatch[2].replace(/,/g, ""));
+    if (!Number.isFinite(numeric)) return { value, unit: normalizedUnit };
+
+    let scaled = numeric;
+    let displayUnit = normalizedUnit;
+    if (/^(?:百万|百萬)港元$/.test(normalizedUnit) || normalizedUnit === "HK$m") {
+      scaled = numeric / 100;
+      displayUnit = "亿港元";
+    } else if (/^(?:百万|百萬)美元$/.test(normalizedUnit)) {
+      scaled = numeric / 100;
+      displayUnit = "亿美元";
+    } else if (/^(?:百万|百萬)元(?:人民币|人民幣)$/.test(normalizedUnit)) {
+      scaled = numeric / 100;
+      displayUnit = "亿元人民币";
+    } else if (/^(?:百万|百萬)元$/.test(normalizedUnit)) {
+      scaled = numeric / 100;
+      displayUnit = "亿元";
+    } else if (/^(?:十亿|十億)(港元|美元|元)$/.test(normalizedUnit)) {
+      scaled = numeric * 10;
+      displayUnit = `亿${normalizedUnit.replace(/^(?:十亿|十億)/, "")}`;
+    } else {
+      const countMatch = normalizedUnit.match(/^(?:百万|百萬)(户|戶|连接|連接|订阅|訂閱)?$/);
+      if (countMatch) {
+        const suffix = ({ "戶": "户", "連接": "连接", "訂閱": "订阅" })[countMatch[1]] || countMatch[1] || "";
+        const wanValue = numeric * 10;
+        if (Math.abs(wanValue) >= 10000) {
+          scaled = wanValue / 10000;
+          displayUnit = `亿${suffix}`;
+        } else {
+          scaled = wanValue;
+          displayUnit = `万${suffix}`;
+        }
+      }
+    }
+    return { value: `${prefix}${compactChineseNumber(scaled)}`, unit: displayUnit };
+  }
+
+  function localizeChineseMagnitudeText(value) {
     return String(value == null ? "" : value)
+      .replace(/(分别为|分別為)\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*(和|及|与|與|、)\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*(百万港元|百萬港元|百万美元|百萬美元|百万元人民币|百萬元人民幣|百万元|百萬元|十亿美元|十億美元|十亿港元|十億港元|十亿元|十億元|百万户|百萬戶|百万连接|百萬連接|百万订阅|百萬訂閱|百万|百萬)/g, (_, prefix, first, connector, second, unit) => {
+        const firstDisplay = localizedMetricParts(first, unit);
+        const secondDisplay = localizedMetricParts(second, unit);
+        return `${prefix}${firstDisplay.value}${firstDisplay.unit}${connector}${secondDisplay.value}${secondDisplay.unit}`;
+      })
+      .replace(/HK\$\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*million\b/gi, (_, number) => {
+        const display = localizedMetricParts(number, "百万港元");
+        return `${display.value}${display.unit}`;
+      })
+      .replace(/(?:US)?\$\s*([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*million\b/gi, (_, number) => {
+        const display = localizedMetricParts(number, "百万美元");
+        return `${display.value}${display.unit}`;
+      })
+      .replace(/([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s*(百万港元|百萬港元|百万美元|百萬美元|百万元人民币|百萬元人民幣|百万元|百萬元|十亿美元|十億美元|十亿港元|十億港元|十亿元|十億元|百万户|百萬戶|百万连接|百萬連接|百万订阅|百萬訂閱|百万|百萬)/g, (_, number, unit) => {
+        const display = localizedMetricParts(number, unit);
+        return `${display.value}${display.unit}`;
+      })
+      .replace(/([><≈~]?\s*-?[\d,]+(?:\.\d+)?)\s+million(?:\s+(customers?|subscribers?|connections?))?\b/gi, (_, number, suffix = "") => {
+        const translatedSuffix = /connections?/i.test(suffix) ? "连接" : /customers?|subscribers?/i.test(suffix) ? "户" : "";
+        const display = localizedMetricParts(number, `百万${translatedSuffix}`);
+        return `${display.value}${display.unit}`;
+      });
+  }
+
+  function safe(value) {
+    return localizeChineseMagnitudeText(value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -7881,10 +7954,18 @@ document.addEventListener("keydown", (event) => {
     return safe(value);
   }
 
+  function formatMetricValue(value, unit, gapStatus = "") {
+    return formatValue(localizedMetricParts(value, unit).value, gapStatus);
+  }
+
+  function formatMetricUnit(value, unit) {
+    return safe(localizedMetricParts(value, unit).unit);
+  }
+
   function formatItemValue(item) {
     const comparator = String(item?.comparator || "").trim().toLowerCase();
     const prefix = ["≈", "~", "approx"].includes(comparator) ? "约" : "";
-    return `${prefix}${formatValue(item?.value, item?.gap_status)}`;
+    return `${prefix}${formatMetricValue(item?.value, item?.unit, item?.gap_status)}`;
   }
 
   function renderScrollingLabel(value) {
@@ -8011,7 +8092,7 @@ document.addEventListener("keydown", (event) => {
         <ul>${components.slice(0, 6).map((component) => `
           <li class="${component.detail ? "has-detail" : ""}">
             <span>${safe(component.label)}${component.detail ? `<small>${safe(component.detail)}</small>` : ""}</span>
-            ${component.value == null ? "" : `<strong>${formatValue(component.value)}<i>${safe(component.unit)}</i></strong>`}
+            ${component.value == null ? "" : `<strong>${formatMetricValue(component.value, component.unit)}<i>${formatMetricUnit(component.value, component.unit)}</i></strong>`}
           </li>
         `).join("")}</ul>
       </section>
@@ -8073,7 +8154,7 @@ document.addEventListener("keydown", (event) => {
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
-        <strong>${formatValue(entity.value, entity.gap_status)}<i>${safe(entity.unit)}</i></strong>
+        <strong>${formatMetricValue(entity.value, entity.unit, entity.gap_status)}<i>${formatMetricUnit(entity.value, entity.unit)}</i></strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
           ${renderEntityComponents(entity)}
         </div>
@@ -8231,12 +8312,6 @@ document.addEventListener("keydown", (event) => {
         const match = text.match(/-?\d+(?:\.\d+)?/);
         return match ? Number(match[0]) : null;
       };
-      const compactValue = (value) => String(value || "—")
-        .replace(/HK\$\s*/i, "HK$")
-        .replace(/\s+million\b/gi, "m")
-        .replace(/\s+HK\s+cents?\b/gi, "¢")
-        .replace(/\s+/g, " ")
-        .trim();
       const periodCounts = items.reduce((counts, item) => {
         counts[item.period] = (counts[item.period] || 0) + 1;
         return counts;
@@ -8267,13 +8342,16 @@ document.addEventListener("keydown", (event) => {
               ${chartItems.map(({ item, index, value }) => {
                 const hasValue = Number.isFinite(value);
                 const width = hasValue ? Math.max(1.5, Math.abs(value) / chartMax * 100) : 0;
+                const displayValue = ["revenue", "net_profit", "ebitda", "capital_expenditure"].includes(key)
+                  ? localizedMetricParts(value, "百万港元").value
+                  : key === "5g_customers" ? localizedMetricParts(value, "百万户").value : value;
                 return `
                   <button type="button" ${entityAttributes(item, index)}
                     class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${hasValue ? "" : "is-missing"} ${index === selectedIndex ? "is-selected" : ""}"
                     style="--financial-bar-width:${width.toFixed(2)}%;--financial-ratio:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
                     <i aria-hidden="true"><b></b></i>
-                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : chartType === "disclosure" ? "未披露" : "—"}</strong>
+                    <strong>${hasValue ? formatValue(displayValue) : chartType === "disclosure" ? "未披露" : "—"}</strong>
                   </button>
                 `;
               }).join("")}
@@ -8319,7 +8397,7 @@ document.addEventListener("keydown", (event) => {
           <g ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
             <circle cx="${point.x}" cy="${point.y}" r="${radius.toFixed(1)}" />
             <text x="${point.x}" y="${point.y + 25}" text-anchor="middle">${safe(item.name)}</text>
-            <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatValue(item.value, item.gap_status)}${safe(item.unit)}</text>
+            <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatMetricValue(item.value, item.unit, item.gap_status)}${formatMetricUnit(item.value, item.unit)}</text>
           </g>
         `;
       }).join("");
@@ -8334,7 +8412,7 @@ document.addEventListener("keydown", (event) => {
           <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${numeric < 0 ? "is-negative" : "is-positive"} ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
             <i><b style="--viz-size:${size.toFixed(2)}%"></b></i>
-            <strong>${formatValue(item.value, item.gap_status)}${safe(item.unit)}</strong>
+            <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}${formatMetricUnit(item.value, item.unit)}</strong>
           </li>
         `;
       }).join("")}</ul>`;
@@ -8346,7 +8424,7 @@ document.addEventListener("keydown", (event) => {
         const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `
           <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${Number(item.value) < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-            <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
+            <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
             <span>${renderScrollingLabel(item.name)}</span>
           </div>
@@ -8371,7 +8449,7 @@ document.addEventListener("keydown", (event) => {
         const width = hasRange ? Math.max(2, (high - low) / span * 100) : 0;
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${!hasRange ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
           <span>${renderScrollingLabel(item.name)}</span><i>${hasRange ? `<b style="--range-left:${left.toFixed(2)}%;--range-width:${width.toFixed(2)}%"></b>` : "-"}</i>
-          <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
+          <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
     }
@@ -8400,7 +8478,7 @@ document.addEventListener("keydown", (event) => {
             <polyline class="trend-line" points="${coordinates}"></polyline>
             <g class="trend-nodes">${nodes}</g>
           </svg>
-          <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
+          <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
     }
@@ -8409,7 +8487,7 @@ document.addEventListener("keydown", (event) => {
       return `<ul class="intelligence-viz intelligence-viz-disclosure" aria-label="${safe(focus.label)}明细">${items.map((item, index) => `
         <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
           <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
-          <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
+          <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<i>${formatMetricUnit(item.value, item.unit)}</i></strong>
         </li>`).join("")}</ul>`;
     }
 
@@ -8426,7 +8504,7 @@ document.addEventListener("keydown", (event) => {
         let graphic = "";
         if (profile.kind === "coverage") {
           const progress = Math.min(100, numeric);
-          graphic = `<span class="governance-ring" style="--governance-progress:${progress.toFixed(1)}" aria-hidden="true"><i></i><b>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></b></span>`;
+          graphic = `<span class="governance-ring" style="--governance-progress:${progress.toFixed(1)}" aria-hidden="true"><i></i><b>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></b></span>`;
         } else {
           const step = Number(profile.step) || 1;
           const segmentCount = Math.max(1, Math.min(10, Math.ceil(numeric / step)));
@@ -8439,7 +8517,7 @@ document.addEventListener("keydown", (event) => {
         }
         return `<div ${entityAttributes(item, index)} class="intelligence-viz-entity governance-indicator governance-indicator-${safe(profile.kind)} ${index === selectedIndex ? "is-selected" : ""}">
           <span class="governance-indicator-label">${safe(item.name)}</span>
-          <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
+          <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<i>${formatMetricUnit(item.value, item.unit)}</i></strong>
           <div class="governance-indicator-graphic">${graphic}</div>
           <small>${safe(profile.caption)}</small>
         </div>`;
@@ -8449,7 +8527,7 @@ document.addEventListener("keydown", (event) => {
     if (visual === "kpis") return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="${safe(focus.label)}关键指标">${items.map((item, index) => `
       <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}" style="--kpi-index:${index}">
         <span>${renderScrollingLabel(item.name)}</span>
-        <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
+        <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<i>${formatMetricUnit(item.value, item.unit)}</i></strong>
         <small>${safe(item.detail)}</small>
       </div>
     `).join("")}</div>`;
@@ -8459,7 +8537,7 @@ document.addEventListener("keydown", (event) => {
       return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
         <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
         <i><b style="--row-width:${width.toFixed(2)}%"></b></i>
-        <strong>${formatItemValue(item)}<small>${safe(item.unit)}</small></strong>
+        <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
       </li>`;
     }).join("")}</ul>`;
   }
@@ -8483,7 +8561,7 @@ document.addEventListener("keydown", (event) => {
         </span>
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
-          <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
+          <strong>${formatMetricValue(focusMetric.value, focusMetric.unit)}<i>${formatMetricUnit(focusMetric.value, focusMetric.unit)}</i></strong>
           <em>${safe(periodLabel)}</em>
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
@@ -8707,7 +8785,7 @@ document.addEventListener("keydown", (event) => {
       return `
         <li>
           <div><strong>${name}</strong></div>
-          <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value, item.gap_status)} ${safe(item.unit)}</strong></div>
+          <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatMetricValue(item.value, item.unit, item.gap_status)} ${formatMetricUnit(item.value, item.unit)}</strong></div>
           ${item.source_url ? `<a href="${safe(item.source_url)}" target="_self" aria-label="打开${name}来源">来源<span aria-hidden="true">↗</span></a>` : ""}
         </li>
       `;
@@ -8767,7 +8845,7 @@ document.addEventListener("keydown", (event) => {
     drawerBody.innerHTML = `
       <section class="intelligence-detail-lead">
         <span>当前关键结果 · ${safe(domain.metric?.label)}</span>
-        <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
+        <strong>${formatMetricValue(domain.metric?.value, domain.metric?.unit)}<i>${formatMetricUnit(domain.metric?.value, domain.metric?.unit)}</i></strong>
         <p>${safe(domain.insight)}</p>
       </section>
       <div class="intelligence-summary-strip" aria-label="综合渠道覆盖">
