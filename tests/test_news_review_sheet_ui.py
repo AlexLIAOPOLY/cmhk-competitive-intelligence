@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from contextlib import nullcontext
+from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
 import cmhk.intelligence.news_review_sheet as news_review_sheet
+from cmhk.auth.service import AuthService
 import web_app
 
 
@@ -105,6 +108,8 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         html = (web_app.STATIC_DIR / "index.html").read_text(encoding="utf-8")
         script = (web_app.STATIC_DIR / "news-review-sheet.js").read_text(encoding="utf-8")
         css = (web_app.STATIC_DIR / "news-review-sheet.css").read_text(encoding="utf-8")
+        organization_script = (web_app.STATIC_DIR / "organization-admin.js").read_text(encoding="utf-8")
+        organization_css = (web_app.STATIC_DIR / "organization-admin.css").read_text(encoding="utf-8")
 
         self.assertIn('id="openNewsReviewSheetButton"', html)
         self.assertIn('id="newsReviewWorkspace"', html)
@@ -131,6 +136,10 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn(".news-review-status-select.status-accepted", css)
         self.assertIn("reviewerAvatar(row.reviewer)", script)
         self.assertIn("news-review-reviewer", css)
+        self.assertIn('<th>来源</th>', organization_script)
+        self.assertIn('label: "飞书表格"', organization_script)
+        self.assertIn('label: "本地 APP"', organization_script)
+        self.assertIn("organization-audit-source.is-feishu", organization_css)
 
 
 class NewsReviewActorTests(unittest.TestCase):
@@ -161,6 +170,48 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertEqual(result["rows"][0]["reviewer"]["name"], "最新复核人")
         self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
+
+    def test_direct_feishu_decision_is_mirrored_once_and_local_change_is_ignored(self) -> None:
+        def snapshot(status: str) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "updatedAt": "2026-08-25T10:00:00+08:00",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{"rowNumber": 2, "values": sheet_row(status, "待审核", "未同步", "", "", "", "测试新闻")}],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                events = web_app.sync_news_review_sheet_audit(snapshot("接受"))
+                self.assertEqual(len(events), 1)
+                self.assertEqual(events[0]["source"], "feishu_sheet")
+                self.assertEqual(events[0]["actor_name"], "飞书表格协作者")
+                self.assertEqual(events[0]["details"]["before"], "待审核")
+                self.assertEqual(events[0]["details"]["after"], "接受")
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
+                ignored = [{"rowNumber": 2, "columnIndex": 0, "before": "接受", "value": "不接受"}]
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受"), ignored_changes=ignored), [])
+
+    def test_new_sheet_rows_establish_a_baseline_without_false_footprints(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            snapshot = {
+                "sheetId": "sheet-2",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{"rowNumber": 9, "values": sheet_row("接受", "待审核", "已纳入", "", "", "", "新增候选")}],
+            }
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", service.state_dir / "news-review-sheet-audit-state.json"),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot), [])
+                self.assertEqual(service.operation_audit(), [])
 
 
 if __name__ == "__main__":

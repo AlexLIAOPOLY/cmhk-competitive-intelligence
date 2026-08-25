@@ -69,6 +69,8 @@ from cmhk.reporting.operational_pdf import generate_operational_report_pdf, repo
 
 ROOT = Path(__file__).resolve().parent
 AUTH = AuthService(ROOT)
+NEWS_REVIEW_AUDIT_STATE_PATH = AUTH.state_dir / "news-review-sheet-audit-state.json"
+NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
@@ -388,7 +390,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "只输出三行简体中文，每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。只基于输入判断趋势、位置和业务意义；保留比较符；不得补数、使用Markdown或引用外部知识。"},
+            {"role": "system", "content": "只输出三行简体中文，每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。只基于输入判断趋势、位置和业务意义；保留比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
             {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,
@@ -3863,6 +3865,98 @@ def attach_news_review_actors(snapshot: dict) -> dict:
     return snapshot
 
 
+def sync_news_review_sheet_audit(
+    snapshot: dict,
+    *,
+    ignored_changes: list[dict] | None = None,
+) -> list[dict]:
+    """Mirror direct Feishu review decisions into the administrator footprint."""
+    headers = snapshot.get("headers") if isinstance(snapshot.get("headers"), list) else []
+    sheet_id = str(snapshot.get("sheetId") or "news-review-sheet")
+    ignored: set[tuple[int, int, str, str]] = set()
+    for item in ignored_changes or []:
+        if not isinstance(item, dict):
+            continue
+        try:
+            column_index = int(item.get("columnIndex", -1))
+            row_number = int(item.get("rowNumber") or 0)
+        except (TypeError, ValueError):
+            continue
+        if column_index in {0, 1} and row_number >= 2:
+            ignored.add((
+                row_number,
+                column_index,
+                str(item.get("before") or ""),
+                str(item.get("value") or ""),
+            ))
+
+    current_rows: dict[str, dict] = {}
+    for row in snapshot.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        try:
+            row_number = int(row.get("rowNumber") or 0)
+        except (TypeError, ValueError):
+            continue
+        values = row.get("values") if isinstance(row.get("values"), list) else []
+        if row_number < 2 or len(values) < 2:
+            continue
+        current_rows[str(row_number)] = {
+            "title": str(values[6] if len(values) > 6 else "")[:500],
+            "decisions": [str(values[0] or ""), str(values[1] or "")],
+        }
+
+    events: list[dict] = []
+    with NEWS_REVIEW_AUDIT_LOCK:
+        previous = AUTH._read(NEWS_REVIEW_AUDIT_STATE_PATH, {})
+        previous_rows = previous.get("rows") if isinstance(previous, dict) else {}
+        same_sheet = str(previous.get("sheet_id") or "") == sheet_id if isinstance(previous, dict) else False
+        if same_sheet and isinstance(previous_rows, dict):
+            for row_key, current in current_rows.items():
+                before_row = previous_rows.get(row_key)
+                if not isinstance(before_row, dict) or before_row.get("title") != current.get("title"):
+                    continue
+                before_decisions = before_row.get("decisions") if isinstance(before_row.get("decisions"), list) else []
+                after_decisions = current.get("decisions") or []
+                if len(before_decisions) < 2 or len(after_decisions) < 2:
+                    continue
+                row_number = int(row_key)
+                for column_index in (0, 1):
+                    before = str(before_decisions[column_index] or "")
+                    after = str(after_decisions[column_index] or "")
+                    if before == after or (row_number, column_index, before, after) in ignored:
+                        continue
+                    field_label = str(headers[column_index] if len(headers) > column_index else f"审批列{column_index + 1}")
+                    title = str(current.get("title") or f"飞书审核表第 {row_number} 行")
+                    events.append(AUTH.record_operation(
+                        actor={
+                            "id": "feishu-review-sheet-collaborator",
+                            "name": "飞书表格协作者",
+                            "role": "EXTERNAL",
+                        },
+                        action="news_review.update",
+                        target=sheet_id,
+                        source="feishu_sheet",
+                        details={
+                            "source_label": "飞书表格",
+                            "target_label": title,
+                            "sheet_row": row_number,
+                            "decision_rows": [row_number],
+                            "field": field_label,
+                            "before": before,
+                            "after": after,
+                            "identity_note": "飞书表格单元格回读不提供可靠的具体编辑人身份",
+                        },
+                    ))
+        next_state = {
+            "sheet_id": sheet_id,
+            "rows": current_rows,
+        }
+        if previous != next_state:
+            AUTH._write(NEWS_REVIEW_AUDIT_STATE_PATH, next_state)
+    return events
+
+
 def _task_incident_metadata() -> dict[str, dict]:
     try:
         monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
@@ -4575,7 +4669,9 @@ class AppHandler(BaseHTTPRequestHandler):
             try:
                 from cmhk.intelligence.news_review_sheet import review_sheet_snapshot
 
-                json_response(self, {"ok": True, **attach_news_review_actors(review_sheet_snapshot())})
+                snapshot = review_sheet_snapshot()
+                sync_news_review_sheet_audit(snapshot)
+                json_response(self, {"ok": True, **attach_news_review_actors(snapshot)})
             except Exception as exc:
                 json_response(
                     self,
@@ -5129,6 +5225,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 if not isinstance(changes, list):
                     raise ValueError("changes 必须是数组")
                 result = update_review_sheet_cells(changes)
+                sync_news_review_sheet_audit(result, ignored_changes=changes)
                 decision_rows = sorted({
                     int(item.get("rowNumber") or 0)
                     for item in changes

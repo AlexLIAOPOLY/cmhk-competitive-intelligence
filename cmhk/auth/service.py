@@ -359,6 +359,7 @@ class AuthService:
         action: str,
         target: str = "",
         result: str = "success",
+        source: str = "local_app",
         details: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Append a standalone, administrator-readable operation audit event."""
@@ -374,6 +375,7 @@ class AuthService:
             "action": str(action or "unknown")[:120],
             "target": str(target or "")[:240],
             "result": "failure" if result == "failure" else "success",
+            "source": source if source in {"feishu_sheet", "feishu_card"} else "local_app",
             "details": details if isinstance(details, dict) else {},
         }
         line = json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n"

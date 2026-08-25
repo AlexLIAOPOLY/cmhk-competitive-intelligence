@@ -680,6 +680,7 @@ class CardActionHandler:
             actor={**actor, "feishuOpenId": effective_open_id},
             action="fault.mark_handled",
             target=incident_id,
+            source="feishu_card",
             details={
                 "source": "feishu_card",
                 "handler_name": effective_name,
