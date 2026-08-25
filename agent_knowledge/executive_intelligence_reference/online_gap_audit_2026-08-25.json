@@ -19,6 +19,81 @@
         "https://www.chinaunicom.com.hk/en/ir/highlights.php?data=quarterly"
       ],
       "evidence_note": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。"
+    },
+    {
+      "domain": "cloud",
+      "focus": "revenue",
+      "entity": "中国移动云",
+      "period": "H1 2025",
+      "value": 7869.3,
+      "unit": "百万美元",
+      "original_value": 56100,
+      "original_unit": "人民币百万元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.chinamobileltd.com/en/ir/reports/ir2025.pdf"
+      ],
+      "evidence_note": "中国移动2025年中期报告披露上半年移动云收入561亿元；按本地展示汇率1美元兑7.129元人民币折算为7869.3百万美元。该值仅代表H1 2025，不代替FY2025全年。"
+    },
+    {
+      "domain": "cloud",
+      "focus": "investment",
+      "entity": "AWS",
+      "period": "FY2024",
+      "value": 77658,
+      "unit": "百万美元",
+      "original_value": 77658,
+      "original_unit": "百万美元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1018724/000101872425000004/amzn-20241231.htm"
+      ],
+      "evidence_note": "Amazon集团2024年购置物业及设备现金支出（扣除出售所得及激励）为77658百万美元；这是Amazon母公司集团口径，不是AWS云业务独立资本开支。"
+    },
+    {
+      "domain": "cloud",
+      "focus": "investment",
+      "entity": "Alibaba",
+      "period": "FY2024",
+      "value": 4444,
+      "unit": "百万美元",
+      "original_value": 32087,
+      "original_unit": "人民币百万元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://static.alibabagroup.com/reports/fy2024/ar/ebook/EN/120/index.html"
+      ],
+      "evidence_note": "阿里巴巴FY2024年报披露集团资本开支32087百万元人民币，并在年报中折算为4444百万美元；包含云、移动平台、物流等集团资产投入，不是阿里云独立资本开支。"
+    },
+    {
+      "domain": "cloud",
+      "focus": "investment",
+      "entity": "腾讯",
+      "period": "FY2024",
+      "value": 10677.4,
+      "unit": "百万美元",
+      "original_value": 76760,
+      "original_unit": "人民币百万元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://static.www.tencent.com/uploads/2025/03/19/81cb1f36bec218d27d6e0b24eec012b6.pdf"
+      ],
+      "evidence_note": "腾讯FY2024业绩资料披露集团资本开支76760百万元人民币；按本地FY2024展示汇率1美元兑7.189元人民币折算为10677.4百万美元。该值为腾讯集团口径，不是腾讯云独立资本开支。"
+    },
+    {
+      "domain": "cloud",
+      "focus": "investment",
+      "entity": "Huawei",
+      "period": "FY2024",
+      "value": 7299.5,
+      "unit": "百万美元",
+      "original_value": 52476,
+      "original_unit": "人民币百万元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.huawei.com/minisite/annual-report-download/annual_report_2024_en.pdf"
+      ],
+      "evidence_note": "华为2024年报物业、厂房及设备附注披露全年新增52476百万元人民币；按本地FY2024展示汇率1美元兑7.189元人民币折算为7299.5百万美元。该值为华为集团资产新增口径，不是华为云独立资本开支。"
     }
   ],
   "gap_classifications": [
@@ -34,12 +109,7 @@
     {"domain": "mainland", "focus": "postpaid", "entity": "中国电信", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
     {"domain": "mainland", "focus": "postpaid", "entity": "中国联通", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
     {"domain": "mainland", "focus": "postpaid", "entity": "中国广电", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "未见FY2025后付费用户数。"},
-    {"domain": "cloud", "focus": "revenue", "entity": "中国移动云", "status": "knowledge_pending", "display": "本地库待核验", "note": "官网可找到2025上半年移动云收入561亿元，但当前卡片要求FY2025全年同口径，不以半年值代替。", "source_urls": ["https://www.chinamobileltd.com/en/ir/reports/ir2025.pdf"]},
     {"domain": "cloud", "focus": "profit", "entity": "中国移动云", "status": "public_not_found", "display": "未见云利润披露", "note": "中国移动公开披露移动云收入，未单列移动云利润金额。"},
-    {"domain": "cloud", "focus": "profit", "entity": "Huawei", "status": "public_not_found", "display": "未见云利润披露", "note": "华为2025年报披露云收入，未单列云业务利润金额。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]},
-    {"domain": "cloud", "focus": "investment", "entity": "AWS", "status": "knowledge_pending", "display": "本地库待核验", "note": "母公司现金流量表存在资产购置数据，待按页面定义核对是否可作为集团CAPEX。"},
-    {"domain": "cloud", "focus": "investment", "entity": "Alibaba", "status": "knowledge_pending", "display": "本地库待核验", "note": "官方财报存在资产购置数据，待按页面定义核对集团CAPEX。"},
-    {"domain": "cloud", "focus": "investment", "entity": "腾讯", "status": "knowledge_pending", "display": "本地库待核验", "note": "官方财报存在资产购置数据，待按页面定义核对集团CAPEX。"},
-    {"domain": "cloud", "focus": "investment", "entity": "Huawei", "status": "knowledge_pending", "display": "本地库待核验", "note": "华为年报有现金流量及资产购置数据，但未以页面所需的集团CAPEX名称直接披露。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]}
+    {"domain": "cloud", "focus": "profit", "entity": "Huawei", "status": "public_not_found", "display": "未见云利润披露", "note": "华为2025年报披露云收入，未单列云业务利润金额。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]}
   ]
 }

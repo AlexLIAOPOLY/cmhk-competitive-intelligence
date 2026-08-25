@@ -197,11 +197,27 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertTrue(unicom["source_urls"][0].endswith(".pdf"))
         self.assertIn("highlights.php?data=quarterly", unicom["source_urls"][1])
 
+    def test_user_accepted_single_source_cloud_values_are_displayed_with_true_periods(self):
+        cloud = {focus["id"]: focus for focus in self.domains["cloud"]["focuses"]}
+        revenue = {item["name"]: item for item in cloud["revenue"]["items"]}
+        investment = {item["name"]: item for item in cloud["investment"]["items"]}
+        self.assertEqual(revenue["中国移动云"]["value"], 7869.3)
+        self.assertEqual(revenue["中国移动云"]["period"], "H1 2025")
+        self.assertIn("不代替FY2025全年", revenue["中国移动云"]["analysis"])
+        self.assertEqual(
+            {name: investment[name]["value"] for name in ("AWS", "Alibaba", "腾讯", "Huawei")},
+            {"AWS": 77658.0, "Alibaba": 4444.0, "腾讯": 10677.4, "Huawei": 7299.5},
+        )
+        self.assertTrue(all(investment[name]["period"] == "FY2024" for name in ("AWS", "Alibaba", "腾讯", "Huawei")))
+        self.assertTrue(all("不是" in investment[name]["analysis"] for name in ("AWS", "Alibaba", "腾讯", "Huawei")))
+        self.assertEqual(cloud["investment"]["metric"]["value"], 77658.0)
+        self.assertIn("AWS FY2024", cloud["investment"]["metric"]["label"])
+
     def test_overview_method_and_frontend_do_not_conflate_local_gaps_with_non_disclosure(self):
         self.assertIn("本地知识库", self.snapshot["method"])
         self.assertEqual(
             self.snapshot["data_audit"]["gap_status_counts"],
-            {"public_not_found": 14, "knowledge_pending": 5},
+            {"public_not_found": 14},
         )
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")

@@ -2102,7 +2102,11 @@ def _apply_online_gap_audit(domains: list[dict[str, Any]]) -> dict[str, Any]:
                         "value": value,
                         "unit": str(fact.get("unit") or ""),
                         "period": str(fact.get("period") or entity.get("period") or ""),
-                        "detail": f"{fact.get('period') or ''}{focus.get('label') or ''} · {len(source_urls)}个官方证据入口交叉核验",
+                        "detail": (
+                            f"{fact.get('period') or ''}{focus.get('label') or ''} · {len(source_urls)}个官方证据入口交叉核验"
+                            if len(source_urls) >= 2 else
+                            f"{fact.get('period') or ''}{focus.get('label') or ''} · 1个官方披露入口，按要求上屏"
+                        ),
                         "analysis": str(fact.get("evidence_note") or ""),
                         "components": [_component(
                             focus.get("label") or entity.get("name"), value, fact.get("unit"), fact.get("period")
@@ -2144,6 +2148,20 @@ def _apply_online_gap_audit(domains: list[dict[str, Any]]) -> dict[str, Any]:
                         component["detail"] = label
                 status_counts[status] = status_counts.get(status, 0) + 1
                 added_sources.extend(_source(f"{entity.get('name')} {focus.get('label')} 缺口复核", url) for url in source_urls)
+            if domain.get("id") == "cloud" and focus.get("id") == "investment":
+                available = [item for item in (focus.get("items") or []) if _number(item.get("value")) is not None]
+                if available:
+                    leader = max(available, key=lambda item: float(item["value"]))
+                    tail = min(available, key=lambda item: float(item["value"]))
+                    focus["metric"] = {
+                        "value": leader["value"],
+                        "unit": leader["unit"],
+                        "label": f"{leader['name']} {leader.get('period') or '最新披露期'}集团资本开支",
+                    }
+                    focus["insight"] = (
+                        f"{leader['name']}集团资本开支{leader['value']:g}百万美元、{tail['name']}为{tail['value']:g}百万美元；"
+                        "资本军备能力分层意味着基础设施扩张承载空间不同，但集团投入与云业务单独投入不能等同，也不能据此判断投入转化效率。"
+                    )
         domain["sources"] = _dedupe_sources(list(domain.get("sources") or []) + added_sources)
     return {
         "audited_at_hkt": str(audit.get("audited_at_hkt") or ""),
