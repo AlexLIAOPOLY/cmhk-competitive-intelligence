@@ -393,6 +393,7 @@
 .competitor-result-header .competitor-chart-legend { margin-left: auto; }
 .competitor-core-summary { display: flex; width: min(calc(100% - 28px),1600px); min-height: 48px; align-items: center; justify-content: center; margin: 12px auto 6px; padding: 9px 20px; border: 1px solid rgba(91,190,209,.32); border-radius: 8px; background: linear-gradient(90deg,rgba(17,56,70,.52),rgba(9,35,47,.8),rgba(17,56,70,.52)); text-align: center; }
 .competitor-core-summary strong { position: relative; color: #f1fafb; font-family: "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; font-size: clamp(14px,1.08vw,17px); font-weight: 680; line-height: 1.55; letter-spacing: .018em; text-wrap: balance; }
+.competitor-core-summary strong mark { position: relative; display: inline; padding: 0 .08em; color: #78e0d2; background: linear-gradient(180deg,transparent 58%,rgba(67,203,190,.2) 58%); font-weight: 820; text-shadow: 0 0 18px rgba(78,217,204,.22); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .competitor-core-summary strong > i { display: flex; width: min(42vw,360px); gap: 7px; align-items: center; }
 .competitor-core-summary strong > i u { display: block; height: 3px; flex: 1 1 auto; border-radius: 999px; background: linear-gradient(90deg,rgba(89,143,158,.1),rgba(109,213,230,.58),rgba(89,143,158,.1)); background-size: 220% 100%; text-decoration: none; animation: competitor-insight-shimmer 1.25s ease-in-out infinite; }
 .competitor-core-summary strong > i u:nth-child(2) { flex-grow: .7; animation-delay: .12s; }
