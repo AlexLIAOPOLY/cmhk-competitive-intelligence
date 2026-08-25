@@ -3891,7 +3891,7 @@
         "label": "中国移动 FY2025"
       },
       "context": "2016–2025十年窗口；全部卡片只展示绝对数",
-      "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；官方未单列的后付费数据保留缺口。",
+      "insight": "营收、EBITDA、净利润与移动客户只展示绝对值；移动客户沿用各公司官方口径，推导值明确标约，广电缺口保留。",
       "entities": [
         {
           "name": "中国移动",
@@ -6068,206 +6068,263 @@
         },
         {
           "id": "postpaid",
-          "label": "后付费用户数",
+          "label": "移动客户",
           "visual": "rows",
-          "headline": "客户价值判断出现盲区",
+          "headline": "客户覆盖底盘形成断层",
           "metric": {
-            "value": "-",
-            "unit": "",
-            "label": "三来源数据待补"
+            "value": 10.05,
+            "unit": "亿户",
+            "label": "中国移动 FY2025"
           },
-          "context": "官方明确披露的后付费用户数",
-          "insight": "四家公司均缺少可比后付费原值；这一盲区使客户收入底盘、续约质量与客户价值无法穿透比较，不能以移动或5G用户总量替代。",
+          "context": "公司披露的移动客户/移动用户；联通约值为官方期初加全年净增推导",
+          "insight": "中国移动为10.05亿户，中国联通为3.573亿户；客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
           "items": [
             {
               "name": "中国移动",
-              "unit": "",
+              "value": 10.05,
+              "unit": "亿户",
               "period": "FY2025",
-              "detail": "官方文件未单列后付费用户数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数。",
+              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
               "components": [
                 {
-                  "label": "后付费用户数",
-                  "detail": "官方文件未单列后付费用户数"
+                  "label": "移动客户",
+                  "value": 10.05,
+                  "unit": "亿户",
+                  "detail": "FY2025"
                 }
               ],
               "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
+              "source_url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "comparator": "=",
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 8.489,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 8.872,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.2507,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.5028,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.4192,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.5689,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.7501,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 9.91,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 10.04,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 10.05,
+                  "unit": "亿户",
+                  "verification_count": 3,
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+                    "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf",
+                    "https://www.chinamobileltd.com/en/media/press/p260326.pdf"
+                  ]
                 }
               ],
-              "gap_status": "public_not_found",
-              "gap_label": "官方文件未单列后付费用户数",
-              "source_urls": [],
+              "source_urls": [
+                "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+                "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf",
+                "https://www.chinamobileltd.com/en/media/press/p260326.pdf"
+              ],
+              "gap_status": "",
               "ai_summary": {}
             },
             {
               "name": "中国电信",
-              "unit": "",
+              "value": 4.3865,
+              "unit": "亿户",
               "period": "FY2025",
-              "detail": "官方文件未单列后付费用户数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数。",
+              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
               "components": [
                 {
-                  "label": "后付费用户数",
-                  "detail": "官方文件未单列后付费用户数"
+                  "label": "移动客户",
+                  "value": 4.3865,
+                  "unit": "亿户",
+                  "detail": "FY2025"
                 }
               ],
               "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
+              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "comparator": "=",
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 2.15,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 2.4996,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.03,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.3557,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.5102,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.7243,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.9118,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 4.0777,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 4.2452,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 4.3865,
+                  "unit": "亿户",
+                  "verification_count": 3,
+                  "source_urls": [
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                    "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf"
+                  ]
                 }
               ],
-              "gap_status": "public_not_found",
-              "gap_label": "官方文件未单列后付费用户数",
-              "source_urls": [],
+              "source_urls": [
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025",
+                "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf"
+              ],
+              "gap_status": "",
               "ai_summary": {}
             },
             {
               "name": "中国联通",
-              "unit": "",
+              "value": 3.573,
+              "unit": "亿户",
               "period": "FY2025",
-              "detail": "官方文件未单列后付费用户数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "年报、业绩公告和业绩演示未单列后付费用户数。",
+              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
               "components": [
                 {
-                  "label": "后付费用户数",
-                  "detail": "官方文件未单列后付费用户数"
+                  "label": "移动客户",
+                  "value": 3.573,
+                  "unit": "亿户",
+                  "detail": "FY2025"
                 }
               ],
               "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
+              "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+              "verification_count": 3,
+              "verification_status": "official_derived_from_verified_rows",
+              "comparator": "≈",
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 2.6382,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 2.8416,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.1504,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.1848,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.0581,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.1711,
+                  "unit": "亿户",
+                  "verification_count": 3
                 },
                 {
                   "label": "FY2022",
@@ -6276,40 +6333,53 @@
                 },
                 {
                   "label": "FY2023",
-                  "unit": "",
+                  "value": 3.333,
+                  "unit": "亿户",
                   "verification_count": 0
                 },
                 {
                   "label": "FY2024",
-                  "unit": "",
+                  "value": 3.4398,
+                  "unit": "亿户",
                   "verification_count": 0
                 },
                 {
                   "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0
+                  "value": 3.573,
+                  "unit": "亿户",
+                  "verification_count": 3,
+                  "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+                    "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025",
+                    "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
+                  ]
                 }
               ],
-              "gap_status": "public_not_found",
-              "gap_label": "官方文件未单列后付费用户数",
-              "source_urls": [],
+              "source_urls": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025",
+                "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
+              ],
+              "gap_status": "",
               "ai_summary": {}
             },
             {
               "name": "中国广电",
               "unit": "",
               "period": "FY2025",
-              "detail": "官方文件未单列后付费用户数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "未见FY2025后付费用户数。",
+              "detail": "未见FY2025集团移动客户总数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
+              "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
               "components": [
                 {
-                  "label": "后付费用户数",
-                  "detail": "官方文件未单列后付费用户数"
+                  "label": "移动客户",
+                  "detail": "未见FY2025集团移动客户总数"
                 }
               ],
               "component_count": 1,
               "source_url": "",
               "verification_count": 0,
+              "verification_status": "",
+              "comparator": "=",
               "trend": [
                 {
                   "label": "FY2016",
@@ -6363,7 +6433,7 @@
                 }
               ],
               "gap_status": "public_not_found",
-              "gap_label": "官方文件未单列后付费用户数",
+              "gap_label": "未见FY2025集团移动客户总数",
               "source_urls": [],
               "ai_summary": {}
             }
@@ -6386,12 +6456,44 @@
           "url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
         },
         {
+          "label": "中国移动",
+          "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+        },
+        {
+          "label": "中国电信",
+          "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+        },
+        {
           "label": "中国联通 EBITDA 官方文件",
           "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
         },
         {
           "label": "中国联通 EBITDA 官方文件",
           "url": "https://www.chinaunicom.com.hk/en/ir/highlights.php?data=quarterly"
+        },
+        {
+          "label": "中国移动 移动客户 官方文件",
+          "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf"
+        },
+        {
+          "label": "中国移动 移动客户 官方文件",
+          "url": "https://www.chinamobileltd.com/en/media/press/p260326.pdf"
+        },
+        {
+          "label": "中国电信 移动客户 官方文件",
+          "url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025"
+        },
+        {
+          "label": "中国电信 移动客户 官方文件",
+          "url": "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf"
+        },
+        {
+          "label": "中国联通 移动客户 官方文件",
+          "url": "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025"
+        },
+        {
+          "label": "中国联通 移动客户 官方文件",
+          "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
         }
       ],
       "ai_analysis": [],
@@ -10033,9 +10135,9 @@
     "audited_at_hkt": "2026-08-25T09:18:57+08:00",
     "policy": "本地知识库未完成核验不等于互联网未披露；只有检索了对应公司官网、年报、业绩公告和业绩演示后仍未见独立指标，才标记为 public_not_found。",
     "gap_status_counts": {
-      "public_not_found": 14
+      "public_not_found": 11
     },
-    "verified_public_fact_count": 6
+    "verified_public_fact_count": 9
   },
   "refresh": {
     "ok": true,
@@ -10205,7 +10307,7 @@
       "macro": 4
     },
     "model_analysis": {},
-    "evidence_hash": "b954e91ff8ad8f1ba19f2675b35f10ed220b1991fae66b616438f6326e8a9bc9",
+    "evidence_hash": "9508227ae0c1f748eb4f4f81a187c1aac970b31bf71302c65e94188c0dbacbd3",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
