@@ -53,7 +53,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=24', INDEX)
         self.assertIn('/static/organization-admin.css?v=23', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=104', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=105', INDEX)
         self.assertIn('/static/app.js?v=300', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -561,8 +561,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "国际运营商",
             "内地运营商",
             "全球云厂商",
-            "expectedInsightCount",
-            "情报进入业务入口",
+            "AI洞察与业务应用",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn('fetch("/api/crawl-runs?limit=500"', SCRIPT)
@@ -570,9 +569,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=104', INDEX)
+        self.assertIn('workspace-tabs.js?v=105', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=110', INDEX)
+        self.assertIn('workspace-tabs.css?v=111', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -587,10 +586,13 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1580, 620]", SCRIPT)
-        self.assertIn('label: "四库分流"', SCRIPT)
+        self.assertIn('label: "数据入库"', SCRIPT)
         self.assertIn('["agent", "database-hub", "", "cyan"]', SCRIPT)
         self.assertNotIn('["agent", "database-hub", "四库分流", "cyan"]', SCRIPT)
         self.assertIn('label: "四库更新"', SCRIPT)
+        self.assertIn('label: "智能检索爬虫"', SCRIPT)
+        self.assertIn('label: "固定网页爬虫"', SCRIPT)
+        self.assertIn(".news-lineage-lane-label", STYLE)
         self.assertNotIn('四库更新 · 2 × 2', SCRIPT)
         self.assertIn('group.note ? `<span>${esc(group.note)}</span>` : ""', SCRIPT)
         self.assertIn('kind === "branch"', SCRIPT)
@@ -613,7 +615,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("历史记忆影响下一轮", SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)
-        for key in ("strategic", "news-search", "news-ai", "news-dedupe", "news-output", "main", "agent", "insights", "consumers"):
+        self.assertNotIn('key: "consumers"', SCRIPT)
+        self.assertNotIn('["insights", "consumers"', SCRIPT)
+        for key in ("strategic", "news-search", "news-ai", "news-dedupe", "news-output", "main", "agent", "insights"):
             self.assertIn(f'key: "{key}"', SCRIPT)
         for domain in ("local", "international", "cloud", "mainland"):
             self.assertIn(f'domainNode("{domain}"', SCRIPT)
