@@ -16220,6 +16220,22 @@ body.report-library-open::before {
 }
 .intelligence-viz-rows li > i b::after { position: absolute; inset: 0 0 0 auto; width: 2px; background: color-mix(in srgb, var(--domain-accent) 35%, #ecfbff); box-shadow: -2px 0 5px color-mix(in srgb, var(--domain-accent) 32%, transparent); content: ""; }
 
+/* Comparison rows use plain horizontal bars: no pill ends or lollipop marker. */
+.intelligence-viz-rows li > i {
+  height: 8px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(28, 67, 82, .28);
+  box-shadow: none;
+}
+.intelligence-viz-rows li > i b {
+  border: 0;
+  border-radius: 0;
+  background: var(--domain-accent);
+  box-shadow: none;
+}
+.intelligence-viz-rows li > i b::after { display: none; }
+
 .intelligence-domain-cloud .intelligence-viz-columns .is-negative b {
   border-color: #9f5360;
   background: linear-gradient(90deg, rgba(255, 235, 238, .2), transparent 20% 78%, rgba(48, 5, 15, .2)), linear-gradient(180deg, #d28c95, #a85263 48%, #6d303e);
