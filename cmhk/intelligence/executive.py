@@ -20,9 +20,11 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
+DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/display_reference_data.json"
+ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/online_gap_audit_2026-08-25.json"
 INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
 
-DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
@@ -31,26 +33,6 @@ SAFE_VERIFICATION_STATUSES = {
     "multi_source_or_multi_snapshot_verified",
     "official_three_distinct_sources_verified",
 }
-USD_FX_2024 = {"USD": 1.0, "RMB": 7.20, "CNY": 7.20}
-USD_FX_BY_YEAR = {
-    2016: {"USD": 1.0, "RMB": 6.645, "CNY": 6.645},
-    2017: {"USD": 1.0, "RMB": 6.761, "CNY": 6.761},
-    2018: {"USD": 1.0, "RMB": 6.616, "CNY": 6.616},
-    2019: {"USD": 1.0, "RMB": 6.911, "CNY": 6.911},
-    2020: {"USD": 1.0, "RMB": 6.903, "CNY": 6.903},
-    2021: {"USD": 1.0, "RMB": 6.452, "CNY": 6.452},
-    2022: {"USD": 1.0, "RMB": 6.730, "CNY": 6.730},
-    2023: {"USD": 1.0, "RMB": 7.075, "CNY": 7.075},
-    2024: {"USD": 1.0, "RMB": 7.189, "CNY": 7.189},
-    2025: {"USD": 1.0, "RMB": 7.129, "CNY": 7.129},
-}
-USD_FX_SOURCES = (
-    ("OECD年度平均汇率", "https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en/full-report/tax-levels-and-tax-structure-1990-2024_19909ff5.html"),
-    ("Federal Reserve G.5A年度汇率", "https://www.federalreserve.gov/releases/g5a/"),
-    ("IRS年度平均汇率", "https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates"),
-)
-
-
 def _read_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -61,6 +43,19 @@ def _read_json_optional(path: Path, default: Any) -> Any:
         return _read_json(path)
     except (OSError, json.JSONDecodeError):
         return default
+
+
+def _display_reference_data() -> dict[str, Any]:
+    payload = _read_json_optional(DISPLAY_REFERENCE_PATH, {})
+    return payload if isinstance(payload, dict) else {}
+
+
+def _fx_sources() -> list[tuple[str, str]]:
+    return [
+        (str(item.get("label") or ""), str(item.get("url") or ""))
+        for item in (_display_reference_data().get("sources") or [])
+        if isinstance(item, dict) and item.get("label") and item.get("url")
+    ]
 
 
 def _number(value: Any) -> float | None:
@@ -78,8 +73,16 @@ def _number(value: Any) -> float | None:
 
 
 def _million_usd(value: float | None, currency: str, year: int = 2024) -> float | None:
-    rate = USD_FX_BY_YEAR.get(int(year), USD_FX_2024).get(str(currency or "").upper())
-    return value / rate if value is not None and rate else None
+    if value is None:
+        return None
+    code = str(currency or "").upper()
+    if code == "USD":
+        return value
+    if code not in {"RMB", "CNY"}:
+        return None
+    rates = _display_reference_data().get("cny_per_usd_annual_average") or {}
+    rate = _number(rates.get(str(int(year))))
+    return value / rate if rate else None
 
 
 def _verified_number(row: dict[str, Any] | None) -> float | None:
@@ -1695,7 +1698,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             {"title": item["name"], "detail": (f"FY{comparison_year} 云收入 {item['value']:,.1f} 百万美元" if _number(item.get("value")) is not None else f"FY{comparison_year} 云收入金额待三来源补齐"), "kind": "公司披露数据"}
             for item in revenue_amount_items
         ],
-        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items] + [_source(label, url) for label, url in USD_FX_SOURCES]),
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items] + [_source(label, url) for label, url in _fx_sources()]),
     }
 
 
@@ -1955,13 +1958,14 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             result["trend"] = trend
         return result
 
+    conversion_reference = _display_reference_data().get("international_2025_conversion") or {}
     native_units = {
-        "Verizon": "USD million", "Deutsche Telekom": "EUR billion",
-        "AT&T": "USD million", "NTT Group": "JPY billion",
+        operator: str((conversion_reference.get(operator) or {}).get("native_unit") or "")
+        for operator in requested
     }
     usd_per_native = {
-        "Verizon": 0.001, "AT&T": 0.001,
-        "Deutsche Telekom": 1.1300, "NTT Group": 1 / 149.5686,
+        operator: float((conversion_reference.get(operator) or {}).get("usd_billions_per_native_unit") or 0)
+        for operator in requested
     }
 
     def usd_billions(operator: str, value: float) -> float:
@@ -2014,7 +2018,7 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         arpu = _verified_number(row_for(operator, arpu_metric, 2025))
         if subscribers is None or arpu is None:
             continue
-        arpu_usd = arpu / 149.5686 if operator == "NTT Group" else arpu
+        arpu_usd = arpu * usd_per_native["NTT Group"] if operator == "NTT Group" else arpu
         if operator == "Verizon":
             detail = f"后付费连接 {subscribers:.3f}百万 · ARPA ${arpu_usd:.2f}/账户/月"
             warning = "Verizon披露的是ARPA（每账户），不写成ARPU。"
@@ -2055,10 +2059,89 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         "insight": "对比金额统一为十亿美元，ARPU统一为美元/月；Verizon为ARPA，NTT的用户口径已单独标注。",
         "entities": revenue_items, "focuses": focuses,
         "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "三来源认证"} for item in revenue_items],
-        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in all_items] + [
-            _source("ECB 2025年均汇率", "https://data.ecb.europa.eu/data/datasets/EXR/EXR.A.USD.EUR.SP00.A"),
-            _source("美联储/FRED 2025日元年均汇率", "https://fred.stlouisfed.org/series/AEXJPUS/"),
-        ]),
+        "sources": _dedupe_sources(
+            [_source(item["name"], item["source_url"]) for item in all_items]
+            + [_source(label, url) for label, url in _fx_sources()]
+        ),
+    }
+
+
+def _apply_online_gap_audit(domains: list[dict[str, Any]]) -> dict[str, Any]:
+    audit = _read_json_optional(ONLINE_GAP_AUDIT_PATH, {})
+    if not isinstance(audit, dict):
+        audit = {}
+    facts = {
+        (str(item.get("domain") or ""), str(item.get("focus") or ""), str(item.get("entity") or "")): item
+        for item in (audit.get("verified_public_facts") or [])
+        if isinstance(item, dict)
+    }
+    classifications = {
+        (str(item.get("domain") or ""), str(item.get("focus") or ""), str(item.get("entity") or "")): item
+        for item in (audit.get("gap_classifications") or [])
+        if isinstance(item, dict)
+    }
+    status_counts: dict[str, int] = {}
+    for domain in domains:
+        added_sources: list[dict[str, str] | None] = []
+        for focus in domain.get("focuses") or []:
+            for entity in focus.get("items") or []:
+                key = (str(domain.get("id") or ""), str(focus.get("id") or ""), str(entity.get("name") or ""))
+                fact = facts.get(key)
+                if fact:
+                    source_urls = [str(url) for url in (fact.get("source_urls") or []) if str(url).startswith(("http://", "https://"))]
+                    value = _number(fact.get("value"))
+                    entity.update({
+                        "value": value,
+                        "unit": str(fact.get("unit") or ""),
+                        "period": str(fact.get("period") or entity.get("period") or ""),
+                        "detail": f"{fact.get('period') or ''}{focus.get('label') or ''} · {len(source_urls)}个官方证据入口交叉核验",
+                        "analysis": str(fact.get("evidence_note") or ""),
+                        "components": [_component(
+                            focus.get("label") or entity.get("name"), value, fact.get("unit"), fact.get("period")
+                        )],
+                        "component_count": 1,
+                        "source_url": source_urls[0] if source_urls else "",
+                        "source_urls": source_urls,
+                        "verification_count": len(source_urls),
+                        "verification_status": str(fact.get("verification_status") or ""),
+                        "gap_status": "",
+                    })
+                    for point in entity.get("trend") or []:
+                        if point.get("label") == fact.get("period"):
+                            point.update({"value": value, "unit": fact.get("unit"), "verification_count": len(source_urls), "source_urls": source_urls})
+                    added_sources.extend(_source(f"{entity.get('name')} {focus.get('label')} 官方文件", url) for url in source_urls)
+                    continue
+                if _number(entity.get("value")) is not None:
+                    continue
+                classification = classifications.get(key) or {}
+                status = str(classification.get("status") or "knowledge_pending")
+                label = str(classification.get("display") or "本地库待核验")
+                note = str(classification.get("note") or "当前本地知识库未完成同口径核验；不代表互联网未披露。")
+                source_urls = [str(url) for url in (classification.get("source_urls") or []) if str(url).startswith(("http://", "https://"))]
+                detail = (
+                    f"{label} · 官网、年报、业绩公告与业绩演示复核至2026-08-25"
+                    if status == "public_not_found"
+                    else f"{label} · 不得表述为互联网未披露"
+                )
+                entity.update({
+                    "gap_status": status,
+                    "gap_label": label,
+                    "detail": detail,
+                    "analysis": note,
+                    "source_url": source_urls[0] if source_urls else str(entity.get("source_url") or ""),
+                    "source_urls": source_urls,
+                })
+                for component in entity.get("components") or []:
+                    if component.get("value") is None:
+                        component["detail"] = label
+                status_counts[status] = status_counts.get(status, 0) + 1
+                added_sources.extend(_source(f"{entity.get('name')} {focus.get('label')} 缺口复核", url) for url in source_urls)
+        domain["sources"] = _dedupe_sources(list(domain.get("sources") or []) + added_sources)
+    return {
+        "audited_at_hkt": str(audit.get("audited_at_hkt") or ""),
+        "policy": str(audit.get("policy") or ""),
+        "gap_status_counts": status_counts,
+        "verified_public_fact_count": len(facts),
     }
 
 
@@ -2075,6 +2158,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     mainland = _requested_mainland_domain(financial_payload, global_payload)
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     domains = [local, international, mainland, cloud]
+    online_gap_audit = _apply_online_gap_audit(domains)
     ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
     ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
     for domain in domains:
@@ -2180,7 +2264,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     return {
         "domains": domains,
         "relations": relations,
-        "method": "页面只使用通过质量检查的数据库记录；不同期间、代理分部口径和不可直接比较的数据均单独说明。",
+        "method": "页面数值只从本地知识库取用；本地库待核验不等于互联网未披露，只有完成官网、年报、业绩公告与业绩演示复核的空值才标记为未见公开披露。",
+        "data_audit": online_gap_audit,
         "refresh": refresh_state if isinstance(refresh_state, dict) else {},
         "ai": {
             "agent_run_id": ai_payload.get("agent_run_id", "") if isinstance(ai_payload, dict) else "",

@@ -163,6 +163,43 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertTrue(self.snapshot["ai"]["model_analysis_fresh"])
         self.assertTrue(all(focus.get("ai_summary") for domain in self.snapshot["domains"] for focus in domain["focuses"]))
 
+    def test_every_missing_value_has_an_audited_gap_status(self):
+        missing = [
+            item
+            for domain in self.snapshot["domains"]
+            for focus in domain["focuses"]
+            for item in focus["items"]
+            if item.get("value") is None
+        ]
+        self.assertTrue(missing)
+        self.assertTrue(all(item.get("gap_status") in {"public_not_found", "knowledge_pending"} for item in missing))
+        for item in missing:
+            detail = str(item.get("detail") or "")
+            if item["gap_status"] == "public_not_found":
+                self.assertIn("官网、年报、业绩公告与业绩演示复核", detail)
+            else:
+                self.assertIn("不得表述为互联网未披露", detail)
+
+    def test_china_unicom_fy2025_ebitda_is_recovered_from_local_audit_knowledge(self):
+        ebitda = next(focus for focus in self.domains["mainland"]["focuses"] if focus["id"] == "ebitda")
+        unicom = next(item for item in ebitda["items"] if item["name"] == "中国联通")
+        self.assertEqual(unicom["value"], 994.2)
+        self.assertEqual(unicom["unit"], "亿元")
+        self.assertEqual(unicom["verification_count"], 2)
+        self.assertEqual(len(unicom["source_urls"]), 2)
+        self.assertTrue(unicom["source_urls"][0].endswith(".pdf"))
+        self.assertIn("highlights.php?data=quarterly", unicom["source_urls"][1])
+
+    def test_overview_method_and_frontend_do_not_conflate_local_gaps_with_non_disclosure(self):
+        self.assertIn("本地知识库", self.snapshot["method"])
+        self.assertEqual(
+            self.snapshot["data_audit"]["gap_status_counts"],
+            {"public_not_found": 14, "knowledge_pending": 5},
+        )
+        root = Path(__file__).resolve().parents[1]
+        app = (root / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn('gapStatus === "public_not_found" ? "未见公开披露" : "待核验"', app)
+
     def test_manual_regeneration_falls_back_to_current_evidence_when_model_times_out(self):
         current = pipeline._read_json(pipeline.AI_ANALYSIS_PATH, {})
         with tempfile.TemporaryDirectory() as temp_dir:

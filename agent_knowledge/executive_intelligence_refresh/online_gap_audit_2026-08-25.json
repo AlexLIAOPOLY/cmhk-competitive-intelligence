@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "audited_at_hkt": "2026-08-25T09:18:57+08:00",
+  "scope": "战略总览当前卡片空值及已发现的公开披露漏项",
+  "policy": "本地知识库未完成核验不等于互联网未披露；只有检索了对应公司官网、年报、业绩公告和业绩演示后仍未见独立指标，才标记为 public_not_found。",
+  "verified_public_facts": [
+    {
+      "domain": "mainland",
+      "focus": "ebitda",
+      "entity": "中国联通",
+      "period": "FY2025",
+      "value": 994.2,
+      "unit": "亿元",
+      "original_value": 99420,
+      "original_unit": "人民币百万元",
+      "verification_status": "official_direct_and_recalculated_verified",
+      "source_urls": [
+        "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+        "https://www.chinaunicom.com.hk/en/ir/highlights.php?data=quarterly"
+      ],
+      "evidence_note": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。"
+    }
+  ],
+  "gap_classifications": [
+    {"domain": "local", "focus": "revenue", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立营收。"},
+    {"domain": "local", "focus": "ebitda", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立EBITDA。"},
+    {"domain": "local", "focus": "net_profit", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立净利润。"},
+    {"domain": "local", "focus": "postpaid", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "未见CMHK独立年度后付费用户系列。"},
+    {"domain": "local", "focus": "postpaid", "entity": "SmarTone", "status": "public_not_found", "display": "未见FY2025独立披露", "note": "FY2025业绩公告与业绩演示披露后付费ARPU，但未见FY2025后付费用户数。", "source_urls": ["https://www.smartoneholdings.com/about/investor/results/english/2025_annual_results.pdf", "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"]},
+    {"domain": "mainland", "focus": "revenue", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025营收。"},
+    {"domain": "mainland", "focus": "ebitda", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025 EBITDA。"},
+    {"domain": "mainland", "focus": "net_profit", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025净利润。"},
+    {"domain": "mainland", "focus": "postpaid", "entity": "中国移动", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
+    {"domain": "mainland", "focus": "postpaid", "entity": "中国电信", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
+    {"domain": "mainland", "focus": "postpaid", "entity": "中国联通", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
+    {"domain": "mainland", "focus": "postpaid", "entity": "中国广电", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "未见FY2025后付费用户数。"},
+    {"domain": "cloud", "focus": "revenue", "entity": "中国移动云", "status": "knowledge_pending", "display": "本地库待核验", "note": "官网可找到2025上半年移动云收入561亿元，但当前卡片要求FY2025全年同口径，不以半年值代替。", "source_urls": ["https://www.chinamobileltd.com/en/ir/reports/ir2025.pdf"]},
+    {"domain": "cloud", "focus": "profit", "entity": "中国移动云", "status": "public_not_found", "display": "未见云利润披露", "note": "中国移动公开披露移动云收入，未单列移动云利润金额。"},
+    {"domain": "cloud", "focus": "profit", "entity": "Huawei", "status": "public_not_found", "display": "未见云利润披露", "note": "华为2025年报披露云收入，未单列云业务利润金额。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]},
+    {"domain": "cloud", "focus": "investment", "entity": "AWS", "status": "knowledge_pending", "display": "本地库待核验", "note": "母公司现金流量表存在资产购置数据，待按页面定义核对是否可作为集团CAPEX。"},
+    {"domain": "cloud", "focus": "investment", "entity": "Alibaba", "status": "knowledge_pending", "display": "本地库待核验", "note": "官方财报存在资产购置数据，待按页面定义核对集团CAPEX。"},
+    {"domain": "cloud", "focus": "investment", "entity": "腾讯", "status": "knowledge_pending", "display": "本地库待核验", "note": "官方财报存在资产购置数据，待按页面定义核对集团CAPEX。"},
+    {"domain": "cloud", "focus": "investment", "entity": "Huawei", "status": "knowledge_pending", "display": "本地库待核验", "note": "华为年报有现金流量及资产购置数据，但未以页面所需的集团CAPEX名称直接披露。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]}
+  ]
+}

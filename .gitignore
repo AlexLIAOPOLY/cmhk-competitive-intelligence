@@ -52,6 +52,8 @@ agent_evals/
 frontend_test_results.txt
 .crawl_process.lock
 agent_knowledge/executive_intelligence_refresh/*.json
+!agent_knowledge/executive_intelligence_refresh/display_reference_data.json
+!agent_knowledge/executive_intelligence_refresh/online_gap_audit_2026-08-25.json
 agent_knowledge/executive_intelligence_refresh/.refresh.lock
 agent_knowledge/**/agent_verified_facts.json
 .tmp_*/

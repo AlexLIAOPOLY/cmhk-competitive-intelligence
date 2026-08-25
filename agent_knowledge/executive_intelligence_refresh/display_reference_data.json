@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "updated_at_hkt": "2026-08-25T09:18:57+08:00",
+  "purpose": "战略总览跨币种展示换算的本地知识库参考数据",
+  "cny_per_usd_annual_average": {
+    "2016": 6.645,
+    "2017": 6.761,
+    "2018": 6.616,
+    "2019": 6.911,
+    "2020": 6.903,
+    "2021": 6.452,
+    "2022": 6.73,
+    "2023": 7.075,
+    "2024": 7.189,
+    "2025": 7.129
+  },
+  "international_2025_conversion": {
+    "Verizon": {"native_unit": "USD million", "usd_billions_per_native_unit": 0.001},
+    "AT&T": {"native_unit": "USD million", "usd_billions_per_native_unit": 0.001},
+    "Deutsche Telekom": {"native_unit": "EUR billion", "usd_billions_per_native_unit": 1.13},
+    "NTT Group": {"native_unit": "JPY billion", "usd_billions_per_native_unit": 0.00668589956242}
+  },
+  "sources": [
+    {"label": "OECD年度平均汇率", "url": "https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en/full-report/tax-levels-and-tax-structure-1990-2024_19909ff5.html"},
+    {"label": "Federal Reserve G.5A年度汇率", "url": "https://www.federalreserve.gov/releases/g5a/"},
+    {"label": "IRS年度平均汇率", "url": "https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates"},
+    {"label": "ECB 2025年均汇率", "url": "https://data.ecb.europa.eu/data/datasets/EXR/EXR.A.USD.EUR.SP00.A"},
+    {"label": "Federal Reserve 2025日元年均汇率", "url": "https://fred.stlouisfed.org/series/AEXJPUS/"}
+  ]
+}

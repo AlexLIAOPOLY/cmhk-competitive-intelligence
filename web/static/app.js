@@ -7871,8 +7871,10 @@ document.addEventListener("keydown", (event) => {
       .replace(/'/g, "&#039;");
   }
 
-  function formatValue(value) {
-    if (value == null || value === "") return "未披露";
+  function formatValue(value, gapStatus = "") {
+    if (value == null || value === "") {
+      return gapStatus === "public_not_found" ? "未见公开披露" : "待核验";
+    }
     if (typeof value === "number") {
       return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(value);
     }
@@ -8065,7 +8067,7 @@ document.addEventListener("keydown", (event) => {
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
-        <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
+        <strong>${formatValue(entity.value, entity.gap_status)}<i>${safe(entity.unit)}</i></strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
           ${renderEntityComponents(entity)}
         </div>
@@ -8311,7 +8313,7 @@ document.addEventListener("keydown", (event) => {
           <g ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
             <circle cx="${point.x}" cy="${point.y}" r="${radius.toFixed(1)}" />
             <text x="${point.x}" y="${point.y + 25}" text-anchor="middle">${safe(item.name)}</text>
-            <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatValue(item.value)}${safe(item.unit)}</text>
+            <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatValue(item.value, item.gap_status)}${safe(item.unit)}</text>
           </g>
         `;
       }).join("");
@@ -8326,7 +8328,7 @@ document.addEventListener("keydown", (event) => {
           <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${numeric < 0 ? "is-negative" : "is-positive"} ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
             <i><b style="--viz-size:${size.toFixed(2)}%"></b></i>
-            <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
+            <strong>${formatValue(item.value, item.gap_status)}${safe(item.unit)}</strong>
           </li>
         `;
       }).join("")}</ul>`;
@@ -8338,7 +8340,7 @@ document.addEventListener("keydown", (event) => {
         const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `
           <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${Number(item.value) < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-            <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
+            <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
             <span>${renderScrollingLabel(item.name)}</span>
           </div>
@@ -8363,7 +8365,7 @@ document.addEventListener("keydown", (event) => {
         const width = hasRange ? Math.max(2, (high - low) / span * 100) : 0;
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${!hasRange ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
           <span>${renderScrollingLabel(item.name)}</span><i>${hasRange ? `<b style="--range-left:${left.toFixed(2)}%;--range-width:${width.toFixed(2)}%"></b>` : "-"}</i>
-          <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
+          <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
     }
@@ -8392,7 +8394,7 @@ document.addEventListener("keydown", (event) => {
             <polyline class="trend-line" points="${coordinates}"></polyline>
             <g class="trend-nodes">${nodes}</g>
           </svg>
-          <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
+          <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
     }
@@ -8401,7 +8403,7 @@ document.addEventListener("keydown", (event) => {
       return `<ul class="intelligence-viz intelligence-viz-disclosure" aria-label="${safe(focus.label)}明细">${items.map((item, index) => `
         <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
           <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
-          <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
+          <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
         </li>`).join("")}</ul>`;
     }
 
@@ -8418,7 +8420,7 @@ document.addEventListener("keydown", (event) => {
         let graphic = "";
         if (profile.kind === "coverage") {
           const progress = Math.min(100, numeric);
-          graphic = `<span class="governance-ring" style="--governance-progress:${progress.toFixed(1)}" aria-hidden="true"><i></i><b>${formatValue(item.value)}<small>${safe(item.unit)}</small></b></span>`;
+          graphic = `<span class="governance-ring" style="--governance-progress:${progress.toFixed(1)}" aria-hidden="true"><i></i><b>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></b></span>`;
         } else {
           const step = Number(profile.step) || 1;
           const segmentCount = Math.max(1, Math.min(10, Math.ceil(numeric / step)));
@@ -8431,7 +8433,7 @@ document.addEventListener("keydown", (event) => {
         }
         return `<div ${entityAttributes(item, index)} class="intelligence-viz-entity governance-indicator governance-indicator-${safe(profile.kind)} ${index === selectedIndex ? "is-selected" : ""}">
           <span class="governance-indicator-label">${safe(item.name)}</span>
-          <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
+          <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
           <div class="governance-indicator-graphic">${graphic}</div>
           <small>${safe(profile.caption)}</small>
         </div>`;
@@ -8441,7 +8443,7 @@ document.addEventListener("keydown", (event) => {
     if (visual === "kpis") return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="${safe(focus.label)}关键指标">${items.map((item, index) => `
       <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}" style="--kpi-index:${index}">
         <span>${renderScrollingLabel(item.name)}</span>
-        <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
+        <strong>${formatValue(item.value, item.gap_status)}<i>${safe(item.unit)}</i></strong>
         <small>${safe(item.detail)}</small>
       </div>
     `).join("")}</div>`;
@@ -8451,7 +8453,7 @@ document.addEventListener("keydown", (event) => {
       return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
         <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
         <i><b style="--row-width:${width.toFixed(2)}%"></b></i>
-        <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
+        <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
       </li>`;
     }).join("")}</ul>`;
   }
@@ -8699,7 +8701,7 @@ document.addEventListener("keydown", (event) => {
       return `
         <li>
           <div><strong>${name}</strong></div>
-          <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value)} ${safe(item.unit)}</strong></div>
+          <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value, item.gap_status)} ${safe(item.unit)}</strong></div>
           ${item.source_url ? `<a href="${safe(item.source_url)}" target="_self" aria-label="打开${name}来源">来源<span aria-hidden="true">↗</span></a>` : ""}
         </li>
       `;
