@@ -8081,7 +8081,7 @@ document.addEventListener("keydown", (event) => {
     if (!components.length) return "";
     const total = Number(entity.component_count) || components.length;
     const recordCount = Number(entity.record_count) || 0;
-    const visibleCount = Math.min(6, components.length);
+    const visibleCount = Math.min(8, components.length);
     const visibilityLabel = total > visibleCount ? `显示 ${visibleCount} / 共 ${total}` : `${total} 项`;
     const countLabel = recordCount && recordCount !== total
       ? `${total > visibleCount ? `显示 ${visibleCount} / ` : ""}去重产品 ${total} 个 · 数据库记录 ${recordCount} 条`
@@ -8089,7 +8089,7 @@ document.addEventListener("keydown", (event) => {
     return `
       <section class="intelligence-entity-components" aria-label="具体包含">
         <header><span>具体包含</span><small>${safe(countLabel)}</small></header>
-        <ul>${components.slice(0, 6).map((component) => `
+        <ul>${components.slice(0, 8).map((component) => `
           <li class="${component.detail ? "has-detail" : ""}">
             <span>${safe(component.label)}${component.detail ? `<small>${safe(component.detail)}</small>` : ""}</span>
             ${component.value == null ? "" : `<strong>${formatMetricValue(component.value, component.unit)}<i>${formatMetricUnit(component.value, component.unit)}</i></strong>`}

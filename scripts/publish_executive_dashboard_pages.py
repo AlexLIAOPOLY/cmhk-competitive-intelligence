@@ -36,6 +36,8 @@ PUBLIC_STATIC_FILES = (
     "company-data.js",
     "confirm-dialog.css",
     "confirm-dialog.js",
+    "custom-select.css",
+    "custom-select.js",
     "leadership-board.css",
     "news-review-sheet.css",
     "news-review-sheet.js",

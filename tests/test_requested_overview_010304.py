@@ -56,6 +56,22 @@ class RequestedOverview010304Tests(unittest.TestCase):
         for domain in (local, mainland):
             self.assertNotIn("%", {item["unit"] for focus in domain.values() for item in focus["items"] if item.get("value") is not None})
 
+    def test_cmhk_reference_ppt_values_keep_period_and_dimension_labels(self):
+        local = {focus["id"]: focus for focus in self.domains["local"]["focuses"]}
+        revenue = next(item for item in local["revenue"]["items"] if item["name"] == "CMHK")
+        profit = next(item for item in local["net_profit"]["items"] if item["name"] == "CMHK")
+        self.assertEqual((revenue["value"], revenue["unit"], revenue["period"]), (4544.6, "百万港元", "2026首7月"))
+        self.assertEqual((profit["value"], profit["unit"], profit["period"]), (583.2, "百万港元", "2026首7月"))
+        components = {component["label"]: component for component in revenue["components"]}
+        self.assertEqual(components["5G客户渗透率"]["unit"], "%")
+        self.assertIn("期末值", components["5G客户渗透率"]["detail"])
+        self.assertIn("年化", components["总资产收益率"]["detail"])
+        app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (Path(__file__).resolve().parents[1] / "web/static/styles.css").read_text(encoding="utf-8")
+        self.assertIn("Math.min(8, components.length)", app)
+        self.assertIn("components.slice(0, 8)", app)
+        self.assertIn(".intelligence-domain-local .intelligence-entity-focus:not(.is-overview)", styles)
+
     def test_cloud_currency_values_are_normalized_to_usd(self):
         cloud = {focus["id"]: focus for focus in self.domains["cloud"]["focuses"]}
         self.assertEqual({item["unit"] for item in cloud["investment"]["items"] if item["value"] is not None}, {"百万美元"})
@@ -229,7 +245,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn("本地知识库", self.snapshot["method"])
         self.assertEqual(
             self.snapshot["data_audit"]["gap_status_counts"],
-            {"public_not_found": 7},
+            {"public_not_found": 5},
         )
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")

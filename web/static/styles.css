@@ -15612,6 +15612,13 @@ body.report-library-open::before {
     padding-bottom: 30px;
   }
   .intelligence-entity-focus { min-height: 92px; }
+  .intelligence-domain-local .intelligence-entity-focus:not(.is-overview) {
+    min-height: 282px;
+  }
+  .intelligence-domain-local .intelligence-entity-focus:not(.is-overview) .intelligence-entity-detail-body {
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
 /* ===== Four-domain executive typography v6 ===== */

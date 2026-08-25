@@ -1012,6 +1012,28 @@ def _requested_hong_kong_domain(
         ("SmarTone", "SmarTone", "SmarTone"),
         ("3HK", "3HK / Hutchison", "3HK"),
     )
+    cmhk_reference_ppt = {
+        "period": "2026首7月",
+        "revenue_m_hkd": 4544.6,
+        "contribution_margin_m_hkd": 3410.0,
+        "net_profit_m_hkd": 583.2,
+        "five_g_penetration_pct": 62.6,
+        "capability_export_projects": 12,
+        "annualized_roa_pct": 5.65,
+        "annualized_receivables_to_revenue_pct": 4.10,
+    }
+
+    def cmhk_reference_components() -> list[dict[str, Any]]:
+        period = cmhk_reference_ppt["period"]
+        return [
+            _component("主营业务收入", cmhk_reference_ppt["revenue_m_hkd"], "百万港元", f"累计｜{period}"),
+            _component("收入贡献毛益", cmhk_reference_ppt["contribution_margin_m_hkd"], "百万港元", f"累计｜{period}"),
+            _component("净利润", cmhk_reference_ppt["net_profit_m_hkd"], "百万港元", f"累计｜{period}"),
+            _component("5G客户渗透率", cmhk_reference_ppt["five_g_penetration_pct"], "%", f"期末值｜{period}"),
+            _component("能力出海项目", cmhk_reference_ppt["capability_export_projects"], "个", f"累计完成｜{period}"),
+            _component("总资产收益率", cmhk_reference_ppt["annualized_roa_pct"], "%", f"年化｜{period}"),
+            _component("应收账款占收比", cmhk_reference_ppt["annualized_receivables_to_revenue_pct"], "%", f"年化｜{period}"),
+        ]
 
     def operating_row(operator: str, metric: str, year: int = 2025) -> dict[str, Any] | None:
         return next((
@@ -1034,13 +1056,24 @@ def _requested_hong_kong_domain(
         profit = _annual_financial_value(financial_rows, subject, "net_income", 2025)
         previous_profit = _annual_financial_value(financial_rows, subject, "net_income", 2024)
         missing_note = "CMHK未公开独立公司口径，保留缺口" if name == "CMHK" else "三来源数据待补"
+        if name == "CMHK":
+            revenue = {
+                "value": cmhk_reference_ppt["revenue_m_hkd"],
+                "source_url": "",
+                "verification_count": 1,
+            }
+            profit = {
+                "value": cmhk_reference_ppt["net_profit_m_hkd"],
+                "source_url": "",
+                "verification_count": 1,
+            }
         revenue_items.append({
             "name": name, "value": round(float(revenue["value"]), 1) if revenue else None,
-            "unit": "百万港元" if revenue else "", "period": "FY2025",
-            "detail": "FY2025营收 · 三份不同官方文件核验" if revenue else missing_note,
-            "analysis": f"FY2025营收为{float(revenue['value']):,.1f}百万港元；沿用公司原披露财年。" if revenue else f"{missing_note}，不以母集团或其他运营商数据替代。",
-            "components": [_component("营收", round(float(revenue["value"]), 1), "百万港元", "FY2025")] if revenue else [_component("营收", detail=missing_note)],
-            "component_count": 1, "source_url": str((revenue or {}).get("source_url") or ""),
+            "unit": "百万港元" if revenue else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025",
+            "detail": (f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else "FY2025营收 · 三份不同官方文件核验") if revenue else missing_note,
+            "analysis": (f"{cmhk_reference_ppt['period']}主营业务收入为{cmhk_reference_ppt['revenue_m_hkd']:,.1f}百万港元；该值为首7月累计，不与FY2025全年值直接排名。" if name == "CMHK" else f"FY2025营收为{float(revenue['value']):,.1f}百万港元；沿用公司原披露财年。") if revenue else f"{missing_note}，不以母集团或其他运营商数据替代。",
+            "components": cmhk_reference_components() if name == "CMHK" else ([_component("营收", round(float(revenue["value"]), 1), "百万港元", "FY2025")] if revenue else [_component("营收", detail=missing_note)]),
+            "component_count": len(cmhk_reference_components()) if name == "CMHK" else 1, "source_url": str((revenue or {}).get("source_url") or ""),
             "verification_count": int((revenue or {}).get("verification_count") or 0),
             "trend": _annual_financial_trend(financial_rows, subject, "revenue", unit="百万港元"),
         })
@@ -1056,10 +1089,10 @@ def _requested_hong_kong_domain(
         })
         profit_items.append({
             "name": name, "value": round(float(profit["value"]), 1) if profit else None,
-            "unit": "百万港元" if profit else "", "period": "FY2025",
-            "detail": "FY2025净利润金额" if profit else missing_note,
-            "analysis": f"FY2025净利润为{float(profit['value']):,.1f}百万港元；只展示金额，不混入同比增速。" if profit else f"{missing_note}，不估算净利润。",
-            "components": [_component("净利润", round(float(profit["value"]), 1), "百万港元", "FY2025")] if profit else [_component("净利润", detail=missing_note)],
+            "unit": "百万港元" if profit else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025",
+            "detail": f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else ("FY2025净利润金额" if profit else missing_note),
+            "analysis": (f"{cmhk_reference_ppt['period']}净利润为{cmhk_reference_ppt['net_profit_m_hkd']:,.1f}百万港元；为累计值，不与FY2025全年利润直接排名。" if name == "CMHK" else f"FY2025净利润为{float(profit['value']):,.1f}百万港元；只展示金额，不混入同比增速。") if profit else f"{missing_note}，不估算净利润。",
+            "components": [_component("净利润", round(float(profit["value"]), 1), "百万港元", cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025")] if profit else [_component("净利润", detail=missing_note)],
             "component_count": 1, "source_url": str((profit or {}).get("source_url") or ""),
             "verification_count": int((profit or {}).get("verification_count") or 0),
             "trend": _annual_financial_trend(financial_rows, subject, "net_income", unit="百万港元"),
@@ -1108,13 +1141,13 @@ def _requested_hong_kong_domain(
                 "context": context, "insight": insight, "items": items}
 
     focuses = [
-        focus("revenue", "营收", revenue_items, "持续竞争资源明显分层", "2016–2025原表；当前卡片显示FY2025"),
+        focus("revenue", "营收", revenue_items, "持续竞争资源明显分层", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
         focus("ebitda", "EBITDA", ebitda_items, "持续投入能力形成断层", "2016–2025原表；当前卡片显示FY2025"),
-        focus("net_profit", "净利润", profit_items, "盈利防线出现两极分化", "2016–2025原表；当前卡片显示FY2025"),
+        focus("net_profit", "净利润", profit_items, "盈利防线出现两极分化", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
         focus("postpaid", "后付费用户数", postpaid_items, "经常性收入底盘分层", "只展示公司原生后付费用户数"),
     ]
     return {"id": "local", "index": "01", "title": "本地运营商", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
-            "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；不同财年与公司口径分别标注",
+            "metric": focuses[0]["metric"], "context": "CMHK补充2026首7月累计值；其他公司保留2016–2025财年窗口",
             "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；缺口不填充。",
             "entities": revenue_items, "focuses": focuses, "relations": [],
             "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, postpaid_items) for item in items])}
