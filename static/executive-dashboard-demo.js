@@ -139,7 +139,7 @@
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "line"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["bar", "bar"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
