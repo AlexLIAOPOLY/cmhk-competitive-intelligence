@@ -175,6 +175,12 @@ class DashboardPagesPublishTests(unittest.TestCase):
             "Apache License",
             (vendor.parent / "echarts-LICENSE.txt").read_text(encoding="utf-8"),
         )
+        display_font = publisher.STATIC_DIR / "fonts" / "SmileySans-Oblique.ttf.woff2"
+        self.assertGreater(display_font.stat().st_size, 1_000_000)
+        self.assertIn(
+            "SIL OPEN FONT LICENSE",
+            (display_font.parent / "SmileySans-OFL.txt").read_text(encoding="utf-8"),
+        )
         self.assertNotIn('role="tablist"', html)
         self.assertNotIn("data-monitor-view", html)
         self.assertNotIn("data-overview-view", html)
@@ -221,10 +227,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('root.addEventListener("focusin"', script)
         self.assertNotIn("setLinkedCompany", script)
         self.assertNotIn("is-related", script)
-        self.assertIn("function comparisonBoardHeader", script)
-        self.assertIn("三家运营商关键指标总览", script)
+        self.assertNotIn("function comparisonBoardHeader", script)
+        self.assertNotIn("三家运营商关键指标总览", script)
         self.assertIn(".comparison-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr)", style)
-        self.assertIn(".comparison-board-header { grid-column: 1 / -1", style)
+        self.assertNotIn(".comparison-board-header", style)
+        self.assertIn('font-family: "Smiley Sans"', style)
+        self.assertIn('url("./fonts/SmileySans-Oblique.ttf.woff2")', style)
+        self.assertIn("font-size: clamp(36px, 2.35vw, 58px)", style)
+        self.assertIn("font-size: clamp(23px, 1.5vw, 37px)", style)
         self.assertIn(".comparison-metric-grid-business .comparison-metric-card", style)
         self.assertIn(".comparison-bars { width: 100%; height: 100%", style)
         self.assertIn(".comparison-mini-charts { height: 100%; grid-template-columns: 1fr", style)
@@ -555,6 +565,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./vendor/echarts-6.1.0.min.js?v=1"', html)
             self.assertTrue((first / "vendor" / "echarts-6.1.0.min.js").is_file())
             self.assertTrue((first / "vendor" / "echarts-LICENSE.txt").is_file())
+            self.assertTrue((first / "fonts" / "SmileySans-Oblique.ttf.woff2").is_file())
+            self.assertTrue((first / "fonts" / "SmileySans-OFL.txt").is_file())
             self.assertIn("--surface: #091725", style)
             self.assertIn('--font-tech: "DIN Alternate"', style)
             self.assertIn('font-feature-settings: "tnum" 1, "lnum" 1', style)

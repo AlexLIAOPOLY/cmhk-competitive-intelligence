@@ -721,18 +721,6 @@
     </article>`;
   }
 
-  function comparisonBoardHeader() {
-    return `<header class="comparison-board-header">
-      <div class="comparison-board-copy">
-        <strong>三家运营商关键指标总览</strong>
-        <span>4 个主题 · 14 项指标</span>
-      </div>
-      <div class="comparison-board-legend" aria-label="运营商颜色图例">
-        ${comparisonOperatorKeys.map((key, index) => `<span style="--series-color:${chartColors[index]}"><i></i>${escapeHtml(comparisonCompanyNames[key])}</span>`).join("")}
-      </div>
-    </header>`;
-  }
-
   function setupChartTooltips(root) {
     if (root.dataset.chartTooltipsReady === "1") return;
     root.dataset.chartTooltipsReady = "1";
@@ -798,7 +786,7 @@
     disposeComparisonEcharts();
     comparisonEchartSpecs.clear();
     comparisonEchartSequence = 0;
-    target.innerHTML = `${comparisonBoardHeader()}${comparisonSections.map(comparisonPanel).join("")}`;
+    target.innerHTML = comparisonSections.map(comparisonPanel).join("");
     initializeEcharts(target);
     setupChartTooltips(target);
   }
