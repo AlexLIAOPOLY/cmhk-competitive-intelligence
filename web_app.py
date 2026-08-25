@@ -487,7 +487,7 @@ def _parse_competitor_strategic_signal(content: object) -> tuple[str, list[str]]
                 highlights.append(value)
             if len(highlights) == 3:
                 break
-        value = re.sub(r"[【】]", "", marked_value).strip()
+        value = re.sub(r"[【】]", "", marked_value).strip().rstrip("。．.")
         if len(value) > 100:
             value = value[:99].rstrip("，,；; ") + "…"
         return value, [item for item in highlights if item in value]
@@ -574,7 +574,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值；并由你从公司、竞争动作、趋势拐点或胜负判断中选出1—3个最值得决策者关注的短语，每个2—10字，仅在该短语两侧加【】用于视觉强调，不包裹标点或整句。其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
+            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值，句末不要句号或英文句点；并由你从公司、竞争动作、趋势拐点或胜负判断中选出1—3个最值得决策者关注的短语，每个2—10字，仅在该短语两侧加【】用于视觉强调，不包裹标点或整句。其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
             {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,

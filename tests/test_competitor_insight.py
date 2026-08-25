@@ -92,13 +92,14 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("https://", captured["body"]["messages"][1]["content"])
         self.assertNotIn("RAG", captured["body"]["messages"][1]["content"])
         self.assertEqual(result["insight"], MODEL_CONTENT)
-        self.assertEqual(result["strategicIndicator"], "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。")
+        self.assertEqual(result["strategicIndicator"], "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营")
         self.assertEqual(result["strategicHighlights"], ["客户留存差距", "体验和价值经营"])
         self.assertEqual(len(result["insights"]), 3)
         self.assertIn("只输出四行", captured["body"]["messages"][0]["content"])
         self.assertIn("战略指标｜", captured["body"]["messages"][0]["content"])
         self.assertIn("选出1—3个", captured["body"]["messages"][0]["content"])
         self.assertIn("两侧加【】", captured["body"]["messages"][0]["content"])
+        self.assertIn("句末不要句号", captured["body"]["messages"][0]["content"])
         self.assertIn("竞争格局｜", captured["body"]["messages"][0]["content"])
         self.assertEqual(captured["body"]["max_tokens"], 1800)
         self.assertEqual(captured["body"]["temperature"], 0.1)
@@ -277,19 +278,19 @@ class CompetitorInsightTests(unittest.TestCase):
     def test_strategic_indicator_is_extracted_separately_from_three_insight_rows(self):
         self.assertEqual(
             web_app._parse_competitor_strategic_indicator(MODEL_CONTENT),
-            "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。",
+            "客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营",
         )
         self.assertEqual(len(web_app._parse_competitor_insight_items(MODEL_CONTENT)), 3)
         self.assertFalse(any("战略指标" in item for item in web_app._parse_competitor_insight_items(MODEL_CONTENT)))
         self.assertEqual(
             web_app._parse_competitor_strategic_signal(MODEL_CONTENT),
-            ("客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营。", ["客户留存差距", "体验和价值经营"]),
+            ("客户留存差距持续收窄，下一阶段胜负取决于体验和价值经营", ["客户留存差距", "体验和价值经营"]),
         )
 
     def test_strategic_signal_keeps_legacy_unmarked_model_output_usable(self):
         self.assertEqual(
             web_app._parse_competitor_strategic_signal("战略指标｜规模领先，竞争焦点转向价值经营。"),
-            ("规模领先，竞争焦点转向价值经营。", []),
+            ("规模领先，竞争焦点转向价值经营", []),
         )
 
     def test_missing_scope_wording_does_not_reject_usable_model_content(self):
