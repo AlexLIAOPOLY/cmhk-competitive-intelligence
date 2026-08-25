@@ -3938,6 +3938,43 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
         evidence = incident.get("evidence") if isinstance(incident.get("evidence"), list) else []
         status = str(incident.get("status") or "open")
         resolution_type = str(resolution.get("type") or "")
+        condition_key = str(incident.get("condition_key") or "")
+        component = str(incident.get("component") or "")
+        alarm_type = "系统运行异常"
+        alarm_type_rules = (
+            (("heartbeat",), "心跳异常"),
+            (("stuck", "timeout"), "任务停滞或超时"),
+            (("failed", "failure"), "任务执行失败"),
+            (("fault-resolution", "card-update", "ledger"), "告警结案或回写异常"),
+            (("feishu", "delivery", "publish"), "飞书交付异常"),
+            (("log-error", "stable-log"), "运行日志错误"),
+            (("web-health", "web-app"), "后台服务异常"),
+        )
+        alarm_type_source = f"{condition_key} {component}".lower()
+        for needles, label in alarm_type_rules:
+            if any(needle in alarm_type_source for needle in needles):
+                alarm_type = label
+                break
+        resolution_type_labels = {
+            "automatic_recovery": "系统自行恢复",
+            "normal_task_progress": "任务实际正常推进",
+            "service_restarted": "服务重启后恢复",
+            "condition_cleared": "故障条件消除",
+            "false_positive": "确认误报",
+            "superseded": "由新告警口径接管",
+            "unverified": "等待恢复证据",
+        }
+        resolution_reason_labels = {
+            "scheduler_heartbeat_verified": "独立心跳持续更新，任务实际正常推进；没有执行重启、补跑或其他修复动作。",
+            "log_condition_cleared": "后续巡检未再发现同一类新增日志错误；没有记录自动修复动作。",
+            "condition_no_longer_current": "最新任务归档或状态源已不再显示该故障；没有记录自动修复动作。",
+            "service_restarted_after_error": "服务在故障后确实重新启动，后续巡检未再命中原异常。",
+            "superseded_by_stable_log_condition": "旧版重复日志告警已由新的稳定故障状态接管。",
+        }
+        resolution_reason_code = str(incident.get("resolution_reason") or "")
+        resolution_reason = str(resolution_ai.get("recovery_cause") or "")
+        if not resolution_reason:
+            resolution_reason = resolution_reason_labels.get(resolution_reason_code, "")
         phase_labels = {
             "automatic_recovery": "自动修复后恢复",
             "normal_task_progress": "已确认任务正常",
@@ -3971,6 +4008,9 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "severity_label": severity_labels[severity],
             **_handler_public_fields(handled),
             "summary": str(incident.get("summary") or ""),
+            "alarm_type": alarm_type,
+            "alarm_reason": str(diagnosis.get("fault_cause") or incident.get("error") or incident.get("summary") or ""),
+            "alarm_trigger_summary": str(incident.get("summary") or ""),
             "error": str(diagnosis.get("fault_cause") or incident.get("error") or ""),
             "impact": str(diagnosis.get("fault_impact") or incident.get("impact") or ""),
             "suggestions": [str(item) for item in suggestions if str(item).strip()],
@@ -3984,6 +4024,9 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "inferences": diagnosis.get("inferences") if isinstance(diagnosis.get("inferences"), list) else [],
             "resolution_status": str(resolution.get("status") or ""),
             "resolution_type": resolution_type,
+            "resolution_type_label": resolution_type_labels.get(resolution_type, "历史结案（旧口径）" if status == "resolved" else "尚未结案"),
+            "resolution_reason_code": resolution_reason_code,
+            "resolution_reason": resolution_reason,
             "resolution_summary": str(resolution_ai.get("resolution_summary") or ""),
             "recovery_cause": str(resolution_ai.get("recovery_cause") or ""),
             "verification_summary": str(resolution_ai.get("verification_summary") or ""),

@@ -1605,14 +1605,14 @@
     const kinds = [...new Set(tasks.map((task) => task.kind).filter(Boolean))];
     panel.innerHTML = `<div class="workspace-module-inner fault-monitor"><section class="workspace-panel fault-workbench">
       <header class="fault-toolbar"><div class="fault-total"><span>报警总数</span><strong id="faultResultCount">0</strong><em>条</em></div><div class="fault-filter-row">
-        <label>状态<select data-fault-filter="status"><option value="all">全部记录</option><option value="attention">需要处理</option><option value="completed">已恢复</option></select></label>
+        <label>状态<select data-fault-filter="status"><option value="all">全部记录</option><option value="attention">需要处理</option><option value="completed">已结案</option></select></label>
         <label>任务类型<select data-fault-filter="kind"><option value="all">全部任务</option>${kinds.map((kind) => `<option value="${esc(kind)}">${esc(taskLabel(kind))}</option>`).join("")}</select></label>
         <label class="fault-search">搜索<input type="search" data-fault-filter="query" placeholder="任务、原因或阶段"></label>
         <button class="workspace-button" type="button" data-refresh-fault>刷新</button>
         <div class="operational-report-control is-fault" aria-label="导出报警统计报告"><label>PDF 报告<select data-alert-report-period><option value="daily">日报</option><option value="weekly">周报</option><option value="monthly">月报</option><option value="annual">年报</option></select></label><button class="workspace-button" type="button" data-download-alert-report>导出 PDF</button></div>
       </div></header>
       <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>原因摘要</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>报警原因</th><th>解决原因</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-footer"><nav class="fault-pagination" id="faultPagination" aria-label="报警记录分页"></nav><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
@@ -1636,7 +1636,8 @@
   function faultStatus(task) {
     if (task.handler_name) return { key: "completed", label: "人工修复", tone: "is-ok" };
     if (task.incident_status === "open") return { key: "attention", label: "待处理", tone: "is-alert" };
-    if (task.incident_status === "resolved") return { key: "completed", label: "已恢复", tone: "is-ok" };
+    if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return { key: "attention", label: "待验证", tone: "is-running" };
+    if (task.incident_status === "resolved") return { key: "completed", label: task.resolution_type_label || task.phase || "已结案", tone: "is-ok" };
     if (task.interrupted) return { key: "attention", label: "中断", tone: "is-alert" };
     if (task.run_status === "failed") return { key: "attention", label: "失败", tone: "is-alert" };
     if (task.run_status === "running") return { key: "running", label: "运行中", tone: "is-running" };
@@ -1646,10 +1647,20 @@
 
   function faultCause(task) {
     const status = faultStatus(task);
-    if (task.source === "project-monitor") return task.error || task.summary || "监控账本未记录具体故障原因。";
+    if (task.source === "project-monitor") return task.alarm_reason || task.error || task.summary || "监控账本未记录具体故障原因。";
     if (status.key === "running") return task.progress_detail || task.status_detail || `任务正在${task.phase || "运行"}，当前未记录故障。`;
     if (status.key === "completed") return task.status_detail || task.progress_detail || "任务已正常完成，未记录故障原因。";
     return task.error || task.warning || task.status_detail || task.progress_detail || task.detail || task.message || "任务归档未记录具体故障原因，请查看运行日志。";
+  }
+
+  function faultResolutionReason(task) {
+    if (task.resolution_reason) return task.resolution_reason;
+    if (task.recovery_cause) return task.recovery_cause;
+    if (task.incident_status === "open") return "尚未结案，等待处理或恢复证据。";
+    if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return "告警条件当前未再出现，但正向恢复证据不足，暂不判定已恢复。";
+    if (task.handler_name) return "已由人工标记修复；本次记录没有填写结构化解决原因。";
+    if (task.incident_status === "resolved" && !task.resolution_type) return "历史记录未保存结构化解决原因，不能据此判断为自动恢复。";
+    return task.verification_summary || "尚未记录解决原因。";
   }
 
   function faultSeverity(task) {
@@ -1705,7 +1716,7 @@
     const rows = state.tasks.map((task, index) => ({ task, index, status: faultStatus(task) })).filter(({ task, status }) => {
       if (state.faultFilters.status !== "all" && status.key !== state.faultFilters.status) return false;
       if (state.faultFilters.kind !== "all" && task.kind !== state.faultFilters.kind) return false;
-      return !query || [task.title, task.scope, task.phase, task.summary, task.error, task.impact, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
+      return !query || [task.title, task.scope, task.phase, task.alarm_type, task.alarm_reason, task.summary, task.error, task.impact, task.resolution_type_label, task.resolution_reason, task.recovery_cause, task.verification_summary, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
     });
     const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
     const direction = state.faultSort.direction === "asc" ? 1 : -1;
@@ -1728,8 +1739,8 @@
       const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
       const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}人工修复并同步飞书` : task.incident_status === "resolved" ? `监控已按证据结案：${task.phase || "已验证"}` : canResolve ? "记录人工修复并同步原飞书消息" : "请使用飞书账号登录后记录人工修复";
       const repairTimes = `<small>结案 · ${esc(task.resolved_at_hkt || task.completed_at_hkt || "—")}</small><small>人工 · ${esc(task.manual_repaired_at_hkt || "—")}</small>`;
-      return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.phase || "未记录阶段")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td class="fault-repair-times">${repairTimes}</td><td><span class="fault-open-label">查看</span></td></tr>`;
-    }).join("") : '<tr><td colspan="9" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
+      return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.alarm_type || "未分类告警")}</small></td><td><span class="fault-resolution-cause">${esc(faultResolutionReason(task))}</span><small>${esc(task.resolution_type_label || task.phase || "尚未结案")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td class="fault-repair-times">${repairTimes}</td><td><span class="fault-open-label">查看</span></td></tr>`;
+    }).join("") : '<tr><td colspan="10" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
     if (pagination) {
       const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
@@ -1744,12 +1755,21 @@
     if (!task || !dialog || !body) return;
     const status = faultStatus(task);
     const severity = faultSeverity(task);
-    const details = [["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], ["人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
+    const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], ["人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
+    const confirmedFacts = Array.isArray(task.confirmed_facts) ? task.confirmed_facts.filter(Boolean) : [];
+    const inferences = Array.isArray(task.inferences) ? task.inferences.filter(Boolean) : [];
+    const resolutionEvidence = Array.isArray(task.resolution_evidence) ? task.resolution_evidence.filter(Boolean) : [];
+    const resolutionAction = task.resolution_action && typeof task.resolution_action === "object" ? task.resolution_action : {};
+    const actionSummary = resolutionAction.performed ? `已执行：${resolutionAction.type || "未命名动作"}` : "未执行自动修复动作";
     body.innerHTML = `<header><div><span class="fault-status ${status.tone}"><i></i>${status.label}</span><h2>${esc(task.title || taskLabel(task.kind))}</h2></div><time>${esc(taskTime(task))}</time></header>
-      <section class="fault-detail-section fault-reason"><h3>原因</h3><p>${esc(faultCause(task))}</p></section>
-      ${task.diagnosis_summary ? `<section class="fault-detail-section"><h3>LLM 告警总结</h3><p>${esc(task.diagnosis_summary)}</p></section>` : ""}
-      ${task.resolution_summary ? `<section class="fault-detail-section"><h3>LLM 结案总结</h3><p>${esc(task.resolution_summary)}</p><p><strong>恢复原因：</strong>${esc(task.recovery_cause || "—")}</p><p><strong>验证结论：</strong>${esc(task.verification_summary || "—")}</p><p><strong>剩余风险：</strong>${esc(task.remaining_risk || "—")}</p></section>` : ""}
-      <section class="fault-detail-section"><h3>解决方法</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
+      <section class="fault-detail-section fault-reason"><h3>报警原因 · ${esc(task.alarm_type || "未分类告警")}</h3><p>${esc(faultCause(task))}</p>${task.alarm_trigger_summary && task.alarm_trigger_summary !== faultCause(task) ? `<small>触发摘要：${esc(task.alarm_trigger_summary)}</small>` : ""}</section>
+      ${confirmedFacts.length ? `<section class="fault-detail-section"><h3>已确认事实</h3><ul>${confirmedFacts.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
+      ${inferences.length ? `<section class="fault-detail-section is-inference"><h3>分析推断</h3><ul>${inferences.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
+      ${task.diagnosis_summary ? `<section class="fault-detail-section"><h3>LLM 告警总结</h3><p>${esc(task.diagnosis_summary)}</p><small>模型：${esc(task.diagnosis_model || "—")} · 来源：${esc(task.diagnosis_source || "未记录")}</small></section>` : ""}
+      <section class="fault-detail-section fault-resolution"><h3>解决原因 · ${esc(task.resolution_type_label || "尚未结案")}</h3><p>${esc(faultResolutionReason(task))}</p><small>${esc(actionSummary)}</small></section>
+      ${task.resolution_summary ? `<section class="fault-detail-section"><h3>LLM 结案总结</h3><p>${esc(task.resolution_summary)}</p><p><strong>验证结论：</strong>${esc(task.verification_summary || "—")}</p><p><strong>剩余风险：</strong>${esc(task.remaining_risk || "—")}</p><small>模型：${esc(task.resolution_model || "—")}</small></section>` : ""}
+      ${resolutionEvidence.length ? `<section class="fault-detail-section"><h3>结案验证证据</h3><ul>${resolutionEvidence.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
+      <section class="fault-detail-section"><h3>${task.incident_status === "open" ? "建议处理方法" : "当时的处理建议"}</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
       <dl>${details.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
       <details class="fault-evidence"><summary>查看运行证据</summary><pre id="faultEvidenceLog">${esc([...(task.evidence || []), ...(task.resolution_evidence || [])].join("\n") || task.error || "该报警没有更多证据记录。")}</pre></details>`;
     dialog.showModal();

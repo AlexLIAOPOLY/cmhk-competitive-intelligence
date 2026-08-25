@@ -23,7 +23,9 @@ class FaultIncidentApiTests(unittest.TestCase):
                         "status": "evidence_verified",
                         "type": "automatic_recovery" if severity == "P3" else "condition_cleared",
                         "ai_status": "completed",
+                        "ai_summary": {"recovery_cause": f"{severity} recovery reason"},
                     } if severity != "P1" else {}),
+                    "diagnosis": {"fault_cause": f"{severity} alarm reason"},
                 }
                 for index, severity in enumerate(("P1", "P2", "P3"), start=1)
             }
@@ -69,6 +71,9 @@ class FaultIncidentApiTests(unittest.TestCase):
         self.assertEqual(web_record["auto_repaired_at_hkt"], "")
         self.assertEqual(web_record["resolved_at_hkt"], "2026-08-19T09:15:00+08:00")
         self.assertEqual(web_record["manual_repaired_at_hkt"], "2026-08-19T10:00:00+08:00")
+        self.assertEqual(web_record["alarm_reason"], "P2 alarm reason")
+        self.assertEqual(web_record["resolution_type_label"], "故障条件消除")
+        self.assertEqual(web_record["resolution_reason"], "P2 recovery reason")
         auto_record = next(record for record in records if record["severity"] == "P3")
         self.assertEqual(auto_record["auto_repaired_at_hkt"], "2026-08-19T09:15:00+08:00")
         self.assertEqual(total, 3)
