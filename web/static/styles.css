@@ -15283,9 +15283,9 @@ body.report-library-open::before {
   text-align: right;
 }
 
-.intelligence-period-prefix {
+.intelligence-viz-rows li > strong small.intelligence-period-prefix {
   margin-right: 4px;
-  color: #6f929f;
+  color: #b8c1c5;
   font-size: 8px;
   font-weight: 560;
   letter-spacing: 0;
