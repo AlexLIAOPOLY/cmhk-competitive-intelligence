@@ -7881,6 +7881,12 @@ document.addEventListener("keydown", (event) => {
     return safe(value);
   }
 
+  function formatItemValue(item) {
+    const comparator = String(item?.comparator || "").trim().toLowerCase();
+    const prefix = ["≈", "~", "approx"].includes(comparator) ? "约" : "";
+    return `${prefix}${formatValue(item?.value, item?.gap_status)}`;
+  }
+
   function renderScrollingLabel(value) {
     const label = String(value == null ? "" : value);
     return `
@@ -8453,7 +8459,7 @@ document.addEventListener("keydown", (event) => {
       return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
         <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
         <i><b style="--row-width:${width.toFixed(2)}%"></b></i>
-        <strong>${formatValue(item.value, item.gap_status)}<small>${safe(item.unit)}</small></strong>
+        <strong>${formatItemValue(item)}<small>${safe(item.unit)}</small></strong>
       </li>`;
     }).join("")}</ul>`;
   }
