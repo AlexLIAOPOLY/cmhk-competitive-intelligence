@@ -453,6 +453,9 @@
 @keyframes competitor-insight-dots { 0% { clip-path: inset(0 100% 0 0); } 100% { clip-path: inset(0 0 0 0); } }
 @keyframes competitor-option-appear { from { max-width: 0; opacity: 0; transform: scale(.78); } to { max-width: 220px; opacity: 1; transform: scale(1); } }
 .competitor-chart-card { position: relative; display: flex; min-width: 0; margin: 0; padding: 10px 16px 11px; flex-direction: column; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.competitor-chart-type-toggle { position: absolute; top: 10px; right: 18px; z-index: 7; display: grid; width: 27px; height: 27px; padding: 0; place-items: center; border: 1px solid rgba(89,145,162,.24); border-radius: 6px; color: #79a2ae; background: rgba(5,25,34,.34); opacity: .54; cursor: pointer; transition: opacity .16s ease,color .16s ease,border-color .16s ease,background .16s ease; }
+.competitor-chart-type-toggle:hover,.competitor-chart-type-toggle:focus-visible { border-color: rgba(97,194,211,.58); color: #9edce6; background: rgba(9,39,50,.8); opacity: 1; outline: 0; }
+.competitor-chart-type-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .competitor-chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px 13px; }
 .competitor-chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: #a9c1c9 !important; white-space: nowrap; }
 .competitor-chart-legend i { width: 15px; height: 2px; border-radius: 999px; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb,var(--series-color) 55%,transparent); }
@@ -464,6 +467,10 @@
 .competitor-chart-year line { stroke: #527483; stroke-width: 1; }
 .competitor-chart-year text { fill: #7697a3; font-size: 10px; text-anchor: middle; }
 .competitor-chart-series > path { fill: none; stroke: var(--series-color); stroke-width: 2.4; stroke-dasharray: var(--series-dash); stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.competitor-chart-zero { stroke: rgba(125,176,190,.42); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.competitor-chart-bar { fill: color-mix(in srgb,var(--series-color) 72%,transparent); stroke: var(--series-color); stroke-width: .8; cursor: crosshair; transform-box: fill-box; transform-origin: center bottom; transition: fill .14s ease,stroke .14s ease,filter .14s ease; vector-effect: non-scaling-stroke; }
+.competitor-chart-bar.is-bound { fill: color-mix(in srgb,var(--series-color) 48%,transparent); stroke-dasharray: 2 1; }
+.competitor-chart-bar:is(:hover,:focus,.is-active) { fill: var(--series-color); stroke: #eaf9fb; stroke-width: 1.5; filter: drop-shadow(0 0 4px color-mix(in srgb,var(--series-color) 58%,transparent)); outline: none; }
 .competitor-chart-point { cursor: crosshair; }
 .competitor-chart-point-hit { fill: transparent; stroke: none; pointer-events: all; }
 .competitor-chart-point-marker { fill: #071d28; stroke: var(--series-color); stroke-width: 2.2; transform-box: fill-box; transform-origin: center; transition: fill .14s ease,stroke .14s ease,transform .14s ease; vector-effect: non-scaling-stroke; }
@@ -1549,7 +1556,7 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .news-flow-stage,.news-stage-retention::after { transition: none !important; }
   .fault-resolve-cell input[aria-busy="true"],
   .fault-action-feedback.is-progress > i { animation: none !important; }
-  .competitor-insight::before,.competitor-insight-loading span,.competitor-insight:is(.is-loading,.is-streaming) .competitor-insight-identity svg path,.competitor-insight.is-streaming .competitor-insight-badge::after,.competitor-option-group label.is-appearing { animation: none !important; }
+  .competitor-core-summary strong > i u,.competitor-core-summary.is-streaming strong::after,.competitor-insight::before,.competitor-insight-loading span,.competitor-insight.is-streaming .competitor-insight-list > li,.competitor-insight:is(.is-loading,.is-streaming) .competitor-insight-identity svg path,.competitor-insight.is-streaming .competitor-insight-badge::after,.competitor-option-group label.is-appearing { animation: none !important; }
   .competitor-option-group,.competitor-option-group label { transition: none !important; }
 }
 

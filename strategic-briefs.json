@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T14:19:28+08:00",
+  "generated_at": "2026-08-25T14:29:55+08:00",
   "items": [
     {
       "id": "NEWS-880E1FBB515DE8",
@@ -17,6 +17,22 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMi7wNBVV95cUxQMGNOSlFqOElJZ0tLcUxUUTZybVdDRDVkOHBCNG1KcU5CekFSN2M2SlpINVR1LWl1QzFEMXREU09fcGs0Vm9kdm9VMG9kU3J2Mkw4SmFYSm5lb3hwNmNUTlpKcWhUTWhnMlFhR01XQTROaDI1N1F3a28tNmNJVVIwem4yUFd1aXVIVldlQWh0LVFPeXFNQTlVX2ViRG9yMUwzdTYtVWI5TFRzb3VtNlkyVG9Na01OeE1vTFBkcnNzbGVsUHA5VTl1M2JfYWlEaUxxZFg3blFlYllfczlwdGwyczVPXy1iYi1NRWVzVkRPVnhNcXBOYldXLUZOcVh1Mi14cmVSeHp1QjlsNTY3dG5Rb2ZHZ0pWYnd5ODFOSTdvbklya09rZHh2bzI1dFp4STYxd1ozNDhvV0xMc0RHaWhOcWpfd1RtaF90N1lFbF9WSmNhdVBCaWRpeGUydkxMVWx4cW9IOGdlazJXTm94QVdQcXNNcVhrVW1zY0hqSmZPUFU5Q3hoM013R3Z1VG5WckZLR3ozSkJqQUxFNC0tZ0djQUlfR3VmRkNUTlJDN2JfdWRkS3F0bDdGWGZxa1RSemJNanRPN3VDSkh4eGY5ZFdvSDlKSWNwZ2t3U25OejJ1WkdEQ09lVGhPLW16c29TMTQ?oc=5",
       "published_at": "2026-08-24T19:05:00+08:00"
+    },
+    {
+      "id": "NEWS-A66041A39D4493",
+      "title": "内蒙古乌兰察布AI算力中心规划达12.5GW，规模超越OpenAI Stargate",
+      "summary": "中国内蒙古乌兰察布数据中心规划容量达12.5GW，规模超越OpenAI的Stargate项目，成为中国AI算力基础设施的重要布局。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBoa2FNUFB2S3kwSUpQSk93TjdJZmc3X28ycFN5NjBCcTZuZk5jTGFVdDg3M3lHemVqM0dxRUhxWUF4UUd1R0dhNGVmY2dBdHVEZEVqYXBnWmFrSFlaeWh4Nm92OA?oc=5",
+      "published_at": "2026-08-23T21:54:45+08:00"
+    },
+    {
+      "id": "NEWS-0703804171363D",
+      "title": "SK电讯与首尔大学合作推出AI人才培养课程",
+      "summary": "SK电讯与首尔大学在产学合作第十年之际，联合推出面向下一代AI人才培养的课程项目。",
+      "category": "竞对动态",
+      "source_url": "https://biz.heraldcorp.com/article/10849409",
+      "published_at": "2026-08-23T19:30:00+08:00"
     },
     {
       "id": "NEWS-C0478CC374E9EB",
@@ -49,22 +65,6 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQYXE0bDZwRVBSZF90TzZjYkotUVlmT3lkZ0RRNHdfemtrOU0zeG1ZU0UzMmNkN3NDUmg5T3pkbi0yWWtGX0VScGJYdVBEV25EeEM4a1gtdDBhLW9Oc0F4UllxT0lRNF9TZDVBQkZjbHFyel9pUzBtTUZyRlRlcXBVcWphOURhVXdybkdDWXltX3ZXTUZXS1JVRkJwTkdKUQ?oc=5",
       "published_at": "2026-08-19T17:40:24+08:00"
-    },
-    {
-      "id": "NEWS-E80E7073E9341C",
-      "title": "澳门五年规划拟降低博彩业增加值比重 加强与香港合作",
-      "summary": "澳门发布五年规划，拟降低博彩业在经济中的增加值比重，并加强与香港的合作。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMi6gJBVV95cUxQcjNINTFBNHI4R2VTMUhKeDhzYk9rMGFuX2VtVTUySmhTQ1VISlFGV3hJclVMVFN4SzFMYkZrWHFvZmdBRUpaT1BkbGZBeWt5SGZIeXRrczlBdHE1TkR5SFN6UDdVRGVRVUpFWjZQTVlmcFkxckhCMWJlTFhueWUzSkJlckJpWGFuVE1IOVhDamFRYzItU3p4RDhPRjNkWFJULVRnTDRRbXhYWW9JQmVaWjZVbFl1SW9UcWhuQ19mZ1JuU01mT1Y3ZWxjWnJFUXUtT0ZUQWR6NnNjTHpwbjBHNDdvNGh2QVRoVGVnenBOMmU5Z0N5MmdzV1BiSjlRLUw1X3VqdGZxSmFaTFByX0hwUVV2cjJ3REJ2cnhqWmNzLWFPN2V0QjdieDlsRXdhTVFFNWwxMGExZDluUDA4bm1VV0V4anp5b2MyWnduMnI5RTBJZHVNWjV0cXlPeFpYN2MyUUFyN3BWN0JFUQ?oc=5",
-      "published_at": "2026-08-19T16:18:54+08:00"
-    },
-    {
-      "id": "NEWS-3A40133739FCB4",
-      "title": "港怡伙数码通在元朗首设遥距医健站",
-      "summary": "港怡医院与数码通合作在元朗设立首个遥距医健站，提供视像诊症及送药服务，计划明年扩展至10个屋苑。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
-      "published_at": "2026-08-19T04:41:28+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "f13ef0a7c1022e68f7db25402f84e24fae57f09d31a720dd362505fbf9e08260"
+  "site_version": "c0676602eb76d2a18e878c2e7ebd236b95914469a16589f57310bdd60452223a"
 }
