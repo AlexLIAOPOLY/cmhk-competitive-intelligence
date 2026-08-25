@@ -807,7 +807,7 @@
   }
 
   function renderCompetitorStrategicIndicatorCopy(copy, text, highlights = []) {
-    const value = String(text || "");
+    const value = String(text || "").trim().replace(/[。．.]+$/, "");
     const phrases = [...new Set((Array.isArray(highlights) ? highlights : []).map((item) => String(item || "").trim()).filter((item) => item.length >= 2 && value.includes(item)))].slice(0, 3);
     if (!phrases.length) {
       copy.textContent = value;
@@ -927,7 +927,7 @@
     if (!line) return { text: "", highlights: [] };
     const marked = line.replace(/^\s*(?:#{1,6}\s*|[-*•]\s+|\d+[.)、]\s*)/, "").replace(/^(战略指标|核心结论)[：|｜]\s*/, "").trim();
     const highlights = [...marked.matchAll(/【([^【】]{2,12})】/g)].map((match) => match[1].trim()).filter(Boolean).slice(0, 3);
-    const value = marked.replace(/[【】]/g, "").trim().slice(0, 100);
+    const value = marked.replace(/[【】]/g, "").trim().replace(/[。．.]+$/, "").slice(0, 100);
     return { text: value, highlights: [...new Set(highlights)].filter((item) => value.includes(item)) };
   }
 

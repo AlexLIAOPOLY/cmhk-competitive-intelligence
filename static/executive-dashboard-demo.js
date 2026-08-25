@@ -267,7 +267,7 @@
             formatter(params) { return rows[params.dataIndex].chartDisplay; }
           },
           emphasis: { focus: "self", itemStyle: { shadowBlur: 10, shadowColor: "rgba(100, 205, 244, .45)" } },
-          markLine: diverging ? { silent: true, symbol: "none", lineStyle: { color: "rgba(153, 190, 207, .34)", width: 1 }, data: [{ xAxis: 0 }] } : undefined,
+          markLine: diverging ? { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: "rgba(153, 190, 207, .34)", width: 1 }, data: [{ xAxis: 0 }] } : undefined,
           z: 2
         },
         {
