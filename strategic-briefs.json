@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T14:13:31+08:00",
+  "generated_at": "2026-08-25T14:19:28+08:00",
   "items": [
     {
       "id": "NEWS-880E1FBB515DE8",
@@ -9,6 +9,14 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://big5.cctv.com/gate/big5/tv.cctv.cn/2026/08/24/VIDENG7eHNTn0NubOPAhCr4S260824.shtml",
       "published_at": "2026-08-24T23:16:00+08:00"
+    },
+    {
+      "id": "NEWS-1FB9802685A174",
+      "title": "洪水桥片区｜京东集团：注入现代智慧物流产业 预计将创造超过 2,500 个就业岗位",
+      "summary": "京东集团表示将在洪水桥片区注入现代智慧物流产业，预计创造超过2,500个就业岗位。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMi7wNBVV95cUxQMGNOSlFqOElJZ0tLcUxUUTZybVdDRDVkOHBCNG1KcU5CekFSN2M2SlpINVR1LWl1QzFEMXREU09fcGs0Vm9kdm9VMG9kU3J2Mkw4SmFYSm5lb3hwNmNUTlpKcWhUTWhnMlFhR01XQTROaDI1N1F3a28tNmNJVVIwem4yUFd1aXVIVldlQWh0LVFPeXFNQTlVX2ViRG9yMUwzdTYtVWI5TFRzb3VtNlkyVG9Na01OeE1vTFBkcnNzbGVsUHA5VTl1M2JfYWlEaUxxZFg3blFlYllfczlwdGwyczVPXy1iYi1NRWVzVkRPVnhNcXBOYldXLUZOcVh1Mi14cmVSeHp1QjlsNTY3dG5Rb2ZHZ0pWYnd5ODFOSTdvbklya09rZHh2bzI1dFp4STYxd1ozNDhvV0xMc0RHaWhOcWpfd1RtaF90N1lFbF9WSmNhdVBCaWRpeGUydkxMVWx4cW9IOGdlazJXTm94QVdQcXNNcVhrVW1zY0hqSmZPUFU5Q3hoM013R3Z1VG5WckZLR3ozSkJqQUxFNC0tZ0djQUlfR3VmRkNUTlJDN2JfdWRkS3F0bDdGWGZxa1RSemJNanRPN3VDSkh4eGY5ZFdvSDlKSWNwZ2t3U25OejJ1WkdEQ09lVGhPLW16c29TMTQ?oc=5",
+      "published_at": "2026-08-24T19:05:00+08:00"
     },
     {
       "id": "NEWS-C0478CC374E9EB",
@@ -57,14 +65,6 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
       "published_at": "2026-08-19T04:41:28+08:00"
-    },
-    {
-      "id": "NEWS-498C3B6CDD7D64",
-      "title": "有线宽频通过改名 「周大福媒体娱乐有限公司」 保留有线新闻及 HOY 品牌不变",
-      "summary": "有线宽频（1097）8 月 17 日于尖沙咀 K11 ATELIER 举行股东大会，全数出席股东投下赞成票，正式通过将公司名称由「有线宽频通讯有限公司」更改为「周大福媒体娱乐有限公司」，英文名",
-      "category": "竞对动态",
-      "source_url": "https://unwire.hk/2026/08/18/i-cable-rename-ctf-media/movie-2/",
-      "published_at": "2026-08-18T07:40:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "327ea2fd3b508acb51c12dd360282cc9568c0c30c40c041ac4a286c4b384fe9c"
+  "site_version": "f13ef0a7c1022e68f7db25402f84e24fae57f09d31a720dd362505fbf9e08260"
 }
