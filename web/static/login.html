@@ -27,15 +27,33 @@
       .login-card > .login-hint strong { color:#e9f7fb; font-weight:650; }
       .motion-stage { flex:1; display:grid; place-items:center; padding:30px 0 26px; }
       .login-motion { position:relative; width:240px; aspect-ratio:1; display:grid; place-items:center; }
-      .motion-backlight { position:absolute; inset:42px 30px; border-radius:36px; background:radial-gradient(ellipse,rgba(93,221,231,.24),rgba(51,174,199,.06) 58%,transparent 76%); }
+      .motion-backlight { position:absolute; inset:42px 30px; border-radius:36px; background:radial-gradient(ellipse,rgba(93,221,231,.28),rgba(51,174,199,.07) 58%,transparent 76%); filter:blur(1px); animation:backlight-breathe 3.6s ease-in-out infinite; }
+      .motion-aura { position:absolute; inset:20px 3px; z-index:0; border:1px solid rgba(119,222,232,.13); border-radius:48% 52% 45% 55%; filter:drop-shadow(0 0 18px rgba(76,204,217,.2)); animation:aura-morph 7s ease-in-out infinite; }
+      .motion-particles { position:absolute; inset:-6px; z-index:0; pointer-events:none; }
+      .motion-particle { position:absolute; width:5px; height:5px; border-radius:50%; background:#85edf2; box-shadow:0 0 12px rgba(133,237,242,.9); animation:particle-drift 4.4s ease-in-out infinite; }
+      .motion-particle:nth-child(3n) { width:4px; height:4px; border-radius:1px; background:#64dcb7; box-shadow:0 0 11px rgba(100,220,183,.85); transform:rotate(45deg); }
+      .motion-particle:nth-child(4n) { width:3px; height:3px; background:#8ccbf4; box-shadow:0 0 10px rgba(140,203,244,.9); }
+      .motion-particle.is-1 { top:7px; left:46px; --dx:13px; --dy:10px; animation-delay:-.4s; }
+      .motion-particle.is-2 { top:24px; right:22px; --dx:-11px; --dy:13px; animation-delay:-2.1s; }
+      .motion-particle.is-3 { top:75px; left:7px; --dx:15px; --dy:-8px; animation-delay:-1.2s; }
+      .motion-particle.is-4 { top:106px; right:-2px; --dx:-14px; --dy:-6px; animation-delay:-3.4s; }
+      .motion-particle.is-5 { bottom:47px; right:12px; --dx:-10px; --dy:-13px; animation-delay:-.8s; }
+      .motion-particle.is-6 { bottom:10px; right:65px; --dx:-8px; --dy:-15px; animation-delay:-2.7s; }
+      .motion-particle.is-7 { bottom:22px; left:38px; --dx:14px; --dy:-11px; animation-delay:-1.6s; }
+      .motion-particle.is-8 { top:126px; left:-3px; --dx:12px; --dy:7px; animation-delay:-3.8s; }
+      .motion-particle.is-9 { top:35px; left:84px; --dx:8px; --dy:12px; animation-delay:-2.4s; }
+      .motion-particle.is-10 { top:54px; right:55px; --dx:-9px; --dy:9px; animation-delay:-1s; }
+      .motion-particle.is-11 { bottom:55px; left:68px; --dx:11px; --dy:-9px; animation-delay:-3s; }
+      .motion-particle.is-12 { bottom:76px; right:44px; --dx:-12px; --dy:-8px; animation-delay:-1.9s; }
       .motion-pages { position:absolute; inset:0; z-index:1; perspective:720px; transform-style:preserve-3d; }
-      .motion-page { position:absolute; top:28px; left:118px; width:132px; height:184px; border:1px solid rgba(153,237,243,.34); border-left-color:rgba(209,250,253,.5); border-radius:3px 26px 26px 3px; background:linear-gradient(145deg,rgba(98,214,225,.24),rgba(55,144,169,.1)); box-shadow:14px 22px 38px rgba(0,10,16,.22); transform-origin:2px 50%; transform-style:preserve-3d; backface-visibility:visible; animation:page-flip 5.4s cubic-bezier(.42,0,.2,1) infinite; }
+      .motion-page { position:absolute; top:28px; left:118px; width:132px; height:184px; border:1px solid rgba(153,237,243,.34); border-left-color:rgba(209,250,253,.5); border-radius:3px 26px 26px 3px; background:linear-gradient(145deg,rgba(98,214,225,.24),rgba(55,144,169,.1)); box-shadow:14px 22px 38px rgba(0,10,16,.22); transform-origin:2px 50%; transform-style:preserve-3d; backface-visibility:visible; animation:page-flip 5.4s cubic-bezier(.42,0,.2,1) infinite,page-edge-glow 2.7s ease-in-out infinite; }
       .motion-page::before,.motion-page::after { content:""; position:absolute; left:24px; height:2px; border-radius:999px; background:linear-gradient(90deg,rgba(221,252,255,.48),rgba(118,220,230,.08)); }
       .motion-page::before { top:38px; width:80px; box-shadow:0 24px 0 rgba(183,238,242,.2),0 48px 0 rgba(183,238,242,.13); }
       .motion-page::after { top:112px; width:52px; }
       .motion-page.is-two { animation-delay:-1.8s; border-color:rgba(111,221,207,.3); background:linear-gradient(145deg,rgba(83,204,195,.16),rgba(40,122,151,.08)); }
       .motion-page.is-three { animation-delay:-3.6s; border-color:rgba(126,194,240,.28); background:linear-gradient(145deg,rgba(75,168,220,.15),rgba(43,111,151,.07)); }
-      .motion-core { position:relative; z-index:2; width:112px; height:112px; display:grid; place-items:center; border:1px solid rgba(142,233,241,.5); border-radius:32px; color:#dffcff; background:linear-gradient(145deg,rgba(47,154,179,.94),rgba(30,105,130,.98)); box-shadow:0 22px 45px rgba(0,9,15,.35),inset 0 1px 0 rgba(255,255,255,.22); }
+      .motion-core { position:relative; z-index:2; width:112px; height:112px; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(142,233,241,.5); border-radius:32px; color:#dffcff; background:linear-gradient(145deg,rgba(47,154,179,.94),rgba(30,105,130,.98)); box-shadow:0 22px 45px rgba(0,9,15,.35),inset 0 1px 0 rgba(255,255,255,.22); }
+      .motion-core::after { content:""; position:absolute; inset:-35% -70%; background:linear-gradient(105deg,transparent 38%,rgba(224,253,255,.24) 48%,transparent 58%); transform:translateX(-42%); animation:core-sheen 3.8s ease-in-out infinite; }
       .motion-core svg { width:64px; height:64px; }
       .motion-caption { margin:-12px 0 26px; color:#8eaeba; text-align:center; font-size:12px; line-height:1.6; }
       button { width:100%; min-height:46px; border-radius:10px; font:inherit; }
@@ -48,6 +66,11 @@
       .status:empty { display:none; }
       .status.is-error { color:#ffad9e; }
       @keyframes page-flip { 0%,10% { opacity:0; transform:rotateY(0deg); } 18% { opacity:.68; transform:rotateY(0deg); } 72% { opacity:.68; transform:rotateY(-168deg); } 82%,100% { opacity:0; transform:rotateY(-168deg); } }
+      @keyframes particle-drift { 0%,100% { opacity:.18; transform:translate(0,0) scale(.7); } 45% { opacity:1; } 60% { transform:translate(var(--dx),var(--dy)) scale(1.18); } }
+      @keyframes backlight-breathe { 0%,100% { opacity:.62; transform:scale(.92); } 50% { opacity:1; transform:scale(1.1); } }
+      @keyframes aura-morph { 0%,100% { opacity:.28; transform:rotate(-3deg) scale(.96); } 50% { opacity:.7; transform:rotate(4deg) scale(1.04); border-radius:54% 46% 57% 43%; } }
+      @keyframes page-edge-glow { 0%,100% { filter:drop-shadow(0 0 0 rgba(116,228,237,0)); } 50% { filter:drop-shadow(0 0 9px rgba(116,228,237,.36)); } }
+      @keyframes core-sheen { 0%,28% { transform:translateX(-48%); opacity:0; } 46% { opacity:1; } 66%,100% { transform:translateX(48%); opacity:0; } }
       @media (max-width:980px) { body { background-position:62% bottom; background-attachment:scroll; } .login-page { grid-template-columns:1fr; width:min(640px,calc(100% - 32px)); gap:42px; padding:36px 0; } .brand img{width:126px}.eyebrow{margin-top:30px} h1{font-size:clamp(28px,8.5vw,48px)}.intro{font-size:14px}.signals{margin-top:22px}.login-card{min-height:520px;padding:32px 26px 28px}.motion-stage{padding:20px 0 16px}.login-motion{width:min(210px,64vw);transform:scale(.9)} }
       @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
     </style>
@@ -67,6 +90,15 @@
         <div class="motion-stage" aria-hidden="true">
           <div class="login-motion">
             <span class="motion-backlight"></span>
+            <span class="motion-aura"></span>
+            <div class="motion-particles">
+              <span class="motion-particle is-1"></span><span class="motion-particle is-2"></span>
+              <span class="motion-particle is-3"></span><span class="motion-particle is-4"></span>
+              <span class="motion-particle is-5"></span><span class="motion-particle is-6"></span>
+              <span class="motion-particle is-7"></span><span class="motion-particle is-8"></span>
+              <span class="motion-particle is-9"></span><span class="motion-particle is-10"></span>
+              <span class="motion-particle is-11"></span><span class="motion-particle is-12"></span>
+            </div>
             <div class="motion-pages">
               <span class="motion-page is-one"></span>
               <span class="motion-page is-two"></span>
