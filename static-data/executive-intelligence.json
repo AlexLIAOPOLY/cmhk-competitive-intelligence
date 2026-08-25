@@ -5217,14 +5217,14 @@
       "id": "mainland",
       "index": "03",
       "title": "内地运营商",
-      "kicker": "移动｜电信｜联通｜广电",
+      "kicker": "移动｜电信｜联通",
       "metric": {
         "value": 10501.87,
         "unit": "亿元",
         "label": "中国移动 FY2025"
       },
       "context": "2016–2025十年窗口；全部卡片只展示绝对数",
-      "insight": "营收、EBITDA、净利润与移动客户只展示绝对值；移动客户沿用各公司官方口径，推导值明确标约，广电缺口保留。",
+      "insight": "营收、EBITDA、净利润与移动客户数只展示绝对值；移动客户数沿用各公司官方口径，推导值明确标约。",
       "entities": [
         {
           "name": "中国移动",
@@ -5673,87 +5673,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "中国广电",
-          "unit": "",
-          "period": "FY2025",
-          "detail": "未见可比披露 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-          "analysis": "未见非上市集团同口径FY2025营收。",
-          "components": [
-            {
-              "label": "营收",
-              "detail": "未见可比披露"
-            }
-          ],
-          "component_count": 1,
-          "source_url": "",
-          "verification_count": 0,
-          "trend": [
-            {
-              "label": "FY2016",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2017",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2018",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2019",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2020",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2021",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2022",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2023",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2024",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            },
-            {
-              "label": "FY2025",
-              "unit": "",
-              "verification_count": 0,
-              "source_urls": []
-            }
-          ],
-          "gap_status": "public_not_found",
-          "gap_label": "未见可比披露",
-          "source_urls": []
         }
       ],
       "focuses": [
@@ -5924,9 +5843,9 @@
               ],
               "ai_summary": {
                 "name": "中国移动",
-                "headline": "FY2025营收为10501.87亿元。",
-                "analysis": "FY2025营收为10501.87亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收10501.87亿元",
+                "analysis": "FY2025营收为10,501.87亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
@@ -6087,9 +6006,9 @@
               ],
               "ai_summary": {
                 "name": "中国电信",
-                "headline": "FY2025营收为5296.00亿元。",
-                "analysis": "FY2025营收为5296.00亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收5296.00亿元",
+                "analysis": "FY2025营收为5,296.00亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
@@ -6243,9 +6162,9 @@
               ],
               "ai_summary": {
                 "name": "中国联通",
-                "headline": "FY2025营收为3922.23亿元。",
-                "analysis": "FY2025营收为3922.23亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收3922.23亿元",
+                "analysis": "FY2025营收为3,922.23亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
@@ -6253,123 +6172,20 @@
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
               }
-            },
-            {
-              "name": "中国广电",
-              "unit": "",
-              "period": "FY2025",
-              "detail": "未见可比披露 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "未见非上市集团同口径FY2025营收。",
-              "components": [
-                {
-                  "label": "营收",
-                  "detail": "未见可比披露"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "trend": [
-                {
-                  "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                }
-              ],
-              "gap_status": "public_not_found",
-              "gap_label": "未见可比披露",
-              "source_urls": [],
-              "ai_summary": {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025营收。",
-                "analysis": "未见非上市集团同口径FY2025营收。",
-                "risk": "营收口径缺口限制了对中国广电客户收入底盘与竞争资源承载力的判断。",
-                "evidence_labels": [
-                  "营收"
-                ],
-                "source_urls": []
-              }
             }
           ],
           "ai_summary": {
             "id": "revenue",
-            "headline": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低。",
+            "headline": "规模优势固化资源壁垒",
             "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-            "risk": "中国广电未见非上市集团同口径FY2025营收，无法纳入收入底盘比较。",
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
             "source_urls": [],
             "entities": [
               {
-                "name": "中国移动",
-                "headline": "FY2025营收为10501.87亿元。",
-                "analysis": "FY2025营收为10501.87亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
-                "evidence_labels": [
-                  "营收"
-                ],
-                "source_urls": [
-                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                ]
-              },
-              {
                 "name": "中国电信",
-                "headline": "FY2025营收为5296.00亿元。",
-                "analysis": "FY2025营收为5296.00亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收5296.00亿元",
+                "analysis": "FY2025营收为5,296.00亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
@@ -6378,26 +6194,28 @@
                 ]
               },
               {
+                "name": "中国移动",
+                "headline": "2025年营收10501.87亿元",
+                "analysis": "FY2025营收为10,501.87亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
+                "evidence_labels": [
+                  "营收"
+                ],
+                "source_urls": [
+                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ]
+              },
+              {
                 "name": "中国联通",
-                "headline": "FY2025营收为3922.23亿元。",
-                "analysis": "FY2025营收为3922.23亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收3922.23亿元",
+                "analysis": "FY2025营收为3,922.23亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025营收。",
-                "analysis": "未见非上市集团同口径FY2025营收。",
-                "risk": "营收口径缺口限制了对中国广电客户收入底盘与竞争资源承载力的判断。",
-                "evidence_labels": [
-                  "营收"
-                ],
-                "source_urls": []
               }
             ]
           }
@@ -6569,9 +6387,9 @@
               ],
               "ai_summary": {
                 "name": "中国移动",
-                "headline": "FY2025 EBITDA为3389.31亿元。",
-                "analysis": "FY2025 EBITDA为3389.31亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为3,389.31亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -6732,9 +6550,9 @@
               ],
               "ai_summary": {
                 "name": "中国电信",
-                "headline": "FY2025 EBITDA为1438.72亿元。",
-                "analysis": "FY2025 EBITDA为1438.72亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为1,438.72亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -6883,9 +6701,9 @@
               "gap_status": "",
               "ai_summary": {
                 "name": "中国联通",
-                "headline": "FY2025 EBITDA为994.2亿元。",
-                "analysis": "FY2025 EBITDA为994.2亿元；年报直接披露该值，官网季度表四季合计为994.21亿元，受展示精度影响与年报相符。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -6893,111 +6711,20 @@
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
               }
-            },
-            {
-              "name": "中国广电",
-              "unit": "",
-              "period": "FY2025",
-              "detail": "未见可比披露 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "未见非上市集团同口径FY2025 EBITDA。",
-              "components": [
-                {
-                  "label": "EBITDA",
-                  "detail": "未见可比披露"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "trend": [
-                {
-                  "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                }
-              ],
-              "gap_status": "public_not_found",
-              "gap_label": "未见可比披露",
-              "source_urls": [],
-              "ai_summary": {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025 EBITDA。",
-                "analysis": "未见非上市集团同口径FY2025 EBITDA。",
-                "risk": "EBITDA口径缺口限制了对中国广电盈利缓冲与价格竞争承受力的判断。",
-                "evidence_labels": [
-                  "EBITDA"
-                ],
-                "source_urls": []
-              }
             }
           ],
           "ai_summary": {
             "id": "ebitda",
-            "headline": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
+            "headline": "现金创造支撑能力分层",
             "analysis": "中国移动 FY2025 EBITDA为3389.31亿元，中国联通994.2亿元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
-            "risk": "中国广电未见非上市集团同口径FY2025 EBITDA，无法纳入盈利缓冲比较。",
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
             "source_urls": [],
             "entities": [
               {
                 "name": "中国移动",
-                "headline": "FY2025 EBITDA为3389.31亿元。",
-                "analysis": "FY2025 EBITDA为3389.31亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为3,389.31亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -7007,9 +6734,9 @@
               },
               {
                 "name": "中国电信",
-                "headline": "FY2025 EBITDA为1438.72亿元。",
-                "analysis": "FY2025 EBITDA为1438.72亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为1,438.72亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -7019,25 +6746,15 @@
               },
               {
                 "name": "中国联通",
-                "headline": "FY2025 EBITDA为994.2亿元。",
-                "analysis": "FY2025 EBITDA为994.2亿元；年报直接披露该值，官网季度表四季合计为994.21亿元，受展示精度影响与年报相符。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025 EBITDA。",
-                "analysis": "未见非上市集团同口径FY2025 EBITDA。",
-                "risk": "EBITDA口径缺口限制了对中国广电盈利缓冲与价格竞争承受力的判断。",
-                "evidence_labels": [
-                  "EBITDA"
-                ],
-                "source_urls": []
               }
             ]
           }
@@ -7209,9 +6926,9 @@
               ],
               "ai_summary": {
                 "name": "中国移动",
-                "headline": "FY2025净利润为1370.95亿元。",
-                "analysis": "FY2025净利润为1370.95亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "headline": "FY2025净利润1370.95亿元",
+                "analysis": "FY2025净利润为1,370.95亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
@@ -7372,9 +7089,9 @@
               ],
               "ai_summary": {
                 "name": "中国电信",
-                "headline": "FY2025净利润为331.85亿元。",
+                "headline": "FY2025净利润331.85亿元",
                 "analysis": "FY2025净利润为331.85亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
@@ -7528,9 +7245,9 @@
               ],
               "ai_summary": {
                 "name": "中国联通",
-                "headline": "FY2025净利润为208.16亿元。",
+                "headline": "FY2025净利润208.16亿元",
                 "analysis": "FY2025净利润为208.16亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
@@ -7538,123 +7255,24 @@
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
               }
-            },
-            {
-              "name": "中国广电",
-              "unit": "",
-              "period": "FY2025",
-              "detail": "未见可比披露 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "未见非上市集团同口径FY2025净利润。",
-              "components": [
-                {
-                  "label": "净利润",
-                  "detail": "未见可比披露"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "trend": [
-                {
-                  "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                },
-                {
-                  "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0,
-                  "source_urls": []
-                }
-              ],
-              "gap_status": "public_not_found",
-              "gap_label": "未见可比披露",
-              "source_urls": [],
-              "ai_summary": {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025净利润。",
-                "analysis": "未见非上市集团同口径FY2025净利润。",
-                "risk": "净利润口径缺口限制了对中国广电自我融资与再投资空间的判断。",
-                "evidence_labels": [
-                  "净利润"
-                ],
-                "source_urls": []
-              }
             }
           ],
           "ai_summary": {
             "id": "net_profit",
-            "headline": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+            "headline": "盈利韧性向头部集中",
             "analysis": "中国移动 FY2025净利润1370.95亿元，中国联通208.16亿元且位于样本尾部；利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-            "risk": "中国广电未见非上市集团同口径FY2025净利润，无法纳入利润池比较。",
-            "source_urls": [],
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
+            "source_urls": [
+              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+            ],
             "entities": [
               {
-                "name": "中国移动",
-                "headline": "FY2025净利润为1370.95亿元。",
-                "analysis": "FY2025净利润为1370.95亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
-                "evidence_labels": [
-                  "净利润"
-                ],
-                "source_urls": [
-                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                ]
-              },
-              {
                 "name": "中国电信",
-                "headline": "FY2025净利润为331.85亿元。",
+                "headline": "FY2025净利润331.85亿元",
                 "analysis": "FY2025净利润为331.85亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
@@ -7663,33 +7281,35 @@
                 ]
               },
               {
+                "name": "中国移动",
+                "headline": "FY2025净利润1370.95亿元",
+                "analysis": "FY2025净利润为1,370.95亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
+                "evidence_labels": [
+                  "净利润"
+                ],
+                "source_urls": [
+                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ]
+              },
+              {
                 "name": "中国联通",
-                "headline": "FY2025净利润为208.16亿元。",
+                "headline": "FY2025净利润208.16亿元",
                 "analysis": "FY2025净利润为208.16亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025净利润。",
-                "analysis": "未见非上市集团同口径FY2025净利润。",
-                "risk": "净利润口径缺口限制了对中国广电自我融资与再投资空间的判断。",
-                "evidence_labels": [
-                  "净利润"
-                ],
-                "source_urls": []
               }
             ]
           }
         },
         {
           "id": "postpaid",
-          "label": "移动客户",
+          "label": "移动客户数",
           "visual": "rows",
           "headline": "客户覆盖底盘形成断层",
           "metric": {
@@ -7705,11 +7325,11 @@
               "value": 10.05,
               "unit": "亿户",
               "period": "FY2025",
-              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "detail": "FY2025移动客户数 · 3个官方证据入口交叉核验",
               "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
               "components": [
                 {
-                  "label": "移动客户",
+                  "label": "移动客户数",
                   "value": 10.05,
                   "unit": "亿户",
                   "detail": "FY2025"
@@ -7795,11 +7415,11 @@
               "gap_status": "",
               "ai_summary": {
                 "name": "中国移动",
-                "headline": "FY2025移动客户为10.05亿户。",
+                "headline": "FY2025移动客户数10.05亿户",
                 "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
@@ -7811,11 +7431,11 @@
               "value": 4.3865,
               "unit": "亿户",
               "period": "FY2025",
-              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "detail": "FY2025移动客户数 · 3个官方证据入口交叉核验",
               "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
               "components": [
                 {
-                  "label": "移动客户",
+                  "label": "移动客户数",
                   "value": 4.3865,
                   "unit": "亿户",
                   "detail": "FY2025"
@@ -7901,11 +7521,11 @@
               "gap_status": "",
               "ai_summary": {
                 "name": "中国电信",
-                "headline": "FY2025移动客户为4.3865亿户。",
+                "headline": "FY2025移动客户数4.3865亿户",
                 "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
@@ -7917,11 +7537,11 @@
               "value": 3.573,
               "unit": "亿户",
               "period": "FY2025",
-              "detail": "FY2025移动客户 · 3个官方证据入口交叉核验",
+              "detail": "FY2025移动客户数 · 3个官方证据入口交叉核验",
               "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
               "components": [
                 {
-                  "label": "移动客户",
+                  "label": "移动客户数",
                   "value": 3.573,
                   "unit": "亿户",
                   "detail": "FY2025"
@@ -8006,115 +7626,36 @@
               "gap_status": "",
               "ai_summary": {
                 "name": "中国联通",
-                "headline": "FY2025移动客户约3.573亿户，为推导约值。",
+                "headline": "FY2025移动客户数3.573亿户",
                 "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
-                "risk": "移动客户为推导约值，非直接披露的精确期末数，可能影响客户覆盖底盘的精确比较。",
+                "risk": "数值为推导约值，非直接披露的精确期末数。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
               }
-            },
-            {
-              "name": "中国广电",
-              "unit": "",
-              "period": "FY2025",
-              "detail": "未见FY2025集团移动客户总数 · 官网、年报、业绩公告与业绩演示复核至2026-08-25",
-              "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
-              "components": [
-                {
-                  "label": "移动客户",
-                  "detail": "未见FY2025集团移动客户总数"
-                }
-              ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "",
-              "comparator": "=",
-              "trend": [
-                {
-                  "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2022",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0
-                },
-                {
-                  "label": "FY2025",
-                  "unit": "",
-                  "verification_count": 0
-                }
-              ],
-              "gap_status": "public_not_found",
-              "gap_label": "未见FY2025集团移动客户总数",
-              "source_urls": [],
-              "ai_summary": {
-                "name": "中国广电",
-                "headline": "未见FY2025集团移动客户总数。",
-                "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
-                "risk": "移动客户口径缺口限制了对中国广电客户覆盖底盘与网络规模摊薄基础的判断。",
-                "evidence_labels": [
-                  "移动客户"
-                ],
-                "source_urls": []
-              }
             }
           ],
           "ai_summary": {
             "id": "postpaid",
-            "headline": "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
+            "headline": "客户覆盖底盘形成断层",
             "analysis": "中国移动 FY2025移动客户10.05亿户，中国联通3.573亿户；客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
-            "risk": "中国广电未见FY2025集团移动客户总数，已披露的5G用户数不作替代；中国联通移动客户为推导约值，非直接披露的精确期末数。",
-            "source_urls": [],
+            "risk": "中国联通数值为推导约值，非直接披露的精确期末数，存在口径差异。",
+            "source_urls": [
+              "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+              "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+            ],
             "entities": [
               {
                 "name": "中国移动",
-                "headline": "FY2025移动客户为10.05亿户。",
+                "headline": "FY2025移动客户数10.05亿户",
                 "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
@@ -8122,11 +7663,11 @@
               },
               {
                 "name": "中国电信",
-                "headline": "FY2025移动客户为4.3865亿户。",
+                "headline": "FY2025移动客户数4.3865亿户",
                 "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
@@ -8134,25 +7675,15 @@
               },
               {
                 "name": "中国联通",
-                "headline": "FY2025移动客户约3.573亿户，为推导约值。",
+                "headline": "FY2025移动客户数3.573亿户",
                 "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
-                "risk": "移动客户为推导约值，非直接披露的精确期末数，可能影响客户覆盖底盘的精确比较。",
+                "risk": "数值为推导约值，非直接披露的精确期末数。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见FY2025集团移动客户总数。",
-                "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
-                "risk": "移动客户口径缺口限制了对中国广电客户覆盖底盘与网络规模摊薄基础的判断。",
-                "evidence_labels": [
-                  "移动客户"
-                ],
-                "source_urls": []
               }
             ]
           }
@@ -8189,62 +7720,50 @@
           "url": "https://www.chinaunicom.com.hk/en/ir/highlights.php?data=quarterly"
         },
         {
-          "label": "中国移动 移动客户 官方文件",
+          "label": "中国移动 移动客户数 官方文件",
           "url": "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf"
         },
         {
-          "label": "中国移动 移动客户 官方文件",
+          "label": "中国移动 移动客户数 官方文件",
           "url": "https://www.chinamobileltd.com/en/media/press/p260326.pdf"
         },
         {
-          "label": "中国电信 移动客户 官方文件",
+          "label": "中国电信 移动客户数 官方文件",
           "url": "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025"
         },
         {
-          "label": "中国电信 移动客户 官方文件",
+          "label": "中国电信 移动客户数 官方文件",
           "url": "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf"
         },
         {
-          "label": "中国联通 移动客户 官方文件",
+          "label": "中国联通 移动客户数 官方文件",
           "url": "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025"
         },
         {
-          "label": "中国联通 移动客户 官方文件",
+          "label": "中国联通 移动客户数 官方文件",
           "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
         }
       ],
       "ai_analysis": [],
       "ai_summary": {
         "domain": "mainland",
-        "headline": "营收、EBITDA与净利润均形成头部断层，意味着竞争资源承载力不在同一量级，但规模不等同效率。",
-        "analysis": "中国移动营收10501.87亿元、EBITDA 3389.31亿元、净利润1370.95亿元，与中国联通营收3922.23亿元、EBITDA 994.2亿元、净利润208.16亿元之间形成利润池与盈利缓冲的绝对断层，头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低。",
-        "risk": "中国广电四项指标均无同口径可比披露，无法判断其竞争资源承载力；中国联通移动客户为推导约值，非直接披露的精确期末数。",
+        "headline": "2025年内地运营商营收规模",
+        "analysis": "中国移动以10501.87亿元居首，中国电信5296.00亿元，中国联通3922.23亿元；收入底盘断层，头部可承受更高网络与客户获取投入，尾部经营容错更低。",
+        "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
         "source_urls": [],
         "focuses": [
           {
             "id": "revenue",
-            "headline": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低。",
+            "headline": "规模优势固化资源壁垒",
             "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-            "risk": "中国广电未见非上市集团同口径FY2025营收，无法纳入收入底盘比较。",
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
             "source_urls": [],
             "entities": [
               {
-                "name": "中国移动",
-                "headline": "FY2025营收为10501.87亿元。",
-                "analysis": "FY2025营收为10501.87亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
-                "evidence_labels": [
-                  "营收"
-                ],
-                "source_urls": [
-                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                ]
-              },
-              {
                 "name": "中国电信",
-                "headline": "FY2025营收为5296.00亿元。",
-                "analysis": "FY2025营收为5296.00亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收5296.00亿元",
+                "analysis": "FY2025营收为5,296.00亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
@@ -8253,41 +7772,43 @@
                 ]
               },
               {
+                "name": "中国移动",
+                "headline": "2025年营收10501.87亿元",
+                "analysis": "FY2025营收为10,501.87亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
+                "evidence_labels": [
+                  "营收"
+                ],
+                "source_urls": [
+                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ]
+              },
+              {
                 "name": "中国联通",
-                "headline": "FY2025营收为3922.23亿元。",
-                "analysis": "FY2025营收为3922.23亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                "headline": "2025年营收3922.23亿元",
+                "analysis": "FY2025营收为3,922.23亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "营收"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025营收。",
-                "analysis": "未见非上市集团同口径FY2025营收。",
-                "risk": "营收口径缺口限制了对中国广电客户收入底盘与竞争资源承载力的判断。",
-                "evidence_labels": [
-                  "营收"
-                ],
-                "source_urls": []
               }
             ]
           },
           {
             "id": "ebitda",
-            "headline": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
+            "headline": "现金创造支撑能力分层",
             "analysis": "中国移动 FY2025 EBITDA为3389.31亿元，中国联通994.2亿元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
-            "risk": "中国广电未见非上市集团同口径FY2025 EBITDA，无法纳入盈利缓冲比较。",
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
             "source_urls": [],
             "entities": [
               {
                 "name": "中国移动",
-                "headline": "FY2025 EBITDA为3389.31亿元。",
-                "analysis": "FY2025 EBITDA为3389.31亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为3,389.31亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -8297,9 +7818,9 @@
               },
               {
                 "name": "中国电信",
-                "headline": "FY2025 EBITDA为1438.72亿元。",
-                "analysis": "FY2025 EBITDA为1438.72亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "FY2025EBITDA为1,438.72亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
@@ -8309,52 +7830,34 @@
               },
               {
                 "name": "中国联通",
-                "headline": "FY2025 EBITDA为994.2亿元。",
-                "analysis": "FY2025 EBITDA为994.2亿元；年报直接披露该值，官网季度表四季合计为994.21亿元，受展示精度影响与年报相符。",
-                "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                "headline": "FY2025EBITDA",
+                "analysis": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "EBITDA"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025 EBITDA。",
-                "analysis": "未见非上市集团同口径FY2025 EBITDA。",
-                "risk": "EBITDA口径缺口限制了对中国广电盈利缓冲与价格竞争承受力的判断。",
-                "evidence_labels": [
-                  "EBITDA"
-                ],
-                "source_urls": []
               }
             ]
           },
           {
             "id": "net_profit",
-            "headline": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+            "headline": "盈利韧性向头部集中",
             "analysis": "中国移动 FY2025净利润1370.95亿元，中国联通208.16亿元且位于样本尾部；利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-            "risk": "中国广电未见非上市集团同口径FY2025净利润，无法纳入利润池比较。",
-            "source_urls": [],
+            "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
+            "source_urls": [
+              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+            ],
             "entities": [
               {
-                "name": "中国移动",
-                "headline": "FY2025净利润为1370.95亿元。",
-                "analysis": "FY2025净利润为1370.95亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
-                "evidence_labels": [
-                  "净利润"
-                ],
-                "source_urls": [
-                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                ]
-              },
-              {
                 "name": "中国电信",
-                "headline": "FY2025净利润为331.85亿元。",
+                "headline": "FY2025净利润331.85亿元",
                 "analysis": "FY2025净利润为331.85亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
@@ -8363,43 +7866,49 @@
                 ]
               },
               {
+                "name": "中国移动",
+                "headline": "FY2025净利润1370.95亿元",
+                "analysis": "FY2025净利润为1,370.95亿元；沿用公司原披露口径。",
+                "risk": "缺失、重复或异口径记录不作推算。",
+                "evidence_labels": [
+                  "净利润"
+                ],
+                "source_urls": [
+                  "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ]
+              },
+              {
                 "name": "中国联通",
-                "headline": "FY2025净利润为208.16亿元。",
+                "headline": "FY2025净利润208.16亿元",
                 "analysis": "FY2025净利润为208.16亿元；沿用公司原披露口径。",
-                "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
                   "净利润"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见非上市集团同口径FY2025净利润。",
-                "analysis": "未见非上市集团同口径FY2025净利润。",
-                "risk": "净利润口径缺口限制了对中国广电自我融资与再投资空间的判断。",
-                "evidence_labels": [
-                  "净利润"
-                ],
-                "source_urls": []
               }
             ]
           },
           {
             "id": "postpaid",
-            "headline": "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
+            "headline": "客户覆盖底盘形成断层",
             "analysis": "中国移动 FY2025移动客户10.05亿户，中国联通3.573亿户；客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
-            "risk": "中国广电未见FY2025集团移动客户总数，已披露的5G用户数不作替代；中国联通移动客户为推导约值，非直接披露的精确期末数。",
-            "source_urls": [],
+            "risk": "中国联通数值为推导约值，非直接披露的精确期末数，存在口径差异。",
+            "source_urls": [
+              "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+              "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+            ],
             "entities": [
               {
                 "name": "中国移动",
-                "headline": "FY2025移动客户为10.05亿户。",
+                "headline": "FY2025移动客户数10.05亿户",
                 "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
@@ -8407,11 +7916,11 @@
               },
               {
                 "name": "中国电信",
-                "headline": "FY2025移动客户为4.3865亿户。",
+                "headline": "FY2025移动客户数4.3865亿户",
                 "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
-                "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                "risk": "缺失、重复或异口径记录不作推算。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
@@ -8419,25 +7928,15 @@
               },
               {
                 "name": "中国联通",
-                "headline": "FY2025移动客户约3.573亿户，为推导约值。",
+                "headline": "FY2025移动客户数3.573亿户",
                 "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
-                "risk": "移动客户为推导约值，非直接披露的精确期末数，可能影响客户覆盖底盘的精确比较。",
+                "risk": "数值为推导约值，非直接披露的精确期末数。",
                 "evidence_labels": [
-                  "移动客户"
+                  "移动客户数"
                 ],
                 "source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                 ]
-              },
-              {
-                "name": "中国广电",
-                "headline": "未见FY2025集团移动客户总数。",
-                "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
-                "risk": "移动客户口径缺口限制了对中国广电客户覆盖底盘与网络规模摊薄基础的判断。",
-                "evidence_labels": [
-                  "移动客户"
-                ],
-                "source_urls": []
               }
             ]
           }
@@ -13045,7 +12544,7 @@
     "audited_at_hkt": "2026-08-25T09:18:57+08:00",
     "policy": "本地知识库未完成核验不等于互联网未披露；只有检索了对应公司官网、年报、业绩公告和业绩演示后仍未见独立指标，才标记为 public_not_found。",
     "gap_status_counts": {
-      "public_not_found": 11
+      "public_not_found": 7
     },
     "verified_public_fact_count": 9
   },
@@ -13217,8 +12716,8 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-25T10:33:31+08:00",
-      "model": "DeepSeek-V4-Pro+GLM+Qwen3-30B-A3B-Instruct-2507",
+      "generated_at_hkt": "2026-08-25T10:40:03+08:00",
+      "model": "GLM+Qwen3-30B-A3B-Instruct-2507",
       "summaries": [
         {
           "domain": "local",
@@ -13734,35 +13233,23 @@
         },
         {
           "domain": "mainland",
-          "headline": "营收、EBITDA与净利润均形成头部断层，意味着竞争资源承载力不在同一量级，但规模不等同效率。",
-          "analysis": "中国移动营收10501.87亿元、EBITDA 3389.31亿元、净利润1370.95亿元，与中国联通营收3922.23亿元、EBITDA 994.2亿元、净利润208.16亿元之间形成利润池与盈利缓冲的绝对断层，头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低。",
-          "risk": "中国广电四项指标均无同口径可比披露，无法判断其竞争资源承载力；中国联通移动客户为推导约值，非直接披露的精确期末数。",
+          "headline": "2025年内地运营商营收规模",
+          "analysis": "中国移动以10501.87亿元居首，中国电信5296.00亿元，中国联通3922.23亿元；收入底盘断层，头部可承受更高网络与客户获取投入，尾部经营容错更低。",
+          "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
           "source_urls": [],
           "focuses": [
             {
               "id": "revenue",
-              "headline": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低。",
+              "headline": "规模优势固化资源壁垒",
               "analysis": "中国移动 FY2025营收10501.9亿元，中国联通3922.23亿元；收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-              "risk": "中国广电未见非上市集团同口径FY2025营收，无法纳入收入底盘比较。",
+              "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
               "source_urls": [],
               "entities": [
                 {
-                  "name": "中国移动",
-                  "headline": "FY2025营收为10501.87亿元。",
-                  "analysis": "FY2025营收为10501.87亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映营收增长质量与持续性。",
-                  "evidence_labels": [
-                    "营收"
-                  ],
-                  "source_urls": [
-                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                  ]
-                },
-                {
                   "name": "中国电信",
-                  "headline": "FY2025营收为5296.00亿元。",
-                  "analysis": "FY2025营收为5296.00亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                  "headline": "2025年营收5296.00亿元",
+                  "analysis": "FY2025营收为5,296.00亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "营收"
                   ],
@@ -13771,41 +13258,43 @@
                   ]
                 },
                 {
+                  "name": "中国移动",
+                  "headline": "2025年营收10501.87亿元",
+                  "analysis": "FY2025营收为10,501.87亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
+                  "evidence_labels": [
+                    "营收"
+                  ],
+                  "source_urls": [
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ]
+                },
+                {
                   "name": "中国联通",
-                  "headline": "FY2025营收为3922.23亿元。",
-                  "analysis": "FY2025营收为3922.23亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映营收增长质量与持续性。",
+                  "headline": "2025年营收3922.23亿元",
+                  "analysis": "FY2025营收为3,922.23亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "营收"
                   ],
                   "source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                   ]
-                },
-                {
-                  "name": "中国广电",
-                  "headline": "未见非上市集团同口径FY2025营收。",
-                  "analysis": "未见非上市集团同口径FY2025营收。",
-                  "risk": "营收口径缺口限制了对中国广电客户收入底盘与竞争资源承载力的判断。",
-                  "evidence_labels": [
-                    "营收"
-                  ],
-                  "source_urls": []
                 }
               ]
             },
             {
               "id": "ebitda",
-              "headline": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
+              "headline": "现金创造支撑能力分层",
               "analysis": "中国移动 FY2025 EBITDA为3389.31亿元，中国联通994.2亿元；盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
-              "risk": "中国广电未见非上市集团同口径FY2025 EBITDA，无法纳入盈利缓冲比较。",
+              "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
               "source_urls": [],
               "entities": [
                 {
                   "name": "中国移动",
-                  "headline": "FY2025 EBITDA为3389.31亿元。",
-                  "analysis": "FY2025 EBITDA为3389.31亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                  "headline": "FY2025EBITDA",
+                  "analysis": "FY2025EBITDA为3,389.31亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "EBITDA"
                   ],
@@ -13815,9 +13304,9 @@
                 },
                 {
                   "name": "中国电信",
-                  "headline": "FY2025 EBITDA为1438.72亿元。",
-                  "analysis": "FY2025 EBITDA为1438.72亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                  "headline": "FY2025EBITDA",
+                  "analysis": "FY2025EBITDA为1,438.72亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "EBITDA"
                   ],
@@ -13827,52 +13316,34 @@
                 },
                 {
                   "name": "中国联通",
-                  "headline": "FY2025 EBITDA为994.2亿元。",
-                  "analysis": "FY2025 EBITDA为994.2亿元；年报直接披露该值，官网季度表四季合计为994.21亿元，受展示精度影响与年报相符。",
-                  "risk": "单一期间数据无法反映盈利缓冲的可持续性。",
+                  "headline": "FY2025EBITDA",
+                  "analysis": "2025年年报直接披露 EBITDA 为人民币994.2亿元；官网季度表四季EBITDA合计为994.21亿元（受展示精度影响与年报相符）。业绩演示和新闻稿未直接列出该值，不计入验证数。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "EBITDA"
                   ],
                   "source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                   ]
-                },
-                {
-                  "name": "中国广电",
-                  "headline": "未见非上市集团同口径FY2025 EBITDA。",
-                  "analysis": "未见非上市集团同口径FY2025 EBITDA。",
-                  "risk": "EBITDA口径缺口限制了对中国广电盈利缓冲与价格竞争承受力的判断。",
-                  "evidence_labels": [
-                    "EBITDA"
-                  ],
-                  "source_urls": []
                 }
               ]
             },
             {
               "id": "net_profit",
-              "headline": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
+              "headline": "盈利韧性向头部集中",
               "analysis": "中国移动 FY2025净利润1370.95亿元，中国联通208.16亿元且位于样本尾部；利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-              "risk": "中国广电未见非上市集团同口径FY2025净利润，无法纳入利润池比较。",
-              "source_urls": [],
+              "risk": "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。",
+              "source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              ],
               "entities": [
                 {
-                  "name": "中国移动",
-                  "headline": "FY2025净利润为1370.95亿元。",
-                  "analysis": "FY2025净利润为1370.95亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映利润转化效率与持续性。",
-                  "evidence_labels": [
-                    "净利润"
-                  ],
-                  "source_urls": [
-                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-                  ]
-                },
-                {
                   "name": "中国电信",
-                  "headline": "FY2025净利润为331.85亿元。",
+                  "headline": "FY2025净利润331.85亿元",
                   "analysis": "FY2025净利润为331.85亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "净利润"
                   ],
@@ -13881,43 +13352,49 @@
                   ]
                 },
                 {
+                  "name": "中国移动",
+                  "headline": "FY2025净利润1370.95亿元",
+                  "analysis": "FY2025净利润为1,370.95亿元；沿用公司原披露口径。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
+                  "evidence_labels": [
+                    "净利润"
+                  ],
+                  "source_urls": [
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ]
+                },
+                {
                   "name": "中国联通",
-                  "headline": "FY2025净利润为208.16亿元。",
+                  "headline": "FY2025净利润208.16亿元",
                   "analysis": "FY2025净利润为208.16亿元；沿用公司原披露口径。",
-                  "risk": "单一期间数据无法反映利润转化效率与持续性。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
                     "净利润"
                   ],
                   "source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
                   ]
-                },
-                {
-                  "name": "中国广电",
-                  "headline": "未见非上市集团同口径FY2025净利润。",
-                  "analysis": "未见非上市集团同口径FY2025净利润。",
-                  "risk": "净利润口径缺口限制了对中国广电自我融资与再投资空间的判断。",
-                  "evidence_labels": [
-                    "净利润"
-                  ],
-                  "source_urls": []
                 }
               ]
             },
             {
               "id": "postpaid",
-              "headline": "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
+              "headline": "客户覆盖底盘形成断层",
               "analysis": "中国移动 FY2025移动客户10.05亿户，中国联通3.573亿户；客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
-              "risk": "中国广电未见FY2025集团移动客户总数，已披露的5G用户数不作替代；中国联通移动客户为推导约值，非直接披露的精确期末数。",
-              "source_urls": [],
+              "risk": "中国联通数值为推导约值，非直接披露的精确期末数，存在口径差异。",
+              "source_urls": [
+                "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+              ],
               "entities": [
                 {
                   "name": "中国移动",
-                  "headline": "FY2025移动客户为10.05亿户。",
+                  "headline": "FY2025移动客户数10.05亿户",
                   "analysis": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。",
-                  "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
-                    "移动客户"
+                    "移动客户数"
                   ],
                   "source_urls": [
                     "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
@@ -13925,11 +13402,11 @@
                 },
                 {
                   "name": "中国电信",
-                  "headline": "FY2025移动客户为4.3865亿户。",
+                  "headline": "FY2025移动客户数4.3865亿户",
                   "analysis": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。",
-                  "risk": "单一期间数据无法反映客户增长质量与活跃度。",
+                  "risk": "缺失、重复或异口径记录不作推算。",
                   "evidence_labels": [
-                    "移动客户"
+                    "移动客户数"
                   ],
                   "source_urls": [
                     "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
@@ -13937,25 +13414,15 @@
                 },
                 {
                   "name": "中国联通",
-                  "headline": "FY2025移动客户约3.573亿户，为推导约值。",
+                  "headline": "FY2025移动客户数3.573亿户",
                   "analysis": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。",
-                  "risk": "移动客户为推导约值，非直接披露的精确期末数，可能影响客户覆盖底盘的精确比较。",
+                  "risk": "数值为推导约值，非直接披露的精确期末数。",
                   "evidence_labels": [
-                    "移动客户"
+                    "移动客户数"
                   ],
                   "source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
                   ]
-                },
-                {
-                  "name": "中国广电",
-                  "headline": "未见FY2025集团移动客户总数。",
-                  "analysis": "官网、年报、业绩公告与业绩演示未见FY2025集团移动客户总数；已披露的5G用户数不作替代。",
-                  "risk": "移动客户口径缺口限制了对中国广电客户覆盖底盘与网络规模摊薄基础的判断。",
-                  "evidence_labels": [
-                    "移动客户"
-                  ],
-                  "source_urls": []
                 }
               ]
             }
@@ -14362,14 +13829,14 @@
         }
       ],
       "discovery_model": "GLM",
-      "discovery_generated_at_hkt": "2026-08-25T10:33:32+08:00",
-      "evidence_hash": "9508227ae0c1f748eb4f4f81a187c1aac970b31bf71302c65e94188c0dbacbd3",
+      "discovery_generated_at_hkt": "2026-08-25T10:41:00+08:00",
+      "evidence_hash": "86888620bbc7c5be441cb199ea0196b176b3cd19989248ab89722e2dd15ee5d7",
       "insight_format": "strategic_cell_meaning_v8",
       "reused": false
     },
-    "evidence_hash": "9508227ae0c1f748eb4f4f81a187c1aac970b31bf71302c65e94188c0dbacbd3",
+    "evidence_hash": "86888620bbc7c5be441cb199ea0196b176b3cd19989248ab89722e2dd15ee5d7",
     "model_analysis_fresh": true,
     "discoveries_generated": true
   },
-  "source_record_count": 36569
+  "source_record_count": 36568
 }
