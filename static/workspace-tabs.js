@@ -10,7 +10,7 @@
     tasks: [],
     faultTotal: 0,
     competitorData: null,
-    competitorSelection: { companies: ["HKBN", "HKT"], metric: "consumer_broadband_customers", years: 5 },
+    competitorSelection: { companies: [], metric: "", years: null },
     competitorInsightRequest: 0,
     competitorInsightController: null,
     competitorInsightRetryTimer: null,
@@ -349,7 +349,8 @@
 
   function competitorHasCommonMetric(data, companyIds, years, metricKey = "") {
     const metrics = metricKey ? data.metrics.filter((metric) => metric.key === metricKey) : data.metrics;
-    return metrics.some((metric) => competitorComparableWindow(data, companyIds, metric.key, years).ok);
+    const windows = years ? [years] : [3, 5, 10, 99];
+    return metrics.some((metric) => windows.some((windowYears) => competitorComparableWindow(data, companyIds, metric.key, windowYears).ok));
   }
 
   function visibleCompetitorIds(data, selectedCompanies, years, metricKey = "") {
@@ -375,7 +376,7 @@
       return units.length === 1 ? (metric.unitLabels?.[units[0]] || units[0]) : "按所选竞对确定单位";
     };
     const comparableMetrics = selection.companies.length
-      ? data.metrics.filter((metric) => competitorComparableWindow(data, selection.companies, metric.key, selection.years).ok)
+      ? data.metrics.filter((metric) => competitorHasCommonMetric(data, selection.companies, selection.years, metric.key))
       : data.metrics;
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     const yearOptions = [3, 5, 10, 99];
@@ -410,7 +411,7 @@
     panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitor(); }));
     panel.querySelector("[data-competitor-clear]")?.addEventListener("click", () => {
       const currentlyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
-      state.competitorSelection = { companies: [], metric: "", years: 5 };
+      state.competitorSelection = { companies: [], metric: "", years: null };
       renderCompetitor({ revealedCompanies: data.companies.map((company) => company.id).filter((company) => !currentlyVisible.has(company)) });
     });
     renderCompetitorResult();
@@ -426,7 +427,7 @@
     state.competitorInsightRetryTimer = null;
     state.competitorInsightRetryAttempt = 0;
     const { companies, metric, years } = state.competitorSelection;
-    if (companies.length < 2 || !metric) {
+    if (companies.length < 2 || !metric || !years) {
       host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后生成对比图</strong><p>选择至少两家竞对、一个指标和回看年限；AI 将比较多家公司的竞争位置、分化路径与业务含义。</p></div>`;
       return;
     }

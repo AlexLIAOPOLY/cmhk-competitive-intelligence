@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T14:08:05+08:00",
+  "generated_at": "2026-08-25T14:13:31+08:00",
   "items": [
+    {
+      "id": "NEWS-880E1FBB515DE8",
+      "title": "2026年前七月中国进口同比增长22%，连续五月跑赢出口",
+      "summary": "2026年前七个月中国进口同比增长22%，连续五个月进口增速跑赢出口，专家称中国进口为全球产业链提供稳定支撑。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://big5.cctv.com/gate/big5/tv.cctv.cn/2026/08/24/VIDENG7eHNTn0NubOPAhCr4S260824.shtml",
+      "published_at": "2026-08-24T23:16:00+08:00"
+    },
     {
       "id": "NEWS-C0478CC374E9EB",
       "title": "香港7月通胀放缓至1.7%",
@@ -57,14 +65,6 @@
       "category": "竞对动态",
       "source_url": "https://unwire.hk/2026/08/18/i-cable-rename-ctf-media/movie-2/",
       "published_at": "2026-08-18T07:40:00+08:00"
-    },
-    {
-      "id": "NEWS-10F096217DA313",
-      "title": "香港一带一路办公室：赋能企业把握大湾区与东盟双循环机遇",
-      "summary": "香港一带一路办公室表示，香港可赋能企业把握粤港澳大湾区与东盟市场的双循环发展机遇。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBuczZacHNGNkEwb1dNNHRYS1lHc2QwQlRmYlAydFdVeVJYRllNNUtKMFU3dzhhd1lOMjU3QndrbnV5U0RtNXVwYThScnRZbU84dTFhVXd2NW1ZWVo4WmZIWExXcUVTVGtFSHRz?oc=5",
-      "published_at": "2026-08-16T17:59:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "df19f75016a86f66c29dffad9de0f32e992ca1a802565a98ad4edac68f250093"
+  "site_version": "327ea2fd3b508acb51c12dd360282cc9568c0c30c40c041ac4a286c4b384fe9c"
 }
