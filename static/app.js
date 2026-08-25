@@ -8537,10 +8537,13 @@ document.addEventListener("keydown", (event) => {
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
+      const periodPrefix = item.name === "CMHK" && item.period === "2026首7月"
+        ? '<small class="intelligence-period-prefix">首7月</small>'
+        : "";
       return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
         <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
         <i><b style="--row-width:${width.toFixed(2)}%"></b></i>
-        <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
+        <strong>${periodPrefix}${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
       </li>`;
     }).join("")}</ul>`;
   }
