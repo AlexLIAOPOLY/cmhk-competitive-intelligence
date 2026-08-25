@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-25T14:29:55+08:00",
+  "generated_at": "2026-08-25T14:35:48+08:00",
   "items": [
     {
       "id": "NEWS-880E1FBB515DE8",
@@ -35,6 +35,14 @@
       "published_at": "2026-08-23T19:30:00+08:00"
     },
     {
+      "id": "NEWS-4FC05673968FFB",
+      "title": "第二届吉港澳经贸交流活动将启幕 三地合作迈向常态化",
+      "summary": "第二届吉港澳经贸交流活动即将启幕，吉林、香港、澳门三地经贸合作迈向常态化。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBnc0RSdEt0dWZncU51RVNVNVFnbG94WTJNaDk1Zl82NU5mZDhTaDVwMkswUFd6U3BaaVBzZlZ1aERHeTlQTmpQbTBCalBDbFA2N3lMYjFGU09Ld01oX0xqN0l1dUNkR3BiMU1LbnVDZDc?oc=5",
+      "published_at": "2026-08-22T16:49:31+08:00"
+    },
+    {
       "id": "NEWS-C0478CC374E9EB",
       "title": "香港7月通胀放缓至1.7%",
       "summary": "香港7月消费者价格通胀如预期放缓至三个月低位，统计处数据显示同比升幅为1.7%。",
@@ -57,14 +65,6 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60381647/%E6%B8%AF%E9%90%B5%E4%BB%8A%E8%B5%B7%E8%A5%BF%E4%B9%9D%E9%BE%8D%E5%9C%B0%E5%8D%80%E5%B1%95%E9%96%8B%E8%87%AA%E5%8B%95%E8%BB%8A%E8%B7%AF%E9%9D%A2%E6%B8%AC%E8%A9%A6-%E6%93%AC%E6%98%8E%E5%B9%B4%E7%AC%AC%E4%BA%8C%E5%AD%A3%E6%8E%A8%E5%87%BA%E6%9C%8D%E5%8B%99",
       "published_at": "2026-08-19T19:02:00+08:00"
-    },
-    {
-      "id": "NEWS-2FA8D4DB71BA6F",
-      "title": "广州南沙新增一项通行粤港澳的职业资质",
-      "summary": "广州南沙新增一项可在粤港澳地区通行的职业资质，促进大湾区人才流动。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQYXE0bDZwRVBSZF90TzZjYkotUVlmT3lkZ0RRNHdfemtrOU0zeG1ZU0UzMmNkN3NDUmg5T3pkbi0yWWtGX0VScGJYdVBEV25EeEM4a1gtdDBhLW9Oc0F4UllxT0lRNF9TZDVBQkZjbHFyel9pUzBtTUZyRlRlcXBVcWphOURhVXdybkdDWXltX3ZXTUZXS1JVRkJwTkdKUQ?oc=5",
-      "published_at": "2026-08-19T17:40:24+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "c0676602eb76d2a18e878c2e7ebd236b95914469a16589f57310bdd60452223a"
+  "site_version": "d36be2ca019441df3f1a454fcfe0f7e607555e1065f569b0d6494f9295f1e709"
 }
