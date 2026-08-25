@@ -34,19 +34,6 @@
   ];
 
   const halfYearPeriods = ["2025H1", "2025H2", "2026H1"];
-  const cmhkReferenceSnapshot = {
-    period: "2026上半年",
-    scope: "对标口径｜主营业务收入已加回网内结算支出",
-    metrics: [
-      { label: "主营业务收入", value: "39.95", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "移动业务", value: "32.82", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "家宽业务", value: "1.16", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "政企业务", value: "5.97", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "营运开支", value: "33.98", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "净利润", value: "5.07", unit: "亿港元", dimension: "金额｜累计" },
-      { label: "净利润率", value: "10.2", unit: "%", dimension: "比率｜期内" }
-    ]
-  };
   const financeMetrics = [
     { label: "营运收入", value: "18.685", unit: "十亿港元", trend: "同比 +8%", periods: halfYearPeriods, values: [17.322, 19.231, 18.685], source: SOURCES.interim2026 },
     { label: "EBITDA率", value: "35.2", unit: "%", trend: "最新披露", periods: halfYearPeriods, values: [36.8, 40.8, 35.2], source: SOURCES.interim2026, gauge: 70 },
@@ -289,7 +276,15 @@
             distance: 8,
             fontSize: 11,
             fontWeight: 700,
-            formatter(params) { return rows[params.dataIndex].chartDisplay; }
+            lineHeight: 13,
+            rich: {
+              value: { color: "#eaf6fb", fontSize: 11, fontWeight: 700, lineHeight: 13 },
+              period: { color: "#789baa", fontSize: 8, fontWeight: 560, lineHeight: 10 }
+            },
+            formatter(params) {
+              const row = rows[params.dataIndex];
+              return row.periodNote ? `{value|${row.chartDisplay}}\n{period|${row.periodNote}}` : `{value|${row.chartDisplay}}`;
+            }
           },
           emphasis: { focus: "self", itemStyle: { shadowBlur: 10, shadowColor: "rgba(100, 205, 244, .45)" } },
           markLine: diverging ? { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: "rgba(153, 190, 207, .34)", width: 1 }, data: [{ xAxis: 0 }] } : undefined,
@@ -723,7 +718,8 @@
           company: comparisonCompanyNames[profile.key] || profile.company,
           value: Number.isFinite(numeric) ? numeric : null,
           chartDisplay: metric?.value === "—" ? "—" : (metric?.value || "—"),
-          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}`,
+          periodNote: sectionKey === "finance" && profile.key === "cmhk" && metric?.value !== "—" ? "2026H1" : "",
+          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}${sectionKey === "finance" && profile.key === "cmhk" ? "｜2026H1" : ""}`,
           status: metric?.value === "—" ? "未披露" : (metric?.trend || "最新披露")
         };
       })
@@ -736,7 +732,6 @@
     return `<article class="panel panel-${escapeHtml(panel.key)} comparison-panel is-visible">
       <header class="panel-heading"><span>${escapeHtml(panel.number)}</span><h2>${escapeHtml(panel.title)}</h2></header>
       <div class="monitor-content comparison-content">
-        ${panel.key === "finance" ? cmhkReferenceStrip() : ""}
         <div class="comparison-metric-grid comparison-metric-grid-${groups.length} comparison-metric-grid-${escapeHtml(panel.key)}">
           ${groups.map((group, groupIndex) => {
             const groupedMetrics = group.indices.map((index) => metrics[index]);
@@ -747,15 +742,6 @@
         </div>
       </div>
     </article>`;
-  }
-
-  function cmhkReferenceStrip() {
-    return `<section class="cmhk-reference-strip" aria-label="CMHK 2026上半年经营数据">
-      <header><strong>CMHK｜${escapeHtml(cmhkReferenceSnapshot.period)}</strong><span>${escapeHtml(cmhkReferenceSnapshot.scope)}</span></header>
-      <div>${cmhkReferenceSnapshot.metrics.map((metric) => `<article tabindex="0" aria-label="${escapeHtml(`${metric.label}：${metric.value}${metric.unit}，${metric.dimension}`)}">
-        <span>${escapeHtml(metric.label)}</span><strong>${escapeHtml(metric.value)}<small>${escapeHtml(metric.unit)}</small></strong><em>${escapeHtml(metric.dimension)}</em>
-      </article>`).join("")}</div>
-    </section>`;
   }
 
   function setupChartTooltips(root) {
