@@ -13,6 +13,7 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         self.assertIn('点击左侧报告行，在这里查看对应的 PDF 文件', script)
         self.assertNotIn('if (latest) showReportPreview(latest.path_str);', script)
         self.assertIn('previewRequest: { weekly: 0, performance: 0 }', script)
+        self.assertIn('activeReportPreview: { weekly: "", performance: "" }', script)
         self.assertNotIn('function subscriptionPanel()', script)
         self.assertNotIn('function performancePanel()', script)
 
@@ -21,6 +22,15 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
 
         self.assertIn('class="report-preview-pdf"', script)
         self.assertIn('下载原始 Word', script)
+
+    def test_clicking_the_active_report_again_returns_to_the_preview_guide(self):
+        script = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
+
+        self.assertIn('if (state.activeReportPreview[kind] === path)', script)
+        self.assertIn('clearReportPreview(kind);', script)
+        self.assertIn('if (side) side.innerHTML = reportPreviewPlaceholder();', script)
+        self.assertIn('row.setAttribute("aria-pressed", String(active));', script)
+        self.assertIn('取消预览', script)
 
     def test_only_the_filename_content_opens_the_rename_editor(self):
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
