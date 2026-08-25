@@ -134,7 +134,7 @@
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["donut", "line", "column", "lollipop", "line", "bar"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["bar", "lollipop", "bar", "lollipop", "bar", "bar"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
@@ -143,7 +143,7 @@
       { indices: [0] },
       { indices: [1] }
     ] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["line", "lollipop", "diverging"], groups: [
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "lollipop", "diverging"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
       { indices: [1] }
     ] }
@@ -297,19 +297,16 @@
     if (!disclosed.length) return emptyChart(rows, metricLabel, chartType);
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
     const isLollipop = chartType === "lollipop";
-    const rowY = (index) => rows.length === 1 ? 54 : 20 + (index * (76 / (rows.length - 1)));
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商${chartTypeNames[chartType]}`)}">
+    return `<div class="comparison-bars${isLollipop ? " is-lollipop" : ""}" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商${chartTypeNames[chartType]}`)}">
       ${rows.map((item, index) => {
-        const y = rowY(index);
-        const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 118);
-        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}>
-          <text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>
-          <line x1="52" y1="${y}" x2="170" y2="${y}" class="chart-track"></line>
-          ${item.value === null ? `<line x1="52" y1="${y}" x2="60" y2="${y}" class="chart-missing-line"></line>` : isLollipop ? `<line x1="52" y1="${y}" x2="${52 + width}" y2="${y}" stroke="${chartColors[index]}" class="chart-lollipop-line"></line><circle class="chart-point" cx="${52 + width}" cy="${y}" r="5" fill="${chartColors[index]}"></circle>` : `<rect class="chart-bar-mark" x="52" y="${y - 5}" width="${width}" height="10" rx="5" fill="${chartColors[index]}"></rect>`}
-          <text x="170" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text>
-        </g>`;
+        const width = item.value === null ? 0 : Math.max(4, (Math.abs(item.value) / max) * 100);
+        return `<div class="comparison-bar-row chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" style="--series-color:${chartColors[index]};--bar-width:${width}%" ${metricTooltip(item, metricLabel)}>
+          <span class="comparison-bar-company"><i></i>${escapeHtml(item.company)}</span>
+          <span class="comparison-bar-track"><i class="comparison-bar-fill"></i>${isLollipop && item.value !== null ? '<b class="comparison-bar-dot"></b>' : ""}</span>
+          <strong>${escapeHtml(item.chartDisplay)}</strong>
+        </div>`;
       }).join("")}
-    </svg>`;
+    </div>`;
   }
 
   function lineChart(rows, metricLabel) {
@@ -369,16 +366,18 @@
     const disclosed = rows.filter((item) => item.value !== null);
     if (!disclosed.length) return emptyChart(rows, metricLabel, "diverging");
     const max = Math.max(...disclosed.map((item) => Math.abs(item.value)), 1);
-    const rowY = (index) => rows.length === 1 ? 54 : 20 + (index * (76 / (rows.length - 1)));
-    return `<svg class="comparison-chart" viewBox="0 0 180 116" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商正负发散条形图`)}">
-      <line x1="91" y1="5" x2="91" y2="111" class="chart-axis chart-zero-axis"></line>
+    return `<div class="comparison-bars is-diverging" role="img" aria-label="${escapeHtml(`${metricLabel}三家重点运营商正负发散条形图`)}">
       ${rows.map((item, index) => {
-        const y = rowY(index);
-        const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 70);
-        const x = item.value < 0 ? 91 - width : 91;
-        return `<g class="chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" ${metricTooltip(item, metricLabel)}><text x="4" y="${y + 4}">${escapeHtml(item.company)}</text>${item.value === null ? `<line x1="87" y1="${y}" x2="95" y2="${y}" class="chart-missing-line"></line>` : `<rect class="chart-bar-mark${item.value < 0 ? " chart-bar-negative" : ""}" x="${x}" y="${y - 5}" width="${width}" height="10" rx="5" fill="${item.value < 0 ? "#efb354" : chartColors[index]}"></rect>`}<text x="174" y="${y - 8}" text-anchor="end" class="chart-direct-value">${escapeHtml(item.chartDisplay)}</text></g>`;
+        const width = item.value === null ? 0 : Math.max(3, (Math.abs(item.value) / max) * 50);
+        const start = item.value < 0 ? 50 - width : 50;
+        const color = item.value < 0 ? "#efb354" : chartColors[index];
+        return `<div class="comparison-bar-row chart-interactive-mark ${item.value === null ? "chart-mark-missing" : ""}" style="--series-color:${color};--bar-width:${width}%;--bar-start:${start}%" ${metricTooltip(item, metricLabel)}>
+          <span class="comparison-bar-company"><i></i>${escapeHtml(item.company)}</span>
+          <span class="comparison-bar-track"><i class="comparison-bar-fill"></i></span>
+          <strong>${escapeHtml(item.chartDisplay)}</strong>
+        </div>`;
       }).join("")}
-    </svg>`;
+    </div>`;
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
