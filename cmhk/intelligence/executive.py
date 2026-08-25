@@ -22,7 +22,7 @@ AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_ana
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
 DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/display_reference_data.json"
 ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json"
-INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
+INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
 DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
@@ -1124,14 +1124,20 @@ def _requested_hong_kong_domain(
     def focus(fid: str, label: str, items: list[dict[str, Any]], headline: str, context: str) -> dict[str, Any]:
         available = [item for item in items if _number(item.get("value")) is not None]
         lead = max(available, key=lambda item: float(item["value"])) if available else {"name": "-", "value": "-", "unit": ""}
-        low = min(available, key=lambda item: float(item["value"])) if available else lead
-        if len(available) >= 2:
-            prefix = f"{lead['name']}为{lead['value']}{lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
+        comparable = (
+            [item for item in available if str(item.get("period") or "") == "FY2025"]
+            if fid in {"revenue", "net_profit"}
+            else available
+        )
+        comparison_lead = max(comparable, key=lambda item: float(item["value"])) if comparable else lead
+        low = min(comparable, key=lambda item: float(item["value"])) if comparable else comparison_lead
+        if len(comparable) >= 2:
+            prefix = f"{comparison_lead['name']}为{comparison_lead['value']}{comparison_lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-                "ebitda": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。",
-                "net_profit": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-                "postpaid": "经常性收入底盘形成梯队，意味着尾部续约与流失波动风险更高；未结合ARPU仍不能判断客户价值。",
+                "revenue": f"这表明{comparison_lead['name']}的经营资源底盘最厚，更能承担网络与获客投入，{low['name']}的资源容错较窄；规模不等同效率。",
+                "ebitda": f"这表明{comparison_lead['name']}的经营造血代理最强，持续投入与价格竞争缓冲更厚，{low['name']}的防守容错更窄。",
+                "net_profit": f"这表明{comparison_lead['name']}盈利状态最稳、自我融资与再投资空间最厚，{low['name']}的盈利防线明显承压。",
+                "postpaid": f"这表明{comparison_lead['name']}的客户经营底盘更厚，{low['name']}的续约与交叉销售基础较窄；未结合ARPU不判断客户价值。",
             }[fid]
             insight = prefix + implication
         else:
@@ -1141,10 +1147,10 @@ def _requested_hong_kong_domain(
                 "context": context, "insight": insight, "items": items}
 
     focuses = [
-        focus("revenue", "营收", revenue_items, "持续竞争资源明显分层", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
-        focus("ebitda", "EBITDA", ebitda_items, "持续投入能力形成断层", "2016–2025原表；当前卡片显示FY2025"),
-        focus("net_profit", "净利润", profit_items, "盈利防线出现两极分化", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
-        focus("postpaid", "后付费用户数", postpaid_items, "经常性收入底盘分层", "只展示公司原生后付费用户数"),
+        focus("revenue", "营收", revenue_items, "HKT资源底盘最厚", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
+        focus("ebitda", "EBITDA", ebitda_items, "HKT造血能力最强", "2016–2025原表；当前卡片显示FY2025"),
+        focus("net_profit", "净利润", profit_items, "HKT稳健三港承压", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
+        focus("postpaid", "后付费用户数", postpaid_items, "HKT客户底盘更稳", "只展示公司原生后付费用户数"),
     ]
     return {"id": "local", "index": "01", "title": "本地运营商", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
             "metric": focuses[0]["metric"], "context": "CMHK补充2026首7月累计值；其他公司保留2016–2025财年窗口",
@@ -1229,19 +1235,19 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
         if len(available) >= 2:
             prefix = f"{lead['name']}为{lead['value']}{lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
-                "ebitda": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
-                "net_profit": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-                "postpaid": "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
+                "revenue": f"这表明{lead['name']}的经营资源底盘最厚，更能承担网络与获客投入，{low['name']}的资源容错较窄；规模不等同效率。",
+                "ebitda": f"这表明{lead['name']}的经营造血代理最强，持续投入与价格竞争缓冲更厚，{low['name']}的防守容错更窄。",
+                "net_profit": f"这表明{lead['name']}盈利状态最稳、自我融资与再投资空间最厚，{low['name']}的盈利防线明显承压。",
+                "postpaid": f"这表明{lead['name']}的客户经营底盘更厚，交叉销售与网络规模摊薄基础更广，{low['name']}的底盘较窄；未结合ARPU不判断客户价值。",
             }[fid]
             insight = prefix + implication
         else:
             insight = "当前不足两家公司具备可比移动客户原值；客户覆盖底盘无法形成稳健横向判断，5G用户数也不能替代集团移动客户总数。"
         headline = {
-            "revenue": "规模优势固化资源壁垒",
-            "ebitda": "现金创造支撑能力分层",
-            "net_profit": "盈利韧性向头部集中",
-            "postpaid": "客户覆盖底盘形成断层",
+            "revenue": "中国移动资源底盘最强",
+            "ebitda": "中国移动造血能力最强",
+            "net_profit": "中国移动盈利韧性最强",
+            "postpaid": "中国移动客户底盘最厚",
         }[fid]
         return {"id": fid, "label": label, "visual": "rows", "headline": headline, "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"}, "context": context, "insight": insight, "items": items}
     focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "FY2025净利润金额"), focus("postpaid", "移动客户数", mobile_customer_items, "公司披露的移动客户/移动用户；联通约值为官方期初加全年净增推导")]
@@ -1713,7 +1719,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "id": "revenue", "label": "云收入", "visual": "columns",
             "metric": {"value": revenue_amount_leader["value"], "unit": "百万美元", "label": f"{revenue_amount_leader['name']} FY{comparison_year}云收入"},
             "context": f"FY{comparison_year}最新已核验披露 · 覆盖 {len(revenue_amount_items)} 家全球云厂商 · 统一折算百万美元",
-            "insight": f"{revenue_amount_leader['name']}云收入{revenue_amount_leader['value']:g}百万美元、{revenue_tail['name']}为{revenue_tail['value']:g}百万美元；收入底盘断层意味着头部具备更强生态扩张与基础设施持续投入空间，但代理分部和重分类口径仍需单列。",
+            "insight": f"{revenue_amount_leader['name']}云收入{revenue_amount_leader['value']:g}百万美元、{revenue_tail['name']}为{revenue_tail['value']:g}百万美元；这表明{revenue_amount_leader['name']}的云业务生态底盘最厚，持续投入能力更强，{revenue_tail['name']}资源弹性较窄。",
             "items": revenue_amount_items,
         },
         {
@@ -1722,7 +1728,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "context": "按各厂商原生利润定义标注 · 统一折算百万美元",
             "insight": (
                 f"同属经营利润披露的AWS为{aws_profit_amount['value']:g}百万美元、Google为{google_profit_amount['value']:g}百万美元；"
-                "利润池向头部集中并形成主导梯队，意味着头部可用更厚盈利缓冲支撑再投资与价格竞争；其他利润定义不混入这一判断。"
+                "这表明AWS的云业务自我造血能力更强，可用更厚盈利缓冲支撑再投资与价格竞争；其他利润定义不混入这一判断。"
                 if aws_profit_amount and google_profit_amount else
                 "各厂商利润定义不同；页面保留原披露口径和缺口，不把异口径利润混入同一判断。"
             ),
@@ -1732,14 +1738,14 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "id": "investment", "label": "资本开支", "visual": "rows",
             "metric": {"value": capex_leader["value"], "unit": "百万美元", "label": f"{capex_leader['name']} {capex_leader.get('period') or '最新披露期'}集团资本开支"},
             "context": "各公司最新已核验披露期 · 母公司集团口径 · 统一折算百万美元 · 原币明细保留",
-            "insight": f"{capex_leader['name']}集团资本开支{capex_leader['value']:g}百万美元、{capex_tail['name']}为{capex_tail['value']:g}百万美元；资本军备能力分层意味着基础设施扩张承载空间不同，但集团投入并非云业务单独投入，不能据此判断投入转化效率。",
+            "insight": f"{capex_leader['name']}集团资本开支{capex_leader['value']:g}百万美元、{capex_tail['name']}为{capex_tail['value']:g}百万美元；这表明{capex_leader['name']}的基础设施扩容弹药更足，{capex_tail['name']}集团投入空间较窄，但不代表云投入效率。",
             "items": capex_items,
         },
     ]
     for focus in focuses:
         focus["headline"] = {
-            "revenue": "生态承载力形成头尾断层",
-            "profit": "盈利飞轮集中于头部", "investment": "资本军备能力明显分层",
+            "revenue": "AWS生态底盘领先",
+            "profit": "AWS自我造血能力最强", "investment": "AWS扩容弹药最足",
         }[focus["id"]]
     return {
         "id": "cloud",
@@ -2102,18 +2108,18 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         }
 
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "跨国资源底盘形成分层",
+        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "Verizon资源底盘领先",
          "metric": leader_metric(revenue_items),
-         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同，但营收规模不等同盈利能力。", "items": revenue_items},
-        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "经营缓冲厚度明显分化",
+         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；这表明Verizon的跨国经营资源底盘更厚，更能承担网络、渠道与获客投入，但营收不等同盈利能力。", "items": revenue_items},
+        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "美德双强造血",
          "metric": leader_metric(ebitda_items),
-         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；盈利缓冲分层意味着网络投入与价格竞争的经营容错不同。", "items": ebitda_items},
-        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "利润池控制力出现分化",
+         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；这表明美德两家的经营造血代理更强，网络投入与价战容错更厚。", "items": ebitda_items},
+        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "AT&T自我融资最强",
          "metric": leader_metric(profit_items),
-         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；利润池分层意味着自我融资、再投资与周期防守空间不同，但绝对值不等同盈利效率。", "items": profit_items},
-        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "客户规模与价值信号错位",
+         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；这表明AT&T当期自我融资、再投资与周期防守空间更厚，但绝对值不等同盈利效率。", "items": profit_items},
+        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "Verizon客户经营信号最强",
          "metric": leader_metric(postpaid_items),
-         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅替代口径、ARPU 26.48美元/月。客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。", "items": postpaid_items},
+         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅、ARPU 26.48美元/月。Verizon在自身口径下同时呈现大规模与高账户价值信号；NTT为替代口径，不可混排。", "items": postpaid_items},
     ]
     all_items = revenue_items + ebitda_items + profit_items + postpaid_items
     return {
@@ -2217,7 +2223,8 @@ def _apply_online_gap_audit(domains: list[dict[str, Any]]) -> dict[str, Any]:
                     }
                     focus["insight"] = (
                         f"{leader['name']}集团资本开支{leader['value']:g}百万美元、{tail['name']}为{tail['value']:g}百万美元；"
-                        "资本军备能力分层意味着基础设施扩张承载空间不同，但集团投入与云业务单独投入不能等同，也不能据此判断投入转化效率。"
+                        f"这表明{leader['name']}的基础设施扩容弹药更足，{tail['name']}的集团投入空间较窄；"
+                        "集团投入不等同云业务单独投入，也不能证明投入转化效率。"
                     )
         domain["sources"] = _dedupe_sources(list(domain.get("sources") or []) + added_sources)
     return {

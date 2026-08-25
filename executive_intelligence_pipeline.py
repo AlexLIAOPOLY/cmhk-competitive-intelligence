@@ -34,10 +34,10 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
-INSIGHT_FORMAT_VERSION = "strategic_cell_meaning_v8"
+INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
 FOCUS_RELATION_FEW_SHOTS = (
-    "少样本约束：\n"
+    "少样本示范（学习判断方式，不要照抄句式）：\n"
     "反例：HKBN有27个产品、3HK有24个、SmarTone有21个，说明三家产品较多。"
     "问题：只是复述数字，没有竞对结构和经营含义。\n"
     "正例：HKBN、3HK和SmarTone分别有27、24、21个产品，而i-CABLE和HGC为8、4个，"
@@ -51,12 +51,16 @@ FOCUS_RELATION_FEW_SHOTS = (
     "不能判断两者关系，只能分别观察投入变化和服务压力。\n"
     "反例：HKT营收36553百万港元，3HK为5448百万港元，数值存在差距。"
     "问题：只告诉读者数据是什么，没有提炼战略发现。\n"
-    "正例：HKT营收36553百万港元、3HK为5448百万港元，可披露收入规模形成头尾分层，"
-    "意味着两者竞争资源承载力不在同一量级；但绝对规模不等同经营效率。\n"
+    "正例：HKT的经营资源底盘明显更厚：营收36553百万港元，而3HK为5448百万港元；"
+    "前者更能承受网络与获客的持续投入，后者的防守空间更窄，但营收绝对值不证明效率高低。\n"
     "反例：AWS云利润39834百万美元，Google为6112百万美元，利润定义见明细。"
     "问题：只复述金额和定义。\n"
-    "正例：同属经营利润披露的AWS为39834百万美元、Google为6112百万美元，利润池向头部集中，"
-    "表明云业务盈利缓冲分层；其他厂商的毛利或调整后EBITA不混入这一判断。\n"
+    "正例：AWS的云业务自我造血能力更强：同属经营利润的AWS为39834百万美元、Google为6112百万美元；"
+    "AWS可用更厚的盈利缓冲支撑再投资与价格竞争，其他厂商的毛利或调整后EBITA不混入比较。\n"
+    "反例：中国移动营收10501.87亿元、中国联通3922.23亿元，规模优势固化资源壁垒。"
+    "问题：仍然只在命名数据差距，没有回答哪家的经营状态更强、哪家更承压。\n"
+    "正例：中国移动的收入底盘最强，中国联通的资源容错相对最窄：两者营收分别为10501.87亿元和3922.23亿元；"
+    "这意味着移动更能同时承担网络、渠道与获客投入，但该指标本身不证明投入效率。\n"
     "反例：三来源数据待补为-，四家公司后付费数据均未披露，因此无法比较。"
     "问题：把空值或占位符当成数字，而且只报告数据缺口。\n"
     "正例：四家公司均缺少可比后付费原值，口径缺口意味着客户价值和客户质量无法穿透比较，"
@@ -543,6 +547,7 @@ _ANALYTICAL_JUDGEMENT_TERMS = (
     "压力", "风险", "机会", "空间", "优势", "短板", "不同", "差异", "相差", "居首",
     "覆盖", "完整", "充分", "不足", "多于", "少于", "强于", "弱于", "扩大", "收窄",
     "深度", "约束", "承压", "断层", "区隔", "选择", "新增", "负担", "转化", "压力",
+    "更强", "更弱", "最强", "更稳", "最稳", "更厚", "最厚", "较窄", "更窄",
 )
 _INTERPRETIVE_CONNECTORS = (
     "表明", "反映", "说明", "意味着", "显示", "因此", "主要来自", "并非", "而非", "本质上",
@@ -601,39 +606,39 @@ def _has_business_judgement(value: Any) -> bool:
 
 
 _OVERVIEW_STRATEGIC_HEADLINES = {
-    ("local", "revenue"): "持续竞争资源明显分层",
-    ("local", "ebitda"): "持续投入能力形成断层",
-    ("local", "net_profit"): "盈利防线出现两极分化",
-    ("local", "postpaid"): "经常性收入底盘分层",
-    ("international", "revenue"): "跨国资源底盘形成分层",
-    ("international", "ebitda"): "经营缓冲厚度明显分化",
-    ("international", "net_profit"): "利润池控制力出现分化",
-    ("international", "postpaid_arpu"): "客户规模与价值信号错位",
-    ("mainland", "revenue"): "规模优势固化资源壁垒",
-    ("mainland", "ebitda"): "现金创造支撑能力分层",
-    ("mainland", "net_profit"): "盈利韧性向头部集中",
-    ("mainland", "postpaid"): "客户覆盖底盘形成断层",
-    ("cloud", "revenue"): "生态承载力形成头尾断层",
-    ("cloud", "profit"): "盈利飞轮集中于头部",
-    ("cloud", "investment"): "资本军备能力明显分层",
+    ("local", "revenue"): "HKT资源底盘最厚",
+    ("local", "ebitda"): "HKT造血能力最强",
+    ("local", "net_profit"): "HKT稳健三港承压",
+    ("local", "postpaid"): "HKT客户底盘更稳",
+    ("international", "revenue"): "Verizon资源底盘领先",
+    ("international", "ebitda"): "美德双强造血",
+    ("international", "net_profit"): "AT&T自我融资最强",
+    ("international", "postpaid_arpu"): "Verizon客户经营信号最强",
+    ("mainland", "revenue"): "中国移动资源底盘最强",
+    ("mainland", "ebitda"): "中国移动造血能力最强",
+    ("mainland", "net_profit"): "中国移动盈利韧性最强",
+    ("mainland", "postpaid"): "中国移动客户底盘最厚",
+    ("cloud", "revenue"): "AWS生态底盘领先",
+    ("cloud", "profit"): "AWS自我造血能力最强",
+    ("cloud", "investment"): "AWS扩容弹药最足",
 }
 
 _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS = {
-    ("local", "revenue"): ("持续竞争资源明显分层", "网络与获客投入空间分化", "规模底盘拉开防守容错"),
-    ("local", "ebitda"): ("持续投入能力形成断层", "价格竞争缓冲明显分化", "经营容错空间拉开层次"),
-    ("local", "net_profit"): ("盈利防线出现两极分化", "自我融资空间明显分层", "再投资能力呈现断层"),
-    ("local", "postpaid"): ("经常性收入底盘分层", "客户保有风险明显分化", "续约底盘拉开层次"),
-    ("international", "revenue"): ("跨国资源底盘形成分层", "网络与渠道投入空间分化", "全球获客资源承载力分层"),
-    ("international", "ebitda"): ("经营缓冲厚度明显分化", "价格竞争容错拉开层次", "持续网络投入能力分层"),
-    ("international", "net_profit"): ("利润池控制力出现分化", "自我融资与再投资空间分层", "周期防守能力拉开差距"),
-    ("international", "postpaid_arpu"): ("客户规模与价值信号错位", "客户质量不能只看规模", "客户经营底盘口径分化"),
-    ("mainland", "revenue"): ("规模优势固化资源壁垒", "网络与获客投入能力分层", "经营防守资源拉开层次"),
-    ("mainland", "ebitda"): ("现金创造支撑能力分层", "持续投入缓冲明显分化", "价格竞争容错拉开差距"),
-    ("mainland", "net_profit"): ("盈利韧性向头部集中", "自我融资能力形成断层", "再投资空间明显分化"),
-    ("mainland", "postpaid"): ("客户覆盖底盘形成断层", "客户规模梯队拉开层次", "交叉销售基础明显分化"),
-    ("cloud", "revenue"): ("生态承载力形成头尾断层", "生态扩张资源明显分层", "基础设施投入空间分化"),
-    ("cloud", "profit"): ("盈利飞轮集中于头部", "再投资与价格竞争空间分层", "盈利缓冲拉开生态差距"),
-    ("cloud", "investment"): ("资本军备能力明显分层", "基础设施扩张空间分化", "持续扩容能力形成断层"),
+    ("local", "revenue"): ("HKT资源底盘最厚", "HKT竞争弹药更足", "CMHK规模防守承压"),
+    ("local", "ebitda"): ("HKT造血能力最强", "HKT价战缓冲更厚", "3HK经营容错最窄"),
+    ("local", "net_profit"): ("HKT稳健三港承压", "HKT再投资弹药更足", "3HK盈利防线失守"),
+    ("local", "postpaid"): ("HKT客户底盘更稳", "HKT续约底盘更厚", "3HK客户底盘较窄"),
+    ("international", "revenue"): ("Verizon资源底盘领先", "Verizon跨国投入弹药更足", "NTT资源容错较窄"),
+    ("international", "ebitda"): ("美德双强造血", "Verizon经营缓冲更厚", "NTT价战容错较窄"),
+    ("international", "net_profit"): ("AT&T自我融资最强", "AT&T再投资弹药更足", "NTT周期防守较弱"),
+    ("international", "postpaid_arpu"): ("Verizon客户经营信号最强", "Verizon账户价值信号更强", "NTT客户口径不可混排"),
+    ("mainland", "revenue"): ("中国移动资源底盘最强", "中国移动竞争弹药最足", "中国联通资源容错最窄"),
+    ("mainland", "ebitda"): ("中国移动造血能力最强", "中国移动价战缓冲最厚", "中国电信经营容错较窄"),
+    ("mainland", "net_profit"): ("中国移动盈利韧性最强", "中国移动再投资弹药最足", "中国联通盈利防守较薄"),
+    ("mainland", "postpaid"): ("中国移动客户底盘最厚", "中国移动交叉销售基础最广", "中国联通客户底盘较窄"),
+    ("cloud", "revenue"): ("AWS生态底盘领先", "AWS扩张资源最厚", "Huawei生态投入弹药较窄"),
+    ("cloud", "profit"): ("AWS自我造血能力最强", "AWS再投资缓冲最厚", "Google盈利弹药较窄"),
+    ("cloud", "investment"): ("AWS扩容弹药最足", "AWS基础设施投入最强", "Alibaba集团投入空间较窄"),
 }
 
 _OVERVIEW_DIRECT_HEADLINE_TERMS = (
@@ -644,7 +649,8 @@ _OVERVIEW_DIRECT_HEADLINE_TERMS = (
 _OVERVIEW_STRATEGIC_MEANING_TERMS = (
     "持续投入", "竞争投入", "网络投入", "客户获取", "客户保有", "价格竞争", "价格战", "经营容错",
     "自我融资", "再投资", "经常性收入", "收入底盘", "客户价值", "客户质量", "续约", "流失",
-    "生态扩张", "资本军备", "基础设施", "客户经营战略",
+    "生态扩张", "资本军备", "基础设施", "客户经营战略", "经营资源", "资源底盘",
+    "经营造血", "自我造血", "盈利状态", "客户经营底盘", "客户经营画像", "扩容弹药", "资源容错",
 )
 
 
@@ -659,7 +665,10 @@ def _strategic_focus_headline(
 
 def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
     if re.match(r"^(?:但|但是|然而|而|这说明|这表明|这意味着|因此)", analysis) or re.search(
-        r"(?:意味着|说明|表明)中(?:[，,。！？!?]|$)|存在差距个|(?:变化|观察)[，,]分别为", analysis
+        r"(?:意味着|说明|表明)中(?:[，,。！？!?]|$)|存在差距个|"
+        r"(?:相差|差距(?:为|约为|约)?)(?:百万美元|百万港元|十亿美元|亿元|万户|百万户)|"
+        r"(?:变化|观察)[，,]分别为",
+        analysis,
     ):
         return f"AI分析分类句序不完整：{domain}.{focus_id}"
     terminal_marks = re.findall(r"[。！？!?]", analysis)
@@ -672,10 +681,6 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         )
     if _contains_action_advice(analysis):
         return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}"
-    if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and not any(
-        term in analysis for term in _OVERVIEW_STRATEGIC_MEANING_TERMS
-    ):
-        return f"AI分析分类仍停留在报数，缺少当前格子的战略意义：{domain}.{focus_id}"
     if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and "不能纳入这一判断" in analysis:
         return f"AI分析引用有效竞对数值后又排除该竞对，判断自相矛盾：{domain}.{focus_id}"
     unsupported_causal = tuple(
@@ -1620,6 +1625,13 @@ def _ranked_focus_items(focus: dict[str, Any]) -> list[dict[str, Any]]:
 def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     focus_id = str(focus.get("id") or "")
     items = _ranked_focus_items(focus)
+    if domain == "local" and focus_id in {"revenue", "net_profit"}:
+        # CMHK is currently a 2026 first-seven-month reference while the other
+        # local operators are FY2025; the compact model input omits period, so
+        # keep it out of full-year operating-strength rankings by identity.
+        fy2025_items = [item for item in items if str(item.get("name") or "") != "CMHK"]
+        if len(fy2025_items) >= 2:
+            items = fy2025_items
     by_name = {str(item.get("name") or ""): item for item in items}
     metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
     metric_value = _display_number(metric.get("value"))
@@ -1634,22 +1646,22 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             if focus_id == "revenue":
                 return (
                     f"{high_name} FY2025营收{high_value}{unit}，{low_name}{low_value}{unit}；"
-                    "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。"
+                    f"这表明{high_name}的经营资源底盘最厚，更能承担网络与获客投入，{low_name}的资源容错较窄；规模不等同效率。"
                 )
             if focus_id == "ebitda":
                 return (
                     f"{high_name} FY2025 EBITDA为{high_value}{unit}，{low_name}{low_value}{unit}；"
-                    "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄；EBITDA不等同现金流。"
+                    f"这表明{high_name}的经营造血代理最强，持续投入与价格竞争缓冲更厚，{low_name}的防守容错更窄；EBITDA不等同现金流。"
                 )
             if focus_id == "net_profit":
                 low_signal = "已为负值" if float(low.get("value") or 0) < 0 else "位于样本尾部"
                 return (
                     f"{high_name} FY2025净利润{high_value}{unit}，{low_name}{low_value}{unit}且{low_signal}；"
-                    "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。"
+                    f"这表明{high_name}盈利状态最稳、自我融资与再投资空间最厚，{low_name}的盈利防线明显承压。"
                 )
             return (
                 f"{high_name} FY2025移动客户{high_value}{unit}，{low_name}{low_value}{unit}；"
-                "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。"
+                f"这表明{high_name}的客户经营底盘更厚，交叉销售与网络规模摊薄基础更广，{low_name}的底盘较窄；未结合ARPU不能判断客户价值。"
             )
         if focus_id == "postpaid":
             named = "、".join(str(item.get("name") or "") for item in focus.get("items") or [] if item.get("name"))
@@ -1664,17 +1676,17 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         if focus_id == "revenue":
             return (
                 f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
-                "收入底盘分层意味着跨国网络、渠道与客户获取投入的承载空间不同；营收规模仍不等同盈利能力。"
+                f"表明{high_name}的经营资源底盘更厚，更能承担跨国网络、渠道与获客投入；{low_name}资源容错较窄，但营收不等同盈利能力。"
             )
         if focus_id == "ebitda":
             return (
                 f"{high_name} EBITDA约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "盈利缓冲分层意味着网络投入与价格竞争的经营容错不同；非GAAP调整口径仍不可直接等同。"
+                f"表明{high_name}的经营造血代理更强，网络投入与价格竞争容错更厚；{low_name}相对承压，但非GAAP调整口径不可完全等同。"
             )
         if focus_id == "net_profit":
             return (
                 f"{high_name} FY2025净利润约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                "利润池分层意味着自我融资、再投资与周期防守空间不同；绝对值仍不等同盈利效率。"
+                f"表明{high_name}当期盈利状态更强，自我融资、再投资与周期防守空间更厚；{low_name}缓冲较窄，绝对值不等同盈利效率。"
             )
         verizon = by_name.get("Verizon") or high
         ntt = by_name.get("NTT Group") or low
@@ -1688,8 +1700,8 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         )
         return (
             f"Verizon {_display_number(verizon.get('value'))}百万连接、ARPA {_display_number(verizon_arpu)}美元/月；"
-            f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅替代口径、ARPU {_display_number(ntt_arpu)}美元/月。"
-            "客户基础与客户价值错位，意味着客户质量不能只看规模；口径不同不可混排。"
+            f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅、ARPU {_display_number(ntt_arpu)}美元/月。"
+            "这表明Verizon自身口径兼具规模与账户价值信号，客户经营画像更强；NTT为替代口径，不可混排。"
         )
     if strategic_fallback and _has_deep_interpretation(strategic_fallback):
         return strategic_fallback
@@ -1762,7 +1774,7 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         return (
             f"最高的{high.get('name')} FY2024云收入{_display_number(high.get('value'))}百万美元，"
             f"最低的{low.get('name')}{_display_number(low.get('value'))}百万美元；"
-            "云收入底盘断层意味着头部具备更强生态扩张与基础设施持续投入空间；代理分部与重分类口径仍不能直接等同。"
+            f"表明{high.get('name')}的云业务生态底盘最厚，生态扩张与基础设施持续投入能力更强；{low.get('name')}资源弹性较窄，代理口径不混排。"
         )
     if (domain, focus_id) == ("cloud", "trend") and items:
         high, low = items[0], items[-1]
@@ -1775,13 +1787,13 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         high, low = (direct[0], direct[-1]) if len(direct) >= 2 else (items[0], items[-1])
         return (
             f"同属经营利润披露的{high.get('name')} FY2024为{_display_number(high.get('value'))}百万美元，"
-            f"{low.get('name')}为{_display_number(low.get('value'))}百万美元；利润池向头部集中并形成主导梯队，意味着头部可用更厚盈利缓冲支撑再投资与价格竞争。"
+            f"{low.get('name')}为{_display_number(low.get('value'))}百万美元；表明{high.get('name')}的云业务自我造血能力更强，可用更厚盈利缓冲支撑再投资与价格竞争，其他利润定义不可混入。"
         )
     if (domain, focus_id) == ("cloud", "investment") and items:
         high, low = items[0], items[-1]
         return (
             f"{high.get('name')} FY2024集团资本开支{_display_number(high.get('value'))}百万美元，"
-            f"{low.get('name')}{_display_number(low.get('value'))}百万美元；资本军备能力明显分层，意味着基础设施扩张承载空间不同，"
+            f"{low.get('name')}{_display_number(low.get('value'))}百万美元；表明{high.get('name')}的基础设施扩容弹药更足，{low.get('name')}的集团投入空间相对较窄，"
             "但集团投入并非云业务单独投入，不能据此判断投入转化效率。"
         )
     if (domain, focus_id) == ("cloud", "disclosure"):
@@ -2462,6 +2474,24 @@ def generate_model_focus_insight(
             "从客户覆盖底盘对交叉销售和网络规模摊薄的影响切入",
             "只分析当前三家，不补入其他运营商或5G用户数",
         ),
+        ("cloud", "revenue"): (
+            "判断哪家云业务的生态底盘最厚，并点名尾部企业的资源弹性",
+            "从收入底盘对基础设施持续投入的承载力切入",
+            "从头部规模能否形成生态扩张正循环切入，保留代理分部边界",
+            "从尾部厂商的资源容错和持续投入压力切入",
+        ),
+        ("cloud", "profit"): (
+            "判断哪家云业务的自我造血能力最强，并说明再投资缓冲",
+            "从AWS与Azure的头部接近关系切入，判断是单一主导还是双强竞争",
+            "从Google与头部经营利润的距离切入，说明价格竞争和再投资弹药",
+            "从利润定义边界切入，只在经营利润同口径企业中给出经营判断",
+        ),
+        ("cloud", "investment"): (
+            "判断哪家集团的基础设施扩容弹药最足，并点名尾部企业",
+            "从资本投入对持续扩容的承载力切入，不判断转化效率",
+            "从集团投入不等同云业务投入的边界切入，仍给出资源弹性判断",
+            "从尾部集团的扩容容错压力切入",
+        ),
         ("cloud", "margin_change"): (
             "按自身同口径利润率改善与减弱分组",
             "比较改善主体与下降主体的方向分化，不计算新差值",
@@ -2520,6 +2550,13 @@ def generate_model_focus_insight(
         "metric": focus.get("metric"),
         "scope": focus_contract,
         "required_angle": angle_instruction,
+        "regeneration_round": regeneration_index,
+        "forbidden_recent_headlines": recent_headlines,
+        "forbidden_recent_analyses": recent_insights,
+        "business_question": (
+            "只依据这组证据，哪家企业的当前经营状态更强或更稳，"
+            "哪家相对承压？这个判断对其竞争资源或客户经营意味着什么？"
+        ),
         "items": [
             {
                 "name": item.get("name"),
@@ -2543,7 +2580,15 @@ def generate_model_focus_insight(
             "role": "system",
             "content": (
                 "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
-                "任务不是解释指标，而是比较当前items中至少两个竞对、期间或指标，找出数据关系及其有界经营含义。"
+                "任务不是解释指标，而是回答输入business_question。"
+                "先在内部完成四步：提出一个候选经营判断；从items中找出支持与反驳证据；"
+                "缩小到当前指标真正能支持的边界；再写成最终结论。不输出思考过程。"
+                "最终文案必须点名企业并回答其经营画像，例如资源底盘更厚、自我造血更强、"
+                "客户经营更稳或盈利防线承压；不能只把高低差距改名为分层、断层、梯队或壁垒。"
+                "forbidden_recent_headlines和forbidden_recent_analyses是最近已展示版本；不得复制、近义改写或仅调换语序。"
+                "regeneration_round不同时，必须依照required_angle改变判断切口，不能只换标题。"
+                "不得输出缺少数值的差距占位语，例如‘差距百万美元’；不计算输入未提供的衍生差值。"
+                "至少比较当前items中两个竞对、期间或指标，再说明有界经营含义。"
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
                 "不得复用旧版标题。标题必须直接概括这组数字对持续投入、竞争防守、客户收入底盘、盈利飞轮或资本军备的意义；"
                 "禁止用年份、指标名、金额、绝对值、序列、入库、披露、口径、数据或重新判断充当标题。只能使用输入数字和事实。"
@@ -2615,7 +2660,8 @@ def generate_model_focus_insight(
             attempt_messages.append({
                 "role": "user",
                 "content": (
-                    f"上一版未通过新洞察门禁：{last_error}。必须换一个分析角度和句式，"
+                    f"上一版未通过事实或格式校验：{last_error}。请先自我批评：它是否只复述高低、"
+                    "分层或断层，而没有回答哪家企业经营更强/更稳、哪家承压。然后重写，"
                     "不得复用current_insight或既有标题；若错误涉及衍生数字，只并列输入原值，"
                     f"不得输出相减、相加或换算结果；本次改用‘{retry_angle}’，该角度覆盖上一条"
                     "required_angle；仍只能使用输入原值，只返回JSON对象。"
@@ -2799,7 +2845,7 @@ def generate_model_focus_insight(
             # anchors. Reject near-copies, but allow a genuinely different
             # judgement angle even when those immutable anchors keep lexical
             # similarity moderately high.
-            if similarity >= 0.94:
+            if similarity >= 0.88:
                 raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = ValueError(str(exc))
@@ -2929,7 +2975,11 @@ def generate_model_domain_summaries(
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
         "你是电信竞争情报分析员。只能使用输入JSON里的事实、数字、期间、口径和来源，不得补充常识数字或猜测。"
-        "任务不是解释数据，而是从每个focus的竞对、期间或指标之间找出可验证关系，并说明这项关系对竞争结构、"
+        "任务不是解释数据，而是从每个focus的竞对、期间或指标之间找出可验证关系，回答"
+        "‘哪家企业当前经营更强或更稳、哪家相对承压、这对竞争资源意味着什么’，并说明判断边界。"
+        "每个focus先在内部完成候选判断、支持/反驳证据、边界收缩、最终改写四步，只输出最终文案。"
+        "overview四区的每条文案必须点名企业并给出有边界的经营画像；不能只把高低差距改名为分层、断层、梯队或壁垒。"
+        "这项判断还需说明对竞争结构、"
         "价格区隔、增长质量、利润转化、需求强度或服务压力的有界含义。"
         "每个领域给出一句headline、一段analysis和一句risk；为每个focus给出analysis、risk；"
         "并为每个focus中的每个实体逐一给出headline、analysis、risk、evidence_labels和source_urls。"
@@ -2941,9 +2991,9 @@ def generate_model_domain_summaries(
         "而要直接解释这一口径缺口限制了哪一种客户价值、盈利质量或竞争结构判断；"
         "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
         "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
-        "全部17个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
+        "全部当前focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
         "focus.headline必须是战略意义判断，不能照抄页签或指标名称，也不能用年份、金额、绝对值、序列、入库、披露、口径或数据作标题。"
-        "overview四区域的focus正文在引用具体数字后，必须继续说明其对持续投入、价格竞争容错、客户收入底盘、"
+        "overview四区域的focus正文在引用具体数字后，必须继续说明对具体企业持续投入、价格竞争容错、客户收入底盘、"
         "自我融资与再投资、生态扩张或基础设施资本军备的意义，不能停在高低、分层或梯队描述。"
         "每个focus至少比较两个竞对、两个期间或两个指标；无法同口径比较时，结论必须是不可比边界而非强行排名。"
         "禁止无证据写领先、竞争力、定价权、导致、造成、推动、带来、源于或驱动；少于3个可比对象时明确样本边界。"

@@ -210,7 +210,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("?request_id=focus-local-scale-", requests[0].full_url)
         self.assertNotEqual(requests[0].full_url, requests[1].full_url)
 
-    def test_focus_generation_keeps_stale_ai_copy_out_of_model_prompt(self):
+    def test_focus_generation_marks_recent_ai_copy_as_forbidden(self):
         focus = {
             "id": "scale",
             "label": "在售方案组合",
@@ -242,9 +242,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             pipeline.generate_model_focus_insight("local", focus)
 
         prompt = json.loads(request.call_args.args[0].data.decode("utf-8"))["messages"][1]["content"]
-        self.assertNotIn("161项", prompt)
-        self.assertNotIn("59项", prompt)
-        self.assertNotIn("旧版头部三家主导", prompt)
+        self.assertIn('"forbidden_recent_analyses"', prompt)
+        self.assertIn("旧版共161项，不得再发给模型。", prompt)
+        self.assertIn("历史文案含59项与48项。", prompt)
+        self.assertIn("旧版头部三家主导", prompt)
         self.assertIn('"value": 84', prompt)
         self.assertIn('"value": 27', prompt)
 
@@ -666,7 +667,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             '**({"relationships": item.get("components")} if (domain_id, focus_id) == ("local", "overlap") else {})',
             source,
         )
-        self.assertIn("if similarity >= 0.94:", source)
+        self.assertIn("if similarity >= 0.88:", source)
 
     def test_overlap_gate_rejects_cross_product_category_mixing(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1402,7 +1403,37 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 )
                 self.assertFalse(pipeline._contains_action_advice(analysis))
                 checked += 1
-        self.assertEqual(checked, 17)
+        self.assertEqual(checked, 15)
+
+    def test_local_full_year_judgement_excludes_partial_year_cmhk_value(self):
+        focus = {
+            "id": "revenue",
+            "items": [
+                {"name": "HKT", "value": 36553, "unit": "百万港元", "period": "FY2025"},
+                {"name": "3HK", "value": 5448, "unit": "百万港元", "period": "FY2025"},
+                {"name": "CMHK", "value": 4544.6, "unit": "百万港元", "period": "2026首7月"},
+            ],
+            "metric": {"value": 36553, "unit": "百万港元"},
+        }
+
+        analysis = pipeline._compact_grounded_focus_analysis("local", focus)
+
+        self.assertIn("HKT FY2025营收36553百万港元，3HK5448百万港元", analysis)
+        self.assertNotIn("CMHK", analysis)
+
+    def test_focus_gate_rejects_unfilled_difference_unit(self):
+        focus = {
+            "items": [
+                {"name": "AWS", "value": 45606},
+                {"name": "Azure", "value": 44589},
+            ]
+        }
+        analysis = (
+            "AWS与Azure经营利润分别为45606百万美元和44589百万美元，存在差距百万美元，"
+            "这意味着两家形成双强竞争。"
+        )
+
+        self.assertIn("句序不完整", pipeline._focus_gate_error("cloud", "profit", analysis, focus))
 
     def test_mobile_price_gate_rejects_false_no_overlap_claim(self):
         focus = {
