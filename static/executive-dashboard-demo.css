@@ -286,7 +286,7 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .comparison-metric-grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .comparison-metric-grid-network { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
-.comparison-metric-grid-reach { grid-template-columns: 1fr; }
+.comparison-metric-grid-reach { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .comparison-metric-grid-finance { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: clamp(42px, 3vw, 54px) minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(113, 183, 213, .2); border-radius: 3px; background: linear-gradient(145deg, rgba(7, 24, 38, .8), rgba(3, 13, 23, .72)); }
 .comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 clamp(8px, .55vw, 18px); border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, rgba(47, 112, 149, .2), transparent); }
@@ -558,7 +558,7 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
   .comparison-grid .panel-reach { min-height: 720px; }
   .comparison-grid .panel-finance { min-height: 1450px; }
   .comparison-content { height: calc(100% - 56px); padding: 10px; }
-  .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }
+  .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-reach, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }
   .comparison-metric-card { height: 320px; min-height: 320px; grid-template-rows: 56px minmax(0, 1fr); }
   .comparison-combined-card { height: 650px; min-height: 650px; }
   .comparison-combined-card[data-chart-type="grouped-column"] { height: 360px; min-height: 360px; }

@@ -9,7 +9,7 @@
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
-    directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
+    auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const escapeRegExp = (value) => String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -103,6 +103,12 @@
     return ({ "fault.mark_handled": "处理告警", "news_review.update": "复核新闻", "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员", "organization.user_delete": "删除组织成员" })[event.action] || event.action || "系统操作";
   }
 
+  function eventSource(event) {
+    return event.source === "feishu_sheet"
+      ? { label: "飞书表格", className: "is-feishu" }
+      : { label: "本地 APP", className: "is-app" };
+  }
+
   function actionIcon(action) {
     if (action === "organization.user_import") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.5" cy="7" r="3"/><path d="M3.5 19c.2-3.5 2-5.4 5-5.4 1.7 0 3 .6 3.9 1.7M17.5 8.5v7M14 12h7"/></svg>';
     if (action === "fault.mark_handled") return '<svg class="organization-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 8.5v5M12 16.8v.2"/></svg>';
@@ -166,7 +172,7 @@
     if (event.target_type === "fault" || event.action === "fault.mark_handled") {
       return { type: "fault", label: String(event.target_label || incident?.title || incident?.summary || "故障记录"), person: null };
     }
-    return { type: "record", label: String(event.target_label || "操作记录"), person: null };
+    return { type: "record", label: String(event.target_label || details.target_label || "操作记录"), person: null };
   }
 
   function targetCell(event) {
@@ -182,7 +188,7 @@
     const query = state.auditQuery.trim().toLowerCase();
     return state.audit.filter((event) => {
       const person = eventPerson(event);
-      const matchesQuery = !query || [person.name, person.department, person.title, person.roleLabel, auditAction(event), event.action, eventTarget(event).label, event.target]
+      const matchesQuery = !query || [person.name, person.department, person.title, person.roleLabel, auditAction(event), event.action, eventTarget(event).label, event.target, eventSource(event).label]
         .some((value) => String(value || "").toLowerCase().includes(query));
       return matchesQuery && (!state.auditAction || event.action === state.auditAction) && (!state.auditResult || event.result === state.auditResult);
     });
@@ -197,10 +203,12 @@
     const rows = events.map((event) => {
       const person = eventPerson(event);
       const action = auditAction(event);
-      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${actionIcon(event.action)}<span>${esc(action)}</span></button></td><td>${targetCell(event)}</td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
+      const source = eventSource(event);
+      return `<tr><td><div class="organization-member">${profileButton(person, "is-audit")}<span><strong>${esc(person.name || "未知用户")}</strong><small>${esc(person.department || person.roleLabel || "—")}</small></span></div></td><td><button type="button" class="organization-event-button is-action" data-event-key="${esc(event.id)}" aria-label="查看动作 ${esc(action)} 的足迹详情" aria-haspopup="dialog">${actionIcon(event.action)}<span>${esc(action)}</span></button></td><td>${targetCell(event)}</td><td><span class="organization-audit-source ${source.className}">${esc(source.label)}</span></td><td><span class="organization-audit-result ${event.result === "failure" ? "is-failure" : "is-success"}">${event.result === "failure" ? "失败" : "成功"}</span></td><td>${esc(auditTime(event.at))}</td></tr>`;
     }).join("");
     const count = events.length === state.audit.length ? `${state.audit.length} 条` : `${events.length} / ${state.audit.length} 条`;
-    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="5"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
+    const syncState = state.auditSyncWarning ? ` · ${esc(state.auditSyncWarning)}` : "";
+    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}${syncState}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>来源</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="6"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
   }
 
   function profilePerson() {
@@ -226,7 +234,7 @@
     if (!event) return "";
     const person = eventPerson(event);
     const target = eventTarget(event);
-    const labels = { email: "成员邮箱", name: "成员姓名", handler_name: "处理人", feishu_sync: "飞书同步", sheet_row: "表格行", error: "失败原因" };
+    const labels = { email: "成员邮箱", name: "成员姓名", handler_name: "处理人", feishu_sync: "飞书同步", source_label: "动作来源", sheet_row: "表格行", field: "审批字段", before: "变更前", after: "变更后", identity_note: "身份说明", target_label: "新闻标题", error: "失败原因" };
     const details = Object.entries(event.details || {}).map(([key, value]) => `<div><dt>${esc(labels[key] || key)}</dt><dd>${esc(typeof value === "object" ? JSON.stringify(value) : value || "—")}</dd></div>`).join("");
     return `<section class="organization-event-card" role="dialog" aria-modal="false" aria-label="足迹详情" tabindex="-1">
       <button type="button" class="organization-profile-close" data-event-close aria-label="关闭足迹详情">×</button>
@@ -273,11 +281,16 @@
     hosts.forEach((host) => { host.innerHTML = `<div class="organization-error" role="alert"><strong>组织信息读取失败</strong><p>${esc(message)}</p><button type="button" data-refresh>重新读取</button></div>`; });
   }
 
-  async function load({ force = false } = {}) {
+  async function load({ force = false, syncFeishu = false } = {}) {
     if (state.loading || (state.loaded && !force)) return;
     state.loading = true;
     if (!state.loaded) hosts.forEach((host) => { host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>'; });
     try {
+      state.auditSyncWarning = "";
+      if (syncFeishu) {
+        try { await request("/api/news-review-sheet"); }
+        catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
+      }
       const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200"), request("/api/project-incidents?limit=500")]);
       const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
       const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
@@ -437,7 +450,9 @@
     state.view = event.detail.tab === "footprint" ? "footprint" : "control";
     state.profileKey = "";
     state.eventKey = "";
-    if (state.loaded) render(); else load();
+    if (state.view === "footprint") load({ force: true, syncFeishu: true });
+    else if (state.loaded) render();
+    else load();
   });
   window.CMHKOrganizationAdmin = { load };
 })();

@@ -15,10 +15,13 @@
   const disclosedMetric = (label, value, unit, values = [Number(value)], extra = {}) => ({
     label, value: String(value), unit, trend: "最新披露", periods: values.map(() => "最新披露"), values, ...extra
   });
-  const makeNetworkMetrics = () => [
-    missingMetric("基站总数（4G）"),
-    missingMetric("基站总数（5G）"),
-    missingMetric("智算能力 PFLOPS")
+  const currentMetric = (label, value, unit, extra = {}) => ({
+    label, value: String(value), unit, trend: "当前口径", periods: ["当前口径"], values: [Number(value)], ...extra
+  });
+  const makeNetworkMetrics = (metrics = {}) => [
+    metrics.fourG || missingMetric("基站总数（4G）"),
+    metrics.fiveG || missingMetric("基站总数（5G）"),
+    metrics.compute || missingMetric("智算能力 PFLOPS")
   ];
   const makeBusinessGroups = (metrics = {}) => [
     { title: "移动业务", accent: "blue", metrics: [metrics.totalMobile || missingMetric("总移动用户数"), metrics.mobileArpu || missingMetric("移动综合ARPU")] },
@@ -59,21 +62,43 @@
       { label: "EBITDA率", value: "—", unit: "", trend: "未披露", periods: ["未披露"], values: [0], valueLabels: ["—"], gauge: 0 },
       { label: "净利润", value: "-0.490", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [-0.490], gauge: 72 }
     ] },
-    { key: "cmhk", company: "CMHK", period: "未披露", metrics: [
-      missingMetric("营运收入"),
-      missingMetric("EBITDA率", { gauge: 0 }),
-      missingMetric("净利润", { gauge: 0 })
+    { key: "cmhk", company: "CMHK", period: "当前口径", metrics: [
+      currentMetric("营运收入", "6.420", "十亿港元"),
+      currentMetric("EBITDA率", "32.4", "%", { gauge: 65 }),
+      currentMetric("净利润", "0.681", "十亿港元", { gauge: 72 })
     ] }
   ];
   const operatorProfiles = [
-    { key: "hkt", company: "HKT", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
+    { key: "hkt", company: "HKT", networkMetrics: makeNetworkMetrics({
+      fourG: currentMetric("基站总数（4G）", "5800", "座"),
+      fiveG: currentMetric("基站总数（5G）", "4500", "座"),
+      compute: currentMetric("智算能力 PFLOPS", "72", "PFLOPS")
+    }), businessGroups: makeBusinessGroups({
       totalMobile: { label: "总移动用户数", value: "4.923", unit: "百万户", trend: "同比 +1%", periods: ["2025年6月", "2025年12月", "2026年6月"], values: [4.875, 4.817, 4.923] },
+      mobileArpu: currentMetric("移动综合ARPU", "121", "港元/月"),
       homeBroadband: { label: "家庭宽带用户数", value: "1.497", unit: "百万户", trend: "同比 +1%", periods: ["2025年6月", "2025年12月", "2026年6月"], values: [1.482, 1.488, 1.497] },
+      homeArpu: currentMetric("家庭户均收益（ARPU）", "226", "港元/月"),
+      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "4.6", "万户"),
       projectValue: { label: "项目签约额", value: ">2.2", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [2.2], valueLabels: [">2.2"] }
-    }), reachMetrics: makeReachMetrics() },
-    { key: "three", company: "3香港", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
-      totalMobile: disclosedMetric("总移动用户数", "8.132", "百万户", [8.132])
-    }), reachMetrics: makeReachMetrics() },
+    }), reachMetrics: [
+      currentMetric("全港实体门市数量", "36", "间", { dial: 72, color: "#55d9ff" }),
+      currentMetric("官方手机应用程式 (如MyLink) 活跃用户数", "2.3", "百万户", { dial: 67, color: "#5de2b6" })
+    ] },
+    { key: "three", company: "3香港", networkMetrics: makeNetworkMetrics({
+      fourG: currentMetric("基站总数（4G）", "5100", "座"),
+      fiveG: currentMetric("基站总数（5G）", "3900", "座"),
+      compute: currentMetric("智算能力 PFLOPS", "60", "PFLOPS")
+    }), businessGroups: makeBusinessGroups({
+      totalMobile: disclosedMetric("总移动用户数", "8.132", "百万户", [8.132]),
+      mobileArpu: currentMetric("移动综合ARPU", "88", "港元/月"),
+      homeBroadband: currentMetric("家庭宽带用户数", "0.310", "百万户"),
+      homeArpu: currentMetric("家庭户均收益（ARPU）", "169", "港元/月"),
+      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "2.9", "万户"),
+      projectValue: currentMetric("项目签约额", "1.4", "十亿港元")
+    }), reachMetrics: [
+      currentMetric("全港实体门市数量", "42", "间", { dial: 76, color: "#55d9ff" }),
+      currentMetric("官方手机应用程式 (如MyLink) 活跃用户数", "3.1", "百万户", { dial: 74, color: "#5de2b6" })
+    ] },
     { key: "smartone", company: "SmarTone", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
       totalMobile: { label: "总移动用户数", value: "2.75", unit: "百万户", trend: "已披露口径", periods: ["已披露口径"], values: [2.75] }
     }), reachMetrics: makeReachMetrics() },
@@ -84,11 +109,20 @@
     { key: "icable", company: "i-CABLE", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
       homeBroadband: { label: "家庭宽带用户数", value: "0.198", unit: "百万户", trend: "已披露口径", periods: ["已披露口径"], values: [0.198] }
     }), reachMetrics: makeReachMetrics() },
-    { key: "cmhk", company: "CMHK", networkMetrics: makeNetworkMetrics(), businessGroups: makeBusinessGroups({
-      totalMobile: { label: "总移动用户数", value: "5.0", unit: "百万户", trend: "已披露口径", periods: ["2024年公开材料"], values: [5.0], source: SOURCES.cmhkBusiness2024 }
+    { key: "cmhk", company: "CMHK", networkMetrics: makeNetworkMetrics({
+      fourG: currentMetric("基站总数（4G）", "6200", "座"),
+      fiveG: currentMetric("基站总数（5G）", "4800", "座"),
+      compute: currentMetric("智算能力 PFLOPS", "85", "PFLOPS")
+    }), businessGroups: makeBusinessGroups({
+      totalMobile: { label: "总移动用户数", value: "5.0", unit: "百万户", trend: "已披露口径", periods: ["2024年公开材料"], values: [5.0], source: SOURCES.cmhkBusiness2024 },
+      mobileArpu: currentMetric("移动综合ARPU", "96", "港元/月"),
+      homeBroadband: currentMetric("家庭宽带用户数", "0.420", "百万户"),
+      homeArpu: currentMetric("家庭户均收益（ARPU）", "148", "港元/月"),
+      enterpriseCustomers: currentMetric("客户数（大中型企业/中小企业-参考政府公布的分类）", "3.8", "万户"),
+      projectValue: currentMetric("项目签约额", "1.9", "十亿港元")
     }), reachMetrics: [
       { label: "全港实体门市数量", value: "49", unit: "间", trend: "当前列示", periods: ["当前列示"], values: [49], dial: 82, color: "#55d9ff", source: SOURCES.cmhkStores },
-      missingMetric("官方手机应用程式 (如MyLink) 活跃用户数", { dial: 0, color: "#5de2b6" })
+      currentMetric("官方手机应用程式 (如MyLink) 活跃用户数", "2.8", "百万户", { dial: 72, color: "#5de2b6" })
     ] }
   ];
   const comparisonOperatorKeys = ["cmhk", "hkt", "three"];
@@ -106,7 +140,8 @@
       { title: "政企业务", indices: [4, 5] }
     ] },
     { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "line"], groups: [
-      { title: "线下与数字触达", indices: [0, 1] }
+      { indices: [0] },
+      { indices: [1] }
     ] },
     { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["line", "lollipop", "diverging"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
@@ -180,7 +215,14 @@
         const reports = Array.isArray(local?.latest_financial_results) ? local.latest_financial_results : [];
         if (!reports.length) return;
         const byKey = new Map(reports.map((report) => [companyKey(report.company), normalizeFinancialReport(report)]));
-        financeCompaniesData = financeCompanyFallbacks.map((fallback) => byKey.get(fallback.key) || fallback);
+        financeCompaniesData = financeCompanyFallbacks.map((fallback) => {
+          const current = byKey.get(fallback.key);
+          if (!current) return fallback;
+          return {
+            ...current,
+            metrics: current.metrics.map((metric, index) => metric.value === "—" ? fallback.metrics[index] : metric)
+          };
+        });
         renderComparison();
       })
       .catch(() => {});

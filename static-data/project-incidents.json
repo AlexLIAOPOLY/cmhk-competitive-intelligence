@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "bb330d8ea222fa0929a97048",
+      "task_id": "incident:bb330d8ea222fa0929a97048",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个后台处理步骤失败、回退或延期，影响任务执行连续性。推断：若未及时恢复，可能导致任务归档延迟或数据不完整。",
+      "suggestions": [
+        "检查错误发生时间附近的任务归档和候选ID，确认受影响步骤的最终状态（回退成功或最终失败）。",
+        "若步骤进入待恢复队列，保留已有结果，仅重试失败的竞争指标AI洞察步骤，并监控响应完整性。",
+        "验证AI服务端日志，确认响应生成是否正常，必要时联系AI服务团队排查模型输出问题。",
+        "修复后，重新执行受影响任务并验证任务归档状态，确保业务处理完成。"
+      ],
+      "occurred_at_hkt": "2026-08-25T11:45:00+08:00",
+      "started_at_hkt": "2026-08-25T11:45:00+08:00",
+      "heartbeat_at_hkt": "2026-08-25T11:45:00+08:00",
+      "completed_at_hkt": "2026-08-25T11:45:30+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "dd73ef60c26b0fb2308c0a5a",
       "task_id": "incident:dd73ef60c26b0fb2308c0a5a",
       "title": "主项目后台任务",
@@ -822,6 +848,32 @@
       "started_at_hkt": "2026-08-25T11:25:23+08:00",
       "heartbeat_at_hkt": "2026-08-25T11:39:24+08:00",
       "completed_at_hkt": "2026-08-25T11:39:54+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "7b45ff262f6d7401b251833f",
+      "task_id": "incident:7b45ff262f6d7401b251833f",
+      "title": "竞对工作台 AI 竞争洞察",
+      "kind": "competitor-workbench",
+      "kind_label": "竞对工作台 AI 竞争洞察",
+      "scope": "competitor-workbench",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "竞对工作台 AI 洞察未生成",
+      "impact": "用户无法查看当前组合的AI竞争格局、公司定位和业务含义洞察，但权威数据图表展示不受影响。",
+      "suggestions": [
+        "检查AI网关日志，确认对应请求的模型路由、响应状态码及返回内容是否完整",
+        "验证当前模型服务的限流队列和超时配置，确认是否存在请求被截断的情况",
+        "在测试环境用相同参数重放请求，观察是否能稳定复现并获取完整响应",
+        "恢复后回读竞对工作台页面，确认AI洞察模块正常展示，并检查相关告警是否消除"
+      ],
+      "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
+      "started_at_hkt": "2026-08-25T11:45:00+08:00",
+      "heartbeat_at_hkt": "2026-08-25T11:48:30+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -12055,54 +12107,6 @@
       "started_at_hkt": "2026-08-17T13:21:33+08:00",
       "heartbeat_at_hkt": "2026-08-17T13:21:33+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "6473f2d9016f4aed4f4ef9ab",
-      "task_id": "incident:6473f2d9016f4aed4f4ef9ab",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T13:19:32+08:00",
-      "started_at_hkt": "2026-08-17T13:19:32+08:00",
-      "heartbeat_at_hkt": "2026-08-17T13:19:32+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "81cdf51dd26d1d9f54a4d407",
-      "task_id": "incident:81cdf51dd26d1d9f54a4d407",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-17T13:16:43+08:00",
-      "started_at_hkt": "2026-08-17T13:17:07+08:00",
-      "heartbeat_at_hkt": "2026-08-17T13:24:33+08:00",
-      "completed_at_hkt": "2026-08-17T13:25:03+08:00",
       "handled_at_hkt": ""
     }
   ],

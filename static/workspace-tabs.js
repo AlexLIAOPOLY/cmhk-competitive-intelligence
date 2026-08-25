@@ -380,7 +380,7 @@
     const yearOptions = [3, 5, 10, 99];
     const validYears = new Set(yearOptions.filter((years) => competitorHasCommonMetric(data, selection.companies, years, selection.metric)));
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
-      <header class="competitor-builder-head"><strong>竞对数据工作台</strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
+      <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
@@ -446,10 +446,14 @@
     const companyMeta = new Map(data.companies.map((item) => [item.id, item]));
     const companyLabel = (company) => companyMeta.get(company)?.label || company;
     const unitLabel = metricMeta.unitLabels?.[comparison.unit] || comparison.unit;
-    const chartLegend = companies.map((company, index) => `<span><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}</span>`).join("");
+    const coincidentGroups = competitorCoincidentGroups(companies, visibleYears, lookup);
+    const coincidentMembers = new Set(coincidentGroups.flatMap((group) => group.companies));
+    const chartLegend = companies.map((company, index) => `<span class="${coincidentMembers.has(company) ? "is-coincident" : ""}"><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}${coincidentMembers.has(company) ? "<em>曲线重合</em>" : ""}</span>`).join("");
+    const coreSummary = buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit: unitLabel, coincidentGroups });
     const chart = buildCompetitorChart({ companies, companyLabel, visibleYears, lookup, unit: unitLabel });
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => { const cell = lookup.get(`${company}|${year}`); return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : "未披露")}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : '<span class="competitor-missing">— 未披露</span>'}</td>`; }).join("")}</tr>`).join("");
-    host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
+    host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
+      <div class="competitor-core-summary" role="note"><span>核心结论</span><strong>${esc(coreSummary)}</strong></div>
       <div class="competitor-result-overview">
       ${chart}
       <section class="competitor-insight" id="competitorInsight" role="status" aria-live="polite" aria-busy="false">
@@ -469,6 +473,41 @@
 
   function competitorComparator(value) {
     return ({ ">=": "≥", "<=": "≤", "~": "≈", "approx": "≈" })[String(value || "").toLowerCase()] || (value === "=" ? "" : String(value || ""));
+  }
+
+  function competitorCoincidentGroups(companies, visibleYears, lookup) {
+    const signatures = new Map();
+    companies.forEach((company) => {
+      const cells = visibleYears.map((year) => lookup.get(`${company}|${year}`));
+      if (!cells.length || cells.some((cell) => !Number.isFinite(cell?.value))) return;
+      const signature = cells.map((cell) => `${cell.comparator || "="}:${cell.value}`).join("|");
+      const group = signatures.get(signature) || [];
+      group.push(company);
+      signatures.set(signature, group);
+    });
+    return [...signatures.values()].filter((group) => group.length > 1).map((group) => ({
+      companies: group,
+      sharedScope: group.every((company) => visibleYears.some((year) => /shared|共建|共享/i.test(String(lookup.get(`${company}|${year}`)?.scope || "")))),
+    }));
+  }
+
+  function buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit, coincidentGroups = [] }) {
+    const format = (value) => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(value);
+    const lastYear = visibleYears.at(-1);
+    const latest = companies.map((company) => ({ company, cell: lookup.get(`${company}|${lastYear}`) })).filter((item) => Number.isFinite(item.cell?.value));
+    const sharedOverlap = coincidentGroups.find((group) => group.sharedScope);
+    if (sharedOverlap) {
+      const sharedCell = lookup.get(`${sharedOverlap.companies[0]}|${lastYear}`);
+      const sharedLabels = sharedOverlap.companies.map(companyLabel).join("与");
+      const others = latest.filter((item) => !sharedOverlap.companies.includes(item.company)).sort((a, b) => b.cell.value - a.cell.value);
+      const otherCopy = others.length ? `${companyLabel(others[0].company)}披露${competitorComparator(others[0].cell.comparator)}${format(others[0].cell.value)}${unit}；` : "";
+      return `${lastYear}年，${otherCopy}${sharedLabels}按共建共享口径均为${competitorComparator(sharedCell.comparator)}${format(sharedCell.value)}${unit}，两条曲线完全重合。`;
+    }
+    const ranked = [...latest].sort((a, b) => b.cell.value - a.cell.value);
+    if (!ranked.length) return "当前窗口暂无可用的共同披露值。";
+    const leader = ranked[0];
+    const overlap = coincidentGroups.length ? `；${coincidentGroups[0].companies.map(companyLabel).join("与")}曲线完全重合` : "";
+    return `${lastYear}年，${companyLabel(leader.company)}在所选公司中最高，披露${competitorComparator(leader.cell.comparator)}${format(leader.cell.value)}${unit}${overlap}。`;
   }
 
   function buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit }) {
