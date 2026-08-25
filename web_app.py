@@ -63,6 +63,10 @@ from cmhk.services.subscriptions import (
     news_category_summary,
 )
 from cmhk.auth.service import AuthService
+from cmhk.integrations.feishu_sheet_edit_events import (
+    TARGET_SPREADSHEET_TOKEN,
+    sheet_edit_events,
+)
 from project_monitor_card_actions import CardActionHandler
 from cmhk.reporting.operational_pdf import generate_operational_report_pdf, report_filename
 
@@ -70,7 +74,11 @@ from cmhk.reporting.operational_pdf import generate_operational_report_pdf, repo
 ROOT = Path(__file__).resolve().parent
 AUTH = AuthService(ROOT)
 NEWS_REVIEW_AUDIT_STATE_PATH = AUTH.state_dir / "news-review-sheet-audit-state.json"
+NEWS_REVIEW_ACTOR_OVERRIDES_PATH = AUTH.state_dir / "news-review-actor-overrides.json"
+NEWS_REVIEW_SHEET_EDIT_EVENT_PATH = AUTH.state_dir / "feishu-sheet-edit-events.jsonl"
 NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
+NEWS_REVIEW_ACTOR_BACKFILL_LOCK = threading.Lock()
+NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT = 0.0
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
@@ -4021,16 +4029,23 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
 
 def attach_news_review_actors(snapshot: dict) -> dict:
     """Attach the latest authenticated human reviewer to each reviewed row."""
+    refresh_news_review_actor_overrides()
+    overrides = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
+    overrides = overrides if isinstance(overrides, dict) else {}
     reviewers: dict[int, dict[str, str]] = {}
     for event in AUTH.operation_audit(limit=1000):
         if event.get("action") != "news_review.update" or event.get("result") != "success":
             continue
+        override = overrides.get(str(event.get("id") or ""))
+        if str(event.get("actor_id") or "") == "feishu-review-sheet-collaborator":
+            if not isinstance(override, dict) or not override.get("name"):
+                continue
         details = event.get("details") if isinstance(event.get("details"), dict) else {}
         decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
         reviewer = {
-            "id": str(event.get("actor_id") or ""),
-            "name": str(event.get("actor_name") or "未知用户"),
-            "avatarUrl": str(event.get("actor_avatar_url") or ""),
+            "id": str((override or {}).get("id") or event.get("actor_id") or ""),
+            "name": str((override or {}).get("name") or event.get("actor_name") or "未知用户"),
+            "avatarUrl": str((override or {}).get("avatar_url") or event.get("actor_avatar_url") or ""),
             "reviewedAt": str(event.get("at") or ""),
         }
         for raw_row_number in decision_rows:
@@ -4049,6 +4064,64 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         if reviewer:
             row["reviewer"] = reviewer
     return snapshot
+
+
+def refresh_news_review_actor_overrides(*, force: bool = False) -> dict[str, dict[str, str]]:
+    """Backfill legacy generic actors through Feishu's official audit API."""
+    global NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT
+    now = time.time()
+    with NEWS_REVIEW_ACTOR_BACKFILL_LOCK:
+        if not force and now - NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT < 300:
+            cached = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
+            return cached if isinstance(cached, dict) else {}
+        NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT = now
+
+    existing = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
+    overrides = existing if isinstance(existing, dict) else {}
+    generic_events = [
+        event
+        for event in AUTH.operation_audit(limit=1000)
+        if event.get("action") == "news_review.update"
+        and event.get("result") == "success"
+        and str(event.get("actor_id") or "") == "feishu-review-sheet-collaborator"
+        and str(event.get("id") or "") not in overrides
+    ]
+    timestamps: list[tuple[dict, int]] = []
+    for event in generic_events:
+        try:
+            parsed = datetime.fromisoformat(str(event.get("at") or "").replace("Z", "+00:00"))
+            timestamps.append((event, int(parsed.timestamp())))
+        except ValueError:
+            continue
+    if not timestamps:
+        return overrides
+    try:
+        audit_events = AUTH.feishu_sheet_edit_audit_events(
+            spreadsheet_token=TARGET_SPREADSHEET_TOKEN,
+            oldest=max(0, min(timestamp for _, timestamp in timestamps) - 900),
+            latest=max(timestamp for _, timestamp in timestamps) + 900,
+        )
+    except Exception:
+        return overrides
+
+    candidates: list[tuple[int, dict[str, str]]] = []
+    for item in audit_events:
+        try:
+            event_time = int(item.get("event_time") or 0)
+        except (TypeError, ValueError):
+            continue
+        profile = AUTH.feishu_profile_by_open_id(str(item.get("operator_value") or ""))
+        if event_time and profile.get("name"):
+            candidates.append((event_time, profile))
+    for event, recorded_at in timestamps:
+        nearby = [candidate for candidate in candidates if abs(candidate[0] - recorded_at) <= 900]
+        if not nearby:
+            continue
+        _, profile = min(nearby, key=lambda candidate: abs(candidate[0] - recorded_at))
+        overrides[str(event["id"])] = profile
+    if overrides != existing:
+        AUTH._write(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, overrides)
+    return overrides
 
 
 def sync_news_review_sheet_audit(
@@ -4097,6 +4170,30 @@ def sync_news_review_sheet_audit(
         previous = AUTH._read(NEWS_REVIEW_AUDIT_STATE_PATH, {})
         previous_rows = previous.get("rows") if isinstance(previous, dict) else {}
         same_sheet = str(previous.get("sheet_id") or "") == sheet_id if isinstance(previous, dict) else False
+        try:
+            previous_event_ms = int(previous.get("last_feishu_event_ms") or 0)
+        except (AttributeError, TypeError, ValueError):
+            previous_event_ms = 0
+        editor_events = sheet_edit_events(
+            path=NEWS_REVIEW_SHEET_EDIT_EVENT_PATH,
+            after_ms=previous_event_ms,
+        )
+        editor_event = editor_events[-1] if editor_events else {}
+        operator_profiles: list[dict[str, str]] = []
+        for operator in editor_event.get("operators") or []:
+            if not isinstance(operator, dict):
+                continue
+            profile = AUTH.feishu_profile_by_open_id(str(operator.get("open_id") or ""))
+            if profile.get("name"):
+                operator_profiles.append(profile)
+        actor = None
+        if operator_profiles:
+            actor = {
+                "id": ",".join(profile["id"] for profile in operator_profiles),
+                "name": "、".join(profile["name"] for profile in operator_profiles),
+                "avatarUrl": operator_profiles[0].get("avatar_url", "") if len(operator_profiles) == 1 else "",
+                "role": "EXTERNAL",
+            }
         if same_sheet and isinstance(previous_rows, dict):
             for row_key, current in current_rows.items():
                 before_row = previous_rows.get(row_key)
@@ -4112,14 +4209,15 @@ def sync_news_review_sheet_audit(
                     after = str(after_decisions[column_index] or "")
                     if before == after or (row_number, column_index, before, after) in ignored:
                         continue
+                    if actor is None:
+                        # Keep the previous value as the comparison baseline until
+                        # the matching Feishu editor event can be resolved.
+                        current["decisions"][column_index] = before
+                        continue
                     field_label = str(headers[column_index] if len(headers) > column_index else f"审批列{column_index + 1}")
                     title = str(current.get("title") or f"飞书审核表第 {row_number} 行")
                     events.append(AUTH.record_operation(
-                        actor={
-                            "id": "feishu-review-sheet-collaborator",
-                            "name": "飞书表格协作者",
-                            "role": "EXTERNAL",
-                        },
+                        actor=actor,
                         action="news_review.update",
                         target=sheet_id,
                         source="feishu_sheet",
@@ -4131,12 +4229,18 @@ def sync_news_review_sheet_audit(
                             "field": field_label,
                             "before": before,
                             "after": after,
-                            "identity_note": "飞书表格单元格回读不提供可靠的具体编辑人身份",
+                            "identity_note": "操作者来自飞书 drive.file.edit_v1 事件，并经组织通讯录解析",
+                            "feishu_event_id": str(editor_event.get("event_id") or ""),
                         },
                     ))
         next_state = {
             "sheet_id": sheet_id,
             "rows": current_rows,
+            "last_feishu_event_ms": int(
+                (editor_event.get("create_time_ms") or previous_event_ms)
+                if events
+                else previous_event_ms
+            ),
         }
         if previous != next_state:
             AUTH._write(NEWS_REVIEW_AUDIT_STATE_PATH, next_state)
@@ -6254,6 +6358,12 @@ def main() -> None:
     if corrected_tasks:
         print(f"Corrected {len(corrected_tasks)} misclassified report task(s)", flush=True)
     start_scheduler_with_backend()
+    try:
+        import news_vote_service
+
+        news_vote_service.ensure_started()
+    except Exception as exc:
+        print(f"Feishu event listener failed to start: {exc}", flush=True)
     port = int(os.environ.get("PORT", "8765"))
     host = os.environ.get("HOST", "0.0.0.0")
     server = ThreadingHTTPServer((host, port), AppHandler)

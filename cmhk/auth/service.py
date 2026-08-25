@@ -352,6 +352,78 @@ class AuthService:
             user = next((item for item in self._users() if str(item.get("feishu_open_id") or "") == open_id), None)
         return self._public_user(user)
 
+    def feishu_profile_by_open_id(self, open_id: str) -> dict[str, str]:
+        """Resolve an event operator Open ID to the organization display profile."""
+        open_id = str(open_id or "").strip()
+        if not open_id or not self.feishu_configured:
+            return {}
+        known = self.public_user_by_feishu_open_id(open_id) or {}
+        try:
+            payload = self._json_request(
+                "https://open.feishu.cn/open-apis/contact/v3/users/"
+                + quote(open_id)
+                + "?user_id_type=open_id&department_id_type=open_department_id",
+                token=self._tenant_access_token(),
+            )
+        except Exception:
+            return {
+                "id": str(known.get("id") or open_id),
+                "open_id": open_id,
+                "name": str(known.get("name") or ""),
+                "avatar_url": str(known.get("avatarUrl") or ""),
+            }
+        user = payload.get("data", {}).get("user", {})
+        if not isinstance(user, dict):
+            user = {}
+        avatar = user.get("avatar") if isinstance(user.get("avatar"), dict) else {}
+        return {
+            "id": str(known.get("id") or open_id),
+            "open_id": open_id,
+            "name": str(user.get("name") or known.get("name") or ""),
+            "avatar_url": str(
+                avatar.get("avatar_240")
+                or avatar.get("avatar_72")
+                or known.get("avatarUrl")
+                or ""
+            ),
+        }
+
+    def feishu_sheet_edit_audit_events(
+        self,
+        *,
+        spreadsheet_token: str,
+        oldest: int,
+        latest: int,
+    ) -> list[dict[str, Any]]:
+        """Read official historical file-edit actors for one Feishu Sheet."""
+        if not self.feishu_configured:
+            return []
+        items: list[dict[str, Any]] = []
+        page_token = ""
+        for _ in range(20):
+            params: dict[str, Any] = {
+                "user_id_type": "open_id",
+                "oldest": int(oldest),
+                "latest": int(latest),
+                "event_name": "space_edit_doc",
+                "object_type": 6,
+                "object_value": str(spreadsheet_token),
+                "page_size": 200,
+            }
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._json_request(
+                "https://open.feishu.cn/open-apis/admin/v1/audit_infos?"
+                + urlencode(params),
+                token=self._tenant_access_token(),
+            )
+            data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+            items.extend(item for item in data.get("items", []) if isinstance(item, dict))
+            if not data.get("has_more") or not data.get("page_token"):
+                break
+            page_token = str(data["page_token"])
+        return items
+
     def record_operation(
         self,
         *,

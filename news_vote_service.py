@@ -184,6 +184,17 @@ def _handle_card_action(data: Any) -> Any:
     )
 
 
+def _handle_drive_file_edit(data: Any) -> None:
+    from cmhk.integrations.feishu_sheet_edit_events import (
+        capture_drive_file_edit_event,
+    )
+
+    capture_drive_file_edit_event(
+        data,
+        path=STATE_DIR.parent / "var" / "auth" / "feishu-sheet-edit-events.jsonl",
+    )
+
+
 def _run_forever() -> None:
     import truststore
 
@@ -194,6 +205,7 @@ def _run_forever() -> None:
     handler = (
         lark.EventDispatcherHandler.builder("", "", lark.LogLevel.INFO)
         .register_p2_card_action_trigger(_handle_card_action)
+        .register_p2_drive_file_edit_v1(_handle_drive_file_edit)
         .build()
     )
     client = ws.Client(

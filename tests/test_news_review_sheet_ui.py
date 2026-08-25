@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext
+from datetime import datetime
 from pathlib import Path
 import tempfile
 import unittest
@@ -173,7 +174,34 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
 
-    def test_direct_feishu_decision_is_mirrored_once_and_local_change_is_ignored(self) -> None:
+    def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            event = service.record_operation(
+                actor={"id": "feishu-review-sheet-collaborator", "name": "飞书表格协作者"},
+                action="news_review.update",
+                source="feishu_sheet",
+                details={"decision_rows": [39]},
+            )
+            override_path = service.state_dir / "news-review-actor-overrides.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_ACTOR_OVERRIDES_PATH", override_path),
+                mock.patch.object(service, "feishu_sheet_edit_audit_events", return_value=[{
+                    "event_time": int(datetime.fromisoformat(event["at"]).timestamp()) - 20,
+                    "operator_value": "ou_alice",
+                }]),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice",
+                    "name": "Alice Chen",
+                    "avatar_url": "https://example.com/alice.png",
+                }),
+            ):
+                overrides = web_app.refresh_news_review_actor_overrides(force=True)
+
+            self.assertEqual(overrides[event["id"]]["name"], "Alice Chen")
+
+    def test_direct_feishu_decision_is_mirrored_with_real_event_actor_once(self) -> None:
         def snapshot(status: str) -> dict:
             return {
                 "sheetId": "sheet-1",
@@ -188,17 +216,49 @@ class NewsReviewActorTests(unittest.TestCase):
             with (
                 mock.patch.object(web_app, "AUTH", service),
                 mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "sheet_edit_events", return_value=[{
+                    "event_id": "evt-1",
+                    "create_time_ms": 1787638413000,
+                    "operators": [{"open_id": "ou_alice"}],
+                }]),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice",
+                    "name": "Alice Chen",
+                    "avatar_url": "https://example.com/alice.png",
+                }),
             ):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
                 events = web_app.sync_news_review_sheet_audit(snapshot("接受"))
                 self.assertEqual(len(events), 1)
                 self.assertEqual(events[0]["source"], "feishu_sheet")
-                self.assertEqual(events[0]["actor_name"], "飞书表格协作者")
+                self.assertEqual(events[0]["actor_name"], "Alice Chen")
+                self.assertEqual(events[0]["details"]["feishu_event_id"], "evt-1")
                 self.assertEqual(events[0]["details"]["before"], "待审核")
                 self.assertEqual(events[0]["details"]["after"], "接受")
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
                 ignored = [{"rowNumber": 2, "columnIndex": 0, "before": "接受", "value": "不接受"}]
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受"), ignored_changes=ignored), [])
+
+    def test_direct_feishu_decision_waits_until_event_actor_is_available(self) -> None:
+        def snapshot(status: str) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{"rowNumber": 2, "values": sheet_row(status, "待审核", "未同步", "", "", "", "测试新闻")}],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "sheet_edit_events", return_value=[]),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
+                saved = service._read(state_path, {})
+                self.assertEqual(saved["rows"]["2"]["decisions"][0], "待审核")
 
     def test_new_sheet_rows_establish_a_baseline_without_false_footprints(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
