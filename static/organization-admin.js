@@ -36,6 +36,15 @@
     return payload;
   }
 
+  function syncNewsReviewSheet() {
+    if (!window.CMHKNewsReviewSheetSyncPromise) {
+      window.CMHKNewsReviewSheetSyncPromise = request("/api/news-review-sheet")
+        .finally(() => { window.CMHKNewsReviewSheetSyncPromise = null; });
+    }
+    return window.CMHKNewsReviewSheetSyncPromise;
+  }
+  window.CMHKSyncNewsReviewSheet = syncNewsReviewSheet;
+
   function safeImageUrl(raw) {
     try {
       const url = new URL(String(raw || "").trim(), location.origin);
@@ -289,7 +298,7 @@
     try {
       state.auditSyncWarning = "";
       if (syncFeishu) {
-        try { await request("/api/news-review-sheet"); }
+        try { await syncNewsReviewSheet(); }
         catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
       }
       const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200"), request("/api/project-incidents?limit=500")]);
