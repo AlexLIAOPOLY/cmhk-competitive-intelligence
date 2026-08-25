@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "053758171d63ab4735c3b134",
+      "task_id": "incident:053758171d63ab4735c3b134",
+      "title": "Feishu媒体指标定时汇总",
+      "kind": "feishu-media-metrics",
+      "kind_label": "Feishu媒体指标定时汇总",
+      "scope": "feishu-media-metrics",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "Feishu媒体指标任务日志出现执行错误",
+      "impact": "当期媒体指标汇总流程中断，可能导致部分媒体指标未收集、AI校验未执行、群消息未发送或发送后回读未完成，影响数据时效性和下游决策。",
+      "suggestions": [
+        "检查任务日志和state.json文件，确认中断的具体阶段（收集/校验/发送/回读）及已完成的步骤。",
+        "在任务代码中实现或优化飞书API调用的重试逻辑，采用带抖动的指数退避策略，并设置合理的最大重试次数和超时时间。",
+        "分析近期飞书API调用频率，评估是否需要降低请求速率或实施请求队列/节流机制，避免再次触发速率限制。",
+        "修复后，从state.json记录的中断点恢复未完成时段的指标汇总任务，并验证群消息发送及回读功能正常。"
+      ],
+      "occurred_at_hkt": "2026-08-25T17:00:33+08:00",
+      "started_at_hkt": "2026-08-25T17:00:33+08:00",
+      "heartbeat_at_hkt": "2026-08-25T17:00:33+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "2ac5ee8fee50df5598c5114a",
       "task_id": "incident:2ac5ee8fee50df5598c5114a",
       "title": "主项目后台任务",
@@ -12093,30 +12119,6 @@
       "started_at_hkt": "2026-08-17T13:48:06+08:00",
       "heartbeat_at_hkt": "2026-08-17T13:48:06+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "af3ea386235f630629a38ce3",
-      "task_id": "incident:af3ea386235f630629a38ce3",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-17T13:40:46+08:00",
-      "started_at_hkt": "2026-08-17T13:41:04+08:00",
-      "heartbeat_at_hkt": "2026-08-17T13:47:36+08:00",
-      "completed_at_hkt": "2026-08-17T13:48:06+08:00",
       "handled_at_hkt": ""
     }
   ],

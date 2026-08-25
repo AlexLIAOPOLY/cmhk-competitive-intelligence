@@ -295,6 +295,19 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-panel .panel-heading > span { min-width: 1.55em; color: transparent; background: linear-gradient(180deg, #c9f4ff 0%, #64d9ff 48%, #5c9cff 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(36px, 2.35vw, 58px); letter-spacing: .015em; filter: drop-shadow(0 0 9px rgba(100, 205, 244, .3)); text-shadow: none; }
 .comparison-panel .panel-heading h2 { padding-left: clamp(13px, .85vw, 25px); border-left-color: rgba(116, 209, 241, .42); color: transparent; background: linear-gradient(90deg, #ffffff 0%, #c7effc 55%, #86c9e3 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(23px, 1.5vw, 37px); letter-spacing: .055em; line-height: 1.1; filter: drop-shadow(0 0 8px rgba(86, 189, 225, .18)); }
 .comparison-content { display: block; height: calc(100% - clamp(58px, 6.5vh, 78px)); padding: 8px; }
+.panel-finance .comparison-content { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
+.cmhk-reference-strip { min-width: 0; padding: 7px 9px 8px; border: 1px solid rgba(239, 179, 84, .26); border-radius: 5px; background: linear-gradient(100deg, rgba(57, 40, 16, .45), rgba(7, 22, 35, .78)); }
+.cmhk-reference-strip > header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.cmhk-reference-strip > header strong { color: #ffe0a5; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.cmhk-reference-strip > header span { overflow: hidden; color: #9fb7c2; font-size: 9px; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.cmhk-reference-strip > div { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.cmhk-reference-strip article { min-width: 0; padding-left: 7px; border-left: 1px solid rgba(239, 179, 84, .2); outline: none; }
+.cmhk-reference-strip article:first-child { padding-left: 0; border-left: 0; }
+.cmhk-reference-strip article > span,
+.cmhk-reference-strip article > em { display: block; overflow: hidden; color: #9eb8c4; font-size: 8px; font-style: normal; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.cmhk-reference-strip article > strong { display: block; margin: 2px 0; color: #f7fbfd; font-family: var(--font-tech); font-size: 15px; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
+.cmhk-reference-strip article > strong small { margin-left: 3px; color: #b9cbd3; font-family: var(--font-ui); font-size: 7px; font-weight: 600; }
+.cmhk-reference-strip article:focus-visible { border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(239, 179, 84, .68); }
 .comparison-metric-grid { width: 100%; height: 100%; min-height: 0; display: grid; align-items: stretch; gap: clamp(8px, .55vw, 20px); }
 .comparison-metric-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .comparison-metric-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -357,6 +370,22 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 
 /* Chart-only comparison: values are labeled directly on marks; no duplicate tables. */
 .comparison-metric-card { position: relative; isolation: isolate; grid-template-rows: 40px minmax(0, 1fr); transition: border-color 160ms ease, background 160ms ease; }
+.comparison-metric-card::before,
+.comparison-metric-card::after { content: ""; position: absolute; inset: 40px 0 0; z-index: 0; pointer-events: none; }
+.comparison-metric-card::before { background: var(--metric-card-bg) center / cover no-repeat; opacity: .38; filter: saturate(.82) contrast(.94) brightness(1.18); }
+.comparison-metric-card::after { background: linear-gradient(90deg, rgba(5, 18, 30, .72) 0%, rgba(5, 18, 30, .44) 48%, rgba(5, 18, 30, .18) 100%); }
+.comparison-metric-card[data-card-theme="base-stations"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/base-stations-v1.webp"); }
+.comparison-metric-card[data-card-theme="ai-compute"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/ai-compute-v1.webp"); }
+.comparison-metric-card[data-card-theme="mobile-service"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/mobile-service-v1.webp"); }
+.comparison-metric-card[data-card-theme="home-broadband"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/home-broadband-v1.webp"); }
+.comparison-metric-card[data-card-theme="enterprise-service"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/enterprise-service-v1.webp"); }
+.comparison-metric-card[data-card-theme="retail-stores"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/retail-stores-v1.webp"); }
+.comparison-metric-card[data-card-theme="mobile-app"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/mobile-app-v1.webp"); }
+.comparison-metric-card[data-card-theme="financial-scale"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/financial-scale-v1.webp"); }
+.comparison-metric-card[data-card-theme="ebitda-margin"] { --metric-card-bg: url("./assets/executive-dashboard/metric-card-backgrounds/ebitda-margin-v1.webp"); }
+.comparison-metric-card[data-card-theme="base-stations"]::before,
+.comparison-metric-card[data-card-theme="ai-compute"]::before,
+.comparison-metric-card[data-card-theme="enterprise-service"]::before { background-position: right center; }
 .comparison-metric-card > header,
 .comparison-chart-only { position: relative; z-index: 1; }
 .comparison-metric-card:hover { border-color: rgba(125, 181, 205, .24); background: rgba(8, 25, 39, .82); }
@@ -583,6 +612,15 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
   .comparison-grid .panel-business { min-height: 1140px; }
   .comparison-grid .panel-reach { min-height: 450px; }
   .comparison-grid .panel-finance { min-height: 620px; }
+  .panel-finance .comparison-content { grid-template-rows: auto auto; }
+  .cmhk-reference-strip > header { display: block; }
+  .cmhk-reference-strip > header span { display: block; margin-top: 3px; text-align: left; white-space: normal; }
+  .cmhk-reference-strip > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cmhk-reference-strip article { min-height: 54px; padding: 7px; border: 1px solid rgba(239, 179, 84, .14); border-radius: 3px; }
+  .cmhk-reference-strip article:first-child { padding: 7px; border-left: 1px solid rgba(239, 179, 84, .14); }
+  .cmhk-reference-strip article > span,
+  .cmhk-reference-strip article > em { font-size: 9px; }
+  .cmhk-reference-strip article > strong { font-size: 17px; }
   .comparison-content { height: calc(100% - 62px); padding: 8px; }
   .comparison-metric-grid { align-content: start; }
   .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-reach, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }

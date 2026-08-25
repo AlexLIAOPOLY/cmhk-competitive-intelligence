@@ -34,6 +34,19 @@
   ];
 
   const halfYearPeriods = ["2025H1", "2025H2", "2026H1"];
+  const cmhkReferenceSnapshot = {
+    period: "2026上半年",
+    scope: "对标口径｜主营业务收入已加回网内结算支出",
+    metrics: [
+      { label: "主营业务收入", value: "39.95", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "移动业务", value: "32.82", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "家宽业务", value: "1.16", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "政企业务", value: "5.97", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "营运开支", value: "33.98", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "净利润", value: "5.07", unit: "亿港元", dimension: "金额｜累计" },
+      { label: "净利润率", value: "10.2", unit: "%", dimension: "比率｜期内" }
+    ]
+  };
   const financeMetrics = [
     { label: "营运收入", value: "18.685", unit: "十亿港元", trend: "同比 +8%", periods: halfYearPeriods, values: [17.322, 19.231, 18.685], source: SOURCES.interim2026 },
     { label: "EBITDA率", value: "35.2", unit: "%", trend: "最新披露", periods: halfYearPeriods, values: [36.8, 40.8, 35.2], source: SOURCES.interim2026, gauge: 70 },
@@ -62,10 +75,10 @@
       { label: "EBITDA率", value: "—", unit: "", trend: "未披露", periods: ["未披露"], values: [0], valueLabels: ["—"], gauge: 0 },
       { label: "净利润", value: "-0.490", unit: "十亿港元", trend: "最新披露", periods: ["最新披露"], values: [-0.490], gauge: 72 }
     ] },
-    { key: "cmhk", company: "CMHK", period: "当前口径", metrics: [
-      currentMetric("营运收入", "6.420", "十亿港元"),
-      currentMetric("EBITDA率", "32.4", "%", { gauge: 65 }),
-      currentMetric("净利润", "0.681", "十亿港元", { gauge: 72 })
+    { key: "cmhk", company: "CMHK", period: "2026上半年", metrics: [
+      { label: "主营业务收入", value: "3.995", unit: "十亿港元", trend: "同比 +6.1%", periods: ["2026上半年"], values: [3.995] },
+      missingMetric("EBITDA率"),
+      { label: "净利润", value: "0.507", unit: "十亿港元", trend: "同比 +18.5%", periods: ["2026上半年"], values: [0.507], gauge: 72 }
     ] }
   ];
   const operatorProfiles = [
@@ -149,6 +162,17 @@
     ] }
   ];
   const chartColors = ["#64cdf4", "#5c9cff", "#60d9aa", "#efb354", "#b68cff", "#f37f8c"];
+  const comparisonCardThemes = {
+    "network-group-0": "base-stations",
+    "network-metric-2": "ai-compute",
+    "business-group-0": "mobile-service",
+    "business-group-1": "home-broadband",
+    "business-group-2": "enterprise-service",
+    "reach-metric-0": "retail-stores",
+    "reach-metric-1": "mobile-app",
+    "finance-group-0": "financial-scale",
+    "finance-metric-1": "ebitda-margin"
+  };
   const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", radial: "百分比环形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
   const comparisonEchartSpecs = new Map();
   let comparisonEchartInstances = [];
@@ -478,6 +502,7 @@
         if (!reports.length) return;
         const byKey = new Map(reports.map((report) => [companyKey(report.company), normalizeFinancialReport(report)]));
         financeCompaniesData = financeCompanyFallbacks.map((fallback) => {
+          if (fallback.key === "cmhk") return fallback;
           const current = byKey.get(fallback.key);
           if (!current) return fallback;
           return {
@@ -657,10 +682,11 @@
 
   function combinedMetricCard(panel, metrics, group, groupIndex) {
     const cardId = `${panel.key}-group-${groupIndex}`;
+    const cardTheme = comparisonCardThemes[cardId] || "";
     const charts = group.sharedChart === "grouped-column"
       ? groupedColumnChart(metrics, group.title)
       : `<div class="comparison-mini-charts">${metrics.map((metric, index) => `<div class="comparison-mini-chart"><span>${escapeHtml(metricTitle(metric))}</span>${comparisonChart(metric.rows, metric.label, panel.chartTypes[group.indices[index]])}</div>`).join("")}</div>`;
-    return `<section class="comparison-metric-card comparison-combined-card" style="--card-delay:${groupIndex * 80}ms" data-chart-type="${escapeHtml(group.sharedChart || "paired")}" aria-labelledby="${escapeHtml(cardId)}">
+    return `<section class="comparison-metric-card comparison-combined-card" style="--card-delay:${groupIndex * 80}ms" data-chart-type="${escapeHtml(group.sharedChart || "paired")}" data-card-theme="${escapeHtml(cardTheme)}" aria-labelledby="${escapeHtml(cardId)}">
       <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(group.title)}</h3></header>
       <div class="comparison-chart-only">${charts}</div>
     </section>`;
@@ -669,7 +695,8 @@
   function singleMetricCard(panel, metric, metricIndex) {
     const chartType = panel.chartTypes[metricIndex];
     const cardId = `${panel.key}-metric-${metricIndex}`;
-    return `<section class="comparison-metric-card" style="--card-delay:${metricIndex * 80}ms" data-chart-type="${escapeHtml(chartType)}" aria-labelledby="${escapeHtml(cardId)}">
+    const cardTheme = comparisonCardThemes[cardId] || "";
+    return `<section class="comparison-metric-card" style="--card-delay:${metricIndex * 80}ms" data-chart-type="${escapeHtml(chartType)}" data-card-theme="${escapeHtml(cardTheme)}" aria-labelledby="${escapeHtml(cardId)}">
       <header><h3 id="${escapeHtml(cardId)}">${escapeHtml(metricTitle(metric))}</h3></header>
       <div class="comparison-chart-only">${comparisonChart(metric.rows, metric.label, chartType)}</div>
     </section>`;
@@ -709,6 +736,7 @@
     return `<article class="panel panel-${escapeHtml(panel.key)} comparison-panel is-visible">
       <header class="panel-heading"><span>${escapeHtml(panel.number)}</span><h2>${escapeHtml(panel.title)}</h2></header>
       <div class="monitor-content comparison-content">
+        ${panel.key === "finance" ? cmhkReferenceStrip() : ""}
         <div class="comparison-metric-grid comparison-metric-grid-${groups.length} comparison-metric-grid-${escapeHtml(panel.key)}">
           ${groups.map((group, groupIndex) => {
             const groupedMetrics = group.indices.map((index) => metrics[index]);
@@ -719,6 +747,15 @@
         </div>
       </div>
     </article>`;
+  }
+
+  function cmhkReferenceStrip() {
+    return `<section class="cmhk-reference-strip" aria-label="CMHK 2026上半年经营数据">
+      <header><strong>CMHK｜${escapeHtml(cmhkReferenceSnapshot.period)}</strong><span>${escapeHtml(cmhkReferenceSnapshot.scope)}</span></header>
+      <div>${cmhkReferenceSnapshot.metrics.map((metric) => `<article tabindex="0" aria-label="${escapeHtml(`${metric.label}：${metric.value}${metric.unit}，${metric.dimension}`)}">
+        <span>${escapeHtml(metric.label)}</span><strong>${escapeHtml(metric.value)}<small>${escapeHtml(metric.unit)}</small></strong><em>${escapeHtml(metric.dimension)}</em>
+      </article>`).join("")}</div>
+    </section>`;
   }
 
   function setupChartTooltips(root) {
