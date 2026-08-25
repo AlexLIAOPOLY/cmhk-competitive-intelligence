@@ -15,9 +15,9 @@
         "progress_detail": "续跑财报结构化门禁失败：第17行 i-CABLE 未发现可读取的官方财报；保留旧数据等待重试。",
         "status_detail": "",
         "started_at_hkt": "2026-08-26T03:00:35+08:00",
-        "heartbeat_at_hkt": "2026-08-26T05:01:46+08:00",
-        "completed_at_hkt": "2026-08-26T05:01:46+08:00",
-        "duration_ms": 7271368,
+        "heartbeat_at_hkt": "2026-08-26T05:31:49+08:00",
+        "completed_at_hkt": "2026-08-26T05:31:49+08:00",
+        "duration_ms": 9074581,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
