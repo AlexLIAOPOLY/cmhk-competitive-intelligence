@@ -305,8 +305,7 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-finance { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
 .comparison-metric-grid-reach .comparison-metric-card { grid-template-rows: clamp(46px, 3vw, 54px) minmax(0, 1fr); }
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: 40px minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(125, 181, 205, .13); border-radius: 5px; background: rgba(7, 22, 35, .72); }
-.comparison-metric-card > header { min-width: 0; display: flex; align-items: center; gap: 9px; padding: 0 13px; border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, color-mix(in srgb, var(--panel-accent) 10%, rgba(31, 65, 86, .24)), rgba(31, 65, 86, .12)); }
-.comparison-metric-card > header::before { content: ""; width: 3px; height: 15px; flex: 0 0 auto; border-radius: 99px; background: var(--panel-accent); box-shadow: 0 0 9px color-mix(in srgb, var(--panel-accent), transparent 48%); opacity: .86; }
+.comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 13px; border-bottom: 1px solid rgba(133, 182, 207, .13); background: radial-gradient(circle at 28px 50%, color-mix(in srgb, var(--panel-accent) 8%, transparent), transparent 84px), rgba(31, 65, 86, .16); }
 .comparison-metric-card h3 { min-width: 0; margin: 0; color: #e6f4f9; font-size: clamp(10px, .67vw, 16px); font-weight: 680; line-height: 1.3; white-space: normal; }
 .comparison-chart-layout { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(120px, .92fr) minmax(150px, 1.08fr); align-items: stretch; overflow: hidden; }
 .comparison-chart { width: 100%; height: 100%; min-height: 0; padding: clamp(7px, .5vw, 12px); border-right: 1px solid rgba(133, 182, 207, .12); overflow: visible; }
@@ -385,7 +384,8 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-business .comparison-metric-card,
 .comparison-metric-grid-reach .comparison-metric-card,
 .comparison-metric-grid-finance .comparison-metric-card { height: auto; min-height: 0; }
-.comparison-metric-card h3 { color: #eef8fb; font-family: var(--font-display); font-size: clamp(13px, .76vw, 16px); font-weight: 700; letter-spacing: .012em; line-height: 1.35; text-shadow: 0 1px 8px rgba(126, 211, 239, .1); }
+.comparison-metric-card h3 { position: relative; color: #eef8fb; font-family: var(--font-display); font-size: clamp(13px, .76vw, 16px); font-weight: 700; letter-spacing: .012em; line-height: 1.35; text-shadow: 0 1px 8px rgba(126, 211, 239, .1); }
+.comparison-metric-card h3::after { content: ""; position: absolute; left: 0; bottom: -5px; width: 22px; height: 2px; border-radius: 99px; background: linear-gradient(90deg, #e4faff 0%, var(--panel-accent) 52%, transparent 100%); box-shadow: 0 0 7px color-mix(in srgb, var(--panel-accent), transparent 58%); opacity: .9; }
 .comparison-chart-only { min-width: 0; min-height: 0; height: 100%; overflow: hidden; }
 .comparison-chart { display: block; width: 100%; height: 100%; border-right: 0; }
 .comparison-chart text { fill: #b7d0da; font: 600 13.5px/1.25 var(--font-ui); font-feature-settings: "kern" 1, "tnum" 1; }
