@@ -134,22 +134,22 @@
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["lollipop", "lollipop", "lollipop", "lollipop", "lollipop", "lollipop"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "dot", "column", "lollipop", "bubble", "column"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["lollipop", "lollipop"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bubble"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["lollipop", "lollipop", "diverging"], groups: [
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "radial", "diverging"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
       { indices: [1] }
     ] }
   ];
   const chartColors = ["#64cdf4", "#5c9cff", "#60d9aa", "#efb354", "#b68cff", "#f37f8c"];
-  const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
+  const chartTypeNames = { column: "柱状图", lollipop: "棒棒糖图", bar: "横向条形图", dot: "点图", bubble: "气泡图", radial: "百分比环形图", donut: "环形图", line: "折线图", diverging: "正负发散条形图" };
   const comparisonEchartSpecs = new Map();
   let comparisonEchartInstances = [];
   let comparisonEchartResizeObserver = null;
@@ -185,7 +185,7 @@
       textStyle: { color: "#dcecf4", fontSize: 12, lineHeight: 19 },
       extraCssText: "border-radius:8px;box-shadow:0 12px 34px rgba(0,0,0,.34)",
       formatter(params) {
-        const index = Number(params.dataIndex) || 0;
+        const index = spec.kind === "radial" ? (Number(params.seriesIndex) || 0) : (Number(params.dataIndex) || 0);
         if (spec.kind === "grouped-column") {
           const row = spec.metrics[0].rows[index];
           return `<strong style="color:#fff">${escapeHtml(row.company)}</strong><br>${spec.metrics.map((metric) => `${escapeHtml(metric.label)}：${escapeHtml(metric.rows[index].display)}`).join("<br>")}`;
@@ -227,6 +227,7 @@
     const disclosed = rows.filter((row) => row.value !== null);
     const absoluteMax = Math.max(...disclosed.map((row) => Math.abs(row.value)), 1);
     const diverging = spec.kind === "diverging";
+    const lollipop = spec.kind === "lollipop";
     const barData = rows.map((row, index) => ({
       value: row.value === null ? 0 : row.value,
       itemStyle: { color: row.value === null ? "transparent" : (row.value < 0 ? "#efb354" : chartColors[index]) },
@@ -254,10 +255,10 @@
           name: spec.metricLabel,
           type: "bar",
           data: barData,
-          barWidth: diverging ? 4 : 3,
+          barWidth: diverging ? 8 : (lollipop ? 7 : 10),
           showBackground: !diverging,
           backgroundStyle: { color: "rgba(90, 132, 151, .14)", borderRadius: 3 },
-          itemStyle: { borderRadius: 3 },
+          itemStyle: { borderRadius: 6 },
           label: {
             show: true,
             position: "right",
@@ -273,7 +274,7 @@
         {
           type: "scatter",
           data: pointData,
-          symbolSize: 8,
+          symbolSize: lollipop ? 14 : (diverging ? 10 : 0),
           tooltip: { show: false },
           emphasis: { scale: 1.35 },
           z: 3
@@ -313,8 +314,125 @@
     };
   }
 
+  function echartColumnOption(spec) {
+    const rows = spec.rows;
+    return {
+      ...echartBaseOption(spec),
+      grid: { left: 14, right: 14, top: 25, bottom: 27 },
+      xAxis: {
+        type: "category", data: rows.map((row) => row.company),
+        axisLine: { lineStyle: { color: "rgba(135, 180, 200, .2)" } }, axisTick: { show: false },
+        axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
+      },
+      yAxis: { type: "value", axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, splitLine: { show: false } },
+      series: [{
+        name: spec.metricLabel,
+        type: "bar",
+        barWidth: 22,
+        data: rows.map((row, index) => ({ value: row.value, itemStyle: { color: chartColors[index] } })),
+        itemStyle: { borderRadius: [6, 6, 2, 2] },
+        label: {
+          show: true, position: "top", distance: 5, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
+          formatter(params) { return rows[params.dataIndex].chartDisplay; }
+        },
+        emphasis: { focus: "self", itemStyle: { shadowBlur: 12, shadowColor: "rgba(100,205,244,.4)" } }
+      }]
+    };
+  }
+
+  function echartDotOption(spec) {
+    const rows = spec.rows;
+    const values = rows.filter((row) => row.value !== null).map((row) => row.value);
+    const min = Math.min(...values, 0);
+    const max = Math.max(...values, 1);
+    const padding = Math.max((max - min) * .22, max * .08, 1);
+    return {
+      ...echartBaseOption(spec),
+      grid: { left: 18, right: 18, top: 28, bottom: 27 },
+      xAxis: {
+        type: "category", data: rows.map((row) => row.company),
+        axisLine: { lineStyle: { color: "rgba(135, 180, 200, .18)" } }, axisTick: { show: false },
+        axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
+      },
+      yAxis: { type: "value", min: Math.max(0, min - padding), max: max + padding, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, splitLine: { show: false } },
+      series: [{
+        name: spec.metricLabel,
+        type: "scatter",
+        symbolSize: 15,
+        data: rows.map((row, index) => ({ value: [row.company, row.value], itemStyle: { color: chartColors[index] } })),
+        label: {
+          show: true, position: "top", distance: 7, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
+          formatter(params) { return rows[params.dataIndex].chartDisplay; }
+        },
+        emphasis: { scale: 1.3, itemStyle: { shadowBlur: 12, shadowColor: "rgba(100,205,244,.5)" } }
+      }]
+    };
+  }
+
+  function echartBubbleOption(spec) {
+    const rows = spec.rows;
+    const max = Math.max(...rows.filter((row) => row.value !== null).map((row) => Math.abs(row.value)), 1);
+    return {
+      ...echartBaseOption(spec),
+      grid: { left: 14, right: 14, top: 24, bottom: 27 },
+      xAxis: {
+        type: "category", data: rows.map((row) => row.company),
+        axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: { color: "#a9c0cb", fontSize: 11, fontWeight: 600, margin: 9 }
+      },
+      yAxis: { type: "value", min: 0, max: 2, show: false },
+      series: [{
+        name: spec.metricLabel,
+        type: "scatter",
+        data: rows.map((row, index) => ({ value: [row.company, 1, row.value], itemStyle: { color: chartColors[index] } })),
+        symbolSize(value) { return value[2] === null ? 0 : 22 + (Math.sqrt(Math.abs(value[2]) / max) * 20); },
+        label: {
+          show: true, position: "top", distance: 6, color: "#eaf6fb", fontSize: 11, fontWeight: 700,
+          formatter(params) { return rows[params.dataIndex].chartDisplay; }
+        },
+        emphasis: { scale: 1.16, itemStyle: { shadowBlur: 16, shadowColor: "rgba(100,205,244,.45)" } }
+      }]
+    };
+  }
+
+  function echartRadialOption(spec) {
+    const rows = spec.rows;
+    const radii = [["19%", "27%"], ["34%", "42%"], ["49%", "57%"]];
+    return {
+      ...echartBaseOption(spec),
+      graphic: rows.map((row, index) => ({
+        type: "group", left: "68%", top: `${28 + (index * 22)}%`,
+        children: [
+          { type: "circle", shape: { cx: 4, cy: 7, r: 4 }, style: { fill: chartColors[index] } },
+          { type: "text", left: 14, top: 0, style: { text: `${row.company}  ${row.chartDisplay}`, fill: "#b8ced7", font: '600 11px "SF Pro Text", "PingFang SC", sans-serif' } }
+        ]
+      })),
+      series: rows.map((row, index) => ({
+        name: row.company,
+        type: "pie",
+        center: ["29%", "50%"],
+        radius: radii[index],
+        clockwise: true,
+        startAngle: 90,
+        silent: row.value === null,
+        avoidLabelOverlap: true,
+        label: { show: false }, labelLine: { show: false },
+        emphasis: { scale: false, itemStyle: { shadowBlur: 12, shadowColor: chartColors[index] } },
+        data: [
+          { value: Math.max(0, Math.min(100, row.value || 0)), name: row.company, itemStyle: { color: chartColors[index], borderRadius: 4 } },
+          { value: Math.max(0, 100 - (row.value || 0)), name: `余量-${index}`, tooltip: { show: false }, itemStyle: { color: "rgba(90,132,151,.14)" }, emphasis: { disabled: true } }
+        ]
+      }))
+    };
+  }
+
   function echartOption(spec) {
-    return spec.kind === "grouped-column" ? echartGroupedColumnOption(spec) : echartHorizontalOption(spec);
+    if (spec.kind === "grouped-column") return echartGroupedColumnOption(spec);
+    if (spec.kind === "column") return echartColumnOption(spec);
+    if (spec.kind === "dot") return echartDotOption(spec);
+    if (spec.kind === "bubble") return echartBubbleOption(spec);
+    if (spec.kind === "radial") return echartRadialOption(spec);
+    return echartHorizontalOption(spec);
   }
 
   function disposeComparisonEcharts() {
@@ -338,9 +456,11 @@
       let activeIndex = 0;
       const rowCount = spec.kind === "grouped-column" ? spec.metrics[0].rows.length : spec.rows.length;
       const showActive = () => {
-        chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
-        chart.dispatchAction({ type: "highlight", seriesIndex: 0, dataIndex: activeIndex });
-        chart.dispatchAction({ type: "showTip", seriesIndex: 0, dataIndex: activeIndex });
+        const seriesIndex = spec.kind === "radial" ? activeIndex : 0;
+        const dataIndex = spec.kind === "radial" ? 0 : activeIndex;
+        chart.dispatchAction({ type: "downplay" });
+        chart.dispatchAction({ type: "highlight", seriesIndex, dataIndex });
+        chart.dispatchAction({ type: "showTip", seriesIndex, dataIndex });
       };
       element.addEventListener("focus", showActive);
       element.addEventListener("blur", () => chart.dispatchAction({ type: "hideTip" }));
@@ -581,11 +701,14 @@
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
-    if (window.echarts && ["column", "lollipop", "bar", "diverging"].includes(chartType)) {
+    if (window.echarts && ["column", "lollipop", "bar", "dot", "bubble", "radial", "diverging"].includes(chartType)) {
       return echartHost({ kind: chartType, rows, metricLabel });
     }
     if (chartType === "column") return columnChart(rows, metricLabel);
     if (chartType === "lollipop" || chartType === "bar") return horizontalChart(rows, metricLabel, chartType);
+    if (chartType === "dot") return lineChart(rows, metricLabel);
+    if (chartType === "bubble") return columnChart(rows, metricLabel);
+    if (chartType === "radial") return horizontalChart(rows, metricLabel, "bar");
     if (chartType === "donut") return donutChart(rows, metricLabel);
     if (chartType === "diverging") return divergingChart(rows, metricLabel);
     return lineChart(rows, metricLabel);
