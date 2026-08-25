@@ -6,6 +6,57 @@
   "verified_public_facts": [
     {
       "domain": "mainland",
+      "focus": "postpaid",
+      "entity": "中国移动",
+      "period": "FY2025",
+      "value": 10.05,
+      "unit": "亿户",
+      "original_value": 1005,
+      "original_unit": "百万户",
+      "verification_status": "official_three_distinct_sources_verified",
+      "source_urls": [
+        "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+        "https://www.chinamobileltd.com/en/ir/webcasts/pre260326.pdf",
+        "https://www.chinamobileltd.com/en/media/press/p260326.pdf"
+      ],
+      "evidence_note": "中国移动FY2025年报、年度业绩演示和业绩新闻稿均披露移动客户1005百万户，即10.05亿户；沿用移动客户口径。"
+    },
+    {
+      "domain": "mainland",
+      "focus": "postpaid",
+      "entity": "中国电信",
+      "period": "FY2025",
+      "value": 4.3865,
+      "unit": "亿户",
+      "original_value": 438.65,
+      "original_unit": "百万户",
+      "verification_status": "official_three_distinct_sources_verified",
+      "source_urls": [
+        "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+        "https://www.chinatelecom-h.com/en/ir/kpi.php?year=2025",
+        "https://doc.irasia.com/listco/hk/chinatelecom/announcement/ca260324.pdf"
+      ],
+      "evidence_note": "中国电信FY2025官方新闻稿、年度运营数据和第四季度运营公告披露移动用户438.65百万户，即4.3865亿户。"
+    },
+    {
+      "domain": "mainland",
+      "focus": "postpaid",
+      "entity": "中国联通",
+      "period": "FY2025",
+      "value": 3.573,
+      "unit": "亿户",
+      "original_value": 357.3,
+      "original_unit": "百万户",
+      "verification_status": "official_derived_from_verified_rows",
+      "source_urls": [
+        "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+        "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2025",
+        "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
+      ],
+      "evidence_note": "中国联通年报披露FY2025移动出账用户超过357百万户、全年净增13.32百万户；本地知识库用FY2024官方期末343.98百万户加官方净增推导约357.30百万户。该值为官方数据推导约值，不表述为直接披露的精确期末数。"
+    },
+    {
+      "domain": "mainland",
       "focus": "ebitda",
       "entity": "中国联通",
       "period": "FY2025",
@@ -102,13 +153,6 @@
     {"domain": "local", "focus": "net_profit", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立净利润。"},
     {"domain": "local", "focus": "postpaid", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "未见CMHK独立年度后付费用户系列。"},
     {"domain": "local", "focus": "postpaid", "entity": "SmarTone", "status": "public_not_found", "display": "未见FY2025独立披露", "note": "FY2025业绩公告与业绩演示披露后付费ARPU，但未见FY2025后付费用户数。", "source_urls": ["https://www.smartoneholdings.com/about/investor/results/english/2025_annual_results.pdf", "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"]},
-    {"domain": "mainland", "focus": "revenue", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025营收。"},
-    {"domain": "mainland", "focus": "ebitda", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025 EBITDA。"},
-    {"domain": "mainland", "focus": "net_profit", "entity": "中国广电", "status": "public_not_found", "display": "未见可比披露", "note": "未见非上市集团同口径FY2025净利润。"},
-    {"domain": "mainland", "focus": "postpaid", "entity": "中国移动", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
-    {"domain": "mainland", "focus": "postpaid", "entity": "中国电信", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
-    {"domain": "mainland", "focus": "postpaid", "entity": "中国联通", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "年报、业绩公告和业绩演示未单列后付费用户数。"},
-    {"domain": "mainland", "focus": "postpaid", "entity": "中国广电", "status": "public_not_found", "display": "官方文件未单列后付费用户数", "note": "未见FY2025后付费用户数。"},
     {"domain": "cloud", "focus": "profit", "entity": "中国移动云", "status": "public_not_found", "display": "未见云利润披露", "note": "中国移动公开披露移动云收入，未单列移动云利润金额。"},
     {"domain": "cloud", "focus": "profit", "entity": "Huawei", "status": "public_not_found", "display": "未见云利润披露", "note": "华为2025年报披露云收入，未单列云业务利润金额。", "source_urls": ["https://www.huawei.com/en/annual-report/2025"]}
   ]

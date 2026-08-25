@@ -775,6 +775,20 @@ def _strict_annual_row(
     ), None)
 
 
+def _published_annual_row(
+    rows: list[dict[str, Any]], operator: str, metric: str, year: int
+) -> dict[str, Any] | None:
+    """Return an official direct or explicitly official-derived annual row."""
+    return next((
+        row for row in rows
+        if row.get("operator") == operator
+        and row.get("metric_key") == metric
+        and int(row.get("year") or 0) == year
+        and row.get("verification_status") in SAFE_VERIFICATION_STATUSES
+        and _verified_number(row) is not None
+    ), None)
+
+
 def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
     growth_items: list[dict[str, Any]] = []
@@ -1118,16 +1132,16 @@ def _component_list(customer_value: float | None, arpu_value: float | None) -> l
 def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payload: dict[str, Any]) -> dict[str, Any]:
     financial_rows = financial_payload.get("rows") or []
     operating_rows = operating_payload.get("rows") or []
-    operators = ("中国移动", "中国电信", "中国联通", "中国广电")
+    operators = ("中国移动", "中国电信", "中国联通")
     revenue_items: list[dict[str, Any]] = []
     ebitda_items: list[dict[str, Any]] = []
     profit_items: list[dict[str, Any]] = []
-    postpaid_items: list[dict[str, Any]] = []
+    mobile_customer_items: list[dict[str, Any]] = []
     for operator in operators:
         revenue = _annual_financial_value(financial_rows, operator, "revenue", 2025)
         ebitda = _annual_financial_value(financial_rows, operator, "ebitda", 2025)
         profit = _annual_financial_value(financial_rows, operator, "net_income", 2025)
-        gap = "三来源数据待补；中国广电不以非上市集团估算值代替" if operator == "中国广电" else "三来源数据待补"
+        gap = "三来源数据待补"
         revenue_item = _financial_item(operator, revenue, "营收", "亿元", gap)
         revenue_item["trend"] = _annual_financial_trend(financial_rows, operator, "revenue", divisor=100, unit="亿元")
         revenue_items.append(revenue_item)
@@ -1137,22 +1151,32 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
         profit_item = _financial_item(operator, profit, "净利润", "亿元", gap)
         profit_item["trend"] = _annual_financial_trend(financial_rows, operator, "net_income", divisor=100, unit="亿元")
         profit_items.append(profit_item)
-        postpaid = _strict_annual_row(operating_rows, operator, "mobile_postpaid_customers", 2025)
-        postpaid_value = _verified_number(postpaid)
-        postpaid_items.append({
+        mobile_customer = _published_annual_row(operating_rows, operator, "mobile_subscribers", 2025)
+        mobile_customer_value = _verified_number(mobile_customer)
+        is_derived = str((mobile_customer or {}).get("verification_status") or "") == "official_derived_from_verified_rows"
+        missing_mobile_detail = "未见FY2025集团移动客户总数；5G用户数不作替代"
+        mobile_customer_items.append({
             "name": operator,
-            "value": round(postpaid_value / 100, 4) if postpaid_value is not None else None,
-            "unit": "亿户" if postpaid_value is not None else "",
+            "value": round(mobile_customer_value / 100, 4) if mobile_customer_value is not None else None,
+            "unit": "亿户" if mobile_customer_value is not None else "",
             "period": "FY2025",
-            "detail": "FY2025后付费用户数" if postpaid_value is not None else "官方文件未单列后付费用户数；保留缺口",
+            "detail": (
+                "FY2025移动出账用户约值 · 官方期初加全年净增推导"
+                if is_derived else "FY2025移动客户 · 官方披露"
+            ) if mobile_customer_value is not None else missing_mobile_detail,
             "analysis": (
-                f"FY2025后付费用户数为{postpaid_value / 100:.4g}亿户；不混入移动用户总数或5G用户。"
-                if postpaid_value is not None else "年报、业绩公告和业绩演示未单列后付费用户数；不以移动用户总数或5G用户替代。"
+                f"FY2025移动出账用户约{mobile_customer_value / 100:.4g}亿户；由FY2024官方期末值加FY2025官方全年净增推导，不表述为直接披露的精确期末数。"
+                if is_derived else
+                f"FY2025移动客户为{mobile_customer_value / 100:.4g}亿户；沿用公司移动客户/移动用户官方口径。"
+                if mobile_customer_value is not None else
+                "官网、年报、业绩公告与业绩演示复核后，未见FY2025集团移动客户总数；5G用户数不作替代。"
             ),
-            "components": [_component("后付费用户数", round(postpaid_value / 100, 4), "亿户", "FY2025")] if postpaid_value is not None else [_component("后付费用户数", detail="官方未单列披露")],
+            "components": [_component("移动客户数", round(mobile_customer_value / 100, 4), "亿户", "FY2025")] if mobile_customer_value is not None else [_component("移动客户数", detail=missing_mobile_detail)],
             "component_count": 1,
-            "source_url": str((postpaid or {}).get("primary_source_url") or ""),
-            "verification_count": int((postpaid or {}).get("distinct_source_document_count") or 0),
+            "source_url": str((mobile_customer or {}).get("primary_source_url") or ""),
+            "verification_count": int((mobile_customer or {}).get("distinct_source_document_count") or 0),
+            "verification_status": str((mobile_customer or {}).get("verification_status") or ""),
+            "comparator": "≈" if is_derived else "=",
             "trend": [
                 {
                     "label": f"FY{year}",
@@ -1161,7 +1185,7 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
                     "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
                 }
                 for year in range(2016, 2026)
-                for row in [_strict_annual_row(operating_rows, operator, "mobile_postpaid_customers", year)]
+                for row in [_published_annual_row(operating_rows, operator, "mobile_subscribers", year)]
             ],
         })
 
@@ -1175,20 +1199,20 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
                 "revenue": "收入底盘断层意味着头部可承受更高强度的网络与客户获取投入，尾部同等资源消耗下经营容错更低；规模不等同效率。",
                 "ebitda": "盈利缓冲断层意味着头部持续投入与承受价格竞争的空间更厚，尾部防守容错更窄。",
                 "net_profit": "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。",
-                "postpaid": "经常性收入底盘形成梯队，但未结合ARPU仍不能判断客户价值。",
+                "postpaid": "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。",
             }[fid]
             insight = prefix + implication
         else:
-            insight = "四家公司均缺少可比后付费原值；这一盲区使客户收入底盘、续约质量与客户价值无法穿透比较，不能以移动或5G用户总量替代。"
+            insight = "当前不足两家公司具备可比移动客户原值；客户覆盖底盘无法形成稳健横向判断，5G用户数也不能替代集团移动客户总数。"
         headline = {
             "revenue": "规模优势固化资源壁垒",
             "ebitda": "现金创造支撑能力分层",
             "net_profit": "盈利韧性向头部集中",
-            "postpaid": "客户价值判断出现盲区",
+            "postpaid": "客户覆盖底盘形成断层",
         }[fid]
         return {"id": fid, "label": label, "visual": "rows", "headline": headline, "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"}, "context": context, "insight": insight, "items": items}
-    focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "FY2025净利润金额"), focus("postpaid", "后付费用户数", postpaid_items, "官方明确披露的后付费用户数")]
-    return {"id": "mainland", "index": "03", "title": "内地运营商", "kicker": "移动｜电信｜联通｜广电", "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；全部卡片只展示绝对数", "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；官方未单列的后付费数据保留缺口。", "entities": revenue_items, "focuses": focuses, "relations": [], "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, postpaid_items) for item in items])}
+    focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "FY2025净利润金额"), focus("postpaid", "移动客户数", mobile_customer_items, "公司披露的移动客户/移动用户；联通约值为官方期初加全年净增推导")]
+    return {"id": "mainland", "index": "03", "title": "内地运营商", "kicker": "移动｜电信｜联通", "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；全部卡片只展示绝对数", "insight": "营收、EBITDA、净利润与移动客户数只展示绝对值；移动客户数沿用各公司官方口径，推导值明确标约。", "entities": revenue_items, "focuses": focuses, "relations": [], "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, mobile_customer_items) for item in items])}
 
 
 def _financial_item(name: str, row: dict[str, Any] | None, label: str, unit: str, gap: str) -> dict[str, Any]:

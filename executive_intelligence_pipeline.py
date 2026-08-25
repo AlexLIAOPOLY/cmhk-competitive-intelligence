@@ -599,7 +599,7 @@ _OVERVIEW_STRATEGIC_HEADLINES = {
     ("mainland", "revenue"): "规模优势固化资源壁垒",
     ("mainland", "ebitda"): "现金创造支撑能力分层",
     ("mainland", "net_profit"): "盈利韧性向头部集中",
-    ("mainland", "postpaid"): "客户价值判断出现盲区",
+    ("mainland", "postpaid"): "客户覆盖底盘形成断层",
     ("cloud", "revenue"): "生态承载力形成头尾断层",
     ("cloud", "profit"): "盈利飞轮集中于头部",
     ("cloud", "investment"): "资本军备能力明显分层",
@@ -617,7 +617,7 @@ _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS = {
     ("mainland", "revenue"): ("规模优势固化资源壁垒", "网络与获客投入能力分层", "经营防守资源拉开层次"),
     ("mainland", "ebitda"): ("现金创造支撑能力分层", "持续投入缓冲明显分化", "价格竞争容错拉开差距"),
     ("mainland", "net_profit"): ("盈利韧性向头部集中", "自我融资能力形成断层", "再投资空间明显分化"),
-    ("mainland", "postpaid"): ("客户价值判断出现盲区", "客户收入底盘缺少抓手", "客户经营战略存在盲区"),
+    ("mainland", "postpaid"): ("客户覆盖底盘形成断层", "客户规模梯队拉开层次", "交叉销售基础明显分化"),
     ("cloud", "revenue"): ("生态承载力形成头尾断层", "生态扩张资源明显分层", "基础设施投入空间分化"),
     ("cloud", "profit"): ("盈利飞轮集中于头部", "再投资与价格竞争空间分层", "盈利缓冲拉开生态差距"),
     ("cloud", "investment"): ("资本军备能力明显分层", "基础设施扩张空间分化", "持续扩容能力形成断层"),
@@ -1635,14 +1635,14 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
                     "利润池断层意味着头部具备更强自我融资与再投资空间，尾部在价格竞争中的盈利防线更薄。"
                 )
             return (
-                f"{high_name} FY2025后付费用户{high_value}{unit}，{low_name}{low_value}{unit}；"
-                "经常性收入底盘形成梯队，意味着尾部续约与流失波动风险更高；未结合ARPU仍不能判断客户价值。"
+                f"{high_name} FY2025移动客户{high_value}{unit}，{low_name}{low_value}{unit}；"
+                "客户覆盖底盘形成梯队，意味着头部具备更广的交叉销售与网络规模摊薄基础；未结合ARPU与活跃度仍不能判断客户价值。"
             )
         if focus_id == "postpaid":
             named = "、".join(str(item.get("name") or "") for item in focus.get("items") or [] if item.get("name"))
             return (
-                f"{named}当前均缺少可比后付费用户原值；披露不足与口径缺口意味着客户价值和客户质量无法穿透比较，"
-                "客户经营战略因此缺少关键判断抓手，且不能由移动或5G用户总量替代。"
+                f"{named}当前均缺少可比移动客户原值；披露不足使客户覆盖底盘无法穿透比较，"
+                "且不能由5G用户数替代集团移动客户总数。"
             )
     if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"} and items:
         high, low = items[0], items[-1]
@@ -2285,7 +2285,7 @@ def generate_model_focus_insight(
         ("mainland", "revenue"): "只比较FY2025营收绝对值；必须从至少两家原值提炼收入基础或竞争资源承载力分层，不得只复述高低。",
         ("mainland", "ebitda"): "只比较FY2025 EBITDA绝对值；必须解释经营现金创造代理或盈利缓冲分层，不得引入净利润或利润率。",
         ("mainland", "net_profit"): "只比较FY2025净利润绝对值；必须解释利润池或盈利韧性分化，不得只写金额差距。",
-        ("mainland", "postpaid"): "当前无可比后付费原值；必须解释这一口径缺口对客户价值、客户质量或竞争结构判断的限制，不能只说无法比较。",
+        ("mainland", "postpaid"): "只比较中国移动、中国电信和中国联通FY2025移动客户绝对值；联通必须明确为官方期初加全年净增推导约值。",
     }
     focus_contract = focus_contracts.get(
         (domain_id, focus_id),
@@ -2442,13 +2442,13 @@ def generate_model_focus_insight(
             "从最高与最低净利润原值提炼利润池集中或盈利韧性分化",
             "比较头部与中尾部利润绝对值层次，不计算新比例",
             "引用至少两家公司原值形成战略发现",
-            "缺失广电数据只作样本边界，不能成为主要结论",
+            "只比较当前中国移动、中国电信和中国联通三家，不补入其他主体",
         ),
         ("mainland", "postpaid"): (
-            "解释统一缺少后付费原值为何限制客户价值穿透比较",
-            "说明移动或5G用户总量不能替代客户质量判断",
-            "从披露口径缺口对竞争结构判断的影响切入",
-            "不编造数字、不只写无法比较",
+            "比较移动、电信和联通FY2025移动客户绝对值",
+            "明确联通约值来自官方期初加全年净增推导",
+            "从客户覆盖底盘对交叉销售和网络规模摊薄的影响切入",
+            "只分析当前三家，不补入其他运营商或5G用户数",
         ),
         ("cloud", "margin_change"): (
             "按自身同口径利润率改善与减弱分组",

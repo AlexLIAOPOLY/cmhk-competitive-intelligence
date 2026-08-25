@@ -27,7 +27,9 @@ class RequestedOverview010304Tests(unittest.TestCase):
             ],
         )
         self.assertEqual([focus["label"] for focus in self.domains["local"]["focuses"]], ["营收", "EBITDA", "净利润", "后付费用户数"])
-        self.assertEqual([focus["label"] for focus in self.domains["mainland"]["focuses"]], ["营收", "EBITDA", "净利润", "后付费用户数"])
+        self.assertEqual([focus["label"] for focus in self.domains["mainland"]["focuses"]], ["营收", "EBITDA", "净利润", "移动客户数"])
+        self.assertEqual(self.domains["mainland"]["kicker"], "移动｜电信｜联通")
+        self.assertTrue(all([item["name"] for item in focus["items"]] == ["中国移动", "中国电信", "中国联通"] for focus in self.domains["mainland"]["focuses"]))
         self.assertEqual([focus["label"] for focus in self.domains["cloud"]["focuses"]], ["云收入", "云利润", "资本开支"])
 
     def test_domain_02_keeps_colleague_international_contract(self):
@@ -148,11 +150,13 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIsNone(by_name["SmarTone"]["value"])
         self.assertEqual(sum(point["value"] is not None for point in by_name["HKT"]["trend"]), 10)
         self.assertEqual(sum(point["value"] is not None for point in by_name["3HK"]["trend"]), 10)
-        mainland_postpaid = next(focus for focus in self.domains["mainland"]["focuses"] if focus["id"] == "postpaid")
-        detail = json.dumps(mainland_postpaid, ensure_ascii=False)
-        self.assertIn("官方文件未单列后付费用户数", detail)
-        self.assertNotIn("移动用户总数1005", detail)
-        self.assertTrue(all(item["value"] is None for item in mainland_postpaid["items"]))
+        mainland_mobile = next(focus for focus in self.domains["mainland"]["focuses"] if focus["id"] == "postpaid")
+        mainland_by_name = {item["name"]: item for item in mainland_mobile["items"]}
+        self.assertEqual(mainland_by_name["中国移动"]["value"], 10.05)
+        self.assertEqual(mainland_by_name["中国电信"]["value"], 4.3865)
+        self.assertEqual(mainland_by_name["中国联通"]["value"], 3.573)
+        self.assertIn("推导约值", mainland_by_name["中国联通"]["analysis"])
+        self.assertNotIn("中国广电", mainland_by_name)
 
     def test_all_requested_items_expose_the_complete_ten_year_window(self):
         for domain_id in ("local", "mainland", "cloud"):
@@ -217,7 +221,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn("本地知识库", self.snapshot["method"])
         self.assertEqual(
             self.snapshot["data_audit"]["gap_status_counts"],
-            {"public_not_found": 14},
+            {"public_not_found": 7},
         )
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")
@@ -235,8 +239,8 @@ class RequestedOverview010304Tests(unittest.TestCase):
                 result = pipeline.regenerate_model_focus_summary("mainland", "postpaid", path=path)
         self.assertTrue(result["ok"])
         self.assertEqual(result["origin"], "evidence_rule")
-        self.assertIn("后付费用户", result["analysis"])
-        self.assertNotIn("移动用户总数为", result["analysis"])
+        self.assertIn("移动客户", result["analysis"])
+        self.assertIn("ARPU", result["analysis"])
 
 
 if __name__ == "__main__":
