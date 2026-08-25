@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "059de6046b77c9a7272207d6",
+      "task_id": "incident:059de6046b77c9a7272207d6",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个后台处理步骤失败、回退或延期，影响任务执行连续性。推断：若未及时恢复，可能导致任务归档延迟或数据不完整。",
+      "suggestions": [
+        "检查错误发生时间附近的任务归档和候选ID，确认受影响步骤的最终状态（回退成功或最终失败）。",
+        "若步骤进入待恢复队列，保留已有结果，仅重试失败的竞争指标AI洞察步骤，并监控响应完整性。",
+        "验证AI服务端日志，确认响应生成是否正常，必要时联系AI服务团队排查模型输出问题。",
+        "修复后，重新执行受影响任务并验证任务归档状态，确保业务处理完成。"
+      ],
+      "occurred_at_hkt": "2026-08-25T11:00:37+08:00",
+      "started_at_hkt": "2026-08-25T11:00:37+08:00",
+      "heartbeat_at_hkt": "2026-08-25T11:00:37+08:00",
+      "completed_at_hkt": "2026-08-25T11:01:20+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "93254e57e7eec8887687113d",
       "task_id": "incident:93254e57e7eec8887687113d",
       "title": "战略新闻AI补审队列",
@@ -12072,30 +12098,6 @@
       "occurred_at_hkt": "2026-08-17T13:12:06+08:00",
       "started_at_hkt": "2026-08-17T13:12:06+08:00",
       "heartbeat_at_hkt": "2026-08-17T13:12:06+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0a5f14bf610e45ebf05f933a",
-      "task_id": "incident:0a5f14bf610e45ebf05f933a",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-17T13:08:36+08:00",
-      "started_at_hkt": "2026-08-17T13:08:36+08:00",
-      "heartbeat_at_hkt": "2026-08-17T13:08:36+08:00",
       "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
