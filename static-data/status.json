@@ -382,10 +382,10 @@
       ]
     },
     "settings": {
-      "totalRows": 40,
-      "enabledRows": 40,
-      "selectedEntities": 74,
-      "selectedFields": 267
+      "totalRows": 44,
+      "enabledRows": 44,
+      "selectedEntities": 93,
+      "selectedFields": 295
     },
     "tasks": {
       "runningCount": 0,

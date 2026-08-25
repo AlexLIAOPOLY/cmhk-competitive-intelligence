@@ -1,13 +1,13 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-25T19:38:46+08:00",
+  "checked_at_hkt": "2026-08-25T19:44:43+08:00",
   "timezone": "Asia/Hong_Kong",
-  "configured_rows": 33,
+  "configured_rows": 44,
   "frequency_counts": {
-    "daily": 27,
+    "daily": 34,
     "weekly": 3,
     "monthly": 3,
-    "other": 0
+    "other": 4
   },
   "source_groups": [
     {
@@ -32,6 +32,9 @@
     }
   ],
   "next_runs": [
+    "2026-08-05T03:00:00+08:00",
+    "2026-08-25T03:00:00+08:00",
+    "2026-08-25T19:44:43+08:00",
     "2026-08-26T03:00:00+08:00",
     "2026-08-31T03:00:00+08:00",
     "2026-09-01T03:00:00+08:00"
