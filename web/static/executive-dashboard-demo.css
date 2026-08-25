@@ -288,6 +288,8 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-network { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
 .comparison-metric-grid-reach { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .comparison-metric-grid-finance { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
+.comparison-metric-grid-reach .comparison-metric-card { grid-template-rows: clamp(46px, 3vw, 54px) minmax(0, 1fr); }
+.comparison-metric-grid-reach .comparison-metric-card h3 { font-size: clamp(15px, .78vw, 18px); }
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: clamp(42px, 3vw, 54px) minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(113, 183, 213, .2); border-radius: 3px; background: linear-gradient(145deg, rgba(7, 24, 38, .8), rgba(3, 13, 23, .72)); }
 .comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 clamp(8px, .55vw, 18px); border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, rgba(47, 112, 149, .2), transparent); }
 .comparison-metric-card h3 { min-width: 0; margin: 0; color: #e6f4f9; font-size: clamp(10px, .67vw, 16px); font-weight: 680; line-height: 1.3; white-space: normal; }
@@ -483,13 +485,13 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
   .panel-network .comparison-metric-card:nth-child(2) .comparison-chart .chart-empty-label { font-size: 9.5px; }
   .panel-business .comparison-chart text,
   .panel-finance .comparison-metric-card:first-child .comparison-chart text { font-size: 15.5px; }
-  .panel-reach .comparison-chart text { font-size: 18.5px; }
+  .panel-reach .comparison-chart text { font-size: 10px; }
   .panel-business .comparison-chart .chart-direct-value,
   .panel-business .comparison-chart .chart-empty-label,
   .panel-finance .comparison-metric-card:first-child .comparison-chart .chart-direct-value,
   .panel-finance .comparison-metric-card:first-child .comparison-chart .chart-empty-label { font-size: 15px; }
   .panel-reach .comparison-chart .chart-direct-value,
-  .panel-reach .comparison-chart .chart-empty-label { font-size: 18px; }
+  .panel-reach .comparison-chart .chart-empty-label { font-size: 11px; }
   .panel-finance .comparison-metric-card:nth-child(2) h3 { font-size: clamp(16px, .84vw, 20px); }
   .panel-finance .comparison-metric-card:nth-child(2) .comparison-chart text { font-size: 9px; }
   .panel-finance .comparison-metric-card:nth-child(2) .comparison-chart .chart-direct-value { font-size: 10.5px; }
