@@ -285,11 +285,10 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .comparison-metric-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .comparison-metric-grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.comparison-metric-grid-network { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
+.comparison-metric-grid-network { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
 .comparison-metric-grid-reach { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.comparison-metric-grid-finance { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); }
+.comparison-metric-grid-finance { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
 .comparison-metric-grid-reach .comparison-metric-card { grid-template-rows: clamp(46px, 3vw, 54px) minmax(0, 1fr); }
-.comparison-metric-grid-reach .comparison-metric-card h3 { font-size: clamp(15px, .78vw, 18px); }
 .comparison-metric-card { min-width: 0; min-height: 0; display: grid; grid-template-rows: clamp(42px, 3vw, 54px) minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(113, 183, 213, .2); border-radius: 3px; background: linear-gradient(145deg, rgba(7, 24, 38, .8), rgba(3, 13, 23, .72)); }
 .comparison-metric-card > header { min-width: 0; display: flex; align-items: center; padding: 0 clamp(8px, .55vw, 18px); border-bottom: 1px solid rgba(133, 182, 207, .16); background: linear-gradient(90deg, rgba(47, 112, 149, .2), transparent); }
 .comparison-metric-card h3 { min-width: 0; margin: 0; color: #e6f4f9; font-size: clamp(10px, .67vw, 16px); font-weight: 680; line-height: 1.3; white-space: normal; }
@@ -364,7 +363,7 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-metric-grid-business .comparison-metric-card,
 .comparison-metric-grid-reach .comparison-metric-card,
 .comparison-metric-grid-finance .comparison-metric-card { height: auto; min-height: 0; }
-.comparison-metric-card h3 { color: #edf9fd; font-family: var(--font-display); font-size: clamp(18px, .96vw, 23px); font-weight: 650; letter-spacing: 0; line-height: 1.4; }
+.comparison-metric-card h3 { color: #edf9fd; font-family: var(--font-display); font-size: clamp(15px, .82vw, 18px); font-weight: 650; letter-spacing: 0; line-height: 1.4; }
 .comparison-chart-only { min-width: 0; min-height: 0; height: 100%; overflow: hidden; }
 .comparison-chart { display: block; width: 100%; height: 100%; border-right: 0; }
 .comparison-chart text { fill: #b7d0da; font: 600 13.5px/1.25 var(--font-ui); font-feature-settings: "kern" 1, "tnum" 1; }
@@ -375,6 +374,23 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .comparison-chart .chart-donut-count { fill: #91b3c2; font-size: 12px; }
 .comparison-chart .chart-direct-value { fill: #f2fbff; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.01em; paint-order: stroke; stroke: #06121e; stroke-width: 2.25px; stroke-linejoin: round; }
 .comparison-chart .chart-empty-label { fill: #9ab9c5; font-size: 13px; font-weight: 600; }
+.comparison-bars { width: 100%; height: 100%; min-height: 0; display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); align-content: stretch; padding: clamp(10px, .7vw, 16px); }
+.comparison-bar-row { min-width: 0; display: grid; grid-template-columns: minmax(44px, 56px) minmax(54px, 1fr) minmax(42px, 58px); align-items: center; gap: clamp(7px, .5vw, 12px); color: #b7d0da; font: 600 13px/1.2 var(--font-ui); font-variant-numeric: tabular-nums; outline: none; }
+.comparison-bar-row.chart-interactive-mark { pointer-events: auto; }
+.comparison-bar-company { min-width: 0; display: flex; align-items: center; gap: 7px; overflow: hidden; color: #c5dbe3; text-overflow: ellipsis; white-space: nowrap; }
+.comparison-bar-company i { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--series-color); box-shadow: 0 0 8px color-mix(in srgb, var(--series-color), transparent 42%); }
+.comparison-bar-track { position: relative; height: 7px; border-radius: 999px; background: rgba(94, 133, 151, .18); }
+.comparison-bar-fill { position: absolute; inset: 0 auto 0 0; width: var(--bar-width); border-radius: inherit; background: var(--series-color); box-shadow: 0 0 12px color-mix(in srgb, var(--series-color), transparent 70%); }
+.comparison-bar-row > strong { color: #f2fbff; font: 700 13px/1 var(--font-display); text-align: right; letter-spacing: -.01em; }
+.comparison-bars.is-lollipop .comparison-bar-fill { top: 2px; bottom: 2px; }
+.comparison-bar-dot { position: absolute; top: 50%; left: var(--bar-width); width: 9px; height: 9px; border-radius: 50%; background: var(--series-color); box-shadow: 0 0 9px color-mix(in srgb, var(--series-color), transparent 52%); transform: translate(-50%, -50%); }
+.comparison-bars.is-diverging .comparison-bar-track::after { content: ""; position: absolute; top: -4px; bottom: -4px; left: 50%; width: 1px; background: rgba(214, 233, 241, .32); }
+.comparison-bars.is-diverging .comparison-bar-fill { left: var(--bar-start); width: var(--bar-width); }
+.comparison-bar-row.chart-mark-missing { opacity: .6; }
+.comparison-bar-row.chart-mark-missing .comparison-bar-fill { width: 8px; background: repeating-linear-gradient(90deg, #779aa9 0 2px, transparent 2px 4px); box-shadow: none; }
+.comparison-bar-row:is(:hover, :focus-visible) { background: linear-gradient(90deg, transparent, rgba(100, 205, 244, .055), transparent); }
+.comparison-bar-row:is(:hover, :focus-visible) .comparison-bar-fill,
+.comparison-bar-row:is(:hover, :focus-visible) .comparison-bar-dot { filter: brightness(1.16); }
 .chart-interactive-mark { outline: none; pointer-events: none; }
 .chart-interactive-mark .chart-column-mark,
 .chart-interactive-mark .chart-bar-mark,
@@ -475,26 +491,12 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
 .reach-dial-copy > em,
 .finance-revenue-copy > em { font-weight: 700; letter-spacing: .025em; }
 
-/* Balance chart typography after each SVG viewBox is fitted into a differently sized card. */
+/* The only active SVG chart is the paired 4G/5G view. Other comparisons use
+   CSS bars so labels stay at one physical text size across differently sized cards. */
 @media (min-width: 901px) {
   .panel-network .comparison-metric-card:first-child .comparison-chart text { font-size: 7px; }
   .panel-network .comparison-metric-card:first-child .comparison-chart .chart-direct-value,
   .panel-network .comparison-metric-card:first-child .comparison-chart .chart-empty-label { font-size: 7.5px; }
-  .panel-network .comparison-metric-card:nth-child(2) .comparison-chart text { font-size: 9px; }
-  .panel-network .comparison-metric-card:nth-child(2) .comparison-chart .chart-direct-value,
-  .panel-network .comparison-metric-card:nth-child(2) .comparison-chart .chart-empty-label { font-size: 9.5px; }
-  .panel-business .comparison-chart text,
-  .panel-finance .comparison-metric-card:first-child .comparison-chart text { font-size: 15.5px; }
-  .panel-reach .comparison-chart text { font-size: 10px; }
-  .panel-business .comparison-chart .chart-direct-value,
-  .panel-business .comparison-chart .chart-empty-label,
-  .panel-finance .comparison-metric-card:first-child .comparison-chart .chart-direct-value,
-  .panel-finance .comparison-metric-card:first-child .comparison-chart .chart-empty-label { font-size: 15px; }
-  .panel-reach .comparison-chart .chart-direct-value,
-  .panel-reach .comparison-chart .chart-empty-label { font-size: 11px; }
-  .panel-finance .comparison-metric-card:nth-child(2) h3 { font-size: clamp(16px, .84vw, 20px); }
-  .panel-finance .comparison-metric-card:nth-child(2) .comparison-chart text { font-size: 9px; }
-  .panel-finance .comparison-metric-card:nth-child(2) .comparison-chart .chart-direct-value { font-size: 10.5px; }
 }
 
 @media (max-width: 1180px) {
@@ -555,15 +557,15 @@ h1 { margin: 0; color: #f8fcff; font-family: var(--font-display); font-size: cla
   .operator-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .operator-tabs button { min-height: 34px; padding-block: 6px; }
   .finance-gauge-stack { display: contents; }
-  .comparison-grid .panel-network { min-height: 780px; }
-  .comparison-grid .panel-business { min-height: 2050px; }
-  .comparison-grid .panel-reach { min-height: 720px; }
-  .comparison-grid .panel-finance { min-height: 1450px; }
+  .comparison-grid .panel-network { min-height: 600px; }
+  .comparison-grid .panel-business { min-height: 1380px; }
+  .comparison-grid .panel-reach { min-height: 540px; }
+  .comparison-grid .panel-finance { min-height: 750px; }
   .comparison-content { height: calc(100% - 56px); padding: 10px; }
   .comparison-metric-grid-1, .comparison-metric-grid-2, .comparison-metric-grid-3, .comparison-metric-grid-6, .comparison-metric-grid-network, .comparison-metric-grid-reach, .comparison-metric-grid-finance { grid-template-columns: 1fr; grid-template-rows: none; }
-  .comparison-metric-card { height: 320px; min-height: 320px; grid-template-rows: 56px minmax(0, 1fr); }
-  .comparison-combined-card { height: 650px; min-height: 650px; }
-  .comparison-combined-card[data-chart-type="grouped-column"] { height: 360px; min-height: 360px; }
+  .comparison-metric-card { height: 220px; min-height: 220px; grid-template-rows: 56px minmax(0, 1fr); }
+  .comparison-combined-card { height: 420px; min-height: 420px; }
+  .comparison-combined-card[data-chart-type="grouped-column"] { height: 280px; min-height: 280px; }
   .comparison-metric-card h3 { font-size: 18px; }
   .comparison-chart .chart-direct-value { font-size: 12px; }
   .comparison-chart-layout { grid-template-columns: minmax(132px, .9fr) minmax(174px, 1.1fr); }
