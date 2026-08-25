@@ -197,6 +197,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("operatorProfiles", script)
         self.assertIn("comparison-metric-grid", script)
         self.assertIn("comparison-metric-card", script)
+        self.assertIn(".comparison-metric-card > header::before", style)
+        self.assertIn("background: var(--panel-accent)", style)
+        self.assertIn("font-size: clamp(13px, .76vw, 16px)", style)
+        self.assertIn("font-weight: 700", style)
         self.assertIn("comparisonCardThemes", script)
         for card_theme in (
             "base-stations", "ai-compute", "mobile-service", "home-broadband",
