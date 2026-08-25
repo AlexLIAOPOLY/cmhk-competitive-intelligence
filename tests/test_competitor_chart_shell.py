@@ -52,10 +52,19 @@ class CompetitorChartShellTests(unittest.TestCase):
         self.assertIn("bindCompetitorChartTooltip(host)", SCRIPT)
         self.assertIn('point.addEventListener("pointerenter"', SCRIPT)
         self.assertIn('point.addEventListener("focus"', SCRIPT)
-        self.assertIn('data-chart-value=', SCRIPT)
+        self.assertIn('data-chart-items=', SCRIPT)
+        self.assertIn('"重合数据点 · "', SCRIPT)
+        self.assertIn("共建共享网络口径，数值不可相加", SCRIPT)
+        self.assertIn('.competitor-chart-tooltip-list', STYLE)
+        self.assertIn('.competitor-chart-tooltip.is-below', STYLE)
         self.assertNotIn('class="competitor-chart-end-label"', SCRIPT)
         self.assertIn("right: 24", SCRIPT)
         self.assertIn(".competitor-chart-tooltip[hidden]", STYLE)
+
+    def test_core_summary_states_a_strategic_implication_instead_of_repeating_values(self):
+        self.assertIn("双方的竞争焦点不在基站数量差异", SCRIPT)
+        self.assertIn("共享网络的运营效率和业务转化能力", SCRIPT)
+        self.assertNotIn("两条曲线完全重合。`", SCRIPT)
 
 
 if __name__ == "__main__":
