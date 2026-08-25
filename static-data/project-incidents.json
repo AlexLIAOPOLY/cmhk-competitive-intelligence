@@ -857,9 +857,9 @@
       "kind": "competitor-workbench",
       "kind_label": "竞对工作台 AI 竞争洞察",
       "scope": "competitor-workbench",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P2",
       "severity_label": "高",
       "summary": "竞对工作台 AI 洞察未生成",
@@ -872,8 +872,8 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-25T11:45:00+08:00",
-      "heartbeat_at_hkt": "2026-08-25T11:48:30+08:00",
-      "completed_at_hkt": "",
+      "heartbeat_at_hkt": "2026-08-25T11:49:00+08:00",
+      "completed_at_hkt": "2026-08-25T11:49:30+08:00",
       "handled_at_hkt": ""
     },
     {
