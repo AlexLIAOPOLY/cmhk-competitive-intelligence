@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "851d5353c9cf321ceb7f5df2",
+      "task_id": "incident:851d5353c9cf321ceb7f5df2",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-26T12:47:40+08:00",
+      "started_at_hkt": "2026-08-26T12:47:40+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:47:40+08:00",
+      "completed_at_hkt": "2026-08-26T12:48:10+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "74870ad96bf9c6168120838c",
       "task_id": "incident:74870ad96bf9c6168120838c",
       "title": "飞书频率调度器",
@@ -215,6 +239,30 @@
       "occurred_at_hkt": "2026-08-26T12:02:00+08:00",
       "started_at_hkt": "2026-08-26T12:41:39+08:00",
       "heartbeat_at_hkt": "2026-08-26T12:41:39+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "0263804e60cc8f010ccbff4a",
+      "task_id": "incident:0263804e60cc8f010ccbff4a",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-26T12:02:00+08:00",
+      "started_at_hkt": "2026-08-26T12:52:41+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:52:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1354,7 +1402,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T12:06:35+08:00",
-      "heartbeat_at_hkt": "2026-08-26T12:47:10+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:52:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12104,56 +12152,6 @@
       "started_at_hkt": "2026-08-18T16:09:26+08:00",
       "heartbeat_at_hkt": "2026-08-18T16:34:40+08:00",
       "completed_at_hkt": "2026-08-18T16:35:11+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b40bf0691a9080790549787a",
-      "task_id": "incident:b40bf0691a9080790549787a",
-      "title": "09:00/15:00战略新闻爬虫",
-      "kind": "strategic-news",
-      "kind_label": "09:00/15:00战略新闻爬虫",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：战略新闻定时爬虫",
-      "impact": "已确认事实：本轮任务未达到完整成功条件，受影响阶段等待有界恢复。推断：可能导致部分战略新闻未及时采集，但已有成功阶段和旧数据不受影响。",
-      "suggestions": [
-        "读取该任务完整日志和最后心跳，确认实际失败阶段及未完成批次。",
-        "检查后台服务重启原因，确保服务稳定性，并确认爬虫进程是否已正常注册。",
-        "仅恢复未完成阶段（如第53/65批之后的批次），避免重复执行已成功的外部写入。",
-        "修复后验证任务状态，确认所有批次完成且数据一致。"
-      ],
-      "occurred_at_hkt": "2026-08-18T16:34:20+08:00",
-      "started_at_hkt": "2026-08-18T16:35:11+08:00",
-      "heartbeat_at_hkt": "2026-08-18T21:38:52+08:00",
-      "completed_at_hkt": "2026-08-18T21:39:22+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "63ce820bb36342daa4a471dd",
-      "task_id": "incident:63ce820bb36342daa4a471dd",
-      "title": "战略新闻定时扫描 15:00",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻定时扫描 15:00",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻任务已启动但长时间没有完成归档",
-      "impact": "任务可能卡在搜索、AI审核、去重、飞书写入或群通知阶段。",
-      "suggestions": [
-        "检查对应 09:00/15:00 归档、进程锁、候选队列与飞书回读。",
-        "先确认是否已经完成或发送，禁止直接补跑造成重复消息。"
-      ],
-      "occurred_at_hkt": "2026-08-18T16:10:00+08:00",
-      "started_at_hkt": "2026-08-18T16:35:11+08:00",
-      "heartbeat_at_hkt": "2026-08-18T23:59:37+08:00",
-      "completed_at_hkt": "2026-08-19T00:00:07+08:00",
       "handled_at_hkt": ""
     }
   ],
