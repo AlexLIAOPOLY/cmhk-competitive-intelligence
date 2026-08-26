@@ -964,15 +964,19 @@
     status.hidden = !message;
   }
 
-  function beginCompetitorInsightStream(card) {
+  function beginCompetitorInsightStream(card, { preserveVisible = false } = {}) {
     if (!card) return;
-    card.classList.remove("is-ai", "is-streaming");
-    card.classList.add("is-loading");
+    const list = card.querySelector("[data-competitor-insight-list]");
+    const keepVisible = preserveVisible && list.children.length > 0;
+    card.classList.remove("is-ai", "is-loading", "is-streaming");
+    card.classList.add(keepVisible ? "is-streaming" : "is-loading");
     card.setAttribute("aria-busy", "true");
     setCompetitorInsightStatus(card, "正在连接 AI");
     card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
-    card.querySelector("[data-competitor-insight-list]").replaceChildren();
-    beginCompetitorStrategicIndicator();
+    if (!keepVisible) {
+      list.replaceChildren();
+      beginCompetitorStrategicIndicator();
+    }
   }
 
   function renderCompetitorInsightDraft(card, text) {
@@ -1006,7 +1010,7 @@
     const controller = new AbortController();
     state.competitorInsightController = controller;
     const card = document.querySelector("#competitorInsight");
-    beginCompetitorInsightStream(card);
+    beginCompetitorInsightStream(card, { preserveVisible: recovery });
     if (recovery) {
       setCompetitorInsightStatus(card, `自动恢复中 · 第 ${state.competitorInsightRetryAttempt} 次`);
       card.querySelector("[data-competitor-insight-badge]").textContent = "RECOVERING";
