@@ -1531,6 +1531,22 @@
   }
 
   function actualEventsForNode(nodeKey, run, detail) {
+    if (nodeKey === "news-db-signal") {
+      const summary = run?.operational_summary || {};
+      const signals = Array.isArray(summary.signals) ? summary.signals : [];
+      const summaryEvent = {
+        time: run.completed_at_hkt || run.started_at_hkt || "未单独记录时间",
+        title: "四库资料补缺完成",
+        content: `执行 ${number(summary.query_count || 0)} 个查询，得到 ${number(summary.search_result_count || 0)} 条搜索结果，筛出 ${number(summary.signal_count || signals.length)} 条需追官方原文的线索。`,
+        run,
+      };
+      return [summaryEvent, ...signals.map((signal) => ({
+        time: signal.published_at || run.completed_at_hkt || "未单独记录时间",
+        title: `${signal.entity || "未记录主体"} · ${signal.title || "未命名线索"}`,
+        content: `线索地址：${signal.news_url || "未记录"}\n交接要求：只作为追证入口，03:00链路须访问 ${number((signal.official_followup_urls || []).length)} 个官方地址核实，不直接写入数据库。`,
+        run,
+      }))];
+    }
     const lines = String(detail?.content || "").split("\n").map((line) => line.trim()).filter(Boolean);
     if (nodeKey === "agent") {
       const structured = lines.flatMap((line) => {
@@ -1712,6 +1728,30 @@
   }
 
   function detailedRecordsForNode(nodeKey, relatedRuns) {
+    if (nodeKey === "news-db-signal") {
+      const domainLabels = { local: "本地运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商" };
+      const originLabels = { "0100_search_engine": "01:00 搜索引擎补缺", previous_day_strategic_news: "前一日战略新闻交接" };
+      return relatedRuns.flatMap((run) => {
+        const summary = run.operational_summary || {};
+        return (Array.isArray(summary.signals) ? summary.signals : []).map((signal) => ({
+          run,
+          title: signal.title || `${signal.entity || "未记录主体"}线索`,
+          summary: `${domainLabels[signal.domain] || signal.domain || "未分类"}｜${signal.entity || "未记录主体"}｜${originLabels[signal.reference_origin] || signal.reference_origin || "来源未记录"}`,
+          source: signal.news_url || "",
+          status: "handoff",
+          resultLabel: "待追官方原文",
+          reason: "该条只是公开信息线索，不是数据库事实；已交给03:00链路访问公司 IR、财报或监管披露原文，字段门禁通过后才能入库。",
+          officialFollowupUrls: Array.isArray(signal.official_followup_urls) ? signal.official_followup_urls : [],
+          extra: [
+            `所属库：${domainLabels[signal.domain] || signal.domain || "未记录"}`,
+            `涉及主体：${signal.entity || "未记录"}`,
+            `线索来源：${originLabels[signal.reference_origin] || signal.reference_origin || "未记录"}`,
+            `当前处置：${signal.disposition === "official_followup_required" ? "待追官方原文" : signal.disposition || "未记录"}`,
+          ].join("\n"),
+          publishedAt: signal.published_at || "",
+        }));
+      });
+    }
     const detailKey = ({ "news-search": "discoveryItems", "news-ai": "aiReviewItems", "news-dedupe": "dedupeItems", "news-output": "newsItems" })[nodeKey];
     if (detailKey) {
       return relatedRuns.flatMap((run) => {
@@ -1735,6 +1775,7 @@
     const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
     const databaseHubNode = nodeKey === "database-hub";
     const databaseUiNode = !databaseHubNode && nodeKey.startsWith("database-");
+    const sourceDiscoveryNode = nodeKey === "news-db-signal";
     const refreshState = state.executiveIntelligence?.refresh || {};
     const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(state.newsSelectedDate);
     const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
@@ -1742,11 +1783,11 @@
     const domainKey = nodeKey.replace(/^database-/, "");
     const numericChangeCount = Number(databaseUiNode ? uiValueChanges.domains?.[domainKey]?.changed || 0 : uiValueChanges.changed || 0);
     const numericChangeLabel = numericBaselineAvailable ? `数值变化 ${number(numericChangeCount)} 项` : "数值变化未留存";
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : sourceDiscoveryNode ? `具体线索 ${records.length} 条` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     const numericChangeNote = databaseHubNode || databaseUiNode
       ? numericBaselineAvailable
         ? numericChangeCount > 0
@@ -1761,7 +1802,7 @@
       const sourceName = String(record.source || "").startsWith("http") ? "原始来源" : record.source || "未记录";
       const reasonLabel = status === "excluded" ? "AI 排除原因" : status === "duplicate" ? "重复判定依据" : status === "deferred" ? "延期原因" : "处理依据";
       const runLabel = record.run ? `${newsRunTime(record.run)} · ${record.run.crawl_run_id}` : databaseHubNode ? "当天数据库写入" : databaseUiNode ? "当天UI发布" : "当天洞察发布";
-      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
+      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}${record.officialFollowupUrls?.length ? `<div><dt>官方追证</dt><dd class="news-lineage-official-links">${record.officialFollowupUrls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">官方地址 ${number(index + 1)}</a>`).join(" · ")}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
     }).join("")}</div></section>`;
   }
 
