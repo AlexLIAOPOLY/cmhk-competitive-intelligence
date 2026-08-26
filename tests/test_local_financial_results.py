@@ -23,6 +23,17 @@ CAPITAL EXPENDITURE Capital expenditure including capitalised interest for the s
 
 
 class LocalFinancialResultsTests(unittest.TestCase):
+    def test_hkex_notice_number_prefix_is_the_publication_date(self) -> None:
+        self.assertEqual(
+            finance._publication_date(
+                {
+                    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+                    "text": "for the year ended 31 December 2025",
+                }
+            ),
+            "2026-03-27",
+        )
+
     def test_icable_hkex_results_announcement_is_an_official_report(self) -> None:
         url = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
         self.assertTrue(

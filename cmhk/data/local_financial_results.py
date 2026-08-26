@@ -189,6 +189,18 @@ def _report_period(record: dict[str, Any]) -> tuple[str, str, tuple[int, int]]:
 
 def _publication_date(record: dict[str, Any]) -> str:
     url = unquote(str(record.get("final_url") or record.get("url") or ""))
+    host = (urlparse(url).hostname or "").casefold()
+    if host in {"www1.hkexnews.hk", "www.hkexnews.hk"}:
+        hkex_notice = re.search(
+            r"(?<!\d)(20\d{2})(0[1-9]|1[0-2])([0-3]\d)\d{1,}(?:\.pdf)?(?:$|[?#])",
+            url,
+            re.I,
+        )
+        if hkex_notice:
+            try:
+                return date(*map(int, hkex_notice.groups())).isoformat()
+            except ValueError:
+                pass
     for pattern in (
         r"(?<!\d)(20\d{2})[._/-](0?[1-9]|1[0-2])[._/-]([0-3]?\d)(?!\d)",
         r"(?<!\d)(20\d{2})(0[1-9]|1[0-2])([0-3]\d)(?!\d)",
