@@ -590,7 +590,7 @@ def current_crawl_scope() -> str:
         {
             int(value)
             for value in re.findall(r"\d+", os.environ.get("CMHK_ROWS", ""))
-            if 2 <= int(value) <= 34
+            if int(value) >= 2
         }
     )
     if not rows:

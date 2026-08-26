@@ -380,7 +380,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.now = datetime(2026, 8, 16, 14, 0, tzinfo=HKT)
         self.runner = FakeCommandRunner()
         self.ai_calls = 0
-        self._write_completed_slot("09:00")
+        self._write_completed_slot("07:30")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -559,7 +559,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_empty_agentic_gap_search_alerts_even_when_scan_completes(self):
         self._write_slot_archive(
-            "09:00",
+            "07:30",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -579,7 +579,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_agentic_gap_search_with_results_is_not_alerted(self):
         self._write_slot_archive(
-            "09:00",
+            "07:30",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -594,7 +594,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_no_agentic_queries_planned_is_not_treated_as_failure(self):
         self._write_slot_archive(
-            "09:00",
+            "07:30",
             {
                 "news_discovery": {
                     "agentic_search": {
@@ -609,7 +609,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_blocked_dirty_copy_raises_a_p1_alert(self):
         self._write_slot_archive(
-            "09:00",
+            "07:30",
             {
                 "review_sheet": {
                     "dirty_copy_blocked_count": 2,
@@ -903,17 +903,17 @@ class ProjectMonitorTests(unittest.TestCase):
         issues = monitor._detect_strategic_slots()
 
         self.assertNotIn(
-            "strategic-slot-incomplete:2026-08-16@09-00",
+            "strategic-slot-incomplete:2026-08-16@07-30",
             {item["condition_key"] for item in issues},
         )
 
     def test_planned_midnight_cutoff_archive_is_not_reported_as_failure(self):
         self.now = datetime(2026, 8, 16, 23, 59, tzinfo=HKT)
-        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-30.json"
         path.write_text(
             json.dumps(
                 {
-                    "slot": "2026-08-16@09:00",
+                    "slot": "2026-08-16@07:30",
                     "status": "cutoff",
                     "notification_status": "not_sent_cutoff",
                     "cutoff_at": "2026-08-17T00:00:00+08:00",
@@ -924,15 +924,15 @@ class ProjectMonitorTests(unittest.TestCase):
         issues = self._monitor()._detect_strategic_slots()
 
         self.assertNotIn(
-            "strategic-slot-failed:2026-08-16@09-00:cutoff:not_sent_cutoff",
+            "strategic-slot-failed:2026-08-16@07-30:cutoff:not_sent_cutoff",
             {item["condition_key"] for item in issues},
         )
 
     def test_strategic_pending_archive_is_not_failed_during_finish_grace(self):
-        self.now = datetime(2026, 8, 16, 9, 58, 29, tzinfo=HKT)
-        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        self.now = datetime(2026, 8, 16, 8, 38, 29, tzinfo=HKT)
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-30.json"
         path.write_text(json.dumps({
-            "slot": "2026-08-16@09:00",
+            "slot": "2026-08-16@07:30",
             "status": "pipeline_completed",
             "notification_status": "pending",
             "scanned_at": "2026-08-16T09:58:27+08:00",
@@ -940,13 +940,13 @@ class ProjectMonitorTests(unittest.TestCase):
 
         keys = {item["condition_key"] for item in self._monitor()._detect_strategic_slots()}
 
-        self.assertNotIn("strategic-slot-failed:2026-08-16@09-00", keys)
+        self.assertNotIn("strategic-slot-failed:2026-08-16@07-30", keys)
 
     def test_strategic_pending_archive_is_failed_after_finish_grace(self):
-        self.now = datetime(2026, 8, 16, 10, 11, tzinfo=HKT)
-        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        self.now = datetime(2026, 8, 16, 8, 41, tzinfo=HKT)
+        path = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-30.json"
         path.write_text(json.dumps({
-            "slot": "2026-08-16@09:00",
+            "slot": "2026-08-16@07:30",
             "status": "pipeline_completed",
             "notification_status": "pending",
             "scanned_at": "2026-08-16T09:58:27+08:00",
@@ -954,7 +954,7 @@ class ProjectMonitorTests(unittest.TestCase):
 
         keys = {item["condition_key"] for item in self._monitor()._detect_strategic_slots()}
 
-        self.assertIn("strategic-slot-failed:2026-08-16@09-00", keys)
+        self.assertIn("strategic-slot-failed:2026-08-16@07-30", keys)
 
     def test_active_strategic_scan_heartbeat_prevents_false_monitor_stale_alarm(self):
         self.now = datetime(2026, 8, 16, 15, 10, tzinfo=HKT)
@@ -1181,7 +1181,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(monitor.state["incidents"][incident_id]["status"], "open")
 
     def test_strategic_slot_accepts_same_day_migrated_morning_archive(self):
-        expected = self.root / "strategy_briefing" / "runs" / "2026-08-16@09-00.json"
+        expected = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-30.json"
         expected.unlink()
         migrated = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-00.json"
         migrated.write_text(
@@ -1200,7 +1200,7 @@ class ProjectMonitorTests(unittest.TestCase):
         issues = self._monitor()._detect_strategic_slots()
 
         self.assertNotIn(
-            "strategic-slot-not-started:2026-08-16@09-00",
+            "strategic-slot-not-started:2026-08-16@07-30",
             {item["condition_key"] for item in issues},
         )
 

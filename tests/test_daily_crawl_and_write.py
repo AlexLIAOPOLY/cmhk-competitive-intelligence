@@ -9,6 +9,13 @@ import daily_crawl_and_write as daily
 
 
 class DailyCrawlAndWritePayloadTests(unittest.TestCase):
+    def test_current_crawl_scope_keeps_rows_beyond_legacy_range(self) -> None:
+        with mock.patch.dict(os.environ, {"CMHK_ROWS": "17,47,58"}, clear=False):
+            self.assertEqual(
+                daily.current_crawl_scope(),
+                "指定行（第17行、第47行、第58行）",
+            )
+
     def test_scheduled_rows_rebuild_payload_with_explicit_row_mapping(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
