@@ -339,6 +339,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "2f1461370d3881e717c3530c",
+      "task_id": "incident:2f1461370d3881e717c3530c",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-26T12:02:00+08:00",
+      "started_at_hkt": "2026-08-26T13:35:40+08:00",
+      "heartbeat_at_hkt": "2026-08-26T13:35:40+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "85151cec49530637f327839c",
       "task_id": "incident:85151cec49530637f327839c",
       "title": "主爬虫与定时爬虫",
@@ -1474,7 +1498,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T12:06:35+08:00",
-      "heartbeat_at_hkt": "2026-08-26T13:30:09+08:00",
+      "heartbeat_at_hkt": "2026-08-26T13:35:40+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12128,30 +12152,6 @@
       "started_at_hkt": "2026-08-18T21:39:22+08:00",
       "heartbeat_at_hkt": "2026-08-18T23:18:34+08:00",
       "completed_at_hkt": "2026-08-18T23:19:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "035063426c1ecd024d62c0cc",
-      "task_id": "incident:035063426c1ecd024d62c0cc",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-18T21:39:03+08:00",
-      "started_at_hkt": "2026-08-18T23:19:04+08:00",
-      "heartbeat_at_hkt": "2026-08-18T23:59:37+08:00",
-      "completed_at_hkt": "2026-08-19T00:00:07+08:00",
       "handled_at_hkt": ""
     }
   ],
