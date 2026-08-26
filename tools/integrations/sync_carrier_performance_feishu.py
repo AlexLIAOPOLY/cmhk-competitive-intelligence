@@ -7,6 +7,8 @@ import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
+
+from cmhk.integrations.feishu_runtime import resolve_lark_cli
 from zoneinfo import ZoneInfo
 
 
@@ -17,7 +19,7 @@ MARKET_CACHE_PATH = ROOT / "data/carrier_performance/carrier_market_cache.json"
 VERIFIED_FIELDS_PATH = ROOT / "data/carrier_performance/carrier_performance_verified_fields.json"
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 SHEET_TITLE = "运营商业绩摘要补充"
-LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 HEADERS = [
     "范围",
     "主体",

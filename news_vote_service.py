@@ -13,14 +13,20 @@ from zoneinfo import ZoneInfo
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")
-APP_ID = "cli_a9575e70ae799cb2"
+ROOT = Path(__file__).resolve().parent
+APP_ID = (
+    os.environ.get("CMHK_FEISHU_EVENT_APP_ID")
+    or os.environ.get("CMHK_FEISHU_APP_ID")
+    or os.environ.get("FEISHU_APP_ID")
+    or "cli_a9575e70ae799cb2"
+).strip()
 LARK_CLI_DIR = Path.home() / "Library" / "Application Support" / "lark-cli"
 APP_SECRET_FILE = LARK_CLI_DIR / f"appsecret_{APP_ID}.enc"
 MASTER_KEY_FILE = LARK_CLI_DIR / "master.key.file"
 STATE_DIR = Path(
     os.environ.get(
         "CMHK_STRATEGY_STATE_DIR",
-        "/Users/liaowang/cmhk_public_crawl_app/strategy_briefing",
+        str(ROOT / "var" / "strategy_briefing"),
     )
 )
 VOTE_FILE = STATE_DIR / "news_votes.json"
@@ -38,6 +44,19 @@ _thread: threading.Thread | None = None
 
 
 def _load_app_secret() -> str:
+    configured = (
+        os.environ.get("CMHK_FEISHU_EVENT_APP_SECRET")
+        or os.environ.get("CMHK_FEISHU_APP_SECRET")
+        or os.environ.get("FEISHU_APP_SECRET")
+        or ""
+    ).strip()
+    if configured:
+        return configured
+    if not APP_SECRET_FILE.is_file() or not MASTER_KEY_FILE.is_file():
+        raise RuntimeError(
+            "服务器未配置 CMHK_FEISHU_EVENT_APP_SECRET 或 CMHK_FEISHU_APP_SECRET"
+        )
+
     from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 

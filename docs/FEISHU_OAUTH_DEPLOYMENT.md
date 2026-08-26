@@ -1,5 +1,7 @@
 # 飞书 OAuth 本机与内网部署
 
+> 通讯录、消息、表格、卡片事件和服务器 profile 的完整配置见 [FEISHU_SERVER_DEPLOYMENT.md](FEISHU_SERVER_DEPLOYMENT.md)。
+
 飞书登录回调固定使用以下路径：
 
 ```text

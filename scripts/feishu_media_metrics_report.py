@@ -29,6 +29,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from ai_config import load_ai_config  # noqa: E402
+from cmhk.integrations.feishu_runtime import lark_cli_env, resolve_lark_cli  # noqa: E402
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -102,17 +103,8 @@ def _rate_limit_backoff(attempt: int) -> float:
 
 
 def run_lark(args: list[str], *, profile: str | None = None, timeout: int = 180) -> CommandResult:
-    env = os.environ.copy()
-    for key in NO_PROXY_KEYS:
-        env.pop(key, None)
-    env.update(
-        {
-            "LARK_CLI_NO_PROXY": "1",
-            "LARKSUITE_CLI_NO_UPDATE_NOTIFIER": "1",
-            "LARKSUITE_CLI_NO_SKILLS_NOTIFIER": "1",
-        }
-    )
-    command = ["lark-cli", *args]
+    env = lark_cli_env()
+    command = [resolve_lark_cli(), *args]
     if profile:
         command.extend(["--profile", profile])
     for attempt in range(LARK_RATE_LIMIT_MAX_ATTEMPTS):
@@ -407,10 +399,16 @@ def discover_publications(config: dict[str, Any], state: dict[str, Any]) -> list
     return [*seeded, *discovered]
 
 
-def get_file_statistics(token: str, file_type: str) -> dict[str, int]:
+def get_file_statistics(token: str, file_type: str, *, profile: str = "") -> dict[str, int]:
     params = {"file_token": token, "file_type": file_type}
+    identity = os.environ.get("CMHK_FEISHU_DRIVE_IDENTITY", "user").strip().lower()
+    if identity not in {"user", "bot"}:
+        raise ReportError("CMHK_FEISHU_DRIVE_IDENTITY 只能是 user 或 bot")
+    configured_profile = os.environ.get("CMHK_FEISHU_DRIVE_PROFILE", "").strip()
+    effective_profile = configured_profile or (profile if identity == "bot" else "")
     result = run_lark(
-        ["drive", "file.statistics", "get", "--as", "user", "--params", json.dumps(params), "--format", "json"]
+        ["drive", "file.statistics", "get", "--as", identity, "--params", json.dumps(params), "--format", "json"],
+        profile=effective_profile or None,
     )
     statistics = _data(result.payload).get("statistics") or {}
     return {name: int(statistics.get(name) or 0) for name in ("uv", "pv", "uv_today", "pv_today")}
@@ -462,7 +460,11 @@ def collect(config: dict[str, Any], state: dict[str, Any]) -> tuple[list[dict[st
         token = str(publication.get("drive_file_token") or "")
         if token:
             try:
-                drive_stats = get_file_statistics(token, str(publication.get("drive_file_type") or "file"))
+                drive_stats = get_file_statistics(
+                    token,
+                    str(publication.get("drive_file_type") or "file"),
+                    profile=profile,
+                )
             except ReportError:
                 drive_stats = (cached.get(title) or {}).get("drive")
                 if not drive_stats:

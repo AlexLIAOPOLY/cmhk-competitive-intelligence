@@ -33,6 +33,7 @@ class FakeLark:
             payload = {"ok": True, "data": {"has_more": False, "items": [{
                 "open_id": "ou_delivery123", "union_id": "on_test123",
                 "name": "测试用户", "en_name": "测试用户 Test User", "job_title": self.job_title,
+                "enterprise_email": "test.user@hk.chinamobile.com",
                 "avatar": {"avatar_72": "https://example.test/avatar.png"},
             }]}}
         elif "api" in argv and "/open-apis/im/v1/chats" in argv:
@@ -125,6 +126,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             "完成审核后推送，您可以选择每天一次或每天两次。"
             "感谢您的配合！",
         )
+
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
@@ -148,6 +150,21 @@ class SubscriptionServiceTests(unittest.TestCase):
         pause = next(item for item in card["body"]["elements"] if item.get("behaviors"))
         self.assertEqual(pause["type"], "text")
         self.assertEqual(pause["behaviors"][0]["value"]["action"], "cmhk_subscription_pause_all_v1")
+
+    def test_server_profiles_can_be_overridden_by_environment(self):
+        service = SubscriptionService(
+            runtime_root=self.root,
+            db_path=self.root / "var" / "subscriptions" / "profile-test.sqlite3",
+            environ={
+                "CMHK_FEISHU_ENTRY_PROFILE": "server-entry",
+                "CMHK_FEISHU_DIRECTORY_PROFILE": "server-directory",
+                "CMHK_FEISHU_DELIVERY_PROFILE": "server-delivery",
+            },
+            command_runner=self.lark,
+        )
+        self.assertEqual(service.entry_profile, "server-entry")
+        self.assertEqual(service.directory_profile, "server-directory")
+        self.assertEqual(service.delivery_profile, "server-delivery")
 
     def test_management_snapshot_exposes_strategic_news_schedule(self):
         self.assertEqual(
@@ -318,6 +335,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         results = self.service.search_people_directory("测试")
         self.assertEqual(results[0]["avatar_url"], "https://example.test/avatar.png")
         self.assertEqual(results[0]["department_names"], ["战略部"])
+        self.assertEqual(
+            self.service.search_people_directory("test.user@")[0]["display_name"],
+            "测试用户",
+        )
         self.assertEqual(self.service.invitation_permission_snapshot()["people_count"], 1)
         self.assertEqual(self.service.invitation_permission_snapshot()["status"], "ready")
         added = self.service.add_directory_candidates(["ou_delivery123"])

@@ -3,6 +3,7 @@ import json
 import os
 import sqlite3
 import tempfile
+import time
 import unittest
 from email.message import Message
 from pathlib import Path
@@ -327,38 +328,44 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(denied.status, 403)
 
     def test_directory_search_keeps_real_avatar_and_job_title(self):
-        directory_payload = {
-            "data": {"users": [{
+        directory_users = [{
                 "name": "测试成员",
-                "enterprise_email": "member@hk.chinamobile.com",
-                "department": "科创及数智化部 - 科技创新管理",
-                "is_activated": True,
-            }]}
-        }
-        completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
-        profile = {"avatar_url": "https://example.test/member.webp", "title": "Project Manager", "department": "缓存部门"}
-        with patch("cmhk.auth.service.subprocess.run", return_value=completed), patch.object(self.service, "_cached_directory_profile", return_value=profile):
+                "email": "member@hk.chinamobile.com",
+                "department": "科创及数智化部 / 科技创新管理",
+                "title": "Project Manager",
+                "avatar_url": "https://example.test/member.webp",
+            }]
+        with patch.object(self.service, "_directory_users_from_openapi", return_value=directory_users):
             users = self.service._search_directory_users("测试")
         self.assertEqual(users[0]["avatar_url"], "https://example.test/member.webp")
         self.assertEqual(users[0]["title"], "Project Manager")
         self.assertEqual(users[0]["department"], "科创及数智化部 / 科技创新管理")
 
+    def test_directory_search_uses_persistent_application_cache(self):
+        cached = [{
+            "name": "缓存成员",
+            "email": "cached@hk.chinamobile.com",
+            "department": "战略部",
+            "title": "经理",
+            "avatar_url": "https://example.test/cached.webp",
+        }]
+        self.service._write(self.service.directory_cache_path, {
+            "version": 1,
+            "expires_at": time.time() + 3600,
+            "users": cached,
+        })
+        with patch.object(self.service, "_tenant_access_token", side_effect=AssertionError("network should not run")):
+            self.assertEqual(self.service._directory_users_from_openapi(), cached)
+
     def test_directory_email_search_uses_simplified_position_for_new_member(self):
-        directory_payload = {
-            "data": {"users": [{
+        directory_users = [{
                 "name": "徐亮 Alan XU Liang",
-                "enterprise_email": "alanxu@hk.chinamobile.com",
-                "department": "科创及数智化部 - 科技创新管理",
-                "job_title": "Manager, Government & Enterprise Business Support Service",
-                "is_activated": True,
-            }]}
-        }
-        completed = type("Completed", (), {"stdout": json.dumps(directory_payload)})()
-        with patch("cmhk.auth.service.subprocess.run", return_value=completed), patch.object(
-            self.service,
-            "_feishu_profile_by_email",
-            return_value={"title": "经理", "avatar_url": "https://example.test/alan.webp"},
-        ):
+                "email": "alanxu@hk.chinamobile.com",
+                "department": "科创及数智化部 / 科技创新管理",
+                "title": "经理",
+                "avatar_url": "https://example.test/alan.webp",
+            }]
+        with patch.object(self.service, "_directory_users_from_openapi", return_value=directory_users):
             users = self.service._search_directory_users("alanxu@hk.chinamobile.com")
         self.assertEqual(users[0]["title"], "经理")
         self.assertEqual(users[0]["avatar_url"], "https://example.test/alan.webp")

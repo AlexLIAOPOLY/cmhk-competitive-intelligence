@@ -25,8 +25,14 @@ from cmhk.integrations.feishu_sheet_rollover import (
     record_active_part,
     timestamped_part_title,
 )
+from cmhk.integrations.feishu_runtime import lark_cli_env, resolve_lark_cli
 
 ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = Path(
+    os.environ.get("CMHK_RUNTIME_ROOT")
+    or os.environ.get("CMHK_MONITOR_RUNTIME_ROOT")
+    or ROOT
+)
 DATA_DIR = ROOT / "strategy_briefing"
 LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
 FULL_DISCOVERY_PATH = DATA_DIR / "news_discovery_full.json"
@@ -35,7 +41,7 @@ STATE_PATH = DATA_DIR / "news_review_sheet_state.json"
 GATE_METADATA_STATE_KEY = "candidate_gate_metadata"
 
 HKT = ZoneInfo("Asia/Hong_Kong")
-LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 SPREADSHEET_TOKEN = (
     os.environ.get("CMHK_NEWS_REVIEW_SPREADSHEET_TOKEN")
     or "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
@@ -232,22 +238,27 @@ def _lark(
     timeout: int = 120,
     retry_transient: bool = False,
 ) -> dict[str, Any]:
-    environment = os.environ.copy()
-    for name in (
-        "HTTP_PROXY",
-        "HTTPS_PROXY",
-        "ALL_PROXY",
-        "http_proxy",
-        "https_proxy",
-        "all_proxy",
-    ):
-        environment.pop(name, None)
-    environment["LARK_CLI_NO_PROXY"] = "1"
+    environment = lark_cli_env()
+    identity = (
+        os.environ.get("CMHK_NEWS_REVIEW_FEISHU_IDENTITY")
+        or os.environ.get("CMHK_FEISHU_SHEETS_IDENTITY")
+        or "user"
+    ).strip().lower()
+    if identity not in {"user", "bot"}:
+        raise RuntimeError("飞书候选池身份只能是 user 或 bot")
+    profile = (
+        os.environ.get("CMHK_NEWS_REVIEW_FEISHU_PROFILE")
+        or os.environ.get("CMHK_FEISHU_SHEETS_PROFILE")
+        or ""
+    ).strip()
     attempts = LARK_READ_MAX_ATTEMPTS if retry_transient else 1
     for attempt in range(1, attempts + 1):
         try:
+            command = [LARK_CLI, *parts, "--as", identity]
+            if profile:
+                command.extend(["--profile", profile])
             process = subprocess.run(
-                [LARK_CLI, *parts, "--as", "user"],
+                command,
                 cwd=str(ROOT),
                 env=environment,
                 capture_output=True,
@@ -2507,7 +2518,7 @@ def _crawl_item_id(*parts: Any) -> str:
 def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     roots = [
         Path(__file__).resolve().parents[2] / "curation_data" / "backups",
-        Path("/Users/liaowang/cmhk_public_crawl_app/curation_data/backups"),
+        RUNTIME_ROOT / "curation_data" / "backups",
     ]
     run_dirs: list[Path] = []
     for root in roots:
@@ -2871,9 +2882,9 @@ def _load_curated_latest(
 def _news_source_paths() -> list[Path]:
     return [
         LATEST_PATH,
-        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_latest.json"),
+        RUNTIME_ROOT / "strategy_briefing" / "news_discovery_latest.json",
         STATE_PATH.parent / "news_discovery_full.json",
-        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_full.json"),
+        RUNTIME_ROOT / "strategy_briefing" / "news_discovery_full.json",
     ]
 
 

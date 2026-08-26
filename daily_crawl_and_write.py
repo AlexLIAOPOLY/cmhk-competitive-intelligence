@@ -20,6 +20,7 @@ from cmhk.integrations.feishu_sheet_rollover import (
     sheet_url,
     timestamped_part_title,
 )
+from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
 
 
 ROOT = Path(__file__).resolve().parent
@@ -48,11 +49,7 @@ AGENT_TRACE_HEADERS = [
     "状态",
 ]
 def feishu_cli_env() -> dict[str, str]:
-    env = os.environ.copy()
-    env["LARK_CLI_NO_PROXY"] = "1"
-    for key in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY", "https_proxy", "http_proxy", "all_proxy"):
-        env.pop(key, None)
-    return env
+    return lark_cli_env()
 
 
 def run_cmd(args: list[str], *, timeout: int = 180) -> str:
@@ -60,7 +57,7 @@ def run_cmd(args: list[str], *, timeout: int = 180) -> str:
     proc = None
     for attempt in range(3):
         proc = subprocess.run(
-            args,
+            portable_lark_argv(args),
             cwd=ROOT,
             text=True,
             capture_output=True,

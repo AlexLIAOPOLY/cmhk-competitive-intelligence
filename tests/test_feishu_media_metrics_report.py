@@ -16,6 +16,28 @@ SPEC.loader.exec_module(MODULE)
 
 
 class FeishuMediaMetricsReportTests(unittest.TestCase):
+    def test_file_statistics_can_use_server_bot_profile(self):
+        result = MODULE.CommandResult(
+            payload={"ok": True, "data": {"statistics": {"uv": 8, "pv": 12}}},
+            stderr="",
+        )
+        with patch.dict(MODULE.os.environ, {"CMHK_FEISHU_DRIVE_IDENTITY": "bot"}), patch.object(
+            MODULE, "run_lark", return_value=result
+        ) as run:
+            stats = MODULE.get_file_statistics("file_test", "file", profile="server-bot")
+        self.assertEqual(stats["uv"], 8)
+        self.assertIn("bot", run.call_args.args[0])
+        self.assertEqual(run.call_args.kwargs["profile"], "server-bot")
+
+    def test_file_statistics_preserves_local_default_user_profile(self):
+        result = MODULE.CommandResult(payload={"ok": True, "data": {"statistics": {}}}, stderr="")
+        with patch.dict(MODULE.os.environ, {}, clear=True), patch.object(
+            MODULE, "run_lark", return_value=result
+        ) as run:
+            MODULE.get_file_statistics("file_test", "file", profile="bot-only-profile")
+        self.assertIn("user", run.call_args.args[0])
+        self.assertIsNone(run.call_args.kwargs["profile"])
+
     def test_run_lark_retries_rate_limit_with_exponential_backoff(self):
         rate_limited = subprocess.CompletedProcess(
             ["lark-cli"],

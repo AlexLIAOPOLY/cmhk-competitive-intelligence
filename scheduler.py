@@ -24,6 +24,7 @@ from cmhk.crawl.run_registry import (
     start_crawl_run,
 )
 from cmhk.intelligence.scheduled_news_bridge import capture_completed_crawl
+from cmhk.integrations.feishu_runtime import resolve_lark_cli
 
 
 ROOT = Path(__file__).resolve().parent
@@ -37,7 +38,7 @@ MAIN_SHEET_ID = "9c638d"
 HKT = ZoneInfo("Asia/Hong_Kong")
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_SCHEDULER_POLL_SECONDS", "60")))
 RETRY_SECONDS = max(300, int(os.environ.get("CMHK_SCHEDULER_RETRY_SECONDS", "1800")))
-LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
 AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "3600")))

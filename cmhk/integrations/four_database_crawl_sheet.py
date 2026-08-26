@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
+from cmhk.integrations.feishu_runtime import resolve_lark_cli
+
 
 ROOT = Path(__file__).resolve().parents[2]
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -19,7 +21,7 @@ SPREADSHEET_TOKEN = os.environ.get("CMHK_FOUR_DATABASE_LOG_SPREADSHEET_TOKEN", "
 SHEET_TITLE = os.environ.get("CMHK_FOUR_DATABASE_LOG_SHEET_TITLE", "四库爬虫明细日志")
 STATE_PATH = ROOT / "var" / "four_database_crawl_sheet" / "state.json"
 LOCK_PATH = ROOT / "var" / "four_database_crawl_sheet" / "write.lock"
-LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 
 HEADERS = [
     "记录时间", "事件ID", "运行ID", "阶段", "四库", "主体／查询", "动作",

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -16,14 +17,11 @@ sys.path.insert(0, str(ROOT))
 import cmhk.intelligence.news_review_sheet as review  # noqa: E402
 
 
-BACKUP_PATH = Path(
-    "/Users/liaowang/cmhk_public_crawl_app/curation_data/backups/"
+RUNTIME_ROOT = Path(os.environ.get("CMHK_RUNTIME_ROOT") or ROOT)
+BACKUP_PATH = RUNTIME_ROOT / "curation_data" / "backups" / (
     "news_review_sheet_before_3hk_exact_cleanup_20260727_105345.json"
 )
-DISCOVERY_PATH = Path(
-    "/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/"
-    "news_discovery_latest.json"
-)
+DISCOVERY_PATH = RUNTIME_ROOT / "strategy_briefing" / "news_discovery_latest.json"
 
 DROP_TITLES = {
     "香港AI产品出口创新高": "与同批香港出口新闻重复且未找到当日对应原文",

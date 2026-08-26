@@ -15,6 +15,8 @@ import time
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 from pathlib import Path
+
+from cmhk.integrations.feishu_runtime import resolve_lark_cli
 from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 from urllib.parse import urljoin
@@ -53,7 +55,7 @@ CMHK_SAVE_RAW_BODY = os.environ.get("CMHK_SAVE_RAW_BODY", "0").strip().lower() i
 CMHK_IGNORE_COMPLIANCE = os.environ.get("CMHK_IGNORE_COMPLIANCE", "0").strip().lower() in {"1", "true", "yes"}
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
-LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 SOURCE_REGISTRY_CACHE: Dict[str, Any] | None = None
 ROBOTS_CACHE: Dict[str, Dict[str, Any]] = {}
 ROBOTS_CACHE_LOCK = threading.Lock()

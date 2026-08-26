@@ -40,6 +40,7 @@ from cmhk.integrations.feishu_sheet_rollover import (
     sheet_url,
     timestamped_part_title,
 )
+from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
 
 try:
     from opencc import OpenCC
@@ -214,24 +215,7 @@ def _fingerprint(*parts: object) -> str:
 
 
 def _command_env(base: dict[str, str] | None = None) -> dict[str, str]:
-    environment = dict(base or os.environ)
-    for key in (
-        "HTTPS_PROXY",
-        "HTTP_PROXY",
-        "ALL_PROXY",
-        "https_proxy",
-        "http_proxy",
-        "all_proxy",
-    ):
-        environment.pop(key, None)
-    environment.update(
-        {
-            "LARK_CLI_NO_PROXY": "1",
-            "LARKSUITE_CLI_NO_UPDATE_NOTIFIER": "1",
-            "LARKSUITE_CLI_NO_SKILLS_NOTIFIER": "1",
-        }
-    )
-    return environment
+    return lark_cli_env(base)
 
 
 def _default_command_runner(
@@ -316,6 +300,7 @@ class ProjectMonitor:
         self.environ = dict(environ or os.environ)
         self.now_fn = now_fn or (lambda: datetime.now(HKT))
         self.command_runner = command_runner or _default_command_runner
+        self._uses_default_command_runner = command_runner is None
         self.http_getter = http_getter or _default_http_getter
         self.ai_diagnoser = ai_diagnoser
         self.state = _read_json(self.state_path, {})
@@ -392,7 +377,7 @@ class ProjectMonitor:
 
     def _run(self, argv: list[str], timeout: float = 20) -> subprocess.CompletedProcess[str]:
         return self.command_runner(
-            argv,
+            portable_lark_argv(argv, self.environ) if self._uses_default_command_runner else argv,
             cwd=self.runtime_root,
             env=_command_env(self.environ),
             timeout=timeout,

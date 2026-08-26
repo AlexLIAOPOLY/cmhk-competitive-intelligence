@@ -17,6 +17,8 @@ from typing import Any, Callable
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
+from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
+
 
 HKT_OFFSET = "+08:00"
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -160,13 +162,7 @@ def _normalize_strategic_scan_times(value: Any) -> list[str]:
 
 
 def _command_env(environ: dict[str, str] | None = None) -> dict[str, str]:
-    env = dict(environ or os.environ)
-    env["LARK_CLI_NO_PROXY"] = "1"
-    env["LARKSUITE_CLI_NO_UPDATE_NOTIFIER"] = "1"
-    env["LARKSUITE_CLI_NO_SKILLS_NOTIFIER"] = "1"
-    for key in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
-        env.pop(key, None)
-    return env
+    return lark_cli_env(environ)
 
 
 def _json_payload(process: subprocess.CompletedProcess[str]) -> dict[str, Any]:
@@ -579,12 +575,21 @@ class SubscriptionService:
     def entry_profile(self) -> str:
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
-        return str(subscriptions.get("entry_profile") or bot.get("profile") or "")
+        return str(
+            self.environ.get("CMHK_FEISHU_ENTRY_PROFILE")
+            or subscriptions.get("entry_profile")
+            or bot.get("profile")
+            or ""
+        )
 
     @property
     def delivery_profile(self) -> str:
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
-        return str(subscriptions.get("delivery_profile") or self.entry_profile)
+        return str(
+            self.environ.get("CMHK_FEISHU_DELIVERY_PROFILE")
+            or subscriptions.get("delivery_profile")
+            or self.entry_profile
+        )
 
     @property
     def primary_delivery_open_id(self) -> str:
@@ -692,6 +697,7 @@ class SubscriptionService:
                     union_id TEXT NOT NULL,
                     display_name TEXT NOT NULL,
                     en_name TEXT NOT NULL DEFAULT '',
+                    enterprise_email TEXT NOT NULL DEFAULT '',
                     avatar_url TEXT NOT NULL DEFAULT '',
                     job_title TEXT NOT NULL DEFAULT '',
                     department_names TEXT NOT NULL DEFAULT '[]',
@@ -840,6 +846,9 @@ class SubscriptionService:
                     "source_profile": "TEXT NOT NULL DEFAULT ''",
                     "avatar_url": "TEXT NOT NULL DEFAULT ''",
                 },
+                "subscription_directory_people": {
+                    "enterprise_email": "TEXT NOT NULL DEFAULT ''",
+                },
             }
             for table, additions in migrations.items():
                 existing = {str(row[1]) for row in db.execute(f"PRAGMA table_info({table})").fetchall()}
@@ -866,7 +875,7 @@ class SubscriptionService:
         if self.command_runner is not None:
             return self.command_runner(argv, timeout=timeout)
         return subprocess.run(
-            argv,
+            portable_lark_argv(argv, self.environ),
             cwd=self.runtime_root,
             env=_command_env(self.environ),
             text=True,
@@ -881,7 +890,11 @@ class SubscriptionService:
     @property
     def directory_profile(self) -> str:
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
-        return str(subscriptions.get("directory_profile") or self.delivery_profile)
+        return str(
+            self.environ.get("CMHK_FEISHU_DIRECTORY_PROFILE")
+            or subscriptions.get("directory_profile")
+            or self.delivery_profile
+        )
 
     def resolve_user(self, open_id: str, *, source_profile: str = "") -> dict[str, str]:
         if not OPEN_ID_RE.fullmatch(open_id):
@@ -1639,6 +1652,9 @@ class SubscriptionService:
                         "union_id": union_id,
                         "display_name": name,
                         "en_name": str(user.get("en_name") or "")[:120],
+                        "enterprise_email": str(
+                            user.get("enterprise_email") or user.get("email") or ""
+                        ).strip().lower()[:240],
                         "avatar_url": str(avatar.get("avatar_72") or avatar.get("avatar_240") or ""),
                         "job_title": str(user.get("job_title") or "")[:160],
                         "department_names": set(),
@@ -1658,17 +1674,18 @@ class SubscriptionService:
                 job_title = str(person["job_title"] or "").strip()
                 db.execute(
                     """INSERT INTO subscription_directory_people(
-                           directory_open_id, union_id, display_name, en_name, avatar_url,
+                           directory_open_id, union_id, display_name, en_name, enterprise_email, avatar_url,
                            job_title, department_names, source_profile, active, synced_at
-                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
                        ON CONFLICT(directory_open_id) DO UPDATE SET
                            union_id=excluded.union_id, display_name=excluded.display_name,
-                           en_name=excluded.en_name, avatar_url=excluded.avatar_url,
+                           en_name=excluded.en_name, enterprise_email=excluded.enterprise_email,
+                           avatar_url=excluded.avatar_url,
                            job_title=excluded.job_title, department_names=excluded.department_names,
                            source_profile=excluded.source_profile, active=1, synced_at=excluded.synced_at""",
                     (
                         person["directory_open_id"], person["union_id"], person["display_name"],
-                        person["en_name"], person["avatar_url"], job_title,
+                        person["en_name"], person["enterprise_email"], person["avatar_url"], job_title,
                         json.dumps(department_names, ensure_ascii=False), self.directory_profile, now,
                     ),
                 )
@@ -1681,12 +1698,12 @@ class SubscriptionService:
         pattern = f"%{needle.replace('%', '').replace('_', '')}%"
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT directory_open_id, union_id, display_name, en_name, avatar_url,
+                """SELECT directory_open_id, union_id, display_name, en_name, enterprise_email, avatar_url,
                           job_title, department_names, source_profile, synced_at
                    FROM subscription_directory_people
-                   WHERE active=1 AND (display_name LIKE ? OR en_name LIKE ?)
+                   WHERE active=1 AND (display_name LIKE ? OR en_name LIKE ? OR enterprise_email LIKE ?)
                    ORDER BY display_name LIMIT ?""",
-                (pattern, pattern, max(1, min(int(limit), 50))),
+                (pattern, pattern, pattern, max(1, min(int(limit), 50))),
             ).fetchall()
         return [dict(row) | {"department_names": json.loads(row["department_names"] or "[]")} for row in rows]
 

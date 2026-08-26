@@ -130,6 +130,7 @@ class AuthService:
         self.sessions_path = self.state_dir / "sessions.json"
         self.audit_path = self.state_dir / "admin-audit.json"
         self.operation_audit_path = self.state_dir / "operation-audit.jsonl"
+        self.directory_cache_path = self.state_dir / "feishu-directory-cache.json"
         self.lock = threading.RLock()
         self.require_login = os.environ.get("CMHK_AUTH_REQUIRE_LOGIN", "1") == "1"
         self.allow_dev_login = os.environ.get("CMHK_AUTH_ALLOW_DEV_LOGIN", "0") == "1"
@@ -150,6 +151,7 @@ class AuthService:
         self.oauth_attempts: dict[str, list[float]] = {}
         self._tenant_token_cache: tuple[str, float] = ("", 0.0)
         self._custom_attr_cache: tuple[list[dict[str, Any]], float] = ([], 0.0)
+        self._directory_search_cache: tuple[list[dict[str, str]], float] = ([], 0.0)
         certificate_file = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/cert.pem"
         ssl_context = ssl.create_default_context(cafile=certificate_file if Path(certificate_file).is_file() else None)
         self._url_opener = urllib.request.build_opener(
@@ -760,52 +762,124 @@ class AuthService:
                 target["directory_profile_synced_at"] = _now_iso()
                 self._write(self.users_path, users)
 
+    def _directory_users_from_openapi(self) -> list[dict[str, str]]:
+        cached, expires_at = self._directory_search_cache
+        if cached and expires_at > time.time():
+            return cached
+        disk_cache = self._read(self.directory_cache_path, {})
+        disk_users = disk_cache.get("users") if isinstance(disk_cache, dict) else None
+        disk_expires = float(disk_cache.get("expires_at") or 0) if isinstance(disk_cache, dict) else 0
+        if isinstance(disk_users, list) and disk_users and disk_expires > time.time():
+            users = [item for item in disk_users if isinstance(item, dict)]
+            self._directory_search_cache = (users, disk_expires)
+            return users
+        token = self._tenant_access_token()
+        departments: dict[str, str] = {}
+        page_token = ""
+        for _ in range(40):
+            params: dict[str, Any] = {
+                "department_id_type": "open_department_id",
+                "fetch_child": "true",
+                "page_size": 50,
+            }
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._json_request(
+                "https://open.feishu.cn/open-apis/contact/v3/departments/0/children?" + urlencode(params),
+                token=token,
+            )
+            data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+            for item in data.get("items") or []:
+                if not isinstance(item, dict):
+                    continue
+                department_id = str(item.get("open_department_id") or "")
+                name = str(item.get("name") or "").strip()
+                status = item.get("status") if isinstance(item.get("status"), dict) else {}
+                if department_id.startswith("od-") and name and not status.get("is_deleted"):
+                    departments[department_id] = name
+            if not data.get("has_more"):
+                break
+            page_token = str(data.get("page_token") or "")
+            if not page_token:
+                break
+
+        people: dict[str, dict[str, Any]] = {}
+        for department_id, department_name in departments.items():
+            page_token = ""
+            for _ in range(40):
+                params = {
+                    "department_id": department_id,
+                    "department_id_type": "open_department_id",
+                    "user_id_type": "open_id",
+                    "page_size": 50,
+                }
+                if page_token:
+                    params["page_token"] = page_token
+                payload = self._json_request(
+                    "https://open.feishu.cn/open-apis/contact/v3/users/find_by_department?" + urlencode(params),
+                    token=token,
+                )
+                data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+                for item in data.get("items") or []:
+                    if not isinstance(item, dict) or item.get("is_activated") is False:
+                        continue
+                    email = str(item.get("enterprise_email") or item.get("email") or "").strip().lower()
+                    name = str(item.get("name") or item.get("en_name") or "").strip()
+                    open_id = str(item.get("open_id") or "")
+                    if not email.endswith("@" + self.email_domain) or not name:
+                        continue
+                    avatar = item.get("avatar") if isinstance(item.get("avatar"), dict) else {}
+                    key = open_id or email
+                    record = people.setdefault(key, {
+                        "name": name,
+                        "email": email,
+                        "department_names": set(),
+                        "title": str(item.get("job_title") or item.get("title") or "").strip(),
+                        "avatar_url": str(avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or "").strip(),
+                    })
+                    record["department_names"].add(department_name)
+                if not data.get("has_more"):
+                    break
+                page_token = str(data.get("page_token") or "")
+                if not page_token:
+                    break
+        users = [{
+            "name": str(item["name"]),
+            "email": str(item["email"]),
+            "department": " / ".join(sorted(item["department_names"])),
+            "title": str(item["title"]),
+            "avatar_url": str(item["avatar_url"]),
+        } for item in people.values()]
+        cache_seconds = max(600, int(os.environ.get("CMHK_FEISHU_DIRECTORY_CACHE_SECONDS", "21600")))
+        expires_at = time.time() + cache_seconds
+        self._directory_search_cache = (users, expires_at)
+        self._write(self.directory_cache_path, {
+            "version": 1,
+            "expires_at": expires_at,
+            "users": users,
+        })
+        return users
+
     def _search_directory_users(self, query: str) -> list[dict[str, str]]:
         keyword = query.strip()
         if len(keyword) < 2 or len(keyword) > 50:
             raise ValueError("请输入 2-50 个字符搜索飞书成员")
-        executable = os.environ.get("LARK_CLI_PATH") or "/opt/homebrew/bin/lark-cli"
-        child_env = dict(os.environ)
-        child_env["LARK_CLI_NO_PROXY"] = "1"
-        for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
-            child_env.pop(key, None)
         try:
-            result = subprocess.run(
-                [executable, "contact", "+search-user", "--as", "user", "--query", keyword, "--exclude-external-users", "--page-size", "20", "--lang", "zh_cn"],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=15,
-                env=child_env,
-            )
-            payload = json.loads(result.stdout)
-        except (OSError, subprocess.SubprocessError, ValueError) as exc:
-            raise RuntimeError("飞书通讯录搜索失败") from exc
-        entries = payload.get("data", {}).get("users", []) if isinstance(payload, dict) else []
-        users = []
-        for item in entries:
-            if not isinstance(item, dict) or item.get("is_activated") is False or item.get("is_cross_tenant") is True:
-                continue
-            email = str(item.get("enterprise_email") or item.get("email") or "").strip().lower()
-            if not email.endswith("@" + self.email_domain):
-                continue
-            name = str(item.get("localized_name") or item.get("name") or "").strip()
-            avatar = item.get("avatar") if isinstance(item.get("avatar"), dict) else {}
-            cached_profile = self._cached_directory_profile(name)
-            enterprise_profile: dict[str, str] = {}
-            if keyword.strip().lower() == email:
-                try:
-                    enterprise_profile = self._feishu_profile_by_email(email)
-                except RuntimeError:
-                    enterprise_profile = {}
-            users.append({
-                "name": name,
-                "email": email,
-                "department": str(item.get("department") or cached_profile.get("department") or "").replace(" - ", " / ").replace("&amp;", "&").strip(),
-                "title": str(enterprise_profile.get("title") or item.get("job_title") or item.get("title") or cached_profile.get("title") or "").strip(),
-                "avatar_url": str(enterprise_profile.get("avatar_url") or avatar.get("avatar_240") or avatar.get("avatar_72") or avatar.get("avatar_origin") or item.get("avatar_url") or cached_profile.get("avatar_url") or "").strip(),
-            })
-        return [item for item in users if item["name"] and item["email"]]
+            entries = self._directory_users_from_openapi()
+        except RuntimeError as exc:
+            raise RuntimeError("飞书应用通讯录读取失败，请检查服务器应用凭证、权限和可用范围") from exc
+        needle = keyword.casefold()
+        matches = [
+            item for item in entries
+            if needle in f"{item.get('name', '')}\n{item.get('email', '')}".casefold()
+        ]
+        return sorted(
+            matches,
+            key=lambda item: (
+                not str(item.get("name") or "").casefold().startswith(needle),
+                str(item.get("name") or "").casefold(),
+            ),
+        )[:20]
 
     def _upsert_feishu_user(self, identity: dict[str, Any]) -> dict[str, Any]:
         open_id = str(identity.get("open_id") or "")

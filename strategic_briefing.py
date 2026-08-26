@@ -36,6 +36,7 @@ from cmhk.intelligence.scheduled_news_bridge import (
     commit_signal_attempts,
     load_pending_signals,
 )
+from cmhk.integrations.feishu_runtime import resolve_lark_cli
 
 
 ROOT = Path(__file__).resolve().parent
@@ -539,7 +540,7 @@ AI_APPROVAL_RESPONSE_FORMAT = _strict_object_response_format(
 )
 
 
-LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
+LARK_CLI = resolve_lark_cli()
 MONITOR_SHEET_TOKEN = (
     os.environ.get("CMHK_STRATEGY_SHEET_TOKEN") or "NB6Gsi9tChARfGtBDpFc6QfOnmb"
 ).strip()
