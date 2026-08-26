@@ -22557,6 +22557,41 @@
       "discovery_fallback_used": true,
       "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：跨库AI发现只有思考内容，没有最终输出"
     },
+    "ui_value_changes": {
+      "baseline_available": true,
+      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+      "changed": 0,
+      "added": 0,
+      "removed": 0,
+      "domains": {
+        "local": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "international": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "mainland": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "cloud": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        }
+      },
+      "items": [],
+      "verification": "Reconstructed for 2026-08-26 by comparing the pre-refresh workspace UI numeric snapshot with the current runtime UI numeric snapshot; all 19 UI objects had no numeric differences."
+    },
     "pages_publish": {
       "ok": true,
       "attempts": 1,
@@ -22583,6 +22618,7 @@
         "international",
         "cloud"
       ],
+      "ui_numeric_changed_domains": [],
       "ui_verified": true
     },
     "feishu_detail_log": {
