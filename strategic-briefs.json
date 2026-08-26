@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-26T14:49:25+08:00",
+  "generated_at": "2026-08-26T14:54:34+08:00",
   "items": [
+    {
+      "id": "NEWS-2AB0C58A00B9A8",
+      "title": "香港外贸连涨29个月超预期",
+      "summary": "香港外贸连续29个月增长并超出预期，市场关注下半年预测是否上调。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBOM0NILW90c1BxMTdTdUJaVVBmY1FqTEJhQTRfQ0F2V1RUYjBKaDQzMFJPbDRhU1VxclRQVTJVTmRoclRKNENvTEx1SEtiTVlGeHlBVncwUXExY0hLM1dmQmIyTHlDRjN3emU1dlFXeWhEXzZkbjNR?oc=5",
+      "published_at": "2026-08-26T08:24:45+08:00"
+    },
+    {
+      "id": "NEWS-A5D069F6628A1C",
+      "title": "香港7月出口按年升50.7% 受AI电子产品带动",
+      "summary": "香港7月出口按年升50.7%，受AI相关电子产品强劲增长带动，政府预期需求持续。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3365195/hong-kong-exports-jump-507-july-driven-growth-ai-related-electronics",
+      "published_at": "2026-08-25T22:59:00+08:00"
+    },
     {
       "id": "NEWS-6B1134F856EB3F",
       "title": "世界机器人大会开幕，逾10%参展商为粤企",
@@ -49,22 +65,6 @@
       "category": "市场/产品类",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE14MUZHSUR0UXhvRnRkY05lRVc2T3ozYWpKbnU1dXJ5cFllYkdwM3FCYV81bWEwZW5sZjR5STNJNUlnYlNVRnJJSEVFUnF0NEg3RWotNkV5ZS01Tnd4UHQyMDZDYVRDUFJtOGhRMkRiYzhicWR3WXo0?oc=5",
       "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-F72A73AB64FB34",
-      "title": "香港中文大学研发AI气象预报系统“风乌”",
-      "summary": "香港中文大学研发名为“风乌”的AI气象预报系统，旨在提升极端天气预测的准确度和时效性。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9OY2VOel9RUUw2azhrX0xuRHVFMnc5RUhHUFpqTkh4aWl2VnNsME5TVFU3TzBZZDNRYTNMOElIakwyemNhMDB5Qi01Ung1eEFUem9IMFBHVEdUTHo2UHJ6SlNpdXFoYVlsZnlONEFOZzI2RFNNQXh3?oc=5",
-      "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-C9ADADDEFEBE7B",
-      "title": "数码港主席陈细明：扩建后写字楼半数租出，盼提供更多AI算力",
-      "summary": "数码港主席陈细明表示扩建后写字楼已有一半租出，并期望未来能提供更多AI算力。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMimwNBVV95cUxPQnNjS1pkUmsyejRvT2N0X0NZNmVVM0JHMjU2clVUc2Y1MkJfcmluRU5XLWdiSFlEUDBkQzJWRG14VVlTR1FKTlV3NE50N2NCcDVNMlBiR2I1aGRJOXlySUtKaWpHWkRHMEgtMWRwWUdIN3I5YzRmWEtsTnViLUZBU042TzJleU5UbkVZSWl6YUp6enFibmg5UFlPamFUYjZrN1VjVlVOV21yMk5MaWpfYjgwSE9RVll0ZDF1QlM0WV9mRFBkZWJIZGpjSFhHbjBSVDkxVGp5WnVNdmpGQ2Y5RGhoTVhXZi1kamhjY1djelZQSXFPN0ppTFNseXNTM3VkbUF5TTMtNXp6eDJCdHM2cGNkYzVvcjJUNWtiOWZHNk1uV19aT3VEWjdWV0ZUS0dUM21mYnFFWUFPSWZsS1VHSEp3Zm8yckVyWDl0Q0lVTzVXQVk1UXAtVmlydEJsaUlnVzhNNk54ZVBQSlhTcEJOOHRJWEtwVVM0MEpIajNYV01fVTN4V1pFNmpkNDFnVFUxMll6NUR0RXNfYkk?oc=5",
-      "published_at": "2026-08-15"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "a70519e7a33e7dcf37a1d1b9018e1366d52cbbd3f6dd2db00c1d46b0cc5dec96"
+  "site_version": "1bcb51dedd1631852223418229ba5a4e47138984612e6d293dac834b02e769ea"
 }
