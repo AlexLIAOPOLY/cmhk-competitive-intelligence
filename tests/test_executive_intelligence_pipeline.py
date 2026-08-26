@@ -15,6 +15,53 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_ui_numeric_comparison_ignores_equal_values_and_new_fields(self):
+        previous = {
+            "domains": {
+                "international": [
+                    {"key": "Verizon|main", "entity": "Verizon", "field": "页面主值", "value": 138.19, "unit": "十亿美元"},
+                ],
+            },
+        }
+        current = {
+            "domains": {
+                "international": [
+                    {"key": "Verizon|main", "entity": "Verizon", "field": "页面主值", "value": 138.19, "unit": "十亿美元", "context": "重新抓取"},
+                    {"key": "Verizon|component:0:核验来源", "entity": "Verizon", "field": "核验来源", "value": 3, "unit": "个"},
+                ],
+            },
+        }
+
+        result = pipeline._compare_ui_numeric_values(previous, current)
+
+        self.assertTrue(result["baseline_available"])
+        self.assertEqual(result["changed"], 0)
+        self.assertEqual(result["added"], 1)
+        self.assertEqual(result["items"], [])
+
+    def test_ui_numeric_comparison_records_explicit_old_and_new_values(self):
+        previous = {
+            "domains": {
+                "international": [
+                    {"key": "Verizon|main", "entity": "Verizon", "field": "页面主值", "value": 138.19, "unit": "十亿美元"},
+                ],
+            },
+        }
+        current = {
+            "domains": {
+                "international": [
+                    {"key": "Verizon|main", "entity": "Verizon", "field": "页面主值", "value": 140.2, "unit": "十亿美元"},
+                ],
+            },
+        }
+
+        result = pipeline._compare_ui_numeric_values(previous, current)
+
+        self.assertEqual(result["changed"], 1)
+        self.assertEqual(result["domains"]["international"]["changed"], 1)
+        self.assertEqual(result["items"][0]["old_value"], 138.19)
+        self.assertEqual(result["items"][0]["new_value"], 140.2)
+
     def test_0100_handoff_requires_current_hkt_date(self):
         now = datetime(2026, 8, 25, 3, 0, tzinfo=pipeline.HKT)
         with patch.object(

@@ -1292,6 +1292,8 @@
     const sourceAudit = intelligenceRun.operational_summary?.overview_source_recrawl || {};
     const refreshState = state.executiveIntelligence?.refresh || {};
     const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(selectedDate);
+    const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
+    const numericBaselineAvailable = uiValueChanges.baseline_available === true;
     const domainNode = (key, fallbackLabel, position, variant) => {
       const domain = domains.get(key) || {};
       const sourceStats = sourceAudit.domains?.[key] || {};
@@ -1308,22 +1310,24 @@
       const failed = Number(sourceStats.failed || 0);
       const sourceUnchanged = Math.max(0, retrieved - sourceChanged - firstObserved);
       const databaseChanged = Boolean(refreshDomain.database_changed);
+      const numericChangeCount = Number(uiValueChanges.domains?.[key]?.changed || 0);
+      const numericChangeText = numericBaselineAvailable ? `${number(numericChangeCount)} 项` : "未留存";
       return {
         key: `database-${key}`,
         label: domain.title || fallbackLabel,
         value: intelligenceRun.crawl_run_id ? number(uiItemCount) : "—",
         unit: intelligenceRun.crawl_run_id ? "项发布到UI" : "",
-        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 数据变化 ${number(sourceChanged)} 项` : "当天未留下四库刷新归档",
+        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 数值变化 ${numericChangeText}` : "当天未留下四库刷新归档",
         health: intelligenceHealth,
         variant,
         compact: true,
         position,
         details: intelligenceRun.crawl_run_id ? [
-          `当天重新发布到UI ${number(uiItemCount)} 项；数据变化 ${number(sourceChanged)} 项`,
-          `数据库事实快照 ${number(factCount)} 条；本库数据库版本${databaseChanged ? "有变化" : "未变化"}`,
+          `当天重新发布到UI ${number(uiItemCount)} 项；结构化数值变化 ${numericChangeText}`,
+          `数据库事实快照 ${number(factCount)} 条；本库文件内容${databaseChanged ? "有变动" : "未变动"}，不据此计算数值变化`,
           `官方来源检查 ${number(Number(sourceStats.official_urls || 0))} 条：成功 ${number(retrieved)} 条、失败 ${number(failed)} 条`,
-          `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`,
-          "数据变化按本轮官方来源内容变化统计；点击下方可查看重新发布到UI的具体对象",
+          `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`,
+          numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较；点开可查看重新发布对象及明确的前后值" : "本轮未留存更新前数值基线，页面不推测变化数量",
           `运行 ${intelligenceRun.crawl_run_id} · 完成 ${runCompletionText(intelligenceRun)}`,
         ] : ["所选日期没有该数据库的刷新记录"],
         evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
@@ -1346,6 +1350,8 @@
     const changedDatabaseCount = Array.isArray(refreshState.change_summary?.database_changed_domains)
       ? refreshState.change_summary.database_changed_domains.length
       : ["local", "international", "cloud", "mainland"].filter((key) => refreshState.domains?.[key]?.database_changed).length;
+    const numericChangeCount = Number(uiValueChanges.changed || 0);
+    const numericChangeText = numericBaselineAvailable ? `${number(numericChangeCount)} 项` : "未留存";
     const modelAnalysis = intelligenceRun.operational_summary?.model_analysis || {};
     const insightCount = Number(modelAnalysis.focuses_passed || 0);
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
@@ -1378,7 +1384,7 @@
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [285, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "官方原文复核 / 数据库入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数据变化 ${number(sourceChanged)} 项` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [550, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；数据变化 ${number(sourceChanged)} 项`, `四个可见库中 ${number(changedDatabaseCount)} 个数据库版本有变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`, "数据变化按本轮官方来源内容变化统计", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "database-hub", label: "官方原文复核 / 数据库入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [550, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [770, 425], "database-local"),
       domainNode("international", "国际运营商", [952, 425], "database-international"),
       domainNode("cloud", "全球云厂商", [770, 563], "database-cloud"),
@@ -1626,6 +1632,11 @@
   function executiveNodeRecords(nodeKey) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
+    const refreshState = state.executiveIntelligence?.refresh || {};
+    const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(state.newsSelectedDate);
+    const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
+    const numericBaselineAvailable = uiValueChanges.baseline_available === true;
+    const numericChangeItems = numericBaselineAvailable && Array.isArray(uiValueChanges.items) ? uiValueChanges.items : [];
     const factRecord = (domain, item) => ({
       title: `${item.company || domain.title || "未分类"} · ${item.metric || "审核事实"}`,
       summary: item.analysis || item.basis || "",
@@ -1643,21 +1654,32 @@
       ].join("\n"),
       publishedAt: domain.ai_updated_at || "",
     });
-    const uiRecord = (domain, item) => ({
-      title: item.name || `${domain.title || "未分类"} UI对象`,
-      summary: item.analysis || item.detail || "",
-      source: item.source_url || "",
-      status: "updated",
-      resultLabel: "已发布到UI",
-      reason: `已重新发布到${domain.title || domain.id || "四库"}前端数据区，页面显示 ${item.value ?? "—"}${item.unit || ""}${item.period ? `（${item.period}）` : ""}。这是发布确认记录，不是该对象数值发生变化的证明。`,
-      extra: [
-        `所属UI库：${domain.title || domain.id || "未记录"}`,
-        `页面主值：${item.value ?? "—"}${item.unit || ""}${item.period ? ` · ${item.period}` : ""}`,
-        `UI字段：${(item.components || []).map((part) => `${part.label || "指标"} ${part.value ?? "—"}${part.unit || ""}${part.detail ? `（${part.detail}）` : ""}`).join("；") || "未记录"}`,
-        `核验来源：${item.verification_count ?? "—"} 个`,
-      ].join("\n"),
-      publishedAt: domain.ai_updated_at || "",
-    });
+    const uiRecord = (domain, item) => {
+      const entityName = item.name || `${domain.title || "未分类"} UI对象`;
+      const changes = numericChangeItems.filter((change) => change.domain === domain.id && change.entity === entityName);
+      const changeDetails = changes.map((change) => `${change.field || "数值字段"}：${change.old_value ?? "—"}${change.unit || ""} → ${change.new_value ?? "—"}${change.unit || ""}`);
+      const hasNumericChange = changes.length > 0;
+      return {
+        title: entityName,
+        summary: item.analysis || item.detail || "",
+        source: item.source_url || "",
+        status: hasNumericChange ? "value-changed" : "updated",
+        resultLabel: hasNumericChange ? `数值变化 ${number(changes.length)} 项` : "重新发布 · 数值未变",
+        reason: hasNumericChange
+          ? `本对象有 ${number(changes.length)} 项结构化数值发生变化：${changeDetails.join("；")}。`
+          : numericBaselineAvailable
+            ? `已重新发布到${domain.title || domain.id || "四库"}前端数据区；与更新前相同字段逐项比较后，未发现结构化数值变化。`
+            : `已重新发布到${domain.title || domain.id || "四库"}前端数据区；本轮未留存更新前数值基线，不能推测数值是否变化。`,
+        extra: [
+          `所属UI库：${domain.title || domain.id || "未记录"}`,
+          `页面主值：${item.value ?? "—"}${item.unit || ""}${item.period ? ` · ${item.period}` : ""}`,
+          `UI字段：${(item.components || []).map((part) => `${part.label || "指标"} ${part.value ?? "—"}${part.unit || ""}${part.detail ? `（${part.detail}）` : ""}`).join("；") || "未记录"}`,
+          numericBaselineAvailable ? `数值变化：${hasNumericChange ? changeDetails.join("；") : "0 项（数值与更新前相同）"}` : "数值变化：未留存更新前数值基线",
+          `核验来源：${item.verification_count ?? "—"} 个`,
+        ].join("\n"),
+        publishedAt: domain.ai_updated_at || "",
+      };
+    };
     const insightRecord = (domain, focus) => ({
       title: `${domain.title || domain.id || "未分类"} · ${focus.label || focus.id || "AI洞察"}`,
       summary: focus.insight || focus.headline || "",
@@ -1713,12 +1735,26 @@
     const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
     const databaseHubNode = nodeKey === "database-hub";
     const databaseUiNode = !databaseHubNode && nodeKey.startsWith("database-");
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseHubNode ? `数据库事实 ${records.length} 条` : databaseUiNode ? `UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
+    const refreshState = state.executiveIntelligence?.refresh || {};
+    const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(state.newsSelectedDate);
+    const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
+    const numericBaselineAvailable = uiValueChanges.baseline_available === true;
+    const domainKey = nodeKey.replace(/^database-/, "");
+    const numericChangeCount = Number(databaseUiNode ? uiValueChanges.domains?.[domainKey]?.changed || 0 : uiValueChanges.changed || 0);
+    const numericChangeLabel = numericBaselineAvailable ? `数值变化 ${number(numericChangeCount)} 项` : "数值变化未留存";
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = databaseHubNode ? "当天数据库入库与数据变化" : databaseUiNode ? "当天UI重新发布与数据变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
-    return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>${detailTitle}</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
+    const detailTitle = databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const numericChangeNote = databaseHubNode || databaseUiNode
+      ? numericBaselineAvailable
+        ? numericChangeCount > 0
+          ? `<p class="news-lineage-value-change-note is-changed">仅带“数值变化”标记的对象计入；详情必须明确显示同一字段的旧值 → 新值。</p>`
+          : `<p class="news-lineage-value-change-note is-none">本轮结构化数值变化 0 项；下方 ${number(records.length)} ${databaseHubNode ? "条数据库事实" : "项UI对象"}不代表数值发生变化。</p>`
+        : `<p class="news-lineage-value-change-note is-unavailable">本轮未留存更新前数值基线，因此不展示或推测数值变化数量。</p>`
+      : "";
+    return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>${detailTitle}</h3><span>${esc(recordLabel)}</span></header>${coverageNote}${numericChangeNote}<div class="news-lineage-detail-items">${records.map((record) => {
       const status = String(record.status || "processed").toLowerCase();
       const title = record.aiTitle || record.sourceTitle || record.title || "未命名处理对象";
       const sourceUrl = record.url || (String(record.source || "").startsWith("http") ? record.source : "");

@@ -7,6 +7,7 @@ import fcntl
 import hashlib
 import itertools
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -288,6 +289,7 @@ def _finalize_refresh_task(
             "feishu_detail_log": result.get("feishu_detail_log", {}),
             "failure_stage": result.get("failure_stage", ""),
             "overview_source_recrawl": result.get("overview_source_recrawl", {}),
+            "ui_value_changes": result.get("ui_value_changes", {}),
         },
     )
 
@@ -303,6 +305,109 @@ def _fact_content(payload: dict[str, Any]) -> dict[str, Any]:
         key: value
         for key, value in payload.items()
         if key not in {"generated_at_hkt", "agent_run_id"}
+    }
+
+
+def _ui_numeric_value_snapshot(snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Capture only numeric fields that are actually rendered as four-domain UI data."""
+    if snapshot is None:
+        from cmhk.intelligence.executive import build_executive_intelligence_snapshot
+
+        snapshot = build_executive_intelligence_snapshot()
+    domains: dict[str, list[dict[str, Any]]] = {}
+    for domain in snapshot.get("domains") or []:
+        domain_id = str(domain.get("id") or "")
+        if domain_id not in UI_DOMAIN_IDS:
+            continue
+        values: list[dict[str, Any]] = []
+        for entity in domain.get("entities") or []:
+            entity_name = str(entity.get("name") or "")
+            candidates = [("main", "页面主值", entity.get("value"), entity.get("unit"), entity.get("period"))]
+            candidates.extend(
+                (
+                    f"component:{index}:{component.get('label') or '指标'}",
+                    str(component.get("label") or "指标"),
+                    component.get("value"),
+                    component.get("unit"),
+                    component.get("detail"),
+                )
+                for index, component in enumerate(entity.get("components") or [])
+            )
+            for field_key, field_label, value, unit, context in candidates:
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(float(value)):
+                    continue
+                values.append(
+                    {
+                        "key": f"{entity_name}|{field_key}",
+                        "entity": entity_name,
+                        "field": field_label,
+                        "value": value,
+                        "unit": str(unit or ""),
+                        "context": str(context or ""),
+                    }
+                )
+        domains[domain_id] = values
+    return {"captured_at_hkt": _now(), "domains": domains}
+
+
+def _compare_ui_numeric_values(
+    previous: dict[str, Any] | None,
+    current: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Count a change only when the same rendered numeric field has a different value."""
+    if not previous or not current:
+        return {
+            "baseline_available": False,
+            "method": "same UI field numeric old-to-new comparison",
+            "changed": 0,
+            "added": 0,
+            "removed": 0,
+            "domains": {},
+            "items": [],
+        }
+    domain_results: dict[str, dict[str, Any]] = {}
+    changed_items: list[dict[str, Any]] = []
+    total_added = 0
+    total_removed = 0
+    for domain in UI_DOMAIN_IDS:
+        old_items = {item["key"]: item for item in (previous.get("domains") or {}).get(domain, [])}
+        new_items = {item["key"]: item for item in (current.get("domains") or {}).get(domain, [])}
+        changes: list[dict[str, Any]] = []
+        for key in sorted(old_items.keys() & new_items.keys()):
+            old_item = old_items[key]
+            new_item = new_items[key]
+            if old_item.get("value") == new_item.get("value"):
+                continue
+            changes.append(
+                {
+                    "domain": domain,
+                    "entity": new_item.get("entity") or old_item.get("entity") or "",
+                    "field": new_item.get("field") or old_item.get("field") or "",
+                    "old_value": old_item.get("value"),
+                    "new_value": new_item.get("value"),
+                    "unit": new_item.get("unit") or old_item.get("unit") or "",
+                    "context": new_item.get("context") or "",
+                }
+            )
+        added = len(new_items.keys() - old_items.keys())
+        removed = len(old_items.keys() - new_items.keys())
+        total_added += added
+        total_removed += removed
+        changed_items.extend(changes)
+        domain_results[domain] = {
+            "baseline_available": True,
+            "changed": len(changes),
+            "added": added,
+            "removed": removed,
+        }
+    return {
+        "baseline_available": True,
+        "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+        "changed": len(changed_items),
+        "added": total_added,
+        "removed": total_removed,
+        "domains": domain_results,
+        "items": changed_items,
     }
 
 
@@ -4539,6 +4644,11 @@ def run_pipeline(
         return {"ok": True, "skipped": True, "reason": "refresh_already_running"}
 
     started = time.monotonic()
+    try:
+        previous_ui_numeric_values = _ui_numeric_value_snapshot()
+    except Exception as exc:
+        previous_ui_numeric_values = None
+        _append_log(f"ui numeric baseline unavailable {exc}")
     state: dict[str, Any] = {
         "ok": False,
         "status": "running",
@@ -4758,6 +4868,21 @@ def run_pipeline(
                 }
                 _append_log(f"model analysis failed {exc}")
                 _task_event(task_run_id, "生成AI洞察", f"AI洞察生成失败：{exc}", level="critical")
+        try:
+            current_ui_numeric_values = _ui_numeric_value_snapshot()
+            state["ui_value_changes"] = _compare_ui_numeric_values(
+                previous_ui_numeric_values,
+                current_ui_numeric_values,
+            )
+        except Exception as exc:
+            state["ui_value_changes"] = _compare_ui_numeric_values(None, None)
+            state["ui_value_changes"]["error"] = str(exc)
+        numeric_change_count = int((state.get("ui_value_changes") or {}).get("changed") or 0)
+        _task_event(
+            task_run_id,
+            "核对UI数值变化",
+            f"按同一UI字段旧值→新值逐项比较，确认{numeric_change_count}项结构化数值变化；网页内容指纹变化不计入。",
+        )
         for domain in UI_DOMAIN_IDS:
             sidecar = (state.get("domain_fact_sidecars") or {}).get(domain) or {}
             state["domains"].setdefault(domain, {"ok": True, "changed": False})
@@ -4823,6 +4948,10 @@ def run_pipeline(
                     "source_content_changed_domains": [
                         domain for domain in UI_DOMAIN_IDS
                         if int((((state.get("overview_source_recrawl") or {}).get("domains") or {}).get(domain) or {}).get("content_changed") or 0) > 0
+                    ],
+                    "ui_numeric_changed_domains": [
+                        domain for domain in UI_DOMAIN_IDS
+                        if int((((state.get("ui_value_changes") or {}).get("domains") or {}).get(domain) or {}).get("changed") or 0) > 0
                     ],
                     "ui_verified": pages_ok,
                 },
