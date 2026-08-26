@@ -2,6 +2,20 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260826_110247_096895",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 20260826_030806_46215eb7 · 父任务 20260826_030035_726664",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "宏观政策支撑库",
+      "progress_detail": "正在重建宏观政策支撑库数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
+      "heartbeat_at_hkt": "2026-08-26T11:03:27+08:00",
+      "started_at_hkt": "2026-08-26T11:02:47+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260826_105706_279134",
       "trigger": "每日01:00四库资料搜索",
       "scope": "四库更新资料 2026-08-26",
@@ -9572,24 +9586,24 @@
       "crawl_run_id": "20260826_030035_726664",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "running",
-      "phase": "恢复未完成任务",
-      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
-      "status_detail": "",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-26T11:00:56+08:00",
+      "heartbeat_at_hkt": "2026-08-26T11:02:47+08:00",
       "started_at_hkt": "2026-08-26T03:00:35+08:00",
-      "completed_at_hkt": "",
-      "duration_ms": 27115050,
+      "completed_at_hkt": "2026-08-26T11:02:47+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 28932133,
       "final_audit": {
-        "generated_at": "2026-08-26T03:07:17.824058",
-        "rows_crawled": "33",
-        "ok_rows": "7",
-        "partial_rows": "1",
-        "failed_rows": "25",
-        "fulfilled": "8/33 (24.2%)",
-        "live_url_success": "196/204 (96.1%)",
-        "live_url_failures": "8",
+        "generated_at": "2026-08-26T10:59:27.559555",
+        "rows_crawled": "1",
+        "ok_rows": "0",
+        "partial_rows": "0",
+        "failed_rows": "1",
+        "fulfilled": "0/1 (0.0%)",
+        "live_url_success": "7/8 (87.5%)",
+        "live_url_failures": "1",
         "restored_from_previous_evidence": "0"
       },
       "curation": {
@@ -9621,7 +9635,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-26T10:32:29+08:00",
+          "generated_at_hkt": "2026-08-26T11:00:56+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -9782,6 +9796,46 @@
               ],
               "core_metric_count": 3,
               "fetched_at_hkt": "2026-08-26T03:02:01.636321+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 17,
+              "company": "i-CABLE",
+              "period": "FY 2025",
+              "report_type": "annual",
+              "publication_date": "2025-12-31",
+              "due_at_hkt": "2026-01-01T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$539 million",
+                  "evidence": "revenues of the Group decreasing by approximately HK$45 million or 8% to approximately HK$539 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$490 million",
+                  "evidence": "loss for the year ended 31 December 2025 to approximately HK$490 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$52 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-26T10:58:22.582036+08:00",
               "verification_status": "official_document_extracted"
             }
           ],
@@ -9954,11 +10008,46 @@
             {
               "row": 17,
               "company": "i-CABLE",
-              "status": "no_official_report_discovered"
+              "period": "FY 2025",
+              "report_type": "annual",
+              "publication_date": "2025-12-31",
+              "due_at_hkt": "2026-01-01T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$539 million",
+                  "evidence": "revenues of the Group decreasing by approximately HK$45 million or 8% to approximately HK$539 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$490 million",
+                  "evidence": "loss for the year ended 31 December 2025 to approximately HK$490 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$52 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-26T10:58:22.582036+08:00",
+              "verification_status": "official_document_extracted"
             }
           ],
           "quality": {
-            "ok": false,
+            "ok": true,
             "checked_rows": [
               2,
               5,
@@ -9967,13 +10056,49 @@
               15,
               17
             ],
-            "failures": [
-              "第17行 i-CABLE 未发现可读取的官方财报"
-            ]
+            "failures": []
           },
           "database_changed": true,
-          "database_updated": false,
+          "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
+        },
+        "financial_frontend_publish": {
+          "ok": true,
+          "returnCode": 0,
+          "status": "published",
+          "site_version": "ddcd2984c6f7cb03c0605ee51e175c37bd6de881f0de57662673454a3248916c",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "6521885b445707dba29330230ccf168cb2ef25fc",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260826_030035_726664",
+          "bootstrap": false,
+          "page_count": 6,
+          "signal_count": 30,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260826_030035_726664.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 35832,
+          "agent_run_id": "20260826_030806_46215eb7",
+          "task_run_id": "20260826_110247_096895",
+          "task_id": "crawl:20260826_110247_096895",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "15_focus_analysis",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
         }
       }
     },
@@ -22800,6 +22925,6 @@
       }
     }
   ],
-  "total": 229,
+  "total": 230,
   "truncated": false
 }
