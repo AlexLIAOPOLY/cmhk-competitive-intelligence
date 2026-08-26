@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "dc3d6415ef240a8c947d9972",
+      "task_id": "incident:dc3d6415ef240a8c947d9972",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-26T23:02:03+08:00",
+      "started_at_hkt": "2026-08-26T23:02:03+08:00",
+      "heartbeat_at_hkt": "2026-08-26T23:02:03+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "7bf9cbded33afc040868e4b0",
       "task_id": "incident:7bf9cbded33afc040868e4b0",
       "title": "主项目后台任务",
@@ -2122,7 +2146,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T17:03:34+08:00",
-      "heartbeat_at_hkt": "2026-08-26T22:57:03+08:00",
+      "heartbeat_at_hkt": "2026-08-26T23:02:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12122,32 +12146,6 @@
       "started_at_hkt": "2026-08-19T10:19:46+08:00",
       "heartbeat_at_hkt": "2026-08-19T10:21:16+08:00",
       "completed_at_hkt": "2026-08-19T10:21:46+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "95b7f76319ef5e0ee7ff7f45",
-      "task_id": "incident:95b7f76319ef5e0ee7ff7f45",
-      "title": "错误告警处理按钮监听器",
-      "kind": "project-monitor-card-actions",
-      "kind_label": "错误告警处理按钮监听器",
-      "scope": "project-monitor-card-actions",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "告警处理按钮回调执行失败",
-      "impact": "已确认事实：用户点击“已处理”后，处理人员或处理状态可能暂时无法写回错误台账。推断：可能导致告警处理记录延迟或丢失，影响后续跟踪。",
-      "suggestions": [
-        "检查 project_monitor_card_actions.stderr.log 的完整错误上下文，确认是否缺少接收频率参数，并核对 LaunchAgent 状态。",
-        "审查前端回调逻辑，确保接收频率字段在提交前已正确选择或设置默认值。",
-        "修复后执行隔离测试，模拟点击“已处理”按钮，确认本地状态或错误台账写回正常，不发送测试群消息。",
-        "验证修复后错误日志无新异常，并确认告警处理流程可正常完成。"
-      ],
-      "occurred_at_hkt": "2026-08-19T10:11:15+08:00",
-      "started_at_hkt": "2026-08-19T10:11:15+08:00",
-      "heartbeat_at_hkt": "2026-08-19T10:11:15+08:00",
-      "completed_at_hkt": "2026-08-19T10:14:45+08:00",
       "handled_at_hkt": ""
     }
   ],
