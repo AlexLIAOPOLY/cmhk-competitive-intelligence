@@ -28,6 +28,34 @@ DOMAIN_LABELS = {
     "cloud": "云厂商库",
 }
 
+SEARCH_METRIC_TERMS = (
+    "earnings", "results", "revenue", "profit", "EBITDA", "ARPU",
+    "subscribers", "customers", "capex", '"cloud revenue"',
+    "财报", "业绩", "营收", "收入", "利润", "用户数", "客户数", "订户",
+    "资本开支", "云收入", "云业务",
+)
+
+
+def _build_search_plans() -> list[dict[str, Any]]:
+    """Build the actual 01:00 queries; every metric term reaches the provider."""
+    metric_clause = " OR ".join(SEARCH_METRIC_TERMS)
+    plans: list[dict[str, Any]] = []
+    for domain, entity, aliases, _official_urls in NEWS_ENTITY_SOURCES:
+        subject = " OR ".join(f'"{alias}"' for alias in aliases[:3])
+        plans.append(
+            {
+                "module": f"四库资料/{domain}",
+                "domain": domain,
+                "entity": entity,
+                "query": f"({subject}) ({metric_clause})",
+                "keywords": list(aliases),
+                "lookback_days": 2,
+                "search_origin": "four_database_0100_agent",
+                "semantic_relevance": True,
+            }
+        )
+    return plans
+
 
 def _previous_day_news_references(reference: datetime) -> tuple[list[str], list[dict[str, Any]]]:
     target_date = (reference - timedelta(days=1)).date().isoformat()
@@ -178,23 +206,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
     run_id = str(run["crawl_run_id"])
     log_path = Path(str(run["stream_log_path"]))
     try:
-        plans: list[dict[str, Any]] = []
-        for domain, entity, aliases, _official_urls in NEWS_ENTITY_SOURCES:
-            subject = " OR ".join(f'"{alias}"' for alias in aliases[:3])
-            query = f"({subject}) (earnings OR results OR revenue OR profit OR subscribers OR ARPU OR capex OR 财报 OR 业绩 OR 营收 OR 用户数 OR 资本开支)"
-            plans.append(
-                {
-                    "module": f"四库资料/{domain}",
-                    "domain": domain,
-                    "entity": entity,
-                    "query": query,
-                    "fallback_query": f'"{entity}" earnings revenue subscribers',
-                    "keywords": list(aliases),
-                    "lookback_days": 2,
-                    "search_origin": "four_database_0100_agent",
-                    "semantic_relevance": True,
-                }
-            )
+        plans = _build_search_plans()
         items, errors, stats = news_discovery_digest._execute_search_plans(
             plans,
             start_at=reference - timedelta(hours=24),

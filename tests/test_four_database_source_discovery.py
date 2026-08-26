@@ -9,6 +9,18 @@ import four_database_source_discovery as discovery
 
 
 class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
+    def test_actual_search_queries_cover_all_metric_families_and_aliases(self) -> None:
+        plans = discovery._build_search_plans()
+
+        self.assertEqual(len(plans), 18)
+        self.assertTrue(all("fallback_query" not in plan for plan in plans))
+        for plan in plans:
+            for term in discovery.SEARCH_METRIC_TERMS:
+                self.assertIn(term, plan["query"])
+        hkt = next(plan for plan in plans if plan["entity"] == "HKT")
+        self.assertIn('"香港电讯"', hkt["query"])
+        self.assertIn('"香港電訊"', hkt["query"])
+
     def test_search_audit_keeps_per_domain_queries_results_and_zero_result_reason(self) -> None:
         plans = [
             {"module": "四库资料/local", "domain": "local", "entity": "HKT", "query": "full HKT", "fallback_query": "HKT earnings", "lookback_days": 2},
