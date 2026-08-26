@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "e60bb2ebc27f992c74fcc159",
+      "task_id": "incident:e60bb2ebc27f992c74fcc159",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-27T05:05:05+08:00",
+      "started_at_hkt": "2026-08-27T05:05:05+08:00",
+      "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "96a993c5b159b7e0e86b8fd5",
       "task_id": "incident:96a993c5b159b7e0e86b8fd5",
       "title": "主项目后台任务",
@@ -45,7 +69,7 @@
       ],
       "occurred_at_hkt": "2026-08-27T04:13:31+08:00",
       "started_at_hkt": "2026-08-27T04:13:36+08:00",
-      "heartbeat_at_hkt": "2026-08-27T04:59:34+08:00",
+      "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -357,7 +381,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T03:38:39+08:00",
-      "heartbeat_at_hkt": "2026-08-27T04:59:34+08:00",
+      "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12116,30 +12140,6 @@
       "started_at_hkt": "2026-08-19T15:35:05+08:00",
       "heartbeat_at_hkt": "2026-08-19T15:35:05+08:00",
       "completed_at_hkt": "2026-08-19T15:41:06+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "7f6ac5f244c964d74e617e8b",
-      "task_id": "incident:7f6ac5f244c964d74e617e8b",
-      "title": "战略新闻定时扫描 15:00",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻定时扫描 15:00",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻定时扫描超过宽限期仍未启动",
-      "impact": "该时段竞对与战略新闻可能漏采，且不能在未核实历史状态前直接补跑。",
-      "suggestions": [
-        "检查对应 09:00/15:00 归档、进程锁、候选队列与飞书回读。",
-        "先确认是否已经完成或发送，禁止直接补跑造成重复消息。"
-      ],
-      "occurred_at_hkt": "2026-08-19T15:15:00+08:00",
-      "started_at_hkt": "2026-08-19T15:15:04+08:00",
-      "heartbeat_at_hkt": "2026-08-19T19:23:38+08:00",
-      "completed_at_hkt": "2026-08-19T19:24:08+08:00",
       "handled_at_hkt": ""
     }
   ],
