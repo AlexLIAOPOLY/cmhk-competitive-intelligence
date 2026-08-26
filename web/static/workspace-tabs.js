@@ -1395,7 +1395,7 @@
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
-      ["main", "agent", "提交证据审核", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["news-db-signal", "database-hub", "03:00追官方原文", "amber"], ["agent", "database-hub", "审核事实写库", "cyan"],
+      ["main", "agent", "提交证据审核", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["news-output", "news-db-signal", "前一日新闻进入01:00", "previous-day"], ["news-db-signal", "main", "03:00追官方原文", "amber"], ["agent", "database-hub", "审核事实写库", "cyan"],
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
     ];
@@ -1430,6 +1430,14 @@
       const ty = upperLoop ? target.y : target.y + target.h;
       const railY = upperLoop ? 8 : from === "business" ? 425 : 472;
       return `M ${sx} ${sy} C ${sx + 60} ${railY}, ${tx - 110} ${railY}, ${tx} ${ty}`;
+    }
+    if (kind === "previous-day") {
+      const sx = source.x + source.w / 2;
+      const sy = source.y + source.h;
+      const tx = target.x + target.w;
+      const ty = target.y + target.h / 2;
+      const railY = target.y - 16;
+      return `M ${sx} ${sy} C ${sx} ${railY - 24}, ${sx} ${railY}, ${sx - 24} ${railY} H ${tx + 34} C ${tx + 16} ${railY}, ${tx + 16} ${ty}, ${tx} ${ty}`;
     }
     if (kind === "branch") {
       const sx = source.x + source.w;
