@@ -39,4 +39,4 @@ if [[ -n "$delivery_app_id" || -n "$delivery_secret" ]]; then
 fi
 
 echo "Feishu server profiles initialized and bot identities verified."
-echo "Run: python3 scripts/check_feishu_server_readiness.py --live"
+echo "Run: python3 scripts/check_feishu_server_readiness.py --live --require-drive"

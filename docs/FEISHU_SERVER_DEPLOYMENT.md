@@ -59,6 +59,8 @@ CMHK_FEISHU_SHEETS_IDENTITY=bot
 CMHK_FEISHU_SHEETS_PROFILE=cmhk-innovation-digital
 CMHK_FEISHU_DRIVE_IDENTITY=bot
 CMHK_FEISHU_DRIVE_PROFILE=cmhk-innovation-digital
+CMHK_FEISHU_DRIVE_PROBE_TOKEN=<an existing app-accessible file token>
+CMHK_FEISHU_DRIVE_PROBE_TYPE=file
 LARK_CLI_PATH=/usr/local/bin/lark-cli
 ```
 
@@ -73,10 +75,11 @@ python3 scripts/prewarm_feishu_directory.py \
   --env-file /etc/cmhk/feishu.env
 python3 scripts/check_feishu_server_readiness.py \
   --server-url https://cmhk-intelligence.internal \
-  --live
+  --live \
+  --require-drive
 ```
 
-Bootstrap 脚本从标准输入传递 Secret，建立命名 profile，不会把 Secret 放进程参数。通讯录预热使用应用身份全量拉取一次授权范围，并在切流前生成本地快取，避免第一次页面搜索等待逐部门分页。Readiness 脚本只读，不发消息、不改表。如要同时验证文件访问量统计，再设置 `CMHK_FEISHU_DRIVE_PROBE_TOKEN` 和可选的 `CMHK_FEISHU_DRIVE_PROBE_TYPE`。
+Bootstrap 脚本从标准输入传递 Secret，建立命名 profile，不会把 Secret 放进程参数。通讯录预热使用应用身份全量拉取一次授权范围，并在切流前生成本地快取，避免第一次页面搜索等待逐部门分页。Readiness 脚本只读，不发消息、不改表。服务器上必须设置 `CMHK_FEISHU_DRIVE_PROBE_TOKEN` 和可选的 `CMHK_FEISHU_DRIVE_PROBE_TYPE`，并使用 `--require-drive`；缺少探针或权限时验收会直接失败，不再跳过云盘链路。
 
 ## IP 白名单
 

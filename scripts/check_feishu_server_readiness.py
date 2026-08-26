@@ -58,9 +58,16 @@ def _is_loopback_url(value: str) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--live", action="store_true", help="verify bot profiles with read-only API calls")
+    parser.add_argument(
+        "--require-drive",
+        action="store_true",
+        help="require and execute a read-only Drive statistics probe (implies --live)",
+    )
     parser.add_argument("--server-url", default="", help="expected external service URL")
     parser.add_argument("--env-file", default=os.environ.get("CMHK_AUTH_ENV_FILE", ""))
     args = parser.parse_args()
+    if args.require_drive:
+        args.live = True
     _load_env_file(args.env_file)
 
     config = json.loads((ROOT / "config" / "project_monitor.json").read_text(encoding="utf-8"))
@@ -82,6 +89,13 @@ def main() -> int:
         or ""
     ).strip()
     checks: list[dict[str, object]] = []
+    drive_probe_token = os.environ.get("CMHK_FEISHU_DRIVE_PROBE_TOKEN", "").strip()
+    if args.require_drive:
+        checks.append({
+            "name": "drive_probe_configured",
+            "ok": bool(drive_probe_token),
+            "error": "set CMHK_FEISHU_DRIVE_PROBE_TOKEN" if not drive_probe_token else "",
+        })
 
     checks.append({"name": "app_credentials", "ok": bool(app_id and app_secret)})
     cli = resolve_lark_cli()
@@ -142,7 +156,6 @@ def main() -> int:
                 [cli, "sheets", "+workbook-info", "--spreadsheet-token", spreadsheet_token,
                  "--as", "bot", "--profile", primary_profile, "--format", "json"],
             ))
-        drive_probe_token = os.environ.get("CMHK_FEISHU_DRIVE_PROBE_TOKEN", "").strip()
         if drive_probe_token:
             drive_probe_type = os.environ.get("CMHK_FEISHU_DRIVE_PROBE_TYPE", "file").strip()
             live_commands.append((
