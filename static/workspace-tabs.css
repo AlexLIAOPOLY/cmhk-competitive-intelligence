@@ -1766,7 +1766,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .fault-filter-row .operational-report-control .workspace-button { width: auto; }
   #logModal .log-modal > header > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
   #logModal .operational-report-control { order: 3; width: 100%; justify-content: flex-end; padding: 8px 0 0; border-top: 1px solid rgba(83,129,145,.36); border-left: 0; }
-  .fault-table-wrap { overflow-x: hidden; }
+  .fault-table-wrap { max-height: none; overflow-x: hidden; overflow-y: visible; }
   .fault-table { display: block; min-width: 0; }
   .fault-table thead { display: none; }
   .fault-table tbody { display: block; }

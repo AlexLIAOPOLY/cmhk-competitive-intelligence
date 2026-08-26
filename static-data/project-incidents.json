@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "f419d02be63ff15214edc2d2",
+      "task_id": "incident:f419d02be63ff15214edc2d2",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-26T16:31:03+08:00",
+      "started_at_hkt": "2026-08-26T16:31:03+08:00",
+      "heartbeat_at_hkt": "2026-08-26T16:31:03+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "837f1137ae57b55d32063315",
       "task_id": "incident:837f1137ae57b55d32063315",
       "title": "主项目后台任务",
@@ -1738,7 +1762,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T16:15:37+08:00",
-      "heartbeat_at_hkt": "2026-08-26T16:26:03+08:00",
+      "heartbeat_at_hkt": "2026-08-26T16:31:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12126,30 +12150,6 @@
       "started_at_hkt": "2026-08-19T00:42:33+08:00",
       "heartbeat_at_hkt": "2026-08-19T00:53:01+08:00",
       "completed_at_hkt": "2026-08-19T00:53:32+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "bc5851fc9fb5f9e34c93aa35",
-      "task_id": "incident:bc5851fc9fb5f9e34c93aa35",
-      "title": "公司内部AI审核",
-      "kind": "strategic-news",
-      "kind_label": "公司内部AI审核",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "内部AI请求连续超时",
-      "impact": "审核吞吐下降，定时任务可能超过窗口或将候选延期。",
-      "suggestions": [
-        "检查内部网关健康、并发限流和任务队列长度。",
-        "不要丢弃候选；让失败条目保留到待恢复队列。"
-      ],
-      "occurred_at_hkt": "2026-08-19T00:31:31+08:00",
-      "started_at_hkt": "2026-08-19T00:31:31+08:00",
-      "heartbeat_at_hkt": "2026-08-19T00:31:31+08:00",
-      "completed_at_hkt": "2026-08-19T00:37:32+08:00",
       "handled_at_hkt": ""
     }
   ],
