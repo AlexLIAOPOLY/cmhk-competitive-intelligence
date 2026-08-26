@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 7,
-      "partial": 5
+      "ok": 9,
+      "partial": 1
     },
     "visuals": {
       "crawl": {
@@ -16,12 +16,12 @@
         "completedAt": "2026-08-26 12:06:08"
       },
       "quality": {
-        "ok": 7,
-        "partial": 5,
-        "failed": 21,
+        "ok": 9,
+        "partial": 1,
+        "failed": 23,
         "fieldTotal": 205,
         "missingFields": 2,
-        "rawSources": 207
+        "rawSources": 205
       },
       "blocks": [
         {
@@ -40,7 +40,7 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 118
+          "value": 119
         },
         {
           "label": "government_public_info",
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 20
+          "value": 17
         },
         {
           "label": "government_statistics",
@@ -66,11 +66,11 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 105
+          "value": 104
         },
         {
           "label": "US",
-          "value": 20
+          "value": 19
         },
         {
           "label": "EU",
@@ -92,19 +92,23 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 148
+          "value": 144
         },
         {
           "label": "cache:httpx",
-          "value": 30
+          "value": 33
         },
         {
           "label": "curl_chrome_ua",
-          "value": 20
+          "value": 17
         },
         {
           "label": "curl_direct_chrome_ua",
           "value": 8
+        },
+        {
+          "label": "curl_crawler_ua",
+          "value": 2
         },
         {
           "label": "cache:curl_direct_chrome_ua",
@@ -333,7 +337,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-26 11:37:46",
+    "latestOutputText": "2026-08-27 03:05:03",
     "outputs": [
       {
         "name": "8月19日周报.docx",
