@@ -673,9 +673,9 @@ class StrategicBriefingTests(unittest.TestCase):
     def test_both_daily_slots_share_next_midnight_deadline(self):
         self.assertEqual(
             [value.strftime("%H:%M") for value in briefing.SCAN_TIMES],
-            ["09:00", "14:00"],
+            ["07:30", "14:00"],
         )
-        for hour, minute in ((9, 0), (14, 0)):
+        for hour, minute in ((7, 30), (14, 0)):
             slot_at = datetime(2026, 8, 19, hour, minute, tzinfo=briefing.HKT)
             self.assertEqual(
                 briefing._daily_cutoff_at(slot_at),
@@ -714,7 +714,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertFalse(result["scans"])
 
     def test_completed_scan_archive_prevents_any_second_run(self):
-        slot_key = "2026-07-30@09:00"
+        slot_key = "2026-07-30@07:30"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -759,7 +759,7 @@ class StrategicBriefingTests(unittest.TestCase):
         run_impl.assert_not_called()
 
     def test_incomplete_archive_does_not_block_retry(self):
-        slot_key = "2026-07-30@09:00"
+        slot_key = "2026-07-30@07:30"
         incomplete = {
             "slot": slot_key,
             "status": "completed",
@@ -805,7 +805,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_recovers_completed_archive_from_stale_state(self):
         now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
-        slot_key = "2026-07-30@09:00"
+        slot_key = "2026-07-30@07:30"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -872,7 +872,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_restarts_interrupted_scan_after_normal_catchup_window(self):
         now = datetime(2026, 8, 18, 11, 6, tzinfo=briefing.HKT)
-        slot_key = "2026-08-18@09:00"
+        slot_key = "2026-08-18@07:30"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {
@@ -942,7 +942,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_runs_afternoon_slot_after_morning_crossed_its_start_time(self):
         now = datetime(2026, 8, 18, 17, 30, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@09:00"
+        morning_key = "2026-08-18@07:30"
         afternoon_key = "2026-08-18@14:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
@@ -1031,7 +1031,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
         now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@09:00"
+        morning_key = "2026-08-18@07:30"
         afternoon_key = "2026-08-18@14:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
@@ -1520,7 +1520,7 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.agent_semantic_deduplicate_candidates([item], [])
 
-        agent_call.assert_called_once()
+        self.assertEqual(agent_call.call_count, 2)
         self.assertEqual(result["kept"], [item])
         self.assertEqual(result["deferred"], [])
         audit = write_audit.call_args.args[1]
@@ -3827,7 +3827,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(len(result["duplicates"]), 1)
         self.assertEqual(result["duplicates"][0]["duplicate_of"], "history-1")
 
-    def test_semantic_agent_rejects_forward_reference_that_can_form_cycle(self):
+    def test_semantic_agent_keeps_only_invalid_forward_reference_not_whole_batch(self):
         candidates = [
             {
                 "id": "candidate-a",
@@ -3867,13 +3867,48 @@ class StrategicBriefingTests(unittest.TestCase):
             ]
         }
 
-        with self.assertRaisesRegex(RuntimeError, "无效重复对象 candidate-b"):
-            briefing._validated_semantic_dedupe_decisions(
-                response,
-                candidates,
-                valid_duplicate_ids=set(),
-                identity_matches={},
+        decisions = briefing._validated_semantic_dedupe_decisions(
+            response,
+            candidates,
+            valid_duplicate_ids=set(),
+            identity_matches={},
+        )
+
+        self.assertFalse(decisions["candidate-a"]["is_duplicate"])
+        self.assertTrue(decisions["candidate-a"]["recovered_open"])
+        self.assertTrue(decisions["candidate-b"]["is_duplicate"])
+        self.assertEqual(decisions["candidate-b"]["duplicate_of"], "candidate-a")
+
+    def test_high_confidence_title_dedupe_is_moderate(self):
+        base = {
+            "id": "earlier",
+            "title": "南沙谋划创新共享机制对接香港发展规划",
+            "published_at": "2026-08-26T07:30:00+08:00",
+        }
+        self.assertTrue(
+            briefing._high_confidence_title_duplicate(
+                {
+                    "id": "later",
+                    "title": "广州南沙谋划创新共享机制对接香港发展规划",
+                    "published_at": "2026-08-26T07:45:00+08:00",
+                },
+                base,
             )
+        )
+        self.assertFalse(
+            briefing._high_confidence_title_duplicate(
+                {
+                    "id": "different",
+                    "title": "AI安全初创公司Alice完成1.4亿美元融资",
+                    "published_at": "2026-08-26T07:45:00+08:00",
+                },
+                {
+                    "id": "other",
+                    "title": "AI初创公司Emerald AI完成1.5亿美元融资",
+                    "published_at": "2026-08-26T07:40:00+08:00",
+                },
+            )
+        )
 
     def test_semantic_agent_normalizes_mutual_cycle_to_earlier_representative(self):
         candidates = [

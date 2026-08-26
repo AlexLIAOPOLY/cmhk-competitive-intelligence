@@ -77,7 +77,7 @@ SEMANTIC_DEDUPE_BATCH_SIZE = max(
 )
 SEMANTIC_DEDUPE_MAX_LLM_CALLS = max(
     1,
-    min(10, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_MAX_LLM_CALLS", "10"))),
+    min(20, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_MAX_LLM_CALLS", "14"))),
 )
 SEMANTIC_DEDUPE_REFERENCE_LIMIT = max(
     1,
@@ -606,10 +606,10 @@ def _parse_scan_times(raw: str) -> tuple[clock_time, ...]:
             parsed.append(clock_time(hour=int(hour_text), minute=int(minute_text)))
         except (TypeError, ValueError):
             logging.warning("忽略无效战略快讯扫描时间：%s", text)
-    return tuple(sorted(set(parsed))) or (clock_time(9, 0), clock_time(14, 0))
+    return tuple(sorted(set(parsed))) or (clock_time(7, 30), clock_time(14, 0))
 
 
-SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "09:00,14:00"))
+SCAN_TIMES = _parse_scan_times(os.environ.get("CMHK_STRATEGY_SCAN_TIMES", "07:30,14:00"))
 
 
 def _parse_clock(value: str, fallback: clock_time) -> clock_time:
@@ -5449,6 +5449,36 @@ def _event_dates_close(left: dict[str, Any], right: dict[str, Any]) -> bool:
     return abs((left_date - right_date).days) <= 3
 
 
+def _high_confidence_title_duplicate(
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> bool:
+    """Catch only exact or very-near same-day headlines before model review."""
+    if not _event_dates_close(left, right):
+        return False
+    left_title = re.sub(
+        r"[^0-9a-z\u4e00-\u9fff]+",
+        "",
+        _to_simplified_chinese(_clean_text(left.get("title"), 240), 240).casefold(),
+    )
+    right_title = re.sub(
+        r"[^0-9a-z\u4e00-\u9fff]+",
+        "",
+        _to_simplified_chinese(_clean_text(right.get("title"), 240), 240).casefold(),
+    )
+    if not left_title or not right_title:
+        return False
+    if left_title == right_title:
+        return True
+    shorter, longer = sorted((left_title, right_title), key=len)
+    if len(shorter) >= 12 and shorter in longer:
+        return True
+    return (
+        min(len(left_title), len(right_title)) >= 12
+        and SequenceMatcher(None, left_title, right_title).ratio() >= 0.88
+    )
+
+
 def _semantic_priority_history(
     candidate: dict[str, Any],
     history: list[dict[str, Any]],
@@ -5516,55 +5546,67 @@ def _validated_semantic_dedupe_decisions(
         if isinstance(entry, dict) and _clean_text(entry.get("id"), 80)
     }
     decisions: dict[str, dict[str, Any]] = {}
+    validation_errors: list[str] = []
     external_duplicate_ids = set(valid_duplicate_ids)
     for candidate_index, candidate in enumerate(candidates):
         candidate_id = candidate["id"]
-        raw = response_map.get(candidate_id)
-        if not isinstance(raw, dict):
-            raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的去重结论")
-        raw_duplicate = raw.get("is_duplicate")
-        if isinstance(raw_duplicate, bool):
-            is_duplicate = raw_duplicate
-        elif str(raw_duplicate).strip().lower() in {"true", "1", "yes", "是", "重复"}:
-            is_duplicate = True
-        elif str(raw_duplicate).strip().lower() in {"false", "0", "no", "否", "不重复"}:
-            is_duplicate = False
-        else:
-            raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的重复布尔值")
-        duplicate_of = _clean_text(raw.get("duplicate_of"), 80)
-        reason = _to_simplified_chinese(raw.get("reason"), 160)
-        if len(reason) < 8:
-            raise RuntimeError(f"Agent 未解释候选 {candidate_id} 的去重依据")
-        if is_duplicate:
-            # A candidate may only point to durable history, an earlier batch,
-            # or an earlier candidate in this batch.  Validating against one
-            # batch-wide union allowed a model to point backwards and forwards
-            # at once (A -> B and B -> A), which removed every representative
-            # of an event from the review sheet.
-            allowed_duplicate_ids = external_duplicate_ids | {
-                entry["id"]
-                for entry in candidates[:candidate_index]
-                if _clean_text(entry.get("id"), 80)
-            }
-            if not duplicate_of or duplicate_of not in allowed_duplicate_ids:
+        try:
+            raw = response_map.get(candidate_id)
+            if not isinstance(raw, dict):
+                raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的去重结论")
+            raw_duplicate = raw.get("is_duplicate")
+            if isinstance(raw_duplicate, bool):
+                is_duplicate = raw_duplicate
+            elif str(raw_duplicate).strip().lower() in {"true", "1", "yes", "是", "重复"}:
+                is_duplicate = True
+            elif str(raw_duplicate).strip().lower() in {"false", "0", "no", "否", "不重复"}:
+                is_duplicate = False
+            else:
+                raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的重复布尔值")
+            duplicate_of = _clean_text(raw.get("duplicate_of"), 80)
+            reason = _to_simplified_chinese(raw.get("reason"), 160)
+            if len(reason) < 8:
+                raise RuntimeError(f"Agent 未解释候选 {candidate_id} 的去重依据")
+            if is_duplicate:
+                allowed_duplicate_ids = external_duplicate_ids | {
+                    entry["id"]
+                    for entry in candidates[:candidate_index]
+                    if _clean_text(entry.get("id"), 80)
+                }
+                if not duplicate_of or duplicate_of not in allowed_duplicate_ids:
+                    raise RuntimeError(
+                        f"Agent 为候选 {candidate_id} 返回了无效重复对象 {duplicate_of}"
+                    )
+            else:
+                duplicate_of = ""
+            required_matches = identity_matches.get(candidate_id) or set()
+            if required_matches and (
+                not is_duplicate or duplicate_of not in required_matches
+            ):
                 raise RuntimeError(
-                    f"Agent 为候选 {candidate_id} 返回了无效重复对象 {duplicate_of}"
+                    f"Agent 对候选 {candidate_id} 的结论否认了同ID或同URL身份匹配"
                 )
-        else:
-            duplicate_of = ""
-        required_matches = identity_matches.get(candidate_id) or set()
-        if required_matches and (
-            not is_duplicate or duplicate_of not in required_matches
-        ):
-            raise RuntimeError(
-                f"Agent 对候选 {candidate_id} 的结论否认了同ID或同URL身份匹配"
-            )
-        decisions[candidate_id] = {
-            "id": candidate_id,
-            "is_duplicate": is_duplicate,
-            "duplicate_of": duplicate_of,
-            "reason": reason,
-        }
+            decisions[candidate_id] = {
+                "id": candidate_id,
+                "is_duplicate": is_duplicate,
+                "duplicate_of": duplicate_of,
+                "reason": reason,
+            }
+        except RuntimeError as exc:
+            error = _clean_text(exc, 240)
+            validation_errors.append(error)
+            decisions[candidate_id] = {
+                "id": candidate_id,
+                "is_duplicate": False,
+                "duplicate_of": "",
+                "reason": "该条模型结论格式异常；为避免误删，单条保守保留。",
+                "recovered_open": True,
+                "errors": [error],
+            }
+    if len(validation_errors) > max(1, len(candidates) // 4):
+        raise RuntimeError(
+            f"Agent 去重结论有 {len(validation_errors)}/{len(candidates)} 条格式异常"
+        )
     return decisions
 
 
@@ -5856,11 +5898,24 @@ def agent_semantic_deduplicate_candidates(
             or (earlier_by_url.get(candidate_url) if candidate_url else None)
             or signature_match
         )
+        title_match = None
+        if exact_match is None:
+            title_match = next(
+                (
+                    entry
+                    for entry in [*history, *earlier_by_id.values()]
+                    if _high_confidence_title_duplicate(candidate, entry)
+                ),
+                None,
+            )
+            exact_match = title_match
         if exact_match:
             reason = (
                 "程序高置信事件去重：候选与历史或更早候选的主体、"
                 "核心动作和发布时间匹配。"
                 if signature_match
+                else "程序高置信标题去重：同日标题完全相同或高度近似。"
+                if title_match
                 else "程序确定性去重：候选与历史或更早候选的ID或规范化URL完全相同。"
             )
             aggregate[candidate_id].update(
@@ -5883,16 +5938,16 @@ def agent_semantic_deduplicate_candidates(
     _emit_progress(
         progress_callback,
         "确定性去重",
-        f"ID、规范化URL和高置信事件签名先行命中 {deterministic_count} 条。",
+        f"ID、规范化URL、高置信事件签名和标题先行命中 {deterministic_count} 条。",
     )
     active_candidates = [
         candidate
         for candidate in candidates
         if not aggregate[candidate["id"]]["is_duplicate"]
     ]
-    # Use the full hard budget to keep each reasoning request small.  Repairs
-    # are allowed only when enough calls remain for every untouched batch.
-    primary_call_budget = SEMANTIC_DEDUPE_MAX_LLM_CALLS
+    # Keep primary requests small while reserving two calls for repairing a
+    # malformed response or retrying a transient model failure.
+    primary_call_budget = max(1, SEMANTIC_DEDUPE_MAX_LLM_CALLS - 2)
     llm_batch_size = max(
         SEMANTIC_DEDUPE_BATCH_SIZE,
         (len(active_candidates) + primary_call_budget - 1)
@@ -5902,6 +5957,7 @@ def agent_semantic_deduplicate_candidates(
     repair_call_count = 0
     repair_resolved_count = 0
     malformed_responses: list[dict[str, Any]] = []
+    retry_failures: list[dict[str, Any]] = []
     processed_candidates: list[dict[str, Any]] = []
     batch_total = (
         (len(active_candidates) + llm_batch_size - 1) // llm_batch_size
@@ -6006,8 +6062,35 @@ def agent_semantic_deduplicate_candidates(
                 batch_error = _clean_text(exc, 240)
                 decisions = {}
         except Exception as exc:
-            batch_error = _clean_text(exc, 240)
-            decisions = {}
+            initial_error = _clean_text(exc, 240)
+            retry_failures.append(
+                {"batch": batch_number, "stage": "primary", "error": initial_error}
+            )
+            remaining_primary_calls = batch_total - batch_number
+            can_retry = (
+                llm_call_count + 1 + remaining_primary_calls
+                <= SEMANTIC_DEDUPE_MAX_LLM_CALLS
+            )
+            if can_retry:
+                llm_call_count += 1
+                repair_call_count += 1
+                try:
+                    decisions = _call_semantic_dedupe_agent(
+                        batch,
+                        history=[],
+                        priority_history=priority_history,
+                        earlier_candidates=earlier_candidates,
+                    )
+                    repair_resolved_count += 1
+                except Exception as retry_exc:
+                    batch_error = _clean_text(retry_exc, 240)
+                    retry_failures.append(
+                        {"batch": batch_number, "stage": "retry", "error": batch_error}
+                    )
+                    decisions = {}
+            else:
+                batch_error = initial_error
+                decisions = {}
         if batch_error:
             logging.warning(
                 "语义去重第 %s/%s 轮失败；确定性身份去重已完成，"
@@ -6035,6 +6118,9 @@ def agent_semantic_deduplicate_candidates(
             decision = decisions.get(candidate["id"])
             if decision:
                 record["assessed_shards"] = history_shards
+                if decision.get("recovered_open"):
+                    record["recovered_open"] = True
+                    record["errors"].extend(decision.get("errors") or [])
                 if decision["is_duplicate"]:
                     record.update(
                         {
@@ -6093,6 +6179,7 @@ def agent_semantic_deduplicate_candidates(
         "repair_call_count": repair_call_count,
         "repair_resolved_count": repair_resolved_count,
         "malformed_responses": malformed_responses,
+        "retry_failures": retry_failures,
         "failed_open_count": sum(
             1 for record in aggregate.values() if record.get("recovered_open")
         ),

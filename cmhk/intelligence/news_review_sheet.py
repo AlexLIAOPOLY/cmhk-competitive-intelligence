@@ -3103,7 +3103,7 @@ def run_cycle(
 def build_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
     del args, kwargs
     # The Agentic discovery callback only suppresses its legacy per-item cards.
-    # The owning 09:00/14:00 scan invokes run_cycle(force=True) exactly once
+    # The owning 07:30/14:00 scan invokes run_cycle(force=True) exactly once
     # after discovery completes, so syncing here would write the same batch
     # twice and make the final group summary incorrectly report zero new rows.
     return []

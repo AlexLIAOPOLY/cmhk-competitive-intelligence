@@ -70,7 +70,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         (self.root / "config").mkdir()
         (self.root / "config" / "project_monitor.json").write_text(json.dumps({
-            "strategic_scan_times": ["09:00", "14:00"],
+            "strategic_scan_times": ["07:30", "14:00"],
             "bot": {"profile": "cli_test"},
             "subscriptions": {
                 "entry_profile": "cli_test",
@@ -121,7 +121,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 09:00 和 14:00 执行，"
+            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 07:30 和 14:00 执行，"
             "完成审核后推送，您可以选择每天一次或每天两次。"
             "感谢您的配合！",
         )
@@ -155,8 +155,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             {
                 "service": "news",
                 "enabled": False,
-                "times": ["09:00", "14:00"],
-                "times_text": "09:00 / 14:00",
+                "times": ["07:30", "14:00"],
+                "times_text": "07:30 / 14:00",
                 "timezone": "Asia/Hong_Kong",
                 "timezone_label": "香港时间",
                 "dispatch_rule": "爬虫完成审核后推送",

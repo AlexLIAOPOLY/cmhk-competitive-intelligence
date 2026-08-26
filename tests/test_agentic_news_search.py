@@ -43,7 +43,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
             True,
         )
 
-        self.assertEqual(start_at, datetime(2026, 8, 15, 8, 0, tzinfo=HKT))
+        self.assertEqual(start_at, datetime(2026, 8, 15, 6, 30, tzinfo=HKT))
         self.assertEqual(end_at, datetime(2026, 8, 16, 9, 0, tzinfo=HKT))
 
     def test_afternoon_window_keeps_one_hour_overlap_with_morning_slot(self):
@@ -52,7 +52,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
             False,
         )
 
-        self.assertEqual(start_at, datetime(2026, 8, 16, 8, 0, tzinfo=HKT))
+        self.assertEqual(start_at, datetime(2026, 8, 16, 6, 30, tzinfo=HKT))
         self.assertEqual(end_at, datetime(2026, 8, 16, 14, 0, tzinfo=HKT))
 
     def test_late_index_retry_unions_results_until_reliable_minimum(self):
