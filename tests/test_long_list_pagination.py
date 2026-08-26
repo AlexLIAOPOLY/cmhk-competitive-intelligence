@@ -11,12 +11,14 @@ ORGANIZATION_STYLES = (ROOT / "web/static/organization-admin.css").read_text(enc
 
 
 class LongListPaginationTests(unittest.TestCase):
-    def test_members_have_a_six_row_height_cap_and_pagination(self):
+    def test_members_have_six_row_pages_that_fill_the_workspace(self):
         self.assertIn("memberPage: 1, memberPageSize: 6", ORGANIZATION)
         self.assertIn("users.slice(pageStart, pageStart + state.memberPageSize)", ORGANIZATION)
         self.assertIn('attribute: "data-member-page"', ORGANIZATION)
         self.assertIn("state.memberPage = 1", ORGANIZATION)
-        self.assertIn("max-height:648px", ORGANIZATION_STYLES)
+        self.assertIn(".organization-member-list{display:flex;align-self:stretch", ORGANIZATION_STYLES)
+        self.assertIn("min-height:max(760px,calc(100dvh - 178px))", ORGANIZATION_STYLES)
+        self.assertIn(".organization-pagination{margin-top:auto}", ORGANIZATION_STYLES)
         self.assertIn(".organization-pagination", ORGANIZATION_STYLES)
 
     def test_team_footprint_has_ten_row_pages_and_filter_reset(self):
@@ -24,7 +26,7 @@ class LongListPaginationTests(unittest.TestCase):
         self.assertIn("events.slice(pageStart, pageStart + state.auditPageSize)", ORGANIZATION)
         self.assertIn('attribute: "data-audit-page"', ORGANIZATION)
         self.assertIn("state.auditPage = 1", ORGANIZATION)
-        self.assertIn("max-height:658px", ORGANIZATION_STYLES)
+        self.assertIn(".organization-footprint-surface{display:flex;min-height:max(760px,calc(100dvh - 118px))", ORGANIZATION_STYLES)
 
     def test_weekly_and_performance_files_have_ten_row_pages(self):
         self.assertIn("reportPages: { weekly: 1, performance: 1 }", APP)
@@ -33,15 +35,16 @@ class LongListPaginationTests(unittest.TestCase):
         self.assertIn('class="report-pagination"', APP)
         self.assertIn('data-report-page="${page + 1}"', APP)
         self.assertIn(".report-pagination", STYLES)
+        self.assertIn(".report-pagination{margin-top:auto}", STYLES)
 
     def test_changed_assets_are_cache_busted(self):
         for asset in (
-            "/static/styles.css?v=284",
-            "/static/workspace-tabs.css?v=125",
-            "/static/organization-admin.css?v=24",
+            "/static/styles.css?v=285",
+            "/static/workspace-tabs.css?v=128",
+            "/static/organization-admin.css?v=25",
             "/static/app.js?v=306",
             "/static/organization-admin.js?v=26",
-            "/static/workspace-tabs.js?v=131",
+            "/static/workspace-tabs.js?v=134",
         ):
             self.assertIn(asset, INDEX)
 

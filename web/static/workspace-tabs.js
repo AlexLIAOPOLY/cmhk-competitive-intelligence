@@ -34,7 +34,7 @@
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultPage: 1,
-    faultPageSize: 10,
+    faultPageSize: 8,
     faultFeedback: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));

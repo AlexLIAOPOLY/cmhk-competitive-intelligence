@@ -1417,12 +1417,15 @@ select {
 
 /* ===== File Table ===== */
 .output-table {
+  display: flex;
   margin: 0;
   overflow-y: hidden;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
   background: transparent;
 }
+.report-pagination{margin-top:auto}
 .report-pagination{display:flex;min-height:46px;align-items:center;justify-content:space-between;gap:12px;padding:7px 16px;border-top:1px solid rgba(83,129,145,.22);background:rgba(7,29,40,.32)}.report-pagination nav{display:flex;align-items:center;gap:9px}.report-pagination button{display:grid;width:30px;height:30px;border:1px solid rgba(74,121,138,.56);border-radius:7px;padding:0;place-items:center;color:#9fbdc6;background:rgba(12,42,54,.72);cursor:pointer;font:700 13px/1 system-ui}.report-pagination button:hover:not(:disabled),.report-pagination button:focus-visible{border-color:#61bfd2;color:#f1fafb;outline:0}.report-pagination button:disabled{cursor:default;opacity:.32}.report-pagination strong,.report-pagination>span{color:#789ca7;font-size:10px;font-weight:600}.report-pagination>span{font-size:9px}
 
 .file-header,

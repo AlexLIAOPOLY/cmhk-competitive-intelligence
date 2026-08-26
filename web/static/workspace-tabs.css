@@ -1195,7 +1195,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-handler-avatar.is-system svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .fault-repair-times small { display:block; margin:0; color:#8aa8b2; font-size:9px; line-height:1.55; white-space:nowrap; }
 .fault-empty { color: #7899a6 !important; text-align: center; }
-.fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
+.fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; margin-top: auto; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
 .fault-pagination { display: flex; align-items: center; gap: 5px; }
 .fault-pagination button { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid rgba(74,121,138,.56); border-radius: 8px; color: #9fbdc6; background: rgba(12,42,54,.72); font: 650 10px/1 system-ui; cursor: pointer; }
 .fault-pagination button:hover:not(:disabled) { border-color: #61bfd2; color: #f1fafb; background: #194354; }
