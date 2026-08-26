@@ -8,9 +8,9 @@
       "kind": "web-app",
       "kind_label": "主项目后台任务",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
@@ -22,7 +22,7 @@
       "occurred_at_hkt": "2026-08-27T05:05:05+08:00",
       "started_at_hkt": "2026-08-27T05:05:05+08:00",
       "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-27T05:05:35+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -69,7 +69,7 @@
       ],
       "occurred_at_hkt": "2026-08-27T04:13:31+08:00",
       "started_at_hkt": "2026-08-27T04:13:36+08:00",
-      "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
+      "heartbeat_at_hkt": "2026-08-27T05:10:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -381,7 +381,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T03:38:39+08:00",
-      "heartbeat_at_hkt": "2026-08-27T05:05:05+08:00",
+      "heartbeat_at_hkt": "2026-08-27T05:10:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
