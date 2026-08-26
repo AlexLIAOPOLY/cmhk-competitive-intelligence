@@ -6145,11 +6145,17 @@ pre {
 
 .crawl-run-list {
   min-height: 0;
-  overflow: auto;
-  display: grid;
-  align-content: start;
-  gap: 7px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
+
+.crawl-run-page { display: grid; min-height: 0; align-content: start; gap: 7px; overflow: hidden; }
+.crawl-run-pagination { display: flex; min-height: 42px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 9px; border-top: 1px solid var(--border); }
+.crawl-run-pagination nav { display: flex; align-items: center; gap: 7px; }
+.crawl-run-pagination button { display: grid; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; padding: 0; place-items: center; color: var(--muted); background: #fff; cursor: pointer; font: 700 12px/1 system-ui; }
+.crawl-run-pagination button:disabled { cursor: default; opacity: .35; }
+.crawl-run-pagination strong,.crawl-run-pagination>span { color: var(--muted); font-size: 9px; font-weight: 650; white-space: nowrap; }
 
 .crawl-run-item {
   width: 100%;
@@ -13801,6 +13807,12 @@ body.dashboard-page {
 
 .dashboard-page #logModal .crawl-run-item time,
 .dashboard-page #logModal .crawl-run-item small { color: #8ba8b2; }
+.dashboard-page #logModal .crawl-run-pagination { border-color: #294c59; }
+.dashboard-page #logModal .crawl-run-pagination button { border-color: #365f6e; color: #a9c4cc; background: #102f3c; }
+.dashboard-page #logModal .crawl-run-pagination button:hover:not(:disabled),
+.dashboard-page #logModal .crawl-run-pagination button:focus-visible { border-color: #5795a7; color: #f0fafb; background: #173f4d; outline: 0; }
+.dashboard-page #logModal .crawl-run-pagination strong,
+.dashboard-page #logModal .crawl-run-pagination>span { color: #8ba8b2; }
 .dashboard-page #logModal .crawl-run-item .status-running { color: #f2bd5b; }
 .dashboard-page #logModal .crawl-run-item .status-failed { color: #f08078; }
 .dashboard-page #logModal .crawl-run-item .status-completed { color: #5ed09e; }

@@ -51,10 +51,10 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=26', INDEX)
+        self.assertIn('/static/organization-admin.js?v=27', INDEX)
         self.assertIn('/static/organization-admin.css?v=25', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=135', INDEX)
-        self.assertIn('/static/app.js?v=306', INDEX)
+        self.assertIn('/static/app.js?v=307', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)

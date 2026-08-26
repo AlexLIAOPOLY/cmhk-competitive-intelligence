@@ -12,7 +12,7 @@ ORGANIZATION_STYLES = (ROOT / "web/static/organization-admin.css").read_text(enc
 
 class LongListPaginationTests(unittest.TestCase):
     def test_members_have_six_row_pages_that_fill_the_workspace(self):
-        self.assertIn("memberPage: 1, memberPageSize: 6", ORGANIZATION)
+        self.assertIn("memberPage: 1, memberPageSize: 7", ORGANIZATION)
         self.assertIn("users.slice(pageStart, pageStart + state.memberPageSize)", ORGANIZATION)
         self.assertIn('attribute: "data-member-page"', ORGANIZATION)
         self.assertIn("state.memberPage = 1", ORGANIZATION)
@@ -39,12 +39,12 @@ class LongListPaginationTests(unittest.TestCase):
 
     def test_changed_assets_are_cache_busted(self):
         for asset in (
-            "/static/styles.css?v=285",
-            "/static/workspace-tabs.css?v=128",
+            "/static/styles.css?v=286",
+            "/static/workspace-tabs.css?v=129",
             "/static/organization-admin.css?v=25",
-            "/static/app.js?v=306",
-            "/static/organization-admin.js?v=26",
-            "/static/workspace-tabs.js?v=134",
+            "/static/app.js?v=307",
+            "/static/organization-admin.js?v=27",
+            "/static/workspace-tabs.js?v=135",
         ):
             self.assertIn(asset, INDEX)
 

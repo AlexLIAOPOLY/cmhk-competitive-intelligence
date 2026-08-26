@@ -65,6 +65,8 @@ const state = {
     kind: "all",
     time: "all",
   },
+  crawlRunPage: 1,
+  crawlRunPageSize: 6,
   activeCrawlRunId: null,
   crawlLogPollTimer: null,
   crawlLogPollBusy: false,
@@ -3709,7 +3711,11 @@ function renderCrawlRunList() {
     els.crawlRunList.innerHTML = '<div class="crawl-run-filter-empty"><strong>没有符合条件的任务</strong><span>调整筛选条件或清除筛选。</span></div>';
     return;
   }
-  els.crawlRunList.innerHTML = visibleTasks.map(function (task) {
+  const totalPages = Math.max(1, Math.ceil(visibleTasks.length / state.crawlRunPageSize));
+  state.crawlRunPage = Math.min(Math.max(1, state.crawlRunPage), totalPages);
+  const pageStart = (state.crawlRunPage - 1) * state.crawlRunPageSize;
+  const pageTasks = visibleTasks.slice(pageStart, pageStart + state.crawlRunPageSize);
+  const taskItems = pageTasks.map(function (task) {
     const id = String(task.task_id || "");
     const time = String(task.completed_at_hkt || task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
     const status = crawlRunStatusLabel(task);
@@ -3726,9 +3732,25 @@ function renderCrawlRunList() {
       + taskLifecycleCompact(task)
       + '</button>';
   }).join("");
+  const pageEnd = Math.min(visibleTasks.length, pageStart + state.crawlRunPageSize);
+  const pagination = visibleTasks.length > state.crawlRunPageSize
+    ? '<footer class="crawl-run-pagination"><nav aria-label="任务记录分页">'
+      + '<button type="button" data-crawl-run-page="' + (state.crawlRunPage - 1) + '"' + (state.crawlRunPage === 1 ? ' disabled' : '') + ' aria-label="上一页">‹</button>'
+      + '<strong>第 ' + state.crawlRunPage + ' / ' + totalPages + ' 页</strong>'
+      + '<button type="button" data-crawl-run-page="' + (state.crawlRunPage + 1) + '"' + (state.crawlRunPage === totalPages ? ' disabled' : '') + ' aria-label="下一页">›</button>'
+      + '</nav><span>' + (pageStart + 1) + '–' + pageEnd + ' / ' + visibleTasks.length + '</span></footer>'
+    : '';
+  els.crawlRunList.innerHTML = '<div class="crawl-run-page">' + taskItems + '</div>' + pagination;
   els.crawlRunList.querySelectorAll("[data-run-id]").forEach(function (button) {
     button.addEventListener("click", function () {
       loadCrawlRunLog(button.dataset.runId);
+    });
+  });
+  els.crawlRunList.querySelectorAll("[data-crawl-run-page]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (button.disabled) return;
+      state.crawlRunPage = Number(button.dataset.crawlRunPage) || 1;
+      renderCrawlRunList();
     });
   });
 }
@@ -3819,11 +3841,17 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     state.hasRunningTasks = state.crawlRuns.some(function (task) {
       return String(task.run_status || "") === "running";
     });
-    renderLogButtonActivity();
-    renderCrawlRunList();
     let target = selectRunId || (selectLatest && state.crawlRuns.length ? state.crawlRuns[0].task_id : "");
     if (target) {
       target = unifiedTaskId(target);
+      const targetIndex = filteredCrawlRuns().findIndex(function (task) {
+        return unifiedTaskId(task) === target;
+      });
+      if (targetIndex >= 0) state.crawlRunPage = Math.floor(targetIndex / state.crawlRunPageSize) + 1;
+    }
+    renderLogButtonActivity();
+    renderCrawlRunList();
+    if (target) {
       await loadCrawlRunLog(target);
     }
     scheduleUnifiedTaskListRefresh();
@@ -7219,6 +7247,7 @@ function applyCrawlRunFilters() {
   state.crawlRunFilters.status = els.crawlRunStatusFilter?.value || "all";
   state.crawlRunFilters.kind = els.crawlRunKindFilter?.value || "all";
   state.crawlRunFilters.time = els.crawlRunTimeFilter?.value || "all";
+  state.crawlRunPage = 1;
   renderCrawlRunList();
 }
 
@@ -7229,6 +7258,7 @@ function applyCrawlRunFilters() {
 if (els.resetCrawlRunFilters) {
   els.resetCrawlRunFilters.addEventListener("click", function () {
     state.crawlRunFilters = { status: "all", kind: "all", time: "all" };
+    state.crawlRunPage = 1;
     syncCrawlRunFilterControls();
     updateCrawlRunFilterBadge();
     renderCrawlRunList();
