@@ -33,8 +33,6 @@
     activeReportPreview: { weekly: "", performance: "" },
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
-    faultPage: 1,
-    faultPageSize: 8,
     faultFeedback: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -2137,13 +2135,6 @@
     return `<th aria-sort="${ariaSort}"><button class="fault-sort-button ${active ? "is-active" : ""}" type="button" data-fault-sort="${key}" aria-label="${esc(label)}，当前${active ? (direction === "asc" ? "升序" : "降序") : "未排序"}">${esc(label)}<i aria-hidden="true"></i></button></th>`;
   }
 
-  function faultPaginationTokens(current, total) {
-    if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
-    const pages = new Set([1, total, current - 1, current, current + 1]);
-    const ordered = [...pages].filter((page) => page >= 1 && page <= total).sort((left, right) => left - right);
-    return ordered.flatMap((page, index) => index && page - ordered[index - 1] > 1 ? ["ellipsis", page] : [page]);
-  }
-
   function renderFaultMonitor() {
     const panel = document.querySelector('[data-workspace-panel="fault"]');
     const tasks = state.tasks || [];
@@ -2157,8 +2148,8 @@
         <div class="operational-report-control is-fault" aria-label="导出报警统计报告"><label>PDF 报告<select data-alert-report-period><option value="daily">日报</option><option value="weekly">周报</option><option value="monthly">月报</option><option value="annual">年报</option></select></label><button class="workspace-button" type="button" data-download-alert-report>导出 PDF</button></div>
       </div></header>
       <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-      <div class="workspace-table-wrap fault-table-wrap"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>报警原因</th><th>解决原因</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
-      <footer class="fault-monitor-footer"><nav class="fault-pagination" id="faultPagination" aria-label="报警记录分页"></nav><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
+      <div class="workspace-table-wrap fault-table-wrap" tabindex="0" aria-label="报警记录列表，可滚动"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>报警原因</th><th>解决原因</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <footer class="fault-monitor-footer"><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
     panel.querySelector('[data-fault-filter="kind"]').value = state.faultFilters.kind;
@@ -2272,12 +2263,8 @@
       return compared ? compared * direction : left.index - right.index;
     });
     const filtersActive = state.faultFilters.status !== "all" || state.faultFilters.kind !== "all" || Boolean(query);
-    const totalPages = Math.max(1, Math.ceil(rows.length / state.faultPageSize));
-    state.faultPage = Math.min(Math.max(1, state.faultPage), totalPages);
-    const pageStart = (state.faultPage - 1) * state.faultPageSize;
-    const visibleRows = rows.slice(pageStart, pageStart + state.faultPageSize);
     document.querySelector("#faultResultCount").textContent = number(filtersActive ? rows.length : state.faultTotal || rows.length);
-    body.innerHTML = visibleRows.length ? visibleRows.map(({ task, index, status }) => {
+    body.innerHTML = rows.length ? rows.map(({ task, index, status }) => {
       const severity = faultSeverity(task);
       const canResolve = task.source === "project-monitor" && task.incident_id && window.CMHKAuth?.user?.authProvider === "feishu";
       const checked = Boolean(task.handler_name) || task.incident_status === "resolved";
@@ -2286,11 +2273,6 @@
       const repairTimes = `<small>结案 · ${esc(task.resolved_at_hkt || task.completed_at_hkt || "—")}</small><small>人工 · ${esc(task.manual_repaired_at_hkt || "—")}</small>`;
       return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.alarm_type || "未分类告警")}</small></td><td><span class="fault-resolution-cause">${esc(faultResolutionReason(task))}</span><small>${esc(task.resolution_type_label || task.phase || "尚未结案")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td class="fault-repair-times">${repairTimes}</td><td><span class="fault-open-label">查看</span></td></tr>`;
     }).join("") : '<tr><td colspan="10" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
-    const pagination = document.querySelector("#faultPagination");
-    if (pagination) {
-      const pageButtons = faultPaginationTokens(state.faultPage, totalPages).map((page) => page === "ellipsis" ? '<span class="fault-pagination-ellipsis" aria-hidden="true">…</span>' : `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
-      pagination.innerHTML = `<button type="button" data-fault-page="${state.faultPage - 1}"${state.faultPage === 1 ? " disabled" : ""} aria-label="上一页">‹</button>${pageButtons}<button type="button" data-fault-page="${state.faultPage + 1}"${state.faultPage === totalPages ? " disabled" : ""} aria-label="下一页">›</button><em>每页 ${state.faultPageSize} 条 · 共 ${number(rows.length)} 条</em>`;
-    }
   }
 
   async function openFaultDetail(index) {
@@ -2347,10 +2329,9 @@
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
-        if (!quiet) state.faultPage = 1;
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");
-        if (nextStatus) nextStatus.textContent = `状态已刷新 · 第 ${state.faultPage} / ${Math.max(1, Math.ceil(state.tasks.length / state.faultPageSize))} 页 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+        if (nextStatus) nextStatus.textContent = `状态已刷新 · 共 ${number(state.tasks.length)} 条 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
       }
     } catch (error) {
       if (status && !quiet) status.textContent = `状态刷新失败：${error.message}`;
@@ -2515,16 +2496,10 @@
       const period = document.querySelector("[data-alert-report-period]")?.value || "daily";
       window.location.assign(`/api/alert-report.pdf?period=${encodeURIComponent(period)}`);
     }
-    const faultPage = event.target.closest("[data-fault-page]");
-    if (faultPage && !faultPage.disabled) {
-      state.faultPage = Number(faultPage.dataset.faultPage) || 1;
-      renderFaultRows();
-    }
     const faultSort = event.target.closest("[data-fault-sort]");
     if (faultSort) {
       const key = faultSort.dataset.faultSort;
       state.faultSort = { key, direction: state.faultSort.key === key && state.faultSort.direction === "asc" ? "desc" : "asc" };
-      state.faultPage = 1;
       renderFaultMonitor();
     }
     const faultDetail = event.target.closest("[data-fault-detail]");
@@ -2593,14 +2568,12 @@
     const filter = event.target.closest("[data-fault-filter]");
     if (!filter || filter.dataset.faultFilter === "query") return;
     state.faultFilters[filter.dataset.faultFilter] = filter.value;
-    state.faultPage = 1;
     renderFaultRows();
   });
   document.addEventListener("input", (event) => {
     const filter = event.target.closest('[data-fault-filter="query"]');
     if (!filter) return;
     state.faultFilters.query = filter.value;
-    state.faultPage = 1;
     renderFaultRows();
   });
 

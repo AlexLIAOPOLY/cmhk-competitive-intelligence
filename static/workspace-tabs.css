@@ -1004,7 +1004,7 @@
 .workspace-report-side > .workspace-panel .workspace-panel-header { border-bottom-color: rgba(79,127,145,.42); }
 .workspace-report-host .output-table { min-height: 0; max-height: none; flex: 1; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .workspace-report-host .output-table { display: flex; flex-direction: column; }
-.workspace-report-host .report-pagination { margin-top: auto; }
+.workspace-report-host .file-header { position: sticky; z-index: 2; top: 0; flex: 0 0 auto; }
 .workspace-inline-report-block .output-tabs[hidden] { display: none !important; }
 .workspace-report-host .output-heading strong { color: #e9f4f6; }
 .workspace-report-host .output-heading span,
@@ -1078,7 +1078,7 @@
 body.has-maximized-report-preview { overflow: hidden; }
 
 .fault-monitor { min-height: 100%; }
-.fault-workbench { display: flex; height: 100%; min-height: max(760px,calc(100dvh - 106px)); flex-direction: column; overflow: hidden; }
+.fault-workbench { display: flex; height: calc(100dvh - 106px); min-height: 0; max-height: calc(100dvh - 106px); flex-direction: column; overflow: hidden; }
 .fault-toolbar { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 22px; padding: 12px 16px; border-bottom: 1px solid rgba(71,113,130,.55); }
 .fault-total { display: flex; flex: 0 0 auto; align-items: baseline; gap: 7px; }
 .fault-total span { color: #9bb4bd; font-size: 11px; }
@@ -1096,7 +1096,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 .operational-report-control button { white-space: nowrap; }
 .operational-report-control.is-fault { padding-left: 8px; }
 .operational-report-control.is-fault label select { height: 36px; }
-.fault-table-wrap { min-height: 0; max-height: none; flex: 0 0 auto; overflow-x: auto; overflow-y: hidden; }
+.fault-table-wrap { min-height: 0; max-height: none; flex: 1; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .fault-table { min-width: 1420px; table-layout: fixed; }
 .fault-table th:nth-child(1) { width: 72px; text-align:center; }
 .fault-table th:nth-child(2) { width: 78px; }
@@ -1196,13 +1196,6 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-repair-times small { display:block; margin:0; color:#8aa8b2; font-size:9px; line-height:1.55; white-space:nowrap; }
 .fault-empty { color: #7899a6 !important; text-align: center; }
 .fault-monitor-footer { display: flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 16px; margin-top: auto; padding: 7px 12px; border-top: 1px solid rgba(49,85,103,.52); }
-.fault-pagination { display: flex; align-items: center; gap: 5px; }
-.fault-pagination button { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid rgba(74,121,138,.56); border-radius: 8px; color: #9fbdc6; background: rgba(12,42,54,.72); font: 650 10px/1 system-ui; cursor: pointer; }
-.fault-pagination button:hover:not(:disabled) { border-color: #61bfd2; color: #f1fafb; background: #194354; }
-.fault-pagination button.is-active { border-color: #65c7da; color: #06202b; background: #69c6d8; box-shadow: 0 0 16px rgba(79,190,211,.2); }
-.fault-pagination button:disabled { opacity: .3; cursor: default; }
-.fault-pagination-ellipsis { display: grid; width: 18px; place-items: center; color: #6f929f; font-size: 10px; }
-.fault-pagination em { margin-left: 5px; color: #6f929f; font-size: 9px; font-style: normal; white-space: nowrap; }
 .fault-monitor-note:empty { display: none; }
 .fault-monitor-note { margin-left: auto; color: #6f929f; font-size: 9px; text-align: right; }
 .fault-action-feedback { position:fixed; top:76px; right:24px; z-index:40; display:flex; width:min(460px,calc(100vw - 48px)); align-items:flex-start; gap:11px; padding:12px 14px; border:1px solid rgba(100,190,208,.48); border-radius:10px; color:#dcecef; background:rgba(8,34,46,.97); box-shadow:0 16px 38px rgba(0,8,14,.42); }
@@ -1768,8 +1761,8 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .fault-filter-row .operational-report-control .workspace-button { width: auto; }
   #logModal .log-modal > header > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
   #logModal .operational-report-control { order: 3; width: 100%; justify-content: flex-end; padding: 8px 0 0; border-top: 1px solid rgba(83,129,145,.36); border-left: 0; }
-  .fault-workbench { display: block; height: auto; min-height: 0; overflow: visible; }
-  .fault-table-wrap { max-height: none; overflow-x: hidden; overflow-y: visible; }
+  .fault-workbench { display: flex; height: calc(100dvh - 74px); min-height: 0; max-height: calc(100dvh - 74px); overflow: hidden; }
+  .fault-table-wrap { max-height: none; min-height: 0; flex: 1; overflow-x: hidden; overflow-y: auto; }
   .fault-table { display: block; min-width: 0; }
   .fault-table thead { display: none; }
   .fault-table tbody { display: block; }
