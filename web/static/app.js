@@ -71,6 +71,8 @@ const state = {
   hasRunningTasks: false,
   reportLibraryBaselineReady: false,
   weeklyPreviewController: null,
+  reportPages: { weekly: 1, performance: 1 },
+  reportPageSize: 10,
 };
 
 const els = {
@@ -1822,7 +1824,10 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
     </div>
   `;
-  files.forEach((file) => {
+  const totalPages = Math.max(1, Math.ceil(files.length / state.reportPageSize));
+  state.reportPages[type] = Math.min(Math.max(1, state.reportPages[type] || 1), totalPages);
+  const pageStart = (state.reportPages[type] - 1) * state.reportPageSize;
+  files.slice(pageStart, pageStart + state.reportPageSize).forEach((file) => {
     const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const unread = isReportUnread(file);
@@ -1844,11 +1849,22 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       </div>
     `;
   });
+  const page = state.reportPages[type];
+  const start = pageStart + 1;
+  const end = Math.min(files.length, pageStart + state.reportPageSize);
+  html += `<footer class="report-pagination"><nav aria-label="${type === "performance" ? "业绩摘要" : "战略周报"}分页"><button type="button" data-report-page="${page - 1}" data-report-type="${type}"${page === 1 ? " disabled" : ""} aria-label="上一页">‹</button><strong>第 ${page} / ${totalPages} 页</strong><button type="button" data-report-page="${page + 1}" data-report-type="${type}"${page === totalPages ? " disabled" : ""} aria-label="下一页">›</button></nav><span>${start}–${end} / ${files.length}</span></footer>`;
   target.innerHTML = html;
 }
 
 function bindOutputTableEvents(target) {
   if (!target) return;
+  target.querySelectorAll("[data-report-page]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.disabled) return;
+      state.reportPages[button.dataset.reportType] = Number(button.dataset.reportPage) || 1;
+      renderFileList();
+    });
+  });
   target.querySelectorAll(".file-name-editable").forEach((cell) => {
     cell.addEventListener("click", () => openFileEditor(cell.dataset.path));
   });

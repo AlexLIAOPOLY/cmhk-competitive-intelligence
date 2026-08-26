@@ -9,6 +9,7 @@
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
+    memberPage: 1, memberPageSize: 6, auditPage: 1, auditPageSize: 10,
     auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -99,13 +100,36 @@
     return '<svg class="organization-add-member-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3.25" /><path d="M3.5 19.5c.2-3.7 2.3-5.8 5.5-5.8s5.3 2.1 5.5 5.8M18.25 7.75v6.5M15 11h6.5" /></svg>';
   }
 
+  function paginationTokens(current, total) {
+    if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+    const pages = new Set([1, total, current - 1, current, current + 1]);
+    const ordered = [...pages].filter((page) => page >= 1 && page <= total).sort((left, right) => left - right);
+    return ordered.flatMap((page, index) => index && page - ordered[index - 1] > 1 ? ["ellipsis", page] : [page]);
+  }
+
+  function listPagination({ page, pageSize, total, attribute, label }) {
+    if (total <= pageSize) return "";
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const tokens = paginationTokens(page, totalPages).map((token) => token === "ellipsis"
+      ? '<span class="organization-pagination-ellipsis" aria-hidden="true">…</span>'
+      : `<button type="button" ${attribute}="${token}" class="${token === page ? "is-active" : ""}"${token === page ? ' aria-current="page"' : ""}>${token}</button>`).join("");
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(total, page * pageSize);
+    return `<footer class="organization-pagination"><nav aria-label="${esc(label)}"><button type="button" ${attribute}="${page - 1}"${page === 1 ? " disabled" : ""} aria-label="上一页">‹</button>${tokens}<button type="button" ${attribute}="${page + 1}"${page === totalPages ? " disabled" : ""} aria-label="下一页">›</button></nav><span>${start}–${end} / ${total}</span></footer>`;
+  }
+
   function memberList(users, selected) {
     const trashIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" /></svg>';
-    const items = users.map((user) => `<li class="organization-member-entry">${profileButton(user)}<button type="button" class="organization-member-row${selected?.id === user.id ? " is-selected" : ""}" data-select-user="${esc(user.id)}" aria-pressed="${selected?.id === user.id}">
+    const totalPages = Math.max(1, Math.ceil(users.length / state.memberPageSize));
+    state.memberPage = Math.min(Math.max(1, state.memberPage), totalPages);
+    const pageStart = (state.memberPage - 1) * state.memberPageSize;
+    const pageUsers = users.slice(pageStart, pageStart + state.memberPageSize);
+    const items = pageUsers.map((user) => `<li class="organization-member-entry">${profileButton(user)}<button type="button" class="organization-member-row${selected?.id === user.id ? " is-selected" : ""}" data-select-user="${esc(user.id)}" aria-pressed="${selected?.id === user.id}">
       ${memberIdentity(user)}
       <span class="organization-member-meta"><strong>${esc(user.department || "未填写部门")}</strong><small>${esc(user.roleLabel || "待分配")} · ${user.status === "disabled" ? "已停用" : "启用"}</small></span>
     </button><button type="button" class="organization-delete-user" data-delete-user="${esc(user.id)}" aria-label="删除成员 ${esc(user.name || user.account || "未命名成员")}" title="删除成员"${user.current ? " disabled" : ""}>${trashIcon}</button></li>`).join("");
-    return `<aside class="organization-member-list" aria-label="成员列表"><header><strong>成员（${users.length}）</strong><span>部门与角色</span></header><ul>${items || '<li class="organization-empty">没有符合条件的成员</li>'}</ul></aside>`;
+    const pagination = listPagination({ page: state.memberPage, pageSize: state.memberPageSize, total: users.length, attribute: "data-member-page", label: "成员列表分页" });
+    return `<aside class="organization-member-list" aria-label="成员列表"><header><strong>成员（${users.length}）</strong><span>部门与角色</span></header><ul>${items || '<li class="organization-empty">没有符合条件的成员</li>'}</ul>${pagination}</aside>`;
   }
 
   function auditAction(event) {
@@ -213,11 +237,15 @@
 
   function footprintSurface() {
     const events = filteredAudit();
+    const totalPages = Math.max(1, Math.ceil(events.length / state.auditPageSize));
+    state.auditPage = Math.min(Math.max(1, state.auditPage), totalPages);
+    const pageStart = (state.auditPage - 1) * state.auditPageSize;
+    const visibleEvents = events.slice(pageStart, pageStart + state.auditPageSize);
     const actionOptions = [...new Set(state.audit.map((event) => String(event.action || "")).filter(Boolean))]
       .sort((left, right) => auditAction({ action: left }).localeCompare(auditAction({ action: right }), "zh-CN"))
       .map((action) => `<option value="${esc(action)}"${state.auditAction === action ? " selected" : ""}>${esc(auditAction({ action }))}</option>`)
       .join("");
-    const rows = events.map((event) => {
+    const rows = visibleEvents.map((event) => {
       const person = eventPerson(event);
       const action = auditAction(event);
       const source = eventSource(event);
@@ -225,7 +253,8 @@
     }).join("");
     const count = events.length === state.audit.length ? `${state.audit.length} 条` : `${events.length} / ${state.audit.length} 条`;
     const syncState = state.auditSyncWarning ? ` · ${esc(state.auditSyncWarning)}` : "";
-    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}${syncState}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>来源</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="6"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div></section>`;
+    const pagination = listPagination({ page: state.auditPage, pageSize: state.auditPageSize, total: events.length, attribute: "data-audit-page", label: "团队足迹分页" });
+    return `<section class="organization-surface organization-footprint-surface" aria-label="团队足迹"><div class="organization-footprint-bar"><strong>团队足迹</strong><span aria-live="polite">${count}${syncState}</span></div><div class="organization-footprint-toolbar" aria-label="筛选团队足迹"><label><span class="sr-only">搜索成员、动作或处理对象</span><input type="search" data-audit-search value="${esc(state.auditQuery)}" placeholder="搜索成员、动作或处理对象" /></label><label><span class="sr-only">筛选动作</span><select data-audit-action-filter><option value="">全部动作</option>${actionOptions}</select></label><label><span class="sr-only">筛选结果</span><select data-audit-result-filter><option value="">全部结果</option><option value="success"${state.auditResult === "success" ? " selected" : ""}>成功</option><option value="failure"${state.auditResult === "failure" ? " selected" : ""}>失败</option></select></label></div><div class="organization-table-wrap"><table class="organization-table organization-audit-table"><thead><tr><th>成员</th><th>动作</th><th>处理对象</th><th>来源</th><th>结果</th><th>时间</th></tr></thead><tbody>${rows || '<tr><td colspan="6"><div class="organization-empty">没有符合筛选条件的团队足迹</div></td></tr>'}</tbody></table></div>${pagination}</section>`;
   }
 
   function profilePerson() {
@@ -410,22 +439,26 @@
   hosts.forEach((host) => {
     host.addEventListener("input", (event) => {
       if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
-      if (event.target.matches("[data-audit-search]")) { state.auditQuery = event.target.value; render(); const search = footprintHost?.querySelector("[data-audit-search]"); search?.focus(); search?.setSelectionRange(state.auditQuery.length, state.auditQuery.length); return; }
+      if (event.target.matches("[data-audit-search]")) { state.auditQuery = event.target.value; state.auditPage = 1; render(); const search = footprintHost?.querySelector("[data-audit-search]"); search?.focus(); search?.setSelectionRange(state.auditQuery.length, state.auditQuery.length); return; }
       if (!event.target.matches("[data-search]")) return;
-      state.query = event.target.value; render();
+      state.query = event.target.value; state.memberPage = 1; render();
       const search = controlHost?.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);
     });
     host.addEventListener("change", (event) => {
-      if (event.target.matches("[data-audit-action-filter]")) { state.auditAction = event.target.value; render(); return; }
-      if (event.target.matches("[data-audit-result-filter]")) { state.auditResult = event.target.value; render(); return; }
-      if (event.target.matches("[data-department-filter]")) { state.department = event.target.value; render(); return; }
-      if (event.target.matches("[data-role-filter]")) { state.role = event.target.value; render(); return; }
+      if (event.target.matches("[data-audit-action-filter]")) { state.auditAction = event.target.value; state.auditPage = 1; render(); return; }
+      if (event.target.matches("[data-audit-result-filter]")) { state.auditResult = event.target.value; state.auditPage = 1; render(); return; }
+      if (event.target.matches("[data-department-filter]")) { state.department = event.target.value; state.memberPage = 1; render(); return; }
+      if (event.target.matches("[data-role-filter]")) { state.role = event.target.value; state.memberPage = 1; render(); return; }
       const detail = event.target.closest("[data-user-id]");
       if (!detail) return;
       if (event.target.matches("[data-role]")) applyRoleDefaults(detail, event.target.value);
       else if (event.target.matches("[data-status], [data-module]")) markDirty(detail);
     });
     host.addEventListener("click", (event) => {
+      const memberPage = event.target.closest("[data-member-page]");
+      if (memberPage && !memberPage.disabled) { state.memberPage = Number(memberPage.dataset.memberPage) || 1; render(); return; }
+      const auditPage = event.target.closest("[data-audit-page]");
+      if (auditPage && !auditPage.disabled) { state.auditPage = Number(auditPage.dataset.auditPage) || 1; render(); return; }
       const profile = event.target.closest("[data-profile-key]");
       if (profile) { state.profileKey = profile.dataset.profileKey; state.eventKey = ""; render(); return; }
       if (event.target.closest("[data-profile-close]")) { state.profileKey = ""; render(); return; }
