@@ -555,7 +555,7 @@
 .news-lineage-tools button:hover,.news-lineage-tools button:focus-visible { border-color: #58bed2; color: #effbfc; outline: 0; background: #143b4a; }
 .news-lineage-tools button { min-width: 84px; font-size: 11px; }
 .news-lineage-viewport { width: 100%; min-height: 440px; overflow: auto hidden; overscroll-behavior-inline: contain; background-image: radial-gradient(circle at center,rgba(100,171,190,.11) 0 1px,transparent 1.3px); background-size: 22px 22px; scrollbar-color: rgba(87,174,193,.5) rgba(5,24,33,.7); scrollbar-width: thin; }
-.news-lineage.is-global .news-lineage-viewport { min-height: 620px; }
+.news-lineage.is-global .news-lineage-viewport { min-height: 720px; }
 .news-lineage.is-global .news-lineage-header { min-height: 96px; padding: 14px 18px; }
 .news-lineage.is-global .news-lineage-mode-switch { margin-bottom: 10px; }
 .news-lineage.is-global .news-lineage-mode-switch button { min-width: 88px; height: 30px; font-size: 11px; }

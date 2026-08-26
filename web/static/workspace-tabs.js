@@ -1340,6 +1340,10 @@
     const selectedDate = state.newsSelectedDate || newsRunDate(runs[0]);
     const mainRun = mainRunForDate(selectedDate);
     const newsRun = runs[0] || latest.strategic_news || {};
+    const sourceDiscoveryRun = state.crawlRuns.find((run) => (
+      run.task_kind === "four-database-source-discovery"
+      && newsRunDate(run) === selectedDate
+    )) || {};
     const intelligenceRun = state.crawlRuns.find((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
@@ -1366,6 +1370,7 @@
     };
     const strategicHealth = combinedRunHealth(runs);
     const mainHealth = runHealth(mainRun);
+    const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const intelligenceHealth = runHealth(intelligenceRun);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const expectedInsightCount = Number(
@@ -1406,23 +1411,24 @@
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
+    const sourceDiscoverySummary = sourceDiscoveryRun.operational_summary || intelligenceRun.operational_summary?.news_database_signals || {};
     const nodes = [
-      { key: "strategic", label: "09:00 / 14:00 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
+      { key: "strategic", label: "09:00 / 14:00 战略新闻扫描", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["搜索引擎、固定来源与03:00页面变化线索共同进入候选池", ...runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`)], evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
       { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, health: strategicHealth, variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
       { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
       { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
       { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "news-db-signal", label: "01:00 四库资料搜索", value: number(intelligenceRun.operational_summary?.news_database_signals?.signal_count || 0), unit: "条线索", note: "独立搜索 Agent 交接 03:00 · 明细写飞书", health: intelligenceHealth, variant: "source", compact: true, position: [230, 520], details: ["按四库主体与指标字段检索最近24小时资料", "合并前一天09:00/14:00两次新闻任务内容作参考", "搜索与新闻结果只作线索，不直接写库", "按主体转到官方 IR / 监管披露入口", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: intelligenceRun.operational_summary?.news_database_signals?.audit_path || "当天未留下01:00资料搜索审计" },
-      { key: "database-hub", label: "数据入库", value: "4", unit: "个库", note: "解析成功且值有变化才写库", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["固定官方入口与01:00搜索资料合并", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败或仅页面变化不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
-      domainNode("local", "本地运营商", [630, 342], "database-local"),
-      domainNode("international", "国际运营商", [812, 342], "database-international"),
-      domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
-      domainNode("mainland", "内地运营商", [812, 480], "database-mainland"),
-      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项洞察" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页已发布" : intelligenceRun.crawl_run_id ? "洞察已生成 · 发布待核对" : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 390], details: intelligenceRun.crawl_run_id ? [`洞察通过 ${number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0)} / ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
+      { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天09:00/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
+      { key: "main", label: "03:00 固定源主爬", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 455], details: ["按调度表抓取固定网页与四类官方来源", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 455], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "database-hub", label: "官方原文复核 / 入库", value: "4", unit: "个库", note: "字段门禁全过且值变化才写入", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 476], details: ["合并03:00固定官方入口与01:00资料补缺线索", "01:00线索必须回到公司 IR、财报或监管披露原文", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败、只有页面变化或没有值变化，都不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      domainNode("local", "本地运营商", [630, 422], "database-local"),
+      domainNode("international", "国际运营商", [812, 422], "database-international"),
+      domainNode("cloud", "全球云厂商", [630, 560], "database-cloud"),
+      domainNode("mainland", "内地运营商", [812, 560], "database-mainland"),
+      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项洞察" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页已发布" : intelligenceRun.crawl_run_id ? "洞察已生成 · 发布待核对" : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 455], details: intelligenceRun.crawl_run_id ? [`洞察通过 ${number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0)} / ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
@@ -1433,10 +1439,14 @@
     return {
       nodes,
       edges,
-      canvasSize: [1580, 620],
+      canvasSize: [1580, 720],
       feedbackLabel: "历史记录用于下一轮去重",
-      laneLabels: [{ label: "智能检索爬虫", position: [18, 22] }, { label: "固定网页爬虫", position: [18, 360] }],
-      groups: [{ key: "databases", label: "四库更新", position: [610, 310], size: [380, 294] }],
+      laneLabels: [
+        { label: "A｜战略新闻智能检索线", position: [18, 22] },
+        { label: "B｜四库资料补缺线", position: [18, 230] },
+        { label: "C｜固定官方源更新线", position: [18, 420] },
+      ],
+      groups: [{ key: "databases", label: "四库更新", note: "仅官方原文 + 字段门禁通过才写入", position: [610, 390], size: [380, 294] }],
     };
   }
 
@@ -1509,6 +1519,9 @@
     const date = state.newsSelectedDate;
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
+    if (nodeKey === "news-db-signal") {
+      return state.crawlRuns.filter((run) => run.task_kind === "four-database-source-discovery" && newsRunDate(run) === date);
+    }
     if (["main", "agent"].includes(nodeKey)) {
       const mainRun = mainRunForDate(date);
       return mainRun.crawl_run_id ? [mainRun] : [];
@@ -1584,6 +1597,7 @@
   const newsErrorStageLabels = {
     strategic_news: "战略新闻任务",
     scheduled_cutoff: "战略新闻调度截止",
+    four_database_source_discovery: "01:00 四库资料补缺",
     financial_frontend_publish: "AI洞察与业务应用 / 前端发布",
     executive_intelligence_refresh: "四库更新",
   };
@@ -1827,7 +1841,7 @@
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
+        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">

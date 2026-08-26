@@ -53,7 +53,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=25', INDEX)
         self.assertIn('/static/organization-admin.css?v=23', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=115', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=117', INDEX)
         self.assertIn('/static/app.js?v=300', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -536,7 +536,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_module_exposes_clickable_live_lineage_with_detailed_dialog(self):
         for label in (
-            "09:00 / 14:00 战略新闻",
+            "09:00 / 14:00 战略新闻扫描",
             "线索补缺",
             "AI审核",
             "历史去重",
@@ -589,12 +589,13 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "09:00 / 14:00 战略新闻",
+            "09:00 / 14:00 战略新闻扫描",
             "线索补缺",
             "AI审核",
             "历史去重",
             "新增新闻",
-            "03:00 主爬虫",
+            "01:00 四库资料补缺",
+            "03:00 固定源主爬",
             "Agent 证据审核",
             "本地运营商",
             "国际运营商",
@@ -608,9 +609,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=115', INDEX)
+        self.assertIn('workspace-tabs.js?v=117', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=118', INDEX)
+        self.assertIn('workspace-tabs.css?v=120', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -624,17 +625,19 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("不展示通用逻辑原则", SCRIPT)
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
-        self.assertIn("canvasSize: [1580, 620]", SCRIPT)
-        self.assertIn('label: "数据入库"', SCRIPT)
-        self.assertIn('label: "01:00 四库资料搜索"', SCRIPT)
+        self.assertIn("canvasSize: [1580, 720]", SCRIPT)
+        self.assertIn('label: "官方原文复核 / 入库"', SCRIPT)
+        self.assertIn('label: "01:00 四库资料补缺"', SCRIPT)
         self.assertIn("飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因", SCRIPT)
         self.assertIn('"合并前一天09:00/14:00两次新闻任务内容作参考"', SCRIPT)
         self.assertIn('["news-db-signal", "database-hub", "03:00追官方原文", "amber"]', SCRIPT)
         self.assertIn('["agent", "database-hub", "", "cyan"]', SCRIPT)
         self.assertNotIn('["agent", "database-hub", "四库分流", "cyan"]', SCRIPT)
         self.assertIn('label: "四库更新"', SCRIPT)
-        self.assertIn('label: "智能检索爬虫"', SCRIPT)
-        self.assertIn('label: "固定网页爬虫"', SCRIPT)
+        self.assertIn('label: "A｜战略新闻智能检索线"', SCRIPT)
+        self.assertIn('label: "B｜四库资料补缺线"', SCRIPT)
+        self.assertIn('label: "C｜固定官方源更新线"', SCRIPT)
+        self.assertIn('note: "仅官方原文 + 字段门禁通过才写入"', SCRIPT)
         self.assertIn(".news-lineage-lane-label", STYLE)
         self.assertNotIn('四库更新 · 2 × 2', SCRIPT)
         self.assertIn('group.note ? `<span>${esc(group.note)}</span>` : ""', SCRIPT)
