@@ -21,6 +21,12 @@ ROOT = Path(__file__).resolve().parent
 HKT = ZoneInfo("Asia/Hong_Kong")
 OUTPUT = ROOT / "agent_knowledge" / "executive_intelligence_refresh" / "source_discovery_latest.json"
 TASK_KIND = "four-database-source-discovery"
+DOMAIN_LABELS = {
+    "local": "本地运营商库",
+    "international": "国际运营商库",
+    "mainland": "内地运营商库",
+    "cloud": "云厂商库",
+}
 
 
 def _previous_day_news_references(reference: datetime) -> tuple[list[str], list[dict[str, Any]]]:
@@ -52,6 +58,113 @@ def _write_json(path: Path, payload: Any) -> None:
     temporary.replace(path)
 
 
+def _search_audit(
+    plans: list[dict[str, Any]],
+    items: list[dict[str, Any]],
+    signals: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Build a readable, per-database audit without upgrading search leads to facts."""
+    results_by_query: dict[str, list[dict[str, Any]]] = {}
+    for item in items:
+        results_by_query.setdefault(str(item.get("query") or "").strip(), []).append(item)
+
+    query_rows: list[dict[str, Any]] = []
+    result_rows: list[dict[str, Any]] = []
+    domains: dict[str, dict[str, Any]] = {}
+    for domain, label in DOMAIN_LABELS.items():
+        domain_plans = [plan for plan in plans if plan.get("domain") == domain]
+        domain_items = [item for item in items if item.get("module") == f"四库资料/{domain}"]
+        domain_signals = [signal for signal in signals if signal.get("domain") == domain]
+        domains[domain] = {
+            "label": label,
+            "query_count": len(domain_plans),
+            "result_count": len(domain_items),
+            "signal_count": len(domain_signals),
+            "zero_result_query_count": sum(
+                not results_by_query.get(str(plan.get("fallback_query") or plan.get("query") or "").strip())
+                for plan in domain_plans
+            ),
+            "status": "有候选，等待03:00追官方原文" if domain_signals else "本轮未形成可交接线索",
+        }
+        for plan in domain_plans:
+            query = str(plan.get("fallback_query") or plan.get("query") or "").strip()
+            query_rows.append({
+                "domain": domain,
+                "domain_label": label,
+                "entity": str(plan.get("entity") or "").strip(),
+                "query": query,
+                "lookback_days": int(plan.get("lookback_days") or 0),
+                "result_count": len(results_by_query.get(query, [])),
+                "status": "命中" if results_by_query.get(query) else "无结果",
+            })
+        for item in domain_items:
+            item_url = str(item.get("url") or item.get("source_url") or "").strip()
+            matched_signal = next((
+                signal for signal in domain_signals
+                if str(signal.get("news_url") or "").strip() == item_url
+            ), None)
+            result_rows.append({
+                "domain": domain,
+                "domain_label": label,
+                "entity": next((
+                    str(plan.get("entity") or "")
+                    for plan in domain_plans
+                    if str(plan.get("fallback_query") or plan.get("query") or "").strip()
+                    == str(item.get("query") or "").strip()
+                ), ""),
+                "title": str(item.get("title") or "").strip(),
+                "source": str(item.get("source") or "公开新闻来源").strip(),
+                "published_at": str(item.get("published_at") or "").strip(),
+                "url": item_url,
+                "provider": str(item.get("search_provider") or "").strip(),
+                "handoff": bool(matched_signal),
+                "disposition": "已形成线索，交接03:00追官方原文" if matched_signal else "未形成交接线索，不直接入库",
+                "reason": "标题或摘要同时命中四库主体和财务／用户／资本开支字段" if matched_signal else "未同时通过四库主体与指标字段筛选",
+            })
+    return {"domains": domains, "queries": query_rows, "results": result_rows}
+
+
+def _append_readable_audit_events(
+    log_path: Path,
+    payload: dict[str, Any],
+) -> None:
+    audit = payload.get("search_audit") or {}
+    append_crawl_run_event(log_path, {
+        "type": "source_discovery_scope",
+        "generated_at_hkt": payload.get("generated_at_hkt"),
+        "window_hours": 24,
+        "query_count": payload.get("query_count"),
+        "search_result_count": payload.get("search_result_count"),
+        "previous_day_reference_count": payload.get("previous_day_reference_count"),
+        "signal_count": payload.get("signal_count"),
+        "policy": "搜索结果只作线索；03:00追官方原文并通过字段门禁后才可入库",
+    })
+    for reference in payload.get("previous_day_references") or []:
+        append_crawl_run_event(log_path, {
+            "type": "source_discovery_previous_reference",
+            "title": reference.get("title"),
+            "source": reference.get("source"),
+            "published_at": reference.get("published_at") or reference.get("source_date"),
+            "url": reference.get("url") or reference.get("source_url"),
+            "reference_run": reference.get("reference_run"),
+            "disposition": "作为补充线索参与四库主体与指标字段筛选",
+        })
+    for domain in DOMAIN_LABELS:
+        summary = (audit.get("domains") or {}).get(domain) or {}
+        append_crawl_run_event(log_path, {"type": "source_discovery_domain", "domain": domain, **summary})
+        for query in audit.get("queries") or []:
+            if query.get("domain") == domain:
+                append_crawl_run_event(log_path, {"type": "source_discovery_query", **query})
+        for result in audit.get("results") or []:
+            if result.get("domain") == domain:
+                append_crawl_run_event(log_path, {"type": "source_discovery_result", **result})
+        for signal in payload.get("signals") or []:
+            if signal.get("domain") == domain:
+                append_crawl_run_event(log_path, {"type": "source_discovery_handoff", **signal})
+    for error in payload.get("errors") or []:
+        append_crawl_run_event(log_path, {"type": "source_discovery_error", "error": str(error)})
+
+
 def run_discovery(now: datetime | None = None) -> dict[str, Any]:
     reference = (now or datetime.now(HKT)).astimezone(HKT)
     started = time.monotonic()
@@ -72,6 +185,8 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             plans.append(
                 {
                     "module": f"四库资料/{domain}",
+                    "domain": domain,
+                    "entity": entity,
                     "query": query,
                     "fallback_query": f'"{entity}" earnings revenue subscribers',
                     "keywords": list(aliases),
@@ -113,7 +228,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
                     }
                 )
         payload = {
-            "schema_version": 1,
+            "schema_version": 2,
             "task_kind": TASK_KIND,
             "run_id": run_id,
             "generated_at_hkt": reference.isoformat(timespec="seconds"),
@@ -129,13 +244,14 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             "policy": "search_results_are_leads_only; 03:00_must_read_official_source_and_pass_field_gates",
             "signals": signals,
         }
+        payload["search_audit"] = _search_audit(plans, items, signals)
         _write_json(OUTPUT, payload)
         try:
             payload["feishu_detail_log"] = append_rows(discovery_rows(payload, plans=plans, search_items=items))
         except Exception as exc:
             payload["feishu_detail_log"] = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
         _write_json(OUTPUT, payload)
-        append_crawl_run_event(log_path, {"type": "source_discovery", **{key: payload[key] for key in ("query_count", "search_result_count", "signal_count", "domains")}})
+        _append_readable_audit_events(log_path, payload)
         append_crawl_run_event(log_path, {"type": "feishu_detail_log", **payload["feishu_detail_log"]})
         log_ok = bool((payload.get("feishu_detail_log") or {}).get("readback_verified"))
         detail = f"01:00资料搜索完成：{payload['query_count']}个查询、{payload['search_result_count']}条搜索结果、前一日两次任务参考{payload['previous_day_reference_count']}条、{payload['signal_count']}条四库线索；已交接03:00官方来源复核。"

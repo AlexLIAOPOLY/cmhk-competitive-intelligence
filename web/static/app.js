@@ -3554,14 +3554,68 @@ function isImportantTaskLogLine(line) {
 function renderTaskLogLines(container, content) {
   container.textContent = "";
   const lines = String(content || "").split("\n");
+  const handedOffUrls = new Set(lines.flatMap((line) => {
+    try {
+      const event = JSON.parse(String(line || ""));
+      return event.type === "source_discovery_handoff" && event.news_url ? [String(event.news_url)] : [];
+    } catch (_error) { return []; }
+  }));
   lines.forEach((line) => {
-    const row = document.createElement(isImportantTaskLogLine(line) ? "strong" : "span");
-    row.className = isImportantTaskLogLine(line)
+    const displayLine = readableTaskLogLine(line, handedOffUrls);
+    const row = document.createElement(isImportantTaskLogLine(displayLine) ? "strong" : "span");
+    row.className = isImportantTaskLogLine(displayLine)
       ? "task-log-line is-critical"
       : "task-log-line";
-    row.textContent = line || " ";
+    row.textContent = displayLine || " ";
     container.appendChild(row);
   });
+}
+
+function readableTaskLogLine(line, handedOffUrls = new Set()) {
+  const raw = String(line || "").trim();
+  if (!raw.startsWith("{")) return line;
+  let event;
+  try { event = JSON.parse(raw); } catch (_error) { return line; }
+  const numberValue = (value) => Number(value || 0).toLocaleString("zh-HK");
+  const domain = event.label || event.domain_label || ({
+    local: "本地运营商库",
+    international: "国际运营商库",
+    mainland: "内地运营商库",
+    cloud: "云厂商库"
+  })[event.domain] || event.domain || "未分库";
+  if (event.type === "source_discovery_scope") {
+    return `【搜索范围】${event.generated_at_hkt || "未记录时间"}｜最近${numberValue(event.window_hours)}小时｜${numberValue(event.query_count)}个查询｜${numberValue(event.search_result_count)}条结果｜前一日新闻参考${numberValue(event.previous_day_reference_count)}条｜交接线索${numberValue(event.signal_count)}条\n  口径：${event.policy || "搜索结果只作线索，03:00复核后才可入库"}`;
+  }
+  if (event.type === "source_discovery_previous_reference") {
+    return `【前一日新闻参考】${event.title || "无标题"}\n  来源：${event.source || "未记录来源"}｜${event.published_at || "未记录时间"}｜任务：${event.reference_run || "未记录"}\n  网址：${event.url || "未记录网址"}\n  处理：${event.disposition || "参与四库线索筛选"}`;
+  }
+  if (event.type === "source_discovery_domain") {
+    return `【${domain}】查询${numberValue(event.query_count)}个｜命中${numberValue(event.result_count)}条｜零结果查询${numberValue(event.zero_result_query_count)}个｜交接${numberValue(event.signal_count)}条｜${event.status || "未记录状态"}`;
+  }
+  if (event.type === "source_discovery_query") {
+    return `  查询｜${event.entity || "未记录主体"}｜${event.status || "已执行"} ${numberValue(event.result_count)}条｜回看${numberValue(event.lookback_days)}天｜${event.query || "未记录检索词"}`;
+  }
+  if (event.type === "source_discovery_result") {
+    const handedOff = event.handoff === true || handedOffUrls.has(String(event.url || ""));
+    const inferredDisposition = handedOff ? "已形成线索，交接03:00追官方原文" : "未形成交接线索，不直接入库";
+    const disposition = event.handoff === undefined ? inferredDisposition : (event.disposition || inferredDisposition);
+    const reason = event.reason || (handedOff ? "标题或摘要同时命中四库主体和指标字段" : "未同时通过四库主体与指标字段筛选");
+    return `  结果｜${event.entity || "未识别主体"}｜${event.title || "无标题"}\n    来源：${event.source || "未记录来源"}｜${event.published_at || "未记录时间"}｜${event.provider || "未记录搜索渠道"}\n    网址：${event.url || "未记录网址"}\n    处理：${disposition}｜原因：${reason}`;
+  }
+  if (event.type === "source_discovery_handoff") {
+    return `  交接03:00｜${event.entity || "未记录主体"}｜${event.title || "无标题"}\n    新闻线索：${event.news_url || "未记录网址"}\n    官方复核入口：${(event.official_followup_urls || []).join(" ｜ ") || "未记录"}`;
+  }
+  if (event.type === "source_discovery_error") return `【搜索异常】${event.error || "未记录错误"}`;
+  if (event.type === "source_discovery") {
+    const domains = event.domains || {};
+    return `【旧版搜索汇总】查询${numberValue(event.query_count)}个｜结果${numberValue(event.search_result_count)}条｜线索${numberValue(event.signal_count)}条｜本地${numberValue(domains.local)}／国际${numberValue(domains.international)}／内地${numberValue(domains.mainland)}／云${numberValue(domains.cloud)}`;
+  }
+  if (event.type === "feishu_detail_log") {
+    const state = event.readback_verified ? "写入并回读通过" : `未通过：${event.error || event.readback_reason || "没有正向回读证据"}`;
+    return `【飞书明细日志】${state}｜写入${numberValue(event.written)}行｜跳过${numberValue(event.skipped)}行｜${event.sheet_title || "四库爬虫明细日志"} ${event.row_start && event.row_end ? `第${event.row_start}—${event.row_end}行` : ""}`.trim();
+  }
+  if (event.type === "log" && event.text) return String(event.text);
+  return line;
 }
 
 function scheduleUnifiedTaskListRefresh() {
