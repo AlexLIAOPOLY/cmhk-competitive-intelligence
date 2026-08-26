@@ -2,116 +2,72 @@
   "ok": true,
   "status": {
     "results": {
-      "count": 33,
-      "ok": 7,
-      "partial": 5
+      "count": 1,
+      "ok": 0,
+      "partial": 0
     },
     "visuals": {
       "crawl": {
-        "success": 196,
-        "failed": 8,
+        "success": 7,
+        "failed": 1,
         "fallback": 0,
-        "total": 204,
-        "successRate": 96,
-        "completedAt": "2026-08-26 03:07:17"
+        "total": 8,
+        "successRate": 88,
+        "completedAt": "2026-08-26 10:59:27"
       },
       "quality": {
-        "ok": 7,
-        "partial": 5,
-        "failed": 21,
-        "fieldTotal": 205,
-        "missingFields": 6,
-        "rawSources": 206
+        "ok": 0,
+        "partial": 0,
+        "failed": 1,
+        "fieldTotal": 14,
+        "missingFields": 2,
+        "rawSources": 8
       },
       "blocks": [
         {
-          "label": "运营动态",
-          "value": 20
-        },
-        {
-          "label": "产品资费",
-          "value": 8
-        },
-        {
           "label": "经营指标",
-          "value": 5
+          "value": 1
         }
       ],
       "sourceTypes": [
         {
-          "label": "company_official",
-          "value": 118
-        },
-        {
-          "label": "government_public_info",
-          "value": 26
-        },
-        {
           "label": "commercial_data",
-          "value": 19
-        },
-        {
-          "label": "government_statistics",
-          "value": 9
-        },
-        {
-          "label": "regulator_public_info",
-          "value": 7
-        },
-        {
-          "label": "industry_association",
           "value": 4
+        },
+        {
+          "label": "company_official",
+          "value": 3
+        },
+        {
+          "label": "exchange_public_disclosure",
+          "value": 1
         }
       ],
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 104
+          "value": 6
         },
         {
           "label": "US",
-          "value": 19
+          "value": 1
         },
         {
           "label": "EU",
-          "value": 13
-        },
-        {
-          "label": "international",
-          "value": 9
-        },
-        {
-          "label": "UK",
-          "value": 7
-        },
-        {
-          "label": "ES",
-          "value": 7
+          "value": 1
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 146
-        },
-        {
-          "label": "cache:httpx",
-          "value": 30
+          "value": 5
         },
         {
           "label": "curl_chrome_ua",
-          "value": 20
+          "value": 2
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 8
-        },
-        {
-          "label": "skipped",
-          "value": 1
-        },
-        {
-          "label": "cache:curl_direct_chrome_ua",
           "value": 1
         }
       ],
@@ -136,100 +92,210 @@
         "completedAt": "2026-08-26T03:31:25+08:00"
       },
       "newsFunnel": {
-        "scope": "午后扫描（2026-08-25@14:00）",
-        "label": "8月25日 14:00",
-        "completedAt": "2026-08-25T14:03:01+08:00",
-        "historyDuplicates": 1,
+        "scope": "晨间扫描（2026-08-26@09:00）",
+        "label": "8月26日 09:00",
+        "completedAt": "2026-08-26T10:56:19+08:00",
+        "historyDuplicates": 21,
         "summary": {
-          "discovered": 7,
-          "confirmed": 2,
-          "newCount": 1,
-          "sourceCount": 1
+          "discovered": 692,
+          "confirmed": 237,
+          "newCount": 215,
+          "sourceCount": 129
         },
         "categories": [
           {
-            "label": "市场与产品",
-            "value": 1
+            "label": "行业动态",
+            "value": 90
+          },
+          {
+            "label": "网络与技术",
+            "value": 40
+          },
+          {
+            "label": "竞对动态",
+            "value": 30
+          },
+          {
+            "label": "其他",
+            "value": 55
           }
         ],
         "impacts": [
           {
             "label": "收入与需求",
-            "value": 1
+            "value": 43
+          },
+          {
+            "label": "竞争格局",
+            "value": 33
+          },
+          {
+            "label": "产品与定价",
+            "value": 25
+          },
+          {
+            "label": "供应韧性",
+            "value": 22
+          },
+          {
+            "label": "合规与牌照",
+            "value": 19
+          },
+          {
+            "label": "网络与运营",
+            "value": 19
+          },
+          {
+            "label": "资本配置",
+            "value": 19
+          },
+          {
+            "label": "成本与效率",
+            "value": 18
+          },
+          {
+            "label": "客户与渠道",
+            "value": 17
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 7,
+            "value": 692,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 7 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 692 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 2,
-            "removed": 5,
-            "rate": 29,
-            "note": "保留 29%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 2 条，未确认 5 条。"
+            "value": 237,
+            "removed": 455,
+            "rate": 34,
+            "note": "保留 34%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 237 条，未确认 455 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 1,
-            "removed": 1,
-            "rate": 50,
-            "note": "排除 1 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 1 条重复事件，剩余 1 条。"
+            "value": 216,
+            "removed": 21,
+            "rate": 91,
+            "note": "排除 21 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 21 条重复事件，剩余 216 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 1,
-            "removed": 0,
+            "value": 215,
+            "removed": 1,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 1 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 215 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
-      "todayNewsRounds": [],
+      "todayNewsRounds": [
+        {
+          "key": "2026-08-26-09",
+          "label": "上午",
+          "time": "09:00",
+          "status": "已完成",
+          "discovered": 692,
+          "confirmed": 673,
+          "historyDuplicates": 21,
+          "newCount": 215,
+          "note": "",
+          "categories": [
+            {
+              "label": "行业动态",
+              "value": 90
+            },
+            {
+              "label": "网络与技术",
+              "value": 40
+            },
+            {
+              "label": "竞对动态",
+              "value": 30
+            },
+            {
+              "label": "其他",
+              "value": 55
+            }
+          ],
+          "impacts": [
+            {
+              "label": "收入与需求",
+              "value": 43
+            },
+            {
+              "label": "竞争格局",
+              "value": 33
+            },
+            {
+              "label": "产品与定价",
+              "value": 25
+            },
+            {
+              "label": "供应韧性",
+              "value": 22
+            },
+            {
+              "label": "合规与牌照",
+              "value": 19
+            },
+            {
+              "label": "网络与运营",
+              "value": 19
+            },
+            {
+              "label": "资本配置",
+              "value": 19
+            },
+            {
+              "label": "成本与效率",
+              "value": 18
+            },
+            {
+              "label": "客户与渠道",
+              "value": 17
+            }
+          ],
+          "stages": [
+            {
+              "key": "discovered",
+              "label": "检索发现",
+              "value": 692,
+              "detail": "固定监控与 Agentic Search 汇总的候选新闻。"
+            },
+            {
+              "key": "confirmed",
+              "label": "AI确认",
+              "value": 673,
+              "detail": "AI 结合竞对、政策及战略相关性完成审核。"
+            },
+            {
+              "key": "deduplicated",
+              "label": "历史去重",
+              "value": 652,
+              "detail": "与历史记录比对，排除 21 条重复事件。"
+            },
+            {
+              "key": "new",
+              "label": "新增入库",
+              "value": 215,
+              "detail": "已写入飞书、纳入今日信息资产的新增记录。"
+            }
+          ]
+        }
+      ],
       "entities": [
         {
-          "label": "HKBN",
-          "value": 4
-        },
-        {
-          "label": "HKT",
-          "value": 3
-        },
-        {
-          "label": "csl",
-          "value": 3
-        },
-        {
-          "label": "1O1O",
-          "value": 3
-        },
-        {
-          "label": "3HK",
-          "value": 3
-        },
-        {
-          "label": "Hutchison",
-          "value": 3
-        },
-        {
-          "label": "SmarTone",
-          "value": 3
-        },
-        {
-          "label": "行业资讯",
-          "value": 3
+          "label": "iCable",
+          "value": 1
         }
       ],
       "outputs": [
@@ -293,7 +359,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-26 03:21:03",
+    "latestOutputText": "2026-08-26 10:58:22",
     "outputs": [
       {
         "name": "8月19日周报.docx",

@@ -63,103 +63,6 @@
   };
 
   const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
-  let competitorParticleFrame = 0;
-
-  function animateCompetitorOptionParticles(elements, { mode = "scatter", onComplete } = {}) {
-    const targets = [...elements].map((element) => {
-      const rect = (mode === "assemble" ? element.querySelector(":scope > b") : element)?.getBoundingClientRect();
-      if (!rect) return null;
-      const builderClip = element.closest(".competitor-builder")?.getBoundingClientRect() || rect;
-      const fieldsetClip = element.closest("fieldset")?.getBoundingClientRect() || builderClip;
-      const left = Math.max(rect.left, builderClip.left, fieldsetClip.left, 0);
-      const right = Math.min(rect.right, builderClip.right, fieldsetClip.right, window.innerWidth);
-      const top = Math.max(rect.top, builderClip.top, fieldsetClip.top, 0);
-      const bottom = Math.min(rect.bottom, builderClip.bottom, fieldsetClip.bottom, window.innerHeight);
-      return { left, right, top, bottom, width: right - left, height: bottom - top };
-    }).filter((rect) => rect && rect.width > 1 && rect.height > 1);
-    if (!targets.length || motionPreference.matches) {
-      onComplete?.();
-      return;
-    }
-    let canvas = document.querySelector("[data-competitor-particle-layer]");
-    if (!canvas) {
-      canvas = document.createElement("canvas");
-      canvas.className = "competitor-particle-layer";
-      canvas.dataset.competitorParticleLayer = "";
-      canvas.setAttribute("aria-hidden", "true");
-      document.body.append(canvas);
-    }
-    window.cancelAnimationFrame(competitorParticleFrame);
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(window.innerWidth * ratio);
-    canvas.height = Math.round(window.innerHeight * ratio);
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
-    canvas.hidden = false;
-    const context = canvas.getContext("2d");
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const colors = ["#66d9ee", "#42a9cf", "#86f0d1", "#d9fbff"];
-    const mobile = window.innerWidth < 620;
-    const particles = targets.flatMap((rect, elementIndex) => {
-      const count = mobile
-        ? Math.max(8, Math.min(14, Math.round(rect.width * rect.height / 150)))
-        : Math.max(14, Math.min(34, Math.round(rect.width * rect.height / 82)));
-      return Array.from({ length: count }, (_item, index) => {
-        const targetX = rect.left + Math.random() * rect.width;
-        const targetY = rect.top + Math.random() * rect.height;
-        const direction = (Math.random() - .5) * 2;
-        const travel = (mobile ? 16 : 24) + Math.random() * (mobile ? 22 : 38);
-        const driftX = travel * (.55 + Math.random() * .55);
-        const driftY = direction * travel * (.28 + Math.random() * .58);
-        const scatteredX = targetX + driftX;
-        const scatteredY = targetY + driftY;
-        return {
-          startX: mode === "scatter" ? targetX : scatteredX,
-          startY: mode === "scatter" ? targetY : scatteredY,
-          endX: mode === "scatter" ? scatteredX : targetX,
-          endY: mode === "scatter" ? scatteredY : targetY,
-          delay: elementIndex * 18 + Math.random() * 72 + index % 3 * 5,
-          size: .8 + Math.random() * 1.7,
-          color: colors[Math.floor(Math.random() * colors.length)],
-        };
-      });
-    });
-    const startedAt = performance.now();
-    const duration = mode === "scatter" ? 390 : 430;
-    const draw = (now) => {
-      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      context.globalCompositeOperation = "lighter";
-      let active = false;
-      particles.forEach((particle) => {
-        const progress = Math.max(0, Math.min(1, (now - startedAt - particle.delay) / duration));
-        if (progress < 1) active = true;
-        const eased = mode === "scatter"
-          ? 1 - Math.pow(1 - progress, 3)
-          : 1 - Math.pow(1 - progress, 4);
-        const x = particle.startX + (particle.endX - particle.startX) * eased;
-        const y = particle.startY + (particle.endY - particle.startY) * eased;
-        const alpha = mode === "scatter" ? 1 - progress : Math.sin(progress * Math.PI) * .78;
-        if (alpha <= 0) return;
-        context.globalAlpha = alpha * .28;
-        context.fillStyle = particle.color;
-        context.beginPath();
-        context.arc(x, y, particle.size * 2.7, 0, Math.PI * 2);
-        context.fill();
-        context.globalAlpha = Math.min(1, alpha + .14);
-        context.beginPath();
-        context.arc(x, y, particle.size, 0, Math.PI * 2);
-        context.fill();
-      });
-      if (active) {
-        competitorParticleFrame = window.requestAnimationFrame(draw);
-      } else {
-        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        canvas.hidden = true;
-        onComplete?.();
-      }
-    };
-    competitorParticleFrame = window.requestAnimationFrame(draw);
-  }
 
   function workspaceSignalDot(tab) {
     let dot = tab?.querySelector("[data-workspace-indicator]");
@@ -482,14 +385,10 @@
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
-        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
+        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company, optionIndex) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" style="--option-order:${optionIndex}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>仅可选择至少有 2 个共同披露年的窗口</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${selection.companies.length && !validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${selection.companies.length && !validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
-    const appearingOptions = [...panel.querySelectorAll("[data-competitor-option].is-appearing")];
-    if (appearingOptions.length) {
-      window.requestAnimationFrame(() => animateCompetitorOptionParticles(appearingOptions, { mode: "assemble" }));
-    }
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
       const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
@@ -502,12 +401,12 @@
         return;
       }
       panel.querySelectorAll("[data-competitor-company]").forEach((item) => { item.disabled = true; });
-      animateCompetitorOptionParticles(disappearing, { mode: "scatter", onComplete: () => renderCompetitor() });
       disappearing.forEach((item) => item.classList.add("is-disappearing"));
       panel.querySelectorAll(".competitor-option-group").forEach((group) => {
         const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
         if (!remaining) group.classList.add("is-disappearing");
       });
+      window.setTimeout(() => renderCompetitor(), motionPreference.matches ? 0 : 430);
     }));
     panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => { state.competitorSelection.metric = event.target.value; renderCompetitor(); });
     panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitor(); }));
@@ -1065,15 +964,19 @@
     status.hidden = !message;
   }
 
-  function beginCompetitorInsightStream(card) {
+  function beginCompetitorInsightStream(card, { preserveVisible = false } = {}) {
     if (!card) return;
-    card.classList.remove("is-ai", "is-streaming");
-    card.classList.add("is-loading");
+    const list = card.querySelector("[data-competitor-insight-list]");
+    const keepVisible = preserveVisible && list.children.length > 0;
+    card.classList.remove("is-ai", "is-loading", "is-streaming");
+    card.classList.add(keepVisible ? "is-streaming" : "is-loading");
     card.setAttribute("aria-busy", "true");
     setCompetitorInsightStatus(card, "正在连接 AI");
     card.querySelector("[data-competitor-insight-badge]").textContent = "CONNECTING";
-    card.querySelector("[data-competitor-insight-list]").replaceChildren();
-    beginCompetitorStrategicIndicator();
+    if (!keepVisible) {
+      list.replaceChildren();
+      beginCompetitorStrategicIndicator();
+    }
   }
 
   function renderCompetitorInsightDraft(card, text) {
@@ -1107,7 +1010,7 @@
     const controller = new AbortController();
     state.competitorInsightController = controller;
     const card = document.querySelector("#competitorInsight");
-    beginCompetitorInsightStream(card);
+    beginCompetitorInsightStream(card, { preserveVisible: recovery });
     if (recovery) {
       setCompetitorInsightStatus(card, `自动恢复中 · 第 ${state.competitorInsightRetryAttempt} 次`);
       card.querySelector("[data-competitor-insight-badge]").textContent = "RECOVERING";
@@ -1340,6 +1243,10 @@
     const selectedDate = state.newsSelectedDate || newsRunDate(runs[0]);
     const mainRun = mainRunForDate(selectedDate);
     const newsRun = runs[0] || latest.strategic_news || {};
+    const sourceDiscoveryRun = state.crawlRuns.find((run) => (
+      run.task_kind === "four-database-source-discovery"
+      && newsRunDate(run) === selectedDate
+    )) || {};
     const intelligenceRun = state.crawlRuns.find((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
@@ -1366,6 +1273,7 @@
     };
     const strategicHealth = combinedRunHealth(runs);
     const mainHealth = runHealth(mainRun);
+    const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const intelligenceHealth = runHealth(intelligenceRun);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const expectedInsightCount = Number(
@@ -1406,23 +1314,24 @@
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
+    const sourceDiscoverySummary = sourceDiscoveryRun.operational_summary || intelligenceRun.operational_summary?.news_database_signals || {};
     const nodes = [
-      { key: "strategic", label: "09:00 / 14:00 战略新闻", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`), evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
+      { key: "strategic", label: "09:00 / 14:00 战略新闻扫描", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["搜索引擎、固定来源与03:00页面变化线索共同进入候选池", ...runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`)], evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
       { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, health: strategicHealth, variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
       { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
       { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
       { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "main", label: "03:00 主爬虫", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 390], details: mainDetails, evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 390], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "news-db-signal", label: "01:00 四库资料搜索", value: number(intelligenceRun.operational_summary?.news_database_signals?.signal_count || 0), unit: "条线索", note: "独立搜索 Agent 交接 03:00 · 明细写飞书", health: intelligenceHealth, variant: "source", compact: true, position: [230, 520], details: ["按四库主体与指标字段检索最近24小时资料", "合并前一天09:00/14:00两次新闻任务内容作参考", "搜索与新闻结果只作线索，不直接写库", "按主体转到官方 IR / 监管披露入口", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: intelligenceRun.operational_summary?.news_database_signals?.audit_path || "当天未留下01:00资料搜索审计" },
-      { key: "database-hub", label: "数据入库", value: "4", unit: "个库", note: "解析成功且值有变化才写库", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 411], details: ["固定官方入口与01:00搜索资料合并", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败或仅页面变化不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
-      domainNode("local", "本地运营商", [630, 342], "database-local"),
-      domainNode("international", "国际运营商", [812, 342], "database-international"),
-      domainNode("cloud", "全球云厂商", [630, 480], "database-cloud"),
-      domainNode("mainland", "内地运营商", [812, 480], "database-mainland"),
-      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项洞察" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页已发布" : intelligenceRun.crawl_run_id ? "洞察已生成 · 发布待核对" : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 390], details: intelligenceRun.crawl_run_id ? [`洞察通过 ${number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0)} / ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
+      { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天09:00/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
+      { key: "main", label: "03:00 固定源主爬", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 455], details: ["按调度表抓取固定网页与四类官方来源", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 455], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "database-hub", label: "官方原文复核 / 入库", value: "4", unit: "个库", note: "字段门禁全过且值变化才写入", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 476], details: ["合并03:00固定官方入口与01:00资料补缺线索", "01:00线索必须回到公司 IR、财报或监管披露原文", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败、只有页面变化或没有值变化，都不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      domainNode("local", "本地运营商", [630, 422], "database-local"),
+      domainNode("international", "国际运营商", [812, 422], "database-international"),
+      domainNode("cloud", "全球云厂商", [630, 560], "database-cloud"),
+      domainNode("mainland", "内地运营商", [812, 560], "database-mainland"),
+      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项洞察" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页已发布" : intelligenceRun.crawl_run_id ? "洞察已生成 · 发布待核对" : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 455], details: intelligenceRun.crawl_run_id ? [`洞察通过 ${number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0)} / ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
@@ -1433,10 +1342,14 @@
     return {
       nodes,
       edges,
-      canvasSize: [1580, 620],
+      canvasSize: [1580, 720],
       feedbackLabel: "历史记录用于下一轮去重",
-      laneLabels: [{ label: "智能检索爬虫", position: [18, 22] }, { label: "固定网页爬虫", position: [18, 360] }],
-      groups: [{ key: "databases", label: "四库更新", position: [610, 310], size: [380, 294] }],
+      laneLabels: [
+        { label: "A｜战略新闻智能检索线", position: [18, 22] },
+        { label: "B｜四库资料补缺线", position: [18, 230] },
+        { label: "C｜固定官方源更新线", position: [18, 420] },
+      ],
+      groups: [{ key: "databases", label: "四库更新", note: "仅官方原文 + 字段门禁通过才写入", position: [610, 390], size: [380, 294] }],
     };
   }
 
@@ -1509,6 +1422,9 @@
     const date = state.newsSelectedDate;
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
+    if (nodeKey === "news-db-signal") {
+      return state.crawlRuns.filter((run) => run.task_kind === "four-database-source-discovery" && newsRunDate(run) === date);
+    }
     if (["main", "agent"].includes(nodeKey)) {
       const mainRun = mainRunForDate(date);
       return mainRun.crawl_run_id ? [mainRun] : [];
@@ -1584,6 +1500,7 @@
   const newsErrorStageLabels = {
     strategic_news: "战略新闻任务",
     scheduled_cutoff: "战略新闻调度截止",
+    four_database_source_discovery: "01:00 四库资料补缺",
     financial_frontend_publish: "AI洞察与业务应用 / 前端发布",
     executive_intelligence_refresh: "四库更新",
   };
@@ -1827,7 +1744,7 @@
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>新闻获取与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
+        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">

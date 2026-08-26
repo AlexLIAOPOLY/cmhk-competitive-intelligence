@@ -1,18 +1,18 @@
 {
   "ok": true,
   "data": {
-    "generatedAt": "2026-08-26 03:31:25",
+    "generatedAt": "2026-08-25 19:10:20",
     "summary": {
       "companies": 22,
       "metrics": 51,
-      "records": 191,
-      "verifiedRecords": 95,
+      "records": 193,
+      "verifiedRecords": 67,
       "crawlRecords": 96,
       "acceptedAiFacts": 105,
       "publishableAiFacts": 96,
       "publishedAiFacts": 96,
       "aiCleanedRecords": 96,
-      "qualityPassedRecords": 191,
+      "qualityPassedRecords": 193,
       "suppressedRecords": 0,
       "excludedOutOfScopeFacts": 0,
       "excludedNonFacts": 8,
@@ -106,7 +106,8 @@
       "hong-kong",
       "iCable",
       "mainland",
-      "亚太运营商"
+      "亚太运营商",
+      "香港本地竞对财报"
     ],
     "metricCategories": [
       "产品资费",
@@ -117,6 +118,7 @@
       "财务业绩"
     ],
     "sourceTypes": [
+      "official-financial-results",
       "public-crawl",
       "verified-performance"
     ],
@@ -130,7 +132,7 @@
       {
         "company": "3HK / Hutchison",
         "metricCount": 11,
-        "recordCount": 14,
+        "recordCount": 13,
         "sourceCount": 4
       },
       {
@@ -142,13 +144,13 @@
       {
         "company": "HKBN",
         "metricCount": 17,
-        "recordCount": 20,
+        "recordCount": 18,
         "sourceCount": 10
       },
       {
         "company": "HKT",
-        "metricCount": 10,
-        "recordCount": 10,
+        "metricCount": 14,
+        "recordCount": 18,
         "sourceCount": 9
       },
       {
@@ -195,8 +197,8 @@
       },
       {
         "company": "SmarTone",
-        "metricCount": 18,
-        "recordCount": 22,
+        "metricCount": 16,
+        "recordCount": 20,
         "sourceCount": 11
       },
       {
@@ -225,8 +227,8 @@
       },
       {
         "company": "i-CABLE",
-        "metricCount": 11,
-        "recordCount": 14,
+        "metricCount": 10,
+        "recordCount": 13,
         "sourceCount": 6
       },
       {
@@ -1832,202 +1834,6 @@
         "hasSources": true
       },
       {
-        "id": "45cba4a323af237b",
-        "company": "3HK / Hutchison",
-        "metric": "最新披露",
-        "value": "2025年度业绩",
-        "detail": "2025年度业绩",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "45e55b0b57cafbaa",
-        "company": "3HK / Hutchison",
-        "metric": "披露日期",
-        "value": "2026年3月9日",
-        "detail": "2026年3月9日",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "d9ca66a7bdf65fe7",
-        "company": "3HK / Hutchison",
-        "metric": "股票代码",
-        "value": "0215.HK",
-        "detail": "0215.HK",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "488f0ee09eb923d2",
-        "company": "3HK / Hutchison",
-        "metric": "收益",
-        "value": "香港业务总收益54.48亿港元",
-        "detail": "香港业务总收益54.48亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "be20f353a8ee4c5d",
-        "company": "3HK / Hutchison",
-        "metric": "EBITDA / 利润",
-        "value": "香港业务EBIT 0.18亿港元",
-        "detail": "香港业务EBIT 0.18亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "1e27f1c97c6b77f3",
-        "company": "3HK / Hutchison",
-        "metric": "派息",
-        "value": "股息每股0.0521港元/股；股息0.0228港元/股；股息为每股0.0749港元/股",
-        "detail": "建议派发2025年度末期股息每股0.0521港元/股；连同中期股息0.0228港元/股，全年股息为每股0.0749港元/股，与上年持平。",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "ffe0a7c6bb8b72f4",
-        "company": "3HK / Hutchison",
-        "metric": "资本开支",
-        "value": "资本开支4.33亿港元；资本开支占服务收入比由13%",
-        "detail": "2025年资本开支4.33亿港元，较重述后的2024年4.31亿港元基本稳定；资本开支占服务收入比由13%降至12%，投资继续聚焦香港网络和服务体验。",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月9日",
-        "stockCode": "0215.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
         "id": "868d2a4fc7aac975",
         "company": "3HK / Hutchison",
         "metric": "战略升级",
@@ -2112,202 +1918,6 @@
         "hasSources": true
       },
       {
-        "id": "529f30829fbbc051",
-        "company": "SmarTone",
-        "metric": "最新披露",
-        "value": "2025/26中期业绩",
-        "detail": "2025/26中期业绩",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "5d0cfeea4a03127e",
-        "company": "SmarTone",
-        "metric": "披露日期",
-        "value": "2026年2月24日",
-        "detail": "2026年2月24日",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "393bf7b24a801aac",
-        "company": "SmarTone",
-        "metric": "股票代码",
-        "value": "0315.HK",
-        "detail": "0315.HK",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "92063f8f8f9efaea",
-        "company": "SmarTone",
-        "metric": "收益",
-        "value": "35.61亿港元",
-        "detail": "35.61亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "ab92f189bbfe969c",
-        "company": "SmarTone",
-        "metric": "EBITDA / 利润",
-        "value": "股东应占溢利2.78亿港元",
-        "detail": "股东应占溢利2.78亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "410021d7aa5df308",
-        "company": "SmarTone",
-        "metric": "派息",
-        "value": "股息每股0.145港元",
-        "detail": "中期股息每股0.145港元，与上年同期持平。",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "3de0194342b5386e",
-        "company": "SmarTone",
-        "metric": "资本开支",
-        "value": "资本开支1.79亿港元",
-        "detail": "2025/26上半年资本开支1.79亿港元，同比下降2.7%；持续投资5G网络、客户体验和平台简化。",
-        "group": "hong-kong",
-        "disclosure": "2025/26中期业绩",
-        "disclosureDate": "2026年2月24日",
-        "stockCode": "0315.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf"
-          },
-          {
-            "label": "smartoneholdings.com",
-            "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
         "id": "3d192eb229c3a2d1",
         "company": "SmarTone",
         "metric": "战略升级",
@@ -2389,202 +1999,6 @@
         "qualityStatus": "verified",
         "valueType": "text",
         "metricCategory": "其他",
-        "hasSources": true
-      },
-      {
-        "id": "cdaeabb56baca96f",
-        "company": "HKBN",
-        "metric": "最新披露",
-        "value": "2026财年中期业绩",
-        "detail": "2026财年中期业绩",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "e015d7587a690c68",
-        "company": "HKBN",
-        "metric": "披露日期",
-        "value": "2026年4月24日",
-        "detail": "2026年4月24日",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "0b9208c8edcb5f62",
-        "company": "HKBN",
-        "metric": "股票代码",
-        "value": "1310.HK",
-        "detail": "1310.HK",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "440ed7702d6b52ed",
-        "company": "HKBN",
-        "metric": "收益",
-        "value": "60.29亿港元",
-        "detail": "60.29亿港元",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "909f057fb7a17975",
-        "company": "HKBN",
-        "metric": "EBITDA / 利润",
-        "value": "EBITDA 12.57亿港元；净利润1.08亿港元",
-        "detail": "EBITDA 12.57亿港元；净利润1.08亿港元",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "c201e1c85c339deb",
-        "company": "HKBN",
-        "metric": "派息",
-        "value": "分派每股0.155港元",
-        "detail": "2026财年中期分派每股0.155港元，与上年同期持平。",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "a9f2a46eb743572f",
-        "company": "HKBN",
-        "metric": "资本开支",
-        "value": "资本开支2.70亿港元",
-        "detail": "2026财年上半年资本开支2.70亿港元，同比增加13%；继续投入企业方案、住宅光纤升级和AI融合能力。",
-        "group": "hong-kong",
-        "disclosure": "2026财年中期业绩",
-        "disclosureDate": "2026年4月24日",
-        "stockCode": "1310.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
         "hasSources": true
       },
       {
@@ -2924,174 +2338,6 @@
         "hasSources": true
       },
       {
-        "id": "9c4f1f764ec37824",
-        "company": "i-CABLE",
-        "metric": "最新披露",
-        "value": "2025年度业绩",
-        "detail": "2025年度业绩",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "abc5fdc8b3c9c1f5",
-        "company": "i-CABLE",
-        "metric": "披露日期",
-        "value": "2026年3月27日",
-        "detail": "2026年3月27日",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "089e48750ef109f2",
-        "company": "i-CABLE",
-        "metric": "股票代码",
-        "value": "1097.HK",
-        "detail": "1097.HK",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "披露信息",
-        "hasSources": true
-      },
-      {
-        "id": "d7c6c0ebb7cd686d",
-        "company": "i-CABLE",
-        "metric": "收益",
-        "value": "5.39亿港元",
-        "detail": "5.39亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "01931e0da665dde0",
-        "company": "i-CABLE",
-        "metric": "EBITDA / 利润",
-        "value": "亏损4.90亿港元",
-        "detail": "亏损4.90亿港元",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "99c246c1a3d23f65",
-        "company": "i-CABLE",
-        "metric": "派息",
-        "value": "董事会不建议派发2025年度末期股息。",
-        "detail": "董事会不建议派发2025年度末期股息。",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "4a6855f6d575c73b",
-        "company": "i-CABLE",
-        "metric": "资本开支",
-        "value": "2025年度业绩公告未单独列示统一资本开支金额；截至2025年12月31日，物业、厂房及设备已订约但未拨备资本承担为56万港元，节目库资本承担为1025.5万港元。",
-        "detail": "2025年度业绩公告未单独列示统一资本开支金额；截至2025年12月31日，物业、厂房及设备已订约但未拨备资本承担为56万港元，节目库资本承担为1025.5万港元。",
-        "group": "hong-kong",
-        "disclosure": "2025年度业绩",
-        "disclosureDate": "2026年3月27日",
-        "stockCode": "1097.HK",
-        "sourceType": "verified-performance",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
-          }
-        ],
-        "rowRef": "",
-        "qualityIssues": [],
-        "qualityStatus": "verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
         "id": "9239667f6d66b1f1",
         "company": "i-CABLE",
         "metric": "战略升级",
@@ -3161,6 +2407,756 @@
         "qualityStatus": "verified",
         "valueType": "text",
         "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
+        "id": "207fa715779ae6f2",
+        "company": "HKT",
+        "metric": "收益",
+        "value": "186.85亿港元",
+        "detail": "186.85亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "70b601dce141fb17",
+        "company": "HKT",
+        "metric": "EBITDA / 利润",
+        "value": "65.86亿港元",
+        "detail": "65.86亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "9cf6525a2e0475b9",
+        "company": "HKT",
+        "metric": "净利润",
+        "value": "21.53亿港元",
+        "detail": "21.53亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "bcbc5a4abfca5bc0",
+        "company": "HKT",
+        "metric": "资本开支",
+        "value": "10.42亿港元",
+        "detail": "10.42亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ab3d706174ca3aa8",
+        "company": "HKT",
+        "metric": "派息",
+        "value": "0.348港元/股",
+        "detail": "0.348港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "7141a07f4c31dcc0",
+        "company": "HKT",
+        "metric": "5G用户数",
+        "value": "2.2 million",
+        "detail": "2.2 million",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-07-29",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
+        "id": "c19e38fcec97af09",
+        "company": "3HK / Hutchison",
+        "metric": "收益",
+        "value": "28.46亿港元",
+        "detail": "28.46亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ee41c7bf2c127dfc",
+        "company": "3HK / Hutchison",
+        "metric": "EBITDA / 利润",
+        "value": "7.63亿港元",
+        "detail": "7.63亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "e83a524e270f7897",
+        "company": "3HK / Hutchison",
+        "metric": "净利润",
+        "value": "0.11亿港元",
+        "detail": "0.11亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "c6e6c4629ecae89f",
+        "company": "3HK / Hutchison",
+        "metric": "派息",
+        "value": "0.0228港元/股",
+        "detail": "0.0228港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-08-10",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "3f0caeb271307ab0",
+        "company": "SmarTone",
+        "metric": "收益",
+        "value": "35.61亿港元",
+        "detail": "35.61亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "a9c9f3475009e754",
+        "company": "SmarTone",
+        "metric": "净利润",
+        "value": "2.78亿港元",
+        "detail": "2.78亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "ab523b0a8a877077",
+        "company": "SmarTone",
+        "metric": "派息",
+        "value": "0.145港元/股",
+        "detail": "0.145港元/股",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-02-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "2c5849adee34b782",
+        "company": "HKBN",
+        "metric": "收益",
+        "value": "60.29亿港元",
+        "detail": "60.29亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "08113f3f3d35aa6e",
+        "company": "HKBN",
+        "metric": "EBITDA / 利润",
+        "value": "12.57亿港元",
+        "detail": "12.57亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "241319db855fb614",
+        "company": "HKBN",
+        "metric": "净利润",
+        "value": "1.08亿港元",
+        "detail": "1.08亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "72773d527acbfbeb",
+        "company": "i-CABLE",
+        "metric": "收益",
+        "value": "5.39亿港元",
+        "detail": "5.39亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "2025-12-31",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "2029006ed5211682",
+        "company": "i-CABLE",
+        "metric": "净利润",
+        "value": "-4.90亿港元",
+        "detail": "-4.90亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "2025-12-31",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "d0917533a59363ab",
+        "company": "i-CABLE",
+        "metric": "资本开支",
+        "value": "0.52亿港元",
+        "detail": "0.52亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "2025-12-31",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "541175e4b287799a",
+        "company": "i-CABLE",
+        "metric": "派息",
+        "value": "HK$Nil",
+        "detail": "HK$Nil",
+        "group": "香港本地竞对财报",
+        "disclosure": "FY 2025",
+        "disclosureDate": "2025-12-31",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "03bdd4037b24157f",
+        "company": "HKT",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "93cbdd2a43500973",
+        "company": "HKT",
+        "metric": "披露日期",
+        "value": "2026-07-29",
+        "detail": "2026-07-29",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Announcement",
+            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_2",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "6df0742cf48c4b23",
+        "company": "3HK / Hutchison",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "256c0cef5a5fd1e4",
+        "company": "3HK / Hutchison",
+        "metric": "披露日期",
+        "value": "2026-08-10",
+        "detail": "2026-08-10",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "2026 Interim Results Presentation",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_5",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "16dadb7a9f4632f5",
+        "company": "SmarTone",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "551e7fc82fb62bcf",
+        "company": "SmarTone",
+        "metric": "披露日期",
+        "value": "2026-02-24",
+        "detail": "2026-02-24",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_8",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "436be5e6671e9e21",
+        "company": "HKBN",
+        "metric": "最新披露",
+        "value": "H1 2026",
+        "detail": "H1 2026",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "9e00a2e804a99db9",
+        "company": "HKBN",
+        "metric": "披露日期",
+        "value": "2026-04-24",
+        "detail": "2026-04-24",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "23483c4c29b8247e",
+        "company": "i-CABLE",
+        "metric": "最新披露",
+        "value": "FY 2025",
+        "detail": "FY 2025",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
+        "hasSources": true
+      },
+      {
+        "id": "124ea9dd634b0ad9",
+        "company": "i-CABLE",
+        "metric": "披露日期",
+        "value": "2025-12-31",
+        "detail": "2025-12-31",
+        "group": "香港本地竞对财报",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "PDF extracted by pdftotext",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_17",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "披露信息",
         "hasSources": true
       },
       {

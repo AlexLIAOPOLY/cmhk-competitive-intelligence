@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-26T08:55:34+08:00",
+  "checked_at_hkt": "2026-08-26T11:01:04+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -34,7 +34,7 @@
   "next_runs": [
     "2026-08-05T03:00:00+08:00",
     "2026-08-26T03:00:00+08:00",
-    "2026-08-26T08:55:34+08:00",
+    "2026-08-26T11:01:04+08:00",
     "2026-08-27T03:00:00+08:00",
     "2026-08-31T03:00:00+08:00",
     "2026-09-01T03:00:00+08:00"
@@ -44,17 +44,16 @@
       "crawl_run_id": "20260826_030035_726664",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "failed",
-      "backend_pid": 79336,
+      "run_status": "running",
+      "backend_pid": 35091,
       "worker_pid": 0,
-      "phase": "失败",
-      "progress_detail": "续跑财报结构化门禁失败：第17行 i-CABLE 未发现可读取的官方财报；保留旧数据等待重试。",
-      "failure_stage": "local_financial_results",
-      "heartbeat_at_hkt": "2026-08-26T08:32:09+08:00",
+      "phase": "恢复未完成任务",
+      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-26T11:00:56+08:00",
       "started_at_hkt": "2026-08-26T03:00:35+08:00",
-      "completed_at_hkt": "2026-08-26T08:32:09+08:00",
-      "crawl_return_code": 1,
-      "duration_ms": 19894176,
+      "completed_at_hkt": "",
+      "duration_ms": 27115050,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "c42fae",
@@ -183,7 +182,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-26T08:32:09+08:00",
+          "generated_at_hkt": "2026-08-26T10:32:29+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -540,49 +539,52 @@
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 136437,
-        "lines": 640
-      }
+        "bytes": 151542,
+        "lines": 653
+      },
+      "status_detail": "",
+      "interrupted": false,
+      "resumed_at_hkt": "2026-08-26T11:00:56+08:00"
     },
     "strategic_news": {
-      "crawl_run_id": "20260825_140004_076309",
+      "crawl_run_id": "20260826_090028_856114",
       "trigger": "战略新闻定时爬虫",
-      "scope": "午后扫描（2026-08-25@14:00）",
+      "scope": "晨间扫描（2026-08-26@09:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 72352,
+      "backend_pid": 62248,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 7 条，AI保留 2 条，历史重复 1 条，新增 1 条。",
-      "heartbeat_at_hkt": "2026-08-25T14:03:01+08:00",
-      "started_at_hkt": "2026-08-25T14:00:04+08:00",
-      "completed_at_hkt": "2026-08-25T14:03:01+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 692 条，AI保留 237 条，历史重复 21 条，新增 215 条。",
+      "heartbeat_at_hkt": "2026-08-26T10:56:19+08:00",
+      "started_at_hkt": "2026-08-26T09:00:28+08:00",
+      "completed_at_hkt": "2026-08-26T10:56:19+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 177659,
+      "duration_ms": 6950122,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260825_140004_076309.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_090028_856114.jsonl"
       },
       "stream_log": {
-        "bytes": 8969,
-        "lines": 53
+        "bytes": 105012,
+        "lines": 599
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 7 条，AI保留 2 条，历史重复 1 条，新增 1 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 692 条，AI保留 237 条，历史重复 21 条，新增 215 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-08-25@14:00",
-        "discovered": 7,
-        "ai_retained": 2,
-        "history_duplicates": 1,
-        "new_count": 1,
+        "slot": "2026-08-26@09:00",
+        "discovered": 692,
+        "ai_retained": 237,
+        "history_duplicates": 21,
+        "new_count": 215,
         "readback_verified": true,
         "notification_status": "sent",
-        "message_id": "om_x100b67e74f9b28b8b14c851f641f8f8"
+        "message_id": "om_x100b67d113e704acb2557479bd2373a"
       }
     },
     "four_database_refresh": {

@@ -1,72 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-08-26T08:55:28+08:00",
-  "items": [
-    {
-      "id": "NEWS-880E1FBB515DE8",
-      "title": "2026年前七月中国进口同比增长22%，连续五月跑赢出口",
-      "summary": "2026年前七个月中国进口同比增长22%，连续五个月进口增速跑赢出口，专家称中国进口为全球产业链提供稳定支撑。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://big5.cctv.com/gate/big5/tv.cctv.cn/2026/08/24/VIDENG7eHNTn0NubOPAhCr4S260824.shtml",
-      "published_at": "2026-08-24T23:16:00+08:00"
-    },
-    {
-      "id": "NEWS-1FB9802685A174",
-      "title": "洪水桥片区｜京东集团：注入现代智慧物流产业 预计将创造超过 2,500 个就业岗位",
-      "summary": "京东集团表示将在洪水桥片区注入现代智慧物流产业，预计创造超过2,500个就业岗位。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMi7wNBVV95cUxQMGNOSlFqOElJZ0tLcUxUUTZybVdDRDVkOHBCNG1KcU5CekFSN2M2SlpINVR1LWl1QzFEMXREU09fcGs0Vm9kdm9VMG9kU3J2Mkw4SmFYSm5lb3hwNmNUTlpKcWhUTWhnMlFhR01XQTROaDI1N1F3a28tNmNJVVIwem4yUFd1aXVIVldlQWh0LVFPeXFNQTlVX2ViRG9yMUwzdTYtVWI5TFRzb3VtNlkyVG9Na01OeE1vTFBkcnNzbGVsUHA5VTl1M2JfYWlEaUxxZFg3blFlYllfczlwdGwyczVPXy1iYi1NRWVzVkRPVnhNcXBOYldXLUZOcVh1Mi14cmVSeHp1QjlsNTY3dG5Rb2ZHZ0pWYnd5ODFOSTdvbklya09rZHh2bzI1dFp4STYxd1ozNDhvV0xMc0RHaWhOcWpfd1RtaF90N1lFbF9WSmNhdVBCaWRpeGUydkxMVWx4cW9IOGdlazJXTm94QVdQcXNNcVhrVW1zY0hqSmZPUFU5Q3hoM013R3Z1VG5WckZLR3ozSkJqQUxFNC0tZ0djQUlfR3VmRkNUTlJDN2JfdWRkS3F0bDdGWGZxa1RSemJNanRPN3VDSkh4eGY5ZFdvSDlKSWNwZ2t3U25OejJ1WkdEQ09lVGhPLW16c29TMTQ?oc=5",
-      "published_at": "2026-08-24T19:05:00+08:00"
-    },
-    {
-      "id": "NEWS-A66041A39D4493",
-      "title": "内蒙古乌兰察布AI算力中心规划达12.5GW，规模超越OpenAI Stargate",
-      "summary": "中国内蒙古乌兰察布数据中心规划容量达12.5GW，规模超越OpenAI的Stargate项目，成为中国AI算力基础设施的重要布局。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBoa2FNUFB2S3kwSUpQSk93TjdJZmc3X28ycFN5NjBCcTZuZk5jTGFVdDg3M3lHemVqM0dxRUhxWUF4UUd1R0dhNGVmY2dBdHVEZEVqYXBnWmFrSFlaeWh4Nm92OA?oc=5",
-      "published_at": "2026-08-23T21:54:45+08:00"
-    },
-    {
-      "id": "NEWS-0703804171363D",
-      "title": "SK电讯与首尔大学合作推出AI人才培养课程",
-      "summary": "SK电讯与首尔大学在产学合作第十年之际，联合推出面向下一代AI人才培养的课程项目。",
-      "category": "竞对动态",
-      "source_url": "https://biz.heraldcorp.com/article/10849409",
-      "published_at": "2026-08-23T19:30:00+08:00"
-    },
-    {
-      "id": "NEWS-4FC05673968FFB",
-      "title": "第二届吉港澳经贸交流活动将启幕 三地合作迈向常态化",
-      "summary": "第二届吉港澳经贸交流活动即将启幕，吉林、香港、澳门三地经贸合作迈向常态化。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBnc0RSdEt0dWZncU51RVNVNVFnbG94WTJNaDk1Zl82NU5mZDhTaDVwMkswUFd6U3BaaVBzZlZ1aERHeTlQTmpQbTBCalBDbFA2N3lMYjFGU09Ld01oX0xqN0l1dUNkR3BiMU1LbnVDZDc?oc=5",
-      "published_at": "2026-08-22T16:49:31+08:00"
-    },
-    {
-      "id": "NEWS-368D370FF8C415",
-      "title": "花旗维持中国电信「买入」评级，二季度纯利胜预期",
-      "summary": "花旗发布研报称，中国电信二季度纯利胜预期，维持「买入」评级。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBMTlpwODg5STlER3cxaUpJdnR2TGZFVExKd2FGd2k4QUpOakVTb28yU0F0NjlETVpMUGJjWENCNlFCOG9wcXJTWkhBakpPaDh1WEF5Y3habFZlSmxCZTdoOElnSkU1RFlGREJBRmI0b1g?oc=5",
-      "published_at": "2026-08-21T17:49:05+08:00"
-    },
-    {
-      "id": "NEWS-C0478CC374E9EB",
-      "title": "香港7月通胀放缓至1.7%",
-      "summary": "香港7月消费者价格通胀如预期放缓至三个月低位，统计处数据显示同比升幅为1.7%。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.finanzen.at/nachrichten/zinsen/hong-kong-inflation-eases-to-1-7percent-1036478278",
-      "published_at": "2026-08-20T14:01:00+08:00"
-    },
-    {
-      "id": "NEWS-6B1134F856EB3F",
-      "title": "世界机器人大会开幕，逾10%参展商为粤企",
-      "summary": "世界机器人大会展示约3000件产品，超过10%的参展商来自广东，凸显大湾区在机器人产业链上的优势。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
-      "published_at": "2026-08-20T04:09:00+08:00"
-    }
-  ],
+  "generated_at": "2026-08-26T10:56:12+08:00",
+  "items": [],
   "monitor": {
     "status": "snapshot",
     "scan_times": [
@@ -75,5 +10,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "6129094fdb395c97aef4736b1f585d6e75a6f69a3b8ea4544edd409149155472"
+  "site_version": "ddcd2984c6f7cb03c0605ee51e175c37bd6de881f0de57662673454a3248916c"
 }
