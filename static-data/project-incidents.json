@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "4a0a0f22504d3cd365ef8272",
+      "task_id": "incident:4a0a0f22504d3cd365ef8272",
+      "title": "飞书频率调度器",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度器",
+      "scope": "frequency-scheduler",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "频率调度器独立心跳中断",
+      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
+      "suggestions": [
+        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
+        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-27T03:05:07+08:00",
+      "started_at_hkt": "2026-08-27T03:05:34+08:00",
+      "heartbeat_at_hkt": "2026-08-27T03:10:04+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "7d972b976fee30c750f138a5",
       "task_id": "incident:7d972b976fee30c750f138a5",
       "title": "主项目后台任务",
@@ -143,6 +167,30 @@
       "started_at_hkt": "2026-08-27T00:08:34+08:00",
       "heartbeat_at_hkt": "2026-08-27T00:08:34+08:00",
       "completed_at_hkt": "2026-08-27T00:09:04+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "affe54a6048595f0884fa9d6",
+      "task_id": "incident:affe54a6048595f0884fa9d6",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-27 03:07:42",
+      "started_at_hkt": "2026-08-27T03:08:04+08:00",
+      "heartbeat_at_hkt": "2026-08-27T03:10:04+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -2349,9 +2397,9 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主爬虫存在失败或未通过质量门禁的数据",
@@ -2362,8 +2410,8 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-27T03:02:33+08:00",
-      "heartbeat_at_hkt": "2026-08-27T03:05:03+08:00",
-      "completed_at_hkt": "",
+      "heartbeat_at_hkt": "2026-08-27T03:07:34+08:00",
+      "completed_at_hkt": "2026-08-27T03:08:04+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -12096,56 +12144,6 @@
       "started_at_hkt": "2026-08-19T11:48:41+08:00",
       "heartbeat_at_hkt": "2026-08-19T11:55:11+08:00",
       "completed_at_hkt": "2026-08-19T11:55:42+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "811e08a380abcc8595c66bbc",
-      "task_id": "incident:811e08a380abcc8595c66bbc",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-19T11:40:40+08:00",
-      "started_at_hkt": "2026-08-19T10:28:17+08:00",
-      "heartbeat_at_hkt": "2026-08-19T11:40:40+08:00",
-      "completed_at_hkt": "2026-08-19T11:41:10+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0880bc69bf10c833f1babb72",
-      "task_id": "incident:0880bc69bf10c833f1babb72",
-      "title": "飞书频率调度周期",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度周期",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "调度器日志出现未处理异常",
-      "impact": "已确认事实：本轮或后续到期任务可能没有被正常检查或启动。推断：可能导致任务漏跑、业务延迟或数据不一致，影响依赖该调度器的下游流程。",
-      "suggestions": [
-        "检查异常前后的完整scheduler stderr日志，定位具体异常堆栈和触发点。",
-        "确认本轮调度任务是否已启动或完成，若未启动则手动触发一次，避免重复执行已完成任务。",
-        "修复异常代码或配置，并重启调度器服务，确保调度周期恢复正常。",
-        "验证后续调度周期任务能正常启动和完成，观察日志无新异常后关闭告警。"
-      ],
-      "occurred_at_hkt": "2026-08-19T11:25:39+08:00",
-      "started_at_hkt": "2026-08-19T00:09:02+08:00",
-      "heartbeat_at_hkt": "2026-08-19T11:25:39+08:00",
-      "completed_at_hkt": "2026-08-19T19:24:08+08:00",
       "handled_at_hkt": ""
     }
   ],
