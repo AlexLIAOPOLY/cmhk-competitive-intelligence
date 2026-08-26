@@ -1368,6 +1368,8 @@
       `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
       ...(mainRowsProcessed ? [`实际处理 ${number(mainRowsProcessed)} 行`, `URL成功 ${number(mainRun.run_log?.success_urls)} 个·失败 ${number(mainRun.run_log?.failed_urls)} 个`] : []),
     ] : ["所选日期没有主爬虫运行记录"];
+    const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
+    const archivedAgentCandidateCount = Number(mainRunDetail.agentReviewSummary?.total || 0);
     const reviewResults = dailyNewsReviewResults(selectedDate);
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
@@ -1383,7 +1385,7 @@
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [285, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [285, 473], details: mainRun.curation ? [`原始指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选事实` : ""}` : "候选事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
       { key: "database-hub", label: "新增数据入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [550, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [770, 425], "database-local"),
       domainNode("international", "国际运营商", [952, 425], "database-international"),
@@ -1724,6 +1726,63 @@
         return (domain.focuses || []).map((focus) => insightRecord(domain, focus));
       });
     }
+    if (nodeKey === "main") {
+      return relatedRuns.flatMap((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return (Array.isArray(detail.crawlItems) ? detail.crawlItems : []).map((item) => {
+          const status = item.status === "completed" ? "included" : item.status === "failed" ? "excluded" : "deferred";
+          const urls = Array.isArray(item.urls) ? item.urls : [];
+          return {
+            run,
+            title: item.title || `第 ${item.rowNumber || "—"} 行抓取`,
+            summary: item.summary || "本轮没有保存该行抓取摘要。",
+            source: urls[0] || "",
+            status,
+            resultLabel: item.status === "completed" ? "抓取完成" : item.status === "failed" ? "抓取失败" : "部分完成 / 质量待核",
+            reason: item.errors?.length ? item.errors.join("；") : "已按该行配置逐一访问来源，并保留HTTP结果、抓取方法与字段覆盖。",
+            evidenceUrls: urls,
+            evidenceLinkLabel: "实际抓取",
+            extra: [
+              `调度行：第 ${item.rowNumber || "—"} 行`,
+              `行状态：${(item.rowStatuses || []).join("、") || "未记录"}`,
+              `来源类型：${(item.sourceTypes || []).join("、") || "未记录"}`,
+              `抓取方法：${Object.entries(item.methodCounts || {}).map(([method, count]) => `${method} ${number(count)}次`).join("、") || "未记录"}`,
+              `提取字段：${(item.extractedFields || []).join("、") || "未提取到字段"}`,
+            ].join("\n"),
+          };
+        });
+      });
+    }
+    if (nodeKey === "agent") {
+      return relatedRuns.flatMap((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return (Array.isArray(detail.agentReviewItems) ? detail.agentReviewItems : []).map((item) => {
+          const decision = String(item.decision || "").toLowerCase();
+          const status = decision === "accepted" ? "included" : decision === "rejected" ? "excluded" : "deferred";
+          const sources = (Array.isArray(item.sources) ? item.sources : []).map((source) => source?.url || "").filter(Boolean);
+          const verification = item.search_verification || {};
+          return {
+            run,
+            title: `${item.company || "未记录主体"} · ${item.metric || "未记录指标"}`,
+            summary: item.value || item.note || "未提取到可发布数值",
+            source: sources[0] || "",
+            status,
+            resultLabel: decision === "accepted" ? "审核通过" : decision === "rejected" ? "审核拒绝" : "待人工复核",
+            reason: [item.basis, ...(item.reasons || [])].filter(Boolean).join("；") || item.note || "本轮未保存审核依据。",
+            evidenceUrls: sources,
+            evidenceLinkLabel: "证据来源",
+            extra: [
+              `调度行：${item.row_ref || "未记录"}`,
+              `证据层级：${item.source_tier || "未记录"}`,
+              `质量分：${item.quality_score ?? "—"} · 置信度：${item.confidence ?? "—"}`,
+              `主体支持：${item.entity_supported ? "是" : "否"} · 指标支持：${item.metric_supported ? "是" : "否"} · 数值支持：${item.value_supported ? "是" : "否"}`,
+              `在线核验：${verification.status || "未记录"} · ${number(verification.vote_count || 0)} 票 · 冲突 ${number(verification.conflict_count || 0)} 项`,
+              verification.online_search?.query ? `核验查询：${verification.online_search.query}` : "核验查询：未记录",
+            ].join("\n"),
+          };
+        });
+      });
+    }
     return [];
   }
 
@@ -1770,12 +1829,18 @@
   }
 
   function renderDetailedRecords(nodeKey, records, relatedRuns = []) {
-    if (!records.length) return "";
+    if (!records.length) {
+      const auditedNode = ["news-db-signal", "main", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-");
+      if (!auditedNode) return "";
+      return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>当天逐条内容归档</h3><span>0 条</span></header><p class="news-lineage-detail-coverage">该节点有汇总结果，但当前运行未读取到逐条归档；这属于明细缺口，不代表当天没有处理。请按运行编号检查原始归档。</p></section>`;
+    }
     const included = records.filter((item) => ["included", "kept", "updated"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === true).length;
     const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
     const databaseHubNode = nodeKey === "database-hub";
     const databaseUiNode = !databaseHubNode && nodeKey.startsWith("database-");
     const sourceDiscoveryNode = nodeKey === "news-db-signal";
+    const mainCrawlNode = nodeKey === "main";
+    const agentAuditNode = nodeKey === "agent";
     const refreshState = state.executiveIntelligence?.refresh || {};
     const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(state.newsSelectedDate);
     const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
@@ -1783,11 +1848,11 @@
     const domainKey = nodeKey.replace(/^database-/, "");
     const numericChangeCount = Number(databaseUiNode ? uiValueChanges.domains?.[domainKey]?.changed || 0 : uiValueChanges.changed || 0);
     const numericChangeLabel = numericBaselineAvailable ? `数值变化 ${number(numericChangeCount)} 项` : "数值变化未留存";
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : sourceDiscoveryNode ? `具体线索 ${records.length} 条` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : sourceDiscoveryNode ? `具体线索 ${records.length} 条` : mainCrawlNode ? `实际处理 ${records.length} 行` : agentAuditNode ? `逐条审核 ${records.length} 条 · 通过 ${included} · 拒绝 ${excluded}` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : mainCrawlNode ? "当天33行固定源逐行抓取明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     const numericChangeNote = databaseHubNode || databaseUiNode
       ? numericBaselineAvailable
         ? numericChangeCount > 0
@@ -1802,7 +1867,8 @@
       const sourceName = String(record.source || "").startsWith("http") ? "原始来源" : record.source || "未记录";
       const reasonLabel = status === "excluded" ? "AI 排除原因" : status === "duplicate" ? "重复判定依据" : status === "deferred" ? "延期原因" : "处理依据";
       const runLabel = record.run ? `${newsRunTime(record.run)} · ${record.run.crawl_run_id}` : databaseHubNode ? "当天数据库写入" : databaseUiNode ? "当天UI发布" : "当天洞察发布";
-      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}${record.officialFollowupUrls?.length ? `<div><dt>官方追证</dt><dd class="news-lineage-official-links">${record.officialFollowupUrls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">官方地址 ${number(index + 1)}</a>`).join(" · ")}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
+      const evidenceUrls = record.evidenceUrls?.length ? record.evidenceUrls : record.officialFollowupUrls || [];
+      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>${esc(record.evidenceLinkLabel || "官方追证")}</dt><dd class="news-lineage-official-links">${evidenceUrls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">${esc(record.evidenceLinkLabel || "官方地址")} ${number(index + 1)}</a>`).join(" · ")}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
     }).join("")}</div></section>`;
   }
 

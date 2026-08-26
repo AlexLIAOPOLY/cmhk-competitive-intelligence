@@ -2174,6 +2174,79 @@ def strategic_news_process_items_for_crawl_run(run: object) -> dict:
     }
 
 
+def main_crawl_items_for_crawl_run(run: object) -> list[dict]:
+    """Return one auditable detail record per row handled by a main crawl run."""
+    if not isinstance(run, dict) or str(run.get("trigger") or "") != "定时爬虫":
+        return []
+    curation = run.get("curation") if isinstance(run.get("curation"), dict) else {}
+    agent_run_id = str(curation.get("agent_run_id") or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", agent_run_id):
+        return []
+    artifact_path = ROOT / "curation_data" / "backups" / agent_run_id / "run_log.json"
+    try:
+        raw_items = json.loads(artifact_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    if not isinstance(raw_items, list):
+        return []
+    grouped: dict[int, list[dict]] = {}
+    for raw in raw_items:
+        if not isinstance(raw, dict):
+            continue
+        try:
+            row_number = int(raw.get("row") or 0)
+        except (TypeError, ValueError):
+            continue
+        if row_number > 0:
+            grouped.setdefault(row_number, []).append(raw)
+    items: list[dict] = []
+    for row_number, row_items in sorted(grouped.items()):
+        def fetched_successfully(item: dict) -> bool:
+            try:
+                status_code = int(item.get("http_status") or 0)
+            except (TypeError, ValueError):
+                status_code = 0
+            return 200 <= status_code < 400 and not item.get("error")
+
+        success_items = [item for item in row_items if fetched_successfully(item)]
+        failed_items = [item for item in row_items if item not in success_items]
+        titles = list(dict.fromkeys(str(item.get("title") or "").strip() for item in row_items if item.get("title")))
+        source_types = list(dict.fromkeys(str(item.get("source_type") or "").strip() for item in row_items if item.get("source_type")))
+        extracted_fields = list(dict.fromkeys(
+            field.strip()
+            for item in row_items
+            for field in str(item.get("extracted_fields") or "").split(",")
+            if field.strip()
+        ))
+        errors = list(dict.fromkeys(str(item.get("error") or item.get("skip_reason") or "").strip() for item in failed_items if item.get("error") or item.get("skip_reason")))
+        urls: list[str] = []
+        for item in row_items:
+            raw_url = str(item.get("final_url") or item.get("url") or "").strip()
+            parsed_url = urlparse(raw_url)
+            if parsed_url.scheme in {"http", "https"} and raw_url not in urls:
+                urls.append(raw_url)
+        row_statuses = {str(item.get("row_status") or "").strip() for item in row_items if item.get("row_status")}
+        status = "failed" if not success_items else "partial" if failed_items or any(value not in {"ok", "success"} for value in row_statuses) else "completed"
+        items.append(
+            {
+                "rowNumber": row_number,
+                "title": f"第 {row_number} 行 · {titles[0] if titles else '未记录页面标题'}",
+                "summary": f"实际抓取 {len(row_items)} 个URL：成功 {len(success_items)}、失败 {len(failed_items)}。",
+                "status": status,
+                "urls": urls[:30],
+                "sourceTypes": source_types,
+                "extractedFields": extracted_fields,
+                "errors": errors,
+                "methodCounts": {
+                    method: sum(1 for item in row_items if str(item.get("method") or "未记录") == method)
+                    for method in sorted({str(item.get("method") or "未记录") for item in row_items})
+                },
+                "rowStatuses": sorted(row_statuses),
+            }
+        )
+    return items
+
+
 def build_today_news_rounds(today_key: str = "") -> list[dict]:
     day = str(today_key or "").strip() or datetime.now().astimezone().strftime("%Y-%m-%d")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", day):
@@ -5150,6 +5223,13 @@ class AppHandler(BaseHTTPRequestHandler):
             if result.get("ok"):
                 result["newsItems"] = strategic_news_items_for_crawl_run(result.get("run"))
                 result.update(strategic_news_process_items_for_crawl_run(result.get("run")))
+                result["crawlItems"] = main_crawl_items_for_crawl_run(result.get("run"))
+                run = result.get("run") if isinstance(result.get("run"), dict) else {}
+                curation = run.get("curation") if isinstance(run.get("curation"), dict) else {}
+                agent_run_id = str(curation.get("agent_run_id") or "")
+                quality = load_curation_quality_records(agent_run_id) if agent_run_id else {"ok": False, "records": []}
+                result["agentReviewItems"] = quality.get("records", []) if quality.get("ok") else []
+                result["agentReviewSummary"] = quality.get("summary", {}) if quality.get("ok") else {}
             json_response(self, result, 200 if result.get("ok") else 404)
             return
         if path == "/api/curation-quality-records":

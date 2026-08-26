@@ -517,6 +517,34 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("HKBN", result["aiReviewItems"][0]["reason"])
         self.assertEqual(result["dedupeItems"][0]["duplicateOf"], "NEWS-HISTORY")
 
+    def test_main_crawl_items_expose_one_record_per_processed_row(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            artifact = root / "curation_data" / "backups" / "agent-run-1" / "run_log.json"
+            artifact.parent.mkdir(parents=True)
+            artifact.write_text(
+                json.dumps(
+                    [
+                        {"row": 2, "row_status": "ok", "title": "HKT IR", "url": "https://example.com/hkt", "http_status": 200, "method": "httpx", "source_type": "company_official", "extracted_fields": "收入,EBITDA"},
+                        {"row": 2, "row_status": "ok", "title": "HKT PDF", "url": "https://example.com/hkt.pdf", "http_status": 200, "method": "pdf", "source_type": "company_official", "extracted_fields": "净利润"},
+                        {"row": 3, "row_status": "failed", "title": "3HK", "url": "https://example.com/3hk", "http_status": "bad", "method": "httpx", "source_type": "company_official", "error": "timeout"},
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            run = {"trigger": "定时爬虫", "curation": {"agent_run_id": "agent-run-1"}}
+
+            with mock.patch.object(web_app, "ROOT", root):
+                items = web_app.main_crawl_items_for_crawl_run(run)
+
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0]["rowNumber"], 2)
+        self.assertEqual(items[0]["summary"], "实际抓取 2 个URL：成功 2、失败 0。")
+        self.assertEqual(items[0]["extractedFields"], ["收入", "EBITDA", "净利润"])
+        self.assertEqual(items[1]["status"], "failed")
+        self.assertEqual(items[1]["errors"], ["timeout"])
+
     def test_today_news_rounds_compare_morning_and_afternoon_archives(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             runs_dir = Path(tmp)
