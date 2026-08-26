@@ -139,11 +139,11 @@
         "scope": "晨间扫描（2026-08-26@09:00）",
         "label": "8月26日 09:00",
         "completedAt": "2026-08-26T10:56:19+08:00",
-        "historyDuplicates": 21,
+        "historyDuplicates": 73,
         "summary": {
           "discovered": 692,
           "confirmed": 237,
-          "newCount": 215,
+          "newCount": 164,
           "sourceCount": 104
         },
         "categories": [
@@ -224,20 +224,20 @@
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 216,
-            "removed": 21,
-            "rate": 91,
-            "note": "排除 21 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 21 条重复事件，剩余 216 条。"
+            "value": 164,
+            "removed": 73,
+            "rate": 69,
+            "note": "排除 73 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 73 条重复事件，剩余 164 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 215,
-            "removed": 1,
+            "value": 164,
+            "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 215 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 164 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },

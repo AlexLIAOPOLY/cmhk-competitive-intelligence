@@ -10,8 +10,8 @@
         "task_kind": "strategic-news",
         "run_status": "completed",
         "phase": "已完成",
-        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 692 条，AI保留 237 条，历史重复 21 条，新增 215 条。",
-        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 692 条，AI保留 237 条，历史重复 21 条，新增 215 条。",
+        "progress_detail": "完整重跑去重并人工温和复核完成；发现 692 条，AI保留 237 条，历史重复/已存在 73 条，最终新增 164 条；飞书候选表与原群消息均已回读。",
+        "status_detail": "完整重跑去重并人工温和复核完成；发现 692 条，AI保留 237 条，历史重复/已存在 73 条，最终新增 164 条；飞书候选表与原群消息均已回读。",
         "failure_stage": "",
         "heartbeat_at_hkt": "2026-08-26T10:56:19+08:00",
         "started_at_hkt": "2026-08-26T09:00:28+08:00",
@@ -24,14 +24,16 @@
           "slot": "2026-08-26@09:00",
           "discovered": 692,
           "ai_retained": 237,
-          "history_duplicates": 21,
-          "new_count": 215,
+          "history_duplicates": 73,
+          "new_count": 164,
           "readback_verified": true,
-          "notification_status": "sent",
-          "message_id": "om_x100b67d113e704acb2557479bd2373a"
+          "notification_status": "edited",
+          "message_id": "om_x100b67d113e704acb2557479bd2373a",
+          "dedupe_audit_id": "20260826T115456-4968822f",
+          "message_readback_verified": true
         }
       },
-      "lines": 599,
+      "lines": 600,
       "newsItems": [
         {
           "newsId": "NEWS-65E6617C137FB6",
