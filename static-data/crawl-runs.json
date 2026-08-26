@@ -9,11 +9,11 @@
       "phase": "失败",
       "progress_detail": "续跑财报结构化门禁失败：第17行 i-CABLE 未发现可读取的官方财报；保留旧数据等待重试。",
       "failure_stage": "local_financial_results",
-      "heartbeat_at_hkt": "2026-08-26T08:02:05+08:00",
+      "heartbeat_at_hkt": "2026-08-26T08:32:09+08:00",
       "started_at_hkt": "2026-08-26T03:00:35+08:00",
-      "completed_at_hkt": "2026-08-26T08:02:05+08:00",
+      "completed_at_hkt": "2026-08-26T08:32:09+08:00",
       "crawl_return_code": 1,
-      "duration_ms": 18090843,
+      "duration_ms": 19894176,
       "final_audit": {
         "generated_at": "2026-08-26T03:07:17.824058",
         "rows_crawled": "33",
@@ -54,7 +54,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-26T08:02:05+08:00",
+          "generated_at_hkt": "2026-08-26T08:32:09+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
