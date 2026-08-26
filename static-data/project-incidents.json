@@ -2,6 +2,31 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "74870ad96bf9c6168120838c",
+      "task_id": "incident:74870ad96bf9c6168120838c",
+      "title": "飞书频率调度器",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度器",
+      "scope": "frequency-scheduler",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "主项目常驻服务未运行",
+      "impact": "对应的爬虫、定时任务或Web能力可能停止，后续计划任务可能漏跑。",
+      "suggestions": [
+        "先读取 launchctl print gui/501/com.liaowang.cmhk-frequency-scheduler 与对应 stderr 日志。",
+        "确认没有同类任务正在执行后，再按既有 LaunchAgent 流程恢复服务。",
+        "恢复后交叉检查任务归档、/api/status 与 /api/task-runs，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-26T12:29:07+08:00",
+      "started_at_hkt": "2026-08-26T12:29:08+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:29:08+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "be59fca5a7a77b858ceef106",
       "task_id": "incident:be59fca5a7a77b858ceef106",
       "title": "主项目后台任务",
@@ -104,6 +129,30 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻AI补审队列",
       "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-26T12:02:00+08:00",
+      "started_at_hkt": "2026-08-26T12:25:37+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:25:37+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "405eacb574f0ba21742289b8",
+      "task_id": "incident:405eacb574f0ba21742289b8",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -116,8 +165,8 @@
         "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
       ],
       "occurred_at_hkt": "2026-08-26T12:02:00+08:00",
-      "started_at_hkt": "2026-08-26T12:25:37+08:00",
-      "heartbeat_at_hkt": "2026-08-26T12:25:37+08:00",
+      "started_at_hkt": "2026-08-26T12:30:38+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:30:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1257,7 +1306,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T12:06:35+08:00",
-      "heartbeat_at_hkt": "2026-08-26T12:25:37+08:00",
+      "heartbeat_at_hkt": "2026-08-26T12:30:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12107,56 +12156,6 @@
       "started_at_hkt": "2026-08-18T16:35:11+08:00",
       "heartbeat_at_hkt": "2026-08-18T21:38:52+08:00",
       "completed_at_hkt": "2026-08-18T21:39:22+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "abeba6ece99c92ae466b1aed",
-      "task_id": "incident:abeba6ece99c92ae466b1aed",
-      "title": "战略新闻定时扫描 15:00",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻定时扫描 15:00",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻定时扫描超过宽限期仍未启动",
-      "impact": "已确认事实：该时段竞对与战略新闻可能漏采。推断：若未及时处理，可能影响当日战略情报完整性，且直接补跑可能导致重复消息，需先核实历史状态。",
-      "suggestions": [
-        "检查09:00/15:00任务归档记录，确认是否已实际执行或发送，避免重复。",
-        "检查进程锁和候选队列状态，确认是否有残留锁或堆积任务阻塞调度。",
-        "检查飞书回读接口及日志，确认任务状态是否同步异常。",
-        "在确认未执行且无重复风险后，手动触发一次扫描，并验证结果是否正常入库和发送。"
-      ],
-      "occurred_at_hkt": "2026-08-18T15:15:00+08:00",
-      "started_at_hkt": "2026-08-18T15:15:06+08:00",
-      "heartbeat_at_hkt": "2026-08-18T16:34:40+08:00",
-      "completed_at_hkt": "2026-08-18T16:35:11+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "8d769bf93a52eefef31ab9fe",
-      "task_id": "incident:8d769bf93a52eefef31ab9fe",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-18T14:39:12+08:00",
-      "started_at_hkt": "2026-08-18T14:39:12+08:00",
-      "heartbeat_at_hkt": "2026-08-18T14:39:12+08:00",
-      "completed_at_hkt": "2026-08-18T16:09:26+08:00",
       "handled_at_hkt": ""
     }
   ],
