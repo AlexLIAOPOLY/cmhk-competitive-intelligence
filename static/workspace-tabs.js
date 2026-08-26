@@ -1306,20 +1306,24 @@
       const firstObserved = Number(sourceStats.first_observation || 0);
       const retrieved = Number(sourceStats.retrieved || 0);
       const failed = Number(sourceStats.failed || 0);
+      const sourceUnchanged = Math.max(0, retrieved - sourceChanged - firstObserved);
+      const databaseChanged = Boolean(refreshDomain.database_changed);
       return {
         key: `database-${key}`,
         label: domain.title || fallbackLabel,
         value: intelligenceRun.crawl_run_id ? number(uiItemCount) : "—",
-        unit: intelligenceRun.crawl_run_id ? "项更新到UI" : "",
-        note: intelligenceRun.crawl_run_id ? `数据库入库 ${number(factCount)} 条 · UI发布 ${number(uiItemCount)} 项` : "当天未留下四库刷新归档",
+        unit: intelligenceRun.crawl_run_id ? "项发布到UI" : "",
+        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 非数据变化数` : "当天未留下四库刷新归档",
         health: intelligenceHealth,
         variant,
         compact: true,
         position,
         details: intelligenceRun.crawl_run_id ? [
-          `当天实际更新到UI ${number(uiItemCount)} 项；对应数据库入库事实 ${number(factCount)} 条`,
+          `当天重新发布到UI ${number(uiItemCount)} 项；这是发布对象总数，不代表 ${number(uiItemCount)} 项数值发生变化`,
+          `数据库事实快照 ${number(factCount)} 条；本库数据库版本${databaseChanged ? "有变化" : "未变化"}`,
           `官方来源检查 ${number(Number(sourceStats.official_urls || 0))} 条：成功 ${number(retrieved)} 条、失败 ${number(failed)} 条`,
-          `来源内容变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条；来源变化不等同于字段改值`,
+          `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`,
+          "来源页面变化不等同于数据库字段改值；当前归档未保存UI对象逐字段前后值，页面不虚构逐项变化数",
           `运行 ${intelligenceRun.crawl_run_id} · 完成 ${runCompletionText(intelligenceRun)}`,
         ] : ["所选日期没有该数据库的刷新记录"],
         evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
@@ -1335,6 +1339,16 @@
         0
       )
       : databaseFactCount;
+    const sourceRetrieved = Number(sourceAudit.retrieved || 0);
+    const sourceChanged = Number(sourceAudit.content_changed || 0);
+    const sourceFirstObserved = Number(sourceAudit.first_observation || 0);
+    const sourceUnchanged = Math.max(0, sourceRetrieved - sourceChanged - sourceFirstObserved);
+    const changedDatabaseCount = Array.isArray(refreshState.change_summary?.database_changed_domains)
+      ? refreshState.change_summary.database_changed_domains.length
+      : ["local", "international", "cloud", "mainland"].filter((key) => refreshState.domains?.[key]?.database_changed).length;
+    const modelAnalysis = intelligenceRun.operational_summary?.model_analysis || {};
+    const insightCount = Number(modelAnalysis.focuses_passed || 0);
+    const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
     const mainValue = mainRun.crawl_run_id ? number(mainRowsProcessed) : "—";
@@ -1362,18 +1376,18 @@
       { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
-      { key: "main", label: "03:00 固定源主爬", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "官方原文复核 / 入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条入库信息" : "", note: intelligenceRun.crawl_run_id ? `写入四库数据库 · 来源变化 ${number(sourceAudit.content_changed || 0)} 条` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库的审核事实 ${number(refreshFactCount)} 条`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceAudit.retrieved || 0)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `来源内容变化 ${number(sourceAudit.content_changed || 0)} 条、首次采样 ${number(sourceAudit.first_observation || 0)} 条`, "点开下方逐条明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "database-hub", label: "官方原文复核 / 数据库入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `事实快照 · 非字段变化数 · ${number(changedDatabaseCount)} 库版本有变化` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；不是 ${number(refreshFactCount)} 条字段都发生变化`, `四个可见库中 ${number(changedDatabaseCount)} 个数据库版本有变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`, "来源页面变化不等同于数据库字段改值；当前只归档到库级版本变化，未归档逐字段差异", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [630, 440], "database-local"),
       domainNode("international", "国际运营商", [812, 440], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 578], "database-cloud"),
       domainNode("mainland", "内地运营商", [812, 578], "database-mainland"),
-      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0) : "—", unit: intelligenceRun.crawl_run_id ? "项洞察" : "", note: intelligenceRun.operational_summary?.pages_publish?.ok ? "主页 · 公开页已发布" : intelligenceRun.crawl_run_id ? "洞察已生成 · 发布待核对" : "当天未运行", health: intelligenceRun.operational_summary?.model_analysis?.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 473], details: intelligenceRun.crawl_run_id ? [`洞察通过 ${number(intelligenceRun.operational_summary?.model_analysis?.focuses_passed || 0)} / ${expectedInsightCount} 项`, `模型 ${intelligenceRun.operational_summary?.model_analysis?.model || "未记录"}`, `证据指纹 ${intelligenceRun.operational_summary?.model_analysis?.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
+      { key: "insights", label: "AI洞察与业务应用", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: intelligenceRun.crawl_run_id ? "项AI洞察" : "", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1112, 473], details: intelligenceRun.crawl_run_id ? [`AI洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；本轮${insightGenerationLabel}`, "洞察生成数与数据库事实数、UI发布对象数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
-      ["main", "agent", "", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["news-db-signal", "database-hub", "03:00追官方原文", "amber"], ["agent", "database-hub", "", "cyan"],
+      ["main", "agent", "提交证据审核", "cyan"], ["main", "news-search", "页面变化线索", "amber"], ["news-db-signal", "database-hub", "03:00追官方原文", "amber"], ["agent", "database-hub", "审核事实写库", "cyan"],
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
     ];
@@ -1385,9 +1399,9 @@
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库资料补缺线", position: [18, 230] },
-        { label: "C｜固定官方源更新线", position: [18, 438] },
+        { label: "C｜固定官方源复核、入库与UI发布线", position: [18, 438] },
       ],
-      groups: [{ key: "databases", label: "四库更新", position: [610, 408], size: [380, 294] }],
+      groups: [{ key: "databases", label: "四库UI发布", position: [610, 408], size: [380, 294] }],
     };
   }
 
@@ -1634,8 +1648,8 @@
       summary: item.analysis || item.detail || "",
       source: item.source_url || "",
       status: "updated",
-      resultLabel: "已更新到UI",
-      reason: `已发布到${domain.title || domain.id || "四库"}前端数据区，页面显示 ${item.value ?? "—"}${item.unit || ""}${item.period ? `（${item.period}）` : ""}。`,
+      resultLabel: "已发布到UI",
+      reason: `已重新发布到${domain.title || domain.id || "四库"}前端数据区，页面显示 ${item.value ?? "—"}${item.unit || ""}${item.period ? `（${item.period}）` : ""}。这是发布确认记录，不是该对象数值发生变化的证明。`,
       extra: [
         `所属UI库：${domain.title || domain.id || "未记录"}`,
         `页面主值：${item.value ?? "—"}${item.unit || ""}${item.period ? ` · ${item.period}` : ""}`,
@@ -1699,11 +1713,11 @@
     const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
     const databaseHubNode = nodeKey === "database-hub";
     const databaseUiNode = !databaseHubNode && nodeKey.startsWith("database-");
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseHubNode ? `逐条入库 ${records.length} 条` : databaseUiNode ? `UI更新 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseHubNode ? `数据库事实 ${records.length} 条` : databaseUiNode ? `UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = databaseHubNode ? "当天数据库入库明细" : databaseUiNode ? "当天UI更新明细" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = databaseHubNode ? "当天数据库事实快照（非变化条数）" : databaseUiNode ? "当天UI发布对象（非数据变化数）" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>${detailTitle}</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
       const status = String(record.status || "processed").toLowerCase();
       const title = record.aiTitle || record.sourceTitle || record.title || "未命名处理对象";
