@@ -9,7 +9,7 @@
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
-    memberPage: 1, memberPageSize: 6, auditPage: 1, auditPageSize: 10,
+    memberPage: 1, memberPageSize: 7, auditPage: 1, auditPageSize: 10,
     auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
