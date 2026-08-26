@@ -70,6 +70,8 @@ FOCUS_RELATION_FEW_SHOTS = (
 MAX_FOCUS_INSIGHT_CHARS = 120
 MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
+DEFAULT_EXECUTIVE_AI_MODEL = "DeepSeek-V4-Pro"
+EXECUTIVE_AI_FALLBACK_MODELS = ("GLM", "Qwen3-30B-A3B-Instruct-2507")
 DOMAIN_LABELS = {
     "local": "本地运营商",
     "international": "国际运营商",
@@ -107,6 +109,15 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
     ("cloud", "Oracle Cloud", ("Oracle Cloud",), ("https://investor.oracle.com/financials/",)),
 )
 FACT_DOMAIN_IDS = (*UI_DOMAIN_IDS, *SUPPORTING_DOMAIN_IDS)
+
+
+def _executive_model_route() -> list[str]:
+    """Keep four-database judgements on V4 Pro unless operations explicitly override it."""
+    primary = (
+        os.environ.get("CMHK_EXECUTIVE_AI_MODEL", "").strip()
+        or DEFAULT_EXECUTIVE_AI_MODEL
+    )
+    return list(dict.fromkeys([primary, *EXECUTIVE_AI_FALLBACK_MODELS]))
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
@@ -2764,8 +2775,7 @@ def generate_model_focus_insight(
             + json.dumps(compact_focus, ensure_ascii=False),
         },
     ]
-    model = str(config.get("model") or "deepseek-v4")
-    base_models = list(dict.fromkeys([model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    base_models = _executive_model_route()
     has_safe_outage_fallback = scale_has_record_counts or (domain_id, focus_id) in {
         ("macro", "service"),
         ("international", "growth"),
@@ -3165,7 +3175,7 @@ def generate_model_domain_summaries(
     ]
     body = prepare_structured_chat_body({
         **dict(config.get("extra_parameters") or {}),
-        "model": str(config.get("model") or "deepseek-v4"),
+        "model": _executive_model_route()[0],
         "messages": messages,
         "temperature": temperature,
         "max_tokens": 16000,
@@ -3367,8 +3377,7 @@ def generate_model_domain_summaries(
                     ]
                     focus_candidate: dict[str, Any] | None = None
                     focus_error: Exception | None = None
-                    configured_model = str(body["model"])
-                    focus_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+                    focus_models = _executive_model_route()
                     for focus_attempt, focus_model in enumerate(focus_models):
                         request = urllib.request.Request(
                             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
@@ -3577,7 +3586,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     ]
     body = prepare_structured_chat_body({
         **dict(config.get("extra_parameters") or {}),
-        "model": str(config.get("model") or "deepseek-v4"),
+        "model": _executive_model_route()[0],
         "messages": messages,
         "temperature": 0.0,
         # Four compact discoveries still need enough room for compatible
@@ -3586,9 +3595,8 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     })
     discoveries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
-    configured_model = str(body["model"])
-    discovery_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
-    used_model = configured_model
+    discovery_models = _executive_model_route()
+    used_model = discovery_models[0]
     for attempt, discovery_model in enumerate(discovery_models):
         body["model"] = discovery_model
         body["messages"] = messages
@@ -3710,8 +3718,7 @@ def regenerate_model_discovery(
             "content": json.dumps({"from": source_domain, "to": target_domain, **scoped_evidence}, ensure_ascii=False),
         },
     ]
-    configured_model = str(config.get("model") or "deepseek-v4")
-    base_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+    base_models = _executive_model_route()
     models = [*base_models, *base_models]
     last_error: Exception | None = None
     replacement: dict[str, Any] | None = None

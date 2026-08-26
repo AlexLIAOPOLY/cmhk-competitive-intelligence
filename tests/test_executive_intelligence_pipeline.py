@@ -90,11 +90,15 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn('(\"导致\", \"造成\", \"推动\", \"带来\", \"源于\", \"驱动\")', source)
         self.assertIn('validated_focus["headline"] = str(evidence_focus.get("headline")', source)
 
-    def test_manual_discovery_regeneration_prefers_qwen(self):
+    def test_four_database_model_route_prefers_v4_pro(self):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
-        self.assertIn(
-            'models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
+        self.assertEqual(
+            pipeline._executive_model_route(),
+            ["DeepSeek-V4-Pro", "GLM", "Qwen3-30B-A3B-Instruct-2507"],
+        )
+        self.assertNotIn(
+            'list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
             source,
         )
         self.assertIn('detail必须包含“表明、反映、说明”三者之一且只用一个即可', source)
@@ -157,7 +161,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
         requests = [call.args[0] for call in request.call_args_list]
         bodies = [json.loads(item.data.decode("utf-8")) for item in requests]
-        self.assertEqual([body["model"] for body in bodies], ["Qwen3-30B-A3B-Instruct-2507", "GLM"])
+        self.assertEqual([body["model"] for body in bodies], ["DeepSeek-V4-Pro", "GLM"])
         request_ids = [item.get_header("X-request-id") for item in requests]
         self.assertNotEqual(request_ids[0], request_ids[1])
         self.assertIn(request_ids[0], bodies[0]["messages"][-1]["content"])
@@ -439,7 +443,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
-        self.assertEqual(result["model"], "deepseek-v4")
+        self.assertEqual(result["model"], "DeepSeek-V4-Pro")
         self.assertTrue(result["focus"]["repaired"])
         self.assertEqual(result["focus"]["headline"], "数量不代表吸引力")
         self.assertIn("去重后在售产品84个", result["focus"]["analysis"])
@@ -1902,6 +1906,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "GLM")
         self.assertEqual(len(result["discoveries"]), 4)
         self.assertEqual(open_url.call_count, 2)
+        request_models = [
+            json.loads(call.args[0].data.decode("utf-8"))["model"]
+            for call in open_url.call_args_list
+        ]
+        self.assertEqual(request_models, ["DeepSeek-V4-Pro", "GLM"])
 
     def test_discovery_generation_repairs_overlong_card_copy_before_gate(self):
         evidence = {
