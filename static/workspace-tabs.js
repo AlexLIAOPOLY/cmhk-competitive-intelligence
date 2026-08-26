@@ -1237,6 +1237,11 @@
     };
   }
 
+  function executiveDomainFactsForDate(domain, date) {
+    if (!domain || !String(domain.ai_updated_at || "").startsWith(date)) return [];
+    return Array.isArray(domain.ai_analysis) ? domain.ai_analysis : [];
+  }
+
   function globalSchedulerLineageModel(runs, stages) {
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
@@ -1247,13 +1252,16 @@
       run.task_kind === "four-database-source-discovery"
       && newsRunDate(run) === selectedDate
     )) || {};
-    const intelligenceRun = state.crawlRuns.find((run) => (
+    const matchingIntelligenceRuns = state.crawlRuns.filter((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
         newsRunDate(run) === selectedDate
         || (mainRun.crawl_run_id && linkedParentRunId(run) === mainRun.crawl_run_id)
       )
-    )) || {};
+    ));
+    const intelligenceRun = matchingIntelligenceRuns.find((run) => (
+      run.completed_at_hkt && run.operational_summary?.model_analysis
+    )) || matchingIntelligenceRuns[0] || {};
     const runHealth = (run) => {
       if (!run || !Object.keys(run).length) return { key: "unknown", label: "无记录" };
       const status = String(run.run_status || run.status || "").toLowerCase();
@@ -1281,26 +1289,52 @@
       || state.executiveIntelligence?.ui_contract?.focuses_expected
       || 15
     );
+    const sourceAudit = intelligenceRun.operational_summary?.overview_source_recrawl || {};
+    const refreshState = state.executiveIntelligence?.refresh || {};
+    const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(selectedDate);
     const domainNode = (key, fallbackLabel, position, variant) => {
       const domain = domains.get(key) || {};
+      const sourceStats = sourceAudit.domains?.[key] || {};
+      const refreshDomain = refreshMatchesDate ? refreshState.domains?.[key] || {} : {};
+      const archivedFacts = executiveDomainFactsForDate(domain, selectedDate);
+      const factCount = Number(refreshDomain.agent_fact_update?.facts ?? archivedFacts.length ?? 0);
+      const sourceChanged = Number(sourceStats.content_changed || 0);
+      const firstObserved = Number(sourceStats.first_observation || 0);
+      const retrieved = Number(sourceStats.retrieved || 0);
+      const failed = Number(sourceStats.failed || 0);
       return {
         key: `database-${key}`,
         label: domain.title || fallbackLabel,
-        value: intelligenceRun.crawl_run_id ? "已更新" : "—",
-        unit: "",
-        note: intelligenceRun.crawl_run_id ? `完成 ${runCompletionText(intelligenceRun)}` : "当天未留下四库刷新归档",
+        value: intelligenceRun.crawl_run_id ? number(factCount) : "—",
+        unit: intelligenceRun.crawl_run_id ? "条入库信息" : "",
+        note: intelligenceRun.crawl_run_id ? `来源变化 ${number(sourceChanged)} · 首采 ${number(firstObserved)} · 失败 ${number(failed)}` : "当天未留下四库刷新归档",
         health: intelligenceHealth,
         variant,
         compact: true,
         position,
-        details: intelligenceRun.crawl_run_id ? [`运行 ${intelligenceRun.crawl_run_id}`, `状态 ${intelligenceRun.run_status || "未记录"}`, `完成 ${runCompletionText(intelligenceRun)}`] : ["所选日期没有该数据库的刷新记录"],
+        details: intelligenceRun.crawl_run_id ? [
+          `实际入库审核事实 ${number(factCount)} 条`,
+          `官方来源检查 ${number(Number(sourceStats.official_urls || 0))} 条：成功 ${number(retrieved)} 条、失败 ${number(failed)} 条`,
+          `来源内容变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条；来源变化不等同于字段改值`,
+          `运行 ${intelligenceRun.crawl_run_id} · 完成 ${runCompletionText(intelligenceRun)}`,
+        ] : ["所选日期没有该数据库的刷新记录"],
         evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
       };
     };
+    const databaseFactCount = [...domains.values()].reduce(
+      (sum, domain) => sum + executiveDomainFactsForDate(domain, selectedDate).length,
+      0
+    );
+    const refreshFactCount = refreshMatchesDate
+      ? ["local", "international", "cloud", "mainland"].reduce(
+        (sum, key) => sum + Number(refreshState.domains?.[key]?.agent_fact_update?.facts || 0),
+        0
+      )
+      : databaseFactCount;
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
-    const mainValue = mainRowsProcessed ? number(mainRowsProcessed) : mainRun.run_status === "failed" ? "已中断" : mainRun.run_status === "running" ? "运行中" : "—";
-    const mainUnit = mainRowsProcessed ? "行实际处理" : "";
+    const mainValue = mainRun.crawl_run_id ? number(mainRowsProcessed) : "—";
+    const mainUnit = mainRun.crawl_run_id ? "行实际处理" : "";
     const mainCrossedDate = mainRun.crawl_run_id && newsRunDate(mainRun) !== selectedDate;
     const mainDetails = mainRun.crawl_run_id ? [
       `运行 ${mainRun.crawl_run_id}`,
@@ -1326,7 +1360,7 @@
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源主爬", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成" : mainRun.run_status === "completed" ? "完成" : "最后记录"} ${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条发布", note: mainRun.curation?.agent_run_id ? `Agent run ${mainRun.curation.agent_run_id}` : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "官方原文复核 / 入库", value: "4", unit: "个库", note: "字段门禁全过且值变化才写入", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: ["合并03:00固定官方入口与01:00资料补缺线索", "01:00线索必须回到公司 IR、财报或监管披露原文", "核对主体、字段、期间、单位、来源和内容哈希", "解析失败、只有页面变化或没有值变化，都不得声明数据库更新"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "database-hub", label: "官方原文复核 / 入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条入库信息" : "", note: intelligenceRun.crawl_run_id ? `四库合计 · 来源变化 ${number(sourceAudit.content_changed || 0)} 条` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: intelligenceRun.crawl_run_id ? [`当天四库实际入库审核事实 ${number(refreshFactCount)} 条`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceAudit.retrieved || 0)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `来源内容变化 ${number(sourceAudit.content_changed || 0)} 条、首次采样 ${number(sourceAudit.first_observation || 0)} 条`, "点开下方逐条明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [630, 440], "database-local"),
       domainNode("international", "国际运营商", [812, 440], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 578], "database-cloud"),
@@ -1574,30 +1608,29 @@
   function executiveNodeRecords(nodeKey) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
+    const factRecord = (domain, item) => ({
+      title: `${item.company || domain.title || "未分类"} · ${item.metric || "审核事实"}`,
+      summary: item.analysis || item.basis || "",
+      source: item.source_url || "",
+      status: "updated",
+      resultLabel: "已入库",
+      reason: item.basis || item.analysis || "本轮归档没有保存处理依据。",
+      extra: [
+        `所属库：${domain.title || domain.id || "未记录"}`,
+        `证据层级：${item.source_tier || "未记录"}`,
+        `质量分：${item.quality_score ?? "—"}`,
+        `置信度：${item.confidence ?? "—"}`,
+        `行引用：${item.row_ref || "未记录"}`,
+        `证据哈希：${item.evidence_hash || "未记录"}`,
+      ].join("\n"),
+      publishedAt: domain.ai_updated_at || "",
+    });
     if (nodeKey === "database-hub") {
-      return domains.flatMap((domain) => String(domain.data_time || "").includes(state.newsSelectedDate) ? [{
-        title: domain.title || domain.id || "未命名数据库",
-        summary: domain.context || domain.insight || "",
-        status: "updated",
-        resultLabel: "已分流更新",
-        reason: `${(domain.entities || []).length} 个对象·${(domain.sources || []).length} 个来源·${(domain.focuses || []).length} 组分析`,
-        extra: (domain.sources || []).map((item) => `${item.label || "来源"}：${item.url || "未记录地址"}`).join("\n"),
-        publishedAt: domain.data_time || "",
-      }] : []);
+      return domains.flatMap((domain) => executiveDomainFactsForDate(domain, state.newsSelectedDate).map((item) => factRecord(domain, item)));
     }
     if (nodeKey.startsWith("database-")) {
       const domain = domains.find((item) => item.id === domainKey);
-      if (!domain || !String(domain.data_time || "").includes(state.newsSelectedDate)) return [];
-      return (domain.entities || []).map((entity) => ({
-        title: entity.name || "未命名数据对象",
-        summary: entity.analysis || entity.detail || "",
-        source: entity.source_url || "",
-        status: "updated",
-        resultLabel: "已更新",
-        reason: entity.analysis || "已按当天数据库刷新结果入库。",
-        extra: (entity.components || []).map((item) => `${item.label || "明细"}：${item.value ?? "—"}${item.unit || ""}`).join("\n"),
-        publishedAt: domain.data_time || "",
-      }));
+      return executiveDomainFactsForDate(domain, state.newsSelectedDate).map((item) => factRecord(domain, item));
     }
     if (nodeKey === "insights") {
       const insightRecords = domains.flatMap((domain) => {
@@ -1643,11 +1676,12 @@
     if (!records.length) return "";
     const included = records.filter((item) => ["included", "kept", "updated"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === true).length;
     const excluded = records.filter((item) => ["excluded", "duplicate"].includes(String(item.status || "").toLowerCase()) || item.shouldInclude === false).length;
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : `逐条记录 ${records.length} 条`;
+    const databaseNode = nodeKey === "database-hub" || nodeKey.startsWith("database-");
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : databaseNode ? `逐条入库 ${records.length} 条` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>当天处理对象明细</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
+    return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>${databaseNode ? "当天入库信息明细" : "当天处理对象明细"}</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
       const status = String(record.status || "processed").toLowerCase();
       const title = record.aiTitle || record.sourceTitle || record.title || "未命名处理对象";
       const sourceUrl = record.url || (String(record.source || "").startsWith("http") ? record.source : "");
