@@ -137,7 +137,12 @@ class AuthService:
         self.app_id = (os.environ.get("CMHK_FEISHU_APP_ID") or os.environ.get("FEISHU_APP_ID") or "").strip()
         self.app_secret = (os.environ.get("CMHK_FEISHU_APP_SECRET") or os.environ.get("FEISHU_APP_SECRET") or "").strip()
         self.tenant_key = (os.environ.get("CMHK_FEISHU_TENANT_KEY") or os.environ.get("FEISHU_TENANT_KEY") or "").strip()
-        self.redirect_uri = (os.environ.get("CMHK_FEISHU_REDIRECT_URI") or "").strip()
+        self.redirect_uri = (
+            os.environ.get("CMHK_FEISHU_REDIRECT_URI")
+            or os.environ.get("FEISHU_REDIRECT_URI")
+            or ""
+        ).strip()
+        self.trust_proxy_headers = os.environ.get("CMHK_AUTH_TRUST_PROXY_HEADERS", "0") == "1"
         self.email_domain = (os.environ.get("CMHK_AUTH_EMAIL_DOMAIN") or "hk.chinamobile.com").strip().lower().lstrip("@")
         self.allowed_origins = {
             item.strip() for item in os.environ.get("CMHK_AUTH_ALLOWED_ORIGINS", "").split(",") if item.strip()
@@ -269,12 +274,36 @@ class AuthService:
             parts.append("Secure")
         return "; ".join(parts)
 
+    @staticmethod
+    def _loopback_hostname(value: str) -> bool:
+        try:
+            hostname = urlparse(value if "://" in value else f"//{value}").hostname
+        except ValueError:
+            return False
+        return str(hostname or "").lower() in {"127.0.0.1", "localhost", "::1"}
+
     def _origin(self, handler) -> str:
-        proto = handler.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip() or "http"
-        return f"{proto}://{handler.headers.get('Host', '127.0.0.1:8765')}"
+        forwarded_proto = handler.headers.get("X-Forwarded-Proto", "").split(",", 1)[0].strip().lower()
+        proto = forwarded_proto if forwarded_proto in {"http", "https"} else "http"
+        host = str(handler.headers.get("Host") or "127.0.0.1:8765").split(",", 1)[0].strip()
+        if self.trust_proxy_headers:
+            forwarded_host = str(handler.headers.get("X-Forwarded-Host") or "").split(",", 1)[0].strip()
+            if forwarded_host:
+                host = forwarded_host
+        if not host or any(character in host for character in "\r\n/\\"):
+            host = "127.0.0.1:8765"
+        return f"{proto}://{host}"
 
     def _callback_uri(self, handler) -> str:
-        return self.redirect_uri or self._origin(handler) + "/api/auth/feishu/callback"
+        request_callback = self._origin(handler) + "/api/auth/feishu/callback"
+        if not self.redirect_uri:
+            return request_callback
+        # A copied workstation configuration must never send an intranet/server
+        # login back to localhost. Keep the explicit loopback URI only when the
+        # browser is itself accessing the service through a loopback host.
+        if self._loopback_hostname(self.redirect_uri) and not self._loopback_hostname(self._origin(handler)):
+            return request_callback
+        return self.redirect_uri
 
     def _same_origin(self, handler) -> bool:
         origin = handler.headers.get("Origin", "").strip()

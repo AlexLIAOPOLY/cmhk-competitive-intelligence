@@ -13,9 +13,9 @@ from cmhk.auth.service import AuthService, MODULE_LABELS, ROLE_MODULES
 
 
 class FakeHandler:
-    def __init__(self, *, body=None, cookie="", origin="http://127.0.0.1:8765", client="127.0.0.1"):
+    def __init__(self, *, body=None, cookie="", origin="http://127.0.0.1:8765", client="127.0.0.1", host="127.0.0.1:8765"):
         self.headers = Message()
-        self.headers["Host"] = "127.0.0.1:8765"
+        self.headers["Host"] = host
         if cookie:
             self.headers["Cookie"] = cookie
         if origin:
@@ -54,6 +54,9 @@ class AuthServiceTest(unittest.TestCase):
             "CMHK_AUTH_ENV_FILE": "",
             "CMHK_FEISHU_APP_ID": "",
             "CMHK_FEISHU_APP_SECRET": "",
+            "CMHK_FEISHU_REDIRECT_URI": "",
+            "FEISHU_REDIRECT_URI": "",
+            "CMHK_AUTH_TRUST_PROXY_HEADERS": "0",
         }, clear=False)
         self.env.start()
         self.service = AuthService(Path(self.temp.name))
@@ -253,6 +256,49 @@ class AuthServiceTest(unittest.TestCase):
         state, cookie = self.service._oauth_state("/#workspace=dashboard")
         self.assertEqual(self.service._verify_oauth_state(cookie, state)["next"], "/#workspace=dashboard")
         self.assertIsNone(self.service._verify_oauth_state(cookie + "x", state))
+
+    def test_callback_uri_follows_local_and_intranet_request_hosts(self):
+        local = FakeHandler(origin="")
+        self.assertEqual(
+            self.service._callback_uri(local),
+            "http://127.0.0.1:8765/api/auth/feishu/callback",
+        )
+        intranet = FakeHandler(origin="", client="10.20.30.40", host="cmhk-intelligence.internal:8765")
+        self.assertEqual(
+            self.service._callback_uri(intranet),
+            "http://cmhk-intelligence.internal:8765/api/auth/feishu/callback",
+        )
+
+    def test_external_request_never_inherits_a_loopback_redirect_uri(self):
+        with patch.dict(os.environ, {"CMHK_FEISHU_REDIRECT_URI": "http://127.0.0.1:8765/api/auth/feishu/callback"}):
+            service = AuthService(Path(self.temp.name) / "stale-loopback")
+        local = FakeHandler(origin="")
+        self.assertEqual(service._callback_uri(local), "http://127.0.0.1:8765/api/auth/feishu/callback")
+        intranet = FakeHandler(origin="", client="10.20.30.40", host="10.20.30.10:8765")
+        self.assertEqual(service._callback_uri(intranet), "http://10.20.30.10:8765/api/auth/feishu/callback")
+
+    def test_explicit_server_redirect_uri_is_stable_for_local_health_access(self):
+        callback = "https://cmhk-intelligence.internal/api/auth/feishu/callback"
+        with patch.dict(os.environ, {"CMHK_FEISHU_REDIRECT_URI": callback}):
+            service = AuthService(Path(self.temp.name) / "fixed-server")
+        self.assertEqual(service._callback_uri(FakeHandler(origin="")), callback)
+
+    def test_shared_feishu_redirect_environment_name_is_supported(self):
+        callback = "https://cmhk-intelligence.internal/api/auth/feishu/callback"
+        with patch.dict(os.environ, {"CMHK_FEISHU_REDIRECT_URI": "", "FEISHU_REDIRECT_URI": callback}):
+            service = AuthService(Path(self.temp.name) / "shared-feishu-env")
+        self.assertEqual(service._callback_uri(FakeHandler(origin="")), callback)
+
+    def test_trusted_reverse_proxy_can_supply_external_host(self):
+        with patch.dict(os.environ, {"CMHK_AUTH_TRUST_PROXY_HEADERS": "1"}):
+            service = AuthService(Path(self.temp.name) / "trusted-proxy")
+        proxied = FakeHandler(origin="", host="127.0.0.1:8765")
+        proxied.headers["X-Forwarded-Proto"] = "https"
+        proxied.headers["X-Forwarded-Host"] = "cmhk-intelligence.internal"
+        self.assertEqual(
+            service._callback_uri(proxied),
+            "https://cmhk-intelligence.internal/api/auth/feishu/callback",
+        )
 
     def test_oauth_start_is_rate_limited_per_client(self):
         handler = FakeHandler(origin="")

@@ -52,8 +52,6 @@
     <string>1</string>
     <key>CMHK_AUTH_ENV_FILE</key>
     <string>/Users/liaowang/Desktop/揭榜挂帅需求/高华军/demo/.env.feishu.local</string>
-    <key>CMHK_FEISHU_REDIRECT_URI</key>
-    <string>http://127.0.0.1:8765/api/auth/feishu/callback</string>
     <key>TTS_BACKEND</key>
     <string>internal</string>
     <key>INTERNAL_TTS_MODEL</key>
