@@ -1,4 +1,174 @@
 {
+  "20260826_140005_050700": [
+    {
+      "newsId": "NEWS-CA1E14EC345C06",
+      "title": "Airtel Kenya澄清小时数据套餐为何数分钟内耗尽",
+      "summary": "Airtel Kenya回应客户疑问，解释小时数据套餐为何会在数分钟内快速耗尽。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "Tuko News on MSN",
+      "publishedAt": "2026-08-26T06:50:40+08:00",
+      "url": "https://www.msn.com/en-xl/africa/kenya/airtel-kenya-clarifies-why-hourly-data-can-get-depleted-in-minutes/ar-AA2aVZ7B",
+      "inclusionReason": "Airtel Kenya回应客户对小时数据套餐快速耗尽的疑问，属竞对产品与客户服务动态。",
+      "businessImpact": "客户与渠道"
+    },
+    {
+      "newsId": "NEWS-9BE8CDF2049D50",
+      "title": "联想拯救者Y700无极5G平板开卖，5499元人民币起",
+      "summary": "联想拯救者Y700无极5G旗舰小尺寸平板开卖，起售价5499元人民币，并提及香港用户可能关注的配置。",
+      "category": "市场/产品类",
+      "region": "国际/行业",
+      "source": "MobileMagazine",
+      "publishedAt": "2026-08-26T11:06:17+08:00",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBDNHRUQUw5UkpvZWF6MGlGTmNoV29UU1doa01feWlCSVlDbEdKeXV5d3VQN250YXQ0YWpkaE1IWm5WY3B3SkNmU2ZLMnFGTzN6ZHNjc3FMUlg3dWtBTnRWWXJtMktsMFAzdzItUm1fMTZYMTRZYk40?oc=5",
+      "inclusionReason": "联想5G平板新品开卖并公布售价，属5G终端产品与定价变化，可观察5G设备市场需求。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-B4419D722F68EF",
+      "title": "台军汉光演习中美军顾问角色公开化引发关注",
+      "summary": "台湾军方在年度汉光演习中公开承认美军顾问协助训练部队，美台军事合作趋于公开化。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "Insider",
+      "publishedAt": "2026-08-26T06:42:00+08:00",
+      "url": "https://www.businessinsider.com/us-quietly-help-taiwan-train-fight-china-han-kuang-2026-8",
+      "inclusionReason": "美台军事合作公开化涉及台海地缘政治紧张，可能影响区域供应链、投资环境与电信运营商的跨境业务连续性。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-00C806147A365C",
+      "title": "美伊冲突持续：印度等石油公司规避伊朗黑名单船舶，油价波动",
+      "summary": "美伊冲突最新进展显示中东局势在降级与持续对抗间摇摆，至少三家印度石油公司避免使用伊朗黑名单船舶。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "The Times of India",
+      "publishedAt": "2026-08-26T06:35:00+08:00",
+      "url": "https://timesofindia.indiatimes.com/world/middle-east/us-iran-war-news-live-updates-donald-trump-warning-strait-of-hormuz-mines-cleared-middle-east-conflict-barron-trump-tehran-latest-news/liveblog/133527138.cms",
+      "inclusionReason": "中东冲突影响全球石油供应与航运安全，油价波动可能推高电信运营商能源成本与供应链不确定性。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-74D2FC08531A79",
+      "title": "伊朗与阿曼探讨临时霍尔木兹海峡走廊，油价跌破87美元",
+      "summary": "伊朗与阿曼探讨建立临时航运走廊以缓解霍尔木兹海峡紧张局势，特朗普称海峡水雷已清除，油价延续跌势。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "CNBCTV18",
+      "publishedAt": "2026-08-26T06:39:00+08:00",
+      "url": "https://www.cnbctv18.com/world/us-iran-war-live-updates-iran-oman-discuss-temporary-hormuz-corridor-crude-donald-trump-liveblog-19976630.htm",
+      "inclusionReason": "霍尔木兹海峡航运安全直接影响全球石油供应与价格，油价变化将影响电信运营商能源成本与运营支出。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-19B376175D047F",
+      "title": "Jio与Airtel纯语音年度套餐对比",
+      "summary": "Jio和Airtel分别推出1748卢比和1849卢比的纯语音长周期预付费套餐，不含数据流量，适合仅需通话和短信的用户。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "दैनिक जागरण",
+      "publishedAt": "2026-08-26T06:35:00+08:00",
+      "url": "https://www.jagran.com/technology/tech-guide-jio-rs-1748-vs-airtel-rs-1849-longterm-voice-only-prepaid-plans-compared-40352263.html",
+      "inclusionReason": "Airtel推出纯语音年度套餐，属于竞对产品资费策略变化，可用于对标分析。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-747FDA5B5D9900",
+      "title": "中国移动上半年营利双降，AI业务增长停滞",
+      "summary": "2026年上半年中国移动营收利润双降，通信服务收入收缩，个人与政企市场ARPU下滑，AI与算力业务增量有限难以对冲传统业务萎缩。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "OFweek通信网",
+      "publishedAt": "2026-08-26T07:01:00+08:00",
+      "url": "https://tele.ofweek.com/2026-08/ART-8320501-12003-30700116.html",
+      "inclusionReason": "中国移动作为行业龙头出现营利双降、传统通信收缩和AI增长停滞，反映行业整体需求与转型压力，可作为市场趋势参考。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-C2CAC1316DB4B0",
+      "title": "人民日报深圳人民眼：前海从先行到真行",
+      "summary": "人民日报刊发深圳前海专题报道，聚焦前海从先行先试到取得实质成效的发展历程。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "人民网",
+      "publishedAt": "2026-08-26T11:15:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1sbmV1XzJoYXBNVmdyR0NUNXhGWVQ0MEZfa09DdjVubXdSS05udXZ4VmlubkdleHk4NFdYVU1WRGxYNnBlX0N4S3pINk4wdG9hNHZLVWdjQU5UUUZzcU9TalAyLWlfcWdSb2ptbG16d1Y?oc=5",
+      "inclusionReason": "前海是深港融合与跨境合作的核心区域，其发展进展涉及跨境基建、通关便利化和企业需求变化，对香港本地电信与数字基础设施有潜在影响。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-325CBD86D5E8DF",
+      "title": "工信部：加强公共技术服务平台、中试平台等载体建设",
+      "summary": "工信部副部长辛国斌介绍“十四五”制造业规模增长情况，并提出加强公共技术服务平台、中试平台等载体建设。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "经济观察网",
+      "publishedAt": "2026-08-26T07:00:00+08:00",
+      "url": "https://www.eeo.com.cn/2026/0826/1011522.shtml",
+      "inclusionReason": "工信部提出加强公共技术服务平台和中试平台建设，属制造业产业政策新部署，可能影响企业客户与产业生态。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-36D41C37D9135C",
+      "title": "工信部：加力清理拖欠企业账款 持续实施减轻企业负担专项行动",
+      "summary": "工信部表示将加力清理拖欠企业账款，持续实施减轻企业负担专项行动，营造良好产业生态。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-08-26T07:00:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5058918",
+      "inclusionReason": "工信部部署清理拖欠企业账款和减轻企业负担专项行动，属具体产业政策变化，可能改善企业现金流与经营成本。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-8CB83ED1FC7EF7",
+      "title": "工信部：加快新一代通信网、算力网规划建设 加强6G技术研发",
+      "summary": "工信部提出加快新一代通信网、算力网规划建设，推动5G规模化普及应用，并加强6G技术研发。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-08-26T07:01:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5058850",
+      "inclusionReason": "工信部明确加快通信网、算力网规划建设并加强6G研发，属信息通信基础设施政策新部署，影响网络投资与技术演进。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-7152B411F77D1F",
+      "title": "工信部：我国已成功研制近200项人工智能关键标准",
+      "summary": "工信部副部长辛国斌在国新办发布会上表示，我国已研制近200项人工智能关键标准，AI已贯穿研发设计、生产制造、质检运维等全链条，并正组织多城市开展AI伦理审查与服务实践。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "澎湃新闻",
+      "publishedAt": "2026-08-26T07:00:00+08:00",
+      "url": "https://www.thepaper.cn/newsDetail_forward_33851259",
+      "inclusionReason": "工信部发布AI关键标准研制进展与伦理审查实践，涉及AI治理与标准化，可影响电信行业AI应用合规与部署方向。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-8F487DEEED1495",
+      "title": "工信部：积极稳妥推进智能网联汽车准入和上路通行试点",
+      "summary": "工信部副部长辛国斌在国新办发布会上表示，将积极稳妥推进智能网联汽车准入和上路通行试点、车路云一体化试点，并支持重点企业加大动力电池与自动驾驶技术攻关。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-08-26T07:00:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5058954",
+      "inclusionReason": "智能网联汽车准入与车路云一体化试点涉及车联网基础设施和通信需求，可能带动电信运营商在车联网领域的业务机会。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-CCC7419389F333",
+      "title": "腾讯云与卡尔动力达成战略合作，AI助力L4级自动驾驶模型迭代",
+      "summary": "腾讯云与卡尔动力签署战略合作，围绕自动驾驶货运模型的训练、推理、数据处理与迭代开展合作，支撑L4级干线货运规模化运营。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "icloudnews",
+      "publishedAt": "2026-08-26T07:01:00+08:00",
+      "url": "https://www.icloudnews.net/a/121662.html",
+      "inclusionReason": "腾讯云与卡尔动力就L4级自动驾驶货运模型训练推理达成具体合作，涉及AI算力与自动驾驶技术落地，可关注其对车联网与边缘算力需求的带动。",
+      "businessImpact": "成本与效率"
+    }
+  ],
   "20260826_090028_856114": [
     {
       "newsId": "NEWS-65E6617C137FB6",
@@ -11773,44 +11943,6 @@
       "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5zTk1oMzI0YWpGVktxRHgwN1dJTE1UZmhLQnR2djBQSy01ekdId3lWejJPWko1Q2NxM1JwMHdnMTBRWElXaDRwSjZBc3pIZDA?oc=5",
       "inclusionReason": "新闻提及xAI数据中心供电容量将增至10GW，属于基础设施/网络/技术类监控关键词AI对应的具体基础设施投资与建设事件，符合战略信号纳入标准。",
       "businessImpact": "成本与效率"
-    }
-  ],
-  "20260814_090058_767245": [
-    {
-      "newsId": "NEWS-14E2FB3DA09B2F",
-      "title": "元太下调消费电子增长预期至10-15% IoT维持20-25%增长",
-      "summary": "元太科技下调消费电子业务增长预期至10-15%，IoT业务维持20-25%增长。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "CMoney",
-      "publishedAt": "2026-08-13T18:13:59+08:00",
-      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE04bXdaRnJQSFdaQXJOX0xsSDlrTnFPU2VpUkFPMmNFdE9ralQ3bUVkWUxMejVmZ3JmM3Z3UWpOVkVDMnlvMjNYUndNNHU3UkR3cGcyRjFhZ0s?oc=5",
-      "inclusionReason": "元太科技下调消费电子增长预期至10-15%，IoT业务维持20-25%增长，涉及IoT市场趋势。",
-      "businessImpact": "收入与需求"
-    },
-    {
-      "newsId": "NEWS-D063AA1991FAE6",
-      "title": "GSMA报告指出非洲错失MVNO发展机会",
-      "summary": "GSMA 2025年报告指出移动虚拟网络运营商模式有助于提升市场接入，非洲正错失这一商业机会。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "cajnewsafrica",
-      "publishedAt": "2026-08-13T19:43:00+08:00",
-      "url": "https://cajnewsafrica.com/2026/08/13/africa-is-missing-out-on-the-mvno-opportunity/",
-      "inclusionReason": "新闻引用GSMA报告具体指出非洲市场在MVNO商业模式上的发展缺失，属于正式监控关键词MVNO对应的具体行业趋势与市场分析事件。",
-      "businessImpact": "收入与需求"
-    },
-    {
-      "newsId": "NEWS-5DD25053FEE1C8",
-      "title": "长江和记实业巴拿马港口业务终止致上半年吞吐量下降1%",
-      "summary": "长江和记实业披露巴拿马运河港口业务被强制终止，导致公司上半年整体吞吐量下降1%。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "region": "国际/行业",
-      "source": "scmp.com",
-      "publishedAt": "2026-08-13T23:00:00+08:00",
-      "url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3363940/ck-hutchison-says-forced-termination-panama-ports-cut-1-throughput",
-      "inclusionReason": "新闻提及长江和记实业因巴拿马港口业务终止导致吞吐量下降1%，属于宏观经济监控词Hong Kong economy关联的具体企业海外经营事件，反映香港企业受地缘政治影响的宏观信号。",
-      "businessImpact": "收入与需求"
     }
   ]
 }

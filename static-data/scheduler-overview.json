@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-26T13:58:11+08:00",
+  "checked_at_hkt": "2026-08-26T14:07:43+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -179,52 +179,44 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260826_090028_856114",
+      "crawl_run_id": "20260826_140005_050700",
       "trigger": "战略新闻定时爬虫",
-      "scope": "晨间扫描（2026-08-26@09:00）",
+      "scope": "午后扫描（2026-08-26@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 62248,
+      "backend_pid": 37630,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "完整重跑去重并人工温和复核完成；发现 692 条，AI保留 237 条，历史重复/已存在 73 条，最终新增 164 条；飞书候选表与原群消息均已回读。",
-      "heartbeat_at_hkt": "2026-08-26T10:56:19+08:00",
-      "started_at_hkt": "2026-08-26T09:00:28+08:00",
-      "completed_at_hkt": "2026-08-26T10:56:19+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 36 条，AI保留 17 条，历史重复 3 条，新增 14 条。",
+      "heartbeat_at_hkt": "2026-08-26T14:07:23+08:00",
+      "started_at_hkt": "2026-08-26T14:00:05+08:00",
+      "completed_at_hkt": "2026-08-26T14:07:23+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 6950122,
+      "duration_ms": 438596,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_090028_856114.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_140005_050700.jsonl"
       },
       "stream_log": {
-        "bytes": 105012,
-        "lines": 599
+        "bytes": 15009,
+        "lines": 87
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "完整重跑去重并人工温和复核完成；发现 692 条，AI保留 237 条，历史重复/已存在 73 条，最终新增 164 条；飞书候选表与原群消息均已回读。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 36 条，AI保留 17 条，历史重复 3 条，新增 14 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-08-26@09:00",
-        "discovered": 692,
-        "ai_retained": 237,
-        "history_duplicates": 73,
-        "new_count": 164,
+        "slot": "2026-08-26@14:00",
+        "discovered": 36,
+        "ai_retained": 17,
+        "history_duplicates": 3,
+        "new_count": 14,
         "readback_verified": true,
-        "notification_status": "edited",
-        "message_id": "om_x100b67d113e704acb2557479bd2373a",
-        "dedupe_audit_id": "20260826T115456-4968822f",
-        "message_readback_verified": true
-      },
-      "dedupe_correction": {
-        "updated_at_hkt": "2026-08-26T12:08:00+08:00",
-        "audit_id": "20260826T115456-4968822f",
-        "sheet_readback_verified": true,
-        "message_readback_verified": true
+        "notification_status": "sent",
+        "message_id": "om_x100b67dc677b30b4b1082c006c0b3ff"
       }
     },
     "four_database_refresh": {
