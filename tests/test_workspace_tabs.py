@@ -53,7 +53,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=25', INDEX)
         self.assertIn('/static/organization-admin.css?v=23', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=128', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=129', INDEX)
         self.assertIn('/static/app.js?v=305', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -601,7 +601,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "国际运营商",
             "内地运营商",
             "全球云厂商",
-            "AI洞察与业务应用",
+            "AI战略洞察UI更新",
         ):
             self.assertIn(label, SCRIPT)
         self.assertIn('fetch("/api/crawl-runs?limit=500"', SCRIPT)
@@ -609,7 +609,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=128', INDEX)
+        self.assertIn('workspace-tabs.js?v=129', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=123', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
@@ -626,7 +626,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1580, 720]", SCRIPT)
-        self.assertIn('label: "官方原文复核 / 数据库入库"', SCRIPT)
+        self.assertIn('label: "新增数据入库"', SCRIPT)
+        self.assertNotIn('label: "官方原文复核 / 数据库入库"', SCRIPT)
+        self.assertNotIn('label: "AI洞察与业务应用"', SCRIPT)
         self.assertIn('unit: intelligenceRun.crawl_run_id ? "条数据库事实"', SCRIPT)
         self.assertIn('unit: intelligenceRun.crawl_run_id ? "项发布到UI"', SCRIPT)
         self.assertIn('unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过"', SCRIPT)
