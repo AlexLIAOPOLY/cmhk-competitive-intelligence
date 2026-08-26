@@ -10,8 +10,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=27', INDEX)
-        self.assertIn('/static/organization-admin.css?v=25', INDEX)
+        self.assertIn('/static/organization-admin.js?v=28', INDEX)
+        self.assertIn('/static/organization-admin.css?v=26', INDEX)
 
     def test_member_detail_starts_empty_until_a_member_is_selected(self):
         self.assertIn('selectedUserId: ""', SCRIPT)
