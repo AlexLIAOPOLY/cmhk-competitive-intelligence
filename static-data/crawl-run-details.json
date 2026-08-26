@@ -106,18 +106,6 @@
           "businessImpact": "供应韧性"
         },
         {
-          "newsId": "NEWS-B32AE642E7360E",
-          "title": "SpaceXAI部署英伟达Vera CPU加速AI代理应用",
-          "summary": "SpaceXAI部署英伟达Vera CPU以加速AI代理应用落地。",
-          "category": "行业动态",
-          "region": "国际/行业",
-          "source": "香港經濟日報HKET",
-          "publishedAt": "2026-08-25T17:16:45+08:00",
-          "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5jYUF0U2F2UE1VbnJoQU5xaVFHNE5VdUMzb3FCcXR4cGNhbDFZTVpEVUNLdFN5SVhoX0JpRG9XMzZiX3NHNHJYZHZGTzNMV2s?oc=5",
-          "inclusionReason": "SpaceXAI部署英伟达Vera CPU用于AI代理应用，涉及CPU在AI基础设施中的实际部署案例，反映算力硬件在AI应用中的演进趋势。",
-          "businessImpact": "网络与运营"
-        },
-        {
           "newsId": "NEWS-52C189ED875998",
           "title": "AI智竞 联通未来：中国联通燃动“冰丝带” 全场景护航2026世界人形机器人运动会开幕！",
           "summary": "8月22日，备受全球瞩目的第二届世界人形机器人运动会在国家速滑馆“冰丝带”开幕，来自六大洲、16个国家的666支队伍、2056台机器人齐聚于此同台竞技，共赴这场人机共融的巅峰之约。",
@@ -176,18 +164,6 @@
           "url": "https://www.techpowerup.com/351960/asus-unveils-rog-rapture-gt-bn98-first-wi-fi-8-gaming-router",
           "inclusionReason": "华硕发布首款Wi-Fi 8游戏路由器，展示下一代Wi-Fi技术商用化进展，涉及网络基础设施技术演进。",
           "businessImpact": "产品与定价"
-        },
-        {
-          "newsId": "NEWS-11307555775BC5",
-          "title": "阿里万相3.0将商业文档转为视频，文件须经中国法律管辖",
-          "summary": "阿里巴巴发布万相3.0 AI视频模型，可直接将商业文档、表格和幻灯片生成为30秒视频，但所有文件均须经过中国法律框架处理。",
-          "category": "政策监管",
-          "region": "国际/行业",
-          "source": "Tech Times on MSN",
-          "publishedAt": "2026-08-25T15:28:52+08:00",
-          "url": "https://www.msn.com/en-us/money/general/alibaba-wan3-0-turns-business-documents-into-video-your-files-route-through-chinese-law/ar-AA2aTAjy",
-          "inclusionReason": "阿里万相3.0涉及用户文件数据跨境或境内处理的法律管辖问题，与隐私条例、网络安全法及内地与香港数据合规要求存在实质关联，可能影响企业客户对AI工具的数据合规评估。",
-          "businessImpact": "合规与牌照"
         },
         {
           "newsId": "NEWS-C3DDBB76B25385",
@@ -586,18 +562,6 @@
           "businessImpact": "收入与需求"
         },
         {
-          "newsId": "NEWS-A4DB98E2A89B9C",
-          "title": "张曼莉：湖南制造与香港AI战略高度契合",
-          "summary": "湖南日产业创新对接会在亚博举行，张曼莉表示湖南制造与香港AI战略高度契合。",
-          "category": "行业动态",
-          "region": "香港本地",
-          "source": "點新聞",
-          "publishedAt": "2026-08-25T23:22:30+08:00",
-          "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE12TVBfbDJsVWd4MUstSWwxY0tJTFZpaDF6VDRDWWpHOHNWMWtwTWJpQ2RTc1BVS0VEQVZGXzByVGhsSzIxd2hMUjB0SzB2djN3TExBTDU2SUZVSVcwUFVOa2pvQ0lCTmpxeF9JSUlZbThjNXlqeXhTam53?oc=5",
-          "inclusionReason": "香港官员在对接会表示湘港AI战略契合，具体事件→促进香港AI产业合作与本地需求。",
-          "businessImpact": "收入与需求"
-        },
-        {
           "newsId": "NEWS-A26780DFA2E47A",
           "title": "克宫顾问：英国无人机工厂或遭“不明来源”袭击",
           "summary": "克宫顾问称，因英国无人机工厂泄漏导弹零件设计图纸，或遭“不明来源”半军事行动；英国首相拟下月访美游说乌克兰国防需求。",
@@ -658,18 +622,6 @@
           "businessImpact": "收入与需求"
         },
         {
-          "newsId": "NEWS-F755EC2EFFB147",
-          "title": "中国电信智能业务加速增长 算力投入驱动长期价值",
-          "summary": "中国电信2026年上半年营收2590.10亿元、归母净利润195.88亿元，5G用户达3.23亿户，融合ARPU达128元，算力投入驱动增长。",
-          "category": "竞对动态",
-          "region": "国际/行业",
-          "source": "中财网",
-          "publishedAt": "2026-08-25T11:46:00+08:00",
-          "url": "https://stock.cfi.cn/p20260825001442.html",
-          "inclusionReason": "中国电信发布2026年上半年财报，营收2590.10亿元、净利润195.88亿元，5G用户3.23亿户，可用于竞对经营与用户对标。",
-          "businessImpact": "收入与需求"
-        },
-        {
           "newsId": "NEWS-D819F6FE7242C4",
           "title": "中国电信（601728）8月25日主力资金净买入2424.70万元",
           "summary": "证券之星消息，截至2026年8月25日收盘，中国电信(601728)报收于6.45元，下跌0.31%，换手率0.11%，成交量82.39万手，成交额5.31亿元。",
@@ -682,18 +634,6 @@
           "businessImpact": "资本配置"
         },
         {
-          "newsId": "NEWS-69B421ACD2C87B",
-          "title": "中国移动2026年上半年基础业务承压，算力、智能服务逆势增长",
-          "summary": "日前，中国移动发布2026年中期业绩报告。公司在传统通信业务面临增长压力的背景下，以算力和智能服务为代表的新兴业务正加速崛起，成为业绩报告中的突出亮点。",
-          "category": "竞对动态",
-          "region": "国际/行业",
-          "source": "凤凰网资讯频道",
-          "publishedAt": "2026-08-25T16:56:00+08:00",
-          "url": "https://news.ifeng.com/c/8vsZ1VBJKkR",
-          "inclusionReason": "中国移动2026年上半年基础业务承压，算力、智能服务逆势增长显示正式监控竞对发生具体经营事件，影响收入与需求。",
-          "businessImpact": "收入与需求"
-        },
-        {
           "newsId": "NEWS-F8DD34C0D7D584",
           "title": "中国移动（00941.HK）：8月25日南向资金增持46.83万股",
           "summary": "证券之星消息，8月25日南向资金增持46.83万股中国移动（00941.HK）。近5个交易日中，获南向资金减持的有3天，累计净减持511.02万股。",
@@ -704,18 +644,6 @@
           "url": "https://www.sohu.com/a/1067585204_122123195",
           "inclusionReason": "中国移动（00941.HK）：8月25日南向资金增持46.83万股显示正式监控竞对发生具体经营事件，影响资本配置。",
           "businessImpact": "资本配置"
-        },
-        {
-          "newsId": "NEWS-3FFAAB2D25C8C3",
-          "title": "中国联通以5G-A大上行智慧网络助力人形机器人运动会盛大召开",
-          "summary": "作为两届运动会全球独家通信服务合作伙伴，中国联通围绕智慧办赛、智慧参赛、智慧观赛三个维度，以“两张网和一个平台”，即5G-A大上行网络、全光WI-FI专网和具身智能机器人管理平台，与AI构建…",
-          "category": "竞对动态",
-          "region": "国际/行业",
-          "source": "凤凰网山东频道",
-          "publishedAt": "2026-08-25T13:00:00+08:00",
-          "url": "https://sd.ifeng.com/c/8vsGrDteytY",
-          "inclusionReason": "中国联通以5G-A大上行智慧网络助力人形机器人运动会盛大召开显示正式监控竞对发生具体经营事件，影响产品与定价。",
-          "businessImpact": "产品与定价"
         },
         {
           "newsId": "NEWS-96E86B897143D0",
@@ -740,30 +668,6 @@
           "url": "https://news.google.com/rss/articles/CBMi1wJBVV95cUxPamhMQ01hZFlzaXBkVkVYLUVjdExEVkE0MC1iSkZOYzFwNm0teUtEX1BfNk53NzdhMWpPenRpeXUzNnV3WWYtUDdDSUVTd1Y4VGJXM3lYay1tREx3Y19XdEhUV09iLTFBMjVjZVBhTThwSzVSY1JOWHFYUjBic0I1MVl1T1otcFFkLTJxVU9ONURlaEtIZkhfT2lZVWFiZTFvYUxhQjlkeEg4RTFUbEdhYU1uUmZ3blZIVlRzeVNmbnRTOXRCMW9FTUtMczhRVmQzV2hkdDJGUU9jTzN6cFlhY0NkWi1kX2JLMW9VVjFzeU5INXo2VXcwdGc1OW9EaXNkRFlMNFdDWFFXWkk2QnZaXzdPYjNJbEk1Rm9TUHRYUHNiVTU0Nmxtdy1tWU5CLTQ5QWV1QWJDRHlDQkVMWnoxZ19sem12SHZEcndaLUNsNms2SVozMzdJ?oc=5",
           "inclusionReason": "中国移动香港与中银Mastercard推出买手机即减300元优惠，属具体产品促销活动，影响产品定价与客户获取。",
           "businessImpact": "产品与定价"
-        },
-        {
-          "newsId": "NEWS-559CA73FC2C581",
-          "title": "中韩相隔8年重启信息通信合作部级战略对话",
-          "summary": "中韩两国时隔8年重启信息通信领域的部级战略对话，讨论双边ICT合作。",
-          "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-          "region": "国际/行业",
-          "source": "on.cc東網",
-          "publishedAt": "2026-08-25T17:24:16+08:00",
-          "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQX1pKRm5BSzFFSDBENzFmMXFlZnNIeVR1RnZRVGNqU0Z3VTVJZVpfMkdnUmVLYWpfWUU2ak1DZzBQSjJwQTJoRFlnb2FLWFNhb0RIeTNXNnpSNlFEeWg3SEZrZkV4a1FKYWNQUFdxYmgyWHVoc2s4Y1BiM1BuR2dXVnA0N3hyOWhWQ0RTX3FmWkRkS1NQbWI4cg?oc=5",
-          "inclusionReason": "中韩重启信息通信合作部级战略对话，属具体国际合作事件，可能影响区域ICT合作与市场格局。",
-          "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-FAC47AC093E350",
-          "title": "机电工程署为政府部门和公共设施提供AI技术支援",
-          "summary": "机电工程署为政府部门和公共设施提供AI技术支援，以提升效率及职业安全水平。",
-          "category": "基础设施/网络/技术类",
-          "region": "香港本地",
-          "source": "myTV SUPER",
-          "publishedAt": "2026-08-25T21:00:00+08:00",
-          "url": "https://news.google.com/rss/articles/CBMi3wRBVV95cUxQMm5Mam1yV18xbzNHMkhmaTFkSWFhdE5yMUlsX0YtU3ZWSDhISDF2czNDOW9rdzkwTk5OM3dJN21QamktX2N3UWhPZWJ5OExzUzNXbk1BeHhGMHhkblRud21kWXZqVXQyYUpTM19CcXdDZndVNWFRdExjUGRQVnhLTnhRVTRaUXZ5ZFhnSFRPZHBCUm5fTnd1QXJWZTVpMHNUTUs5cVFldW5fa054ekpOZnBJcDZvSUFLcU51RG5GdGVNdkdsUW9MTFRpTnlHdnlDV0w0Q2NFbXV4em4zOU02aHJROWdpZTVxOTlXZFFoaGNhNzRFQzFUN2d5WTFqT1h2cmVFNEN4UWV6UlUwVzduWE9ZejdlZ01JZHFsM0NjT0tFNGxVM3NjcDlDRGg2cUM3ekV3Yk5rVEQwZXIxTnlOVFozM1VKZzR3TUh3eHQ1UC02RnEtR0poUmdEcWN2ZmQzZTBoR3BBWDhOWWpMNEY5VXJ5MWhIZmRDd2U4Q2RrR1lEQndVTEZjZi1COWs0ODhNbnZaNklhd1pWUjh3Q1RGbXhRT3JuSFZqcS05aFJCaXlKdjVJWlk3a2xuczQyclFlWnFfT0c4czZFVkxTdnFnZnkwV0FHWWR4cUxyTHBYUzZJYXNRZ2h2dkRUdUpBMHRLV01GNEpzaVZKcVZ4OVk4YVlFRDhlS3lTd0c2am5oOFJSQ3N4X3AxRlRlSlp5aFJDTE5JaFJrM1RRZWN6djJKNWpkRkVBSEMtdXNpUVlkM1NnMmVjZEFubVotVWlfSWVlOVZfdm5FQmNITmpQRUxF?oc=5",
-          "inclusionReason": "机电工程署为政府部门和公共设施提供AI技术支援，属香港本地AI应用的具体部署，可提升公共部门效率与职业安全。",
-          "businessImpact": "成本与效率"
         },
         {
           "newsId": "NEWS-ACA75DF1C4D6BD",
@@ -814,18 +718,6 @@
           "businessImpact": "成本与效率"
         },
         {
-          "newsId": "NEWS-1CDF6A006D5874",
-          "title": "全球独角兽大会｜智能体专家分享最新实践绘人工智能新蓝图",
-          "summary": "全球独角兽大会上智能体专家分享AI最新实践，描绘人工智能发展新蓝图。",
-          "category": "行业动态",
-          "region": "香港本地",
-          "source": "大公文匯網",
-          "publishedAt": "2026-08-25T14:39:50+08:00",
-          "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9sMDdCbW00MElHaHFPRm1OV2RtMEZzNzNPZEhCajZwZHFielh6MHFOd05zekhHOTVYTThZY1lnMkgzc1J6cjlCaUFtR0tuMU1UR2p0blhGRzQ4enJuM3VyN0RSOWtoWTBGV2Vfc2dNWFY?oc=5",
-          "inclusionReason": "全球独角兽大会智能体专家分享AI最新实践，属于AI技术演进的具体行业活动，可影响企业AI应用与效率。",
-          "businessImpact": "成本与效率"
-        },
-        {
           "newsId": "NEWS-BF86B003850C71",
           "title": "全球独角兽大会｜行业领袖谈AI赋能：现在是科学家创业最佳时代",
           "summary": "全球独角兽大会行业领袖讨论AI赋能，认为现在是科学家创业的最佳时代。",
@@ -836,18 +728,6 @@
           "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBBNDJrdWo0SEQzVlJUeWFjSHE3dmtoWXF0TFlCNGZ2enhfaUh3UVN4UGxma1gxZlJ0QTFsc1Z5N0Zmd002RmtZS215STlvQjVvQUh5YkhOb19ZbkJVQUhXQ0l0RFJpc215UUF0Sm9wdVI?oc=5",
           "inclusionReason": "全球独角兽大会行业领袖讨论AI赋能与科学家创业趋势，反映AI产业生态与竞争格局变化。",
           "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-B563392221F6AD",
-          "title": "中国联通以5G-A与全光网络护航世界人形机器人运动会",
-          "summary": "中国联通作为第二届世界人形机器人运动会全球独家通信服务合作伙伴，以5G-A、全光网络与AI技术为赛事提供通信保障。",
-          "category": "竞对动态",
-          "region": "国际/行业",
-          "source": "搜狐",
-          "publishedAt": "2026-08-25T22:31:00+08:00",
-          "url": "https://www.sohu.com/a/1067497975_121002623",
-          "inclusionReason": "中国联通作为赛事独家通信服务合作伙伴，以5G-A、全光网络与AI技术保障大规模机器人赛事，展示其网络与技术能力，可用于竞对网络能力对标。",
-          "businessImpact": "网络与运营"
         },
         {
           "newsId": "NEWS-B5B62227A3819C",
@@ -872,18 +752,6 @@
           "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE80ZUp2Q1RCRHpSSEY3SENLZFUyTDlNU2FqTUhQRUJiTThLNWRDSVZBSk5fdTkyRXY5dkpCYmYxTThPdmxQVF9kYWlVNEJaN3pORjh2OGJ3SllmTWQxVXNISkJzWUFrM0FTbDNsMGFQU19ObG9fSmc?oc=5",
           "inclusionReason": "南沙对接香港施政报告推动粤港全链条合作→涉及跨境产业与科技合作，可能影响香港企业需求、数字基础设施及营商环境。",
           "businessImpact": "客户与渠道"
-        },
-        {
-          "newsId": "NEWS-DFA39753E3EF91",
-          "title": "印度推动毫米波商机 中磊、正文卡位",
-          "summary": "印度推动毫米波频谱商用，台湾网通设备厂商中磊、正文积极布局相关商机。",
-          "category": "行业动态",
-          "region": "国际/行业",
-          "source": "自由時報",
-          "publishedAt": "2026-08-25T16:35:11+08:00",
-          "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE05Z3RnR0Qzd3hXa3doS0JYU1JxRXN2NjhUV3RVVENpVWR2ZnhiNUpsaHdVakdRR2lxdEVGbzlzSGlyRWZxbEdFdFAtYzJ5d00tUUlkazNBcS0?oc=5",
-          "inclusionReason": "印度推动毫米波商用带来设备需求→涉及5G毫米波基础设施部署和供应链机会，可作为国际电信市场趋势参考。",
-          "businessImpact": "供应韧性"
         },
         {
           "newsId": "NEWS-CA38FA44C0707C",
@@ -932,30 +800,6 @@
           "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE40OG1kZzNWUlBOZm5qRTU1ZDU3UFNqYU5qc0p2VzJmU1lmX1JkSlRkSWtjXzdhSXVxdldPSVIzTEFXSHNnR0twbnZ0QTk3N2pVbG55cWhoWFpjc2tNZnBEdUZRb3N3aGd6VHZhZi14TnhfVW9EZEtJ?oc=5",
           "inclusionReason": "南沙与香港建立创新共享机制、开展全链条合作，涉及大湾区融合与产业协同，可能影响香港本地企业需求与网络基础设施部署。",
           "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-3C7460E96371F3",
-          "title": "小米发布玄戒O3等三款自研芯片覆盖AI与智驾",
-          "summary": "小米发布旗舰SoC玄戒O3、端侧AI加速芯片玄戒O100及智能驾驶AI芯片玄戒D100，全面覆盖AI与智驾领域。",
-          "category": "行业动态",
-          "region": "国际/行业",
-          "source": "香港01",
-          "publishedAt": "2026-08-25T17:50:00+08:00",
-          "url": "https://www.hk01.com/%E6%95%B8%E7%A2%BC%E7%94%9F%E6%B4%BB/60383426/%E5%B0%8F%E7%B1%B3%E7%8E%84%E6%88%92o3%E5%BC%B7%E5%8B%A2%E7%99%BB%E5%A0%B4-%E9%80%A3%E7%99%BC%E4%B8%89%E6%AC%BE%E8%87%AA%E7%A0%94%E6%99%B6%E7%89%87-%E5%BE%9Eai%E5%88%B0%E6%99%BA%E9%A7%95%E5%85%A8%E9%9D%A2%E8%A6%86%E8%93%8B",
-          "inclusionReason": "小米发布三款自研芯片，涉及端侧AI加速和智能驾驶算力，属于芯片与AI基础设施领域的具体技术进展，可能影响终端芯片供应链格局。",
-          "businessImpact": "供应韧性"
-        },
-        {
-          "newsId": "NEWS-98953E3B8EA044",
-          "title": "美国对伊朗实施经济制裁中国买家首当其冲",
-          "summary": "美国宣布对伊朗展开经济孤立行动，威胁惩罚与伊朗贸易的国家，中国作为伊朗最大石油买家首当其冲。",
-          "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-          "region": "国际/行业",
-          "source": "雅虎財經",
-          "publishedAt": "2026-08-25T12:30:00+08:00",
-          "url": "https://hk.finance.yahoo.com/news/%E5%B7%9D%E6%99%AE%E5%A4%A7%E5%88%80%E7%A0%8D%E5%90%91%E4%BC%8A%E6%9C%97%E8%B2%BF%E6%98%93%E5%91%BD%E8%84%88-%E4%B8%AD%E5%9C%8B%E8%B2%B7%E5%AE%B6%E9%A6%96%E7%95%B6%E5%85%B6%E8%A1%9D-%E6%8B%86%E8%A7%A3%E5%85%A8%E7%90%83%E6%9B%9D%E9%9A%AA%E6%9C%80%E9%AB%98%E5%9C%8B%E5%AE%B6%E5%90%8D%E5%96%AE-113007270.html",
-          "inclusionReason": "美国对伊朗制裁升级可能影响全球能源供应与贸易格局，涉及地缘政治风险，可能间接影响供应链成本与宏观经济环境。",
-          "businessImpact": "供应韧性"
         },
         {
           "newsId": "NEWS-F9999796E1542F",
@@ -1018,18 +862,6 @@
           "businessImpact": "收入与需求"
         },
         {
-          "newsId": "NEWS-9F0ADAD8091F7E",
-          "title": "德勤与港大发布企业AI应用报告：逾三成企业跨团队部署AI",
-          "summary": "德勤联同香港大学发布《企业AI应用：决策者洞察》报告，显示逾三成企业跨团队部署AI，近半表示ROI低于预期。",
-          "category": "行业动态",
-          "region": "香港本地",
-          "source": "香港經濟日報即時新聞頻道",
-          "publishedAt": "2026-08-25T12:06:00+08:00",
-          "url": "https://inews.hket.com/article/4182426/%E5%BE%B7%E5%8B%A4%EF%BD%9C%E9%80%BE%E4%B8%89%E6%88%90%E4%BC%81%E6%A5%AD%E8%B7%A8%E5%9C%98%E9%9A%8A%E9%83%A8%E7%BD%B2Al%E3%80%80%E6%83%9F%E8%BF%91%E5%8D%8A%E8%A1%A8%E7%A4%BAROI%E4%BD%8E%E6%96%BC%E9%A0%90%E6%9C%9F",
-          "inclusionReason": "德勤与港大发布企业AI应用报告，显示逾三成企业跨团队部署AI、近半ROI低于预期，反映企业AI规模化应用与投资回报现状，影响数字化服务需求。",
-          "businessImpact": "收入与需求"
-        },
-        {
           "newsId": "NEWS-101BB88018B6B1",
           "title": "爱立信携联发科、AT&T完成北美首例先进移动性功能实网试验",
           "summary": "爱立信与联发科、AT&T合作，完成北美首例先进移动性功能实网试验。",
@@ -1075,18 +907,6 @@
           "publishedAt": "2026-08-25T09:09:58+08:00",
           "url": "https://news.google.com/rss/articles/CBMi3wNBVV95cUxPSnFEbzEzOVFFanBiOS1nUW45OUZYdE1HRVEtVkF5MW9kb2hWYlVyWGw4cWRoUURsSTlReXgydEFvSTJ1MGZMZVc1eG1aVTYxTVpCNUsxMnFGOWFkLU5hVnE5c0xueGR1TDF6WjR6aWd6SnBFZ0R1Q203Z1BLeVlFM2MtOXVDQ25CbEgwb24wZGFZYVV3T29yMElGUzN1MVRKVUZDZGN1ZVZXN0JrN2I0NDZVTy1DMjZGRnVOOXdKTGJXQU8zTzJ2cWZfYVNOc1FsY3BrMlh2TmlKVE1tVzE2SVVGWlNCZDNSVVZpcHBreHdndFY0VGMwUHBRTmZQeFlRSzVNQVhtb3gwcktyM3FXMGYwc1RqOGtyaWx1ZTJhVGRwTTJra2pSNDg4YlAyb3E4cVlUQzliUDFuZXZEcklacmlIYVZMSlhsMUlKN2REZ2o2YTh5Y3QwMmc2OEgxMjdjajhSRjZqdWxpcDlUSng0dUZhbWtsY1pYSGRVSWhsZ2VwWnRXUURaTU1QcDVreU00VjFlSXdpT1NJSmdneElpdFQtRW5waWVvdHFyNEFTZm14VFZjNkFBRG1sV2g4VEtFTXM1d0FQNElNMFlVRUt6aUZITndnU1RWMFhsdVdIUQ?oc=5",
           "inclusionReason": "数码港与教育局合作推动数字教育，涉及本地创科企业与学校的实质项目落地，反映香港数字经济生态和人才培育的具体进展。",
-          "businessImpact": "客户与渠道"
-        },
-        {
-          "newsId": "NEWS-27A61C9B61F9CB",
-          "title": "教育局举办「人工智能领导」培训 策动校本数字教育发展",
-          "summary": "教育局举办人工智能领导培训，推动校本数字教育发展，提升教育界AI应用能力。",
-          "category": "行业动态",
-          "region": "香港本地",
-          "source": "info.gov.hk",
-          "publishedAt": "2026-08-25T17:05:51+08:00",
-          "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE8yQmJDcW1sUmQ5blpTTHNKOEFjeDhRaHU1VlhNN29YTVZGREc5VHJHU2RhM0FNdEdqSmprdUUxVXRkZ3BRaTJac05FUFZJaW93VEc0cjZtWlgxcGUxWjRVZzh3dmg3TFkzcTNYMTI0Ny05dw?oc=5",
-          "inclusionReason": "香港教育局主办AI领导培训，推动校本数字教育，反映本地AI人才培育和数字化转型的具体政策落地。",
           "businessImpact": "客户与渠道"
         },
         {
@@ -1162,66 +982,6 @@
           "businessImpact": "客户与渠道"
         },
         {
-          "newsId": "NEWS-E5128A5B81E0AC",
-          "title": "有线宽频正式更名为周大福媒体娱乐",
-          "summary": "有线宽频宣布更名为周大福媒体娱乐，自8月17日生效，股份简称将于8月28日起以新名称标识。",
-          "category": "竞对动态",
-          "region": "香港本地",
-          "source": "明報財經網",
-          "publishedAt": "2026-08-25T21:14:14+08:00",
-          "url": "https://news.google.com/rss/articles/CBMi3wNBVV95cUxNS1BPYnZwa25VOVRiMFlYckVLSjZkdXNUd21JWWhCajNZb2htRmlYclZhM054c1RGaEtjTlVlOFBOTGJxMzRSbTVPQndLUFpqNHpCcE10UGFiV21veVJmLVZybFZRTnREVGVJNkNyeTZCbnplNTVTX3p0eEZOb0FZOTNjZGJMTWZhVURJeVQ3RzAzcF9DNmZBc1J2TjJYNHdYVTRLSk9WUWJ2X09xbWI3aTU2WUtCei1SRk0yZk45SzU0SXdEOEpDdXJ6akJXcExGMTFzbzR3aC1qZS1uaUFqa1RRd1VMNE55TUdWd1J6Tl8wbkl6ODRGc3BTOXJHQmpjVGNaRkdlRnRVNDVSa3NRamVuNlVRQlRkYUJqdThaajdnbmlWcTNzeG80U0dta281YVFUZXExUGM1Z19JdlhpNFp6MWJ3bUl4Rl85OW5nTGxBLTdia21ST1dNLUhiUVZOT25MazdWU2pCQ1l5ejkwekdnOXhmd3BhV3R4VVhZaXVyWkp0MVVGUExLMEZaZG8xY2dVZ2JnU3dLZ3pxTzVtM1JSTHpCOW9nMFFZM3Eyb1lkbV9XV1dRWE9BdTE2M2xpck9tc2dGZFdyQXFFdGc4bUJVTmE1RnAyeU5pUkdqWQ?oc=5",
-          "inclusionReason": "有线宽频作为被监测竞对，正式更名反映其品牌战略调整，属于竞对经营动作。",
-          "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-D26376E23AAA36",
-          "title": "有线宽频更名周大福媒体娱乐 强调更关心港人港事",
-          "summary": "有线宽频在更名周大福媒体娱乐之际，表示将更关心港人港事，聚焦本地内容与服务。",
-          "category": "竞对动态",
-          "region": "香港本地",
-          "source": "橙新聞",
-          "publishedAt": "2026-08-25T18:12:04+08:00",
-          "url": "https://news.google.com/rss/articles/CBMiyAJBVV95cUxQNXA1WjE4a2xNWFNUWWszaU54NDV1b0dSX3dMNzgyWmUwOTBrNW1xVHpjRzhuUDl1Qi1xaXR0ZTJ1UkJMRWNPNGVTN3NIUE9pRzFSZlhYTUhueHh1akJYSkY4cWxOYTJTdHpIZkpDODhyT3NLSTJVQ2tPbW1RWnB2QXZ5WmVhdUdlVzgtdVQxMUJlalJqUGdCTThZVnZ3d1lQZVpTc2tTdDNwM2xuUVVrb0syUnZiclJFcTNWOHJTWXlCdDVpYjlvajBRLVZacWpWM1c3M1VUSnFUek1lNU8tSFBVZ2QxcksyQ240QVdVcGRMU1NXT1p0ZTlDT2J0cGZPemJuanQwdmFoVzByYjZGOXRxUWZRYmhqWVExOW4zT1piUm1UYnZCendtTUt3ekNmdC1RcDdMb2ZFb3BZZmFoVlJ4Nk9mZUxw?oc=5",
-          "inclusionReason": "有线宽频作为被监测竞对，更名并宣布战略方向调整，强调聚焦香港本地市场，属于竞对经营动作。",
-          "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-81E2FE77F64CFF",
-          "title": "有线宽频股份简称8月28日起改为「周大福媒体娱乐」",
-          "summary": "有线宽频在联交所的股份简称将于8月28日起由「有线宽频」更改为「周大福媒体娱乐」，英文简称由「I-CABLE COMM」改为「CTFME」。",
-          "category": "竞对动态",
-          "region": "香港本地",
-          "source": "雅虎財經",
-          "publishedAt": "2026-08-25T10:32:00+08:00",
-          "url": "https://hk.finance.yahoo.com/news/%E6%9C%89%E7%B7%9A%E5%AF%AC%E9%A0%BB%E8%82%A1%E4%BB%BD%E7%B0%A1%E7%A8%B1%E5%85%AB%E6%9C%88%E4%BA%8C%E5%8D%81%E5%85%AB%E6%97%A5%E6%9B%B4%E6%94%B9%E7%82%BA-%E5%91%A8%E5%A4%A7%E7%A6%8F%E5%AA%92%E9%AB%94%E5%A8%9B%E6%A8%82-093158544.html",
-          "inclusionReason": "有线宽频作为被监测竞对，股份简称变更属于公司品牌重塑的重要经营动作，configured_competitor_hint为HKBN但事件主体确为竞对有线宽频。",
-          "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-9D5F71F87B20AB",
-          "title": "有线宽频拟更名为「周大福媒体娱乐」",
-          "summary": "有线宽频股东通过决议，公司名称由「i-CABLE Communications Limited 有线宽频通讯有限公司」更改为「CTF Media & Entertainment Limite…",
-          "category": "竞对动态",
-          "region": "香港本地",
-          "source": "格隆汇 on MSN",
-          "publishedAt": "2026-08-25T10:34:13+08:00",
-          "url": "https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E6%9C%89%E7%BA%BF%E5%AE%BD%E9%A2%91-01097-hk-%E6%8B%9F%E6%9B%B4%E5%90%8D%E4%B8%BA-%E5%91%A8%E5%A4%A7%E7%A6%8F%E5%AA%92%E4%BD%93%E5%A8%B1%E4%B9%90/ar-AA2aSO7l",
-          "inclusionReason": "有线宽频正式更名，反映竞对公司品牌与股权战略调整，可能影响市场定位与竞争格局。",
-          "businessImpact": "竞争格局"
-        },
-        {
-          "newsId": "NEWS-9A13B756A45951",
-          "title": "有线宽频股份简称将更改为「周大福媒体娱乐」",
-          "summary": "有线宽频公告，公司名称已正式更改为「CTF Media & Entertainment Limited 周大福媒体娱乐」，股份简称将相应变更。",
-          "category": "竞对动态",
-          "region": "香港本地",
-          "source": "证券之星港股频道",
-          "publishedAt": "2026-08-25T19:58:00+08:00",
-          "url": "https://hk.stockstar.com/RB2026082500040256.shtml",
-          "inclusionReason": "有线宽频股份简称变更，与第一条为同一更名事件的不同报道角度，涉及竞对资本市场标识变化。",
-          "businessImpact": "竞争格局"
-        },
-        {
           "newsId": "NEWS-4AF01164E4227E",
           "title": "Apple发布搭载M5 Max与M5 Ultra的全新Mac Studio",
           "summary": "Apple发布全新Mac Studio，搭载M5 Max与M5 Ultra芯片，内存最高512GB，将于8月27日开放预购，主打本地AI算力。",
@@ -1232,6 +992,246 @@
           "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE41V3ctYkV3Vzk4Y0JzMzR3TVROendLak9XVFV5S0tiVXN6ZW1Odzl1T0lOWGc4WERmSGRXenNlWXlKN1NCN19icjlnZ1FXa21MZFNTdjc5U05Jd0JBbjVXWVN1RFBURlB4?oc=5",
           "inclusionReason": "Apple发布新一代高性能AI算力硬件，M5系列芯片的本地AI算力提升反映终端侧AI基础设施演进趋势，对电信行业AI终端生态与边缘计算需求有潜在影响。",
           "businessImpact": "产品与定价"
+        },
+        {
+          "newsId": "NEWS-18B85CFE99778E",
+          "title": "法兴：AI与关税重塑铜价逻辑 LME铜更直接受益于AI需求",
+          "summary": "法兴模型显示LME铜自2025年初以来大部分涨幅可解释，约一半收益归因于AI相关因素，数据中心建设、电网及电气化投资成为影响铜价的重要变量。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "东方财富网财经频道",
+          "publishedAt": "2026-08-25T21:18:00+08:00",
+          "url": "https://finance.eastmoney.com/a/202608253853186332.html",
+          "inclusionReason": "数据中心建设与AI需求成为影响铜价的重要变量，反映AI基础设施投入对上游材料需求的具体变化。",
+          "businessImpact": "成本与效率"
+        },
+        {
+          "newsId": "NEWS-71934E7699F85F",
+          "title": "泰凌微2026年中报：增收不增利 应收账款体量较大",
+          "summary": "泰凌微2026年中报显示营业总收入5.41亿元同比上升7.37%，归母净利润9873.88万元同比下降2.31%，应收账款占最新年报归母净利润比达118.11%。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "搜狐",
+          "publishedAt": "2026-08-25T17:31:00+08:00",
+          "url": "https://www.sohu.com/a/1067609534_115377",
+          "inclusionReason": "物联网芯片厂商泰凌微中报显示收入增长但利润下滑、应收账款偏高，反映IoT芯片市场需求与供应链经营的具体变化。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-FA5A846AC67DC2",
+          "title": "港股中报透视算力产业：有公司靠卖Token扭亏 需求端仍看不到尽头",
+          "summary": "港股中报显示算力产业有公司靠卖Token扭亏，需求端仍看不到尽头。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "Moomoo",
+          "publishedAt": "2026-08-25T21:29:42+08:00",
+          "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQT0xrX1BoVWtnUXEyV2Y4QUtGQUpNMjA2dDA3XzhOaUhsR3phU2kyMUdMLU4xUkRWMjFld3pXbUdrSnA1U1hfUUg0NXdIc2RpalRJNW5IaDNHUDJvR3BoTm1sSnZQOXJVNHI1SHlrVHNEbTNKQW8xZnNHQzZ2N0tJblI0NWVscHJGa2FnQ3hZbTF5WExUcFZtd2JPVGJnckZld21fdXNGTlNRUQ?oc=5",
+          "inclusionReason": "港股中报显示算力公司靠卖Token扭亏且需求旺盛，反映AI算力市场商业化与需求增长。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-AAFBD04EFA715B",
+          "title": "横琴出台新政支持澳门珠江西岸航空港建设",
+          "summary": "横琴粤澳深度合作区公布支持澳门珠江西岸国际航空运输枢纽建设的扶持办法，助力琴澳一体推进航空枢纽建设。",
+          "category": "政策监管",
+          "region": "国际/行业",
+          "source": "香港文匯網",
+          "publishedAt": "2026-08-25T19:55:00+08:00",
+          "url": "https://www.wenweipo.com/a/202608/25/AP6a8d74dae4b0c1e500263347.html",
+          "inclusionReason": "横琴出台具体扶持办法支持澳门航空枢纽建设，属跨境合作与区域交通基础设施政策变化，可能影响区域客流与经济需求。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-A4C28E81F2B511",
+          "title": "物联网数据采集器密度检测成2026年智慧城市基建新刚需",
+          "summary": "物联网数据采集器密度检测服务在2026年兴起，融合射频技术为智慧城市传感器部署提供第三方检测，成为新基建配套服务。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "搜狐",
+          "publishedAt": "2026-08-25T17:31:00+08:00",
+          "url": "https://www.sohu.com/a/1067612566_122066679",
+          "inclusionReason": "物联网数据采集器密度检测作为智慧城市新基建配套服务兴起，反映物联网部署标准化和第三方服务需求增长，可能影响电信运营商物联网业务生态与基础设施部署模式。",
+          "businessImpact": "网络与运营"
+        },
+        {
+          "newsId": "NEWS-663F562DB7A0EB",
+          "title": "AI投资热潮转向现金流阶段",
+          "summary": "分析认为AI人工智能投资正从追逐梦想转向关注实际现金流回报。",
+          "category": "行业动态",
+          "region": "香港本地",
+          "source": "香港財經時報HKBT",
+          "publishedAt": "2026-08-25T18:58:00+08:00",
+          "url": "https://news.google.com/rss/articles/CBMipwJBVV95cUxNSW1zblJrOWVNR0EtMS0zV3BvTVBVaDF6TmJQY2psU3RtX191bjJVY0M5QXNTQl9wZjB5bnpGaXBmVkxlWTgzTWpmT3N1Y01QMmVLWjFfaEtraWNZNFB5bGtQTmdzVmdJd1gyVUZPYWdUakptcTVtTDJaUDB6QXZHb2xBY3V1Wk0tWElfQzRlVHBrZ0xuV0FuTXhNZThkUnJ6S3BHN0hGXzVRSHI4di10VGxLWThmYmdqZTU2T19xaUhMNWZ6R2hGajFzNHE1WVZKWWR3NGUzUmFvUWM0Ujg4cWFYY2pNd200T3VoUXJpZFFTQU1UWDZMcElJWEt1bk9TS0Y0X1R2cEgtOWZIaUZrdkZlay0wVGh5MkY5alVPbGpDZ0p3cFdr?oc=5",
+          "inclusionReason": "AI投资逻辑从概念转向现金流，反映市场需求和资本配置趋势变化，影响电信行业AI投资决策。",
+          "businessImpact": "资本配置"
+        },
+        {
+          "newsId": "NEWS-05B322C4D84534",
+          "title": "玮俊生物科技参与马来西亚彭亨州AI数字基建项目",
+          "summary": "玮俊生物科技与马来西亚彭亨州航空城签署战略合作备忘录，规划开发超1200英亩综合AI数字基建生态系统，包括300兆瓦AI数据中心、GPU集群及绿色能源配套。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "雅虎財經",
+          "publishedAt": "2026-08-25T16:33:00+08:00",
+          "url": "https://hk.finance.yahoo.com/news/%E7%91%8B%E4%BF%8A%E7%94%9F%E7%89%A9%E7%A7%91%E6%8A%80%E7%B0%BD%E6%88%B0%E7%95%A5%E5%90%88%E4%BD%9C%E5%82%99%E5%BF%98%E9%8C%84-%E5%8F%83%E8%88%87%E5%A4%A7%E9%A6%AC%E5%BD%AD%E4%BA%A8%E5%B7%9Eai%E6%95%B8%E5%AD%97%E5%9F%BA%E5%BB%BA%E9%A0%85%E7%9B%AE-153353556.html",
+          "inclusionReason": "马来西亚大型AI数据中心和GPU集群项目涉及AI基础设施投资，反映区域算力需求增长趋势。",
+          "businessImpact": "供应韧性"
+        },
+        {
+          "newsId": "NEWS-42D45998C1FBEB",
+          "title": "瑞银上调Celestica评级至买入，算力硬件企业获华尔街集体看好",
+          "summary": "瑞银将算力硬件企业Celestica评级上调至买入，华尔街预计其未来两年EPS复合增幅达50%。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "Investing.com 香港 - 股市報價& 財經新聞",
+          "publishedAt": "2026-08-25T15:20:49+08:00",
+          "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5LNTVtNFB6bW9ZWWxHcDlSeXRlQ196TU1LdGhCY2FwLWo5bnFtLVB6bi1QWXJfZHJwbkcxY3pBQkZRTWJ2eTVQR2Rhck5XSmF0aENIQjIyaTZvUUp1Q2FJR204TGpfa3hPYV9oUktqMUU?oc=5",
+          "inclusionReason": "算力硬件企业获华尔街集体唱多，反映算力产业链需求强劲，影响电信行业算力基础设施投资判断。",
+          "businessImpact": "供应韧性"
+        },
+        {
+          "newsId": "NEWS-75296324943B64",
+          "title": "算力成为交易资产：从算力期货到算力美元",
+          "summary": "探讨算力本身作为可交易资产的趋势，涵盖算力期货和算力美元等金融化形态。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "PANews",
+          "publishedAt": "2026-08-25T23:49:00+08:00",
+          "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPaXlRTFJOZHl3WUM2V0Z3SHVCTG9oRTkwYWg0SzJiQUFMRlNWQUZRVWkwaTVYU1p4SmxaS0c5YXJnTko1bmxBVkZUaGwxaEp4enlFdGVNOVFyVFhOWFZTcHhMYTl1Nk84cmk3d2NjamlBLWplVmpuc0lDcUZHVklwU01yVDVmdw?oc=5",
+          "inclusionReason": "算力金融化趋势反映算力作为基础设施资源的战略价值提升，影响电信行业对算力资产定价和投资的理解。",
+          "businessImpact": "资本配置"
+        },
+        {
+          "newsId": "NEWS-6CA18922C0B7A5",
+          "title": "川湖滑轨技术成AI服务器机柜关键支撑",
+          "summary": "川湖科技凭借滑轨专利技术支撑AI服务器机柜，云端业者难以替换其产品。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "鏡週刊 on MSN",
+          "publishedAt": "2026-08-25T23:28:58+08:00",
+          "url": "https://www.msn.com/zh-tw/%E6%8A%80%E8%A1%93/%E7%A1%AC%E9%AB%94%E8%88%87%E8%A3%9D%E7%BD%AE/%E7%9B%B4%E6%93%8A%E5%B7%9D%E6%B9%96%E7%99%BC%E9%81%94%E8%B7%AF1-%E5%85%A9%E6%A0%B9%E9%90%B5%E6%A2%9D%E6%92%90%E4%BD%8Fai%E4%BC%BA%E6%9C%8D%E5%99%A8%E9%9A%B1%E5%BD%A2%E8%84%8A%E6%A4%8E-%E5%B7%9D%E6%B9%96%E9%BB%91%E7%A7%91%E6%8A%80%E8%AE%93%E9%BB%83%E4%BB%81%E5%8B%B3%E6%88%92%E4%B8%8D%E6%8E%89/ar-AA2aVigo",
+          "inclusionReason": "川湖滑轨技术支撑AI服务器机柜且云端业者难以替换，反映AI服务器供应链关键组件需求。",
+          "businessImpact": "供应韧性"
+        },
+        {
+          "newsId": "NEWS-5611D8854A119D",
+          "title": "APEC会议首次走进粤港澳大湾区",
+          "summary": "APEC领导人非正式会议首次在粤港澳大湾区举行，文章认为大湾区可为亚太共同体建设提供试验场。",
+          "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+          "region": "国际/行业",
+          "source": "南方网",
+          "publishedAt": "2026-08-25T19:13:00+08:00",
+          "url": "https://news.southcn.com/node_ac2b0b62a4/cfd70b4255.shtml",
+          "inclusionReason": "APEC会议首次走进粤港澳大湾区并讨论区域合作体系，影响区内经贸合作与市场开放。",
+          "businessImpact": "竞争格局"
+        },
+        {
+          "newsId": "NEWS-70ECC53BAA8111",
+          "title": "美国对伊朗实施“最严厉制裁”，霍尔木兹海峡仍是博弈焦点",
+          "summary": "美国对伊朗转向经济封锁，霍尔木兹海峡通行权争夺仍是局势关键，影响能源运输走向。",
+          "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+          "region": "国际/行业",
+          "source": "中国青年网新闻频道",
+          "publishedAt": "2026-08-25T13:46:00+08:00",
+          "url": "https://news.youth.cn/jsxw/202608/t20260825_16833019.htm",
+          "inclusionReason": "美国对伊朗实施最严厉制裁并聚焦霍尔木兹海峡通行权，可能影响能源运输与供应成本。",
+          "businessImpact": "供应韧性"
+        },
+        {
+          "newsId": "NEWS-6707337D708650",
+          "title": "蔡杰铭连跑三场抢人才企业 邀全球独角兽落户香港",
+          "summary": "香港官员蔡杰铭连跑三场活动吸引人才企业，邀请全球独角兽落户香港。",
+          "category": "政策监管",
+          "region": "香港本地",
+          "source": "香港商报",
+          "publishedAt": "2026-08-25T20:19:29+08:00",
+          "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBHazI3SGJzSW5USXFiOVJFc0FxRFl2RS1QWHlYdjc2NDg3Z0IxZVdGMlBnRDVGOS1zSV9MS21XTDBBQk1DWElabnBFRFMxXzUyUkUySEF1RmE3V1J2eEZlUGplenpTVUZlbVVuTnhZaFd4UQ?oc=5",
+          "inclusionReason": "香港官员连跑三场活动吸引全球独角兽落户，具体产业政策动作→可能带动本地企业客户需求与数字产业投资。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-6DB3AFA2DF4041",
+          "title": "西门子:台湾AI下一战 须解决算力、电力、净零3挑战",
+          "summary": "西门子:台湾AI下一战 须解决算力、电力、净零3挑战 自由财经",
+          "category": "基础设施/网络/技术类",
+          "region": "国际/行业",
+          "source": "自由財經",
+          "publishedAt": "2026-08-25T19:23:50+08:00",
+          "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9nT0FXSU9lbHBFSUotRGZjLUJGYTRrV1BRck9ZMmJFWFVCaEVqdjRtWEJHNHJmZDZ5cko0akluQnB4NkVRUUZwLS1URUw1X3k0YmYtVmVXQm1VbVFJc2Vj?oc=5",
+          "inclusionReason": "西门子:台湾AI下一战 须解决算力、电力、净零3挑战属于可验证的关键技术事件，影响竞争格局。",
+          "businessImpact": "竞争格局"
+        },
+        {
+          "newsId": "NEWS-BC427B5529A20E",
+          "title": "港珠澳大桥通车8年货值与回本分析",
+          "summary": "港珠澳大桥通车8年累计投入1269亿元，带动1.5万亿货值过桥，跨境物流与香港机场货运衔接日益频繁。",
+          "category": "基础设施/网络/技术类",
+          "region": "香港本地",
+          "source": "搜狐",
+          "publishedAt": "2026-08-25T18:17:00+08:00",
+          "url": "https://www.sohu.com/a/1067617578_122313232",
+          "inclusionReason": "港珠澳大桥带动跨境物流货值与香港机场货运衔接，反映深港跨境基建带来的物流需求变化，可影响企业客户需求与网络部署。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-E6E5BC3BB18708",
+          "title": "镜头：香港机场百里延伸 东莞空港中心收货忙",
+          "summary": "镜头：香港机场百里延伸 东莞空港中心收货忙 中国评论新闻",
+          "category": "基础设施/网络/技术类",
+          "region": "香港本地",
+          "source": "中國評論新聞",
+          "publishedAt": "2026-08-25T23:55:40+08:00",
+          "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQNWVhZFRVVHdRb1JJRzVlalRfSTh3NEZWMW93YUtNRzYwektWVVRCTE1FcUVFbUlnYWtOci1BS3FjM0VXTFVyRzdWbk13QUxBc21acEtVV3ZVd01pVVhEeUI2OXFHb2RNaVNwcGVRamRBYU1OaDl6S19CLXp5NmJCampGOWk0OHFlQVE?oc=5",
+          "inclusionReason": "镜头：香港机场百里延伸 东莞空港中心收货忙属于可验证的基础设施事件，影响成本与效率。",
+          "businessImpact": "成本与效率"
+        },
+        {
+          "newsId": "NEWS-9527F45BBEE6B4",
+          "title": "雷蒙德詹姆斯上调安谋控股目标价，看好CPU业务增长前景",
+          "summary": "雷蒙德詹姆斯上调安谋控股目标价，看好其CPU业务增长前景。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "Investing.com 香港 - 股市報價& 財經新聞",
+          "publishedAt": "2026-08-25T18:06:16+08:00",
+          "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBCczY1Tmo0THNFNjlIZDU3N1V0a2tja2FnOXEyNTloVWlxT2VhX2tyRjdQRi1WX3dIcnk0RG9kTFd6bzhBZ2c3XzgtRkt1STZfOWd4b012cXZ2c1pfZnFDNzc5VHA5clBQLUZCSE9iT2pzWW5v?oc=5",
+          "inclusionReason": "安谋控股CPU业务获机构看好并上调目标价，反映CPU市场需求与竞争格局变化。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-8E9A6402D393AF",
+          "title": "雷蒙德詹姆斯上调英伟达目标价至352美元，看好CPU业务增长",
+          "summary": "雷蒙德詹姆斯上调英伟达目标价至352美元，看好其CPU业务增长。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "Investing.com 香港 - 股市報價& 財經新聞",
+          "publishedAt": "2026-08-25T18:00:16+08:00",
+          "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNQVNkZ1Q1UGRBaHEtVEluVlVSV3NrZzh5VVRWMmlCaC1ta040NVdfSzVyMVlDQ0NzRUI0YWpHMWcxMlU0QXR5aHI3c1E4NTFDR2FheGt0c0VPZ3VCX29hUnhPUXhqVEZLa0Z0Ty1wcGhWdW5feW5RUlM2V0N5SXpsNllNa1Y?oc=5",
+          "inclusionReason": "英伟达CPU业务获机构看好并上调目标价，反映CPU市场需求与竞争格局变化。",
+          "businessImpact": "收入与需求"
+        },
+        {
+          "newsId": "NEWS-93FDFC572335F2",
+          "title": "雷蒙德詹姆斯看好AI服务器CPU成长，点名顶尖半导体股",
+          "summary": "雷蒙德詹姆斯分析师看好AI服务器CPU市场增长前景，并点名推荐多只顶尖半导体股票。",
+          "category": "行业动态",
+          "region": "国际/行业",
+          "source": "Investing.com 香港 - 股市報價& 財經新聞",
+          "publishedAt": "2026-08-25T22:11:30+08:00",
+          "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5xdGVOT1hXQTd4dklCM2RyWXByY1NneGNZenNzOEhEZkIzdFhhUEk1eWgxa2Q1aVFSeGRfeGloS2VLVncyaHRoMjkxTjBUWXUtbU9nWTdCOVNYcmtnNlJ5bkx2OWs1NWdzajlCWi1EQ3FQSGhPdTMw?oc=5",
+          "inclusionReason": "AI服务器CPU市场增长预期涉及算力基础设施需求变化，可间接影响数据中心与电信云部署成本。",
+          "businessImpact": "成本与效率"
+        },
+        {
+          "newsId": "NEWS-CF55F6E21CA839",
+          "title": "香港机场东莞空港中心长远计划明年6月正式运营，年处理货物能力超100万吨",
+          "summary": "香港机场东莞空港中心长远计划于明年6月正式运营，年处理货物能力将超过100万吨。",
+          "category": "基础设施/网络/技术类",
+          "region": "香港本地",
+          "source": "大公文匯網",
+          "publishedAt": "2026-08-25T21:38:10+08:00",
+          "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5MbGZFRFJmTUk5eE1YLU1rdmlUOXU0RnA0SG1rc1JGbmxxNUM2OW11TDN6bllWcFRmb2RhdkY2UjNhdEdrVVZCblBxalZxallQNVdpaG9KSUNXQ2tKTGZfLUxDcmpFRE02NmstMnlDVlQ?oc=5",
+          "inclusionReason": "空港中心正式运营将提升香港跨境物流能力，涉及口岸与通关基础设施，可能影响本地企业物流需求和网络部署。",
+          "businessImpact": "收入与需求"
         }
       ],
       "discoveryItems": [
@@ -16091,7 +16091,7 @@
           "publishedAt": "2026-08-25T17:16:45+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -16100,8 +16100,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "两者均报道SpaceXAI部署英伟达Vera CPU以加速/支援AI基础设施。标题核心主体（SpaceXAI）、动作（部署英伟达Vera CPU）、目的（AI基础设施/代理应用）完全一致。NEWS-8B371D675C206A在allowed_duplicate_ids中。",
+          "duplicateOf": "NEWS-8B371D675C206A",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -16235,7 +16235,7 @@
           "publishedAt": "2026-08-25T15:28:52+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -16244,8 +16244,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "两者均报道阿里巴巴发布万相3.0（Wan3.0）AI视频模型，可将商业文档/PPT转为30秒视频。主体（阿里巴巴/阿里）、产品（万相3.0/Wan3.0）、功能（文档转视频/30秒视频）完全一致。NEWS-641F46C708600F在allowed_duplicate_ids中。",
+          "duplicateOf": "NEWS-641F46C708600F",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -16292,7 +16292,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "两者均报道Apple推出M6/M5 Ultra芯片。NEWS-26F8909FF8C047报道Apple推出M6芯片及M5 Ultra版Mac Studio，NEWS-C3DDBB76B25385报道Apple推出M6与M5 Ultra，同一产品发布事件。",
+          "reason": "与NEWS-C3DDBB76B25385为同一事件：Apple发布M6芯片及M5 Ultra，AI算力大幅提升。两者报道同一产品发布，仅来源和措辞不同。NEWS-C3DDBB76B25385在allowed_duplicate_ids中。",
           "duplicateOf": "NEWS-C3DDBB76B25385",
           "errors": [],
           "query": "",
@@ -16556,7 +16556,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与earlier_candidates中NEWS-5B64A7447015AD报道同一事件：香港7月出口按年升50.7%，受AI电子产品带动。标题和摘要高度一致，来源不同但核心事实相同。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-5B64A7447015AD",
           "errors": [],
           "query": "",
@@ -16844,7 +16844,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与NEWS-BFD40EAF14C250报道同一事件：高通下一代Snapdragon旗舰平台Oryon CPU达5GHz。两者核心事实完全一致，均为高通Oryon CPU 5GHz的预告。",
+          "reason": "高通预告下一代Snapdragon旗舰平台Oryon CPU达5GHz，与NEWS-BFD40EAF14C250'高通新一代Oryon CPU达到5GHz主频'是同一产品发布事件。主体（高通）、产品（Oryon CPU）、关键数字（5GHz）完全一致，属于同一公告的不同媒体报道。BFD40EAF14C250在先（ord",
           "duplicateOf": "NEWS-BFD40EAF14C250",
           "errors": [],
           "query": "",
@@ -17108,7 +17108,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17125,7 +17125,7 @@
           "publishedAt": "2026-08-25T23:22:30+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17134,8 +17134,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-ABE3E64F5DA46E同属湖南日产业创新对接会上张曼莉谈湖南制造与香港AI战略合作，主体、场合和动作一致，仅来源和标题措辞不同。",
+          "duplicateOf": "NEWS-ABE3E64F5DA46E",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17160,7 +17160,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17186,7 +17186,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17212,7 +17212,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17238,7 +17238,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17264,7 +17264,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17281,7 +17281,7 @@
           "publishedAt": "2026-08-25T11:46:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17290,8 +17290,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道中国电信2026年上半年业绩，营收2590.10亿元、归母净利润195.88亿元等关键数字一致，属同一份财报。",
+          "duplicateOf": "NEWS-65E6617C137FB6",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17316,7 +17316,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17333,7 +17333,7 @@
           "publishedAt": "2026-08-25T16:56:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17342,8 +17342,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道中国移动2026年中期业绩，基础业务承压、算力与智能服务增长等核心内容一致，属同一份中期业绩报告。",
+          "duplicateOf": "NEWS-C5C82E79227AD1",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17368,7 +17368,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17385,7 +17385,7 @@
           "publishedAt": "2026-08-25T13:00:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17394,8 +17394,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道中国联通作为通信服务合作伙伴护航2026世界人形机器人运动会，主体、场合和动作一致，属同一事件。",
+          "duplicateOf": "NEWS-52C189ED875998",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17420,7 +17420,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17446,7 +17446,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17463,7 +17463,7 @@
           "publishedAt": "2026-08-25T17:24:16+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17472,8 +17472,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道中韩时隔8年重启信息通信合作部级战略对话，主体、动作、关键时间一致，为同一事件。",
+          "duplicateOf": "NEWS-21FAB93EFD8ED7",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17489,7 +17489,7 @@
           "publishedAt": "2026-08-25T21:00:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17498,8 +17498,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道机电工程署为多个政府部门提供AI技术支援，主体与动作一致，为同一事件。",
+          "duplicateOf": "NEWS-1A8152FCD1E899",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17524,7 +17524,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17550,7 +17550,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17576,7 +17576,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17602,7 +17602,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17619,7 +17619,7 @@
           "publishedAt": "2026-08-25T14:39:50+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17628,8 +17628,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "程序高置信标题去重：同日标题完全相同或高度近似。",
+          "duplicateOf": "NEWS-B05F2E1D98E297",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17654,7 +17654,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17671,7 +17671,7 @@
           "publishedAt": "2026-08-25T22:31:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17680,8 +17680,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道中国联通以5G-A等护航世界人形机器人运动会，主体、动作、赛事一致，为同一事件。",
+          "duplicateOf": "NEWS-52C189ED875998",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
           ],
@@ -17706,7 +17706,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 3: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-ABE3E64F5DA46E 返回了无效重复对象 NEWS-A4DB98E2A89B9C"
@@ -17732,7 +17732,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17749,7 +17749,7 @@
           "publishedAt": "2026-08-25T16:35:11+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17758,8 +17758,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "程序高置信标题去重：同日标题完全相同或高度近似。",
+          "duplicateOf": "NEWS-81D9704C369065",
           "errors": [
             "bounded batch 4: timed out"
           ],
@@ -17784,7 +17784,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17810,7 +17810,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17836,7 +17836,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17862,7 +17862,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17879,7 +17879,7 @@
           "publishedAt": "2026-08-25T17:50:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17888,8 +17888,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道小米发布玄戒O3、O100、D100三款自研芯片，主体、产品、动作一致，为同一产品发布事件。",
+          "duplicateOf": "NEWS-E02BFE11F922C6",
           "errors": [
             "bounded batch 4: timed out"
           ],
@@ -17905,7 +17905,7 @@
           "publishedAt": "2026-08-25T12:30:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -17914,8 +17914,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "均报道美国对伊朗实施经济孤立/制裁并威胁惩罚与伊贸易国家，中国作为最大石油买家受影响，为同一事件。",
+          "duplicateOf": "NEWS-1690DC33730A6F",
           "errors": [
             "bounded batch 4: timed out"
           ],
@@ -17940,7 +17940,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17966,7 +17966,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -17992,7 +17992,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18018,7 +18018,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18044,7 +18044,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18061,7 +18061,7 @@
           "publishedAt": "2026-08-25T12:06:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18070,8 +18070,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-2A79B981DA9498报道同一份德勤与港大联合发布的企业AI应用报告，核心数据33.7%一致。本条发布时间更早（12:06），但两者为同一事件的不同媒体报道。",
+          "duplicateOf": "NEWS-2A79B981DA9498",
           "errors": [
             "bounded batch 4: timed out"
           ],
@@ -18096,7 +18096,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18122,7 +18122,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18148,7 +18148,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18174,7 +18174,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18191,7 +18191,7 @@
           "publishedAt": "2026-08-25T17:05:51+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18200,8 +18200,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-9748B5AEB33170报道同一教育局人工智能领导培训活动，均面向中小学推动校本数字教育。本条来自政府官网，NEWS-9748B5AEB33170来自香港01，为同一事件的不同来源报道。",
+          "duplicateOf": "NEWS-9748B5AEB33170",
           "errors": [
             "bounded batch 4: timed out"
           ],
@@ -18226,7 +18226,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18252,7 +18252,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18278,7 +18278,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18304,7 +18304,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18330,7 +18330,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 4: timed out"
@@ -18356,7 +18356,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18373,7 +18373,7 @@
           "publishedAt": "2026-08-25T21:14:14+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18382,7 +18382,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18399,7 +18399,7 @@
           "publishedAt": "2026-08-25T18:12:04+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18408,7 +18408,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18425,7 +18425,7 @@
           "publishedAt": "2026-08-25T10:32:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18434,8 +18434,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "有线宽频股份简称8月28日起改为周大福媒体娱乐，与NEWS-E5128A5B81E0AC、NEWS-D26376E23AAA36、NEWS-9A13B756A45951均为同一更名事件。本条发布时间最早（10:32），信息最完整。同时priority_history中NEWS-D72383049F5B7A也报道同一事件",
+          "duplicateOf": "NEWS-E5128A5B81E0AC",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18451,7 +18451,7 @@
           "publishedAt": "2026-08-25T10:34:13+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18460,8 +18460,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "程序高置信标题去重：同日标题完全相同或高度近似。",
+          "duplicateOf": "NEWS-E5128A5B81E0AC",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18477,7 +18477,7 @@
           "publishedAt": "2026-08-25T19:58:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18486,8 +18486,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "有线宽频股份简称将更改为周大福媒体娱乐，与NEWS-E5128A5B81E0AC、NEWS-D26376E23AAA36、NEWS-81E2FE77F64CFF为同一更名事件。NEWS-81E2FE77F64CFF最早发布且信息最完整。",
+          "duplicateOf": "NEWS-81E2FE77F64CFF",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18512,7 +18512,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18529,7 +18529,7 @@
           "publishedAt": "2026-08-25T20:05:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18538,8 +18538,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-A5D069F6628A1C（香港7月出口按年升50.7%）和NEWS-5B64A7447015AD（AI电子产品需求强劲 香港7月出口年增50.7%）均报道香港出口数据。但NEWS-767AEFD931702E报道的是1至7月累计数据（出口升40.9%），而A5D069F6628A1C和5B64A7447",
+          "duplicateOf": "NEWS-A5D069F6628A1C",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18555,7 +18555,7 @@
           "publishedAt": "2026-08-25T20:02:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18564,8 +18564,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与priority_history中NEWS-EE37B80A957A81（机电署研AI无人机检测高位灯 建私有云助各政府部门项目落地）和NEWS-1A8152FCD1E899（机电署为多个政府部门提供AI支援 推动不同项目落地应用）高度重复。三者均报道香港机电署利用AI技术支援政府部门，主体相同（机电署）、动作相同（",
+          "duplicateOf": "NEWS-EE37B80A957A81",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18590,7 +18590,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18616,7 +18616,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18633,7 +18633,7 @@
           "publishedAt": "2026-08-25T13:40:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18642,8 +18642,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与earlier_candidates中NEWS-1EE405172F0693（新皇岗口岸开通｜多部门联合演练 模拟深港救护车跨境病人交接）高度重复。两者均报道在新皇岗口岸进行的深港救护车跨境病人交接联合演练，主体（海关、消防处、入境处、卫生署）、地点（新皇岗口岸）、事件（跨境病人交接演练）完全一致，为同一事件的不同媒",
+          "duplicateOf": "NEWS-1EE405172F0693",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18668,7 +18668,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18694,7 +18694,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18711,7 +18711,7 @@
           "publishedAt": "2026-08-25T20:49:05+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18720,7 +18720,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18746,7 +18746,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18772,7 +18772,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18798,7 +18798,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18824,7 +18824,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18850,7 +18850,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18876,7 +18876,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18902,7 +18902,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
@@ -18919,7 +18919,7 @@
           "publishedAt": "2026-08-25T15:00:12+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18928,8 +18928,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与priority_history中NEWS-99D554421FD810（硬蛋创新签订逾10亿美元Token工厂服务合同）和当前批次NEWS-33FCB860739270（硬蛋创新逾10亿美元Token订单正式落地）高度重复。三者均报道硬蛋创新签订/落实逾10亿美元AI服务/Token合约。44E77D87F0EE5",
+          "duplicateOf": "NEWS-99D554421FD810",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18945,7 +18945,7 @@
           "publishedAt": "2026-08-25T20:25:36+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18954,8 +18954,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与priority_history中NEWS-99D554421FD810（硬蛋创新签订逾10亿美元Token工厂服务合同）和当前批次NEWS-44E77D87F0EE5A（硬蛋创新10亿美元AI服务合约正式落实）高度重复。三者均报道硬蛋创新同一笔逾10亿美元AI/Token合约。33FCB860739270强调'五年",
+          "duplicateOf": "NEWS-99D554421FD810",
           "errors": [
             "bounded batch 5: 公司内部 AI 返回的 JSON 字段不完整：Agent 为候选 NEWS-E5128A5B81E0AC 返回了无效重复对象 NEWS-D26376E23AAA36"
           ],
@@ -18971,7 +18971,7 @@
           "publishedAt": "2026-08-25T15:04:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -18980,8 +18980,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与earlier_candidates中NEWS-ACA75DF1C4D6BD（私隐公署发布代理式AI指引 建议避免过度收集个人资料）高度重复。两者均报道香港私隐专员公署发布代理式AI指引，建议避免过度提供/收集个人资料。主体（私隐公署/私隐专员公署）、事件（发布代理式AI指引）、核心建议（资料最少化/避免过度收集）完",
+          "duplicateOf": "NEWS-ACA75DF1C4D6BD",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -18997,7 +18997,7 @@
           "publishedAt": "2026-08-25T19:24:35+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19006,8 +19006,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与当前批次中NEWS-42D45998C1FBEB（瑞银上调Celestica评级至买入，算力硬件企业获华尔街集体看好）高度重复。两者均报道华尔街对Celestica的集体看好，41EB57DA9DA7A2标题为'算力硬件企业Celestica获华尔街集体唱多'，42D45998C1FBEB更详细包含瑞银评级和EPS数",
+          "duplicateOf": "NEWS-42D45998C1FBEB",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19032,7 +19032,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19058,7 +19058,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19075,7 +19075,7 @@
           "publishedAt": "2026-08-25T23:21:23+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19084,8 +19084,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "苹果发布M5 Ultra芯片，AI算力达前代4.5倍。earlier_candidates中NEWS-C3DDBB76B25385（Apple推出M6与M5 Ultra）和NEWS-641FA881B60AAA（M5 Ultra完整解析）均报道同一芯片发布事件。本条与NEWS-C3DDBB76B25385均报道苹果M5",
+          "duplicateOf": "NEWS-C3DDBB76B25385",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19101,7 +19101,7 @@
           "publishedAt": "2026-08-25T22:51:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19110,8 +19110,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "苹果2026 Mac Mini导入12核M6芯片，高规机搭M5 Pro。earlier_candidates中NEWS-875C254120A5A1（Mac mini M6/M5 Pro 2026全新登场）和NEWS-7E5AEE452E75CA（新款Mac mini首搭2纳米M6晶片）均报道同一Mac mini发布事",
+          "duplicateOf": "NEWS-875C254120A5A1",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19127,7 +19127,7 @@
           "publishedAt": "2026-08-25T23:33:19+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19136,8 +19136,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "苹果Mac mini首搭M6与M5 Pro晶片，AI效能狂飙4倍。与NEWS-875C254120A5A1和NEWS-E04ECE33C08548报道同一Mac mini发布事件，主体（苹果Mac mini）、动作（发布）、芯片（M6/M5 Pro）完全一致。",
+          "duplicateOf": "NEWS-875C254120A5A1",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19162,7 +19162,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19179,7 +19179,7 @@
           "publishedAt": "2026-08-25T21:56:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19188,8 +19188,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "康希通信2026半年报：营收3.95亿元同比增20.58%，扭亏为盈，并购知融科技。priority_history中NEWS-2E1BE939E5E1DC（康希通信2026上半年营收3.95亿元增20.58%扭亏）关键数字完全一致，同一份财报事件。本条多了并购知融科技内容但核心财报数据相同。",
+          "duplicateOf": "NEWS-2E1BE939E5E1DC",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19214,7 +19214,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19231,7 +19231,7 @@
           "publishedAt": "2026-08-25T21:01:33+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19240,8 +19240,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "苹果发布搭载M6芯片的全新Mac mini，主打代理式AI与边缘算力。与NEWS-875C254120A5A1、NEWS-E04ECE33C08548、NEWS-D58CCB495E8B2B均为同一Mac mini发布事件，主体（苹果Mac mini）、芯片（M6）一致。",
+          "duplicateOf": "NEWS-875C254120A5A1",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19257,7 +19257,7 @@
           "publishedAt": "2026-08-25T11:47:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19266,8 +19266,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "辉达200亿美元收购Groq首款机柜量产，今年将与Vera Rubin一同上线。priority_history中NEWS-734A5C535CF187（英伟达Groq 3 LPX机架全面投产，200亿美元交易技术年内商用落地）和NEWS-B3B271367B789D（英伟达旗下AI推理加速器Groq 3 LPX已全面",
+          "duplicateOf": "NEWS-734A5C535CF187",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19283,7 +19283,7 @@
           "publishedAt": "2026-08-25T21:38:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19292,8 +19292,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "软银发万亿日元债券用于AI投资。priority_history中NEWS-66EC8B69D855F0（SoftBank拟发行创纪录1万亿日元零售债券为AI投资再融资）、NEWS-A3DFEF6A23235A（软银拟发行63亿美元零售债券）、NEWS-F0B7AFD1D81264（软银拟发1兆日圆零售债创日本纪录）均",
+          "duplicateOf": "NEWS-66EC8B69D855F0",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19318,7 +19318,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19335,7 +19335,7 @@
           "publishedAt": "2026-08-25T13:11:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19344,8 +19344,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "雷蒙德詹姆斯上调AMD评级，预测2030年服务器CPU市场规模达2010亿美元。earlier_candidates中NEWS-E344CC901EB2BF（Raymond James上调AMD目标价至641美元，看好其挑战英特尔CPU主导地位）同为雷蒙德詹姆斯对AMD的评级上调，同一分析师机构对同一公司的评级行动。",
+          "duplicateOf": "NEWS-E344CC901EB2BF",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19370,7 +19370,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19396,7 +19396,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19422,7 +19422,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19439,7 +19439,7 @@
           "publishedAt": "2026-08-25T20:10:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19448,8 +19448,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "香港7月出口按年升50.7%，美国市场倍增。earlier_candidates中NEWS-A5D069F6628A1C（香港7月出口按年升50.7%受AI电子产品带动）和NEWS-5B64A7447015AD（AI电子产品需求强劲香港7月出口年增50.7%）均报道同一出口数据。关键数字50.7%完全一致，同一经济数据",
+          "duplicateOf": "NEWS-A5D069F6628A1C",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19465,7 +19465,7 @@
           "publishedAt": "2026-08-25T16:07:24+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19474,8 +19474,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "香港北都首个片区开发项目由「五中一港」财团中标。priority_history中NEWS-B07800FA4B40F5（洪水桥片区批予中国海外、京东、信置等合组财团10.3亿中标）和NEWS-0A0DFB3BE0CFD0（财团以10.3亿港元中标北部都会区洪水桥项目）均报道同一中标事件。主体（北都/洪水桥片区）、动作",
+          "duplicateOf": "NEWS-B07800FA4B40F5",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19491,7 +19491,7 @@
           "publishedAt": "2026-08-25T15:47:27+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19500,8 +19500,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "香港政府推广AI应用提升公共服务效率。priority_history中NEWS-1A8152FCD1E899（机电署为多个政府部门提供AI支援推动不同项目落地应用）和NEWS-7BC39A644DEBCA（机电署三项AI应用项目显著提升效能）均报道香港政府AI在公共服务中的应用。主体（香港政府/机电署）、主题（AI提",
+          "duplicateOf": "NEWS-1A8152FCD1E899",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19526,7 +19526,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19552,7 +19552,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "",
           "errors": [
             "bounded batch 6: timed out"
@@ -19569,7 +19569,7 @@
           "publishedAt": "2026-08-25T18:04:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19578,8 +19578,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "语义去重模型结构异常；确定性ID、URL和事件签名均未命中，为避免漏报按保守召回策略保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-A5D069F6628A1C和NEWS-5B64A7447015AD报道同一事件：香港7月出口按年升50.7%，均提及AI电子产品带动增长。标题核心数据一致（50.7%），主体（香港出口）、时间（7月）完全相同，属于同一份经济数据的报道。",
+          "duplicateOf": "NEWS-A5D069F6628A1C",
           "errors": [
             "bounded batch 6: timed out"
           ],
@@ -19643,7 +19643,7 @@
           "publishedAt": "2026-08-25T22:31:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19652,8 +19652,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "与earlier_candidates中NEWS-BFD40EAF14C250报道同一事件：高通新一代Oryon CPU达到5GHz主频。两者主体（高通/Oryon CPU）、关键数字（5GHz）完全一致，属于同一产品预告的不同媒体报道。",
+          "duplicateOf": "NEWS-BFD40EAF14C250",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -19907,7 +19907,7 @@
           "publishedAt": "2026-08-26T07:56:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19916,8 +19916,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "与earlier_candidates中NEWS-E344CC901EB2BF和NEWS-93485FAE3C7C14、NEWS-12DDDF0E4BF122报道同一主题：AMD服务器CPU市占有望超越Intel，分析师给予看好评级。NEWS-E344CC901EB2BF是Raymond James上调AMD目标价看好",
+          "duplicateOf": "NEWS-E344CC901EB2BF",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -19940,8 +19940,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与NEWS-9C5BF15A2E4C2D报道同一事件：Raymond James分析师看好AMD数据中心CPU前景。9C5BF15A2E4C2D标题为'AMD服务器CPU市占明年或超Intel获强力买进评级'，93485FAE3C7C14标题为'AMD涨近5% 分析师看好其数据中心CPU击败英特尔与辉达'，两者核心事实",
-          "duplicateOf": "NEWS-9C5BF15A2E4C2D",
+          "reason": "与earlier_candidates中NEWS-E344CC901EB2BF和NEWS-9C5BF15A2E4C2D、NEWS-12DDDF0E4BF122报道同一主题：AMD在数据中心CPU市场有望击败Intel/英伟达。本记录AMD涨近5%是市场对分析师看好报告的反应，核心事件与NEWS-E344CC901EB2",
+          "duplicateOf": "NEWS-E344CC901EB2BF",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -19964,8 +19964,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与NEWS-9C5BF15A2E4C2D报道同一事件：AMD在数据中心CPU市场有望超越英特尔。12DDDF0E4BF122来源为华尔街日报中文网，9C5BF15A2E4C2D来源为MoneyDJ，但核心事实相同——AMD EPYC处理器在数据中心CPU市场有望超越Intel。",
-          "duplicateOf": "NEWS-9C5BF15A2E4C2D",
+          "reason": "与earlier_candidates中NEWS-E344CC901EB2BF和NEWS-93485FAE3C7C14、NEWS-9C5BF15A2E4C2D报道同一主题：AMD凭借EPYC处理器在数据中心CPU市场有望超越Intel和英伟达。华尔街日报的分析与Raymond James的评级上调指向同一判断，属于同一",
+          "duplicateOf": "NEWS-E344CC901EB2BF",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -19979,7 +19979,7 @@
           "publishedAt": "2026-08-26T00:59:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -19988,8 +19988,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "与priority_history中NEWS-AC86AF2D4084CA和NEWS-F00E8214A288F0报道同一事件：应科院与圣方济各大学签署合作备忘录，推动AI生物材料及数码健康创新。主体（应科院+圣方济各大学）、动作（签署合作备忘录）、领域（AI生物材料与数字健康）完全一致。",
+          "duplicateOf": "NEWS-AC86AF2D4084CA",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20003,7 +20003,7 @@
           "publishedAt": "2026-08-26T01:40:32+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20012,8 +20012,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "与earlier_candidates中NEWS-C3DDBB76B25385、NEWS-7AE76FCB364C40、NEWS-641FA881B60AAA、NEWS-875C254120A5A1、NEWS-4AF01164E4227E、NEWS-7E5AEE452E75CA报道同一事件：Apple发布M6及M5系列",
+          "duplicateOf": "NEWS-C3DDBB76B25385",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20036,8 +20036,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与BDF76BDAF2C707报道同一事件：Apple发布M6及M5系列芯片及新款Mac产品。两者来源相同（Techritual），同一发布事件的不同侧重点。",
-          "duplicateOf": "NEWS-BDF76BDAF2C707",
+          "reason": "与earlier_candidates中NEWS-C3DDBB76B25385、NEWS-BDF76BDAF2C707、NEWS-641FA881B60AAA、NEWS-875C254120A5A1、NEWS-4AF01164E4227E、NEWS-7E5AEE452E75CA报道同一事件：Apple发布M6及M5 U",
+          "duplicateOf": "NEWS-C3DDBB76B25385",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20060,8 +20060,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与BDF76BDAF2C707和7AE76FCB364C40报道同一事件：Apple发布M6芯片及新款Mac mini与Mac Studio。5EA07FB9FC1875标题为'Apple 发布 M6 晶片 揭示 iPhone 18 Pro 两大升级'，虽然增加了iPhone 18 Pro升级的推测，但核心事件仍是Ap",
-          "duplicateOf": "NEWS-BDF76BDAF2C707",
+          "reason": "与NEWS-C3DDBB76B25385（Apple推出M6与M5 Ultra）报道同一事件：Apple发布M6芯片。两者均涉及M6芯片发布，且NEWS-5EA07FB9FC1875摘要提到同步推出Mac mini与Mac Studio，与NEWS-C3DDBB76B25385及NEWS-875C254120A5A1、",
+          "duplicateOf": "NEWS-C3DDBB76B25385",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20276,7 +20276,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "与earlier_candidates中NEWS-558A573D19CE09（美国转向对伊朗经济施压 油价下跌3%）报道同一事件：美国对伊朗转向经济施压导致油价跌逾3%。主体（美国对伊朗经济施压）、动作（油价下跌）、关键数字（3%）完全一致，仅来源不同。",
+          "reason": "与NEWS-558A573D19CE09（美国转向对伊朗经济施压 油价下跌3%）高度重复。两者均报道美国对伊朗转向经济施压导致油价下跌逾3%，主体（美国对伊朗经济施压）、动作（油价跌逾3%）和关键数字（3%）完全一致。当前候选发布时间为8月26日，NEWS-558A573D19CE09为8月25日，属于同一事件的后续跟",
           "duplicateOf": "NEWS-558A573D19CE09",
           "errors": [],
           "query": "",
@@ -20387,7 +20387,7 @@
           "publishedAt": "2026-08-26T00:48:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20396,8 +20396,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "与NEWS-DD8CCBBFA35969高度重复。两者均报道圣安东尼奥市考虑监管数据中心分区政策。同一城市、同一动作，属于同一事件。NEWS-DD8CCBBFA35969更早（order 177 vs 178），但两者发布时间相近，互相重复。",
+          "duplicateOf": "NEWS-DD8CCBBFA35969",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20420,8 +20420,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "软银计划发行63亿美元（1万亿日元）零售债券为OpenAI投资筹资。priority_history中NEWS-66EC8B69D855F0（SoftBank集团拟发行创纪录1万亿日元零售债券为AI投资再融资）和NEWS-A3DFEF6A23235A（软银拟发行63亿美元零售债券）报道同一事件：主体（软银）、动作（发行",
-          "duplicateOf": "NEWS-66EC8B69D855F0",
+          "reason": "与priority_history中NEWS-A3DFEF6A23235A（软银拟发行63亿美元零售债券）以及NEWS-66EC8B69D855F0（SoftBank集团拟发行创纪录1万亿日元零售债券）、NEWS-F0B7AFD1D81264（软银拟发1兆日圆零售债）高度重复。当前候选标题「软银计划在日本发行63亿美元",
+          "duplicateOf": "NEWS-A3DFEF6A23235A",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20444,7 +20444,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "SpaceXAI采用NVIDIA Vera CPU加速代理式AI工作负载，与priority_history中NEWS-EFDD144783AC1D（SpaceX与Nvidia合作开发太空优化AI系统，计划2027年Q4发射）和NEWS-8B371D675C206A（SpaceXAI将部署英伟达Vera CPU以支援A",
+          "reason": "与priority_history中NEWS-EFDD144783AC1D（SpaceX与Nvidia合作开发太空优化AI系统）以及NEWS-8B371D675C206A（SpaceXAI将部署英伟达Vera CPU）高度重复。当前候选「SpaceXAI采用NVIDIA Vera CPU加速代理式AI工作负载」，与NE",
           "duplicateOf": "NEWS-EFDD144783AC1D",
           "errors": [],
           "query": "",
@@ -20540,7 +20540,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "Verizon与Google Cloud深化合作导入AI提升客服及网络效率。priority_history中NEWS-37395968200B0A（谷歌云宣布与Verizon达成战略合作协议）报道同一合作事件：主体（Verizon+Google Cloud）、动作（战略合作/深化合作）一致。",
+          "reason": "当前记录报道Verizon与Google Cloud深化AI合作，priority_history中NEWS-37395968200B0A报道谷歌云与Verizon达成战略合作协议，两者讲述同一合作事件，主体（Verizon+Google Cloud）、动作（合作）完全一致，仅发布时间和细节程度不同。",
           "duplicateOf": "NEWS-37395968200B0A",
           "errors": [],
           "query": "",
@@ -20684,7 +20684,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "SpaceX太空AI带动台供应链提前接单，与priority_history中NEWS-EFDD144783AC1D（SpaceX与Nvidia合作开发太空优化AI系统）和NEWS-ACDE511613DDD9（SpaceXAI采用NVIDIA Vera CPU）报道同一核心事件：SpaceX发展太空AI。本记录从台湾",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-EFDD144783AC1D",
           "errors": [],
           "query": "",
@@ -20708,8 +20708,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "爱立信携手联发科北美首例先进移动测试成功。earlier_candidates中NEWS-101BB88018B6B1（爱立信携联发科、AT&T完成北美首例先进移动性功能实网试验）报道同一事件：主体（爱立信+联发科）、动作（北美首例先进移动测试）、地点（北美）完全一致。",
-          "duplicateOf": "NEWS-101BB88018B6B1",
+          "reason": "当前记录报道爱立信携手联发科在北美完成首例先进移动测试。priority_history中NEWS-08170EB197D642报道爱立信携手联发科完成全球首例GNSS RTK测试，5G定位精度达10公分级。两者主体（爱立信+联发科）、动作（完成首例测试）、地域（北美/全球）高度一致，属于同一合作测试事件的不同报道角度",
+          "duplicateOf": "NEWS-08170EB197D642",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20795,7 +20795,7 @@
           "publishedAt": "2026-08-26T02:07:17+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20804,8 +20804,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "当前记录报道Anthropic IPO前预计AI潜在市场逾30万亿美元、估值上看2万亿美元。priority_history中NEWS-DC2FC95EE4C308报道Anthropic预计潜在营收逾30万亿美元超过SpaceX。两者主体（Anthropic）、关键数字（30万亿美元潜在市场/营收）完全一致，属于同一事",
+          "duplicateOf": "NEWS-DC2FC95EE4C308",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20819,7 +20819,7 @@
           "publishedAt": "2026-08-26T04:30:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20828,8 +20828,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "当前记录报道教大AI学习平台EASE提升答题准确度。priority_history中NEWS-4F215A0228AD1A报道教大研AI学习平台「EASE」学生功课准确率升至82%。两者主体（教大）、产品（EASE平台）、动作（提升答题准确度）完全一致，属于同一事件。",
+          "duplicateOf": "NEWS-4F215A0228AD1A",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20867,7 +20867,7 @@
           "publishedAt": "2026-08-26T00:59:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20876,8 +20876,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "当前记录报道SpaceX携手NVIDIA建设太空AI数据中心，采用Vera CPU及Vera Rubin平台，首批Starmind AI卫星预计2027年Q4发射。priority_history中NEWS-EFDD144783AC1D报道SpaceX与Nvidia合作设计太空优化版Vera Rubin NVL72 A",
+          "duplicateOf": "NEWS-EFDD144783AC1D",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20963,7 +20963,7 @@
           "publishedAt": "2026-08-26T06:03:54+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20972,8 +20972,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "当前记录报道人形机器人产业标准体系建设指南展开公众咨询。priority_history中NEWS-A82BEA4A640051报道中国拟2028年为人形机器人产业制定100项标准。两者主体（人形机器人产业标准）、动作（制定标准/公众咨询）高度一致，属于同一标准制定进程的不同阶段报道。",
+          "duplicateOf": "NEWS-A82BEA4A640051",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -20987,7 +20987,7 @@
           "publishedAt": "2026-08-26T04:30:00+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -20996,8 +20996,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "当前记录报道代理式AI指引出炉，倡保留最终决策权。priority_history中NEWS-ACA75DF1C4D6BD报道私隐公署发布代理式AI指引，建议避免过度收集个人资料。两者主体（代理式AI指引）、动作（发布指引）完全一致，属于同一指引发布事件的不同角度报道。",
+          "duplicateOf": "NEWS-ACA75DF1C4D6BD",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -21107,7 +21107,7 @@
           "publishedAt": "2026-08-26T04:49:32+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -21116,8 +21116,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "程序高置信标题去重：同日标题完全相同或高度近似。",
+          "duplicateOf": "NEWS-02075E683E03FC",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -21203,7 +21203,7 @@
           "publishedAt": "2026-08-26T04:09:32+08:00",
           "module": "",
           "matchedKeywords": "",
-          "status": "kept",
+          "status": "duplicate",
           "aiTitle": "",
           "aiSummary": "",
           "category": "",
@@ -21212,8 +21212,8 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
-          "duplicateOf": "",
+          "reason": "同为德勤企业AI应用调查，逾三成/33.7%企业部署AI且占比倍增，属同一调查事件。",
+          "duplicateOf": "NEWS-2A79B981DA9498",
           "errors": [],
           "query": "",
           "searchOrigin": ""
@@ -21236,7 +21236,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "在有限语义去重预算内未发现同一事件，保留。",
+          "reason": "程序高置信标题去重：同日标题完全相同或高度近似。",
           "duplicateOf": "",
           "errors": [],
           "query": "",
@@ -21356,7 +21356,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均报道有线宽频更名周大福媒体娱乐及公司名称、网址变更，属同一公司更名公告",
+          "reason": "同为有线宽频更改公司名称事件，主体和动作一致。",
           "duplicateOf": "NEWS-E5128A5B81E0AC",
           "errors": [],
           "query": "",
@@ -21452,7 +21452,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均报道香港7月出口受AI产品带动按年增长50.7%，属同一贸易数据发布",
+          "reason": "同为香港7月出口年增50.7%受AI产品带动，关键数字和主体一致。",
           "duplicateOf": "NEWS-5B64A7447015AD",
           "errors": [],
           "query": "",
@@ -21476,7 +21476,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "玄戒O100为小米发布的三款自研芯片之一，均属同一产品发布事件",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-E02BFE11F922C6",
           "errors": [],
           "query": "",
@@ -21500,7 +21500,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均报道高通新一代Oryon/Snapdragon旗舰CPU突破5GHz，属同一产品发布",
+          "reason": "同为高通新一代CPU突破5GHz发布，主体、动作和关键数字一致。",
           "duplicateOf": "NEWS-BFD40EAF14C250",
           "errors": [],
           "query": "",
@@ -21668,7 +21668,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均围绕英伟达即将发布的财报及市场对其延续AI热潮的预期，属同一财报事件前瞻报道",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-7F51683DD65268",
           "errors": [],
           "query": "",
@@ -21716,7 +21716,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均报道佳都科技在香港科学园设立海外研发中心，属同一企业动作",
+          "reason": "佳都科技落户香港科学园设海外研发中心。priority_history中NEWS-A431ED04E0DAD7（佳都科技拟在港设研发中心 结合本地优势拓展东南亚及中东）和NEWS-8F30B1067D932F（内地科企落户科学园 冀港国际化经验助进军海外）都涉及同一事件。NEWS-A431ED04E0DAD7明确提到佳",
           "duplicateOf": "NEWS-A431ED04E0DAD7",
           "errors": [],
           "query": "",
@@ -21740,7 +21740,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "均报道苹果推出Mac mini与Mac Studio双新品并搭载M6/M5系列芯片，属同一产品发布",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-BDF76BDAF2C707",
           "errors": [],
           "query": "",
@@ -21788,7 +21788,7 @@
           "signalType": "",
           "businessImpact": "",
           "exclusionCode": "",
-          "reason": "香港外贸连涨29个月超预期与7月出口年增50.7%均源自同一贸易数据发布",
+          "reason": "在有限语义去重预算内未发现同一事件，保留。",
           "duplicateOf": "NEWS-5B64A7447015AD",
           "errors": [],
           "query": "",
