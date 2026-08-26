@@ -1701,6 +1701,30 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-26 12:06:08",
+      "started_at_hkt": "2026-08-26T12:06:35+08:00",
+      "heartbeat_at_hkt": "2026-08-26T16:14:37+08:00",
+      "completed_at_hkt": "2026-08-26T16:15:07+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "67bfdd2090f174d727f07103",
+      "task_id": "incident:67bfdd2090f174d727f07103",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -1713,8 +1737,8 @@
         "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
-      "started_at_hkt": "2026-08-26T12:06:35+08:00",
-      "heartbeat_at_hkt": "2026-08-26T16:09:06+08:00",
+      "started_at_hkt": "2026-08-26T16:15:37+08:00",
+      "heartbeat_at_hkt": "2026-08-26T16:20:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12125,30 +12149,6 @@
       "occurred_at_hkt": "2026-08-19T00:31:31+08:00",
       "started_at_hkt": "2026-08-19T00:31:31+08:00",
       "heartbeat_at_hkt": "2026-08-19T00:31:31+08:00",
-      "completed_at_hkt": "2026-08-19T00:37:32+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "27397a3367a1e4009f62c120",
-      "task_id": "incident:27397a3367a1e4009f62c120",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-19T00:05:08+08:00",
-      "started_at_hkt": "2026-08-19T00:05:09+08:00",
-      "heartbeat_at_hkt": "2026-08-19T00:37:02+08:00",
       "completed_at_hkt": "2026-08-19T00:37:32+08:00",
       "handled_at_hkt": ""
     }

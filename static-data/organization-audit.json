@@ -3,6 +3,244 @@
   "events": [
     {
       "id": "event-001",
+      "at": "2026-08-26T08:14:31+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-0aad8ed0a646f2f5",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-002",
+      "at": "2026-08-26T08:14:18+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-0aad8ed0a646f2f5",
+      "target_type": "member",
+      "target_label": "孔灵采 Aurora KONG Lingcai",
+      "target_member_id": "member-016",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-003",
+      "at": "2026-08-26T08:13:35+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-e7efa1b3eaa77838",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-004",
+      "at": "2026-08-26T08:13:23+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-e7efa1b3eaa77838",
+      "target_type": "member",
+      "target_label": "林乐轩 Lex LIN Lexuan",
+      "target_member_id": "member-015",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-005",
+      "at": "2026-08-26T08:13:11+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-f9b1f14065296fd3",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-006",
+      "at": "2026-08-26T08:12:59+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-f9b1f14065296fd3",
+      "target_type": "member",
+      "target_label": "高华军 Gavin GAO Huajun",
+      "target_member_id": "member-014",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-007",
+      "at": "2026-08-26T08:12:23+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-bac42eccb717ecfe",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-008",
+      "at": "2026-08-26T08:12:09+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-9d017718b8f70dea",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-009",
+      "at": "2026-08-26T08:11:55+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-9d017718b8f70dea",
+      "target_type": "member",
+      "target_label": "颜陈宇 David YAN Chenyu",
+      "target_member_id": "member-013",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-010",
+      "at": "2026-08-26T08:11:43+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-c473ed8044a339d6",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-011",
+      "at": "2026-08-26T08:11:31+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-c473ed8044a339d6",
+      "target_type": "member",
+      "target_label": "朱子旭 Red ZHU Zixu",
+      "target_member_id": "member-012",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-012",
+      "at": "2026-08-26T08:11:12+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-462a43375ff5f673",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-013",
+      "at": "2026-08-26T08:11:02+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-462a43375ff5f673",
+      "target_type": "member",
+      "target_label": "赵子繁 ZHAO Zifan",
+      "target_member_id": "member-011",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-014",
+      "at": "2026-08-26T08:10:39+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-0f4f138aa6789567",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-015",
+      "at": "2026-08-26T08:10:26+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_import",
+      "target": "pending-0f4f138aa6789567",
+      "target_type": "member",
+      "target_label": "周艺宁 Lana ZHOU Yining",
+      "target_member_id": "member-010",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-016",
+      "at": "2026-08-26T08:09:29+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-cd45c2bb809c3729",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-017",
+      "at": "2026-08-26T08:09:17+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "ADMIN",
+      "action": "organization.user_update",
+      "target": "pending-8555610e7314845d",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-018",
       "at": "2026-08-25T06:40:54+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -16,7 +254,7 @@
       "details": {}
     },
     {
-      "id": "event-002",
+      "id": "event-019",
       "at": "2026-08-25T06:35:52+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -30,7 +268,7 @@
       "details": {}
     },
     {
-      "id": "event-003",
+      "id": "event-020",
       "at": "2026-08-25T06:30:01+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -44,7 +282,7 @@
       "details": {}
     },
     {
-      "id": "event-004",
+      "id": "event-021",
       "at": "2026-08-25T06:30:01+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -58,7 +296,7 @@
       "details": {}
     },
     {
-      "id": "event-005",
+      "id": "event-022",
       "at": "2026-08-25T06:17:49+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -72,7 +310,7 @@
       "details": {}
     },
     {
-      "id": "event-006",
+      "id": "event-023",
       "at": "2026-08-25T06:13:33+00:00",
       "actor_id": "",
       "actor_name": "飞书表格协作者",
@@ -86,7 +324,7 @@
       "details": {}
     },
     {
-      "id": "event-007",
+      "id": "event-024",
       "at": "2026-08-25T03:06:22+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -100,7 +338,7 @@
       "details": {}
     },
     {
-      "id": "event-008",
+      "id": "event-025",
       "at": "2026-08-24T09:18:38+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -114,7 +352,7 @@
       "details": {}
     },
     {
-      "id": "event-009",
+      "id": "event-026",
       "at": "2026-08-20T06:51:21+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -128,7 +366,7 @@
       "details": {}
     },
     {
-      "id": "event-010",
+      "id": "event-027",
       "at": "2026-08-20T03:38:07+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -142,7 +380,7 @@
       "details": {}
     },
     {
-      "id": "event-011",
+      "id": "event-028",
       "at": "2026-08-20T03:28:16+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -156,7 +394,7 @@
       "details": {}
     },
     {
-      "id": "event-012",
+      "id": "event-029",
       "at": "2026-08-20T02:31:50+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -170,7 +408,7 @@
       "details": {}
     },
     {
-      "id": "event-013",
+      "id": "event-030",
       "at": "2026-08-20T02:18:40+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -184,7 +422,7 @@
       "details": {}
     },
     {
-      "id": "event-014",
+      "id": "event-031",
       "at": "2026-08-20T02:18:31+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -198,7 +436,7 @@
       "details": {}
     },
     {
-      "id": "event-015",
+      "id": "event-032",
       "at": "2026-08-20T02:10:21+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -212,7 +450,7 @@
       "details": {}
     },
     {
-      "id": "event-016",
+      "id": "event-033",
       "at": "2026-08-20T02:10:09+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -226,7 +464,7 @@
       "details": {}
     },
     {
-      "id": "event-017",
+      "id": "event-034",
       "at": "2026-08-20T02:10:06+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
