@@ -34,7 +34,7 @@
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultPage: 1,
-    faultPageSize: 100,
+    faultPageSize: 10,
     faultFeedback: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -2121,6 +2121,13 @@
     return `<th aria-sort="${ariaSort}"><button class="fault-sort-button ${active ? "is-active" : ""}" type="button" data-fault-sort="${key}" aria-label="${esc(label)}，当前${active ? (direction === "asc" ? "升序" : "降序") : "未排序"}">${esc(label)}<i aria-hidden="true"></i></button></th>`;
   }
 
+  function faultPaginationTokens(current, total) {
+    if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+    const pages = new Set([1, total, current - 1, current, current + 1]);
+    const ordered = [...pages].filter((page) => page >= 1 && page <= total).sort((left, right) => left - right);
+    return ordered.flatMap((page, index) => index && page - ordered[index - 1] > 1 ? ["ellipsis", page] : [page]);
+  }
+
   function renderFaultMonitor() {
     const panel = document.querySelector('[data-workspace-panel="fault"]');
     const tasks = state.tasks || [];
@@ -2265,7 +2272,7 @@
     }).join("") : '<tr><td colspan="10" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
     const pagination = document.querySelector("#faultPagination");
     if (pagination) {
-      const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
+      const pageButtons = faultPaginationTokens(state.faultPage, totalPages).map((page) => page === "ellipsis" ? '<span class="fault-pagination-ellipsis" aria-hidden="true">…</span>' : `<button type="button" data-fault-page="${page}" class="${page === state.faultPage ? "is-active" : ""}" aria-current="${page === state.faultPage ? "page" : "false"}">${page}</button>`).join("");
       pagination.innerHTML = `<button type="button" data-fault-page="${state.faultPage - 1}"${state.faultPage === 1 ? " disabled" : ""} aria-label="上一页">‹</button>${pageButtons}<button type="button" data-fault-page="${state.faultPage + 1}"${state.faultPage === totalPages ? " disabled" : ""} aria-label="下一页">›</button><em>每页 ${state.faultPageSize} 条 · 共 ${number(rows.length)} 条</em>`;
     }
   }
