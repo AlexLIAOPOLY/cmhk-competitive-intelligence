@@ -2623,6 +2623,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     (ROOT / "write_payload.json").write_text(
         json.dumps(
             {
+                "row_numbers": [int(result["row"]) for result in row_results],
                 "successful_sources_payload": f_values,
                 "sources_payload": f_values,
                 "results_payload": ij_values,

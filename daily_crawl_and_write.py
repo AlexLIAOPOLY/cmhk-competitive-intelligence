@@ -776,11 +776,24 @@ def validate_payload(payload: dict) -> dict:
     problems: list[str] = []
     compliance_gaps: list[str] = []
 
-    f_payload = payload.get("successful_sources_payload") or payload.get("sources_payload") or payload.get("F2:F34")
-    if len(f_payload) != 33:
-        problems.append("payload row count is not 33")
+    f_payload = payload.get("successful_sources_payload") or payload.get("sources_payload") or payload.get("F2:F34") or []
+    row_numbers = payload.get("row_numbers") or []
+    if not row_numbers:
+        row_numbers = list(range(2, 2 + len(f_payload)))
+    if len(row_numbers) != len(f_payload):
+        problems.append(
+            f"payload row mapping mismatch: rows={len(row_numbers)} values={len(f_payload)}"
+        )
+    f_by_row = {
+        int(row_no): str(cells[0] if cells else "")
+        for row_no, cells in zip(row_numbers, f_payload)
+        if str(row_no).isdigit()
+    }
     for row_no in range(2, 35):
-        result = json.loads((ROOT / "results" / f"row_{row_no}.json").read_text(encoding="utf-8"))
+        result_path = ROOT / "results" / f"row_{row_no}.json"
+        if not result_path.exists():
+            continue
+        result = json.loads(result_path.read_text(encoding="utf-8"))
         if result.get("missing_fields") or result.get("entity_missing"):
             compliance_gaps.append(f"row {row_no} missing fields: {result.get('missing_fields')} {result.get('entity_missing')}")
         skipped = [rec for rec in result.get("raw_records", []) if rec.get("method") == "skipped"]
@@ -795,8 +808,10 @@ def validate_payload(payload: dict) -> dict:
             if not entity_result.get("source_urls"):
                 compliance_gaps.append(f"row {row_no} entity {entity_result.get('entity')} has no source url")
     for row_no, entities in entity_rows.items():
-        idx = row_no - 2
-        f_cell = f_payload[idx][0]
+        f_cell = f_by_row.get(row_no)
+        if f_cell is None:
+            problems.append(f"row {row_no} missing from successful sources payload")
+            continue
         for entity in entities:
             if f"【{entity}】" not in f_cell:
                 problems.append(f"row {row_no} entity {entity} missing labeled block in F payload")
@@ -805,6 +820,36 @@ def validate_payload(payload: dict) -> dict:
         "problems": problems,
         "compliance_gaps": compliance_gaps,
         "checked_at_hkt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(),
+    }
+
+
+def payload_for_scheduled_rows(payload: dict) -> dict:
+    raw_rows = os.environ.get("CMHK_ROWS", "").strip()
+    rows = [int(item) for item in raw_rows.split(",") if item.strip().isdigit()]
+    if not rows:
+        return payload
+    existing_rows = [int(item) for item in payload.get("row_numbers") or [] if str(item).isdigit()]
+    if existing_rows == rows:
+        return payload
+    results = []
+    for row_no in rows:
+        result_path = ROOT / "results" / f"row_{row_no}.json"
+        if not result_path.exists():
+            continue
+        results.append(json.loads(result_path.read_text(encoding="utf-8")))
+    f_values = [[crawl.compact_f_cell(result)] for result in results]
+    ij_values = [
+        [crawl.compact_i_cell(result), crawl.compact_log_cell(result), crawl.compact_j_cell(result)]
+        for result in results
+    ]
+    return {
+        **payload,
+        "row_numbers": [int(result["row"]) for result in results],
+        "successful_sources_payload": f_values,
+        "sources_payload": f_values,
+        "results_payload": ij_values,
+        "F2:F34": f_values,
+        "I2:K34": ij_values,
     }
 
 
@@ -817,7 +862,9 @@ def sync_to_feishu() -> None:
     headers = current_headers()
     input_sources_col = get_input_sources_column(headers)
 
-    payload = json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
+    payload = payload_for_scheduled_rows(
+        json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
+    )
 
     write_log_sheet(log_sheet_id, log_target["spreadsheet_token"])
     log_index = append_log_index(log_target)
