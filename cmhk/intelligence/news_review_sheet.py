@@ -2333,13 +2333,34 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
         payload = _read_json(PUBLISHED_PATH, {"items": []})
         published = payload.get("items") if isinstance(payload, dict) else []
         published = [item for item in published or [] if isinstance(item, dict)]
+        archived_sheet_ids = {
+            _text(part.get("sheet_id"), 120)
+            for part in (state.get("archive_parts") or [])
+            if isinstance(part, dict) and _text(part.get("sheet_id"), 120)
+        }
+        active_sheet_follows_rollover = bool(
+            archived_sheet_ids and sheet_id not in archived_sheet_ids
+        )
+
+        def belongs_to_active_sheet(item: dict[str, Any]) -> bool:
+            if item.get("approval_source") != SHEET_SOURCE:
+                return False
+            approval_sheet_id = _text(item.get("approval_sheet_id"), 120)
+            if approval_sheet_id:
+                return approval_sheet_id == sheet_id
+            # Records written before sheet provenance was added belong to the
+            # pre-rollover part. Once a new part is active they must be kept;
+            # rebuilding from only the new sheet would otherwise erase the
+            # entire ticker at every rollover.
+            return not active_sheet_follows_rollover
+
         existing_sheet = {
             _text(item.get("id"), 80): item
             for item in published
-            if item.get("approval_source") == SHEET_SOURCE
+            if belongs_to_active_sheet(item)
         }
         retained = [
-            item for item in published if item.get("approval_source") != SHEET_SOURCE
+            item for item in published if not belongs_to_active_sheet(item)
         ]
         retained_ids = {_text(item.get("id"), 80) for item in retained}
         accepted_rows = [row for row in rows if row["status"] == "接受"]
@@ -2410,6 +2431,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "approved_at": previous.get("approved_at") or now_text,
                     "approved_by": "飞书表格人工审核",
                     "approval_source": SHEET_SOURCE,
+                    "approval_sheet_id": sheet_id,
                 }
             )
             seen_urls.add(url_key)

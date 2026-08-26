@@ -1179,6 +1179,83 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             published["items"][0]["published_at"],
             "2026-07-29T17:16:00+08:00",
         )
+        self.assertEqual(published["items"][0]["approval_sheet_id"], "sheet")
+
+    def test_apply_reviews_preserves_pre_rollover_ticker_items(self):
+        published_payloads = []
+        archived_item = {
+            "id": "NEWS-ARCHIVED",
+            "title": "已在上一分卷审核的快讯",
+            "summary": "分卷后仍应在驾驶舱展示。",
+            "category": "竞对动态",
+            "source_url": "https://example.com/archived",
+            "published_at": "2026-08-25T09:00:00+08:00",
+            "approval_source": review_sheet.SHEET_SOURCE,
+        }
+
+        def read_json(path, default):
+            if path == review_sheet.STATE_PATH:
+                return {"archive_parts": [{"sheet_id": "old-sheet"}]}
+            return {"items": [archived_item]}
+
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[]),
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_json),
+            mock.patch.object(
+                review_sheet,
+                "_write_json",
+                side_effect=lambda path, payload: published_payloads.append(
+                    (path, payload)
+                ),
+            ),
+        ):
+            result = review_sheet.apply_reviews("new-sheet")
+
+        self.assertEqual(result["accepted_count"], 0)
+        self.assertEqual(result["published_count"], 1)
+        published = next(
+            payload
+            for path, payload in published_payloads
+            if path == review_sheet.PUBLISHED_PATH
+        )
+        self.assertEqual(published["items"], [archived_item])
+
+    def test_apply_reviews_removes_unselected_item_from_active_part(self):
+        active_item = {
+            "id": "NEWS-ACTIVE",
+            "title": "当前分卷的快讯",
+            "source_url": "https://example.com/active",
+            "published_at": "2026-08-26T09:00:00+08:00",
+            "approval_source": review_sheet.SHEET_SOURCE,
+            "approval_sheet_id": "new-sheet",
+        }
+        published_payloads = []
+
+        def read_json(path, default):
+            if path == review_sheet.STATE_PATH:
+                return {"archive_parts": [{"sheet_id": "old-sheet"}]}
+            return {"items": [active_item]}
+
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[]),
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_json),
+            mock.patch.object(
+                review_sheet,
+                "_write_json",
+                side_effect=lambda path, payload: published_payloads.append(
+                    (path, payload)
+                ),
+            ),
+        ):
+            result = review_sheet.apply_reviews("new-sheet")
+
+        self.assertEqual(result["accepted_count"], 0)
+        published = next(
+            payload
+            for path, payload in published_payloads
+            if path == review_sheet.PUBLISHED_PATH
+        )
+        self.assertEqual(published["items"], [])
 
     def test_cross_day_sheet_row_without_precise_metadata_stays_blocked(self):
         accepted = self._existing_row()
