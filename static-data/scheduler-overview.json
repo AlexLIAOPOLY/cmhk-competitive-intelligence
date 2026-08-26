@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-26T11:03:37+08:00",
+  "checked_at_hkt": "2026-08-26T11:10:32+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -32,8 +32,7 @@
     }
   ],
   "next_runs": [
-    "2026-08-05T03:00:00+08:00",
-    "2026-08-26T11:03:37+08:00",
+    "2026-08-26T11:10:32+08:00",
     "2026-08-27T03:00:00+08:00",
     "2026-08-31T03:00:00+08:00",
     "2026-09-01T03:00:00+08:00"
@@ -48,9 +47,9 @@
       "run_status": "running",
       "backend_pid": 32967,
       "worker_pid": 0,
-      "phase": "任务启动",
-      "progress_detail": "后台已接收爬虫任务，正在准备执行。",
-      "heartbeat_at_hkt": "2026-08-26T11:03:29+08:00",
+      "phase": "Agent审核",
+      "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
+      "heartbeat_at_hkt": "2026-08-26T11:10:18+08:00",
       "started_at_hkt": "2026-08-26T11:03:29+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -58,8 +57,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_110329_493559.jsonl"
       },
       "stream_log": {
-        "bytes": 0,
-        "lines": 0
+        "bytes": 10151,
+        "lines": 126
       },
       "final_audit": {},
       "run_log": {},
@@ -116,9 +115,9 @@
       "run_status": "running",
       "backend_pid": 35832,
       "worker_pid": 35832,
-      "phase": "宏观政策支撑库",
-      "progress_detail": "正在重建宏观政策支撑库数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
-      "heartbeat_at_hkt": "2026-08-26T11:03:27+08:00",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-26T11:07:01+08:00",
       "started_at_hkt": "2026-08-26T11:02:47+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -126,8 +125,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_110247_096895.jsonl"
       },
       "stream_log": {
-        "bytes": 1398,
-        "lines": 9
+        "bytes": 2159,
+        "lines": 13
       },
       "final_audit": {},
       "run_log": {},

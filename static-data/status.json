@@ -2,72 +2,112 @@
   "ok": true,
   "status": {
     "results": {
-      "count": 1,
-      "ok": 0,
-      "partial": 0
+      "count": 33,
+      "ok": 7,
+      "partial": 4
     },
     "visuals": {
       "crawl": {
-        "success": 7,
-        "failed": 1,
+        "success": 198,
+        "failed": 7,
         "fallback": 0,
-        "total": 8,
-        "successRate": 88,
-        "completedAt": "2026-08-26 10:59:27"
+        "total": 205,
+        "successRate": 97,
+        "completedAt": "2026-08-26 11:07:49"
       },
       "quality": {
-        "ok": 0,
-        "partial": 0,
-        "failed": 1,
-        "fieldTotal": 14,
+        "ok": 7,
+        "partial": 4,
+        "failed": 22,
+        "fieldTotal": 205,
         "missingFields": 2,
-        "rawSources": 8
+        "rawSources": 205
       },
       "blocks": [
         {
+          "label": "运营动态",
+          "value": 20
+        },
+        {
+          "label": "产品资费",
+          "value": 8
+        },
+        {
           "label": "经营指标",
-          "value": 1
+          "value": 5
         }
       ],
       "sourceTypes": [
         {
-          "label": "commercial_data",
-          "value": 4
+          "label": "company_official",
+          "value": 119
         },
         {
-          "label": "company_official",
-          "value": 3
+          "label": "government_public_info",
+          "value": 26
+        },
+        {
+          "label": "commercial_data",
+          "value": 17
+        },
+        {
+          "label": "government_statistics",
+          "value": 9
+        },
+        {
+          "label": "regulator_public_info",
+          "value": 7
         },
         {
           "label": "exchange_public_disclosure",
-          "value": 1
+          "value": 4
         }
       ],
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 6
+          "value": 104
         },
         {
           "label": "US",
-          "value": 1
+          "value": 19
         },
         {
           "label": "EU",
-          "value": 1
+          "value": 13
+        },
+        {
+          "label": "international",
+          "value": 9
+        },
+        {
+          "label": "UK",
+          "value": 7
+        },
+        {
+          "label": "ES",
+          "value": 7
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 5
+          "value": 148
+        },
+        {
+          "label": "cache:httpx",
+          "value": 30
         },
         {
           "label": "curl_chrome_ua",
-          "value": 2
+          "value": 18
         },
         {
           "label": "curl_direct_chrome_ua",
+          "value": 8
+        },
+        {
+          "label": "cache:curl_direct_chrome_ua",
           "value": 1
         }
       ],
@@ -294,8 +334,36 @@
       ],
       "entities": [
         {
-          "label": "iCable",
-          "value": 1
+          "label": "HKBN",
+          "value": 4
+        },
+        {
+          "label": "HKT",
+          "value": 3
+        },
+        {
+          "label": "csl",
+          "value": 3
+        },
+        {
+          "label": "1O1O",
+          "value": 3
+        },
+        {
+          "label": "3HK",
+          "value": 3
+        },
+        {
+          "label": "Hutchison",
+          "value": 3
+        },
+        {
+          "label": "SmarTone",
+          "value": 3
+        },
+        {
+          "label": "行业资讯",
+          "value": 3
         }
       ],
       "outputs": [
