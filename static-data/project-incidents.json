@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "fb06bd857ade9c9ccc25093c",
+      "task_id": "incident:fb06bd857ade9c9ccc25093c",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-27T00:41:09+08:00",
+      "started_at_hkt": "2026-08-27T00:41:09+08:00",
+      "heartbeat_at_hkt": "2026-08-27T00:41:09+08:00",
+      "completed_at_hkt": "2026-08-27T00:41:39+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f10c2cbefa90e31e76988261",
       "task_id": "incident:f10c2cbefa90e31e76988261",
       "title": "主项目后台任务",
@@ -2194,7 +2218,7 @@
       ],
       "occurred_at_hkt": "2026-08-26 12:06:08",
       "started_at_hkt": "2026-08-26T17:03:34+08:00",
-      "heartbeat_at_hkt": "2026-08-27T00:40:39+08:00",
+      "heartbeat_at_hkt": "2026-08-27T00:46:09+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12120,30 +12144,6 @@
       ],
       "occurred_at_hkt": "2026-08-19T10:26:46+08:00",
       "started_at_hkt": "2026-08-19T10:22:16+08:00",
-      "heartbeat_at_hkt": "2026-08-19T10:26:46+08:00",
-      "completed_at_hkt": "2026-08-19T10:27:16+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "cb22d829345ce29b858324e7",
-      "task_id": "incident:cb22d829345ce29b858324e7",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-19T10:26:28+08:00",
-      "started_at_hkt": "2026-08-19T10:26:46+08:00",
       "heartbeat_at_hkt": "2026-08-19T10:26:46+08:00",
       "completed_at_hkt": "2026-08-19T10:27:16+08:00",
       "handled_at_hkt": ""
