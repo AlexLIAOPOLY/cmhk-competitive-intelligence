@@ -12,6 +12,39 @@ import crawl
 
 
 class CrawlRecoveryTests(unittest.TestCase):
+    def test_ctfme_financial_api_reports_are_normalized(self):
+        links = crawl.extract_ctfme_financial_report_links(
+            {
+                "code": 0,
+                "resultList": [
+                    {
+                        "reportYear": "2025",
+                        "reportType": "A",
+                        "pdfLink": "https://apps5.i-cable.com/dl/comm/49be15c0a3d3.pdf",
+                    },
+                    {
+                        "reportYear": "2025",
+                        "reportType": "I",
+                        "pdfLink": "https://apps5.i-cable.com/ct/uz1vE",
+                    },
+                ],
+            }
+        )
+
+        self.assertEqual(
+            links,
+            [
+                {
+                    "url": "https://apps5.i-cable.com/dl/comm/49be15c0a3d3.pdf",
+                    "title": "2025 Annual Report",
+                },
+                {
+                    "url": "https://apps5.i-cable.com/ct/uz1vE",
+                    "title": "2025 Interim Report",
+                },
+            ],
+        )
+
     def test_product_tariff_sync_runs_hkt_and_all_hk_competitors(self):
         shared_client = object()
         hkt_crawl = mock.Mock(return_value={"ok": True, "dataset_dir": "hkt"})

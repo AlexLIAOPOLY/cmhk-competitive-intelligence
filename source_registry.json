@@ -531,6 +531,20 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public company pages only."
     },
+    "ctfme.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official CTF Media & Entertainment public company and investor-relations pages."
+    },
+    "www.ctfme.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official CTF Media & Entertainment public company and investor-relations pages."
+    },
     "www.i-cablebroadband-offer.com": {
       "policy": "allow",
       "type": "company_official",

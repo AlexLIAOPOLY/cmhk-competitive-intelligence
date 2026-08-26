@@ -67,7 +67,7 @@ FINANCIAL_IR_INDEX_URLS: Dict[int, List[str]] = {
     5: ["https://www.hthkh.com/en/ir/reports.php"],
     8: ["https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"],
     11: ["https://www.hkbn.net/group/en/investor-engagement/financial-results"],
-    17: ["https://www.i-cablecomm.com/en/annual-interim-reports"],
+    17: ["https://www.ctfme.com/en/annual-interim-reports"],
 }
 
 
@@ -463,8 +463,10 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.hthkh.com/en/",
     ],
     17: [
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+        "https://apps5.i-cable.com/dl/comm/49be15c0a3d3.pdf",
         "https://www.aastocks.com/en/stocks/analysis/stock-aafn/01097/0/all/1",
-        "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+        "https://www.ctfme.com/en/annual-interim-reports",
         "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
         "https://stockanalysis.com/quote/hkg/1097/financials/",
     ],
@@ -1274,6 +1276,32 @@ def extract_financial_report_links(
     return output
 
 
+def extract_ctfme_financial_report_links(payload: object) -> List[Dict[str, str]]:
+    """Normalize CTFME's official investor-relations API into report links."""
+    if not isinstance(payload, dict) or int(payload.get("code") or 0) != 0:
+        return []
+    output: List[Dict[str, str]] = []
+    seen: set[str] = set()
+    report_labels = {"A": "Annual Report", "I": "Interim Report"}
+    for item in payload.get("resultList") or []:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("pdfLink") or "").strip()
+        year = str(item.get("reportYear") or "").strip()
+        label = report_labels.get(str(item.get("reportType") or "").strip().upper())
+        if not url or not year or not label or url in seen:
+            continue
+        try:
+            parsed = urlparse(url)
+        except ValueError:
+            continue
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            continue
+        seen.add(url)
+        output.append({"url": url, "title": f"{year} {label}"})
+    return output
+
+
 def extract_meta_refresh_url(raw: bytes, content_type: str, base_url: str) -> str:
     if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
         return ""
@@ -1333,6 +1361,22 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
     meta_refresh_url = extract_meta_refresh_url(raw, ctype, str(response.url))
     discovered_news_links = extract_news_links(raw, ctype, str(response.url))
     discovered_report_links = extract_financial_report_links(raw, ctype, str(response.url))
+    final_parsed = urlparse(str(response.url))
+    if (
+        final_parsed.hostname in {"ctfme.com", "www.ctfme.com"}
+        and final_parsed.path.rstrip("/").endswith("/annual-interim-reports")
+    ):
+        try:
+            api_response = client.post(
+                urljoin(str(response.url), "/api/GetWebPage0404"),
+                json={"lang": "EN"},
+            )
+            api_response.raise_for_status()
+            api_links = extract_ctfme_financial_report_links(api_response.json())
+            known = {str(item.get("url") or "") for item in discovered_report_links}
+            discovered_report_links.extend(item for item in api_links if item["url"] not in known)
+        except (httpx.HTTPError, ValueError, TypeError):
+            pass
     return {
         "url": url,
         "final_url": str(response.url),

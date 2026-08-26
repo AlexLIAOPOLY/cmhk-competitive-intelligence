@@ -23,6 +23,22 @@ CAPITAL EXPENDITURE Capital expenditure including capitalised interest for the s
 
 
 class LocalFinancialResultsTests(unittest.TestCase):
+    def test_icable_hkex_results_announcement_is_an_official_report(self) -> None:
+        url = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf"
+        self.assertTrue(
+            finance._is_official_report(
+                17,
+                {
+                    "url": url,
+                    "final_url": url,
+                    "status": 200,
+                    "content_type": "application/pdf",
+                    "title": "FINAL RESULTS ANNOUNCEMENT FOR THE YEAR ENDED 31 DECEMBER 2025",
+                    "text_sample": "i-CABLE Communications Limited annual results",
+                },
+            )
+        )
+
     def test_report_title_year_outranks_later_publication_year_in_url(self) -> None:
         period, report_type, rank = finance._report_period(
             {

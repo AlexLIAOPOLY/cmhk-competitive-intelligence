@@ -2,6 +2,7 @@
 set -euo pipefail
 
 WEB_LABEL="com.liaowang.cmhk-web-app"
+SCHEDULER_LABEL="com.liaowang.cmhk-frequency-scheduler"
 QUEUE_LABEL="com.liaowang.cmhk-queued-web-reload"
 DOMAIN="gui/$(id -u)"
 TASKS_URL="${CMHK_TASK_RUNS_URL:-http://127.0.0.1:8765/api/task-runs?limit=100}"
@@ -13,6 +14,7 @@ STAGE_ROOT="$STATE_DIR/web-reload-releases"
 QUEUE_LOCK_DIR="$STATE_DIR/web-reload-queue.lock"
 RUNTIME="${CMHK_WEB_RUNTIME:-/Users/liaowang/cmhk_public_crawl_app}"
 WEB_PLIST="$HOME/Library/LaunchAgents/$WEB_LABEL.plist"
+SCHEDULER_PLIST="$HOME/Library/LaunchAgents/$SCHEDULER_LABEL.plist"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
 
 mkdir -p "$STATE_DIR" "$(dirname "$LOG_FILE")"
@@ -105,6 +107,15 @@ print(sum(
 PY
 }
 
+running_frequency_pipeline_tasks() {
+  if /usr/bin/pgrep -f "$RUNTIME/crawl.py" >/dev/null 2>&1 \
+    || /usr/bin/pgrep -f "$RUNTIME/run_data_curation.py" >/dev/null 2>&1; then
+    printf '1\n'
+  else
+    printf '0\n'
+  fi
+}
+
 if [[ "${1:-}" == "--count-running-strategic" ]]; then
   running_strategic_tasks
   exit
@@ -128,7 +139,7 @@ interrupt_requested() {
 }
 
 wait_until_idle_or_midnight() {
-  local requested_token="$1" deadline_epoch first_count second_count
+  local requested_token="$1" deadline_epoch first_count second_count frequency_count
   deadline_epoch="$(next_midnight_epoch)"
   while true; do
     if interrupt_requested "$requested_token"; then
@@ -148,12 +159,20 @@ wait_until_idle_or_midnight() {
       sleep "$CHECK_INTERVAL_SECONDS"
       continue
     fi
+    frequency_count="$(running_frequency_pipeline_tasks)"
+    if (( frequency_count > 0 )); then
+      sleep "$CHECK_INTERVAL_SECONDS"
+      continue
+    fi
     sleep "$CHECK_INTERVAL_SECONDS"
     if ! second_count="$(running_strategic_tasks)"; then
       continue
     fi
     if (( second_count == 0 )); then
-      return 0
+      frequency_count="$(running_frequency_pipeline_tasks)"
+      if (( frequency_count == 0 )); then
+        return 0
+      fi
     fi
   done
 }
@@ -205,6 +224,17 @@ while [[ -f "$REQUEST_FILE" ]]; do
     fi
     sleep 1
   done
+
+  # scheduler.py is a long-lived process, so copying a new file is not enough.
+  # Restart it only after all production crawl/audit workers are idle.
+  if /bin/launchctl print "$DOMAIN/$SCHEDULER_LABEL" >/dev/null 2>&1; then
+    /bin/launchctl kickstart -k "$DOMAIN/$SCHEDULER_LABEL" >> "$LOG_FILE" 2>&1
+  elif [[ -f "$SCHEDULER_PLIST" ]]; then
+    /bin/launchctl bootstrap "$DOMAIN" "$SCHEDULER_PLIST" >> "$LOG_FILE" 2>&1
+  else
+    log "Frequency scheduler plist is missing; request remains queued."
+    exit 1
+  fi
 
   # Serialize request publication and completion so an arriving request cannot
   # be removed by the worker after it compared the previous token.

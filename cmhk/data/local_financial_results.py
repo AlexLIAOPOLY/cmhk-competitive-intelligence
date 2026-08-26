@@ -31,7 +31,16 @@ OFFICIAL_DOMAINS = {
     5: {"hthkh.com", "www.hthkh.com", "m.hthkh.com", "doc.irasia.com", "www1.hkexnews.hk", "www.hkexnews.hk"},
     8: {"smartoneholdings.com", "www.smartoneholdings.com"},
     11: {"hkbn.net", "www.hkbn.net", "reg.hkbn.net"},
-    17: {"i-cablecomm.com", "www.i-cablecomm.com", "cdn.prod.website-files.com"},
+    17: {
+        "i-cablecomm.com",
+        "www.i-cablecomm.com",
+        "ctfme.com",
+        "www.ctfme.com",
+        "apps5.i-cable.com",
+        "www1.hkexnews.hk",
+        "www.hkexnews.hk",
+        "cdn.prod.website-files.com",
+    },
 }
 
 CORE_METRICS = {"revenue", "ebitda", "net_profit", "capital_expenditure", "dividend"}

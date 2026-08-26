@@ -1348,7 +1348,7 @@ class ProjectMonitor:
         media_metrics_path = self._source_root() / "var" / "feishu_media_metrics" / "daemon.stderr.log"
         media_metrics_text = self._read_new_log_text(media_metrics_path)
         issues: list[dict[str, Any]] = []
-        heartbeat_path = self._source_root() / "var" / "frequency_scheduler" / "heartbeat.json"
+        heartbeat_path = self.runtime_root / "var" / "frequency_scheduler" / "heartbeat.json"
         heartbeat = _read_json(heartbeat_path, {})
         heartbeat_at = _parse_datetime(heartbeat.get("updated_at_hkt")) if isinstance(heartbeat, dict) else None
         heartbeat_fresh = bool(
@@ -1854,7 +1854,7 @@ class ProjectMonitor:
                         active_ids.add(str(incident_id))
                     continue
             if key == "frequency-scheduler-heartbeat-stale":
-                heartbeat_path = self._source_root() / "var" / "frequency_scheduler" / "heartbeat.json"
+                heartbeat_path = self.runtime_root / "var" / "frequency_scheduler" / "heartbeat.json"
                 heartbeat = _read_json(heartbeat_path, {})
                 heartbeat_at = _parse_datetime(heartbeat.get("updated_at_hkt")) if isinstance(heartbeat, dict) else None
                 if heartbeat_at and (self.now() - heartbeat_at).total_seconds() <= 120:

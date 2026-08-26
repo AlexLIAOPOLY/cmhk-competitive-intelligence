@@ -405,6 +405,33 @@ class ProjectMonitorTests(unittest.TestCase):
 
         self.assertNotIn("frequency-scheduler-heartbeat-stale", {item["condition_key"] for item in issues})
 
+    def test_scheduler_heartbeat_always_uses_runtime_root(self):
+        scheduler_log = self.log_root / "frequency_scheduler.stderr.log"
+        old_timestamp = (self.now - timedelta(hours=1)).timestamp()
+        os.utime(scheduler_log, (old_timestamp, old_timestamp))
+        source_root = Path(self.temp.name) / "source-checkout"
+        stale_path = source_root / "var" / "frequency_scheduler" / "heartbeat.json"
+        stale_path.parent.mkdir(parents=True)
+        stale_path.write_text(json.dumps({
+            "service": "frequency-scheduler",
+            "updated_at_hkt": (self.now - timedelta(hours=2)).isoformat(timespec="seconds"),
+        }))
+        runtime_path = self.root / "var" / "frequency_scheduler" / "heartbeat.json"
+        runtime_path.parent.mkdir(parents=True, exist_ok=True)
+        runtime_path.write_text(json.dumps({
+            "service": "frequency-scheduler",
+            "pid": 84947,
+            "status": "running",
+            "stage": "polling",
+            "updated_at_hkt": self.now.isoformat(timespec="seconds"),
+        }))
+        monitor = self._monitor()
+        monitor.environ["CMHK_MONITOR_SOURCE_ROOT"] = str(source_root)
+
+        issues = monitor._detect_runtime_logs()
+
+        self.assertNotIn("frequency-scheduler-heartbeat-stale", {item["condition_key"] for item in issues})
+
     def _write_completed_slot(self, slot: str) -> None:
         hour, minute = slot.split(":")
         path = self.root / "strategy_briefing" / "runs" / f"2026-08-16@{hour}-{minute}.json"

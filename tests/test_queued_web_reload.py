@@ -47,6 +47,8 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn("WORKER_COPY", queue)
         self.assertNotIn("/Desktop/", worker)
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
+        self.assertIn('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"', worker)
+        self.assertIn("running_frequency_pipeline_tasks", worker)
         self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
         self.assertIn("web-reload-queue.lock", queue)
@@ -62,6 +64,10 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertLess(
             worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
             worker.index('bootstrap "$DOMAIN" "$WEB_PLIST"'),
+        )
+        self.assertLess(
+            worker.index('/usr/bin/rsync -a "$release_dir/" "$RUNTIME/"'),
+            worker.index('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"'),
         )
 
     def test_worker_fallback_counts_running_strategic_crawl(self):
