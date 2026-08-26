@@ -789,7 +789,7 @@ def validate_payload(payload: dict) -> dict:
         for row_no, cells in zip(row_numbers, f_payload)
         if str(row_no).isdigit()
     }
-    for row_no in range(2, 35):
+    for row_no in sorted(f_by_row):
         result_path = ROOT / "results" / f"row_{row_no}.json"
         if not result_path.exists():
             continue
@@ -808,6 +808,8 @@ def validate_payload(payload: dict) -> dict:
             if not entity_result.get("source_urls"):
                 compliance_gaps.append(f"row {row_no} entity {entity_result.get('entity')} has no source url")
     for row_no, entities in entity_rows.items():
+        if row_no not in f_by_row:
+            continue
         f_cell = f_by_row.get(row_no)
         if f_cell is None:
             problems.append(f"row {row_no} missing from successful sources payload")

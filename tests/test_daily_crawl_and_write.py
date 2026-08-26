@@ -34,7 +34,12 @@ class DailyCrawlAndWritePayloadTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (root / "sources.json").write_text(
-                json.dumps([{"row": "47", "entities": ["AWS"]}]),
+                json.dumps(
+                    [
+                        {"row": "2", "entities": ["HKT", "csl"]},
+                        {"row": "47", "entities": ["AWS"]},
+                    ]
+                ),
                 encoding="utf-8",
             )
             with mock.patch.object(daily, "ROOT", root), mock.patch.dict(
