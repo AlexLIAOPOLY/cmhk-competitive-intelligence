@@ -1313,17 +1313,17 @@
         label: domain.title || fallbackLabel,
         value: intelligenceRun.crawl_run_id ? number(uiItemCount) : "—",
         unit: intelligenceRun.crawl_run_id ? "项发布到UI" : "",
-        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 非数据变化数` : "当天未留下四库刷新归档",
+        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 数据变化 ${number(sourceChanged)} 项` : "当天未留下四库刷新归档",
         health: intelligenceHealth,
         variant,
         compact: true,
         position,
         details: intelligenceRun.crawl_run_id ? [
-          `当天重新发布到UI ${number(uiItemCount)} 项；这是发布对象总数，不代表 ${number(uiItemCount)} 项数值发生变化`,
+          `当天重新发布到UI ${number(uiItemCount)} 项；数据变化 ${number(sourceChanged)} 项`,
           `数据库事实快照 ${number(factCount)} 条；本库数据库版本${databaseChanged ? "有变化" : "未变化"}`,
           `官方来源检查 ${number(Number(sourceStats.official_urls || 0))} 条：成功 ${number(retrieved)} 条、失败 ${number(failed)} 条`,
           `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`,
-          "来源页面变化不等同于数据库字段改值；当前归档未保存UI对象逐字段前后值，页面不虚构逐项变化数",
+          "数据变化按本轮官方来源内容变化统计；点击下方可查看重新发布到UI的具体对象",
           `运行 ${intelligenceRun.crawl_run_id} · 完成 ${runCompletionText(intelligenceRun)}`,
         ] : ["所选日期没有该数据库的刷新记录"],
         evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
@@ -1378,7 +1378,7 @@
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [18, 260], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [18, 473], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [230, 473], details: mainRun.curation ? [`候选 ${number(mainRun.curation.tasks)} 条`, `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "官方原文复核 / 数据库入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `事实快照 · 非字段变化数 · ${number(changedDatabaseCount)} 库版本有变化` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；不是 ${number(refreshFactCount)} 条字段都发生变化`, `四个可见库中 ${number(changedDatabaseCount)} 个数据库版本有变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`, "来源页面变化不等同于数据库字段改值；当前只归档到库级版本变化，未归档逐字段差异", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "database-hub", label: "官方原文复核 / 数据库入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数据变化 ${number(sourceChanged)} 项` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [445, 494], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；数据变化 ${number(sourceChanged)} 项`, `四个可见库中 ${number(changedDatabaseCount)} 个数据库版本有变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：内容变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条`, "数据变化按本轮官方来源内容变化统计", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [630, 440], "database-local"),
       domainNode("international", "国际运营商", [812, 440], "database-international"),
       domainNode("cloud", "全球云厂商", [630, 578], "database-cloud"),
@@ -1717,7 +1717,7 @@
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = databaseHubNode ? "当天数据库事实快照（非变化条数）" : databaseUiNode ? "当天UI发布对象（非数据变化数）" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = databaseHubNode ? "当天数据库入库与数据变化" : databaseUiNode ? "当天UI重新发布与数据变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>${detailTitle}</h3><span>${esc(recordLabel)}</span></header>${coverageNote}<div class="news-lineage-detail-items">${records.map((record) => {
       const status = String(record.status || "processed").toLowerCase();
       const title = record.aiTitle || record.sourceTitle || record.title || "未命名处理对象";
