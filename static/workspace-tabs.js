@@ -27,6 +27,10 @@
     newsSelectedStage: "search",
     newsLineageZoom: 1,
     newsLineagePaused: false,
+    newsLineageFitFrame: 0,
+    newsLineageResizeObserver: null,
+    newsLineageWindowResizeHandler: null,
+    newsLineageTabChangeHandler: null,
     schedulerOverview: null,
     executiveIntelligence: null,
     previewRequest: { weekly: 0, performance: 0 },
@@ -1488,6 +1492,35 @@
     requestAnimationFrame(() => requestAnimationFrame(syncNewsLineageEdges));
   }
 
+  function fitNewsLineageToViewport(panel) {
+    const viewport = panel.querySelector("[data-news-lineage-viewport]");
+    const stage = panel.querySelector("[data-news-lineage-stage]");
+    const canvas = panel.querySelector("[data-news-lineage-canvas]");
+    if (!viewport || !stage || !canvas || viewport.clientWidth <= 0) return;
+    const canvasWidth = Number(canvas.dataset.lineageWidth || canvas.offsetWidth || 0);
+    const canvasHeight = Number(canvas.dataset.lineageHeight || canvas.offsetHeight || 0);
+    if (!canvasWidth || !canvasHeight) return;
+    const viewportTop = Math.max(0, viewport.getBoundingClientRect().top);
+    const availableHeight = Math.max(1, window.innerHeight - viewportTop - 12);
+    const zoom = Math.min(1, viewport.clientWidth / canvasWidth, availableHeight / canvasHeight);
+    const scaledWidth = Math.max(1, Math.round(canvasWidth * zoom));
+    const scaledHeight = Math.max(1, Math.round(canvasHeight * zoom));
+    state.newsLineageZoom = Number(zoom.toFixed(4));
+    canvas.style.setProperty("--lineage-zoom", String(state.newsLineageZoom));
+    stage.style.width = `${scaledWidth}px`;
+    stage.style.height = `${scaledHeight}px`;
+    viewport.style.height = `${scaledHeight}px`;
+    viewport.dataset.lineageFit = zoom < .9999 ? "scaled" : "native";
+  }
+
+  function scheduleNewsLineageFit(panel) {
+    cancelAnimationFrame(state.newsLineageFitFrame);
+    state.newsLineageFitFrame = requestAnimationFrame(() => {
+      fitNewsLineageToViewport(panel);
+      scheduleNewsLineageEdgeSync();
+    });
+  }
+
   function lineageStageKey(nodeKey) {
     return ({ strategic: "search", "news-search": "search", "news-ai": "ai", "news-dedupe": "dedupe", "news-output": "push", "app-result": "push", "weekly-result": "push" })[nodeKey] || "";
   }
@@ -1930,22 +1963,31 @@
 
 
   function bindNewsLineageInteractions(panel) {
+    state.newsLineageResizeObserver?.disconnect();
+    if (state.newsLineageWindowResizeHandler) window.removeEventListener("resize", state.newsLineageWindowResizeHandler);
+    if (state.newsLineageTabChangeHandler) window.removeEventListener("workspace-tab-change", state.newsLineageTabChangeHandler);
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!canvas) return;
+    const viewport = panel.querySelector("[data-news-lineage-viewport]");
     canvas.addEventListener("click", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
       if (!node) return;
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
       openActualNewsLineageDetail(node.dataset.newsLineageNode);
     });
-    state.newsLineageResizeObserver?.disconnect();
+    const scheduleFit = () => scheduleNewsLineageFit(panel);
     if (window.ResizeObserver) {
-      state.newsLineageResizeObserver = new ResizeObserver(scheduleNewsLineageEdgeSync);
+      state.newsLineageResizeObserver = new ResizeObserver(scheduleFit);
+      if (viewport) state.newsLineageResizeObserver.observe(viewport);
       state.newsLineageResizeObserver.observe(canvas);
       canvas.querySelectorAll("[data-news-lineage-node]").forEach((node) => state.newsLineageResizeObserver.observe(node));
     }
-    scheduleNewsLineageEdgeSync();
-    document.fonts?.ready.then(scheduleNewsLineageEdgeSync);
+    state.newsLineageWindowResizeHandler = scheduleFit;
+    state.newsLineageTabChangeHandler = scheduleFit;
+    window.addEventListener("resize", state.newsLineageWindowResizeHandler, { passive: true });
+    window.addEventListener("workspace-tab-change", state.newsLineageTabChangeHandler);
+    scheduleFit();
+    document.fonts?.ready.then(scheduleFit);
   }
 
   function renderNewsItems(runs) {
@@ -1976,14 +2018,16 @@
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
-          <div class="news-lineage-viewport" tabindex="0" aria-label="可横向滚动的情报生成流程图">
-            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas style="--lineage-zoom:${state.newsLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
+          <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
+            <div class="news-lineage-stage" data-news-lineage-stage style="width:${lineageWidth}px;height:${lineageHeight}px">
+            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:1;width:${lineageWidth}px;height:${lineageHeight}px">
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
               <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health"><i aria-hidden="true"></i>${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+            </div>
             </div>
           </div>
         </section>

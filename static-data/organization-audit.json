@@ -402,7 +402,7 @@
       "action": "fault.mark_handled",
       "target": "8e759a68a5f020dfbc5eb54e",
       "target_type": "fault",
-      "target_label": "主项目后台任务",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "success",
       "details": {}
@@ -416,7 +416,7 @@
       "action": "fault.mark_handled",
       "target": "8e759a68a5f020dfbc5eb54e",
       "target_type": "fault",
-      "target_label": "主项目后台任务",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "failure",
       "details": {}
@@ -430,7 +430,7 @@
       "action": "fault.mark_handled",
       "target": "8e759a68a5f020dfbc5eb54e",
       "target_type": "fault",
-      "target_label": "主项目后台任务",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "failure",
       "details": {}
