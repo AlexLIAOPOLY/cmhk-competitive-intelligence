@@ -258,7 +258,10 @@ for attempt in 1 2 3 4 5; do
     echo "Private main changed before push; retrying with its latest parent ($attempt/5)." >&2
     continue
   fi
-  if git_net -C "$TMP_DIR" push \
+  # The snapshot clone intentionally omits old blobs. A thin push may try to
+  # lazy-fetch those remote-only blobs as delta bases and fail on large private
+  # histories. Send a self-contained pack from the complete snapshot instead.
+  if git_net -C "$TMP_DIR" push --no-thin \
     origin "$CANDIDATE_COMMIT:refs/heads/$PRIVATE_MAIN"
   then
     NEW_COMMIT="$CANDIDATE_COMMIT"
