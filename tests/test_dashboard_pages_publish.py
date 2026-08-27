@@ -36,7 +36,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
         )
         self.assertTrue(referenced)
-        self.assertEqual(referenced - set(publisher.PUBLIC_STATIC_FILES), set())
+        published_assets = set(publisher.PUBLIC_STATIC_FILES) | {
+            f"vendor/{name}" for name in publisher.PUBLIC_VENDOR_FILES
+        }
+        self.assertEqual(referenced - published_assets, set())
 
         source = SCRIPT_PATH.read_text(encoding="utf-8")
         self.assertIn('["/api/auth/me", {', source)
@@ -836,6 +839,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
             self.assertIn('src="./static/public-snapshot-bootstrap.js?v=6"', html)
             self.assertIn('src="./static/workspace-tabs.js?v=public-7"', html)
+            self.assertIn('src="./static/vendor/chart-4.4.0.umd.js?v=1"', html)
+            self.assertIn(
+                'src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"',
+                html,
+            )
+            self.assertIn('src="./static/vendor/marked-15.0.12.umd.js?v=1"', html)
+            self.assertNotIn("cdn.jsdelivr.net", html)
             self.assertIn('data-workspace-tab="subscriptions"', html)
             self.assertIn('data-workspace-tab="ai"', html)
             self.assertIn('data-src="./static/public-subscriptions.html"', html)
@@ -849,6 +859,23 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('"/api/weekly-report-preview"', bootstrap)
             self.assertIn('"/api/crawl-run-log"', bootstrap)
             self.assertTrue((destination / "static" / "app.js").is_file())
+            self.assertGreater(
+                (destination / "static" / "vendor" / "chart-4.4.0.umd.js").stat().st_size,
+                200_000,
+            )
+            self.assertGreater(
+                (
+                    destination
+                    / "static"
+                    / "vendor"
+                    / "chartjs-plugin-datalabels-2.2.0.min.js"
+                ).stat().st_size,
+                12_000,
+            )
+            self.assertGreater(
+                (destination / "static" / "vendor" / "marked-15.0.12.umd.js").stat().st_size,
+                70_000,
+            )
             self.assertTrue((destination / "static" / "public-subscriptions.html").is_file())
             self.assertTrue((destination / "static" / "public-ai.html").is_file())
             self.assertFalse((destination / "static" / "subscription-admin.html").exists())

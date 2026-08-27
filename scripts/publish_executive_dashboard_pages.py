@@ -48,6 +48,14 @@ PUBLIC_STATIC_FILES = (
     "workspace-tabs.css",
     "workspace-tabs.js",
 )
+PUBLIC_VENDOR_FILES = (
+    "chart-4.4.0.umd.js",
+    "chart-4.4.0-LICENSE.md",
+    "chartjs-plugin-datalabels-2.2.0.min.js",
+    "chartjs-plugin-datalabels-2.2.0-LICENSE.md",
+    "marked-15.0.12.umd.js",
+    "marked-15.0.12-LICENSE.md",
+)
 
 PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
   "use strict";
@@ -831,9 +839,9 @@ def _build_site(
         html,
     )
     html = html.replace(
-        '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
+        '    <script src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>',
         '    <script src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
-        '    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
+        '    <script src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>',
     )
     html = html.replace(
         "<head>",
@@ -887,6 +895,10 @@ def _build_site(
         ),
         encoding="utf-8",
     )
+    vendor_destination = static_destination / "vendor"
+    vendor_destination.mkdir()
+    for name in PUBLIC_VENDOR_FILES:
+        shutil.copy2(STATIC_DIR / "vendor" / name, vendor_destination / name)
 
     report_outputs = ((snapshots.get("status.json") or {}).get("status") or {}).get("outputs", [])
     latest_reports = [
@@ -928,8 +940,6 @@ def _build_site(
     ):
         shutil.copy2(STATIC_DIR / name, static_destination / name)
     shutil.copytree(STATIC_DIR / "fonts", static_destination / "fonts")
-    vendor_destination = static_destination / "vendor"
-    vendor_destination.mkdir()
     for name in ("echarts-6.1.0.min.js", "echarts-LICENSE.txt"):
         shutil.copy2(STATIC_DIR / "vendor" / name, vendor_destination / name)
 
