@@ -4257,7 +4257,10 @@ def sync_news_review_sheet_audit(
         for operator in editor_event.get("operators") or []:
             if not isinstance(operator, dict):
                 continue
-            profile = AUTH.feishu_profile_by_open_id(str(operator.get("open_id") or ""))
+            profile = AUTH.feishu_profile_by_open_id(
+                str(operator.get("open_id") or ""),
+                str(operator.get("union_id") or ""),
+            )
             if profile.get("name"):
                 operator_profiles.append(profile)
         actor = None
@@ -4335,12 +4338,33 @@ def news_review_editor_tracking_status() -> dict[str, object]:
             "message": "等待首条飞书表格编辑者事件",
         }
     latest = editor_events[-1]
+    editors: list[dict[str, str]] = []
+    for operator in latest.get("operators") or []:
+        if not isinstance(operator, dict):
+            continue
+        profile = AUTH.feishu_profile_by_open_id(
+            str(operator.get("open_id") or ""),
+            str(operator.get("union_id") or ""),
+        )
+        if profile.get("name"):
+            editors.append({
+                "id": str(profile.get("id") or ""),
+                "name": str(profile.get("name") or ""),
+                "avatarUrl": str(profile.get("avatar_url") or ""),
+                "openId": str(operator.get("open_id") or ""),
+            })
+    editor_names = "、".join(editor["name"] for editor in editors)
     return {
         "status": "active",
         "receivedEvents": len(editor_events),
         "lastEventAtMs": int(latest.get("create_time_ms") or 0),
         "lastEventId": str(latest.get("event_id") or ""),
-        "message": "已接收飞书表格编辑者事件",
+        "lastEditors": editors,
+        "message": (
+            f"已接收飞书表格编辑者事件：{editor_names}"
+            if editor_names
+            else "已接收飞书表格编辑者事件"
+        ),
     }
 
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import selectors
 import subprocess
 import threading
 from datetime import datetime
@@ -42,6 +43,18 @@ _lock = threading.RLock()
 _started = False
 _thread: threading.Thread | None = None
 _project_card_handler: Any | None = None
+_sidecar_thread: threading.Thread | None = None
+_sidecar_processes: dict[str, subprocess.Popen[str]] = {}
+SHEET_EDIT_SIDECAR = Path(
+    os.environ.get(
+        "CMHK_FEISHU_SHEET_EDIT_LISTENER_BIN",
+        str(ROOT / "var" / "bin" / "lark-cli-drive"),
+    )
+)
+SHEET_EDIT_APP_ID = (
+    os.environ.get("CMHK_FEISHU_SHEET_EDIT_APP_ID")
+    or "cli_a9575e70ae799cb2"
+).strip()
 
 
 def _load_app_secret() -> str:
@@ -333,9 +346,104 @@ def _run_forever() -> None:
     client.start()
 
 
+def _write_sheet_edit_status(state: str, **extra: Any) -> None:
+    path = ROOT / "var" / "auth" / "feishu-sheet-edit-listener-status.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "state": state,
+        "pid": os.getpid(),
+        "updated_at": datetime.now(HKT).isoformat(timespec="milliseconds"),
+        **extra,
+    }
+    temp = path.with_suffix(".tmp")
+    temp.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.replace(path)
+
+
+def _run_event_consumer(event_key: str) -> None:
+    from cmhk.integrations.feishu_sheet_edit_events import capture_drive_file_edit_event
+
+    while True:
+        env = dict(os.environ)
+        env["LARK_CLI_NO_PROXY_WARN"] = "1"
+        try:
+            process = subprocess.Popen(
+                [
+                    str(SHEET_EDIT_SIDECAR),
+                    "event",
+                    "consume",
+                    event_key,
+                    "--as",
+                    "bot",
+                    "--profile",
+                    SHEET_EDIT_APP_ID,
+                ],
+                cwd=ROOT,
+                env=env,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+            )
+            _sidecar_processes[event_key] = process
+            assert process.stdout is not None and process.stderr is not None
+            selector = selectors.DefaultSelector()
+            selector.register(process.stdout, selectors.EVENT_READ, "stdout")
+            selector.register(process.stderr, selectors.EVENT_READ, "stderr")
+            while process.poll() is None or selector.get_map():
+                for key, _ in selector.select(timeout=1):
+                    line = key.fileobj.readline()
+                    if not line:
+                        selector.unregister(key.fileobj)
+                        continue
+                    if key.data == "stderr":
+                        print(f"[{event_key}] {line.rstrip()}", flush=True)
+                        if event_key == "drive.file.edit_v1" and "[source] feishu-websocket: connected" in line:
+                            _write_sheet_edit_status("connected", consumer_pid=process.pid)
+                        continue
+                    event = json.loads(line)
+                    if event_key == "drive.file.edit_v1":
+                        record = capture_drive_file_edit_event(event)
+                        if record:
+                            _write_sheet_edit_status(
+                                "event_received",
+                                consumer_pid=process.pid,
+                                event_id=record.get("event_id", ""),
+                                event_create_time=record.get("create_time", ""),
+                            )
+            selector.close()
+            return_code = process.wait()
+            print(f"Feishu {event_key} consumer exited ({return_code}); restarting", flush=True)
+        except Exception as exc:
+            print(f"Feishu {event_key} consumer failed: {exc}", flush=True)
+        finally:
+            _sidecar_processes.pop(event_key, None)
+        threading.Event().wait(5)
+
+
+def _run_sheet_edit_sidecar() -> None:
+    """Keep the spreadsheet app's recognized lark-cli event bus alive."""
+    _run_event_consumer("drive.file.edit_v1")
+
+
+def _ensure_sheet_edit_sidecar() -> threading.Thread:
+    global _sidecar_thread
+    if _sidecar_thread is not None and _sidecar_thread.is_alive():
+        return _sidecar_thread
+    _sidecar_thread = threading.Thread(
+        target=_run_sheet_edit_sidecar,
+        name="feishu-sheet-edit-sidecar-supervisor",
+        daemon=True,
+    )
+    _sidecar_thread.start()
+    return _sidecar_thread
+
+
 def ensure_started() -> threading.Thread:
     global _started, _thread
     with _lock:
+        _ensure_sheet_edit_sidecar()
         if _started and _thread is not None and _thread.is_alive():
             return _thread
         _thread = threading.Thread(

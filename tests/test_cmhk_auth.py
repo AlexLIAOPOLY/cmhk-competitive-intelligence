@@ -158,6 +158,30 @@ class AuthServiceTest(unittest.TestCase):
         enabled = AuthService(empty_root)
         self.assertEqual(len(enabled._users()), 5)
 
+    def test_sheet_event_open_id_resolves_through_cross_app_union_id(self):
+        users = self.service._users()
+        users.append({
+            "id": "fs-alice",
+            "account": "alice",
+            "name": "Alice Chen",
+            "email": "alice@example.com",
+            "department": "Technology",
+            "avatar_url": "https://example.com/alice.png",
+            "feishu_open_id": "ou_login_app",
+            "feishu_union_id": "on_alice",
+            "credential_source": "feishu_sso",
+            "role": "UNCONFIGURED",
+            "status": "active",
+        })
+        self.service._write(self.service.users_path, users)
+
+        profile = self.service.feishu_profile_by_open_id("ou_sheet_app", "on_alice")
+
+        self.assertEqual(profile["id"], "fs-alice")
+        self.assertEqual(profile["open_id"], "ou_sheet_app")
+        self.assertEqual(profile["name"], "Alice Chen")
+        self.assertEqual(profile["avatar_url"], "https://example.com/alice.png")
+
     def test_admin_can_assign_leader_and_server_enforces_module(self):
         _, admin_session = self.dev_login()
         users = self.service._users()

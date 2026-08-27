@@ -284,10 +284,18 @@ class NewsReviewActorTests(unittest.TestCase):
         with mock.patch.object(web_app, "sheet_edit_events", return_value=[{
             "event_id": "evt-1",
             "create_time_ms": 1787638413000,
-        }]):
+            "operators": [{"open_id": "ou_sheet", "union_id": "on_alice"}],
+        }]), mock.patch.object(web_app.AUTH, "feishu_profile_by_open_id", return_value={
+            "id": "fs-alice",
+            "name": "Alice Chen",
+            "avatar_url": "https://example.com/alice.png",
+        }) as resolve_profile:
             active = web_app.news_review_editor_tracking_status()
         self.assertEqual(active["status"], "active")
         self.assertEqual(active["lastEventId"], "evt-1")
+        self.assertEqual(active["lastEditors"][0]["name"], "Alice Chen")
+        self.assertIn("Alice Chen", active["message"])
+        resolve_profile.assert_called_once_with("ou_sheet", "on_alice")
 
 
 if __name__ == "__main__":

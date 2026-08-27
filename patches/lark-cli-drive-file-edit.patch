@@ -1,0 +1,39 @@
+diff --git a/events/all.go b/events/all.go
+index f6f33f6..6239d02 100644
+--- a/events/all.go
++++ b/events/all.go
+@@ -11,0 +12 @@ import (
++	"github.com/larksuite/cli/events/drive"
+@@ -27,0 +29 @@ func All() []catalog.KeyDefinition {
++		drive.Keys(),
+diff --git a/events/drive/register.go b/events/drive/register.go
+new file mode 100644
+index 0000000..1aa81eb
+--- /dev/null
++++ b/events/drive/register.go
+@@ -0,0 +1,25 @@
++package drive
++
++import (
++	"reflect"
++
++	larkdrive "github.com/larksuite/oapi-sdk-go/v3/service/drive/v1"
++
++	"github.com/larksuite/cli/internal/event"
++)
++
++func Keys() []event.KeyDefinition {
++	return []event.KeyDefinition{
++		{
++			Key:         "drive.file.edit_v1",
++			DisplayName: "File edited",
++			Description: "Triggered after an authorized Drive file is edited",
++			EventType:   "drive.file.edit_v1",
++			Schema: event.SchemaDef{
++				Native: &event.SchemaSpec{Type: reflect.TypeOf(larkdrive.P2FileEditV1Data{})},
++			},
++			AuthTypes:             []string{"bot"},
++			RequiredConsoleEvents: []string{"drive.file.edit_v1"},
++		},
++	}
++}

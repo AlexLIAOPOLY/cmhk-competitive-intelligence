@@ -385,12 +385,34 @@ class AuthService:
             user = next((item for item in self._users() if str(item.get("feishu_open_id") or "") == open_id), None)
         return self._public_user(user)
 
-    def feishu_profile_by_open_id(self, open_id: str) -> dict[str, str]:
+    def public_user_by_feishu_union_id(self, union_id: str) -> dict[str, Any] | None:
+        """Resolve the same person across different Feishu application Open IDs."""
+        union_id = str(union_id or "").strip()
+        if not union_id:
+            return None
+        with self.lock:
+            user = next((item for item in self._users() if str(item.get("feishu_union_id") or "") == union_id), None)
+        return self._public_user(user)
+
+    def feishu_profile_by_open_id(self, open_id: str, union_id: str = "") -> dict[str, str]:
         """Resolve an event operator Open ID to the organization display profile."""
         open_id = str(open_id or "").strip()
-        if not open_id or not self.feishu_configured:
+        union_id = str(union_id or "").strip()
+        if not open_id:
             return {}
-        known = self.public_user_by_feishu_open_id(open_id) or {}
+        known = (
+            self.public_user_by_feishu_open_id(open_id)
+            or self.public_user_by_feishu_union_id(union_id)
+            or {}
+        )
+        fallback = {
+            "id": str(known.get("id") or open_id),
+            "open_id": open_id,
+            "name": str(known.get("name") or ""),
+            "avatar_url": str(known.get("avatarUrl") or ""),
+        }
+        if not self.feishu_configured:
+            return fallback if known else {}
         try:
             payload = self._json_request(
                 "https://open.feishu.cn/open-apis/contact/v3/users/"
@@ -399,12 +421,7 @@ class AuthService:
                 token=self._tenant_access_token(),
             )
         except Exception:
-            return {
-                "id": str(known.get("id") or open_id),
-                "open_id": open_id,
-                "name": str(known.get("name") or ""),
-                "avatar_url": str(known.get("avatarUrl") or ""),
-            }
+            return fallback
         user = payload.get("data", {}).get("user", {})
         if not isinstance(user, dict):
             user = {}

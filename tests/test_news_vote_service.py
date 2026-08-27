@@ -7,6 +7,17 @@ from unittest.mock import patch
 
 
 class NewsVoteServiceTests(unittest.TestCase):
+    def test_sheet_edit_sidecar_uses_runtime_binary(self):
+        module = importlib.import_module("news_vote_service")
+        self.assertEqual(
+            module.SHEET_EDIT_SIDECAR,
+            module.ROOT / "var" / "bin" / "lark-cli-drive",
+        )
+
+    def test_sheet_edit_listener_uses_dedicated_event_app_profile(self):
+        module = importlib.import_module("news_vote_service")
+        self.assertEqual(module.SHEET_EDIT_APP_ID, "cli_a9575e70ae799cb2")
+
     def test_event_secret_prefers_server_environment(self):
         with patch.dict(os.environ, {"CMHK_FEISHU_EVENT_APP_SECRET": "server-secret"}, clear=False):
             module = importlib.import_module("news_vote_service")
