@@ -837,8 +837,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('data-workspace-tab="dashboard"', html)
             self.assertIn('data-workspace-tab="monitoring"', html)
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
-            self.assertIn('src="./static/public-snapshot-bootstrap.js?v=6"', html)
-            self.assertIn('src="./static/workspace-tabs.js?v=public-7"', html)
+            self.assertIn('defer src="./static/public-snapshot-bootstrap.js?v=6"', html)
+            self.assertIn('defer src="./static/workspace-tabs.js?v=public-8"', html)
             self.assertIn('src="./static/vendor/chart-4.4.0.umd.js?v=1"', html)
             self.assertIn(
                 'src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"',
@@ -846,6 +846,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./static/vendor/marked-15.0.12.umd.js?v=1"', html)
             self.assertNotIn("cdn.jsdelivr.net", html)
+            self.assertLess(
+                html.index('src="./static/workspace-tabs.js?v=public-8"'),
+                html.index('src="./static/vendor/chart-4.4.0.umd.js?v=1"'),
+            )
+            self.assertLess(
+                html.index('src="./static/workspace-tabs.js?v=public-8"'),
+                html.index('src="./static/app.js?v=308"'),
+            )
+            self.assertNotRegex(html, r'<script(?![^>]*\bdefer\b)[^>]+src=')
             self.assertIn('data-workspace-tab="subscriptions"', html)
             self.assertIn('data-workspace-tab="ai"', html)
             self.assertIn('data-src="./static/public-subscriptions.html"', html)

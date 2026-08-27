@@ -830,7 +830,7 @@ def _build_site(
     )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',
-        'src="./static/workspace-tabs.js?v=public-7"',
+        'src="./static/workspace-tabs.js?v=public-8"',
         html,
     )
     html = re.sub(
@@ -839,9 +839,9 @@ def _build_site(
         html,
     )
     html = html.replace(
-        '    <script src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>',
-        '    <script src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
-        '    <script src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>',
+        '    <script defer src="./static/auth-client.js?v=3"></script>',
+        '    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
+        '    <script defer src="./static/auth-client.js?v=3"></script>',
     )
     html = html.replace(
         "<head>",
