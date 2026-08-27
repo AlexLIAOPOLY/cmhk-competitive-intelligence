@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-28T04:03:24+08:00",
+  "checked_at_hkt": "2026-08-28T04:09:15+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -45,13 +45,13 @@
       "backend_pid": 33469,
       "worker_pid": 0,
       "phase": "失败",
-      "progress_detail": "官方财报已检查，但结构化门禁失败：第2行 HKT 未发现可读取的官方财报；不会把旧数据发布为成功。",
+      "progress_detail": "续跑财报结构化门禁失败：第2行 HKT 未发现可读取的官方财报；保留旧数据等待重试。",
       "failure_stage": "local_financial_results",
-      "heartbeat_at_hkt": "2026-08-28T03:36:27+08:00",
+      "heartbeat_at_hkt": "2026-08-28T04:06:33+08:00",
       "started_at_hkt": "2026-08-28T03:00:19+08:00",
-      "completed_at_hkt": "2026-08-28T03:36:27+08:00",
+      "completed_at_hkt": "2026-08-28T04:06:33+08:00",
       "crawl_return_code": 1,
-      "duration_ms": 2167419,
+      "duration_ms": 3974055,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "b8a21c",
@@ -219,7 +219,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-28T03:36:26+08:00",
+          "generated_at_hkt": "2026-08-28T04:06:32+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -592,8 +592,8 @@
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 118011,
-        "lines": 749
+        "bytes": 121456,
+        "lines": 752
       }
     },
     "strategic_news": {
