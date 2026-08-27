@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-27T09:29:05+08:00",
+  "generated_at": "2026-08-27T09:35:31+08:00",
   "items": [
+    {
+      "id": "NEWS-39A932A5B8AD57",
+      "title": "SmarTone与csl 5G速度对比测试：启德10个热点结果公布",
+      "summary": "Techritual在启德10个热点对SmarTone与csl进行5G速度实测并公布结果，csl为被评测竞对。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1STVNMNEg5NDZxOXdkWjBtSnpYd2pQTUVtOFhEbzhQWlFsaGVfckp3QzFNX1NKbFdyVnNYOENDRTNlRldxM0N4S1lPUEN0RGpZSXBQRHBOY28?oc=5",
+      "published_at": "2026-08-26T19:10:54+08:00"
+    },
+    {
+      "id": "NEWS-92A70867CD6722",
+      "title": "香港首份五年规划与施政报告将于9月16日公布",
+      "summary": "香港行政长官表示，五年规划与施政报告将于9月16日同时公布。",
+      "category": "政策监管",
+      "source_url": "https://www.scmp.com/news/hong-kong/politics/article/3365319/5-year-plan-policy-address-be-unveiled-september-16-john-lee-says",
+      "published_at": "2026-08-26T18:16:00+08:00"
+    },
     {
       "id": "NEWS-2AB0C58A00B9A8",
       "title": "香港外贸连涨29个月超预期",
@@ -49,22 +65,6 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
       "published_at": "2026-08-16"
-    },
-    {
-      "id": "NEWS-53C6DA08A6825E",
-      "title": "企业深化产业布局 算力网有望拉动4万亿元投资",
-      "summary": "多家企业正谋划算力领域大项目，中国移动等公司算力投资持续增长，机构测算算力网建设将新增直接投资4万亿元。",
-      "category": "行业动态",
-      "source_url": "https://news.online.sh.cn/news/gb/content/2026-08/15/content_10478477.htm",
-      "published_at": "2026-08-15"
-    },
-    {
-      "id": "NEWS-04F9F16E7A143B",
-      "title": "广州海珠区发布“Token贷”及“词元八条”",
-      "summary": "广州市海珠区率先搭建词元经济工具箱，发布“Token贷”和“词元八条”政策。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE54cjF2dnBLQmUyek13Q3B3eWFBOFp2VzNnQ2FlNXhTVDhTTTRlREN6QVpoS1pMZVE3bzhYMFpUeGhaWXdScXFQNGNpeXFnandkVlRGTTI1WHUzcWc3MEE?oc=5",
-      "published_at": "2026-08-15"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "6f2c9446ea9d2d0c6bd4626b428d4f5e67a5797fbab3263fb231688f8e093737"
+  "site_version": "015a58f8cf350d63566d4e64d9ff4fe8883958bfcbe47fe1c48684cc4ae7b591"
 }
