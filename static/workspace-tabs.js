@@ -1408,7 +1408,7 @@
         { label: "B｜四库资料补缺线", position: [18, 230] },
         { label: "C｜固定官方源复核、入库与UI发布线", position: [18, 420] },
       ],
-      groups: [{ key: "databases", label: "四库UI发布", position: [950, 370], size: [395, 301] }],
+      groups: [{ key: "databases", label: "四库UI发布", position: [950, 370], size: [389, 301] }],
     };
   }
 

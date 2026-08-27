@@ -444,7 +444,7 @@
       "action": "fault.mark_handled",
       "target": "a855f6354d441973749f8274",
       "target_type": "fault",
-      "target_label": "主项目后台任务",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "failure",
       "details": {}
