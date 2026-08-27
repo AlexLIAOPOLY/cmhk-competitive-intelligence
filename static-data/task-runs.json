@@ -30,7 +30,7 @@
       "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
       "status_detail": "",
       "started_at_hkt": "2026-08-27T03:00:07+08:00",
-      "heartbeat_at_hkt": "2026-08-27T09:24:07+08:00",
+      "heartbeat_at_hkt": "2026-08-27T09:29:08+08:00",
       "completed_at_hkt": "",
       "duration_ms": 20490248,
       "retry_index": 0
