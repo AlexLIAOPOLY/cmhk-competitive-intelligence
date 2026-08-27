@@ -458,7 +458,7 @@
       "action": "fault.mark_handled",
       "target": "98a7e0c6eb395ef43da80437",
       "target_type": "fault",
-      "target_label": "主项目Web后台",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "failure",
       "details": {}
@@ -472,7 +472,7 @@
       "action": "fault.mark_handled",
       "target": "98a7e0c6eb395ef43da80437",
       "target_type": "fault",
-      "target_label": "主项目Web后台",
+      "target_label": "故障记录",
       "target_member_id": "",
       "result": "failure",
       "details": {}
