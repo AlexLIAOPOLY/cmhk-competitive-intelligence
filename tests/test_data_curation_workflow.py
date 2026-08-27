@@ -38,12 +38,35 @@ class DataCurationWorkflowTests(unittest.TestCase):
         graph.invoke.return_value = {
             "summary": {"run_id": "scheduled-crawl", "completed_at": "2026-08-27T09:00:00+08:00"}
         }
+        graph.update_state.return_value = {
+            "configurable": {"thread_id": "scheduled-crawl", "checkpoint_id": "updated"}
+        }
         with patch("data_curation.workflow.build_graph", return_value=graph):
-            result = run_workflow(run_id="scheduled-crawl", resume=True)
+            result = run_workflow(
+                run_id="scheduled-crawl",
+                resume=True,
+                search_verify_online=True,
+                search_verify_online_limit=80,
+            )
 
         config = {"configurable": {"thread_id": "scheduled-crawl"}}
         graph.get_state.assert_called_once_with(config)
-        graph.invoke.assert_called_once_with(None, config=config)
+        graph.update_state.assert_called_once_with(
+            config,
+            unittest.mock.ANY,
+        )
+        updated_controls = graph.update_state.call_args.args[1]
+        self.assertTrue(updated_controls["search_verify_online"])
+        self.assertEqual(updated_controls["search_verify_online_limit"], 80)
+        graph.invoke.assert_called_once_with(
+            None,
+            config={
+                "configurable": {
+                    "thread_id": "scheduled-crawl",
+                    "checkpoint_id": "updated",
+                }
+            },
+        )
         self.assertEqual(result["run_id"], "scheduled-crawl")
 
     def test_run_workflow_resume_without_checkpoint_starts_once_with_same_id(self) -> None:

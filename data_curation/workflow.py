@@ -2844,6 +2844,22 @@ def run_workflow(
         checkpoint_next = tuple(getattr(checkpoint, "next", ()) or ()) if checkpoint else ()
         if checkpoint_values:
             if checkpoint_next:
+                resume_controls = {
+                    "batch_size": batch_size,
+                    "ai_workers": max(1, ai_workers),
+                    "search_verify_workers": max(1, search_verify_workers),
+                    "search_verify_online": search_verify_online,
+                    "search_verify_online_limit": max(0, search_verify_online_limit),
+                    "online_ai": online_ai,
+                    "dry_run": dry_run,
+                }
+                if any(
+                    checkpoint_values.get(key) != value
+                    for key, value in resume_controls.items()
+                ):
+                    updated_config = graph.update_state(config, resume_controls)
+                    if isinstance(updated_config, dict):
+                        config = updated_config
                 result = graph.invoke(None, config=config)
             else:
                 completed_summary = checkpoint_values.get("summary")
