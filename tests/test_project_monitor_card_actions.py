@@ -9,7 +9,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import project_monitor
-from project_monitor_card_actions import CardActionHandler
+from project_monitor_card_actions import CardActionHandler, _atomic_json
 from cmhk.services.subscriptions import subscription_entry_card
 from tests.test_project_monitor import FakeCommandRunner
 
@@ -240,6 +240,29 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(audit[0]["details"]["source"], "feishu_card")
         serialized = json.dumps(card, ensure_ascii=False)
         self.assertNotRegex(serialized, r"[處狀請議響間級複斷據]")
+
+    def test_process_safe_handler_reloads_shared_idempotency_ledger(self):
+        second_handler = CardActionHandler(
+            runtime_root=self.root,
+            config_path=CONFIG_PATH,
+            state_dir=self.state_dir,
+            environ={"CMHK_ERROR_LEDGER_ENABLED": "1"},
+            now_fn=lambda: self.now,
+            command_runner=self.runner,
+        )
+        event = {"type": "card.action.trigger", "event_id": "evt_shared"}
+        first = {"status": "completed", "event_id": "evt_shared"}
+        self.handler.state["processed_events"]["evt_shared"] = first
+        _atomic_json(self.handler.action_state_path, self.handler.state)
+        second = second_handler.handle_event_process_safe(event)
+        self.assertEqual(second, first)
+        self.assertEqual(self.runner.calls, [])
+
+    def test_config_routes_primary_app_callbacks_to_websocket_owner(self):
+        self.assertEqual(
+            self.handler.actions_config.get("listener_profiles"),
+            ["cmhk-innovation-digital"],
+        )
 
     def test_duplicate_event_is_idempotent(self):
         event = self._event()

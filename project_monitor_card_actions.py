@@ -91,6 +91,7 @@ class CardActionHandler:
         self.web_actions_path = self.state_dir / "web_actions.jsonl"
         self.web_actions_lock_path = self.state_dir / "web_actions.lock"
         self.lock_path = self.state_dir / "card_actions.lock"
+        self.processing_lock_path = self.state_dir / "card_actions_processing.lock"
         self.monitor_state_path = self.state_dir / "state.json"
         self.state = _read_json(self.action_state_path, {})
         if not isinstance(self.state, dict):
@@ -690,6 +691,28 @@ class CardActionHandler:
         )
         return result
 
+    def handle_event_process_safe(self, event: dict[str, Any]) -> dict[str, Any]:
+        """Serialize callbacks shared by the daemon and the WebSocket owner.
+
+        The primary Feishu app now uses the Web application's SDK connection so
+        file-edit and card callbacks share one connection.  The monitoring app
+        still arrives through the standalone daemon.  Both processes write the
+        same idempotency ledger, so reload it while holding a dedicated lock.
+        """
+        self.processing_lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.processing_lock_path.open("a+", encoding="utf-8") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            self.state = _read_json(self.action_state_path, {})
+            if not isinstance(self.state, dict):
+                self.state = {}
+            self.state.setdefault("version", 1)
+            self.state.setdefault("processed_events", {})
+            self.state.setdefault("handled_messages", {})
+            try:
+                return self.handle_event(event)
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
     def _handle_signal(self, _signum: int, _frame: object) -> None:
         self._stop_requested = True
         for process in self._event_processes.values():
@@ -702,10 +725,18 @@ class CardActionHandler:
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
-        profiles = list(dict.fromkeys(filter(None, [
-            profile,
-            str(subscriptions.get("directory_profile") or ""),
-        ])))
+        configured_profiles = self.actions_config.get("listener_profiles")
+        if isinstance(configured_profiles, list):
+            profiles = list(dict.fromkeys(
+                str(item).strip() for item in configured_profiles if str(item).strip()
+            ))
+        else:
+            profiles = list(dict.fromkeys(filter(None, [
+                profile,
+                str(subscriptions.get("directory_profile") or ""),
+            ])))
+        if not profiles:
+            raise RuntimeError("card action listener has no configured profiles")
         selector = selectors.DefaultSelector()
         ready: set[str] = set()
         for event_profile in profiles:
@@ -753,7 +784,7 @@ class CardActionHandler:
                         if not isinstance(event, dict):
                             raise ValueError("event line is not an object")
                         event["source_profile"] = event_profile
-                        result = self.handle_event(event)
+                        result = self.handle_event_process_safe(event)
                         print(json.dumps(result, ensure_ascii=False), flush=True)
                     except Exception as exc:
                         error = _redact(f"{type(exc).__name__}: {exc}", 900)

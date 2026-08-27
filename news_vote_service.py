@@ -41,6 +41,7 @@ for _proxy_key in ("NO_PROXY", "no_proxy"):
 _lock = threading.RLock()
 _started = False
 _thread: threading.Thread | None = None
+_project_card_handler: Any | None = None
 
 
 def _load_app_secret() -> str:
@@ -162,6 +163,16 @@ def _handle_card_action(data: Any) -> Any:
     action = getattr(event, "action", None)
     value = getattr(action, "value", None) or {}
     if value.get("action") != "news_vote":
+        try:
+            result = _handle_project_card_action(data)
+        except Exception as exc:
+            return P2CardActionTriggerResponse(
+                {"toast": {"type": "error", "content": f"处理失败：{exc}"}}
+            )
+        if str(result.get("status") or "") != "ignored":
+            return P2CardActionTriggerResponse(
+                {"toast": {"type": "success", "content": "操作已处理"}}
+            )
         return P2CardActionTriggerResponse(
             {"toast": {"type": "warning", "content": "无法识别此操作"}}
         )
@@ -201,6 +212,90 @@ def _handle_card_action(data: Any) -> Any:
     return P2CardActionTriggerResponse(
         {"toast": {"type": "success", "content": content}}
     )
+
+
+def _fetch_card_content(message_id: str) -> str:
+    if not message_id:
+        return ""
+    command = [
+        "lark-cli",
+        "api",
+        "GET",
+        f"/open-apis/im/v1/messages/{message_id}",
+        "--params",
+        json.dumps({"card_msg_content_type": "user_card_content"}),
+        "--as",
+        "bot",
+        "--profile",
+        APP_ID,
+        "--format",
+        "json",
+    ]
+    env = dict(os.environ)
+    env["LARK_CLI_NO_PROXY"] = "1"
+    result = subprocess.run(
+        command,
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    if result.returncode != 0:
+        return ""
+    try:
+        payload = json.loads(result.stdout)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return ""
+    data = payload.get("data") if isinstance(payload, dict) else None
+    items = data.get("items") if isinstance(data, dict) else None
+    if not isinstance(items, list) or not items:
+        return ""
+    body = items[0].get("body") if isinstance(items[0], dict) else None
+    return str(body.get("content") or "") if isinstance(body, dict) else ""
+
+
+def _flatten_card_action(data: Any) -> dict[str, Any]:
+    event = getattr(data, "event", None)
+    header = getattr(data, "header", None)
+    operator = getattr(event, "operator", None)
+    action = getattr(event, "action", None)
+    context = getattr(event, "context", None)
+    message_id = str(getattr(context, "open_message_id", "") or "").strip()
+    value = getattr(action, "value", None)
+    form_value = getattr(action, "form_value", None)
+    options = getattr(action, "options", None)
+    return {
+        "type": "card.action.trigger",
+        "event_id": str(getattr(header, "event_id", "") or ""),
+        "timestamp": str(getattr(header, "create_time", "") or ""),
+        "operator_id": str(getattr(operator, "open_id", "") or ""),
+        "message_id": message_id,
+        "chat_id": str(getattr(context, "open_chat_id", "") or ""),
+        "host": str(getattr(event, "host", "") or ""),
+        "token": str(getattr(event, "token", "") or ""),
+        "action_tag": str(getattr(action, "tag", "") or ""),
+        "action_value": json.dumps(value, ensure_ascii=False) if isinstance(value, dict) else "",
+        "action_name": str(getattr(action, "name", "") or ""),
+        "form_value": json.dumps(form_value, ensure_ascii=False) if isinstance(form_value, dict) else "",
+        "input_value": str(getattr(action, "input_value", "") or ""),
+        "option": str(getattr(action, "option", "") or ""),
+        "options": ",".join(str(item) for item in options) if isinstance(options, list) else "",
+        "checked": bool(getattr(action, "checked", False)),
+        "timezone": str(getattr(action, "timezone", "") or ""),
+        "card_content": _fetch_card_content(message_id),
+        "source_profile": APP_ID,
+    }
+
+
+def _handle_project_card_action(data: Any) -> dict[str, Any]:
+    global _project_card_handler
+    if _project_card_handler is None:
+        from project_monitor_card_actions import CardActionHandler
+
+        _project_card_handler = CardActionHandler(runtime_root=ROOT)
+    return _project_card_handler.handle_event_process_safe(_flatten_card_action(data))
 
 
 def _handle_drive_file_edit(data: Any) -> None:

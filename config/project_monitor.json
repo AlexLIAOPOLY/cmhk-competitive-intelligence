@@ -144,6 +144,9 @@
   "card_actions": {
     "enabled": true,
     "event_key": "card.action.trigger",
+    "listener_profiles": [
+      "cmhk-innovation-digital"
+    ],
     "action": "cmhk_mark_handled_v1",
     "primary_handler_open_id": "ou_c90bf12154574fc836d69f4bf1429ddc",
     "primary_handler_expected_name": "廖望 Alex LIAO Wang"
