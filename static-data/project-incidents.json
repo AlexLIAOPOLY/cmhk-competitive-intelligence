@@ -1040,6 +1040,30 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻AI补审队列",
       "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
+      "started_at_hkt": "2026-08-27T11:40:38+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:40:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "1153418115680ed74f6e1938",
+      "task_id": "incident:1153418115680ed74f6e1938",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -1052,8 +1076,8 @@
         "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
       ],
       "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
-      "started_at_hkt": "2026-08-27T11:40:38+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:40:38+08:00",
+      "started_at_hkt": "2026-08-27T11:46:39+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:46:39+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2949,7 +2973,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T05:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:40:38+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:46:39+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12097,30 +12121,6 @@
       "started_at_hkt": "2026-08-20T15:58:10+08:00",
       "heartbeat_at_hkt": "2026-08-20T15:58:40+08:00",
       "completed_at_hkt": "2026-08-20T15:59:10+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "16e378b7a88a024c81238137",
-      "task_id": "incident:16e378b7a88a024c81238137",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-20T15:54:43+08:00",
-      "started_at_hkt": "2026-08-20T16:04:14+08:00",
-      "heartbeat_at_hkt": "2026-08-20T16:04:44+08:00",
-      "completed_at_hkt": "2026-08-20T16:05:14+08:00",
       "handled_at_hkt": ""
     }
   ],
