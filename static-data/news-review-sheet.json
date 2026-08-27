@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-27T16:17:24+08:00",
+  "updatedAt": "2026-08-27T16:22:37+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -43,7 +43,13 @@
         "",
         "AI代理身份管理与安全漏洞发现速度加快，涉及网络安全与AI基础设施安全趋势，对电信行业网络安全策略有参考价值。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-27T08:20:48+00:00"
+      }
     },
     {
       "rowNumber": 3,
@@ -62,7 +68,13 @@
         "AI",
         "台湾地方政府推动AI与智慧城市论坛，涉及AI应用落地和城市数字化趋势，对电信行业智慧城市业务有参考意义。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-27T08:22:16+00:00"
+      }
     },
     {
       "rowNumber": 4,

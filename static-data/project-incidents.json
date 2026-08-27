@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "09cafc51025e0689fae42d30",
+      "task_id": "incident:09cafc51025e0689fae42d30",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
+      "suggestions": [
+        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
+        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
+      ],
+      "occurred_at_hkt": "2026-08-27T16:22:05+08:00",
+      "started_at_hkt": "2026-08-27T16:22:05+08:00",
+      "heartbeat_at_hkt": "2026-08-27T16:22:05+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "4cd2047c04d75b30230a7636",
       "task_id": "incident:4cd2047c04d75b30230a7636",
       "title": "主项目后台任务",
@@ -3837,7 +3861,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T15:47:10+08:00",
-      "heartbeat_at_hkt": "2026-08-27T16:17:04+08:00",
+      "heartbeat_at_hkt": "2026-08-27T16:22:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12093,30 +12117,6 @@
       "started_at_hkt": "2026-08-21T08:43:11+08:00",
       "heartbeat_at_hkt": "2026-08-21T08:43:11+08:00",
       "completed_at_hkt": "2026-08-21T08:43:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "27208d2b52423a2365272cd1",
-      "task_id": "incident:27208d2b52423a2365272cd1",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-21T08:11:36+08:00",
-      "started_at_hkt": "2026-08-21T08:11:36+08:00",
-      "heartbeat_at_hkt": "2026-08-21T08:11:36+08:00",
-      "completed_at_hkt": "2026-08-21T08:12:06+08:00",
       "handled_at_hkt": ""
     }
   ],
