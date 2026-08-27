@@ -938,6 +938,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "3b2ee78ce81b856aa986298c",
+      "task_id": "incident:3b2ee78ce81b856aa986298c",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
+      "started_at_hkt": "2026-08-27T11:25:36+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:25:36+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "4b08a7ccaddcfb37b34086fd",
       "task_id": "incident:4b08a7ccaddcfb37b34086fd",
       "title": "主爬虫与定时爬虫",
@@ -2829,7 +2853,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T05:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:20:06+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:26:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12099,32 +12123,6 @@
       "started_at_hkt": "2026-08-20T14:51:42+08:00",
       "heartbeat_at_hkt": "2026-08-21T08:02:34+08:00",
       "completed_at_hkt": "2026-08-21T08:03:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "2285f64ff873167e3864c23e",
-      "task_id": "incident:2285f64ff873167e3864c23e",
-      "title": "Feishu媒体指标定时汇总",
-      "kind": "feishu-media-metrics",
-      "kind_label": "Feishu媒体指标定时汇总",
-      "scope": "feishu-media-metrics",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "主项目常驻服务未运行",
-      "impact": "已确认影响：服务未运行，对应爬虫、定时任务或Web能力可能停止。推断影响：后续计划任务可能漏跑，导致媒体指标数据缺失或延迟。",
-      "suggestions": [
-        "执行 `launchctl print gui/501/com.liaowang.cmhk-feishu-media-metrics` 查看服务详细状态，并检查对应 stderr 日志（如 ~/Library/Logs/ 下相关日志）定位启动失败原因。",
-        "确认没有同类任务正在执行（如通过 `ps aux | grep feishu-media-metrics` 或任务列表），避免重复运行。",
-        "根据 LaunchAgent 配置，使用 `launchctl unload` 后重新 `load` 或 `kickstart` 恢复服务，确保环境变量和依赖路径正确。",
-        "恢复后交叉检查任务归档、/api/status 与 /api/task-runs，确认服务健康且无漏跑任务；若发现漏跑，评估影响后谨慎补跑，禁止盲目重跑已完成的外部写入。"
-      ],
-      "occurred_at_hkt": "2026-08-20T14:46:11+08:00",
-      "started_at_hkt": "2026-08-20T14:46:13+08:00",
-      "heartbeat_at_hkt": "2026-08-20T14:46:13+08:00",
-      "completed_at_hkt": "2026-08-20T14:47:41+08:00",
       "handled_at_hkt": ""
     }
   ],
