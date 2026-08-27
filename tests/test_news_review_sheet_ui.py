@@ -275,6 +275,20 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot), [])
                 self.assertEqual(service.operation_audit(), [])
 
+    def test_editor_tracking_status_reports_waiting_then_active(self) -> None:
+        with mock.patch.object(web_app, "sheet_edit_events", return_value=[]):
+            waiting = web_app.news_review_editor_tracking_status()
+        self.assertEqual(waiting["status"], "waiting_for_first_edit")
+        self.assertEqual(waiting["receivedEvents"], 0)
+
+        with mock.patch.object(web_app, "sheet_edit_events", return_value=[{
+            "event_id": "evt-1",
+            "create_time_ms": 1787638413000,
+        }]):
+            active = web_app.news_review_editor_tracking_status()
+        self.assertEqual(active["status"], "active")
+        self.assertEqual(active["lastEventId"], "evt-1")
+
 
 if __name__ == "__main__":
     unittest.main()

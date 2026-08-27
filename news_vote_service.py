@@ -208,10 +208,10 @@ def _handle_drive_file_edit(data: Any) -> None:
         capture_drive_file_edit_event,
     )
 
-    capture_drive_file_edit_event(
-        data,
-        path=STATE_DIR.parent / "var" / "auth" / "feishu-sheet-edit-events.jsonl",
-    )
+    # The event module owns the canonical path.  Deriving it from STATE_DIR
+    # previously inserted an extra ``var`` component and made the audit reader
+    # and the WebSocket listener use different files.
+    capture_drive_file_edit_event(data)
 
 
 def _run_forever() -> None:

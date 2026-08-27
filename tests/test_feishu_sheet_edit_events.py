@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from cmhk.integrations.feishu_sheet_edit_events import (
+    DEFAULT_EVENT_PATH,
     TARGET_SPREADSHEET_TOKEN,
     capture_drive_file_edit_event,
     sheet_edit_events,
@@ -13,6 +14,13 @@ from cmhk.integrations.feishu_sheet_edit_events import (
 
 
 class FeishuSheetEditEventTests(unittest.TestCase):
+    def test_default_event_path_is_project_auth_directory(self) -> None:
+        project_root = Path(__file__).resolve().parents[1]
+        self.assertEqual(
+            DEFAULT_EVENT_PATH,
+            project_root / "var" / "auth" / "feishu-sheet-edit-events.jsonl",
+        )
+
     def test_target_sheet_operator_ids_are_persisted_and_read(self) -> None:
         data = SimpleNamespace(
             header=SimpleNamespace(

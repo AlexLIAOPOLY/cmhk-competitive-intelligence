@@ -15,6 +15,15 @@ class NewsVoteServiceTests(unittest.TestCase):
         if "CMHK_STRATEGY_STATE_DIR" not in os.environ:
             self.assertEqual(module.STATE_DIR, module.ROOT / "var" / "strategy_briefing")
 
+    def test_drive_edit_handler_uses_canonical_event_path(self):
+        module = importlib.import_module("news_vote_service")
+        event = object()
+        with patch(
+            "cmhk.integrations.feishu_sheet_edit_events.capture_drive_file_edit_event"
+        ) as capture:
+            module._handle_drive_file_edit(event)
+        capture.assert_called_once_with(event)
+
 
 if __name__ == "__main__":
     unittest.main()

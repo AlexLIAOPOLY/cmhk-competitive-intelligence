@@ -14,7 +14,12 @@ TARGET_SPREADSHEET_TOKEN = (
 DEFAULT_EVENT_PATH = Path(
     os.environ.get(
         "CMHK_FEISHU_SHEET_EDIT_EVENT_PATH",
-        str(Path.cwd() / "var" / "auth" / "feishu-sheet-edit-events.jsonl"),
+        str(
+            Path(__file__).resolve().parents[2]
+            / "var"
+            / "auth"
+            / "feishu-sheet-edit-events.jsonl"
+        ),
     )
 )
 

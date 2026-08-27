@@ -4321,6 +4321,29 @@ def sync_news_review_sheet_audit(
     return events
 
 
+def news_review_editor_tracking_status() -> dict[str, object]:
+    """Describe whether the formal runtime has received editor identities."""
+    editor_events = sheet_edit_events(
+        path=NEWS_REVIEW_SHEET_EDIT_EVENT_PATH,
+        after_ms=0,
+    )
+    if not editor_events:
+        return {
+            "status": "waiting_for_first_edit",
+            "receivedEvents": 0,
+            "lastEventAtMs": 0,
+            "message": "等待首条飞书表格编辑者事件",
+        }
+    latest = editor_events[-1]
+    return {
+        "status": "active",
+        "receivedEvents": len(editor_events),
+        "lastEventAtMs": int(latest.get("create_time_ms") or 0),
+        "lastEventId": str(latest.get("event_id") or ""),
+        "message": "已接收飞书表格编辑者事件",
+    }
+
+
 def _task_incident_metadata() -> dict[str, dict]:
     try:
         monitor_state = json.loads(PROJECT_MONITOR_STATE_PATH.read_text(encoding="utf-8"))
@@ -5035,7 +5058,11 @@ class AppHandler(BaseHTTPRequestHandler):
 
                 snapshot = review_sheet_snapshot()
                 sync_news_review_sheet_audit(snapshot)
-                json_response(self, {"ok": True, **attach_news_review_actors(snapshot)})
+                json_response(self, {
+                    "ok": True,
+                    **attach_news_review_actors(snapshot),
+                    "editorTracking": news_review_editor_tracking_status(),
+                })
             except Exception as exc:
                 json_response(
                     self,
