@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-27T10:18:20+08:00",
+  "checked_at_hkt": "2026-08-27T10:20:43+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -731,9 +731,9 @@
       "run_status": "running",
       "backend_pid": 25417,
       "worker_pid": 25417,
-      "phase": "生成AI洞察",
-      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
-      "heartbeat_at_hkt": "2026-08-27T10:06:41+08:00",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-08-27T10:20:30+08:00",
       "started_at_hkt": "2026-08-27T10:02:52+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -741,8 +741,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260827_100252_545518.jsonl"
       },
       "stream_log": {
-        "bytes": 2161,
-        "lines": 13
+        "bytes": 2691,
+        "lines": 16
       },
       "final_audit": {},
       "run_log": {},
