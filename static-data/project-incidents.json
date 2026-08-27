@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "93fc93a5fe950af7516eba1b",
+      "task_id": "incident:93fc93a5fe950af7516eba1b",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T01:41:06+08:00",
+      "started_at_hkt": "2026-08-28T01:41:06+08:00",
+      "heartbeat_at_hkt": "2026-08-28T01:41:06+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "3010ee20c1d16709e5ef2728",
       "task_id": "incident:3010ee20c1d16709e5ef2728",
       "title": "主项目后台任务",
@@ -4269,7 +4293,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T15:47:10+08:00",
-      "heartbeat_at_hkt": "2026-08-28T01:35:06+08:00",
+      "heartbeat_at_hkt": "2026-08-28T01:41:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12081,30 +12105,6 @@
       "started_at_hkt": "2026-08-21T09:36:26+08:00",
       "heartbeat_at_hkt": "2026-08-21T09:36:26+08:00",
       "completed_at_hkt": "2026-08-21T09:36:56+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "ad872737081641841b87e2ec",
-      "task_id": "incident:ad872737081641841b87e2ec",
-      "title": "06:00/13:30战略新闻爬虫",
-      "kind": "strategic-news",
-      "kind_label": "06:00/13:30战略新闻爬虫",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：战略新闻定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "读取该任务完整日志和最后心跳，确认实际失败阶段。",
-        "修复后只恢复未完成阶段，避免重复执行已经成功的外部写入。"
-      ],
-      "occurred_at_hkt": "2026-08-21T09:36:16+08:00",
-      "started_at_hkt": "2026-08-21T09:36:56+08:00",
-      "heartbeat_at_hkt": "2026-08-21T10:21:37+08:00",
-      "completed_at_hkt": "2026-08-21T10:22:07+08:00",
       "handled_at_hkt": ""
     }
   ],
