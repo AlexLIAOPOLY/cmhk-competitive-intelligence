@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "ff4987ab6f661bf4527415af",
+      "task_id": "incident:ff4987ab6f661bf4527415af",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-27T12:08:10+08:00",
+      "started_at_hkt": "2026-08-27T12:08:10+08:00",
+      "heartbeat_at_hkt": "2026-08-27T12:08:10+08:00",
+      "completed_at_hkt": "2026-08-27T12:08:40+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "0735d09e77fdf548fff0ab75",
       "task_id": "incident:0735d09e77fdf548fff0ab75",
       "title": "主项目后台任务",
@@ -1150,6 +1174,30 @@
       "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
       "started_at_hkt": "2026-08-27T12:02:16+08:00",
       "heartbeat_at_hkt": "2026-08-27T12:02:40+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "9122aeb7f2bf7a87d44854a2",
+      "task_id": "incident:9122aeb7f2bf7a87d44854a2",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
+      "started_at_hkt": "2026-08-27T12:13:16+08:00",
+      "heartbeat_at_hkt": "2026-08-27T12:13:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3069,7 +3117,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T11:52:39+08:00",
-      "heartbeat_at_hkt": "2026-08-27T12:07:40+08:00",
+      "heartbeat_at_hkt": "2026-08-27T12:13:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12071,56 +12119,6 @@
       "started_at_hkt": "2026-08-20T17:39:54+08:00",
       "heartbeat_at_hkt": "2026-08-20T17:39:54+08:00",
       "completed_at_hkt": "2026-08-20T17:40:24+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "73f454762ffee078ae52e5ba",
-      "task_id": "incident:73f454762ffee078ae52e5ba",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认事实：至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败。推断：整体任务是否完成需结合任务归档判断，可能影响任务最终状态，但未确认全部失败。",
-      "suggestions": [
-        "检查日志中对应候选ID（如42a631a12297475c、8aeeb1546c74252e）的任务归档，确认最终完成状态，区分已回退成功与最终失败。",
-        "针对AI返回JSON不完整的问题，检查AI服务输出配置，增加输出长度限制或重试机制，并验证修复后AI返回完整JSON。",
-        "针对未命中关键词问题，检查关键词匹配规则和AI编辑逻辑，确认关键词列表是否完整，必要时更新规则并重新测试。",
-        "修复后，对受影响的候选执行恢复操作（仅重试失败步骤），并验证任务归档状态更新为成功。"
-      ],
-      "occurred_at_hkt": "2026-08-20T17:07:20+08:00",
-      "started_at_hkt": "2026-08-20T17:07:20+08:00",
-      "heartbeat_at_hkt": "2026-08-20T17:07:20+08:00",
-      "completed_at_hkt": "2026-08-20T17:07:51+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "feba489e59abd92e99406033",
-      "task_id": "incident:feba489e59abd92e99406033",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-20T16:35:47+08:00",
-      "started_at_hkt": "2026-08-20T16:35:47+08:00",
-      "heartbeat_at_hkt": "2026-08-20T16:35:47+08:00",
-      "completed_at_hkt": "2026-08-20T16:36:17+08:00",
       "handled_at_hkt": ""
     }
   ],
