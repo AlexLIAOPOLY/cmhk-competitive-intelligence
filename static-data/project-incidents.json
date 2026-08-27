@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "a6295784e29ae3ad4a9f4eeb",
+      "task_id": "incident:a6295784e29ae3ad4a9f4eeb",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-27T20:49:34+08:00",
+      "started_at_hkt": "2026-08-27T20:49:34+08:00",
+      "heartbeat_at_hkt": "2026-08-27T20:49:34+08:00",
+      "completed_at_hkt": "2026-08-27T20:50:04+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f5a67a953e6ea99411f6867c",
       "task_id": "incident:f5a67a953e6ea99411f6867c",
       "title": "主项目后台任务",
@@ -4053,7 +4077,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T15:47:10+08:00",
-      "heartbeat_at_hkt": "2026-08-27T20:44:04+08:00",
+      "heartbeat_at_hkt": "2026-08-27T20:55:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12085,32 +12109,6 @@
       "started_at_hkt": "2026-08-21T09:18:36+08:00",
       "heartbeat_at_hkt": "2026-08-21T09:21:06+08:00",
       "completed_at_hkt": "2026-08-21T09:21:36+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "7b47b793f702509b0c5d99b7",
-      "task_id": "incident:7b47b793f702509b0c5d99b7",
-      "title": "06:00/13:30战略新闻爬虫",
-      "kind": "strategic-news",
-      "kind_label": "06:00/13:30战略新闻爬虫",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：战略新闻定时爬虫",
-      "impact": "本轮任务未达到完整成功条件，但已有成功阶段和旧数据应继续保留，受影响阶段（飞书审核表准备）等待有界恢复。",
-      "suggestions": [
-        "检查该任务的完整日志和最后心跳，确认实际失败阶段及是否有部分写入。",
-        "确认飞书审核表是否已有部分数据写入，避免重复执行已成功的外部写入。",
-        "仅恢复未完成阶段，重新启动爬虫任务，确保从准备阶段继续。",
-        "验证任务最终成功完成，并检查后续数据一致性。"
-      ],
-      "occurred_at_hkt": "2026-08-21T09:17:06+08:00",
-      "started_at_hkt": "2026-08-21T09:17:29+08:00",
-      "heartbeat_at_hkt": "2026-08-21T10:21:37+08:00",
-      "completed_at_hkt": "2026-08-21T10:22:07+08:00",
       "handled_at_hkt": ""
     }
   ],
