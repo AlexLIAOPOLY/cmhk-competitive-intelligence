@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-27T10:01:10+08:00",
+  "checked_at_hkt": "2026-08-27T10:07:32+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -32,8 +32,7 @@
     }
   ],
   "next_runs": [
-    "2026-08-27T03:00:00+08:00",
-    "2026-08-27T10:01:10+08:00",
+    "2026-08-28T03:00:00+08:00",
     "2026-08-31T03:00:00+08:00",
     "2026-09-01T03:00:00+08:00"
   ],
@@ -42,16 +41,17 @@
       "crawl_run_id": "20260827_030007_167936",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "running",
+      "run_status": "completed",
       "backend_pid": 97959,
       "worker_pid": 0,
-      "phase": "恢复未完成任务",
-      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
+      "phase": "已完成",
+      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-27T10:00:55+08:00",
+      "heartbeat_at_hkt": "2026-08-27T10:02:52+08:00",
       "started_at_hkt": "2026-08-27T03:00:07+08:00",
-      "completed_at_hkt": "",
-      "duration_ms": 24967897,
+      "completed_at_hkt": "2026-08-27T10:02:52+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 25365599,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "e01a7e",
@@ -209,7 +209,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-27T09:56:14+08:00",
+          "generated_at_hkt": "2026-08-27T10:00:55+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -632,28 +632,54 @@
             ],
             "failures": []
           },
-          "database_changed": true,
+          "database_changed": false,
           "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
         },
         "financial_frontend_publish": {
-          "ok": false,
+          "ok": true,
           "returnCode": 0,
-          "status": "busy",
-          "site_version": "",
-          "public_url": "",
-          "commit": "",
-          "error": "{\"status\": \"busy\"}\n"
+          "status": "published",
+          "site_version": "aed14ad95c3eeffd34a722cd9d4054ed97e39e8901eb8a4ad619395502756f84",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "ff2d551be076a0b39843d38d67441e9c0b0f534e",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260827_030007_167936",
+          "bootstrap": false,
+          "page_count": 137,
+          "signal_count": 39,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260827_030007_167936.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 25417,
+          "agent_run_id": "20260827_084238_4e564571",
+          "task_run_id": "20260827_100252_545518",
+          "task_id": "crawl:20260827_100252_545518",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "15_focus_analysis",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
         }
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 403387,
-        "lines": 1247
-      },
-      "status_detail": "",
-      "interrupted": false,
-      "resumed_at_hkt": "2026-08-27T10:00:55+08:00"
+        "bytes": 408530,
+        "lines": 1254
+      }
     },
     "strategic_news": {
       "crawl_run_id": "20260827_073003_511125",
@@ -697,125 +723,31 @@
       }
     },
     "four_database_refresh": {
-      "crawl_run_id": "20260826_120727_785843",
+      "crawl_run_id": "20260827_100252_545518",
       "trigger": "四库与观察结论自动更新",
-      "scope": "Agent审核 20260826_110939_5a1b663a · 父任务 20260826_110329_493559",
+      "scope": "Agent审核 20260827_084238_4e564571 · 父任务 20260827_030007_167936",
       "task_kind": "executive-intelligence-refresh",
-      "parent_crawl_run_id": "20260826_110329_493559",
-      "run_status": "completed",
-      "backend_pid": 54295,
-      "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "四库、15个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "heartbeat_at_hkt": "2026-08-26T12:23:47+08:00",
-      "started_at_hkt": "2026-08-26T12:07:27+08:00",
-      "completed_at_hkt": "2026-08-26T12:23:47+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 979839,
+      "parent_crawl_run_id": "20260827_030007_167936",
+      "run_status": "running",
+      "backend_pid": 25417,
+      "worker_pid": 25417,
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-27T10:06:41+08:00",
+      "started_at_hkt": "2026-08-27T10:02:52+08:00",
+      "completed_at_hkt": "",
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260826_120727_785843.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260827_100252_545518.jsonl"
       },
       "stream_log": {
-        "bytes": 3218,
-        "lines": 19
+        "bytes": 2161,
+        "lines": 13
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {},
-      "status_detail": "四库、15个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
-      "failure_stage": "",
-      "operational_summary": {
-        "attempts": 1,
-        "agent_run_id": "20260826_110939_5a1b663a",
-        "failed_domains": [],
-        "status": "completed",
-        "notification_policy": "local_log_only",
-        "model_analysis": {
-          "ok": true,
-          "generated_at_hkt": "2026-08-26T12:22:49+08:00",
-          "model": "GLM+Qwen3-30B-A3B-Instruct-2507",
-          "domains": 4,
-          "focuses_expected": 15,
-          "focuses_passed": 15,
-          "reused": false,
-          "fallback_used": false,
-          "fallback_reason": "",
-          "evidence_hash": "80cd1e4e219238c1942efda0cb878744e27c630c494c1f5f10bc4fb2533bd603",
-          "discovery_model": "deterministic-evidence-fallback",
-          "discovery_fallback_used": true,
-          "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：跨库AI发现只有思考内容，没有最终输出"
-        },
-        "pages_publish": {
-          "ok": true,
-          "attempts": 1,
-          "status": "published",
-          "site_version": "01365417fb9349e45b979f15c26e3af964c965d555bae2888b933d1d0ca3d22c",
-          "item_count": 8,
-          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-          "commit": "9cf46d870e655319497566863f6eb2e802660bde",
-          "snapshot_source_url": ""
-        },
-        "feishu_detail_log": {
-          "ok": true,
-          "written": 657,
-          "skipped": 0,
-          "created": false,
-          "sheet_title": "四库爬虫明细日志",
-          "sheet_url": "",
-          "row_start": 2460,
-          "row_end": 3116,
-          "readback_verified": true
-        },
-        "failure_stage": "",
-        "overview_source_recrawl": {
-          "ok": true,
-          "path": "",
-          "official_urls": 606,
-          "retrieved": 481,
-          "failed": 125,
-          "postpaid_rows": 140,
-          "postpaid_values": 20,
-          "content_changed": 7,
-          "first_observation": 1,
-          "fingerprint_baseline_upgraded": 0,
-          "domains": {
-            "local": {
-              "official_urls": 140,
-              "retrieved": 140,
-              "failed": 0,
-              "content_changed": 1,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "international": {
-              "official_urls": 99,
-              "retrieved": 51,
-              "failed": 48,
-              "content_changed": 2,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "mainland": {
-              "official_urls": 239,
-              "retrieved": 225,
-              "failed": 14,
-              "content_changed": 0,
-              "first_observation": 1,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "cloud": {
-              "official_urls": 134,
-              "retrieved": 71,
-              "failed": 63,
-              "content_changed": 4,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            }
-          }
-        }
-      }
+      "metrics_refresh": {}
     }
   },
   "pipeline": {

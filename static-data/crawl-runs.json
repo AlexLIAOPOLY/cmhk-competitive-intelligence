@@ -2,6 +2,20 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260827_100252_545518",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 20260827_084238_4e564571 · 父任务 20260827_030007_167936",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-27T10:06:41+08:00",
+      "started_at_hkt": "2026-08-27T10:02:52+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260827_073003_511125",
       "trigger": "战略新闻定时爬虫",
       "scope": "晨间扫描（2026-08-27@07:30）",
@@ -33,15 +47,15 @@
       "crawl_run_id": "20260827_030007_167936",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "running",
-      "phase": "恢复未完成任务",
-      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
-      "status_detail": "",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-27T10:00:55+08:00",
+      "heartbeat_at_hkt": "2026-08-27T10:02:52+08:00",
       "started_at_hkt": "2026-08-27T03:00:07+08:00",
-      "completed_at_hkt": "",
-      "duration_ms": 24967897,
+      "completed_at_hkt": "2026-08-27T10:02:52+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 25365599,
       "final_audit": {
         "generated_at": "2026-08-27T03:07:42.566121",
         "rows_crawled": "33",
@@ -82,7 +96,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-27T09:56:14+08:00",
+          "generated_at_hkt": "2026-08-27T10:00:55+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -505,18 +519,47 @@
             ],
             "failures": []
           },
-          "database_changed": true,
+          "database_changed": false,
           "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
         },
         "financial_frontend_publish": {
-          "ok": false,
+          "ok": true,
           "returnCode": 0,
-          "status": "busy",
-          "site_version": "",
-          "public_url": "",
-          "commit": "",
-          "error": "{\"status\": \"busy\"}\n"
+          "status": "published",
+          "site_version": "aed14ad95c3eeffd34a722cd9d4054ed97e39e8901eb8a4ad619395502756f84",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "ff2d551be076a0b39843d38d67441e9c0b0f534e",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260827_030007_167936",
+          "bootstrap": false,
+          "page_count": 137,
+          "signal_count": 39,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260827_030007_167936.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 25417,
+          "agent_run_id": "20260827_084238_4e564571",
+          "task_run_id": "20260827_100252_545518",
+          "task_id": "crawl:20260827_100252_545518",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "15_focus_analysis",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
         }
       }
     },
@@ -34970,6 +35013,6 @@
       }
     }
   ],
-  "total": 236,
+  "total": 237,
   "truncated": false
 }
