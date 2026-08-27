@@ -2,30 +2,6 @@
   "ok": true,
   "incidents": [
     {
-      "incident_id": "a45903fad4582a4d91adebaa",
-      "task_id": "incident:a45903fad4582a4d91adebaa",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-28T05:32:03+08:00",
-      "started_at_hkt": "2026-08-28T05:32:03+08:00",
-      "heartbeat_at_hkt": "2026-08-28T05:32:03+08:00",
-      "completed_at_hkt": "",
-      "handled_at_hkt": ""
-    },
-    {
       "incident_id": "21fbfcd6bbcf1a80eb79d6bd",
       "task_id": "incident:21fbfcd6bbcf1a80eb79d6bd",
       "title": "主爬虫与定时爬虫",
@@ -43,10 +19,34 @@
         "查看本轮完整流日志，定位失败行和来源，不要先重跑全部来源。",
         "检查网络、DNS、目标站结构与历史结果回退状态。"
       ],
-      "occurred_at_hkt": "2026-08-28T05:06:44+08:00",
+      "occurred_at_hkt": "2026-08-28T05:36:50+08:00",
       "started_at_hkt": "2026-08-28T03:36:42+08:00",
-      "heartbeat_at_hkt": "2026-08-28T05:32:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T05:37:04+08:00",
       "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "a45903fad4582a4d91adebaa",
+      "task_id": "incident:a45903fad4582a4d91adebaa",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T05:32:03+08:00",
+      "started_at_hkt": "2026-08-28T05:32:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T05:32:03+08:00",
+      "completed_at_hkt": "2026-08-28T05:32:33+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -141,7 +141,7 @@
       ],
       "occurred_at_hkt": "2026-08-28T03:41:27+08:00",
       "started_at_hkt": "2026-08-28T03:41:33+08:00",
-      "heartbeat_at_hkt": "2026-08-28T05:32:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T05:37:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -429,7 +429,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 03:20:34",
       "started_at_hkt": "2026-08-28T03:29:09+08:00",
-      "heartbeat_at_hkt": "2026-08-28T05:32:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T05:37:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
