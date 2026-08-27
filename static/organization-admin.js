@@ -9,7 +9,7 @@
     loaded: false, loading: false, query: "", department: "", role: "", selectedUserId: "",
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
-    auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null },
+    auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null, requestId: 0, controller: null },
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const escapeRegExp = (value) => String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -331,14 +331,30 @@
 
   async function searchDirectory() {
     const query = state.directory.query.trim();
+    const requestId = ++state.directory.requestId;
+    state.directory.controller?.abort();
+    state.directory.controller = null;
     if (query.length < 2) { state.directory.loading = false; state.directory.users = []; state.directory.error = ""; renderDirectoryResults(); return; }
+    const controller = new AbortController();
+    state.directory.controller = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
     state.directory.loading = true; state.directory.error = ""; renderDirectoryResults();
     try {
-      const payload = await request(`/api/auth/admin/directory/search?q=${encodeURIComponent(query)}`);
-      if (query !== state.directory.query.trim()) return;
+      const payload = await request(`/api/auth/admin/directory/search?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+      if (requestId !== state.directory.requestId || query !== state.directory.query.trim()) return;
       state.directory.users = Array.isArray(payload.users) ? payload.users : [];
-    } catch (error) { state.directory.users = []; state.directory.error = error.message; }
-    finally { if (query === state.directory.query.trim()) { state.directory.loading = false; renderDirectoryResults(); } }
+    } catch (error) {
+      if (requestId !== state.directory.requestId) return;
+      state.directory.users = [];
+      state.directory.error = error?.name === "AbortError" ? "飞书通讯录搜索超时，请稍后重试。" : error.message;
+    } finally {
+      window.clearTimeout(timeout);
+      if (requestId === state.directory.requestId && query === state.directory.query.trim()) {
+        state.directory.controller = null;
+        state.directory.loading = false;
+        renderDirectoryResults();
+      }
+    }
   }
 
   async function importDirectoryUser(button) {
