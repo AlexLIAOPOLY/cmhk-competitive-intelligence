@@ -4,7 +4,7 @@
     "results": {
       "count": 33,
       "ok": 9,
-      "partial": 1
+      "partial": 5
     },
     "visuals": {
       "crawl": {
@@ -17,11 +17,11 @@
       },
       "quality": {
         "ok": 9,
-        "partial": 1,
-        "failed": 23,
+        "partial": 5,
+        "failed": 19,
         "fieldTotal": 205,
-        "missingFields": 12,
-        "rawSources": 201
+        "missingFields": 11,
+        "rawSources": 215
       },
       "blocks": [
         {
@@ -40,7 +40,7 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 115
+          "value": 122
         },
         {
           "label": "government_public_info",
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 17
+          "value": 23
         },
         {
           "label": "government_statistics",
@@ -66,11 +66,11 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 100
+          "value": 107
         },
         {
           "label": "US",
-          "value": 19
+          "value": 23
         },
         {
           "label": "EU",
@@ -81,34 +81,34 @@
           "value": 9
         },
         {
-          "label": "UK",
-          "value": 7
+          "label": "JP",
+          "value": 8
         },
         {
-          "label": "ES",
+          "label": "UK",
           "value": 7
         }
       ],
       "methods": [
         {
-          "label": "curl_crawler_ua",
-          "value": 73
+          "label": "httpx",
+          "value": 81
         },
         {
-          "label": "httpx",
-          "value": 49
+          "label": "curl_crawler_ua",
+          "value": 54
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 27
-        },
-        {
-          "label": "cache:httpx",
-          "value": 20
+          "value": 30
         },
         {
           "label": "curl_chrome_ua",
-          "value": 18
+          "value": 20
+        },
+        {
+          "label": "cache:httpx",
+          "value": 17
         },
         {
           "label": "cache:curl_crawler_ua",
@@ -325,7 +325,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-28 03:09:02",
+    "latestOutputText": "2026-08-28 03:29:09",
     "outputs": [
       {
         "name": "8月19日周报.docx",
