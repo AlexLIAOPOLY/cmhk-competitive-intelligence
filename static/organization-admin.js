@@ -305,7 +305,11 @@
     try {
       state.auditSyncWarning = "";
       if (syncFeishu) {
-        try { await syncNewsReviewSheet(); }
+        try {
+          const syncPayload = await syncNewsReviewSheet();
+          const tracking = syncPayload?.editorTracking;
+          if (tracking?.status !== "active") state.auditSyncWarning = tracking?.message || "飞书编辑者事件待接通";
+        }
         catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
       }
       const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200"), request("/api/project-incidents?limit=500")]);
