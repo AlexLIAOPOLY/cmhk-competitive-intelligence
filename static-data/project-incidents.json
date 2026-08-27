@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "ffca08ada7c4d8fd9873672f",
+      "task_id": "incident:ffca08ada7c4d8fd9873672f",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-27T22:28:37+08:00",
+      "started_at_hkt": "2026-08-27T22:28:37+08:00",
+      "heartbeat_at_hkt": "2026-08-27T22:28:37+08:00",
+      "completed_at_hkt": "2026-08-27T22:29:07+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "fd7c01f4116728ca0a88c723",
       "task_id": "incident:fd7c01f4116728ca0a88c723",
       "title": "主项目后台任务",
@@ -4125,7 +4149,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T15:47:10+08:00",
-      "heartbeat_at_hkt": "2026-08-27T22:28:07+08:00",
+      "heartbeat_at_hkt": "2026-08-27T22:33:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12083,32 +12107,6 @@
       "started_at_hkt": "2026-08-21T09:27:25+08:00",
       "heartbeat_at_hkt": "2026-08-21T10:21:37+08:00",
       "completed_at_hkt": "2026-08-21T10:22:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "9b4ce4223be9c53b8399bb1f",
-      "task_id": "incident:9b4ce4223be9c53b8399bb1f",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认事实：至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败。推断：受影响候选可能无法按时完成审核，但系统已设计为留待下轮或进入补审，未造成数据丢失或服务中断。",
-      "suggestions": [
-        "检查AI服务日志，确认输出截断的具体原因（如token限制、超时），并调整AI调用参数或增加重试机制。",
-        "核对AI返回JSON的校验逻辑，确保允许额外字段或修正字段映射，避免因多余字段导致解析失败。",
-        "对进入待恢复队列的候选，保留已有处理结果，仅重试失败步骤（如AI编辑或审核），完成后验证任务归档状态。",
-        "监控后续日志，确认错误是否持续，若频繁出现则升级至AI模型维护团队处理。"
-      ],
-      "occurred_at_hkt": "2026-08-21T09:25:53+08:00",
-      "started_at_hkt": "2026-08-21T09:23:36+08:00",
-      "heartbeat_at_hkt": "2026-08-21T09:25:53+08:00",
-      "completed_at_hkt": "2026-08-21T09:26:23+08:00",
       "handled_at_hkt": ""
     }
   ],
