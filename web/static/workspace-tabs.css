@@ -608,7 +608,7 @@
 .news-lineage.is-global .news-lineage-node.is-compact > span { min-height: 22px; font-size: 11.5px; }
 .news-lineage.is-global .news-lineage-node.is-compact > strong { font-size: 22px; }
 .news-lineage.is-global .news-lineage-node.is-compact > em { font-size: 9px; line-height: 1.35; }
-.news-lineage.is-global .news-lineage-node.is-database-hub { width: 126px; border-style: dashed; }
+.news-lineage.is-global .news-lineage-node.is-database-hub { width: 144px; height: 104px; min-height: 104px; border-style: dashed; }
 .news-lineage.is-global .news-lineage-node::before { position: absolute; top: 13px; bottom: 13px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--node-accent); opacity: .9; content: ""; }
 .news-lineage.is-global .news-lineage-node.is-crawler { --node-accent:#4bb8d1; background: linear-gradient(155deg,rgba(12,60,80,.98),rgba(5,29,42,.99)); }
 .news-lineage.is-global .news-lineage-node.is-source { --node-accent:#62cae4; background: linear-gradient(155deg,rgba(15,67,84,.98),rgba(6,31,43,.99)); }
