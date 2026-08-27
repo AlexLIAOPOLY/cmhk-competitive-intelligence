@@ -890,6 +890,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "49edda1612a29113a8ec6486",
+      "task_id": "incident:49edda1612a29113a8ec6486",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
+      "started_at_hkt": "2026-08-27T11:14:35+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:14:35+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "4b08a7ccaddcfb37b34086fd",
       "task_id": "incident:4b08a7ccaddcfb37b34086fd",
       "title": "主爬虫与定时爬虫",
@@ -2781,7 +2805,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T05:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:09:05+08:00",
+      "heartbeat_at_hkt": "2026-08-27T11:15:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12101,32 +12125,6 @@
       "started_at_hkt": "2026-08-20T14:46:13+08:00",
       "heartbeat_at_hkt": "2026-08-20T14:46:13+08:00",
       "completed_at_hkt": "2026-08-20T14:47:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "dc07b217feea5ae5d0d0f716",
-      "task_id": "incident:dc07b217feea5ae5d0d0f716",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认事实：至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败。推断：受影响数据可能未完成处理，但整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "检查内部AI服务健康状态及日志，确认是否恢复或存在持续异常。",
-        "根据日志时间关联任务归档、候选ID和最终完成状态，识别受影响的具体步骤和数据。",
-        "若AI服务已恢复，对失败步骤进行重试（仅重试未完成部分），并验证结果。",
-        "验证任务归档，确认整体任务最终完成状态，必要时人工介入处理遗留问题。"
-      ],
-      "occurred_at_hkt": "2026-08-20T13:37:38+08:00",
-      "started_at_hkt": "2026-08-20T13:36:38+08:00",
-      "heartbeat_at_hkt": "2026-08-20T13:37:38+08:00",
-      "completed_at_hkt": "2026-08-20T13:38:08+08:00",
       "handled_at_hkt": ""
     }
   ],
