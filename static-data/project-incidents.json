@@ -674,6 +674,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "6329ac680fab37b51a694420",
+      "task_id": "incident:6329ac680fab37b51a694420",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
+      "started_at_hkt": "2026-08-27T10:33:38+08:00",
+      "heartbeat_at_hkt": "2026-08-27T10:34:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "4b08a7ccaddcfb37b34086fd",
       "task_id": "incident:4b08a7ccaddcfb37b34086fd",
       "title": "主爬虫与定时爬虫",
@@ -2565,7 +2589,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T05:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-27T10:29:08+08:00",
+      "heartbeat_at_hkt": "2026-08-27T10:35:08+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12105,32 +12129,6 @@
       "started_at_hkt": "2026-08-20T10:09:17+08:00",
       "heartbeat_at_hkt": "2026-08-20T10:09:17+08:00",
       "completed_at_hkt": "2026-08-20T10:09:47+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "c12282021ae454a3ab4ef515",
-      "task_id": "incident:c12282021ae454a3ab4ef515",
-      "title": "06:00/13:30战略新闻爬虫",
-      "kind": "strategic-news",
-      "kind_label": "06:00/13:30战略新闻爬虫",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：战略新闻定时爬虫",
-      "impact": "已确认事实：本轮战略新闻爬虫任务未达到完整成功条件，当前新闻索引仅1条，低于3条可靠完成线。推断：新闻数据更新延迟，可能影响依赖该数据的下游分析或报告，但已有成功阶段和旧数据仍保留，未造成数据丢失。",
-      "suggestions": [
-        "检查任务完整日志和最后心跳，确认实际失败阶段（如索引复查是否已执行第2次检索）。",
-        "确认后台服务重启原因，确保服务稳定后，手动触发或等待下次调度恢复未完成阶段。",
-        "仅恢复未完成阶段（如继续执行第2次检索），避免重复执行已成功的外部写入操作。",
-        "修复后验证新闻索引数量达到3条可靠完成线，并确认任务状态为成功。"
-      ],
-      "occurred_at_hkt": "2026-08-20T09:49:13+08:00",
-      "started_at_hkt": "2026-08-20T10:00:43+08:00",
-      "heartbeat_at_hkt": "2026-08-20T13:37:08+08:00",
-      "completed_at_hkt": "2026-08-20T13:37:38+08:00",
       "handled_at_hkt": ""
     }
   ],
