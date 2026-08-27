@@ -1385,7 +1385,7 @@
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [300, 250], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 455], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [530, 455], details: mainRun.curation ? [`原始指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选事实` : ""}` : "候选事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
-      { key: "database-hub", label: "新增数据入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [760, 473], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "database-hub", label: "新增数据入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [760, 469], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [990, 410], "database-local"),
       domainNode("international", "国际运营商", [1155, 410], "database-international"),
       domainNode("cloud", "全球云厂商", [990, 535], "database-cloud"),
@@ -1401,14 +1401,14 @@
     return {
       nodes,
       edges,
-      canvasSize: [1580, 660],
+      canvasSize: [1580, 680],
       feedbackLabel: "历史记录用于下一轮去重",
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库资料补缺线", position: [18, 230] },
         { label: "C｜固定官方源复核、入库与UI发布线", position: [18, 420] },
       ],
-      groups: [{ key: "databases", label: "四库UI发布", position: [970, 382], size: [350, 270] }],
+      groups: [{ key: "databases", label: "四库UI发布", position: [950, 370], size: [395, 301] }],
     };
   }
 
