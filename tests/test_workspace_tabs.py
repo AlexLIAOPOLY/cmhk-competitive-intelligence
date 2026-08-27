@@ -51,7 +51,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=28', INDEX)
+        self.assertIn('/static/organization-admin.js?v=29', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=136', INDEX)
         self.assertIn('/static/app.js?v=308', INDEX)
@@ -92,6 +92,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn('class="organization-heading"', ORGANIZATION_SCRIPT)
         self.assertNotIn('ORGANIZATION &amp; ACCESS', ORGANIZATION_SCRIPT)
         self.assertIn('query.length < 2', ORGANIZATION_SCRIPT)
+        self.assertIn('state.directory.controller?.abort()', ORGANIZATION_SCRIPT)
+        self.assertIn('controller.abort(), 12000', ORGANIZATION_SCRIPT)
+        self.assertIn('飞书通讯录搜索超时，请稍后重试。', ORGANIZATION_SCRIPT)
         self.assertIn('function highlightSearchMatch(value, query)', ORGANIZATION_SCRIPT)
         self.assertIn('class="organization-search-match"', ORGANIZATION_SCRIPT)
         self.assertIn('highlightSearchMatch(user.name || "未命名成员", directory.query)', ORGANIZATION_SCRIPT)

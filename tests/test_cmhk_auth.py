@@ -357,6 +357,23 @@ class AuthServiceTest(unittest.TestCase):
         with patch.object(self.service, "_tenant_access_token", side_effect=AssertionError("network should not run")):
             self.assertEqual(self.service._directory_users_from_openapi(), cached)
 
+    def test_directory_search_returns_stale_cache_while_refreshing_in_background(self):
+        cached = [{
+            "name": "缓存成员",
+            "email": "cached@hk.chinamobile.com",
+            "department": "战略部",
+            "title": "经理",
+            "avatar_url": "https://example.test/cached.webp",
+        }]
+        self.service._write(self.service.directory_cache_path, {
+            "version": 1,
+            "expires_at": time.time() - 60,
+            "users": cached,
+        })
+        with patch.object(self.service, "_schedule_directory_refresh") as schedule:
+            self.assertEqual(self.service._directory_users_from_openapi(), cached)
+        schedule.assert_called_once_with()
+
     def test_directory_email_search_uses_simplified_position_for_new_member(self):
         directory_users = [{
                 "name": "徐亮 Alan XU Liang",

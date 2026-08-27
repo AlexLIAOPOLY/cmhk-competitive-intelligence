@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
 import re
 import secrets
@@ -152,6 +153,7 @@ class AuthService:
         self._tenant_token_cache: tuple[str, float] = ("", 0.0)
         self._custom_attr_cache: tuple[list[dict[str, Any]], float] = ([], 0.0)
         self._directory_search_cache: tuple[list[dict[str, str]], float] = ([], 0.0)
+        self._directory_refresh_in_progress = False
         certificate_file = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/cert.pem"
         ssl_context = ssl.create_default_context(cafile=certificate_file if Path(certificate_file).is_file() else None)
         self._url_opener = urllib.request.build_opener(
@@ -769,10 +771,46 @@ class AuthService:
         disk_cache = self._read(self.directory_cache_path, {})
         disk_users = disk_cache.get("users") if isinstance(disk_cache, dict) else None
         disk_expires = float(disk_cache.get("expires_at") or 0) if isinstance(disk_cache, dict) else 0
-        if isinstance(disk_users, list) and disk_users and disk_expires > time.time():
+        now = time.time()
+        if isinstance(disk_users, list) and disk_users and disk_expires > now:
             users = [item for item in disk_users if isinstance(item, dict)]
             self._directory_search_cache = (users, disk_expires)
             return users
+
+        stale_seconds = max(
+            3600,
+            int(os.environ.get("CMHK_FEISHU_DIRECTORY_STALE_SECONDS", "604800")),
+        )
+        if isinstance(disk_users, list) and disk_users and disk_expires + stale_seconds > now:
+            users = [item for item in disk_users if isinstance(item, dict)]
+            self._directory_search_cache = (users, now + 60)
+            self._schedule_directory_refresh()
+            return users
+
+        return self._refresh_directory_users_from_openapi()
+
+    def _schedule_directory_refresh(self) -> None:
+        with self.lock:
+            if self._directory_refresh_in_progress:
+                return
+            self._directory_refresh_in_progress = True
+
+        def refresh() -> None:
+            try:
+                self._refresh_directory_users_from_openapi()
+            except Exception as exc:
+                logging.warning("飞书通讯录后台刷新失败，继续使用最近缓存：%s", exc)
+            finally:
+                with self.lock:
+                    self._directory_refresh_in_progress = False
+
+        threading.Thread(
+            target=refresh,
+            name="feishu-directory-refresh",
+            daemon=True,
+        ).start()
+
+    def _refresh_directory_users_from_openapi(self) -> list[dict[str, str]]:
         token = self._tenant_access_token()
         departments: dict[str, str] = {}
         page_token = ""
