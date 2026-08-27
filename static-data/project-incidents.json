@@ -19,10 +19,34 @@
         "查看本轮完整流日志，定位失败行和来源，不要先重跑全部来源。",
         "检查网络、DNS、目标站结构与历史结果回退状态。"
       ],
-      "occurred_at_hkt": "2026-08-28T05:36:50+08:00",
+      "occurred_at_hkt": "2026-08-28T06:06:56+08:00",
       "started_at_hkt": "2026-08-28T03:36:42+08:00",
-      "heartbeat_at_hkt": "2026-08-28T06:04:08+08:00",
+      "heartbeat_at_hkt": "2026-08-28T06:09:38+08:00",
       "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "73bf678fe2eebb846dcd6423",
+      "task_id": "incident:73bf678fe2eebb846dcd6423",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T06:04:38+08:00",
+      "started_at_hkt": "2026-08-28T06:04:38+08:00",
+      "heartbeat_at_hkt": "2026-08-28T06:04:38+08:00",
+      "completed_at_hkt": "2026-08-28T06:05:08+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -141,7 +165,7 @@
       ],
       "occurred_at_hkt": "2026-08-28T03:41:27+08:00",
       "started_at_hkt": "2026-08-28T03:41:33+08:00",
-      "heartbeat_at_hkt": "2026-08-28T06:04:08+08:00",
+      "heartbeat_at_hkt": "2026-08-28T06:09:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -429,7 +453,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 03:20:34",
       "started_at_hkt": "2026-08-28T03:29:09+08:00",
-      "heartbeat_at_hkt": "2026-08-28T06:04:08+08:00",
+      "heartbeat_at_hkt": "2026-08-28T06:09:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12077,30 +12101,6 @@
       "started_at_hkt": "2026-08-21T10:15:05+08:00",
       "heartbeat_at_hkt": "2026-08-21T10:15:05+08:00",
       "completed_at_hkt": "2026-08-21T10:15:35+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "2df72d99ec777b81c59905d6",
-      "task_id": "incident:2df72d99ec777b81c59905d6",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:13:35+08:00",
-      "started_at_hkt": "2026-08-21T10:13:35+08:00",
-      "heartbeat_at_hkt": "2026-08-21T10:13:35+08:00",
-      "completed_at_hkt": "2026-08-21T10:14:05+08:00",
       "handled_at_hkt": ""
     }
   ],
