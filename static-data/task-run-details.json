@@ -15,9 +15,9 @@
         "progress_detail": "续跑财报结构化门禁失败：第2行 HKT 未发现可读取的官方财报；保留旧数据等待重试。",
         "status_detail": "",
         "started_at_hkt": "2026-08-28T03:00:19+08:00",
-        "heartbeat_at_hkt": "2026-08-28T04:06:33+08:00",
-        "completed_at_hkt": "2026-08-28T04:06:33+08:00",
-        "duration_ms": 3974055,
+        "heartbeat_at_hkt": "2026-08-28T04:36:39+08:00",
+        "completed_at_hkt": "2026-08-28T04:36:39+08:00",
+        "duration_ms": 5780093,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
