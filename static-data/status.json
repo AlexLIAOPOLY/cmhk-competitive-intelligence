@@ -8,12 +8,12 @@
     },
     "visuals": {
       "crawl": {
-        "success": 198,
-        "failed": 7,
+        "success": 171,
+        "failed": 30,
         "fallback": 0,
-        "total": 205,
-        "successRate": 97,
-        "completedAt": "2026-08-27 03:07:42"
+        "total": 201,
+        "successRate": 85,
+        "completedAt": "2026-08-28 03:20:34"
       },
       "quality": {
         "ok": 9,
