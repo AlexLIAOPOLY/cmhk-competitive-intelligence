@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-27T10:07:06+08:00",
+  "generated_at": "2026-08-27T10:13:05+08:00",
   "items": [
     {
       "id": "NEWS-D14FBE54A841DF",
@@ -17,14 +17,6 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1STVNMNEg5NDZxOXdkWjBtSnpYd2pQTUVtOFhEbzhQWlFsaGVfckp3QzFNX1NKbFdyVnNYOENDRTNlRldxM0N4S1lPUEN0RGpZSXBQRHBOY28?oc=5",
       "published_at": "2026-08-26T19:10:54+08:00"
-    },
-    {
-      "id": "NEWS-92A70867CD6722",
-      "title": "香港首份五年规划与施政报告将于9月16日公布",
-      "summary": "香港行政长官表示，五年规划与施政报告将于9月16日同时公布。",
-      "category": "政策监管",
-      "source_url": "https://www.scmp.com/news/hong-kong/politics/article/3365319/5-year-plan-policy-address-be-unveiled-september-16-john-lee-says",
-      "published_at": "2026-08-26T18:16:00+08:00"
     },
     {
       "id": "NEWS-2AB0C58A00B9A8",
@@ -65,6 +57,14 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
       "published_at": "2026-08-19"
+    },
+    {
+      "id": "NEWS-B68F4E938DEEB7",
+      "title": "河套深港科技创新合作区启航 谱写创科新篇",
+      "summary": "评论文章指出河套深港科技创新合作区建设正当其时，将推动香港创科发展。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
+      "published_at": "2026-08-16"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "c6f5d5efd52302749c31a36ab5379f05f986c5785a26dfebe64fbc4f08d4064f"
+  "site_version": "65191371e4e4eee523dcdb6733c7397f82944bbd16c91352eabcf13736620622"
 }
