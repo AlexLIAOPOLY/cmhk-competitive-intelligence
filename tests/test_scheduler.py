@@ -844,6 +844,40 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertTrue(result["resumed"])
         resume.assert_called_once_with(pending, {})
 
+    def test_agent_control_upgrade_bypasses_retry_backoff_once(self) -> None:
+        pending = {
+            "stage": "sync_completed",
+            "crawl_run_id": "crawl-upgrade",
+            "agent_audit_control_version": 1,
+            "last_attempt_at_hkt": scheduler.datetime.now(scheduler.HKT).isoformat(
+                timespec="seconds"
+            ),
+        }
+        with (
+            mock.patch.object(scheduler, "load_state", return_value={}),
+            mock.patch.object(scheduler, "_load_pending_run", return_value=pending),
+            mock.patch.object(
+                scheduler,
+                "_pending_run_was_interrupted",
+                return_value=False,
+            ),
+            mock.patch.object(scheduler, "crawl_process_running", return_value=False),
+            mock.patch.object(
+                scheduler,
+                "agent_audit_process_running",
+                return_value=False,
+            ),
+            mock.patch.object(
+                scheduler,
+                "resume_pending_run",
+                return_value=True,
+            ) as resume,
+        ):
+            result = scheduler.run_cycle()
+
+        self.assertTrue(result["resumed"])
+        resume.assert_called_once_with(pending, {})
+
 
 class FinancialResultScheduleTests(unittest.TestCase):
     def test_weekly_financial_rows_are_overlaid_with_daily_next_day_sla(self) -> None:

@@ -43,6 +43,7 @@ PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
 AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "5400")))
 DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "80"
+AGENT_AUDIT_CONTROL_VERSION = 2
 REQUIRED_AGENT_NODES = {
     "证据接收",
     "来源分类",
@@ -1019,6 +1020,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         "scheduled_for_hkt": now.isoformat(timespec="seconds"),
         "stream_log_path": str(stream_log_path),
         "agent_audit_run_id": agent_audit_run_id,
+        "agent_audit_control_version": AGENT_AUDIT_CONTROL_VERSION,
         "agent_audit_attempt_count": 0,
         "last_attempt_at_hkt": now.isoformat(timespec="seconds"),
     }
@@ -1457,6 +1459,7 @@ def resume_pending_run(
     if stage == "sync_completed":
         agent_audit_run_id = _infer_agent_audit_run_id(pending, stream_log_path)
         pending["agent_audit_run_id"] = agent_audit_run_id
+        pending["agent_audit_control_version"] = AGENT_AUDIT_CONTROL_VERSION
         _write_pending_run(pending)
         audit_ok, audit_code, curation, trace_sync, audit_error = _run_scheduled_agent_audit(
             crawl_run_id,
@@ -1786,9 +1789,15 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             return result
         last_resume = parse_datetime(pending.get("last_attempt_at_hkt"))
         interrupted_resume = _pending_run_was_interrupted(pending)
+        control_upgrade_due = (
+            str(pending.get("stage") or "") == "sync_completed"
+            and int(pending.get("agent_audit_control_version") or 0)
+            < AGENT_AUDIT_CONTROL_VERSION
+        )
         if (
             last_resume
             and not interrupted_resume
+            and not control_upgrade_due
             and (now - last_resume).total_seconds() < RETRY_SECONDS
         ):
             result["resume_skipped"] = "retry_backoff"
