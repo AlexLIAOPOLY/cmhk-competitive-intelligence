@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-27T08:58:38+08:00",
+  "checked_at_hkt": "2026-08-27T09:05:07+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -33,7 +33,7 @@
   ],
   "next_runs": [
     "2026-08-27T03:00:00+08:00",
-    "2026-08-27T08:58:38+08:00",
+    "2026-08-27T09:05:07+08:00",
     "2026-08-31T03:00:00+08:00",
     "2026-09-01T03:00:00+08:00"
   ],
@@ -48,7 +48,7 @@
       "phase": "Agent审核",
       "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-27T08:58:21+08:00",
+      "heartbeat_at_hkt": "2026-08-27T09:05:03+08:00",
       "started_at_hkt": "2026-08-27T03:00:07+08:00",
       "completed_at_hkt": "",
       "duration_ms": 20490248,
