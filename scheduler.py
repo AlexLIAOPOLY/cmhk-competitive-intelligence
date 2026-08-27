@@ -41,7 +41,8 @@ RETRY_SECONDS = max(300, int(os.environ.get("CMHK_SCHEDULER_RETRY_SECONDS", "180
 LARK_CLI = resolve_lark_cli()
 PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
-AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "3600")))
+AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "5400")))
+DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "80"
 REQUIRED_AGENT_NODES = {
     "证据接收",
     "来源分类",
@@ -631,6 +632,28 @@ def _agent_run_ids(output: str) -> list[str]:
     return run_ids
 
 
+def _scheduled_agent_run_id(crawl_run_id: str) -> str:
+    return f"scheduled_{crawl_run_id}"
+
+
+def _infer_agent_audit_run_id(
+    pending: dict[str, object],
+    stream_log_path: Path,
+) -> str:
+    recorded = str(pending.get("agent_audit_run_id") or "").strip()
+    if recorded:
+        return recorded
+    try:
+        run_ids = _agent_run_ids(
+            stream_log_path.read_text(encoding="utf-8", errors="replace")
+        )
+    except OSError:
+        run_ids = []
+    if run_ids:
+        return run_ids[-1]
+    return _scheduled_agent_run_id(str(pending.get("crawl_run_id") or ""))
+
+
 def _json_object_from_output(output: str) -> dict[str, object]:
     decoder = json.JSONDecoder()
     objects: list[tuple[int, int, dict[str, object]]] = []
@@ -701,7 +724,9 @@ def _run_scheduled_agent_audit(
     stream_log_path: Path,
     *,
     log_sheet_id: str = "",
+    agent_run_id: str = "",
 ) -> tuple[bool, int, dict[str, object], dict[str, object], str]:
+    expected_agent_run_id = str(agent_run_id or "").strip()
     command = [
         PYTHON,
         "-u",
@@ -716,12 +741,17 @@ def _run_scheduled_agent_audit(
         "--search-verify-workers",
         os.environ.get("CMHK_SEARCH_VERIFY_WORKERS", "4"),
     ]
+    if expected_agent_run_id:
+        command.extend(["--run-id", expected_agent_run_id, "--resume"])
     if os.environ.get("CMHK_SEARCH_VERIFY_ONLINE", "1").lower() not in {"0", "false", "no", "off"}:
         command.extend(
             [
                 "--search-verify-online",
                 "--search-verify-online-limit",
-                os.environ.get("CMHK_SEARCH_VERIFY_ONLINE_LIMIT", "0"),
+                os.environ.get(
+                    "CMHK_SEARCH_VERIFY_ONLINE_LIMIT",
+                    DEFAULT_AGENT_AUDIT_ONLINE_LIMIT,
+                ),
             ]
         )
     audit_env = os.environ.copy()
@@ -764,7 +794,12 @@ def _run_scheduled_agent_audit(
         stdout = exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes) else str(exc.stdout or "")
         stderr = exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else str(exc.stderr or "")
         _append_process_output(stream_log_path, stdout, stderr)
-        return False, 124, {}, {}, f"Agent 审核超过 {AGENT_AUDIT_TIMEOUT_SECONDS} 秒"
+        curation = (
+            {"agent_run_id": expected_agent_run_id, "checkpointed": True}
+            if expected_agent_run_id
+            else {}
+        )
+        return False, 124, curation, {}, f"Agent 审核超过 {AGENT_AUDIT_TIMEOUT_SECONDS} 秒"
     finally:
         stop_heartbeat.set()
         heartbeat_thread.join(timeout=2)
@@ -772,11 +807,14 @@ def _run_scheduled_agent_audit(
     _append_process_output(stream_log_path, proc.stdout or "", proc.stderr or "")
     run_ids = _agent_run_ids(proc.stdout or "")
     if proc.returncode:
-        return False, proc.returncode, {}, {}, f"Agent 审核进程失败，返回码 {proc.returncode}"
-    if len(run_ids) != 1:
+        curation = {"agent_run_id": expected_agent_run_id} if expected_agent_run_id else {}
+        return False, proc.returncode, curation, {}, f"Agent 审核进程失败，返回码 {proc.returncode}"
+    if expected_agent_run_id and any(run_id != expected_agent_run_id for run_id in run_ids):
+        return False, 1, {}, {}, f"Agent run_id 与预设检查点不一致：{run_ids}"
+    if not expected_agent_run_id and len(run_ids) != 1:
         return False, 1, {}, {}, f"无法唯一确定本轮 Agent run_id：{run_ids or '未产生'}"
 
-    agent_run_id = run_ids[0]
+    agent_run_id = expected_agent_run_id or run_ids[0]
     curation, problems = _validated_curation_summary(agent_run_id)
     if problems:
         return False, 1, curation, {}, "；".join(problems)
@@ -970,6 +1008,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
     started_record = start_crawl_run(trigger="定时爬虫", scope=env["CMHK_CRAWL_SCOPE"])
     crawl_run_id = str(started_record["crawl_run_id"])
     stream_log_path = Path(started_record["stream_log_path"])
+    agent_audit_run_id = _scheduled_agent_run_id(crawl_run_id)
     pending_run: dict[str, object] = {
         "version": 1,
         "stage": "crawl_running",
@@ -979,6 +1018,8 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         "started_at_hkt": now.isoformat(timespec="seconds"),
         "scheduled_for_hkt": now.isoformat(timespec="seconds"),
         "stream_log_path": str(stream_log_path),
+        "agent_audit_run_id": agent_audit_run_id,
+        "agent_audit_attempt_count": 0,
         "last_attempt_at_hkt": now.isoformat(timespec="seconds"),
     }
     _write_pending_run(pending_run)
@@ -1057,10 +1098,15 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         crawl_run_id,
         stream_log_path,
         log_sheet_id=log_sheet_id,
+        agent_run_id=agent_audit_run_id,
     )
     if not audit_ok:
-        pending_run["last_attempt_at_hkt"] = datetime.now(HKT).isoformat(
-            timespec="seconds"
+        pending_run.update(
+            {
+                "last_attempt_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"),
+                "agent_audit_attempt_count": int(pending_run.get("agent_audit_attempt_count") or 0) + 1,
+                "agent_audit_last_error": audit_error,
+            }
         )
         _write_pending_run(pending_run)
         logging.error("定时爬虫 Agent 审核失败：%s", audit_error)
@@ -1409,12 +1455,24 @@ def resume_pending_run(
         stage = "sync_completed"
 
     if stage == "sync_completed":
+        agent_audit_run_id = _infer_agent_audit_run_id(pending, stream_log_path)
+        pending["agent_audit_run_id"] = agent_audit_run_id
+        _write_pending_run(pending)
         audit_ok, audit_code, curation, trace_sync, audit_error = _run_scheduled_agent_audit(
             crawl_run_id,
             stream_log_path,
             log_sheet_id=log_sheet_id,
+            agent_run_id=agent_audit_run_id,
         )
         if not audit_ok:
+            pending.update(
+                {
+                    "last_attempt_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"),
+                    "agent_audit_attempt_count": int(pending.get("agent_audit_attempt_count") or 0) + 1,
+                    "agent_audit_last_error": audit_error,
+                }
+            )
+            _write_pending_run(pending)
             register_crawl_run(
                 crawl_return_code=audit_code or 1,
                 duration_ms=elapsed_ms(started_at_hkt),
@@ -1437,6 +1495,7 @@ def resume_pending_run(
             }
         )
         _write_pending_run(pending)
+        stage = "audit_completed"
     else:
         curation = (
             pending.get("curation")

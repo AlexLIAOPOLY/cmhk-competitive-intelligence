@@ -24,6 +24,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--recrawl-gaps", action="store_true")
     parser.add_argument("--max-recrawl-rows", type=int, default=3)
     parser.add_argument("--max-recrawl-rounds", type=int, default=1)
+    parser.add_argument("--run-id", default="")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="使用相同 run_id 从 LangGraph 持久化检查点继续；没有检查点时安全开始新流程。",
+    )
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -42,6 +48,8 @@ def main() -> int:
         max_recrawl_rows=args.max_recrawl_rows,
         max_recrawl_rounds=args.max_recrawl_rounds,
         dry_run=args.dry_run,
+        run_id=args.run_id or None,
+        resume=args.resume,
     )
     print("CURATION_SUMMARY=" + json.dumps(summary, ensure_ascii=False), flush=True)
     return 0

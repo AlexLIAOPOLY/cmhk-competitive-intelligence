@@ -2805,8 +2805,12 @@ def run_workflow(
     max_recrawl_rows: int = 3,
     max_recrawl_rounds: int = 1,
     dry_run: bool = False,
+    run_id: str | None = None,
+    resume: bool = False,
 ) -> dict[str, Any]:
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:8]
+    run_id = str(run_id or "").strip() or (
+        datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:8]
+    )
     initial: CurationState = {
         "run_id": run_id,
         "started_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -2829,5 +2833,25 @@ def run_workflow(
         "node_events": [],
         "agent_trace": [],
     }
-    result = build_graph().invoke(initial, config={"configurable": {"thread_id": run_id}})
+    graph = build_graph()
+    config = {"configurable": {"thread_id": run_id}}
+    if resume:
+        try:
+            checkpoint = graph.get_state(config)
+        except Exception:
+            checkpoint = None
+        checkpoint_values = getattr(checkpoint, "values", {}) if checkpoint else {}
+        checkpoint_next = tuple(getattr(checkpoint, "next", ()) or ()) if checkpoint else ()
+        if checkpoint_values:
+            if checkpoint_next:
+                result = graph.invoke(None, config=config)
+            else:
+                completed_summary = checkpoint_values.get("summary")
+                if isinstance(completed_summary, dict) and completed_summary:
+                    return completed_summary
+                result = checkpoint_values
+        else:
+            result = graph.invoke(initial, config=config)
+    else:
+        result = graph.invoke(initial, config=config)
     return result.get("summary", {})

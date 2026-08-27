@@ -213,6 +213,71 @@ class CrawlRunReconciliationTests(unittest.TestCase):
 
 
 class ScheduledAgentAuditTests(unittest.TestCase):
+    def test_scheduled_agent_uses_stable_checkpoint_and_bounded_online_search(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "run.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            proc = subprocess.CompletedProcess(["python"], 0, stdout="", stderr="")
+            summary = {"agent_run_id": "scheduled_crawl-123", "tasks": 3}
+            with (
+                mock.patch.object(scheduler.subprocess, "run", return_value=proc) as run,
+                mock.patch.object(scheduler, "_validated_curation_summary", return_value=(summary, [])),
+                mock.patch.object(scheduler, "heartbeat_crawl_run"),
+                mock.patch.dict(
+                    scheduler.os.environ,
+                    {"CMHK_SEARCH_VERIFY_ONLINE": "1"},
+                    clear=False,
+                ),
+            ):
+                ok, code, curation, trace_sync, error = scheduler._run_scheduled_agent_audit(
+                    "crawl-123",
+                    log_path,
+                    log_sheet_id="",
+                    agent_run_id="scheduled_crawl-123",
+                )
+
+        self.assertTrue(ok)
+        self.assertEqual(code, 0)
+        self.assertEqual(curation, summary)
+        command = run.call_args.args[0]
+        self.assertEqual(command[command.index("--run-id") + 1], "scheduled_crawl-123")
+        self.assertIn("--resume", command)
+        self.assertEqual(
+            command[command.index("--search-verify-online-limit") + 1],
+            scheduler.DEFAULT_AGENT_AUDIT_ONLINE_LIMIT,
+        )
+        self.assertTrue(trace_sync["skipped"])
+        self.assertEqual(error, "")
+
+    def test_scheduled_agent_timeout_retains_checkpoint_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "run.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            timeout = subprocess.TimeoutExpired(
+                cmd=["python"],
+                timeout=scheduler.AGENT_AUDIT_TIMEOUT_SECONDS,
+                output='AGENT_TRACE={"run_id":"scheduled_crawl-timeout"}\n',
+                stderr="still working\n",
+            )
+            with (
+                mock.patch.object(scheduler.subprocess, "run", side_effect=timeout),
+                mock.patch.object(scheduler, "heartbeat_crawl_run"),
+            ):
+                ok, code, curation, trace_sync, error = scheduler._run_scheduled_agent_audit(
+                    "crawl-timeout",
+                    log_path,
+                    agent_run_id="scheduled_crawl-timeout",
+                )
+            log_text = log_path.read_text(encoding="utf-8")
+
+        self.assertFalse(ok)
+        self.assertEqual(code, 124)
+        self.assertEqual(curation["agent_run_id"], "scheduled_crawl-timeout")
+        self.assertTrue(curation["checkpointed"])
+        self.assertEqual(trace_sync, {})
+        self.assertIn("超过", error)
+        self.assertIn("still working", log_text)
+
     def test_agent_success_is_not_rejected_when_feishu_log_is_unavailable(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "run.jsonl"
@@ -276,6 +341,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             "crawl-sync-failure",
             log_path,
             log_sheet_id="",
+            agent_run_id="scheduled_crawl-sync-failure",
         )
         self.assertEqual(register.call_args.kwargs["failure_stage"], "feishu_sync")
         self.assertEqual(register.call_args.kwargs["curation_summary"], curation)
@@ -462,6 +528,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             "crawl-resume",
             log_path,
             log_sheet_id="sheet-resume",
+            agent_run_id="scheduled_crawl-resume",
         )
         bridge.assert_called_once()
         subprocess_run.assert_not_called()
@@ -470,6 +537,48 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertIn("4", state["last_completed"])
         self.assertEqual(register.call_args.kwargs["crawl_return_code"], 0)
         clear_pending.assert_called_once()
+
+    def test_resume_agent_timeout_updates_backoff_checkpoint(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "resume-timeout.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            pending = {
+                "stage": "sync_completed",
+                "crawl_run_id": "crawl-timeout",
+                "rows": [3],
+                "scope": "定时指定行（第3行）",
+                "started_at_hkt": "2026-08-27T03:00:00+08:00",
+                "stream_log_path": str(log_path),
+                "log_sheet_id": "sheet-timeout",
+                "sync_return_code": 0,
+            }
+            with (
+                mock.patch.object(scheduler, "_write_pending_run") as write_pending,
+                mock.patch.object(scheduler, "resume_crawl_run"),
+                mock.patch.object(scheduler, "append_crawl_run_event"),
+                mock.patch.object(
+                    scheduler,
+                    "_run_scheduled_agent_audit",
+                    return_value=(
+                        False,
+                        124,
+                        {"agent_run_id": "scheduled_crawl-timeout", "checkpointed": True},
+                        {},
+                        "Agent 审核超过 3600 秒",
+                    ),
+                ),
+                mock.patch.object(scheduler, "register_crawl_run") as register,
+            ):
+                ok = scheduler.resume_pending_run(pending, {})
+
+        self.assertFalse(ok)
+        self.assertEqual(pending["stage"], "sync_completed")
+        self.assertEqual(pending["agent_audit_run_id"], "scheduled_crawl-timeout")
+        self.assertEqual(pending["agent_audit_attempt_count"], 1)
+        self.assertIn("超过", pending["agent_audit_last_error"])
+        self.assertTrue(pending["last_attempt_at_hkt"])
+        self.assertGreaterEqual(write_pending.call_count, 3)
+        self.assertEqual(register.call_args.kwargs["failure_stage"], "agent_review")
 
     def test_intelligence_refresh_is_never_spawned_during_packaged_unittest_discovery(self) -> None:
         with mock.patch.object(scheduler, "ROOT", Path(scheduler.__file__).resolve().parent):
@@ -484,20 +593,19 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertTrue(result["skipped"])
         self.assertEqual(result["reason"], "non_production_root")
 
-    def test_resume_after_agent_audit_reapplies_financial_and_frontend_gates(self) -> None:
+    def test_resume_from_sync_checkpoint_reapplies_financial_and_frontend_gates(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "resume-finance.jsonl"
             log_path.write_text("", encoding="utf-8")
             pending = {
-                "stage": "audit_completed",
+                "stage": "sync_completed",
                 "crawl_run_id": "crawl-finance-resume",
                 "rows": [2],
                 "scope": "定时指定行（第2行）",
                 "started_at_hkt": "2026-08-14T03:00:00+08:00",
                 "stream_log_path": str(log_path),
+                "log_sheet_id": "sheet-finance",
                 "sync_return_code": 0,
-                "curation": {"agent_run_id": "agent-finance"},
-                "trace_sync": {"ok": True},
             }
             refresh = {
                 "generated_at_hkt": "2026-08-14T03:10:00+08:00",
@@ -531,6 +639,17 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 mock.patch.object(scheduler, "_clear_pending_run"),
                 mock.patch.object(scheduler, "resume_crawl_run"),
                 mock.patch.object(scheduler, "append_crawl_run_event"),
+                mock.patch.object(
+                    scheduler,
+                    "_run_scheduled_agent_audit",
+                    return_value=(
+                        True,
+                        0,
+                        {"agent_run_id": "scheduled_crawl-finance-resume"},
+                        {"ok": True},
+                        "",
+                    ),
+                ) as audit,
                 mock.patch.object(scheduler, "capture_completed_crawl", return_value={}),
                 mock.patch.object(scheduler, "read_live_schedule", return_value=[{"row": 2, "frequency": "每天 03:00"}]),
                 mock.patch.object(scheduler, "save_state"),
@@ -540,6 +659,12 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 ok = scheduler.resume_pending_run(pending, state)
 
         self.assertTrue(ok)
+        audit.assert_called_once_with(
+            "crawl-finance-resume",
+            log_path,
+            log_sheet_id="sheet-finance",
+            agent_run_id="scheduled_crawl-finance-resume",
+        )
         rebuild.assert_called_once_with(rows=[2])
         publish.assert_called_once_with(log_path)
         self.assertTrue(any(call.args[0].get("stage") == "financial_completed" for call in write_pending.call_args_list))

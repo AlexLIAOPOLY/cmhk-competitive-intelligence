@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 import time
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from data_curation.schemas import CandidateFact, EvidenceTask
@@ -12,6 +13,7 @@ from data_curation.workflow import (
     extract_facts,
     search_verify_facts,
     supervise_gap_actions,
+    run_workflow,
 )
 from crawl import apply_crawl_settings, redact_sensitive
 from cmhk.crawl.extractors import find_field_snippets, row_fields
@@ -27,6 +29,37 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_run_workflow_resumes_same_thread_from_checkpoint(self) -> None:
+        graph = unittest.mock.Mock()
+        graph.get_state.return_value = SimpleNamespace(
+            values={"run_id": "scheduled-crawl", "summary": {}},
+            next=("search_verify",),
+        )
+        graph.invoke.return_value = {
+            "summary": {"run_id": "scheduled-crawl", "completed_at": "2026-08-27T09:00:00+08:00"}
+        }
+        with patch("data_curation.workflow.build_graph", return_value=graph):
+            result = run_workflow(run_id="scheduled-crawl", resume=True)
+
+        config = {"configurable": {"thread_id": "scheduled-crawl"}}
+        graph.get_state.assert_called_once_with(config)
+        graph.invoke.assert_called_once_with(None, config=config)
+        self.assertEqual(result["run_id"], "scheduled-crawl")
+
+    def test_run_workflow_resume_without_checkpoint_starts_once_with_same_id(self) -> None:
+        graph = unittest.mock.Mock()
+        graph.get_state.return_value = SimpleNamespace(values={}, next=())
+        graph.invoke.return_value = {
+            "summary": {"run_id": "scheduled-fresh", "completed_at": "2026-08-27T09:00:00+08:00"}
+        }
+        with patch("data_curation.workflow.build_graph", return_value=graph):
+            result = run_workflow(run_id="scheduled-fresh", resume=True)
+
+        args, kwargs = graph.invoke.call_args
+        self.assertEqual(args[0]["run_id"], "scheduled-fresh")
+        self.assertEqual(kwargs["config"]["configurable"]["thread_id"], "scheduled-fresh")
+        self.assertEqual(result["run_id"], "scheduled-fresh")
+
     def test_metric_focused_evidence_reads_beyond_page_header(self) -> None:
         text = "Home About Products " + ("navigation " * 300) + (
             "The Board declared an interim dividend of HK$0.145 per share."
