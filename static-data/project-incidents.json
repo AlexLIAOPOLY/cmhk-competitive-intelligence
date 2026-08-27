@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "af9818d321c6077fddbd06ea",
+      "task_id": "incident:af9818d321c6077fddbd06ea",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T02:14:05+08:00",
+      "started_at_hkt": "2026-08-28T02:14:05+08:00",
+      "heartbeat_at_hkt": "2026-08-28T02:14:05+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "93fc93a5fe950af7516eba1b",
       "task_id": "incident:93fc93a5fe950af7516eba1b",
       "title": "主项目后台任务",
@@ -4293,7 +4317,7 @@
       ],
       "occurred_at_hkt": "2026-08-27 03:07:42",
       "started_at_hkt": "2026-08-27T15:47:10+08:00",
-      "heartbeat_at_hkt": "2026-08-28T02:08:04+08:00",
+      "heartbeat_at_hkt": "2026-08-28T02:14:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12079,32 +12103,6 @@
       "started_at_hkt": "2026-08-21T09:37:56+08:00",
       "heartbeat_at_hkt": "2026-08-21T10:21:37+08:00",
       "completed_at_hkt": "2026-08-21T10:22:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "3b99be8f40df6f26531ec081",
-      "task_id": "incident:3b99be8f40df6f26531ec081",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认事实：至少一个候选进入回退、延期或失败流程。推断：可能影响该候选的去重、审核或后台处理步骤，但整体任务完成状态需结合任务归档确认，当前影响范围较小。",
-      "suggestions": [
-        "检查该候选ID（152ac195cc8228cc）对应的任务归档和最终完成状态，确认是否已回退成功或最终失败。",
-        "检查AI编辑模块的关键词配置和模型日志，确认是否因关键词缺失或模型异常导致未返回命中关键词。",
-        "若条目进入待恢复队列，保留已有结果，仅重新执行AI编辑步骤，并验证是否返回命中关键词。",
-        "修复后重新运行该候选的审核流程，并验证任务归档状态更新为成功。"
-      ],
-      "occurred_at_hkt": "2026-08-21T09:36:26+08:00",
-      "started_at_hkt": "2026-08-21T09:36:26+08:00",
-      "heartbeat_at_hkt": "2026-08-21T09:36:26+08:00",
-      "completed_at_hkt": "2026-08-21T09:36:56+08:00",
       "handled_at_hkt": ""
     }
   ],
