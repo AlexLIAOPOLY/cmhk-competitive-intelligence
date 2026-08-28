@@ -650,6 +650,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "72757a85b50b8975a0e010e7",
+      "task_id": "incident:72757a85b50b8975a0e010e7",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T10:45:38+08:00",
+      "heartbeat_at_hkt": "2026-08-28T10:45:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "331272221bba6b96cb0cc209",
       "task_id": "incident:331272221bba6b96cb0cc209",
       "title": "主项目后台任务",
@@ -1557,7 +1581,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T09:53:04+08:00",
-      "heartbeat_at_hkt": "2026-08-28T10:41:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T10:45:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12075,30 +12099,6 @@
       "started_at_hkt": "2026-08-21T11:23:33+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:23:33+08:00",
       "completed_at_hkt": "2026-08-21T11:24:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "577536f76696c429e168f3e8",
-      "task_id": "incident:577536f76696c429e168f3e8",
-      "title": "四库与AI观察结论刷新",
-      "kind": "executive-intelligence-refresh",
-      "kind_label": "四库与AI观察结论刷新",
-      "scope": "executive-intelligence-refresh",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：四库与观察结论自动更新",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "检查失败域、模型回退原因、证据哈希和公开页面验证状态。",
-        "保留上一版可用数据，修复失败阶段后再执行有界恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-21T11:23:10+08:00",
-      "started_at_hkt": "2026-08-21T11:23:33+08:00",
-      "heartbeat_at_hkt": "2026-08-21T14:25:42+08:00",
-      "completed_at_hkt": "2026-08-21T14:26:04+08:00",
       "handled_at_hkt": ""
     }
   ],
