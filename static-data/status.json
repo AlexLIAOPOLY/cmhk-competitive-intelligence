@@ -56,7 +56,11 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 8
+          "value": 5
+        },
+        {
+          "label": "cache:httpx",
+          "value": 3
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -261,7 +265,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-28 09:17:02",
+    "latestOutputText": "2026-08-29 03:01:02",
     "outputs": [
       {
         "name": "8月19日周报.docx",
