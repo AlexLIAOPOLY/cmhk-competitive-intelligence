@@ -8,9 +8,9 @@
       "kind": "web-app",
       "kind_label": "主项目后台任务",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
@@ -22,7 +22,7 @@
       "occurred_at_hkt": "2026-08-28T18:10:10+08:00",
       "started_at_hkt": "2026-08-28T18:10:10+08:00",
       "heartbeat_at_hkt": "2026-08-28T18:10:10+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-28T18:10:35+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -3623,6 +3623,30 @@
       "started_at_hkt": "2026-08-28T18:08:04+08:00",
       "heartbeat_at_hkt": "2026-08-28T18:09:35+08:00",
       "completed_at_hkt": "2026-08-28T18:10:10+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "5d2256563a6955788b3a0b4c",
+      "task_id": "incident:5d2256563a6955788b3a0b4c",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-28 09:17:45",
+      "started_at_hkt": "2026-08-28T18:10:35+08:00",
+      "heartbeat_at_hkt": "2026-08-28T18:14:05+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -11775,7 +11799,7 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T18:10:10+08:00",
+      "heartbeat_at_hkt": "2026-08-28T18:14:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12065,30 +12089,6 @@
       "started_at_hkt": "2026-08-24T09:21:56+08:00",
       "heartbeat_at_hkt": "2026-08-24T09:21:56+08:00",
       "completed_at_hkt": "2026-08-24T09:22:26+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "06dbbe6a9928743163b3a9fd",
-      "task_id": "incident:06dbbe6a9928743163b3a9fd",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-24T09:19:26+08:00",
-      "started_at_hkt": "2026-08-24T09:19:26+08:00",
-      "heartbeat_at_hkt": "2026-08-24T09:19:26+08:00",
-      "completed_at_hkt": "2026-08-24T09:19:56+08:00",
       "handled_at_hkt": ""
     }
   ],
