@@ -26,6 +26,7 @@
 
 .market-intel-page {
   display: grid;
+  min-width: 0;
   min-height: calc(100dvh - 92px);
   grid-template-rows: minmax(470px, 1fr) minmax(156px, auto);
   gap: 12px;
@@ -229,6 +230,8 @@
 
 .market-daily-section {
   display: grid;
+  width: 100%;
+  min-width: 0;
   min-height: 210px;
   max-height: 270px;
   grid-template-columns: 190px minmax(0, 1fr);
@@ -237,11 +240,12 @@
   padding: 22px 20px;
   border: 1px solid var(--map-line);
   border-radius: 3px;
+  box-sizing: border-box;
   background: var(--map-card);
 }
 .market-daily-title { display: flex; align-items: flex-start; gap: 9px; padding-top: 2px; color: var(--map-text); font-size: 13px; }
 .market-daily-title svg { width: 17px; fill: none; stroke: #4ea5ff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
-.market-daily-table-wrap { min-width: 0; overflow: auto; border: 1px solid rgba(57, 91, 121, .42); border-radius: 3px; scrollbar-color: rgba(76, 129, 169, .55) transparent; }
+.market-daily-table-wrap { width: 100%; min-width: 0; max-width: 100%; overflow: auto; border: 1px solid rgba(57, 91, 121, .42); border-radius: 3px; box-sizing: border-box; scrollbar-color: rgba(76, 129, 169, .55) transparent; }
 .market-daily-table-wrap table { width: 100%; min-width: 700px; table-layout: fixed; border-collapse: collapse; color: #9bb0c4; font-size: 9.5px; font-variant-numeric: tabular-nums; }
 .market-daily-table-wrap th, .market-daily-table-wrap td { height: 32px; padding: 0 5px; border-bottom: 1px solid rgba(57, 91, 121, .3); text-align: center; white-space: nowrap; }
 .market-daily-table-wrap th:first-child { width: 88px; }
