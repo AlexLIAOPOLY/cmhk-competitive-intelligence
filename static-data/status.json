@@ -20,8 +20,8 @@
         "partial": 5,
         "failed": 19,
         "fieldTotal": 205,
-        "missingFields": 11,
-        "rawSources": 215
+        "missingFields": 4,
+        "rawSources": 217
       },
       "blocks": [
         {
@@ -40,7 +40,7 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 122
+          "value": 124
         },
         {
           "label": "government_public_info",
@@ -66,7 +66,7 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 107
+          "value": 109
         },
         {
           "label": "US",
@@ -92,7 +92,7 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 81
+          "value": 89
         },
         {
           "label": "curl_crawler_ua",
@@ -100,7 +100,7 @@
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 30
+          "value": 27
         },
         {
           "label": "curl_chrome_ua",
@@ -108,7 +108,7 @@
         },
         {
           "label": "cache:httpx",
-          "value": 17
+          "value": 15
         },
         {
           "label": "cache:curl_crawler_ua",
@@ -341,7 +341,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-28 03:29:09",
+    "latestOutputText": "2026-08-28 09:17:02",
     "outputs": [
       {
         "name": "8月19日周报.docx",
