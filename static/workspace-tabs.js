@@ -1577,7 +1577,7 @@
     "news-output": /新增候选组装|人工审核状态|飞书分批写入|飞书逐格回读|审核周期完成|飞书写入与逐格回读|结果归档完成|群通知/,
     "app-result": /人工审核状态同步|审核周期完成|结果归档完成/,
     "weekly-result": /飞书分批写入|飞书逐格回读|审核周期完成/,
-    "news-selection-agent": /人工样本隔离|LangChain 偏好学习|LangChain 分批判断|Skill 更新|机器人分批写入与回读|自动勾选与回读完成|失败/,
+    "news-selection-agent": /人工样本隔离|LangChain 偏好学习|LangChain 分批判断|Skill 更新|机器人权限|机器人身份纠正|当天范围门禁|机器人分批写入(?:与回读)?|处理结果|逐格回读|自动勾选与回读(?:完成)?|失败/,
     agent: /\[数据整理\]/,
     "database-local": /\[本地竞对\]|\[发布审核事实\]/,
     "database-international": /\[国际运营商\]|\[发布审核事实\]/,
