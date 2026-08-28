@@ -2,6 +2,56 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "82cb06c2c9438cd6762497fa",
+      "task_id": "incident:82cb06c2c9438cd6762497fa",
+      "title": "飞书频率调度周期",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度周期",
+      "scope": "frequency-scheduler",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "调度器日志出现未处理异常",
+      "impact": "已确认本轮或后续到期任务可能未被正常检查或启动；推断可能导致任务延迟或遗漏。",
+      "suggestions": [
+        "检查异常发生前后的完整stderr日志和任务状态，获取完整异常堆栈和上下文信息。",
+        "确认当前调度周期是否已启动或完成，避免重复触发任务。",
+        "根据完整异常信息修复根因（如代码缺陷、依赖服务恢复等）。",
+        "修复后验证调度器功能正常，并监控后续周期任务执行情况。"
+      ],
+      "occurred_at_hkt": "2026-08-28T21:19:46+08:00",
+      "started_at_hkt": "2026-08-28T21:17:12+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "59e422043c05022579bf7602",
+      "task_id": "incident:59e422043c05022579bf7602",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T21:16:07+08:00",
+      "started_at_hkt": "2026-08-28T21:16:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:16:07+08:00",
+      "completed_at_hkt": "2026-08-28T21:17:12+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "28bec4ed6e5e33ba626e146c",
       "task_id": "incident:28bec4ed6e5e33ba626e146c",
       "title": "主项目Web后台",
@@ -3884,7 +3934,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T18:10:35+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:10:36+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12040,56 +12090,8 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:10:36+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
       "completed_at_hkt": "",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "d29e3b4e5e811bc5a03b6163",
-      "task_id": "incident:d29e3b4e5e811bc5a03b6163",
-      "title": "主项目Web后台",
-      "kind": "web-app",
-      "kind_label": "主项目Web后台",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "Web后台日志出现未处理异常",
-      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
-      "suggestions": [
-        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
-        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
-      ],
-      "occurred_at_hkt": "2026-08-24T15:42:07+08:00",
-      "started_at_hkt": "2026-08-24T15:42:07+08:00",
-      "heartbeat_at_hkt": "2026-08-24T15:42:07+08:00",
-      "completed_at_hkt": "2026-08-24T15:45:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "8bd0e7e08b495d8c8536ac43",
-      "task_id": "incident:8bd0e7e08b495d8c8536ac43",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-24T14:05:47+08:00",
-      "started_at_hkt": "2026-08-24T14:05:56+08:00",
-      "heartbeat_at_hkt": "2026-08-24T14:05:56+08:00",
-      "completed_at_hkt": "2026-08-24T14:06:26+08:00",
       "handled_at_hkt": ""
     }
   ],
