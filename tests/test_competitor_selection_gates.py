@@ -7,53 +7,65 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / "web/static/competitor-workbench-data.json").read_text(encoding="utf-8"))
 SCRIPT = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 WINDOWS = (3, 5, 10, 99)
+ROWS = [*DATA["cells"], *DATA["gaps"]]
 CELLS_BY_COMPANY_METRIC = {}
 for _cell in DATA["cells"]:
     CELLS_BY_COMPANY_METRIC.setdefault((_cell["company"], _cell["metric"]), []).append(_cell)
 
 
-def comparable_window(company_ids, metric_key, years):
-    cells = [
-        cell
-        for company in company_ids
-        for cell in CELLS_BY_COMPANY_METRIC.get((company, metric_key), [])
+def usable_metric(company_ids, metric_key, years):
+    rows = [
+        row for row in ROWS
+        if row["company"] in company_ids and row["metric"] == metric_key
     ]
-    if len({cell["company"] for cell in cells}) != len(company_ids):
+    if len({row["company"] for row in rows}) != len(company_ids):
         return False
-    if len({cell["unit"] for cell in cells if cell["unit"]}) != 1:
+    if len({row["unit"] for row in rows if row["unit"]}) != 1:
         return False
-    company_years = [
-        {cell["year"] for cell in cells if cell["company"] == company}
-        for company in company_ids
-    ]
-    all_years = sorted({cell["year"] for cell in cells})
-    common_years = [year for year in all_years if all(year in values for values in company_years)]
-    if not common_years:
-        return False
+    all_years = sorted({row["year"] for row in rows})
     if years == 99:
         visible_years = range(all_years[0], all_years[-1] + 1)
     else:
-        visible_years = range(common_years[-1] - years + 1, common_years[-1] + 1)
-    shared_years = [year for year in visible_years if all(year in values for values in company_years)]
-    return len(shared_years) >= 1 and all(
-        sum(year in values for year in visible_years) >= 1 for values in company_years
+        visible_years = range(all_years[-1] - years + 1, all_years[-1] + 1)
+    return any(
+        cell["company"] in company_ids
+        and cell["metric"] == metric_key
+        and cell["year"] in visible_years
+        for cell in DATA["cells"]
     )
 
 
 class CompetitorSelectionGateTests(unittest.TestCase):
-    def test_company_metric_and_year_controls_do_not_hide_audited_rows(self):
+    def test_company_metric_and_year_controls_filter_all_empty_inputs(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
-        self.assertIn("competitorHasAuditedMetric", SCRIPT)
-        self.assertIn("selectedCompanies.includes(company.id) || competitorHasAuditedMetric", SCRIPT)
+        self.assertIn("competitorHasUsableMetric", SCRIPT)
+        self.assertIn("selectedCompanies.includes(company.id) || competitorHasUsableMetric", SCRIPT)
         self.assertIn("...(data.gaps || [])", SCRIPT)
-        self.assertNotIn('!validYears.has(years) ? "disabled"', SCRIPT)
-        self.assertIn("不按年数隐藏", SCRIPT)
-        self.assertIn("未披露展示审计理由", SCRIPT)
+        self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
+        self.assertIn("至少有一个披露值", SCRIPT)
+        self.assertIn("缺值仍展示审计理由", SCRIPT)
         self.assertIn('classList.add("is-disappearing")', SCRIPT)
         self.assertIn("transitionCompetitorOptions", SCRIPT)
         self.assertIn("visibleCompetitorIds(data, selection.companies, selection.years, selection.metric)", SCRIPT)
-        self.assertIn("data.metrics.filter((metric) => competitorHasAuditedMetric", SCRIPT)
+        self.assertIn("data.metrics.filter((metric) => competitorHasUsableMetric", SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
+
+    def test_all_gap_metric_from_reported_screenshot_is_filtered_out(self):
+        companies = ["3HK", "HKT", "SmarTone"]
+        self.assertFalse(usable_metric(companies, "residential_2gbps_plus_customers", 99))
+        self.assertTrue(usable_metric(companies, "overview_01_revenue", 99))
+
+    def test_year_window_requires_a_value_but_keeps_partial_gap_series(self):
+        companies = ["3HK", "HKT", "SmarTone"]
+        self.assertTrue(usable_metric(companies, "5g_penetration", 99))
+        self.assertTrue(any(
+            row["company"] == "SmarTone"
+            and row["metric"] == "5g_penetration"
+            and row["year"] == 2020
+            for row in DATA["gaps"]
+        ))
+        self.assertFalse(usable_metric(["SmarTone"], "mobile_postpaid_churn", 3))
+        self.assertTrue(usable_metric(["SmarTone"], "mobile_postpaid_churn", 5))
 
     def test_three_local_competitors_have_all_metric_year_audit_rows(self):
         rows = [*DATA["cells"], *DATA["gaps"]]
