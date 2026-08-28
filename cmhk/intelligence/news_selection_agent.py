@@ -13,6 +13,11 @@ from zoneinfo import ZoneInfo
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
+try:
+    from opencc import OpenCC
+except ImportError:  # pragma: no cover - deployment fallback
+    OpenCC = None
+
 from ai_config import load_ai_config
 from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from cmhk.crawl.run_registry import (
@@ -44,10 +49,18 @@ FEISHU_BOT_PROFILE = (
     or os.environ.get("CMHK_FEISHU_SHEET_EDIT_PROFILE")
     or "cli_a9575e70ae799cb2"
 ).strip()
+SIMPLIFIED_CONVERTER = OpenCC("t2s") if OpenCC is not None else None
 
 
 def _text(value: Any, limit: int = 1000) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
+
+
+def _simplified(value: Any, limit: int = 1000) -> str:
+    text = _text(value, limit)
+    if SIMPLIFIED_CONVERTER is not None and text:
+        text = SIMPLIFIED_CONVERTER.convert(text)
+    return text[:limit]
 
 
 def _now_iso() -> str:
@@ -302,7 +315,7 @@ def _invoke_langchain(
             return _json_object(getattr(response, "content", "")), model_name
         except Exception as exc:
             errors.append(f"{model_name}: {_text(exc, 180)}")
-    raise RuntimeError("LangChain 模型路由全部失敗；" + "；".join(errors[:4]))
+    raise RuntimeError("LangChain 模型路由全部失败；" + "；".join(errors[:4]))
 
 
 def _normalized_decisions(
@@ -317,7 +330,7 @@ def _normalized_decisions(
     for target in targets:
         raw = raw_by_id.get(target["news_id"])
         if not raw:
-            raise ValueError(f"模型遺漏候選 {target['news_id']}")
+            raise ValueError(f"模型遗漏候选 {target['news_id']}")
         item = {**target}
         for field in ("app", "weekly"):
             before = _text(target.get(f"{field}_before"), 20)
@@ -334,7 +347,7 @@ def _normalized_decisions(
                 status = "不接受"
             item[f"{field}_status"] = status
             item[f"{field}_confidence"] = round(confidence, 4)
-        item["reason"] = _text(raw.get("reason"), 500) or "按歷史人工取捨習慣判斷"
+        item["reason"] = _simplified(raw.get("reason"), 500) or "按历史人工取舍习惯判断"
         decisions.append(item)
     return decisions
 
@@ -359,7 +372,7 @@ def _invoke_langchain_batches(
     return {
         "learned_rules": list(
             dict.fromkeys(
-                _text(value, 300)
+                _simplified(value, 300)
                 for payload in payloads
                 for value in (payload.get("learned_rules") or [])
                 if _text(value, 300)
@@ -367,14 +380,14 @@ def _invoke_langchain_batches(
         )[:12],
         "avoid_patterns": list(
             dict.fromkeys(
-                _text(value, 300)
+                _simplified(value, 300)
                 for payload in payloads
                 for value in (payload.get("avoid_patterns") or [])
                 if _text(value, 300)
             )
         )[:12],
-        "app_preference_summary": _text(first.get("app_preference_summary"), 1000),
-        "weekly_preference_summary": _text(first.get("weekly_preference_summary"), 1000),
+        "app_preference_summary": _simplified(first.get("app_preference_summary"), 1000),
+        "weekly_preference_summary": _simplified(first.get("weekly_preference_summary"), 1000),
         "decisions": [
             item
             for payload in payloads
@@ -392,12 +405,12 @@ def _skill_text(
     corrected_count: int,
 ) -> str:
     rules = [
-        _text(value, 300)
+        _simplified(value, 300)
         for value in (payload.get("learned_rules") or [])
         if _text(value, 300)
     ][:12]
     avoid = [
-        _text(value, 300)
+        _simplified(value, 300)
         for value in (payload.get("avoid_patterns") or [])
         if _text(value, 300)
     ][:12]
@@ -425,8 +438,8 @@ description: 学习 CMHK 每日新闻历史人工选材习惯，分别判断 APP
 - LangChain 模型：{_text(model_name, 120)}
 - 有效人工样本：{human_example_count}
 - 已识别人工纠正：{corrected_count}
-- APP 偏好：{_text(payload.get('app_preference_summary'), 1000) or '尚未形成穩定摘要'}
-- 双周报偏好：{_text(payload.get('weekly_preference_summary'), 1000) or '尚未形成稳定摘要'}
+- APP 偏好：{_simplified(payload.get('app_preference_summary'), 1000) or '尚未形成稳定摘要'}
+- 双周报偏好：{_simplified(payload.get('weekly_preference_summary'), 1000) or '尚未形成稳定摘要'}
 
 ## 已学习规则
 

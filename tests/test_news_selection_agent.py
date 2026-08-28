@@ -36,6 +36,9 @@ def _row(
 
 
 class NewsSelectionAgentTests(unittest.TestCase):
+    def test_simplified_normalizes_model_explanations(self):
+        self.assertEqual(agent._simplified("國際網絡與歷史取捨"), "国际网络与历史取舍")
+
     def test_human_examples_exclude_unchanged_agent_choices_but_learn_corrections(self):
         rows = [
             {

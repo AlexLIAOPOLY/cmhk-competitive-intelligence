@@ -632,6 +632,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("canvasSize: [1850, 680]", SCRIPT)
         self.assertIn('key: "news-selection-agent", label: "新闻偏好学习 Agent"', SCRIPT)
         self.assertIn('["news-output", "news-selection-agent", "学习人工习惯", "cyan"]', SCRIPT)
+        self.assertIn("机器人身份纠正|当天范围门禁|机器人分批写入", SCRIPT)
         self.assertIn("detail.newsSelectionItems", SCRIPT)
         self.assertIn("当天新闻偏好 Agent 自动勾选明细", SCRIPT)
         self.assertIn('label: "新增数据入库"', SCRIPT)
