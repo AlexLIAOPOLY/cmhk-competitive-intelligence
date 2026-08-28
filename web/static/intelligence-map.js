@@ -7,7 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
-  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null };
+  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -29,7 +29,7 @@
   }
 
   function graphTopic(value) {
-    return { "政策与监管": "政策监管", "竞争对手": "竞对动态" }[value] || value || "其他情报";
+    return { "政策与监管": "政策监管", "竞争对手": "竞对动态", "基础设施/网络/技术类": "基础设施／网络／技术", "市场/产品类": "市场／产品", "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观／国际" }[value] || value || "其他情报";
   }
 
   function connectedGraph(nodes, candidateEdges, maxNodes = 26, maxEdges = 40) {
@@ -206,15 +206,16 @@
   function graphStyle() {
     return [
       { selector: "node", style: { "background-color": (node) => typeColors[node.data("type")], "border-color": "#09182a", "border-width": 2, width: "mapData(count,1,8,20,42)", height: "mapData(count,1,8,20,42)", label: "data(label)", color: "#c9d9e8", "font-family": "inherit", "font-size": 9, "font-weight": 600, "text-wrap": "wrap", "text-max-width": 82, "text-valign": "bottom", "text-margin-y": 5 } },
-      { selector: "edge", style: { width: "mapData(weight,1,6,1,3.6)", "line-color": "#263c54", "target-arrow-color": "#263c54", "target-arrow-shape": "triangle", "arrow-scale": .65, "curve-style": "bezier", label: "data(label)", color: "#647d96", "font-size": 7, "font-family": "inherit", "text-rotation": "autorotate", "text-background-color": "#081729", "text-background-opacity": .82, "text-background-padding": 2 } },
+      { selector: "edge", style: { width: "mapData(weight,1,6,1,3.6)", "line-color": "#263c54", "target-arrow-color": "#263c54", "target-arrow-shape": "triangle", "arrow-scale": .65, "curve-style": "bezier", label: "", color: "#647d96", "font-size": 7, "font-family": "inherit", "text-rotation": "autorotate", "text-background-color": "#081729", "text-background-opacity": .82, "text-background-padding": 2 } },
       { selector: ":selected", style: { "overlay-opacity": 0, "border-color": "#e1edf7", "border-width": 3 } },
       { selector: "edge:selected", style: { "line-color": "#16c8e5", "target-arrow-color": "#16c8e5", width: 3.2, color: "#dbe9f5" } },
+      { selector: "edge.is-hover, edge:selected", style: { label: "data(label)", "text-opacity": 1 } },
       { selector: ".is-muted", style: { opacity: .13, "text-opacity": 0 } }, { selector: ".is-neighbor", style: { opacity: 1, "text-opacity": 1 } },
     ];
   }
 
   function graphLayout(fullscreen = false) {
-    return { name: "cose", animate: false, fit: true, randomize: false, padding: fullscreen ? 36 : 20, nodeDimensionsIncludeLabels: false, componentSpacing: fullscreen ? 48 : 36, nodeRepulsion: () => fullscreen ? 3200 : 2600, nodeOverlap: 6, idealEdgeLength: (edge) => Math.max(30, 52 - Math.min(Number(edge.data("weight")) || 1, 5) * 4), edgeElasticity: () => 32, gravity: fullscreen ? .8 : 1, numIter: 1200 };
+    return { name: "cose", animate: false, fit: true, randomize: false, padding: fullscreen ? 42 : 24, nodeDimensionsIncludeLabels: true, componentSpacing: fullscreen ? 58 : 44, nodeRepulsion: () => fullscreen ? 5200 : 4000, nodeOverlap: 10, idealEdgeLength: (edge) => Math.max(fullscreen ? 52 : 42, (fullscreen ? 76 : 62) - Math.min(Number(edge.data("weight")) || 1, 5) * 4), edgeElasticity: () => 32, gravity: fullscreen ? .5 : .65, numIter: 1400 };
   }
 
   function evidenceHtml(data) {
@@ -255,7 +256,7 @@
     const cy = window.cytoscape({ container, elements: [...payload.nodes.map((node) => ({ group: "nodes", data: node })), ...payload.edges.map((edge) => ({ group: "edges", data: edge }))], minZoom: fullscreen ? .35 : .45, maxZoom: fullscreen ? 3 : 2.4, boxSelectionEnabled: false, style: graphStyle(), layout: graphLayout(fullscreen) });
     cy.on("tap", "node, edge", (event) => selectGraphElement(event.target, fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"));
     cy.on("tap", (event) => { if (event.target === cy) { cy.elements().removeClass("is-muted is-neighbor").unselect(); const detail = $(fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"); if (detail && fullscreen) { detail.hidden = false; detail.innerHTML = '<div class="market-graph-inspector-empty"><strong>选择一个节点或关系</strong><span>下方会展开关联路径、证据摘要和新闻原文。</span></div>'; } else if (detail) detail.hidden = true; } });
-    cy.on("mouseover", "node, edge", () => { container.style.cursor = "pointer"; }); cy.on("mouseout", "node, edge", () => { container.style.cursor = "grab"; }); return cy;
+    cy.on("mouseover", "node, edge", (event) => { event.target.addClass("is-hover"); container.style.cursor = "pointer"; }); cy.on("mouseout", "node, edge", (event) => { event.target.removeClass("is-hover"); container.style.cursor = "grab"; }); return cy;
   }
 
   function renderGraph(items) {
@@ -263,12 +264,23 @@
     $("market-graph-status").textContent = `${state.graphPayload.nodes.length} 节点 · ${state.graphPayload.edges.length} 关系`;
   }
 
-  function switchView(view) {
+  function pauseViewRotation() {
+    window.clearTimeout(state.viewTimer); state.viewTimer = null;
+  }
+
+  function scheduleViewRotation() {
+    pauseViewRotation();
+    if (document.hidden || panel.hidden || $("market-graph-dialog")?.open) return;
+    state.viewTimer = window.setTimeout(() => switchView(state.view === "graph" ? "cloud" : "graph", { automatic: true }), 10000);
+  }
+
+  function switchView(view, { automatic = false } = {}) {
     state.view = view === "cloud" ? "cloud" : "graph";
     panel.querySelectorAll("[data-market-view]").forEach((button) => { const active = button.dataset.marketView === state.view; button.classList.toggle("act", active); button.setAttribute("aria-selected", String(active)); });
     $("market-graph-canvas").classList.toggle("is-active", state.view === "graph"); $("market-keyword-cloud").classList.toggle("is-active", state.view === "cloud");
     panel.querySelector(".market-knowledge-graph > .market-graph-legend").hidden = state.view !== "graph"; $("market-graph-status").hidden = state.view !== "graph"; $("market-graph-expand").hidden = state.view !== "graph";
     if (state.view === "graph") requestAnimationFrame(() => { state.graph?.resize(); state.graph?.fit(state.graph.elements(), 24); }); else requestAnimationFrame(() => layoutWordCloud($("market-keyword-cloud")));
+    if (!automatic || !document.hidden) scheduleViewRotation();
   }
 
   function insights(items) {
@@ -285,7 +297,7 @@
   }
 
   function openFullscreen() {
-    const dialog = $("market-graph-dialog"); if (!dialog || !state.graphPayload) return; dialog.showModal();
+    const dialog = $("market-graph-dialog"); if (!dialog || !state.graphPayload) return; pauseViewRotation(); dialog.showModal();
     requestAnimationFrame(() => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = makeGraph($("market-graph-dialog-canvas"), state.graphPayload, true); });
   }
 
@@ -331,7 +343,9 @@
 
   async function initialize() {
     pageMarkup();
-    $("market-graph-dialog").addEventListener("close", () => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = null; });
+    panel.querySelector(".market-knowledge-graph").addEventListener("mouseenter", pauseViewRotation);
+    panel.querySelector(".market-knowledge-graph").addEventListener("mouseleave", scheduleViewRotation);
+    $("market-graph-dialog").addEventListener("close", () => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = null; scheduleViewRotation(); });
     try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; state.signature = payloadSignature(cached); renderAll(); } } catch (_error) { /* cache is optional */ }
     try {
       await Promise.race([window.CMHKAuth?.ready, new Promise((_, reject) => setTimeout(() => reject(new Error("auth timeout")), 4000))]);
@@ -347,14 +361,14 @@
     state.pollTimer = window.setTimeout(async () => { await refreshData(); schedulePolling(); }, 300000);
   }
   window.addEventListener("workspace-tab-change", (event) => {
-    if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; return; }
+    if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; pauseViewRotation(); return; }
     if (Date.now() - state.lastRefreshAt >= 60000) refreshData();
-    schedulePolling();
+    schedulePolling(); scheduleViewRotation();
   });
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && !panel.hidden && Date.now() - state.lastRefreshAt >= 60000) refreshData();
-    schedulePolling();
+    schedulePolling(); scheduleViewRotation();
   });
   initialize();
-  schedulePolling();
+  schedulePolling(); scheduleViewRotation();
 })();
