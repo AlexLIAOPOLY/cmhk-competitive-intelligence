@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const MODULES = ["dashboard", "monitoring", "competitor", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization", "footprint"];
+  const MODULES = ["dashboard", "monitoring", "competitor", "intelligence-map", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization", "footprint"];
   let allowedModules = [];
   const state = {
     status: null,
@@ -54,7 +54,7 @@
   const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
   let setWorkspaceNavCollapsed = null;
-  const permissionModule = (module) => module === "footprint" ? "organization" : module;
+  const permissionModule = (module) => ({ footprint: "organization", "intelligence-map": "competitor" }[module] || module);
   const can = (module) => allowedModules.includes(module);
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };

@@ -27,6 +27,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "dashboard",
             "monitoring",
             "competitor",
+            "intelligence-map",
             "news",
             "weekly",
             "performance",
@@ -53,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=30', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=141', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=143', INDEX)
         self.assertIn('/static/app.js?v=311', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -76,7 +77,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('request("/api/auth/admin/audit?limit=200")', ORGANIZATION_SCRIPT)
         self.assertIn("团队足迹", ORGANIZATION_SCRIPT)
         self.assertIn('data-workspace-tab="footprint"', INDEX)
-        self.assertIn('module === "footprint" ? "organization" : module', SCRIPT)
+        self.assertIn('{ footprint: "organization", "intelligence-map": "competitor" }[module] || module', SCRIPT)
         self.assertIn('class="organization-profile-card" role="dialog"', ORGANIZATION_SCRIPT)
         self.assertIn("data-select-user", ORGANIZATION_SCRIPT)
         self.assertIn("person.avatarUrl", ORGANIZATION_SCRIPT)
@@ -297,8 +298,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_navigation_uses_semantic_icons_instead_of_numeric_badges(self):
         navigation = INDEX[INDEX.index('id="workspace-group-overview"'):INDEX.index('id="workspace-panel-dashboard"')]
-        self.assertEqual(13, navigation.count('class="workspace-tab-icon"'))
-        self.assertEqual(13, navigation.count('class="workspace-tab-icon" aria-hidden="true"'))
+        self.assertEqual(14, navigation.count('class="workspace-tab-icon"'))
+        self.assertEqual(14, navigation.count('class="workspace-tab-icon" aria-hidden="true"'))
         self.assertNotIn('workspace-tab-index', navigation)
         for badge in (">00<", ">01<", ">02<", ">03<", ">04<", ">05<", ">06<", ">07<", ">08<", ">09<", ">10<", ">11<"):
             self.assertNotIn(badge, navigation)
@@ -613,7 +614,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=141', INDEX)
+        self.assertIn('workspace-tabs.js?v=143', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=132', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)

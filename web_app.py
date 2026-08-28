@@ -5392,6 +5392,18 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/competitor-intelligence-map":
+            try:
+                from cmhk.intelligence.competitor_map import build_competitor_intelligence_map
+
+                json_response(self, build_competitor_intelligence_map(ROOT))
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "items": []},
+                    status=500,
+                )
+            return
         if path == "/api/scheduler-overview":
             try:
                 json_response(self, build_scheduler_overview())
