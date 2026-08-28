@@ -2797,7 +2797,7 @@
             }
           ],
           "core_metric_count": 4,
-          "fetched_at_hkt": "2026-08-25T03:01:01.911840+08:00",
+          "fetched_at_hkt": "2026-08-28T03:29:02.128487+08:00",
           "verification_status": "official_document_extracted"
         },
         {
@@ -2849,7 +2849,7 @@
             }
           ],
           "core_metric_count": 5,
-          "fetched_at_hkt": "2026-08-25T03:01:02.834639+08:00",
+          "fetched_at_hkt": "2026-08-28T09:17:02.140027+08:00",
           "verification_status": "official_document_extracted"
         },
         {
@@ -2887,6 +2887,46 @@
           "verification_status": "official_document_extracted"
         },
         {
+          "row": 17,
+          "company": "i-CABLE",
+          "period": "FY 2025",
+          "report_type": "annual",
+          "publication_date": "2026-03-27",
+          "due_at_hkt": "2026-03-28T03:00:00+08:00",
+          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+          "source_title": "PDF extracted by pdftotext",
+          "content_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b",
+          "metrics": [
+            {
+              "metric_key": "revenue",
+              "metric": "收入/总收益",
+              "value": "HK$539 million",
+              "evidence": "revenues of the Group decreasing by approximately HK$45 million or 8% to approximately HK$539 million"
+            },
+            {
+              "metric_key": "net_profit",
+              "metric": "净利润",
+              "value": "-HK$490 million",
+              "evidence": "loss for the year ended 31 December 2025 to approximately HK$490 million"
+            },
+            {
+              "metric_key": "capital_expenditure",
+              "metric": "资本开支",
+              "value": "HK$52 million",
+              "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million"
+            },
+            {
+              "metric_key": "dividend",
+              "metric": "派息/分派",
+              "value": "HK$Nil",
+              "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+            }
+          ],
+          "core_metric_count": 4,
+          "fetched_at_hkt": "2026-08-28T03:28:23.140444+08:00",
+          "verification_status": "official_document_extracted"
+        },
+        {
           "row": 8,
           "company": "SmarTone",
           "period": "H1 2026",
@@ -2917,41 +2957,7 @@
             }
           ],
           "core_metric_count": 3,
-          "fetched_at_hkt": "2026-08-25T03:01:01.911336+08:00",
-          "verification_status": "official_document_extracted"
-        },
-        {
-          "row": 17,
-          "company": "i-CABLE",
-          "period": "FY 2025",
-          "report_type": "annual",
-          "publication_date": "",
-          "due_at_hkt": "",
-          "source_url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf",
-          "source_title": "PDF extracted by pdftotext",
-          "content_hash": "19c76e115deb193d7525e4dfc106d6cbc8047e040505799f5e23ed13a6eee889",
-          "metrics": [
-            {
-              "metric_key": "revenue",
-              "metric": "收入/总收益",
-              "value": "HK$539 million",
-              "evidence": "revenues 11%，儘管本年度充滿挑戰，本集團收入減少約 of the Group decreasing by approximately HK$45 million or 8% 45,000,000 港 元 或 8% 至 約 539,000,000 港 元（二 零 to approximately HK$539 million"
-            },
-            {
-              "metric_key": "net_profit",
-              "metric": "净利润",
-              "value": "-HK$490 million",
-              "evidence": "recorded a loss for the year of approximately HK$490 million"
-            },
-            {
-              "metric_key": "dividend",
-              "metric": "派息/分派",
-              "value": "HK$Nil",
-              "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
-            }
-          ],
-          "core_metric_count": 3,
-          "fetched_at_hkt": "2026-08-25T03:02:17.873531+08:00",
+          "fetched_at_hkt": "2026-08-28T03:28:14.149736+08:00",
           "verification_status": "official_document_extracted"
         }
       ],

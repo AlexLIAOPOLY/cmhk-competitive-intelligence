@@ -5,14 +5,14 @@
     "summary": {
       "companies": 28,
       "metrics": 57,
-      "records": 208,
+      "records": 209,
       "verifiedRecords": 67,
       "crawlRecords": 112,
       "acceptedAiFacts": 122,
       "publishableAiFacts": 112,
       "publishedAiFacts": 112,
       "aiCleanedRecords": 112,
-      "qualityPassedRecords": 208,
+      "qualityPassedRecords": 209,
       "suppressedRecords": 0,
       "excludedOutOfScopeFacts": 0,
       "excludedNonFacts": 7,
@@ -170,9 +170,9 @@
       },
       {
         "company": "HKBN",
-        "metricCount": 15,
-        "recordCount": 16,
-        "sourceCount": 5
+        "metricCount": 16,
+        "recordCount": 17,
+        "sourceCount": 6
       },
       {
         "company": "HKT",
@@ -2786,20 +2786,20 @@
         "hasSources": true
       },
       {
-        "id": "121c1a9624eb84e3",
+        "id": "2c5849adee34b782",
         "company": "HKBN",
-        "metric": "EBITDA / 利润",
-        "value": "24.51亿港元",
-        "detail": "24.51亿港元",
+        "metric": "收益",
+        "value": "60.29亿港元",
+        "detail": "60.29亿港元",
         "group": "香港本地竞对财报",
-        "disclosure": "FY 2022",
-        "disclosureDate": "2025-09-05",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
         "stockCode": "",
         "sourceType": "official-financial-results",
         "sources": [
           {
-            "label": "PDF extracted by pdftotext",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
           }
         ],
         "confidence": 1.0,
@@ -2811,20 +2811,45 @@
         "hasSources": true
       },
       {
-        "id": "121c1a9624eb84e3",
+        "id": "08113f3f3d35aa6e",
         "company": "HKBN",
-        "metric": "净利润",
-        "value": "24.51亿港元",
-        "detail": "24.51亿港元",
+        "metric": "EBITDA / 利润",
+        "value": "12.57亿港元",
+        "detail": "12.57亿港元",
         "group": "香港本地竞对财报",
-        "disclosure": "FY 2022",
-        "disclosureDate": "2025-09-05",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
         "stockCode": "",
         "sourceType": "official-financial-results",
         "sources": [
           {
-            "label": "PDF extracted by pdftotext",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          }
+        ],
+        "confidence": 1.0,
+        "rowRef": "row_11",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "241319db855fb614",
+        "company": "HKBN",
+        "metric": "净利润",
+        "value": "1.08亿港元",
+        "detail": "1.08亿港元",
+        "group": "香港本地竞对财报",
+        "disclosure": "H1 2026",
+        "disclosureDate": "2026-04-24",
+        "stockCode": "",
+        "sourceType": "official-financial-results",
+        "sources": [
+          {
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
           }
         ],
         "confidence": 1.0,
@@ -3086,11 +3111,11 @@
         "hasSources": true
       },
       {
-        "id": "9023acebb728b06b",
+        "id": "436be5e6671e9e21",
         "company": "HKBN",
         "metric": "最新披露",
-        "value": "FY 2022",
-        "detail": "FY 2022",
+        "value": "H1 2026",
+        "detail": "H1 2026",
         "group": "香港本地竞对财报",
         "disclosure": "",
         "disclosureDate": "",
@@ -3098,8 +3123,8 @@
         "sourceType": "official-financial-results",
         "sources": [
           {
-            "label": "PDF extracted by pdftotext",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
           }
         ],
         "confidence": 1.0,
@@ -3111,11 +3136,11 @@
         "hasSources": true
       },
       {
-        "id": "6c9da13785370e8e",
+        "id": "9e00a2e804a99db9",
         "company": "HKBN",
         "metric": "披露日期",
-        "value": "2025-09-05",
-        "detail": "2025-09-05",
+        "value": "2026-04-24",
+        "detail": "2026-04-24",
         "group": "香港本地竞对财报",
         "disclosure": "",
         "disclosureDate": "",
@@ -3123,8 +3148,8 @@
         "sourceType": "official-financial-results",
         "sources": [
           {
-            "label": "PDF extracted by pdftotext",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+            "label": "FY26 Interim Results Announcement",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
           }
         ],
         "confidence": 1.0,
