@@ -7,7 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
-  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null };
+  const state = { payload: null, graph: null, fullscreenGraph: null, graphPayload: null, keyword: "", receivedStart: "", receivedEnd: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, layoutFrame: null, resizeObserver: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -30,10 +30,6 @@
 
   function graphTopic(value) {
     return { "政策与监管": "政策监管", "竞争对手": "竞对动态", "基础设施/网络/技术类": "基础设施／网络／技术", "市场/产品类": "市场／产品", "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观／国际" }[value] || value || "其他情报";
-  }
-
-  function dailyCategoryLabel(value) {
-    return { "基础设施／网络／技术": "网络技术", "宏观／国际": "宏观国际", "市场／产品": "市场产品", "基建与地产": "基建地产", "战略与合作": "战略合作" }[value] || value;
   }
 
   function connectedGraph(nodes, candidateEdges, maxNodes = 20, maxEdges = 28) {
@@ -82,14 +78,14 @@
     items.forEach((item) => keywordValues(item).forEach((term) => keywordCounts.set(term, (keywordCounts.get(term) || 0) + 1)));
     const graphKeywords = new Set(ranked(keywordCounts).slice(0, 12).map(([label]) => label));
     const touch = (id, label, type, item) => {
-      const node = nodes.get(id) || { id, label, type, count: 0, description: `${label}在已审核情报中的关联证据`, evidence: [] };
+      const node = nodes.get(id) || { id, label, type, count: 0, description: `${label}在本批次收到新闻中的关联证据`, evidence: [] };
       node.count += 1;
       if (!node.evidence.some((evidence) => evidence.id === item.id)) node.evidence.push(itemEvidence(item));
       nodes.set(id, node);
     };
     const link = (source, target, label, item) => {
       const id = `${source}::${target}`;
-      const edge = edges.get(id) || { id, source, target, label, weight: 0, description: `${label}，来自已审核情报的共同出现关系`, evidence: [] };
+      const edge = edges.get(id) || { id, source, target, label, weight: 0, description: `${label}，来自本批次收到新闻的共同出现关系`, evidence: [] };
       edge.weight += 1;
       if (!edge.evidence.some((evidence) => evidence.id === item.id)) edge.evidence.push(itemEvidence(item));
       edges.set(id, edge);
@@ -120,15 +116,14 @@
   function pageMarkup() {
     panel.innerHTML = `<section class="market-intel-page">
       <section class="market-situation-stage" aria-label="市场议题与关键词态势">
-        <article class="market-trend-visual">
-          <div class="market-trend-chart"><canvas id="market-topic-trend-chart" aria-label="可交互市场情报趋势图"></canvas></div>
-          <div class="market-trend-detail" id="market-trend-detail" aria-live="polite">悬停查看数值，点击数据点查看对应情报</div>
+        <article class="market-keyword-stage market-cloud-stage">
+          <header><h2>情报词云</h2><span>点击关键词聚焦右侧关联</span></header>
+          <div class="market-keyword-cloud is-active" id="market-keyword-cloud" aria-label="可点击热门关键词云"></div>
         </article>
         <aside class="market-keyword-stage market-graph-stage">
-          <header><div class="market-graph-toolbar"><div class="market-view-switch" role="tablist" aria-label="情报关联视图"><button class="act" type="button" role="tab" aria-selected="true" data-market-view="graph">图谱</button><button type="button" role="tab" aria-selected="false" data-market-view="cloud">词云</button></div><span id="market-graph-status">共现关系</span><button id="market-graph-expand" type="button" aria-label="放大知识图谱" title="放大知识图谱"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button></div></header>
+          <header><h2>情报图谱</h2><div class="market-graph-toolbar"><span id="market-graph-status">共现关系</span><button id="market-graph-expand" type="button" aria-label="放大知识图谱" title="放大知识图谱"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button></div></header>
           <div class="market-knowledge-graph">
             <div class="market-graph-canvas is-active" id="market-graph-canvas" role="application" aria-label="情报实体关系图，可拖拽、缩放、平移并点击节点或关系查看详情"></div>
-            <div class="market-keyword-cloud" id="market-keyword-cloud" aria-label="可点击热门关键词云"></div>
             <div class="market-graph-legend" aria-label="节点类型"><span class="entity">主体</span><span class="topic">议题</span><span class="concept">概念</span></div>
             <section class="market-graph-detail" id="market-graph-detail" aria-live="polite" hidden></section>
           </div>
@@ -137,42 +132,8 @@
           </dialog>
         </aside>
       </section>
-      <section class="market-daily-section" aria-label="每日情报分类统计"><div class="market-daily-table-wrap" id="market-daily-table"></div></section>
+      <section class="market-daily-section" aria-label="收到的新闻明细"><div class="market-daily-table-wrap" id="market-daily-table"></div></section>
     </section>`;
-  }
-
-  function renderTrend(items) {
-    state.chart?.destroy();
-    const canvas = $("market-topic-trend-chart");
-    if (!canvas || !window.Chart) return;
-    const dates = [...new Set(items.map((item) => item.sourceDate))].sort();
-    const counts = new Map();
-    items.forEach((item) => counts.set(item.category, (counts.get(item.category) || 0) + 1));
-    const categories = ranked(counts).slice(0, 5).map(([label]) => label);
-    const datasets = categories.map((label, index) => ({
-      label, data: dates.map((date) => items.filter((item) => item.sourceDate === date && item.category === label).length),
-      borderColor: palette[index], backgroundColor: `${palette[index]}18`, borderWidth: 2,
-      pointRadius: 2.5, pointHoverRadius: 5, tension: .28, fill: false,
-    }));
-    state.chart = new window.Chart(canvas, {
-      type: "line", data: { labels: dates.map((date) => date.slice(5)), datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
-        onClick(_event, active) {
-          if (!active.length) return;
-          const point = active.find((candidate) => datasets[candidate.datasetIndex].data[candidate.index] > 0) || active[0];
-          const date = dates[point.index]; const category = datasets[point.datasetIndex].label;
-          const evidence = items.filter((item) => item.sourceDate === date && item.category === category);
-          $("market-trend-detail").innerHTML = `<strong>${esc(date)} · ${esc(category)} · ${evidence.length} 条</strong><span>${evidence.slice(0, 2).map((item) => esc(item.title)).join("；") || "当日无对应情报"}</span>`;
-        },
-        plugins: {
-          datalabels: false,
-          legend: { position: "top", labels: { color: "#8da3bb", usePointStyle: true, pointStyle: "line", boxWidth: 24, font: { size: 11 } } },
-          tooltip: { backgroundColor: "#0b1728", borderColor: "rgba(84,136,177,.45)", borderWidth: 1, titleColor: "#dbe9f5", bodyColor: "#a8bdd2", padding: 10 },
-        },
-        scales: { x: { grid: { display: false }, ticks: { color: "#718aa4", maxTicksLimit: 10 } }, y: { beginAtZero: true, ticks: { color: "#718aa4", precision: 0 }, grid: { color: "rgba(95,128,158,.17)" } } },
-      },
-    });
   }
 
   function keywordTerms(items) {
@@ -203,7 +164,7 @@
 
   function renderWordCloud(allItems) {
     const target = $("market-keyword-cloud"); const terms = keywordTerms(allItems); const max = Math.max(...terms.map((term) => term.count), 1); const min = Math.min(...terms.map((term) => term.count), max);
-    target.innerHTML = terms.map((term, index) => { const normalized = max === min ? 1 : (term.count - min) / (max - min); const size = Math.round(10 + Math.pow(normalized, .72) * 30); return `<button class="market-keyword${state.keyword === term.label ? " is-active" : ""}" style="--cloud-size:${size}px;--word-color:${palette[index % palette.length]}" data-cloud-size="${size}" data-market-keyword="${esc(term.label)}" type="button" title="${esc(term.label)}：出现 ${term.count} 次"><span>${esc(term.label)}</span></button>`; }).join("");
+    target.innerHTML = terms.map((term, index) => { const normalized = max === min ? 1 : (term.count - min) / (max - min); const size = Math.round(10 + Math.pow(normalized, .72) * 30); return `<button class="market-keyword${state.keyword === term.label ? " is-active" : ""}" style="--cloud-size:${size}px;--word-color:${palette[index % palette.length]};--word-index:${index}" data-cloud-size="${size}" data-market-keyword="${esc(term.label)}" type="button" title="${esc(term.label)}：出现 ${term.count} 次"><span>${esc(term.label)}</span></button>`; }).join("");
     requestAnimationFrame(() => layoutWordCloud(target));
   }
 
@@ -259,7 +220,13 @@
     const cy = window.cytoscape({ container, elements: [...payload.nodes.map((node) => ({ group: "nodes", data: node })), ...payload.edges.map((edge) => ({ group: "edges", data: edge }))], minZoom: fullscreen ? .35 : .45, maxZoom: fullscreen ? 3 : 2.4, boxSelectionEnabled: false, style: graphStyle(), layout: graphLayout(fullscreen) });
     cy.on("tap", "node, edge", (event) => selectGraphElement(event.target, fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"));
     cy.on("tap", (event) => { if (event.target === cy) { cy.elements().removeClass("is-muted is-neighbor").unselect(); const detail = $(fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"); if (detail && fullscreen) { detail.hidden = false; detail.innerHTML = '<div class="market-graph-inspector-empty"><strong>选择一个节点或关系</strong><span>下方会展开关联路径、证据摘要和新闻原文。</span></div>'; } else if (detail) detail.hidden = true; } });
-    cy.on("mouseover", "node, edge", (event) => { event.target.addClass("is-hover"); container.style.cursor = "pointer"; }); cy.on("mouseout", "node, edge", (event) => { event.target.removeClass("is-hover"); container.style.cursor = "grab"; }); return cy;
+    cy.on("mouseover", "node, edge", (event) => { event.target.addClass("is-hover"); container.style.cursor = "pointer"; }); cy.on("mouseout", "node, edge", (event) => { event.target.removeClass("is-hover"); container.style.cursor = "grab"; });
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      cy.nodes().style("opacity", .18); cy.edges().style("opacity", .08);
+      cy.nodes().forEach((node, index) => window.setTimeout(() => { if (!node.removed()) node.animate({ style: { opacity: 1 } }, { duration: 420 }); }, index * 28));
+      window.setTimeout(() => { if (!cy.destroyed()) cy.edges().animate({ style: { opacity: 1 } }, { duration: 620 }); }, 180);
+    }
+    return cy;
   }
 
   function renderGraph(items) {
@@ -267,64 +234,61 @@
     $("market-graph-status").textContent = `${state.graphPayload.nodes.length} 节点 · ${state.graphPayload.edges.length} 关系`;
   }
 
-  function pauseViewRotation() {
-    window.clearTimeout(state.viewTimer); state.viewTimer = null;
+  function scheduleVisualLayout() {
+    window.cancelAnimationFrame(state.layoutFrame); state.layoutFrame = window.requestAnimationFrame(() => {
+      state.layoutFrame = null;
+      const cloud = $("market-keyword-cloud");
+      if (cloud?.clientWidth > 0) layoutWordCloud(cloud);
+      const graph = $("market-graph-canvas");
+      if (graph?.clientWidth > 0) { state.graph?.resize(); state.graph?.fit(state.graph.elements(), 38); }
+    });
   }
 
-  function scheduleViewRotation() {
-    pauseViewRotation();
-    if (document.hidden || panel.hidden || $("market-graph-dialog")?.open) return;
-    state.viewTimer = window.setTimeout(() => switchView(state.view === "graph" ? "cloud" : "graph", { automatic: true }), 10000);
+  function receivedMinute(item) {
+    return String(item.publishedAt || "").slice(0, 16);
   }
 
-  function switchView(view, { automatic = false } = {}) {
-    state.view = view === "cloud" ? "cloud" : "graph";
-    panel.querySelectorAll("[data-market-view]").forEach((button) => { const active = button.dataset.marketView === state.view; button.classList.toggle("act", active); button.setAttribute("aria-selected", String(active)); });
-    $("market-graph-canvas").classList.toggle("is-active", state.view === "graph"); $("market-keyword-cloud").classList.toggle("is-active", state.view === "cloud");
-    panel.querySelector(".market-knowledge-graph > .market-graph-legend").hidden = state.view !== "graph"; $("market-graph-status").hidden = state.view !== "graph"; $("market-graph-expand").hidden = state.view !== "graph";
-    if (state.view === "graph") requestAnimationFrame(() => { state.graph?.resize(); state.graph?.fit(state.graph.elements(), 38); }); else requestAnimationFrame(() => layoutWordCloud($("market-keyword-cloud")));
-    if (!automatic || !document.hidden) scheduleViewRotation();
-  }
-
-  function renderDailyTable(items) {
+  function renderReceivedNewsTable(items) {
     const target = $("market-daily-table"); if (!target) return;
-    const observedDates = [...new Set(items.map((item) => item.sourceDate).filter(Boolean))].sort();
-    const categoryCounts = new Map();
-    items.forEach((item) => { const category = graphTopic(item.category); categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1); });
-    const categories = ranked(categoryCounts).map(([category]) => category);
-    if (!observedDates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
-    const dates = [];
-    for (let day = new Date(`${observedDates[0]}T00:00:00Z`), end = new Date(`${observedDates.at(-1)}T00:00:00Z`); day <= end; day.setUTCDate(day.getUTCDate() + 1)) dates.push(day.toISOString().slice(0, 10));
-    dates.reverse();
-    const counts = new Map();
-    items.forEach((item) => { const key = `${item.sourceDate}::${graphTopic(item.category)}`; counts.set(key, (counts.get(key) || 0) + 1); });
-    target.innerHTML = `<table><caption>每日情报统计 <span>${esc(observedDates[0])} — ${esc(observedDates.at(-1))} · 全部 ${items.length} 条</span></caption><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(dailyCategoryLabel(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
-      const values = categories.map((category) => counts.get(`${date}::${category}`) || 0);
-      return `<tr><th scope="row">${esc(date)}</th>${values.map((count) => `<td class="${count ? "has-news" : ""}">${count || "—"}</td>`).join("")}<td class="daily-total">${values.reduce((sum, count) => sum + count, 0)}</td></tr>`;
-    }).join("")}</tbody><tfoot><tr><th scope="row">全部</th>${categories.map((category) => `<td>${categoryCounts.get(category) || 0}</td>`).join("")}<td>${items.length}</td></tr></tfoot></table>`;
+    if (!items.length) { target.innerHTML = '<div class="market-daily-empty">最新批次暂无收到的新闻</div>'; return; }
+    const receivedAt = String(state.payload?.receivedAt || "").replace("T", " ").slice(0, 16);
+    const minutes = items.map(receivedMinute).filter(Boolean).sort(); const min = minutes[0] || ""; const max = minutes.at(-1) || "";
+    const filtered = items.filter((item) => { const value = receivedMinute(item); return (!state.receivedStart || value >= state.receivedStart) && (!state.receivedEnd || value <= state.receivedEnd); });
+    const selected = Boolean(state.receivedStart || state.receivedEnd);
+    target.innerHTML = `<div class="market-received-toolbar"><div><h2>收到的新闻</h2><span>${selected ? `当前显示 ${filtered.length} / 本批次 ${items.length} 条` : `本批次共 ${items.length} 条`}${receivedAt ? ` · ${esc(receivedAt)}` : ""}</span></div><div class="market-time-filter" role="group" aria-label="按发布时间筛选新闻"><label><span>开始时间</span><input type="datetime-local" value="${esc(state.receivedStart)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="start"></label><i aria-hidden="true">—</i><label><span>结束时间</span><input type="datetime-local" value="${esc(state.receivedEnd)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="end"></label><button type="button" data-news-time-clear ${selected ? "" : "disabled"}>清除</button></div></div><table aria-label="收到的新闻明细"><thead><tr><th scope="col">发布时间</th><th scope="col">新闻标题</th><th scope="col">来源</th><th scope="col">监测模块</th><th scope="col">命中关键词</th></tr></thead><tbody>${filtered.map((item) => {
+      const publishedAt = String(item.publishedAt || "").replace("T", " ").slice(0, 16) || "—";
+      const title = item.url ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}<b aria-hidden="true">↗</b></a>` : `<span>${esc(item.title)}</span>`;
+      const keywords = Array.isArray(item.keywords) && item.keywords.length ? item.keywords.map((keyword) => `<em>${esc(keyword)}</em>`).join("") : "—";
+      return `<tr><td class="received-time">${esc(publishedAt)}</td><th scope="row" class="received-title">${title}</th><td>${esc(item.source || "未标注来源")}</td><td>${esc(item.module || "其他情报")}</td><td class="received-keywords">${keywords}</td></tr>`;
+    }).join("") || '<tr><td class="market-filter-empty" colspan="5">该时间范围内没有收到新闻</td></tr>'}</tbody></table>`;
   }
 
   function renderAll() {
-    const allItems = state.payload?.items || []; const items = state.keyword ? allItems.filter((item) => termsFor(item).includes(state.keyword)) : allItems;
-    renderTrend(items); renderWordCloud(allItems); renderGraph(items); renderDailyTable(allItems); switchView(state.view);
+    const allItems = state.payload?.receivedItems || []; const items = state.keyword ? allItems.filter((item) => termsFor(item).includes(state.keyword)) : allItems;
+    renderWordCloud(allItems); renderGraph(items); renderReceivedNewsTable(state.payload?.receivedItems || []); scheduleVisualLayout();
   }
 
   function openFullscreen() {
-    const dialog = $("market-graph-dialog"); if (!dialog || !state.graphPayload) return; pauseViewRotation(); dialog.showModal();
+    const dialog = $("market-graph-dialog"); if (!dialog || !state.graphPayload) return; dialog.showModal();
     requestAnimationFrame(() => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = makeGraph($("market-graph-dialog-canvas"), state.graphPayload, true); });
   }
 
   panel.addEventListener("click", (event) => {
-    const view = event.target.closest("[data-market-view]"); if (view) return switchView(view.dataset.marketView);
     const keyword = event.target.closest("[data-market-keyword]"); if (keyword) { state.keyword = state.keyword === keyword.dataset.marketKeyword ? "" : keyword.dataset.marketKeyword; return renderAll(); }
     if (event.target.closest("#market-graph-expand")) return openFullscreen(); if (event.target.closest("[data-graph-close]")) return $("market-graph-dialog").close();
     const focus = event.target.closest("[data-graph-focus]");
     if (focus && state.fullscreenGraph) { const element = state.fullscreenGraph.getElementById(focus.dataset.graphFocus); if (element.length) { selectGraphElement(element, "market-graph-dialog-detail"); state.fullscreenGraph.animate({ center: { eles: element }, zoom: Math.max(state.fullscreenGraph.zoom(), 1.1) }, { duration: 260 }); } return; }
     if (event.target.closest("[data-graph-reset]")) { state.fullscreenGraph?.elements().removeClass("is-muted is-neighbor").unselect(); state.fullscreenGraph?.fit(state.fullscreenGraph.elements(), 52); }
+    if (event.target.closest("[data-news-time-clear]")) { state.receivedStart = ""; state.receivedEnd = ""; renderReceivedNewsTable(state.payload?.receivedItems || []); }
+  });
+  panel.addEventListener("change", (event) => {
+    const input = event.target.closest("[data-news-time-filter]"); if (!input) return;
+    if (input.dataset.newsTimeFilter === "start") state.receivedStart = input.value; else state.receivedEnd = input.value;
+    renderReceivedNewsTable(state.payload?.receivedItems || []);
   });
 
   function payloadSignature(payload) {
-    return String(payload?.evidenceHash || "");
+    return `${payload?.evidenceHash || ""}:${payload?.receivedHash || ""}`;
   }
 
   async function refreshData() {
@@ -346,9 +310,11 @@
 
   async function initialize() {
     pageMarkup();
-    panel.querySelector(".market-knowledge-graph").addEventListener("mouseenter", pauseViewRotation);
-    panel.querySelector(".market-knowledge-graph").addEventListener("mouseleave", scheduleViewRotation);
-    $("market-graph-dialog").addEventListener("close", () => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = null; scheduleViewRotation(); });
+    $("market-graph-dialog").addEventListener("close", () => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = null; });
+    if (window.ResizeObserver) {
+      state.resizeObserver = new ResizeObserver(scheduleVisualLayout);
+      state.resizeObserver.observe($("market-keyword-cloud")); state.resizeObserver.observe($("market-graph-canvas"));
+    }
     try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; state.signature = payloadSignature(cached); renderAll(); } } catch (_error) { /* cache is optional */ }
     try {
       await Promise.race([window.CMHKAuth?.ready, new Promise((_, reject) => setTimeout(() => reject(new Error("auth timeout")), 4000))]);
@@ -364,14 +330,15 @@
     state.pollTimer = window.setTimeout(async () => { await refreshData(); schedulePolling(); }, 300000);
   }
   window.addEventListener("workspace-tab-change", (event) => {
-    if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; pauseViewRotation(); return; }
+    if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; return; }
     if (Date.now() - state.lastRefreshAt >= 60000) refreshData();
-    schedulePolling(); scheduleViewRotation();
+    schedulePolling(); scheduleVisualLayout();
   });
+  window.addEventListener("resize", scheduleVisualLayout);
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && !panel.hidden && Date.now() - state.lastRefreshAt >= 60000) refreshData();
-    schedulePolling(); scheduleViewRotation();
+    schedulePolling();
   });
   initialize();
-  schedulePolling(); scheduleViewRotation();
+  schedulePolling();
 })();

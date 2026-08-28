@@ -60,6 +60,53 @@ def _labels(text: str, aliases: dict[str, tuple[str, ...]]) -> list[str]:
     return [label for label, terms in aliases.items() if _matches(text, terms)]
 
 
+def _received_news(root: Path) -> tuple[list[dict], str]:
+    """Return every item received by the latest discovery batch, before review."""
+
+    source_path = root / "strategy_briefing" / "news_discovery_latest.json"
+    payload = _load_json(source_path)
+    raw_items = payload.get("items") if isinstance(payload.get("items"), list) else []
+    items: list[dict] = []
+    for index, raw in enumerate(raw_items):
+        if not isinstance(raw, dict):
+            continue
+        title = str(raw.get("title") or raw.get("source_title") or "").strip()
+        if not title:
+            continue
+        keywords = raw.get("keywords") or raw.get("matched_keywords") or []
+        if isinstance(keywords, str):
+            keyword_values = [value.strip() for value in re.split(r"[、，,;；|]+", keywords) if value.strip()]
+        elif isinstance(keywords, list):
+            keyword_values = [str(value).strip() for value in keywords if str(value).strip()]
+        else:
+            keyword_values = []
+        summary = str(raw.get("snippet") or raw.get("summary") or raw.get("source_summary") or "").strip()
+        module = str(raw.get("module") or raw.get("category") or "其他情报").strip()
+        published_at = str(raw.get("published_at") or raw.get("source_date") or "").strip()
+        url = str(raw.get("url") or raw.get("source_url") or "").strip()
+        evidence_text = " ".join((title, summary, " ".join(keyword_values)))
+        items.append({
+            "id": str(raw.get("news_id") or raw.get("id") or f"received-{index + 1}"),
+            "title": title,
+            "summary": summary,
+            "source": str(raw.get("source") or raw.get("source_domain") or "未标注来源").strip(),
+            "publishedAt": published_at,
+            "sourceDate": _date(published_at),
+            "module": module,
+            "category": module,
+            "region": str(raw.get("region") or ("香港本地" if raw.get("is_hong_kong") is True else "未标注地区")).strip(),
+            "keywords": keyword_values,
+            "url": url,
+            "sourceUrl": url,
+            "entities": _labels(evidence_text, ENTITY_ALIASES),
+            "concepts": _labels(evidence_text, CONCEPT_ALIASES),
+        })
+
+    items.sort(key=lambda item: (item["publishedAt"], item["id"]), reverse=True)
+    generated_at = str(payload.get("generated_at") or payload.get("updated_at") or "")
+    return items, generated_at
+
+
 def build_competitor_intelligence_map(root: Path) -> dict:
     """Return approved intelligence records with explicit graph classifications."""
 
@@ -93,6 +140,7 @@ def build_competitor_intelligence_map(root: Path) -> dict:
 
     items.sort(key=lambda item: (item["sourceDate"], item["id"]), reverse=True)
     dates = sorted({item["sourceDate"] for item in items})
+    received_items, received_at = _received_news(root)
     revision = evidence_hash(items)
     return {
         "ok": True,
@@ -102,6 +150,9 @@ def build_competitor_intelligence_map(root: Path) -> dict:
         "coverageStart": dates[0] if dates else "",
         "coverageEnd": dates[-1] if dates else "",
         "evidenceHash": revision,
+        "receivedHash": evidence_hash(received_items),
+        "receivedAt": received_at,
+        "receivedItems": received_items,
         "aiInsight": load_cached_insights(root, revision),
         "items": items,
     }

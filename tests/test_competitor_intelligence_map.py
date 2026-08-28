@@ -22,13 +22,13 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('id="workspace-panel-intelligence-map"', INDEX)
         self.assertIn('<span class="workspace-tab-label">情报图谱</span>', INDEX)
 
-    def test_layout_has_interactive_trend_network_word_cloud_and_daily_table(self):
+    def test_layout_has_side_by_side_network_word_cloud_and_received_news_table(self):
         self.assertNotIn('data-map-filter="days"', SCRIPT)
         self.assertNotIn('data-map-filter="category"', SCRIPT)
         self.assertNotIn('data-map-filter="region"', SCRIPT)
-        self.assertIn("new window.Chart", SCRIPT)
+        self.assertNotIn("new window.Chart", SCRIPT)
         self.assertIn("window.cytoscape", SCRIPT)
-        self.assertIn('data-market-view="cloud"', SCRIPT)
+        self.assertNotIn('data-market-view="cloud"', SCRIPT)
         self.assertIn('data-market-keyword', SCRIPT)
         self.assertIn('name: "cose"', SCRIPT)
         self.assertIn('function connectedGraph(', SCRIPT)
@@ -37,13 +37,10 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('entityIds.slice(index + 1)', SCRIPT)
         self.assertIn('"包含概念"', SCRIPT)
         self.assertIn('randomize: false', SCRIPT)
-        self.assertIn('function scheduleViewRotation()', SCRIPT)
-        self.assertIn('10000', SCRIPT)
+        self.assertNotIn('function scheduleViewRotation()', SCRIPT)
         self.assertIn('label: "data(label)"', SCRIPT)
         self.assertIn('maxNodes = 20, maxEdges = 28', SCRIPT)
         self.assertIn('cy.on("tap", "node, edge"', SCRIPT)
-        self.assertIn('pointHoverRadius: 5', SCRIPT)
-        self.assertIn('datalabels: false', SCRIPT)
         self.assertIn('market-graph-evidence-row', SCRIPT)
         self.assertIn('${esc(item.title)}</span><small>${esc(item.source)}', SCRIPT)
         self.assertNotIn('class="market-graph-evidence">', SCRIPT)
@@ -57,14 +54,25 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertNotIn("全部议题", SCRIPT)
         self.assertNotIn("全部区域", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
-        self.assertIn("grid-template-columns: minmax(0, 1.4fr) minmax(420px, 1fr)", STYLE)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", STYLE)
         self.assertIn('cytoscape-3.34.0.min.js', INDEX)
-        self.assertIn('每日情报统计', SCRIPT)
-        self.assertIn('function renderDailyTable(items)', SCRIPT)
+        self.assertIn('收到的新闻', SCRIPT)
+        self.assertIn('function renderReceivedNewsTable(items)', SCRIPT)
         self.assertIn('market-daily-table-wrap', STYLE)
         self.assertIn('scope="row"', SCRIPT)
-        self.assertIn('<tfoot>', SCRIPT)
-        self.assertIn('全部 ${items.length} 条', SCRIPT)
+        self.assertIn('本批次共 ${items.length} 条', SCRIPT)
+        self.assertIn('state.payload?.receivedItems || []', SCRIPT)
+        self.assertIn('const allItems = state.payload?.receivedItems || []', SCRIPT)
+        self.assertIn('本批次收到新闻中的关联证据', SCRIPT)
+        self.assertIn('new ResizeObserver(scheduleVisualLayout)', SCRIPT)
+        self.assertIn('window.addEventListener("resize", scheduleVisualLayout)', SCRIPT)
+        self.assertIn('type="datetime-local"', SCRIPT)
+        self.assertIn('data-news-time-filter="start"', SCRIPT)
+        self.assertIn('data-news-time-filter="end"', SCRIPT)
+        self.assertIn('data-news-time-clear', SCRIPT)
+        self.assertIn('market-word-float', STYLE)
+        self.assertIn('prefers-reduced-motion: reduce', SCRIPT)
+        self.assertIn('node.animate({ style: { opacity: 1 } }', SCRIPT)
         self.assertNotIn('market-daily-title', SCRIPT)
         self.assertNotIn('data-insight-refresh', SCRIPT)
         self.assertNotIn('重新生成4条AI情报洞察', SCRIPT)
@@ -105,6 +113,19 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
                     {"id": "n2", "title": "缺少日期的记录"},
                 ],
             }, ensure_ascii=False), encoding="utf-8")
+            discovery = root / "strategy_briefing" / "news_discovery_latest.json"
+            discovery.write_text(json.dumps({
+                "generated_at": "2026-08-28T12:30:00+08:00",
+                "items": [{
+                    "news_id": "received-1",
+                    "title": "爬虫收到但尚未审核的新闻",
+                    "source": "测试来源",
+                    "published_at": "2026-08-28T12:00:00+08:00",
+                    "module": "AI与科技",
+                    "keywords": ["AI", "算力"],
+                    "url": "https://example.com/news",
+                }],
+            }, ensure_ascii=False), encoding="utf-8")
 
             payload = build_competitor_intelligence_map(root)
 
@@ -117,6 +138,13 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn("keywords", payload["items"][0])
         self.assertEqual(payload["evidenceHash"], evidence_hash(payload["items"]))
         self.assertIsNone(payload["aiInsight"])
+        self.assertEqual(payload["receivedAt"], "2026-08-28T12:30:00+08:00")
+        self.assertEqual(len(payload["receivedItems"]), 1)
+        self.assertEqual(payload["receivedItems"][0]["title"], "爬虫收到但尚未审核的新闻")
+        self.assertEqual(payload["receivedItems"][0]["sourceDate"], "2026-08-28")
+        self.assertEqual(payload["receivedItems"][0]["category"], "AI与科技")
+        self.assertIn("AI / 算力", payload["receivedItems"][0]["concepts"])
+        self.assertIn("receivedHash", payload)
 
     def test_ai_insights_require_exactly_four_evidence_backed_rows(self):
         rows = [
