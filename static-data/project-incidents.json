@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "4fb7224947657777dbe36e1e",
+      "task_id": "incident:4fb7224947657777dbe36e1e",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T17:37:36+08:00",
+      "started_at_hkt": "2026-08-28T17:37:36+08:00",
+      "heartbeat_at_hkt": "2026-08-28T17:37:36+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "67ba20097bdeb015e0152caa",
       "task_id": "incident:67ba20097bdeb015e0152caa",
       "title": "主项目后台任务",
@@ -3525,7 +3549,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T16:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-28T17:32:35+08:00",
+      "heartbeat_at_hkt": "2026-08-28T17:37:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11679,7 +11703,7 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T17:32:35+08:00",
+      "heartbeat_at_hkt": "2026-08-28T17:37:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12067,32 +12091,6 @@
       "started_at_hkt": "2026-08-24T09:14:24+08:00",
       "heartbeat_at_hkt": "2026-08-24T09:14:24+08:00",
       "completed_at_hkt": "2026-08-24T09:14:55+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "8f3957a6806a4253012831c9",
-      "task_id": "incident:8f3957a6806a4253012831c9",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一批（4条）候选条目未能通过AI批量编辑步骤，已进入紧凑补审回退流程。整体任务是否最终失败需结合任务归档状态确认，当前影响范围有限。",
-      "suggestions": [
-        "检查AI服务端日志，确认JSON响应被截断的原因（如超时、并发限制或模型输出长度限制）。",
-        "验证紧凑补审队列中对应条目的处理状态，确保回退流程已正确执行并完成补审。",
-        "若AI服务存在临时过载，考虑调整批量大小或增加请求重试机制，并监控后续任务成功率。",
-        "修复后选取同类任务进行小批量验证，确认AI返回的JSON字段完整性恢复正常。"
-      ],
-      "occurred_at_hkt": "2026-08-24T09:13:24+08:00",
-      "started_at_hkt": "2026-08-24T09:13:24+08:00",
-      "heartbeat_at_hkt": "2026-08-24T09:13:24+08:00",
-      "completed_at_hkt": "2026-08-24T09:13:54+08:00",
       "handled_at_hkt": ""
     }
   ],
