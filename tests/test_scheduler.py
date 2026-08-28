@@ -669,6 +669,83 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         publish.assert_called_once_with(log_path)
         self.assertTrue(any(call.args[0].get("stage") == "financial_completed" for call in write_pending.call_args_list))
 
+    def test_resume_recrawls_missing_financial_report_before_closing_chain(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "resume-finance-recrawl.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            pending = {
+                "stage": "audit_completed",
+                "crawl_run_id": "crawl-finance-recrawl",
+                "rows": [2],
+                "scope": "定时指定行（第2行）",
+                "started_at_hkt": "2026-08-28T03:00:00+08:00",
+                "stream_log_path": str(log_path),
+                "log_sheet_id": "sheet-finance",
+                "sync_return_code": 0,
+                "curation": {"agent_run_id": "scheduled_crawl-finance-recrawl"},
+                "trace_sync": {"ok": True},
+            }
+            failed_refresh = {
+                "quality": {"ok": False, "failures": ["第2行 HKT 未发现可读取的官方财报"]},
+                "last_check": [{"row": 2, "company": "HKT", "status": "no_official_report_discovered"}],
+                "database_updated": False,
+            }
+            recovered_refresh = {
+                "generated_at_hkt": "2026-08-28T09:30:00+08:00",
+                "schedule_policy": "next-day",
+                "database_path": "cmhk.data.local_financial_results.json",
+                "database_updated": True,
+                "database_changed": True,
+                "quality": {"ok": True, "failures": []},
+                "last_check": [{
+                    "row": 2,
+                    "company": "HKT",
+                    "verification_status": "official_document_extracted",
+                    "period": "H1 2026",
+                    "publication_date": "2026-07-29",
+                    "source_url": "https://www.hkt.com/report.pdf",
+                    "core_metric_count": 5,
+                    "metrics": [],
+                }],
+            }
+            state: dict[str, object] = {"attempts": {"2": "2026-08-28T03:00:00+08:00"}}
+            completed = subprocess.CompletedProcess(
+                [scheduler.PYTHON, str(scheduler.ROOT / "crawl.py")],
+                0,
+                stdout="recovered",
+                stderr="",
+            )
+            with (
+                mock.patch(
+                    "cmhk.data.local_financial_results.rebuild_local_financial_database",
+                    side_effect=[failed_refresh, recovered_refresh],
+                ) as rebuild,
+                mock.patch.object(scheduler.subprocess, "run", return_value=completed) as run,
+                mock.patch.object(scheduler, "_publish_financial_frontend", return_value={
+                    "ok": True,
+                    "status": "verified",
+                    "site_version": "site-finance",
+                    "public_url": "https://example.github.io/project/",
+                }),
+                mock.patch.object(scheduler, "_write_pending_run"),
+                mock.patch.object(scheduler, "_clear_pending_run") as clear_pending,
+                mock.patch.object(scheduler, "resume_crawl_run"),
+                mock.patch.object(scheduler, "append_crawl_run_event") as append_event,
+                mock.patch.object(scheduler, "capture_completed_crawl", return_value={}),
+                mock.patch.object(scheduler, "read_live_schedule", return_value=[{"row": 2, "frequency": "每天 03:00"}]),
+                mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(scheduler, "register_crawl_run"),
+                mock.patch.object(scheduler, "_launch_executive_intelligence_refresh", return_value={"ok": True}),
+            ):
+                ok = scheduler.resume_pending_run(pending, state)
+
+        self.assertTrue(ok)
+        self.assertEqual(rebuild.call_count, 2)
+        self.assertEqual(run.call_args.args[0], [scheduler.PYTHON, str(scheduler.ROOT / "crawl.py")])
+        self.assertEqual(run.call_args.kwargs["env"]["CMHK_ROWS"], "2")
+        self.assertTrue(any(call.args[1].get("type") == "financial_recovery_recrawl" for call in append_event.call_args_list))
+        clear_pending.assert_called_once()
+
     def test_pending_attempt_does_not_advance_schedule_from_partial_row_output(self) -> None:
         now = scheduler.datetime(2026, 7, 29, 16, 0, tzinfo=scheduler.HKT)
         attempt = now - scheduler.timedelta(hours=1)

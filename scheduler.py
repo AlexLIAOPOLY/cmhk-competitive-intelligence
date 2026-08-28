@@ -976,6 +976,56 @@ def _publish_financial_frontend(stream_log_path: Path) -> dict[str, object]:
     }
 
 
+def _missing_financial_report_rows(financial_refresh: dict[str, object]) -> list[int]:
+    return sorted(
+        {
+            int(item.get("row"))
+            for item in financial_refresh.get("last_check") or []
+            if isinstance(item, dict)
+            and str(item.get("row") or "").isdigit()
+            and item.get("status") == "no_official_report_discovered"
+        }
+    )
+
+
+def _recrawl_missing_financial_reports(
+    rows: list[int],
+    stream_log_path: Path,
+) -> dict[str, object]:
+    targeted_rows = sorted(set(rows) & FINANCIAL_RESULT_ROWS)
+    if not targeted_rows:
+        return {"ok": False, "rows": [], "returnCode": 0, "error": "没有可补抓的财报行"}
+    environment = os.environ.copy()
+    environment["CMHK_ROWS"] = ",".join(str(row) for row in targeted_rows)
+    environment["CMHK_CRAWL_MAX_SECONDS"] = "600"
+    try:
+        completed = subprocess.run(
+            [PYTHON, str(ROOT / "crawl.py")],
+            cwd=ROOT,
+            env=environment,
+            text=True,
+            capture_output=True,
+            timeout=720,
+        )
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout if isinstance(exc.stdout, str) else ""
+        stderr = exc.stderr if isinstance(exc.stderr, str) else ""
+        _append_process_output(stream_log_path, stdout, stderr)
+        return {
+            "ok": False,
+            "rows": targeted_rows,
+            "returnCode": 124,
+            "error": "定向财报补抓超过 720 秒",
+        }
+    _append_process_output(stream_log_path, completed.stdout or "", completed.stderr or "")
+    return {
+        "ok": completed.returncode == 0,
+        "rows": targeted_rows,
+        "returnCode": completed.returncode,
+        "error": "" if completed.returncode == 0 else (completed.stderr or completed.stdout or "定向财报补抓失败")[-1200:],
+    }
+
+
 def _monitor_executive_intelligence_refresh(now: datetime) -> dict[str, object]:
     if (
         any(name.startswith("test_") for name in sys.modules)
@@ -1518,6 +1568,26 @@ def resume_pending_run(
 
             financial_refresh = rebuild_local_financial_database(rows=financial_rows)
             financial_quality = financial_refresh.get("quality") or {}
+            missing_financial_rows = _missing_financial_report_rows(financial_refresh)
+            if not financial_quality.get("ok") and missing_financial_rows:
+                financial_recrawl = _recrawl_missing_financial_reports(
+                    missing_financial_rows,
+                    stream_log_path,
+                )
+                append_crawl_run_event(
+                    stream_log_path,
+                    {
+                        "type": "financial_recovery_recrawl",
+                        "ok": bool(financial_recrawl.get("ok")),
+                        "rows": financial_recrawl.get("rows") or [],
+                        "returnCode": financial_recrawl.get("returnCode"),
+                        "error": financial_recrawl.get("error", ""),
+                        "resumed": True,
+                    },
+                )
+                if financial_recrawl.get("ok"):
+                    financial_refresh = rebuild_local_financial_database(rows=financial_rows)
+                    financial_quality = financial_refresh.get("quality") or {}
             curation = {**curation, "local_financial_results": financial_refresh}
             financial_checks = []
             for item in financial_refresh.get("last_check") or []:
