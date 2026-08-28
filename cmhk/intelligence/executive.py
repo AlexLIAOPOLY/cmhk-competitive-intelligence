@@ -8,11 +8,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
+
 
 ROOT = Path(__file__).resolve().parents[2]
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
-LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"
+LEGACY_LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
+LOCAL_FINANCIAL_PATH = (
+    CANONICAL_LOCAL_FINANCIAL_PATH
+    if CANONICAL_LOCAL_FINANCIAL_PATH.exists()
+    else LEGACY_LOCAL_FINANCIAL_PATH
+)
 GLOBAL_OPERATOR_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
 LOCAL_OPERATING_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.json"
 LOCAL_OPERATING_SOURCES_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/sources.json"

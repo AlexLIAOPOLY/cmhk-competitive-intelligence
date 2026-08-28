@@ -23,6 +23,9 @@ from typing import Any, Callable
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
+from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
+from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
+
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from ai_key_rotation import open_llm_request
 
@@ -121,9 +124,14 @@ def _executive_model_route() -> list[str]:
     return list(dict.fromkeys([primary, *EXECUTIVE_AI_FALLBACK_MODELS]))
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
-LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
 INTERNATIONAL_PATH = INTERNATIONAL_DIR / "quarterly_metrics.json"
+LEGACY_LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
+LOCAL_FINANCIAL_PATH = (
+    CANONICAL_LOCAL_FINANCIAL_PATH
+    if CANONICAL_LOCAL_FINANCIAL_PATH.exists()
+    else LEGACY_LOCAL_FINANCIAL_PATH
+)
 GLOBAL_OPERATOR_DIR = ROOT / "agent_knowledge/global_top5_operators_2016_2025"
 GLOBAL_OPERATOR_PATH = GLOBAL_OPERATOR_DIR / "annual_metrics.json"
 CLOUD_DIR = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17"
@@ -4819,6 +4827,40 @@ def run_pipeline(
                     DOMAIN_LABELS[domain],
                     f"仅校验现有数据库通过，共 {int(validation.get('rows') or 0)} 条记录。",
                 )
+        if refresh_builders:
+            try:
+                promotion = promote_daily_financial_facts(
+                    database_path=INTERNATIONAL_PATH,
+                    local_financial_path=LOCAL_FINANCIAL_PATH,
+                    verified_facts_path=VERIFIED_FACTS_PATH,
+                    dry_run=dry_run,
+                )
+                state["daily_main_database_promotion"] = promotion
+                mainland_state = state["domains"].setdefault("mainland", {"ok": True, "changed": False})
+                mainland_state["daily_main_database_promotion"] = promotion
+                mainland_state["changed"] = bool(mainland_state.get("changed") or promotion.get("changed"))
+                international_state = state["domains"].setdefault("international", {"ok": True, "changed": False})
+                international_state["validation"] = validate_database("international", INTERNATIONAL_PATH)
+                _task_event(
+                    task_run_id,
+                    "每日官方财报晋升主库",
+                    f"已处理 {int(promotion.get('candidates') or 0)} 条合格候选；"
+                    f"主库新增 {int(promotion.get('added_rows') or 0)} 条、"
+                    f"升级 {int(promotion.get('upgraded_rows') or 0)} 条，"
+                    f"保留更高核验等级 {int(promotion.get('preserved_stronger_rows') or 0)} 条。",
+                )
+            except Exception as exc:
+                state["daily_main_database_promotion"] = {"ok": False, "changed": False, "error": str(exc)}
+                state["domains"].setdefault("mainland", {}).update({"ok": False, "changed": False, "error": str(exc)})
+                _append_log(f"daily main database promotion failed {exc}")
+                _task_event(task_run_id, "每日官方财报晋升主库", f"主库增量晋升失败：{exc}", level="critical")
+        else:
+            state["daily_main_database_promotion"] = {
+                "ok": True,
+                "changed": False,
+                "skipped": True,
+                "reason": "refresh_builders_disabled",
+            }
         if refresh_builders:
             _task_event(
                 task_run_id,

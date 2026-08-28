@@ -153,8 +153,18 @@ def _report_period(record: dict[str, Any]) -> tuple[str, str, tuple[int, int]]:
     )
     heading = " ".join((title, url))
     probe = " ".join((heading, _record_text(record)[:4500]))
-    fiscal = re.search(r"\bFY\s*(?:20)?(\d{2})\b", probe, re.I)
+    # Prefer the report identity in its title/file name. Annual reports often
+    # contain historical comparison tables (FY22/FY23/...) near the front; a
+    # generic first FY match from body text must never make the database move
+    # backwards.
+    identity_probe = " ".join((title, url))
+    fiscal = re.search(r"\bFY\s*(?:20)?(\d{2})\b", identity_probe, re.I)
     fiscal_year = 2000 + int(fiscal.group(1)) if fiscal else 0
+    named_annual = re.search(r"(?:annual(?:[_\s-]*report)?|year[_\s-]*ended)[_\s()/-]*(20\d{2})", identity_probe, re.I)
+    if not fiscal_year and named_annual:
+        fiscal_year = int(named_annual.group(1))
+    named_interim = re.search(r"(?:(20\d{2})[_\s-]*(?:interim|half)|(?:interim|half)[_\s-]*(20\d{2}))", identity_probe, re.I)
+    interim_year = int(next(value for value in named_interim.groups() if value)) if named_interim else 0
     ended_years = [
         int(value)
         for value in re.findall(
@@ -163,7 +173,7 @@ def _report_period(record: dict[str, Any]) -> tuple[str, str, tuple[int, int]]:
             re.I,
         )
     ]
-    years = [fiscal_year] if fiscal_year else []
+    years = [fiscal_year or interim_year] if (fiscal_year or interim_year) else []
     if not years and ended_years:
         years = ended_years
     if not years:
@@ -369,11 +379,18 @@ def rebuild_local_financial_database(
     now = (now or datetime.now(HKT)).astimezone(HKT)
     selected = sorted(set(rows or FINANCIAL_RESULT_ROWS) & FINANCIAL_RESULT_ROWS)
     previous = _read_json(DATABASE_PATH, {})
-    reports_by_row = {
-        int(item.get("row")): item
-        for item in previous.get("reports", [])
-        if str(item.get("row") or "").isdigit()
-    }
+    legacy = _read_json(DATABASE_PATH.with_name("local_financial_results.json"), {})
+    reports_by_row: dict[int, dict[str, Any]] = {}
+    for payload in (legacy, previous):
+        for item in payload.get("reports", []) or []:
+            if not str(item.get("row") or "").isdigit():
+                continue
+            row_number = int(item["row"])
+            current = reports_by_row.get(row_number) or {}
+            if _period_rank_from_label(str(item.get("period") or "")) >= _period_rank_from_label(
+                str(current.get("period") or "")
+            ):
+                reports_by_row[row_number] = item
     checked: list[dict[str, Any]] = []
     failures: list[str] = []
     for row in selected:
@@ -387,6 +404,21 @@ def rebuild_local_financial_database(
                 failures.append(f"第{row}行 {ROW_COMPANIES[row]} 未发现可读取的官方财报")
             continue
         extracted_period, _extracted_type, extracted_rank = _report_period(report)
+        previous_report = reports_by_row.get(row) or {}
+        previous_period = str(previous_report.get("period") or "")
+        previous_rank = _period_rank_from_label(previous_period)
+        if previous_period and extracted_rank < previous_rank:
+            checked.append(
+                {
+                    "row": row,
+                    "company": ROW_COMPANIES[row],
+                    "status": "stale_official_report_ignored",
+                    "period": extracted_period,
+                    "source_url": report.get("final_url") or report.get("url"),
+                    "preserved_period": previous_period,
+                }
+            )
+            continue
         if discovered_report is not None:
             discovered_period, _discovered_type, discovered_rank = _report_period(discovered_report)
             if discovered_rank > extracted_rank:
@@ -465,6 +497,21 @@ def rebuild_local_financial_database(
     if write and not failures:
         _atomic_write_json(DATABASE_PATH, payload)
     return payload
+
+
+def _period_rank_from_label(value: str) -> tuple[int, int]:
+    year = re.search(r"(20\d{2})", str(value or ""))
+    if not year:
+        return (0, 0)
+    text = str(value or "")
+    quarter = re.search(r"Q([1-4])", text, re.I)
+    if quarter:
+        return (int(year.group(1)), int(quarter.group(1)))
+    if re.search(r"H1|interim", text, re.I):
+        return (int(year.group(1)), 2)
+    if re.search(r"H2|FY|annual", text, re.I):
+        return (int(year.group(1)), 4)
+    return (int(year.group(1)), 0)
 
 
 def financial_database_rows(path: Path = DATABASE_PATH) -> list[dict[str, Any]]:

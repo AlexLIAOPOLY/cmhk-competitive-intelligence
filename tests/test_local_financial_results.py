@@ -61,6 +61,17 @@ class LocalFinancialResultsTests(unittest.TestCase):
 
         self.assertEqual((period, report_type, rank), ("FY 2025", "annual", (2025, 4)))
 
+    def test_report_filename_year_outranks_historical_fy_in_body(self) -> None:
+        period, report_type, rank = finance._report_period(
+            {
+                "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+                "title": "PDF extracted by pdftotext",
+                "text_sample": "Five-year summary FY22 FY23 FY24. Annual report for the year ended 31 August 2025.",
+            }
+        )
+
+        self.assertEqual((period, report_type, rank), ("FY 2025", "annual", (2025, 4)))
+
     def test_official_announcement_is_structured_with_next_day_due_time(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -184,6 +195,45 @@ class LocalFinancialResultsTests(unittest.TestCase):
             self.assertEqual(payload["last_check"][0]["status"], "newer_official_report_unavailable")
             self.assertIn("已发现更新一期官方财报 FY 2026", payload["quality"]["failures"][0])
             self.assertEqual(database.read_text(encoding="utf-8"), before)
+
+    def test_older_extracted_report_cannot_replace_newer_database_period(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            results = root / "results"
+            results.mkdir()
+            database = root / "cmhk.data.local_financial_results.json"
+            database.write_text(
+                json.dumps({"reports": [{"row": 11, "company": "HKBN", "period": "H1 2026", "metrics": []}]}),
+                encoding="utf-8",
+            )
+            annual_url = "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+            (results / "row_11.json").write_text(
+                json.dumps(
+                    {
+                        "row": 11,
+                        "raw_records": [
+                            {
+                                "url": annual_url,
+                                "final_url": annual_url,
+                                "status": 200,
+                                "content_type": "application/pdf",
+                                "title": "PDF extracted by pdftotext",
+                                "text_sample": "Annual Report 2025. Total revenue was HK$6,000 million. EBITDA was HK$1,000 million.",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(finance, "RESULTS_DIR", results),
+                mock.patch.object(finance, "DATABASE_PATH", database),
+            ):
+                payload = finance.rebuild_local_financial_database(rows=[11])
+
+            self.assertTrue(payload["quality"]["ok"])
+            self.assertEqual(payload["reports"][0]["period"], "H1 2026")
+            self.assertEqual(payload["last_check"][0]["status"], "stale_official_report_ignored")
 
 
 if __name__ == "__main__":
