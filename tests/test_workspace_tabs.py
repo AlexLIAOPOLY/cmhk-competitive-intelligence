@@ -53,8 +53,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=30', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=138', INDEX)
-        self.assertIn('/static/app.js?v=308', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=139', INDEX)
+        self.assertIn('/static/app.js?v=310', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -544,6 +544,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "AI审核",
             "历史去重",
             "新增新闻",
+            "新闻偏好学习 Agent",
             "纳入 APP",
             "纳入周报",
         ):
@@ -612,7 +613,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=138', INDEX)
+        self.assertIn('workspace-tabs.js?v=139', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=132', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
@@ -628,7 +629,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("不展示通用逻辑原则", SCRIPT)
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
-        self.assertIn("canvasSize: [1580, 680]", SCRIPT)
+        self.assertIn("canvasSize: [1850, 680]", SCRIPT)
+        self.assertIn('key: "news-selection-agent", label: "新闻偏好学习 Agent"', SCRIPT)
+        self.assertIn('["news-output", "news-selection-agent", "学习人工习惯", "cyan"]', SCRIPT)
+        self.assertIn("detail.newsSelectionItems", SCRIPT)
+        self.assertIn("当天新闻偏好 Agent 自动勾选明细", SCRIPT)
         self.assertIn('label: "新增数据入库"', SCRIPT)
         self.assertNotIn('label: "官方原文复核 / 数据库入库"', SCRIPT)
         self.assertNotIn('label: "AI洞察与业务应用"', SCRIPT)

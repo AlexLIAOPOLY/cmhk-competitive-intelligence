@@ -75,7 +75,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         corrected_item = next(item for item in examples if item["title"] == "人工纠正")
         self.assertTrue(corrected_item["human_correction_of_agent"])
 
-    def test_low_confidence_is_deferred_independently_for_each_field(self):
+    def test_agent_uses_only_accept_or_reject_even_at_low_confidence(self):
         target = {
             "news_id": "NEWS-1",
             "row_number": 2,
@@ -99,7 +99,23 @@ class NewsSelectionAgentTests(unittest.TestCase):
         decision = agent._normalized_decisions(payload, [target])[0]
 
         self.assertEqual(decision["app_status"], "接受")
-        self.assertEqual(decision["weekly_status"], "暂缓")
+        self.assertEqual(decision["weekly_status"], "不接受")
+
+    def test_targets_only_current_crawl_items_from_selection_date(self):
+        today = news_review_sheet._row_dict(
+            _row(title="当天新闻", url="https://example.com/today"), 2
+        )
+        old_values = _row(title="旧新闻", url="https://example.com/old")
+        old_values[3] = "2026-08-27"
+        old = news_review_sheet._row_dict(old_values, 3)
+
+        targets = agent._target_rows(
+            [today, old],
+            [{"news_id": today["news_id"]}, {"news_id": old["news_id"]}],
+            selection_date="2026-08-28",
+        )
+
+        self.assertEqual([item["title"] for item in targets], ["当天新闻"])
 
     def test_large_candidate_set_is_split_into_bounded_langchain_batches(self):
         targets = [{"news_id": f"NEWS-{index}"} for index in range(45)]
@@ -165,7 +181,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 {
                     "news_id": target_id,
                     "app_status": "接受",
-                    "weekly_status": "暂缓",
+                    "weekly_status": "不接受",
                     "app_confidence": 0.92,
                     "weekly_confidence": 0.73,
                     "reason": "适合即时APP，周报价值仍需观察",
@@ -176,8 +192,10 @@ class NewsSelectionAgentTests(unittest.TestCase):
             root = Path(temporary)
             updates = []
 
-            def update(changes, *, sheet_id):
+            def update(changes, *, sheet_id, writer_identity, writer_profile):
                 updates.extend(changes)
+                self.assertEqual(writer_identity, "bot")
+                self.assertEqual(writer_profile, "cli_a9575e70ae799cb2")
                 return {"changedCount": len(changes), "readbackVerified": True}
 
             with (
@@ -215,9 +233,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
             self.assertEqual(result["weekly_accepted_count"], 0)
             self.assertEqual(
                 [(item["columnIndex"], item["value"]) for item in updates],
-                [(0, "接受"), (1, "暂缓")],
+                [(0, "接受"), (1, "不接受")],
             )
-            self.assertIn("不可變邊界", (root / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertIn("不可变边界", (root / "SKILL.md").read_text(encoding="utf-8"))
             audit = json.loads((root / "decisions.jsonl").read_text(encoding="utf-8"))
             self.assertTrue(audit["write_verified"])
             self.assertEqual(audit["parent_crawl_run_id"], "parent-run")

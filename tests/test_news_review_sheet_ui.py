@@ -72,7 +72,13 @@ class NewsReviewSheetModelTests(unittest.TestCase):
                 ]
             )
 
-        write.assert_called_once_with("sheet-1", "A2:B2", [["接受", "接受"]])
+            write.assert_called_once_with(
+                "sheet-1",
+                "A2:B2",
+                [["接受", "接受"]],
+                identity="",
+                profile="",
+            )
         self.assertTrue(payload["readbackVerified"])
         self.assertEqual(payload["changedCount"], 2)
         self.assertEqual(payload["rows"][0]["values"][2], "已纳入")

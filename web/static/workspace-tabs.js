@@ -346,7 +346,7 @@
       : commonAnchor ? Array.from({ length: years }, (_item, index) => commonAnchor - years + 1 + index) : [];
     const sharedVisibleYears = visibleYears.filter((year) => companyYears.every((set) => set.has(year)));
     const pointsPerCompany = companyYears.map((set) => visibleYears.filter((year) => set.has(year)).length);
-    const ok = visibleYears.length > 0 && sharedVisibleYears.length >= 2 && pointsPerCompany.every((count) => count >= 2);
+    const ok = visibleYears.length > 0 && sharedVisibleYears.length >= 1 && pointsPerCompany.every((count) => count >= 1);
     return { ok, reason: ok ? "" : "insufficient_shared_years", unit: units[0], allYears, commonYears, visibleYears, sharedVisibleYears, companyYears };
   }
 
@@ -387,9 +387,9 @@
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
-        <fieldset><legend><i>01</i>选择竞对 <small>至少 2 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company, optionIndex) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" style="--option-order:${optionIndex}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
-        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "仅展示具备多年记录的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
-        <fieldset><legend><i>03</i>选择年限 <small>仅可选择至少有 2 个共同披露年的窗口</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${selection.companies.length && !validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${selection.companies.length && !validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
+        <fieldset><legend><i>01</i>选择竞对 <small>至少 1 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company, optionIndex) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" style="--option-order:${optionIndex}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
+        <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "所有已入库指标均可查看"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
+        <fieldset><legend><i>03</i>选择年限 <small>单年披露也可查看；多家公司须有共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${selection.companies.length && !validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${selection.companies.length && !validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
@@ -430,8 +430,8 @@
     state.competitorInsightRetryTimer = null;
     state.competitorInsightRetryAttempt = 0;
     const { companies, metric, years } = state.competitorSelection;
-    if (companies.length < 2 || !metric || !years) {
-      host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后生成对比图</strong><p>选择至少两家竞对、一个指标和回看年限；AI 将比较多家公司的竞争位置、分化路径与业务含义。</p></div>`;
+    if (companies.length < 1 || !metric || !years) {
+      host.innerHTML = `<div class="competitor-empty"><span>01 — 03</span><strong>完成上方选择后查看数据</strong><p>选择至少一家竞对、一个指标和回看年限；单家公司可查看全部已披露数据，两家以上可生成AI竞争洞察。</p></div>`;
       return;
     }
     const data = state.competitorData;
@@ -443,7 +443,7 @@
       return;
     }
     if (!comparison.ok) {
-      host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>所选组合暂无可直接比较的数据</strong><p>请重新选择竞对、指标或年限；选择区只会提供至少有 2 个共同披露年的组合。</p></div>`;
+      host.innerHTML = `<div class="competitor-empty"><span>数据边界</span><strong>所选组合暂无可直接比较的数据</strong><p>请重新选择竞对、指标或年限；多家公司需要至少一个共同披露年，单家公司有一个有效值即可展示。</p></div>`;
       return;
     }
     const visibleYears = comparison.visibleYears;
@@ -477,7 +477,12 @@
       <details class="competitor-data-details"><summary>查看数据明细与官方来源 <span>${visibleYears.length} 个披露年度</span></summary><div class="workspace-table-wrap"><table class="workspace-table competitor-matrix"><thead><tr><th>披露年度</th>${companies.map((company) => `<th>${esc(companyLabel(company))}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
     bindCompetitorChartTooltip(host);
     bindCompetitorChartTypeToggle(host, chartPayload, chartKey);
-    requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
+    if (companies.length >= 2) {
+      requestCompetitorInsight({ companies, metric: { key: metricMeta.key, label: metricMeta.label }, years: visibleYears, evidenceVersion: data.evidenceVersion }, requestId);
+    } else {
+      const insight = host.querySelector("#competitorInsight");
+      if (insight) insight.innerHTML = `<header class="competitor-insight-header"><div class="competitor-insight-identity"><strong>数据说明</strong></div></header><div class="competitor-insight-body"><ol class="competitor-insight-list"><li>当前为单家公司数据查看；再选择一家具有同指标同单位数据的竞对后，可生成AI竞争洞察。</li></ol></div>`;
+    }
   }
 
   function competitorComparator(value) {
@@ -1254,6 +1259,10 @@
       run.task_kind === "four-database-source-discovery"
       && newsRunDate(run) === selectedDate
     )) || {};
+    const selectionRuns = state.crawlRuns.filter((run) => (
+      run.task_kind === "news-selection-agent"
+      && newsRunDate(run) === selectedDate
+    ));
     const matchingIntelligenceRuns = state.crawlRuns.filter((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
@@ -1284,6 +1293,7 @@
     const strategicHealth = combinedRunHealth(runs);
     const mainHealth = runHealth(mainRun);
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
+    const selectionHealth = combinedRunHealth(selectionRuns);
     const intelligenceHealth = runHealth(intelligenceRun);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const expectedInsightCount = Number(
@@ -1373,6 +1383,15 @@
     const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
     const archivedAgentCandidateCount = Number(mainRunDetail.agentReviewSummary?.total || 0);
     const reviewResults = dailyNewsReviewResults(selectedDate);
+    const selectionSummary = selectionRuns.reduce((summary, run) => {
+      const item = run.operational_summary || {};
+      summary.candidates += Number(item.candidate_count || 0);
+      summary.cells += Number(item.changed_count || 0);
+      summary.appAccepted += Number(item.app_accepted_count || 0);
+      summary.weeklyAccepted += Number(item.weekly_accepted_count || 0);
+      summary.verified = summary.verified && item.readback_verified === true;
+      return summary;
+    }, { candidates: 0, cells: 0, appAccepted: 0, weeklyAccepted: 0, verified: selectionRuns.length > 0 });
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
@@ -1383,8 +1402,9 @@
       { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
       { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
-      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1392, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
-      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1392, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
+      { key: "news-selection-agent", label: "新闻偏好学习 Agent", value: selectionRuns.length ? number(selectionSummary.candidates) : "—", unit: selectionRuns.length ? "条当天判断" : "", note: selectionRuns.length ? `机器人写入 ${number(selectionSummary.cells)} 格 · 回读${selectionSummary.verified ? "通过" : "待核对"}` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", position: [1392, 92], details: selectionRuns.length ? [`独立任务 ${number(selectionRuns.length)} 次；仅处理检索日期为 ${selectedDate} 的本轮新增新闻`, `APP接受 ${number(selectionSummary.appAccepted)} 条；双周报接受 ${number(selectionSummary.weeklyAccepted)} 条`, `飞书机器人写入 ${number(selectionSummary.cells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻偏好学习 Agent 运行记录"], evidence: selectionRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻偏好学习 Agent 日志" },
+      { key: "app-result", label: "纳入 APP", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${number(reviewResults.appSyncedRows.length)} 条已完成同步` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", "“是否纳入滚动”为“接受”即计入", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入 APP") },
+      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: "当天周报选用结果", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", "“是否纳入周报”为“接受”即计入", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日战略新闻", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及指标相关的内容", "新闻摘要只作追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日新闻归档" },
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [300, 250], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 455], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
@@ -1397,7 +1417,7 @@
       { key: "insights", label: "AI战略洞察UI更新", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: intelligenceRun.crawl_run_id ? "项AI洞察" : "", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1385, 455], details: intelligenceRun.crawl_run_id ? [`AI洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；本轮${insightGenerationLabel}`, "洞察生成数与数据库事实数、UI发布对象数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
     ];
     const edges = [
-      ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "app-result", "APP选用", "cyan"], ["news-output", "weekly-result", "周报选用", "cyan"], ["news-output", "strategic", "", "feedback"],
+      ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "news-selection-agent", "学习人工习惯", "cyan"], ["news-selection-agent", "app-result", "机器人勾选", "cyan"], ["news-selection-agent", "weekly-result", "机器人勾选", "cyan"], ["news-output", "strategic", "", "feedback"],
       ["previous-news", "news-db-signal", "01:00读取", "amber"], ["news-db-signal", "main", "03:00追官方原文", "handoff-down"], ["main", "agent", "提交证据审核", "cyan"], ["main", "news-search", "页面变化供下轮", "feedback-side"], ["agent", "database-hub", "审核事实写库", "cyan"],
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
@@ -1405,7 +1425,7 @@
     return {
       nodes,
       edges,
-      canvasSize: [1580, 680],
+      canvasSize: [1850, 680],
       feedbackLabel: "历史记录用于下一轮去重",
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
@@ -1522,13 +1542,16 @@
   }
 
   function lineageStageKey(nodeKey) {
-    return ({ strategic: "search", "news-search": "search", "news-ai": "ai", "news-dedupe": "dedupe", "news-output": "push", "app-result": "push", "weekly-result": "push" })[nodeKey] || "";
+    return ({ strategic: "search", "news-search": "search", "news-ai": "ai", "news-dedupe": "dedupe", "news-output": "push", "news-selection-agent": "push", "app-result": "push", "weekly-result": "push" })[nodeKey] || "";
   }
 
   function lineageRunsForNode(nodeKey) {
     const date = state.newsSelectedDate;
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
+    if (nodeKey === "news-selection-agent") {
+      return state.crawlRuns.filter((run) => run.task_kind === "news-selection-agent" && newsRunDate(run) === date);
+    }
     if (nodeKey === "news-db-signal") {
       return state.crawlRuns.filter((run) => run.task_kind === "four-database-source-discovery" && newsRunDate(run) === date);
     }
@@ -1554,6 +1577,7 @@
     "news-output": /新增候选组装|人工审核状态|飞书分批写入|飞书逐格回读|审核周期完成|飞书写入与逐格回读|结果归档完成|群通知/,
     "app-result": /人工审核状态同步|审核周期完成|结果归档完成/,
     "weekly-result": /飞书分批写入|飞书逐格回读|审核周期完成/,
+    "news-selection-agent": /人工样本隔离|LangChain 偏好学习|LangChain 分批判断|Skill 更新|机器人分批写入与回读|自动勾选与回读完成|失败/,
     agent: /\[数据整理\]/,
     "database-local": /\[本地竞对\]|\[发布审核事实\]/,
     "database-international": /\[国际运营商\]|\[发布审核事实\]/,
@@ -1631,6 +1655,7 @@
   function newsErrorLocation(nodeKey, run, event, message) {
     const text = `${event?.stage || ""}\n${message || ""}`;
     if (/后台服务已重新启动|原爬虫进程已不存在|任务中断/.test(text)) return { label: "运行进程 / 服务重启", nodeKey: "news-search" };
+    if (/新闻偏好学习|机器人分批写入|news_selection_agent/.test(text)) return { label: "新闻偏好学习 Agent", nodeKey: "news-selection-agent" };
     if (/飞书审核表|逐格回读|写入后|群通知/.test(text)) return { label: "新增新闻 / 飞书写入回读", nodeKey: "news-output" };
     if (/新闻索引|搜索|检索|查询/.test(text)) return { label: "线索补缺 / 检索", nodeKey: "news-search" };
     if (/AI审核|AI 审核|模型调用|模型返回/.test(text)) return { label: "AI审核", nodeKey: "news-ai" };
@@ -1858,6 +1883,12 @@
         }));
       });
     }
+    if (nodeKey === "news-selection-agent") {
+      return relatedRuns.flatMap((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return (Array.isArray(detail.newsSelectionItems) ? detail.newsSelectionItems : []).map((item) => ({ ...item, run }));
+      });
+    }
     const detailKey = ({ "news-search": "discoveryItems", "news-ai": "aiReviewItems", "news-dedupe": "dedupeItems", "news-output": "newsItems" })[nodeKey];
     if (detailKey) {
       return relatedRuns.flatMap((run) => {
@@ -1877,7 +1908,7 @@
 
   function renderDetailedRecords(nodeKey, records, relatedRuns = []) {
     if (!records.length) {
-      const auditedNode = ["news-db-signal", "main", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-");
+      const auditedNode = ["news-db-signal", "news-selection-agent", "main", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-");
       if (!auditedNode) return "";
       return `<section class="news-lineage-dialog-section is-item-details is-audit-details"><header><h3>当天逐条内容归档</h3><span>0 条</span></header><p class="news-lineage-detail-coverage">该节点有汇总结果，但当前运行未读取到逐条归档；这属于明细缺口，不代表当天没有处理。请按运行编号检查原始归档。</p></section>`;
     }
@@ -1888,6 +1919,7 @@
     const sourceDiscoveryNode = nodeKey === "news-db-signal";
     const mainCrawlNode = nodeKey === "main";
     const agentAuditNode = nodeKey === "agent";
+    const selectionAgentNode = nodeKey === "news-selection-agent";
     const refreshState = state.executiveIntelligence?.refresh || {};
     const refreshMatchesDate = String(refreshState.completed_at_hkt || "").startsWith(state.newsSelectedDate);
     const uiValueChanges = refreshMatchesDate ? refreshState.ui_value_changes || {} : {};
@@ -1895,11 +1927,11 @@
     const domainKey = nodeKey.replace(/^database-/, "");
     const numericChangeCount = Number(databaseUiNode ? uiValueChanges.domains?.[domainKey]?.changed || 0 : uiValueChanges.changed || 0);
     const numericChangeLabel = numericBaselineAvailable ? `数值变化 ${number(numericChangeCount)} 项` : "数值变化未留存";
-    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : sourceDiscoveryNode ? `具体线索 ${records.length} 条` : mainCrawlNode ? `实际处理 ${records.length} 行` : agentAuditNode ? `逐条审核 ${records.length} 条 · 通过 ${included} · 拒绝 ${excluded}` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
+    const recordLabel = nodeKey === "news-ai" ? `逐条审核 ${records.length} 条 · 纳入 ${included} · 排除 ${excluded}` : sourceDiscoveryNode ? `具体线索 ${records.length} 条` : selectionAgentNode ? `当天自动判断 ${records.length} 条 · 至少一项接受 ${included} 条 · 两项均不接受 ${excluded} 条` : mainCrawlNode ? `实际处理 ${records.length} 行` : agentAuditNode ? `逐条审核 ${records.length} 条 · 通过 ${included} · 拒绝 ${excluded}` : databaseHubNode ? `${numericChangeLabel} · 数据库事实 ${records.length} 条` : databaseUiNode ? `${numericChangeLabel} · UI发布对象 ${records.length} 项` : nodeKey === "insights" ? `逐项洞察 ${records.length} 项` : `逐条记录 ${records.length} 条`;
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : mainCrawlNode ? "当天33行固定源逐行抓取明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : selectionAgentNode ? "当天新闻偏好 Agent 自动勾选明细" : mainCrawlNode ? "当天33行固定源逐行抓取明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     const numericChangeNote = databaseHubNode || databaseUiNode
       ? numericBaselineAvailable
         ? numericChangeCount > 0

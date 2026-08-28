@@ -545,6 +545,46 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(items[1]["status"], "failed")
         self.assertEqual(items[1]["errors"], ["timeout"])
 
+    def test_news_selection_items_expose_robot_identity_and_per_news_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            audit = root / "agent_knowledge" / "news_selection_agent" / "decisions.jsonl"
+            audit.parent.mkdir(parents=True)
+            audit.write_text(
+                json.dumps(
+                    {
+                        "event": "decision",
+                        "agent_run_id": "selection-1",
+                        "news_id": "NEWS-1",
+                        "row_number": 8,
+                        "title": "当天新闻",
+                        "app_before": "待审核",
+                        "weekly_before": "待审核",
+                        "app_status": "接受",
+                        "weekly_status": "不接受",
+                        "automated_fields": ["app", "weekly"],
+                        "app_confidence": 0.91,
+                        "weekly_confidence": 0.82,
+                        "reason": "符合历史人工偏好。",
+                        "model": "DeepSeek-V4-Pro",
+                        "writer_identity": "bot",
+                        "writer_profile": "cli_a9575e70ae799cb2",
+                        "write_verified": True,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(web_app, "ROOT", root):
+                items = web_app.news_selection_items_for_crawl_run(
+                    {"task_kind": "news-selection-agent", "crawl_run_id": "selection-1"}
+                )
+
+        self.assertEqual(items[0]["resultLabel"], "APP接受 / 周报不接受")
+        self.assertIn("写入身份：bot", items[0]["extra"])
+        self.assertIn("逐格回读：通过", items[0]["extra"])
+
     def test_today_news_rounds_compare_morning_and_afternoon_archives(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             runs_dir = Path(tmp)

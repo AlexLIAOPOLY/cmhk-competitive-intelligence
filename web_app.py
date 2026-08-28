@@ -2174,6 +2174,65 @@ def strategic_news_process_items_for_crawl_run(run: object) -> dict:
     }
 
 
+def news_selection_items_for_crawl_run(run: object) -> list[dict]:
+    """Expose every verified preference-Agent decision for the clickable lineage node."""
+    if not isinstance(run, dict) or str(run.get("task_kind") or "") != "news-selection-agent":
+        return []
+    run_id = str(run.get("crawl_run_id") or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", run_id):
+        return []
+    audit_path = ROOT / "agent_knowledge" / "news_selection_agent" / "decisions.jsonl"
+    latest_records: dict[str, dict] = {}
+    try:
+        lines = audit_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(record, dict) or record.get("event") != "decision":
+            continue
+        if str(record.get("agent_run_id") or "") != run_id:
+            continue
+        news_id = str(record.get("news_id") or "").strip()
+        if news_id:
+            latest_records[news_id] = record
+    items: list[dict] = []
+    for record in latest_records.values():
+        app_status = str(record.get("app_status") or "未记录")
+        weekly_status = str(record.get("weekly_status") or "未记录")
+        automated_fields = [str(value) for value in record.get("automated_fields") or []]
+        result_parts = []
+        if "app" in automated_fields:
+            result_parts.append(f"APP{app_status}")
+        if "weekly" in automated_fields:
+            result_parts.append(f"周报{weekly_status}")
+        items.append(
+            {
+                "title": str(record.get("title") or record.get("news_id") or "未命名新闻"),
+                "summary": str(record.get("reason") or "本轮未保存判断原因。"),
+                "status": "included" if "接受" in (app_status, weekly_status) else "excluded",
+                "resultLabel": " / ".join(result_parts) or "未修改",
+                "reason": str(record.get("reason") or "本轮未保存判断原因。"),
+                "publishedAt": str(record.get("recorded_at") or ""),
+                "extra": "\n".join(
+                    (
+                        f"新闻ID：{record.get('news_id') or '未记录'}",
+                        f"飞书行号：{record.get('row_number') or '未记录'}",
+                        f"APP：{record.get('app_before') or '未记录'} → {app_status}（置信度 {record.get('app_confidence', '—')}）",
+                        f"周报：{record.get('weekly_before') or '未记录'} → {weekly_status}（置信度 {record.get('weekly_confidence', '—')}）",
+                        f"模型：{record.get('model') or '未记录'}",
+                        f"写入身份：{record.get('writer_identity') or '未记录'} · {record.get('writer_profile') or '未记录'}",
+                        f"逐格回读：{'通过' if record.get('write_verified') is True else '未通过'}",
+                    )
+                ),
+            }
+        )
+    return items[:500]
+
+
 def main_crawl_items_for_crawl_run(run: object) -> list[dict]:
     """Return one auditable detail record per row handled by a main crawl run."""
     if not isinstance(run, dict) or str(run.get("trigger") or "") != "定时爬虫":
@@ -5282,6 +5341,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 quality = load_curation_quality_records(agent_run_id) if agent_run_id else {"ok": False, "records": []}
                 result["agentReviewItems"] = quality.get("records", []) if quality.get("ok") else []
                 result["agentReviewSummary"] = quality.get("summary", {}) if quality.get("ok") else {}
+                result["newsSelectionItems"] = news_selection_items_for_crawl_run(run)
             json_response(self, result, 200 if result.get("ok") else 404)
             return
         if path == "/api/curation-quality-records":

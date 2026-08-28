@@ -237,17 +237,21 @@ def _lark(
     *parts: str,
     timeout: int = 120,
     retry_transient: bool = False,
+    identity_override: str = "",
+    profile_override: str = "",
 ) -> dict[str, Any]:
     environment = lark_cli_env()
     identity = (
-        os.environ.get("CMHK_NEWS_REVIEW_FEISHU_IDENTITY")
+        identity_override
+        or os.environ.get("CMHK_NEWS_REVIEW_FEISHU_IDENTITY")
         or os.environ.get("CMHK_FEISHU_SHEETS_IDENTITY")
         or "user"
     ).strip().lower()
     if identity not in {"user", "bot"}:
         raise RuntimeError("飞书候选池身份只能是 user 或 bot")
     profile = (
-        os.environ.get("CMHK_NEWS_REVIEW_FEISHU_PROFILE")
+        profile_override
+        or os.environ.get("CMHK_NEWS_REVIEW_FEISHU_PROFILE")
         or os.environ.get("CMHK_FEISHU_SHEETS_PROFILE")
         or ""
     ).strip()
@@ -653,7 +657,14 @@ def _format_sheet(sheet_id: str) -> None:
     )
 
 
-def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
+def _write(
+    sheet_id: str,
+    cell_range: str,
+    values: list[list[Any]],
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> None:
     _lark(
         "sheets",
         "+write",
@@ -665,6 +676,8 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
         cell_range,
         "--values",
         json.dumps(values, ensure_ascii=False),
+        identity_override=identity,
+        profile_override=profile,
     )
 
 
@@ -827,6 +840,8 @@ def _read_rows(
     sheet_id: str,
     *,
     format_version: int = FORMAT_VERSION,
+    identity: str = "",
+    profile: str = "",
 ) -> list[list[Any]]:
     if format_version <= 5:
         end_column = "J"
@@ -850,6 +865,8 @@ def _read_rows(
         "--value-render-option",
         "ToString",
         retry_transient=True,
+        identity_override=identity,
+        profile_override=profile,
     )
     values = _walk_for_key(payload, "values")
     rows = [
@@ -2109,14 +2126,19 @@ def _resolved_review_sheet_id(sheet_id: str | None = None) -> str:
     return saved_sheet_id or ensure_sheet()
 
 
-def review_sheet_snapshot(*, sheet_id: str | None = None) -> dict[str, Any]:
+def review_sheet_snapshot(
+    *,
+    sheet_id: str | None = None,
+    identity: str = "",
+    profile: str = "",
+) -> dict[str, Any]:
     """Return a live, browser-safe view of the Feishu review worksheet."""
     lock_acquired = _LOCK.acquire(timeout=1.0)
     if not lock_acquired:
         raise RuntimeError("后台战略新闻任务正在更新飞书审核表，请稍后刷新")
     try:
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
-        rows = _read_rows(resolved_sheet_id)
+        rows = _read_rows(resolved_sheet_id, identity=identity, profile=profile)
         state = _read_json(STATE_PATH, {})
         return {
             "sheetId": resolved_sheet_id,
@@ -2149,6 +2171,8 @@ def update_review_sheet_cells(
     changes: list[dict[str, Any]],
     *,
     sheet_id: str | None = None,
+    writer_identity: str = "",
+    writer_profile: str = "",
 ) -> dict[str, Any]:
     """Write reviewed cells to Feishu, apply decisions, and prove them by readback."""
     if not isinstance(changes, list) or not changes:
@@ -2160,7 +2184,11 @@ def update_review_sheet_cells(
         if not process_lock_acquired:
             raise RuntimeError("审核表正在同步，请稍后重试")
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
-        current_rows = _read_rows(resolved_sheet_id)
+        current_rows = _read_rows(
+            resolved_sheet_id,
+            identity=writer_identity,
+            profile=writer_profile,
+        )
         normalized: dict[tuple[int, int], dict[str, Any]] = {}
         for raw_change in changes:
             if not isinstance(raw_change, dict):
@@ -2222,10 +2250,16 @@ def update_review_sheet_cells(
                     resolved_sheet_id,
                     f"{start_column}{row_number}:{end_column}{row_number}",
                     [[item["value"] for item in items]],
+                    identity=writer_identity,
+                    profile=writer_profile,
                 )
 
         review_result = apply_reviews(resolved_sheet_id)
-        snapshot = review_sheet_snapshot(sheet_id=resolved_sheet_id)
+        snapshot = review_sheet_snapshot(
+            sheet_id=resolved_sheet_id,
+            identity=writer_identity,
+            profile=writer_profile,
+        )
         readback = {
             (row["rowNumber"], column_index): row["values"][column_index]
             for row in snapshot["rows"]

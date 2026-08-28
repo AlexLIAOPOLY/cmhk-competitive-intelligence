@@ -38,11 +38,12 @@ MODEL_BATCH_SIZE = max(
 WRITE_BATCH_ROWS = max(
     10, min(90, int(os.environ.get("CMHK_NEWS_SELECTION_WRITE_BATCH_ROWS", "80")))
 )
-LOW_CONFIDENCE_THRESHOLD = max(
-    0.5,
-    min(0.95, float(os.environ.get("CMHK_NEWS_SELECTION_CONFIDENCE", "0.68"))),
-)
-VALID_STATUSES = {"接受", "不接受", "暂缓"}
+VALID_STATUSES = {"接受", "不接受"}
+FEISHU_BOT_PROFILE = (
+    os.environ.get("CMHK_NEWS_SELECTION_FEISHU_PROFILE")
+    or os.environ.get("CMHK_FEISHU_SHEET_EDIT_PROFILE")
+    or "cli_a9575e70ae799cb2"
+).strip()
 
 
 def _text(value: Any, limit: int = 1000) -> str:
@@ -197,6 +198,8 @@ def _human_examples(
 def _target_rows(
     rows: list[dict[str, Any]],
     new_items: list[dict[str, Any]],
+    *,
+    selection_date: str,
 ) -> list[dict[str, Any]]:
     target_ids = {
         _text(item.get("news_id"), 80)
@@ -205,6 +208,8 @@ def _target_rows(
     }
     targets: list[dict[str, Any]] = []
     for row in rows:
+        if _text(row.get("search_date"), 20) != selection_date:
+            continue
         if _text(row.get("news_id"), 80) not in target_ids:
             continue
         if row.get("status") != "待审核" and row.get("weekly_status") != "待审核":
@@ -219,6 +224,7 @@ def _target_rows(
                 "category": _text(row.get("category"), 100),
                 "source": _text(row.get("source"), 100),
                 "source_date": _text(row.get("source_date"), 40),
+                "search_date": _text(row.get("search_date"), 20),
                 "keywords": _text(row.get("keywords"), 220),
                 "note": _text(row.get("note"), 220),
                 "app_before": _text(row.get("status"), 20),
@@ -260,20 +266,20 @@ def _invoke_langchain(
 ) -> tuple[dict[str, Any], str]:
     config = load_ai_config(include_key=True)
     system_prompt = (
-        "你是 CMHK 每日新聞選材偏好學習 Agent。你只從已提供的歷史人工決策中歸納習慣，"
-        "並對本輪候選分別判斷 APP 滾動新聞與雙周報。兩個欄位互相獨立。"
-        "接受表示符合歷史取捨，不接受表示明顯不符合；資訊或證據不足時使用暂缓。"
-        "不得把既有自動決策當成人工樣本，不得補造新聞事實。"
-        "只輸出 JSON：learned_rules、avoid_patterns、app_preference_summary、"
-        "weekly_preference_summary、decisions。decisions 每項必須有 news_id、"
+        "你是 CMHK 每日新闻选材偏好学习 Agent。你只从已提供的历史人工决策中归纳习惯，"
+        "并对本轮候选分别判断 APP 滚动新闻与双周报。两个字段互相独立。"
+        "接受表示符合历史取舍，不接受表示不符合或信息不足。"
+        "不得把既有自动决策当成人工样本，不得补造新闻事实。"
+        "请使用简体中文，只输出 JSON：learned_rules、avoid_patterns、app_preference_summary、"
+        "weekly_preference_summary、decisions。decisions 每项必须有 news_id、"
         "app_status、weekly_status、app_confidence、weekly_confidence、reason。"
-        "狀態只能是接受、不接受、暂缓，confidence 為 0 至 1。"
+        "状态只能是接受或不接受，confidence 为 0 至 1。"
     )
     user_prompt = json.dumps(
         {
             "human_examples": examples,
             "current_candidates": targets,
-            "instruction": "歸納可復用偏好並逐條判斷；不可遺漏任何 current_candidates。",
+            "instruction": "归纳可复用偏好并逐条判断；不可遗漏任何 current_candidates。",
         },
         ensure_ascii=False,
     )
@@ -324,8 +330,8 @@ def _normalized_decisions(
                 confidence = max(0.0, min(1.0, float(raw.get(f"{field}_confidence"))))
             except (TypeError, ValueError):
                 confidence = 0.0
-            if status not in VALID_STATUSES or confidence < LOW_CONFIDENCE_THRESHOLD:
-                status = "暂缓"
+            if status not in VALID_STATUSES:
+                status = "不接受"
             item[f"{field}_status"] = status
             item[f"{field}_confidence"] = round(confidence, 4)
         item["reason"] = _text(raw.get("reason"), 500) or "按歷史人工取捨習慣判斷"
@@ -395,37 +401,38 @@ def _skill_text(
         for value in (payload.get("avoid_patterns") or [])
         if _text(value, 300)
     ][:12]
-    bullet_rules = "\n".join(f"- {value}" for value in rules) or "- 暫無足夠人工樣本可歸納。"
-    bullet_avoid = "\n".join(f"- {value}" for value in avoid) or "- 暫無穩定排除模式。"
+    bullet_rules = "\n".join(f"- {value}" for value in rules) or "- 暂无足够人工样本可归纳。"
+    bullet_avoid = "\n".join(f"- {value}" for value in avoid) or "- 暂无稳定排除模式。"
     return f'''---
 name: cmhk-news-selection-preference
-description: 學習 CMHK 每日新聞歷史人工選材習慣，分別判斷 APP 滾動新聞與雙周報候選；僅用於本輪新增且仍待審核的新聞。
+description: 学习 CMHK 每日新闻历史人工选材习惯，分别判断 APP 滚动新闻与双周报候选；仅用于本轮新增、检索日期为当天且仍待审核的新闻。
 ---
 
-# CMHK 新聞選材偏好
+# CMHK 新闻选材偏好
 
-## 不可變邊界
+## 不可变边界
 
-- APP 與雙周報為兩個獨立決策，不得互相複製。
-- 不覆蓋任何既有人工決策；只處理本輪新增且仍為「待審核」的欄位。
-- 歷史自動決策不作訓練樣本；人工改正自動結果後，改正值可作新樣本。
-- 低於 {LOW_CONFIDENCE_THRESHOLD:.2f} 的判斷一律標為「暂缓」。
-- 不補造新聞事實；原文、日期或證據不足時保守暂缓。
+- APP 与双周报为两个独立决策，不得互相复制。
+- 不覆盖任何既有人工决策；只处理本轮新增且仍为「待审核」的字段。
+- 历史自动决策不作训练样本；人工改正自动结果后，改正值可作新样本。
+- 自动结果只使用「接受」或「不接受」，不写「暂缓」。
+- 不补造新闻事实；原文、日期或证据不足时保守标为「不接受」。
+- 只修改本轮新增且检索日期等于当天的新闻；过往日期只可作学习样本。
 
-## 最新學習摘要
+## 最新学习摘要
 
-- 更新時間：{_now_iso()}
+- 更新时间：{_now_iso()}
 - LangChain 模型：{_text(model_name, 120)}
-- 有效人工樣本：{human_example_count}
-- 已識別人工糾正：{corrected_count}
+- 有效人工样本：{human_example_count}
+- 已识别人工纠正：{corrected_count}
 - APP 偏好：{_text(payload.get('app_preference_summary'), 1000) or '尚未形成穩定摘要'}
-- 雙周報偏好：{_text(payload.get('weekly_preference_summary'), 1000) or '尚未形成穩定摘要'}
+- 双周报偏好：{_text(payload.get('weekly_preference_summary'), 1000) or '尚未形成稳定摘要'}
 
-## 已學習規則
+## 已学习规则
 
 {bullet_rules}
 
-## 已學習排除模式
+## 已学习排除模式
 
 {bullet_avoid}
 '''
@@ -454,12 +461,12 @@ def run_news_selection_agent(
     """Learn human choices and auto-review only this crawl's pending rows."""
     started = time.monotonic()
     run = start_crawl_run(
-        trigger="新聞偏好學習與自動勾選 Agent",
-        scope=f"爬蟲後選材（{_text(idempotency_key, 120) or '未命名輪次'}）",
+        trigger="新闻偏好学习与自动勾选 Agent",
+        scope=f"爬虫后选材（{_text(idempotency_key, 120) or '未命名轮次'}）",
         task_kind="news-selection-agent",
         parent_crawl_run_id=parent_crawl_run_id,
-        phase="讀取人工樣本",
-        progress_detail="正在讀取歷史人工 APP 與雙周報勾選習慣。",
+        phase="读取人工样本",
+        progress_detail="正在读取历史人工 APP 与双周报勾选习惯。",
     )
     crawl_run_id = _text(run.get("crawl_run_id"), 120)
     stream_log_path = _text(run.get("stream_log_path"), 1600)
@@ -467,8 +474,8 @@ def run_news_selection_agent(
         state = _load_state()
         completed_keys = state.get("completed_keys") if isinstance(state.get("completed_keys"), dict) else {}
         if idempotency_key and idempotency_key in completed_keys:
-            detail = "同一爬蟲輪次已完成自動勾選，直接復用已驗證結果。"
-            _progress(crawl_run_id, stream_log_path, "幂等結果復用", detail)
+            detail = "同一爬虫轮次已完成自动勾选，直接复用已验证结果。"
+            _progress(crawl_run_id, stream_log_path, "幂等结果复用", detail)
             result = {**completed_keys[idempotency_key], "reused": True, "task_run_id": crawl_run_id}
             finalize_operational_crawl_run(
                 crawl_run_id,
@@ -485,12 +492,20 @@ def run_news_selection_agent(
         rows = _snapshot_rows(snapshot)
         audits = _load_audit()
         examples, corrected_count = _human_examples(rows, _latest_agent_decisions(audits))
-        targets = _target_rows(rows, new_items)
+        selection_date_match = re.match(r"(\d{4}-\d{2}-\d{2})", idempotency_key or "")
+        selection_date = (
+            selection_date_match.group(1) if selection_date_match else _now_iso()[:10]
+        )
+        targets = _target_rows(
+            rows,
+            new_items,
+            selection_date=selection_date,
+        )
         _progress(
             crawl_run_id,
             stream_log_path,
-            "人工樣本隔離",
-            f"讀取 {len(rows)} 條候選；有效人工樣本 {len(examples)} 條，排除既有自動決策，識別人工糾正 {corrected_count} 條。",
+            "人工样本隔离",
+            f"读取审核表 {len(rows)} 条；学习历史人工样本 {len(examples)} 条，排除既有自动结果，识别人工纠正 {corrected_count} 条；当天且属于本轮的新候选 {len(targets)} 条。",
         )
         if not targets:
             result = {
@@ -498,16 +513,16 @@ def run_news_selection_agent(
                 "candidate_count": 0,
                 "changed_count": 0,
                 "readback_verified": True,
-                "reason": "本輪沒有仍待審核的新候選",
+                "reason": "本轮没有检索日期为当天且仍待审核的新候选",
                 "task_run_id": crawl_run_id,
             }
-            _progress(crawl_run_id, stream_log_path, "無待審候選", result["reason"])
+            _progress(crawl_run_id, stream_log_path, "无待审候选", result["reason"])
         else:
             _progress(
                 crawl_run_id,
                 stream_log_path,
-                "LangChain 偏好學習",
-                f"使用 {len(examples)} 條人工樣本分析 {len(targets)} 條本輪候選；APP 與雙周報分開判斷。",
+                "LangChain 偏好学习",
+                f"使用 {len(examples)} 条人工样本分析 {len(targets)} 条当天新候选；APP 与双周报分开判断，只输出接受或不接受。",
             )
             model_payload, model_name = _invoke_langchain_batches(
                 examples,
@@ -515,8 +530,8 @@ def run_news_selection_agent(
                 progress_callback=lambda batch, total, count: _progress(
                     crawl_run_id,
                     stream_log_path,
-                    "LangChain 分批判斷",
-                    f"正在處理第 {batch}/{total} 組，本組 {count} 條候選。",
+                    "LangChain 分批判断",
+                    f"正在处理第 {batch}/{total} 批，本批 {count} 条当天候选。",
                 ),
             )
             decisions = _normalized_decisions(model_payload, targets)
@@ -534,7 +549,7 @@ def run_news_selection_agent(
                 crawl_run_id,
                 stream_log_path,
                 "Skill 更新",
-                f"已把最新人工偏好摘要寫入 {_display_path(SKILL_PATH)}。",
+                f"已把最新人工偏好摘要写入 {_display_path(SKILL_PATH)}，供下次爬虫继续学习。",
             )
             changed_count = 0
             write_batch_total = (
@@ -567,10 +582,20 @@ def run_news_selection_agent(
                 write_result = news_review_sheet.update_review_sheet_cells(
                     changes,
                     sheet_id=sheet_id,
+                    writer_identity="bot",
+                    writer_profile=FEISHU_BOT_PROFILE,
                 )
                 if write_result.get("readbackVerified") is not True:
-                    raise RuntimeError("自動勾選後未取得逐格回讀證據")
+                    raise RuntimeError("自动勾选后未取得逐格回读证据")
                 changed_count += int(write_result.get("changedCount") or 0)
+                app_batch_accept = sum(
+                    item["app_before"] == "待审核" and item["app_status"] == "接受"
+                    for item in decision_batch
+                )
+                weekly_batch_accept = sum(
+                    item["weekly_before"] == "待审核" and item["weekly_status"] == "接受"
+                    for item in decision_batch
+                )
                 recorded_at = _now_iso()
                 for decision in decision_batch:
                     automated_fields = [
@@ -598,13 +623,15 @@ def run_news_selection_agent(
                             "weekly_confidence": decision["weekly_confidence"],
                             "reason": decision["reason"],
                             "write_verified": True,
+                            "writer_identity": "bot",
+                            "writer_profile": FEISHU_BOT_PROFILE,
                         }
                     )
                 _progress(
                     crawl_run_id,
                     stream_log_path,
-                    "分批寫入與回讀",
-                    f"第 {write_batch_index}/{write_batch_total} 批已寫入 {len(changes)} 格並逐格回讀通過。",
+                    "机器人分批写入与回读",
+                    f"第 {write_batch_index}/{write_batch_total} 批由飞书机器人 {FEISHU_BOT_PROFILE} 写入 {len(changes)} 格；APP接受 {app_batch_accept} 条、APP不接受 {sum(item['app_before'] == '待审核' for item in decision_batch) - app_batch_accept} 条，双周报接受 {weekly_batch_accept} 条、双周报不接受 {sum(item['weekly_before'] == '待审核' for item in decision_batch) - weekly_batch_accept} 条；逐格回读通过。",
                 )
             result = {
                 "status": "completed",
@@ -620,25 +647,22 @@ def run_news_selection_agent(
                     and item["weekly_status"] == "接受"
                     for item in decisions
                 ),
-                "deferred_field_count": sum(
-                    item[field] == "暂缓"
-                    and item[field.replace("_status", "_before")] == "待审核"
-                    for item in decisions
-                    for field in ("app_status", "weekly_status")
-                ),
+                "deferred_field_count": 0,
                 "human_example_count": len(examples),
                 "human_correction_count": corrected_count,
                 "model": model_name,
                 "skill_path": _display_path(SKILL_PATH),
                 "audit_path": _display_path(AUDIT_PATH),
                 "readback_verified": True,
+                "writer_identity": "bot",
+                "writer_profile": FEISHU_BOT_PROFILE,
                 "task_run_id": crawl_run_id,
             }
             _progress(
                 crawl_run_id,
                 stream_log_path,
-                "自動勾選與回讀",
-                f"處理 {len(decisions)} 條、寫入 {result['changed_count']} 格；APP 接受 {result['app_accepted_count']} 條，雙周報接受 {result['weekly_accepted_count']} 條，逐格回讀通過。",
+                "自动勾选与回读完成",
+                f"仅处理检索日期为 {selection_date} 的本轮新增新闻 {len(decisions)} 条，由飞书机器人写入 {result['changed_count']} 格；APP接受 {result['app_accepted_count']} 条、不接受 {sum(item['app_before'] == '待审核' for item in decisions) - result['app_accepted_count']} 条，双周报接受 {result['weekly_accepted_count']} 条、不接受 {sum(item['weekly_before'] == '待审核' for item in decisions) - result['weekly_accepted_count']} 条；逐格回读全部通过。",
             )
 
         if idempotency_key:
@@ -660,14 +684,14 @@ def run_news_selection_agent(
             ok=True,
             duration_ms=round((time.monotonic() - started) * 1000),
             progress_detail=(
-                f"新聞偏好學習與自動勾選完成；處理 {result['candidate_count']} 條，"
-                f"寫入 {result['changed_count']} 格，逐格回讀通過。"
+                f"新闻偏好学习与自动勾选完成；处理 {result['candidate_count']} 条，"
+                f"由机器人写入 {result['changed_count']} 格，逐格回读通过。"
             ),
             summary=result,
         )
         return result
     except Exception as exc:
-        detail = "新聞偏好學習 Agent 失敗：" + _text(exc, 700)
+        detail = "新闻偏好学习 Agent 失败：" + _text(exc, 700)
         try:
             append_crawl_run_event(
                 stream_log_path,
