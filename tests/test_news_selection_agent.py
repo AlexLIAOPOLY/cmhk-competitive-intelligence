@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
+from types import SimpleNamespace
 
 from cmhk.intelligence import news_review_sheet
 from cmhk.intelligence import news_selection_agent as agent
@@ -156,6 +157,41 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(len(payload["decisions"]), 45)
         self.assertEqual(model, "DeepSeek-V4-Pro")
         self.assertEqual(progress, [(1, 3, 20), (2, 3, 20), (3, 3, 5)])
+
+    def test_langchain_repairs_malformed_json_without_rewriting_decisions(self):
+        repaired_payload = {
+            "learned_rules": ["香港相关优先"],
+            "avoid_patterns": [],
+            "app_preference_summary": "APP",
+            "weekly_preference_summary": "周报",
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "测试",
+                }
+            ],
+        }
+        fake_model = mock.Mock()
+        fake_model.invoke.side_effect = [
+            SimpleNamespace(content='{"decisions": [{"news_id": "NEWS-1"}'),
+            SimpleNamespace(content=json.dumps(repaired_payload, ensure_ascii=False)),
+        ]
+
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
+        ):
+            payload, model = agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
+
+        self.assertEqual(model, "test-model")
+        self.assertTrue(payload["_format_repaired"])
+        self.assertEqual(payload["decisions"], repaired_payload["decisions"])
+        self.assertEqual(fake_model.invoke.call_count, 2)
 
     def test_run_creates_separate_log_updates_skill_and_writes_only_pending_cells(self):
         human_values = _row(

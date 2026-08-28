@@ -319,7 +319,32 @@ def _invoke_langchain(
             response = model.invoke(
                 [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
             )
-            return _json_object(getattr(response, "content", "")), model_name
+            response_content = getattr(response, "content", "")
+            try:
+                return _json_object(response_content), model_name
+            except Exception as parse_exc:
+                repair_response = model.invoke(
+                    [
+                        SystemMessage(
+                            content=(
+                                "你是 JSON 格式修复器。只修复语法，不改变、增删或重新判断"
+                                "任何字段和业务结论。只输出修复后的 JSON 对象。"
+                            )
+                        ),
+                        HumanMessage(
+                            content=json.dumps(
+                                {
+                                    "parser_error": _text(parse_exc, 300),
+                                    "invalid_json": str(response_content or ""),
+                                },
+                                ensure_ascii=False,
+                            )
+                        ),
+                    ]
+                )
+                repaired = _json_object(getattr(repair_response, "content", ""))
+                repaired["_format_repaired"] = True
+                return repaired, model_name
         except Exception as exc:
             errors.append(f"{model_name}: {_text(exc, 180)}")
     raise RuntimeError("LangChain 模型路由全部失败；" + "；".join(errors[:4]))
@@ -377,6 +402,9 @@ def _invoke_langchain_batches(
         model_names.append(model_name)
     first = payloads[0] if payloads else {}
     return {
+        "_format_repaired": any(
+            payload.get("_format_repaired") is True for payload in payloads
+        ),
         "learned_rules": list(
             dict.fromkeys(
                 _simplified(value, 300)
@@ -557,6 +585,13 @@ def run_news_selection_agent(
                     f"正在处理第 {batch}/{total} 批，本批 {count} 条当天候选。",
                 ),
             )
+            if model_payload.get("_format_repaired") is True:
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "模型格式自动修复",
+                    "模型首次返回的 JSON 格式不完整；已通过 LangChain 仅修复语法并重新校验，业务判断未重写。",
+                )
             decisions = _normalized_decisions(model_payload, targets)
             SKILL_PATH.parent.mkdir(parents=True, exist_ok=True)
             SKILL_PATH.write_text(
