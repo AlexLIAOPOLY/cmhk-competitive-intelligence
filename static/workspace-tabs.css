@@ -645,6 +645,8 @@
 .news-lineage.is-global .news-lineage-node > strong { font-size: 27px; line-height: 1.04; }
 .news-lineage.is-global .news-lineage-node > strong small { margin-left: 4px; font-size: 9.5px; }
 .news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 9.5px; line-height: 1.4; -webkit-line-clamp: 2; }
+.news-lineage.is-global .news-lineage-node.is-dual-metric > strong { font-size: 16px; line-height: 1.25; white-space: nowrap; }
+.news-lineage.is-global .news-lineage-node.is-dual-metric > em { color: #d5e6ea; font-size: 12px; font-weight: 700; }
 .news-lineage.is-global .news-lineage-drag { top: 10px; right: 11px; color: #6f98a4; font-size: 13px; }
 .news-lineage.is-global .news-lineage-details > section { min-height: 138px; grid-template-columns: minmax(190px,.55fr) minmax(300px,1.1fr) minmax(320px,1.35fr); padding: 17px 20px; }
 .news-lineage.is-global .news-lineage-details div > span { font-size: 10px; }
