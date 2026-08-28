@@ -43,6 +43,13 @@ MODEL_BATCH_SIZE = max(
 WRITE_BATCH_ROWS = max(
     10, min(90, int(os.environ.get("CMHK_NEWS_SELECTION_WRITE_BATCH_ROWS", "80")))
 )
+REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
+    5.0,
+    min(
+        120.0,
+        float(os.environ.get("CMHK_NEWS_SELECTION_SNAPSHOT_LOCK_TIMEOUT_SECONDS", "60")),
+    ),
+)
 VALID_STATUSES = {"接受", "不接受"}
 FEISHU_BOT_PROFILE = (
     os.environ.get("CMHK_NEWS_SELECTION_FEISHU_PROFILE")
@@ -501,7 +508,10 @@ def run_news_selection_agent(
 
         from cmhk.intelligence import news_review_sheet
 
-        snapshot = news_review_sheet.review_sheet_snapshot(sheet_id=sheet_id)
+        snapshot = news_review_sheet.review_sheet_snapshot(
+            sheet_id=sheet_id,
+            lock_timeout_seconds=REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS,
+        )
         rows = _snapshot_rows(snapshot)
         audits = _load_audit()
         examples, corrected_count = _human_examples(rows, _latest_agent_decisions(audits))

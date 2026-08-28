@@ -218,7 +218,11 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 mock.patch.object(agent, "append_crawl_run_event"),
                 mock.patch.object(agent, "finalize_operational_crawl_run") as finalize,
                 mock.patch.object(agent, "_invoke_langchain", return_value=(model_payload, "DeepSeek-V4-Pro")),
-                mock.patch.object(news_review_sheet, "review_sheet_snapshot", return_value=snapshot),
+                mock.patch.object(
+                    news_review_sheet,
+                    "review_sheet_snapshot",
+                    return_value=snapshot,
+                ) as review_snapshot,
                 mock.patch.object(news_review_sheet, "update_review_sheet_cells", side_effect=update),
             ):
                 result = agent.run_news_selection_agent(
@@ -230,6 +234,10 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
             self.assertEqual(start.call_args.kwargs["task_kind"], "news-selection-agent")
             self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "parent-run")
+            review_snapshot.assert_called_once_with(
+                sheet_id="sheet-1",
+                lock_timeout_seconds=agent.REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS,
+            )
             self.assertEqual(result["candidate_count"], 1)
             self.assertEqual(result["changed_count"], 2)
             self.assertEqual(result["app_accepted_count"], 1)

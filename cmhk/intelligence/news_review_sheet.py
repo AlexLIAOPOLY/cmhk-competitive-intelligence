@@ -2131,9 +2131,10 @@ def review_sheet_snapshot(
     sheet_id: str | None = None,
     identity: str = "",
     profile: str = "",
+    lock_timeout_seconds: float = 1.0,
 ) -> dict[str, Any]:
     """Return a live, browser-safe view of the Feishu review worksheet."""
-    lock_acquired = _LOCK.acquire(timeout=1.0)
+    lock_acquired = _LOCK.acquire(timeout=max(0.0, lock_timeout_seconds))
     if not lock_acquired:
         raise RuntimeError("后台战略新闻任务正在更新飞书审核表，请稍后刷新")
     try:
