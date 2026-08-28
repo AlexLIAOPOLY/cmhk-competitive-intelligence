@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="./static/news-review-sheet.css?v=4" />
   <link rel="stylesheet" href="./static/workspace-tabs.css?v=132" />
-  <link rel="stylesheet" href="./static/intelligence-map.css?v=1" />
+  <link rel="stylesheet" href="./static/intelligence-map.css?v=2" />
   <link rel="stylesheet" href="./static/organization-admin.css?v=26" />
   </head>
   <body class="dashboard-page">
@@ -275,7 +275,7 @@
 
       <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
       <section class="workspace-module-shell intelligence-map-shell" id="workspace-panel-intelligence-map" role="tabpanel" aria-labelledby="workspace-tab-intelligence-map" data-workspace-panel="intelligence-map" hidden>
-        <div class="intelligence-map-loading" role="status">正在汇总已审核情报…</div>
+        <div class="intelligence-map-loading" role="status" style="display:grid;min-height:calc(100dvh - 92px);place-items:center;color:#607f91;font-size:14px;font-weight:400;letter-spacing:.01em">正在读取已审核情报…</div>
       </section>
       <section class="workspace-module-shell workspace-monitoring-shell" id="workspace-panel-monitoring" role="tabpanel" aria-labelledby="workspace-tab-monitoring" data-workspace-panel="monitoring" hidden>
         <iframe class="workspace-monitoring-frame" data-src="./executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
@@ -635,7 +635,7 @@
     <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>
     <script defer src="./static/auth-client.js?v=3"></script>
     <script defer src="./static/workspace-tabs.js?v=public-8"></script>
-    <script defer src="./static/intelligence-map.js?v=1"></script>
+    <script defer src="./static/intelligence-map.js?v=2"></script>
     <script defer src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>
     <script defer src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"></script>
     <script defer src="./static/vendor/marked-15.0.12.umd.js?v=1"></script>

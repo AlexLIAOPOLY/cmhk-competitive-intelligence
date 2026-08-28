@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "ec6e0b863af37c665131908b",
+      "task_id": "incident:ec6e0b863af37c665131908b",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T14:57:05+08:00",
+      "started_at_hkt": "2026-08-28T14:57:05+08:00",
+      "heartbeat_at_hkt": "2026-08-28T14:57:05+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "724d4d4d3b21e3248db47a0e",
       "task_id": "incident:724d4d4d3b21e3248db47a0e",
       "title": "新闻自动初筛",
@@ -2864,6 +2888,30 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-28 09:17:45",
+      "started_at_hkt": "2026-08-28T14:25:38+08:00",
+      "heartbeat_at_hkt": "2026-08-28T14:50:05+08:00",
+      "completed_at_hkt": "2026-08-28T14:50:36+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "5b53d791abb7e284b6a1ec0f",
+      "task_id": "incident:5b53d791abb7e284b6a1ec0f",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -2876,8 +2924,8 @@
         "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
-      "started_at_hkt": "2026-08-28T14:25:38+08:00",
-      "heartbeat_at_hkt": "2026-08-28T14:50:05+08:00",
+      "started_at_hkt": "2026-08-28T14:51:05+08:00",
+      "heartbeat_at_hkt": "2026-08-28T14:57:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12051,54 +12099,6 @@
       "started_at_hkt": "2026-08-22T09:38:42+08:00",
       "heartbeat_at_hkt": "2026-08-22T09:38:42+08:00",
       "completed_at_hkt": "2026-08-22T09:39:12+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "eabd4f5d9387e7904bc82f6d",
-      "task_id": "incident:eabd4f5d9387e7904bc82f6d",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-22T09:36:12+08:00",
-      "started_at_hkt": "2026-08-22T09:36:12+08:00",
-      "heartbeat_at_hkt": "2026-08-22T09:36:12+08:00",
-      "completed_at_hkt": "2026-08-22T09:36:42+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0384e79f77458d47288154c5",
-      "task_id": "incident:0384e79f77458d47288154c5",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-22T09:34:42+08:00",
-      "started_at_hkt": "2026-08-22T09:34:42+08:00",
-      "heartbeat_at_hkt": "2026-08-22T09:34:42+08:00",
-      "completed_at_hkt": "2026-08-22T09:35:12+08:00",
       "handled_at_hkt": ""
     }
   ],
