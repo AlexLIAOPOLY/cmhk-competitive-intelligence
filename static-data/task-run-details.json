@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260829_032259_657058": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260829_032259_657058",
+        "task_run_id": "20260829_032259_657058",
+        "title": "季度竞对数据发布",
+        "kind": "quarterly-data-release",
+        "kind_label": "季度数据发布",
+        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+        "status_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+        "started_at_hkt": "2026-08-29T03:22:59+08:00",
+        "heartbeat_at_hkt": "2026-08-29T03:23:00+08:00",
+        "completed_at_hkt": "2026-08-29T03:23:00+08:00",
+        "duration_ms": 904,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260829_032232_884664": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260829_032232_884664",
+        "task_run_id": "20260829_032232_884664",
+        "title": "四库与观察结论自动更新",
+        "kind": "executive-intelligence-refresh",
+        "kind_label": "四库刷新",
+        "scope": "Agent审核 scheduled_20260829_030001_119063 · 父任务 20260829_030001_119063",
+        "run_status": "running",
+        "phase": "更新主页UI",
+        "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+        "status_detail": "",
+        "started_at_hkt": "2026-08-29T03:22:32+08:00",
+        "heartbeat_at_hkt": "2026-08-29T03:25:05+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260829_030001_119063": {
       "ok": true,
       "run": {
@@ -10,14 +52,14 @@
         "kind": "crawl",
         "kind_label": "爬虫",
         "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-        "run_status": "running",
-        "phase": "审核归档",
-        "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "爬虫、审核与结果归档已全部完成。",
         "status_detail": "",
         "started_at_hkt": "2026-08-29T03:00:01+08:00",
-        "heartbeat_at_hkt": "2026-08-29T03:21:26+08:00",
-        "completed_at_hkt": "",
-        "duration_ms": 0,
+        "heartbeat_at_hkt": "2026-08-29T03:22:32+08:00",
+        "completed_at_hkt": "2026-08-29T03:22:32+08:00",
+        "duration_ms": 1351877,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
@@ -984,7 +1026,7 @@
         "heartbeat_at_hkt": "2026-08-21T10:21:39+08:00",
         "completed_at_hkt": "2026-08-21T10:21:39+08:00",
         "duration_ms": 2323158,
-        "retry_index": 3
+        "retry_index": 1
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -1005,48 +1047,6 @@
         "heartbeat_at_hkt": "2026-08-21T09:42:07+08:00",
         "completed_at_hkt": "2026-08-21T09:42:07+08:00",
         "duration_ms": 1586,
-        "retry_index": 2
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260821_093727_722111": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260821_093727_722111",
-        "task_run_id": "20260821_093727_722111",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "晨间扫描（2026-08-21@09:00）",
-        "run_status": "failed",
-        "phase": "已中断",
-        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-21T09:41:20+08:00；最后进度：[2026-08-21 09:41:20] AI批量审核：开始剩余未命中缓存队列第 2/46 批，剩余候选 5-8/182，本轮已复用 98 条，本批 4 条。",
-        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-21T09:41:20+08:00；最后进度：[2026-08-21 09:41:20] AI批量审核：开始剩余未命中缓存队列第 2/46 批，剩余候选 5-8/182，本轮已复用 98 条，本批 4 条。",
-        "started_at_hkt": "2026-08-21T09:37:27+08:00",
-        "heartbeat_at_hkt": "2026-08-21T09:41:20+08:00",
-        "completed_at_hkt": "2026-08-21T09:41:20+08:00",
-        "duration_ms": 233312,
-        "retry_index": 1
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260821_093645_969371": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260821_093645_969371",
-        "task_run_id": "20260821_093645_969371",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "晨间扫描（2026-08-21@09:00）",
-        "run_status": "failed",
-        "phase": "已中断",
-        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-21T09:36:47+08:00；最后进度：[2026-08-21 09:36:47] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
-        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-21T09:36:47+08:00；最后进度：[2026-08-21 09:36:47] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
-        "started_at_hkt": "2026-08-21T09:36:45+08:00",
-        "heartbeat_at_hkt": "2026-08-21T09:36:47+08:00",
-        "completed_at_hkt": "2026-08-21T09:36:47+08:00",
-        "duration_ms": 2340,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
