@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "1f34cda8c22574aaebc57af4",
+      "task_id": "incident:1f34cda8c22574aaebc57af4",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "服务重启后恢复",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T21:47:06+08:00",
+      "started_at_hkt": "2026-08-28T21:47:06+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:47:06+08:00",
+      "completed_at_hkt": "2026-08-28T21:48:14+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "82cb06c2c9438cd6762497fa",
       "task_id": "incident:82cb06c2c9438cd6762497fa",
       "title": "飞书频率调度周期",
@@ -3934,7 +3958,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T18:10:35+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:46:36+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:57:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -10440,7 +10464,7 @@
       "scope": "crawl",
       "incident_status": "resolved",
       "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
+      "phase": "恢复证据已确认",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主爬虫存在失败或未通过质量门禁的数据",
@@ -12066,32 +12090,6 @@
       "started_at_hkt": "2026-08-28T16:07:06+08:00",
       "heartbeat_at_hkt": "2026-08-28T16:10:07+08:00",
       "completed_at_hkt": "2026-08-28T16:10:37+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "d006df911351999a217f1323",
-      "task_id": "incident:d006df911351999a217f1323",
-      "title": "竞对工作台 AI 竞争洞察",
-      "kind": "competitor-workbench",
-      "kind_label": "竞对工作台 AI 竞争洞察",
-      "scope": "competitor-workbench",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "竞对工作台 AI 洞察未生成",
-      "impact": "用户无法查看AI竞争格局、公司定位和业务含义等AI洞察内容，但权威数据图表展示不受影响。",
-      "suggestions": [
-        "检查AI网关日志，确认返回400错误的具体原因及请求详情。",
-        "核对当前模型路由配置及限流队列状态，确保请求未被限流或错误路由。",
-        "验证AI洞察请求的输入参数格式与返回协议是否符合后端接口规范。",
-        "修复后重新触发AI洞察生成，并回读页面确认AI洞察内容正常展示及告警状态恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
-      "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:46:36+08:00",
-      "completed_at_hkt": "",
       "handled_at_hkt": ""
     }
   ],
