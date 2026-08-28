@@ -610,10 +610,19 @@ def run_news_selection_agent(
                 "status": "completed",
                 "candidate_count": len(decisions),
                 "changed_count": changed_count,
-                "app_accepted_count": sum(item["app_status"] == "接受" for item in decisions),
-                "weekly_accepted_count": sum(item["weekly_status"] == "接受" for item in decisions),
+                "app_accepted_count": sum(
+                    item["app_before"] == "待审核"
+                    and item["app_status"] == "接受"
+                    for item in decisions
+                ),
+                "weekly_accepted_count": sum(
+                    item["weekly_before"] == "待审核"
+                    and item["weekly_status"] == "接受"
+                    for item in decisions
+                ),
                 "deferred_field_count": sum(
                     item[field] == "暂缓"
+                    and item[field.replace("_status", "_before")] == "待审核"
                     for item in decisions
                     for field in ("app_status", "weekly_status")
                 ),

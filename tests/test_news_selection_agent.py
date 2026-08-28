@@ -211,6 +211,8 @@ class NewsSelectionAgentTests(unittest.TestCase):
             self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "parent-run")
             self.assertEqual(result["candidate_count"], 1)
             self.assertEqual(result["changed_count"], 2)
+            self.assertEqual(result["app_accepted_count"], 1)
+            self.assertEqual(result["weekly_accepted_count"], 0)
             self.assertEqual(
                 [(item["columnIndex"], item["value"]) for item in updates],
                 [(0, "接受"), (1, "暂缓")],
