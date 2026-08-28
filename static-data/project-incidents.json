@@ -8,9 +8,9 @@
       "kind": "frequency-scheduler",
       "kind_label": "飞书频率调度周期",
       "scope": "frequency-scheduler",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "调度器日志出现未处理异常",
@@ -24,7 +24,7 @@
       "occurred_at_hkt": "2026-08-28T21:19:46+08:00",
       "started_at_hkt": "2026-08-28T21:17:12+08:00",
       "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-28T21:20:16+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -3934,7 +3934,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T18:10:35+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:26:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12090,7 +12090,7 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T21:19:46+08:00",
+      "heartbeat_at_hkt": "2026-08-28T21:26:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     }
