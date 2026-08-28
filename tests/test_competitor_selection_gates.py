@@ -13,7 +13,7 @@ for _cell in DATA["cells"]:
     CELLS_BY_COMPANY_METRIC.setdefault((_cell["company"], _cell["metric"]), []).append(_cell)
 
 
-def usable_metric(company_ids, metric_key, years):
+def complete_metric(company_ids, metric_key, years):
     rows = [
         row for row in ROWS
         if row["company"] in company_ids and row["metric"] == metric_key
@@ -27,45 +27,51 @@ def usable_metric(company_ids, metric_key, years):
         visible_years = range(all_years[0], all_years[-1] + 1)
     else:
         visible_years = range(all_years[-1] - years + 1, all_years[-1] + 1)
-    return any(
-        cell["company"] in company_ids
+    disclosed = {
+        (cell["company"], cell["year"])
+        for cell in DATA["cells"]
+        if cell["company"] in company_ids
         and cell["metric"] == metric_key
         and cell["year"] in visible_years
-        for cell in DATA["cells"]
-    )
+    }
+    return all((company, year) in disclosed for company in company_ids for year in visible_years)
 
 
 class CompetitorSelectionGateTests(unittest.TestCase):
-    def test_company_metric_and_year_controls_filter_all_empty_inputs(self):
+    def test_company_metric_and_year_controls_require_complete_windows(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
-        self.assertIn("competitorHasUsableMetric", SCRIPT)
-        self.assertIn("selectedCompanies.includes(company.id) || competitorHasUsableMetric", SCRIPT)
+        self.assertIn("competitorHasCompleteMetric", SCRIPT)
+        self.assertIn("selectedCompanies.includes(company.id) || competitorHasCompleteMetric", SCRIPT)
         self.assertIn("...(data.gaps || [])", SCRIPT)
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
-        self.assertIn("至少有一个披露值", SCRIPT)
-        self.assertIn("缺值仍展示审计理由", SCRIPT)
+        self.assertIn("整个年份窗口均有披露值", SCRIPT)
+        self.assertIn("逐年数据完整", SCRIPT)
         self.assertIn('classList.add("is-disappearing")', SCRIPT)
         self.assertIn("transitionCompetitorOptions", SCRIPT)
         self.assertIn("visibleCompetitorIds(data, selection.companies, selection.years, selection.metric)", SCRIPT)
-        self.assertIn("data.metrics.filter((metric) => competitorHasUsableMetric", SCRIPT)
+        self.assertIn("data.metrics.filter((metric) => competitorHasCompleteMetric", SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
 
     def test_all_gap_metric_from_reported_screenshot_is_filtered_out(self):
         companies = ["3HK", "HKT", "SmarTone"]
-        self.assertFalse(usable_metric(companies, "residential_2gbps_plus_customers", 99))
-        self.assertTrue(usable_metric(companies, "overview_01_revenue", 99))
+        self.assertFalse(complete_metric(companies, "residential_2gbps_plus_customers", 99))
+        self.assertTrue(complete_metric(companies, "overview_01_revenue", 99))
 
-    def test_year_window_requires_a_value_but_keeps_partial_gap_series(self):
+    def test_year_window_rejects_every_partial_gap(self):
         companies = ["3HK", "HKT", "SmarTone"]
-        self.assertTrue(usable_metric(companies, "5g_penetration", 99))
+        self.assertTrue(complete_metric(companies, "5g_penetration", 3))
+        self.assertFalse(complete_metric(companies, "5g_penetration", 10))
+        self.assertFalse(complete_metric(companies, "5g_penetration", 99))
         self.assertTrue(any(
             row["company"] == "SmarTone"
             and row["metric"] == "5g_penetration"
             and row["year"] == 2020
             for row in DATA["gaps"]
         ))
-        self.assertFalse(usable_metric(["SmarTone"], "mobile_postpaid_churn", 3))
-        self.assertTrue(usable_metric(["SmarTone"], "mobile_postpaid_churn", 5))
+        self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 3))
+        self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 5))
+        self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 10))
+        self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 99))
 
     def test_three_local_competitors_have_all_metric_year_audit_rows(self):
         rows = [*DATA["cells"], *DATA["gaps"]]
