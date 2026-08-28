@@ -1,7 +1,72 @@
 {
   "ok": true,
-  "generated_at": "2026-08-26T12:01:42+08:00",
-  "items": [],
+  "generated_at": "2026-08-28T09:50:14+08:00",
+  "items": [
+    {
+      "id": "NEWS-D14FBE54A841DF",
+      "title": "澳门「三五」规划公布 李家超宣布香港首个五年规划将于9月公布",
+      "summary": "澳门第三个五年规划正式公布，引起香港关注；李家超宣布将于9月16日公布香港首个五年规划及2026年施政报告。",
+      "category": "政策监管",
+      "source_url": "https://www.dotdotnews.com/a/202608/26/AP6a8ed60de4b04b6c5d37e3e0.html",
+      "published_at": "2026-08-26T21:03:00+08:00"
+    },
+    {
+      "id": "NEWS-39A932A5B8AD57",
+      "title": "SmarTone与csl 5G速度对比测试：启德10个热点结果公布",
+      "summary": "Techritual在启德10个热点对SmarTone与csl进行5G速度实测并公布结果，csl为被评测竞对。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1STVNMNEg5NDZxOXdkWjBtSnpYd2pQTUVtOFhEbzhQWlFsaGVfckp3QzFNX1NKbFdyVnNYOENDRTNlRldxM0N4S1lPUEN0RGpZSXBQRHBOY28?oc=5",
+      "published_at": "2026-08-26T19:10:54+08:00"
+    },
+    {
+      "id": "NEWS-2AB0C58A00B9A8",
+      "title": "香港外贸连涨29个月超预期",
+      "summary": "香港外贸连续29个月增长并超出预期，市场关注下半年预测是否上调。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBOM0NILW90c1BxMTdTdUJaVVBmY1FqTEJhQTRfQ0F2V1RUYjBKaDQzMFJPbDRhU1VxclRQVTJVTmRoclRKNENvTEx1SEtiTVlGeHlBVncwUXExY0hLM1dmQmIyTHlDRjN3emU1dlFXeWhEXzZkbjNR?oc=5",
+      "published_at": "2026-08-26T08:24:45+08:00"
+    },
+    {
+      "id": "NEWS-A5D069F6628A1C",
+      "title": "香港7月出口按年升50.7% 受AI电子产品带动",
+      "summary": "香港7月出口按年升50.7%，受AI相关电子产品强劲增长带动，政府预期需求持续。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3365195/hong-kong-exports-jump-507-july-driven-growth-ai-related-electronics",
+      "published_at": "2026-08-25T22:59:00+08:00"
+    },
+    {
+      "id": "NEWS-BD66B7519E0063",
+      "title": "SmarTone与港怡医院合作推出遥距医疗服务",
+      "summary": "SmarTone宣布与港怡医院合作推出遥距医疗项目，并在元朗YOHO Midtown开设首个TeleCare SmartHub。",
+      "category": "竞对动态",
+      "source_url": "https://www.telecompaper.com/news/smartone-starts-telemedicine-hubs-with-gleneagles-hospital--1580730",
+      "published_at": "2026-08-25T10:22:00+08:00"
+    },
+    {
+      "id": "NEWS-6B1134F856EB3F",
+      "title": "世界机器人大会开幕，逾10%参展商为粤企",
+      "summary": "世界机器人大会展示约3000件产品，超过10%的参展商来自广东，凸显大湾区在机器人产业链上的优势。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
+      "published_at": "2026-08-20"
+    },
+    {
+      "id": "NEWS-3A40133739FCB4",
+      "title": "港怡伙数码通在元朗首设遥距医健站",
+      "summary": "港怡医院与数码通合作在元朗设立首个遥距医健站，提供视像诊症及送药服务，计划明年扩展至10个屋苑。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
+      "published_at": "2026-08-19"
+    },
+    {
+      "id": "NEWS-B68F4E938DEEB7",
+      "title": "河套深港科技创新合作区启航 谱写创科新篇",
+      "summary": "评论文章指出河套深港科技创新合作区建设正当其时，将推动香港创科发展。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
+      "published_at": "2026-08-16"
+    }
+  ],
   "monitor": {
     "status": "snapshot",
     "scan_times": [
@@ -10,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "52cd93ccdcd7a6ac3e89b38d4200aadeaa8634eabee5fbe022be3c83abeeffff"
+  "site_version": "a3c6ae5846cb4f718363faf1a4fdf0969963459ba961d819694f6b3f7f94d61f"
 }

@@ -362,6 +362,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "9237e5baf53bc2a8332b5016",
+      "task_id": "incident:9237e5baf53bc2a8332b5016",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T09:49:34+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:50:05+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "331272221bba6b96cb0cc209",
       "task_id": "incident:331272221bba6b96cb0cc209",
       "title": "主项目后台任务",
@@ -1245,7 +1269,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T09:18:03+08:00",
-      "heartbeat_at_hkt": "2026-08-28T09:46:33+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:50:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12077,30 +12101,6 @@
       "started_at_hkt": "2026-08-21T10:28:07+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:05:38+08:00",
       "completed_at_hkt": "2026-08-21T11:06:08+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "d0d4e724c5e823ed97c9858d",
-      "task_id": "incident:d0d4e724c5e823ed97c9858d",
-      "title": "定时爬虫续跑状态",
-      "kind": "frequency-scheduler",
-      "kind_label": "定时爬虫续跑状态",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "定时爬虫待恢复状态长时间未推进",
-      "impact": "本轮任务可能卡在抓取、同步或Agent审核阶段，后续到期任务可能被阻塞。",
-      "suggestions": [
-        "交叉检查 pending 状态、crawl_run_id 完整日志和实际进程。",
-        "确认最后成功阶段后，只恢复后续阶段；不要删除状态后直接全量重跑。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:22:55+08:00",
-      "started_at_hkt": "2026-08-21T11:06:08+08:00",
-      "heartbeat_at_hkt": "2026-08-21T11:06:08+08:00",
-      "completed_at_hkt": "2026-08-21T11:07:01+08:00",
       "handled_at_hkt": ""
     }
   ],
