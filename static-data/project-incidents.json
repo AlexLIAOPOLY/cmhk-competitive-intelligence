@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "1d0c317b5166d18cccb147d7",
+      "task_id": "incident:1d0c317b5166d18cccb147d7",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T13:50:34+08:00",
+      "started_at_hkt": "2026-08-28T13:50:34+08:00",
+      "heartbeat_at_hkt": "2026-08-28T13:50:34+08:00",
+      "completed_at_hkt": "2026-08-28T13:51:04+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "a1bf1bcf66e15ff626827054",
       "task_id": "incident:a1bf1bcf66e15ff626827054",
       "title": "主项目后台任务",
@@ -1538,6 +1562,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "0abdac137742260553a320a2",
+      "task_id": "incident:0abdac137742260553a320a2",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T13:50:34+08:00",
+      "heartbeat_at_hkt": "2026-08-28T13:51:35+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "331272221bba6b96cb0cc209",
       "task_id": "incident:331272221bba6b96cb0cc209",
       "title": "主项目后台任务",
@@ -2517,7 +2565,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T12:28:08+08:00",
-      "heartbeat_at_hkt": "2026-08-28T13:45:04+08:00",
+      "heartbeat_at_hkt": "2026-08-28T13:52:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12051,54 +12099,6 @@
       "started_at_hkt": "2026-08-21T14:11:04+08:00",
       "heartbeat_at_hkt": "2026-08-21T14:11:41+08:00",
       "completed_at_hkt": "2026-08-21T14:12:11+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "ad4a08517f78508a8597b506",
-      "task_id": "incident:ad4a08517f78508a8597b506",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-21T14:06:05+08:00",
-      "started_at_hkt": "2026-08-21T14:06:34+08:00",
-      "heartbeat_at_hkt": "2026-08-21T14:06:34+08:00",
-      "completed_at_hkt": "2026-08-21T14:07:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "4498a53f7f1f3a2e425cf92e",
-      "task_id": "incident:4498a53f7f1f3a2e425cf92e",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-21T14:00:03+08:00",
-      "started_at_hkt": "2026-08-21T14:00:03+08:00",
-      "heartbeat_at_hkt": "2026-08-21T14:00:03+08:00",
-      "completed_at_hkt": "2026-08-21T14:00:33+08:00",
       "handled_at_hkt": ""
     }
   ],
