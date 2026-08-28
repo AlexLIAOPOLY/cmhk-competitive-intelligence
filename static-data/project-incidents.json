@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "d8cd6ab2491a2863b770c31e",
+      "task_id": "incident:d8cd6ab2491a2863b770c31e",
+      "title": "主爬虫与定时爬虫",
+      "kind": "crawl",
+      "kind_label": "主爬虫与定时爬虫",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "任务失败：定时爬虫",
+      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
+      "suggestions": [
+        "检查 GitHub Pages 发布结果、site_version、HTTPS和关键资源状态。",
+        "不要把数据库成功误报为完整前端发布成功。"
+      ],
+      "occurred_at_hkt": "2026-08-28T09:17:45+08:00",
+      "started_at_hkt": "2026-08-28T09:18:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:18:33+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "769c66aa99a59fae8c617f47",
       "task_id": "incident:769c66aa99a59fae8c617f47",
       "title": "主项目后台任务",
@@ -1058,6 +1082,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "9e12a08b64445f2aeb10b6b7",
+      "task_id": "incident:9e12a08b64445f2aeb10b6b7",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-28 09:17:45",
+      "started_at_hkt": "2026-08-28T09:18:03+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:18:33+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "be50195380b05c7d31978ab0",
       "task_id": "incident:be50195380b05c7d31978ab0",
       "title": "主爬虫数据质量门禁",
@@ -1136,9 +1184,9 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主爬虫存在失败或未通过质量门禁的数据",
@@ -1149,8 +1197,8 @@
       ],
       "occurred_at_hkt": "2026-08-28 03:20:34",
       "started_at_hkt": "2026-08-28T03:29:09+08:00",
-      "heartbeat_at_hkt": "2026-08-28T09:17:03+08:00",
-      "completed_at_hkt": "",
+      "heartbeat_at_hkt": "2026-08-28T09:17:33+08:00",
+      "completed_at_hkt": "2026-08-28T09:18:03+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -12053,54 +12101,6 @@
       "started_at_hkt": "2026-08-21T11:18:32+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:19:02+08:00",
       "completed_at_hkt": "2026-08-21T11:19:32+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "d9d08e03db2aeaa71e2772ec",
-      "task_id": "incident:d9d08e03db2aeaa71e2772ec",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
-      "started_at_hkt": "2026-08-21T11:25:03+08:00",
-      "heartbeat_at_hkt": "2026-08-21T11:26:01+08:00",
-      "completed_at_hkt": "2026-08-21T11:26:31+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "cbc9a1f63cf3202583ebe73d",
-      "task_id": "incident:cbc9a1f63cf3202583ebe73d",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
-      "started_at_hkt": "2026-08-21T11:28:31+08:00",
-      "heartbeat_at_hkt": "2026-08-21T11:31:02+08:00",
-      "completed_at_hkt": "2026-08-21T11:31:32+08:00",
       "handled_at_hkt": ""
     }
   ],

@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-28T09:17:21+08:00",
+  "checked_at_hkt": "2026-08-28T09:18:55+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -42,15 +42,15 @@
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
       "run_status": "running",
-      "backend_pid": 44425,
+      "backend_pid": 45041,
       "worker_pid": 0,
       "phase": "恢复未完成任务",
       "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-28T09:16:34+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:18:39+08:00",
       "started_at_hkt": "2026-08-28T03:00:19+08:00",
       "completed_at_hkt": "",
-      "duration_ms": 22032394,
+      "duration_ms": 22646714,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "b8a21c",
@@ -173,20 +173,20 @@
         "curation_latest": "curation_data/latest.json"
       },
       "final_audit": {
-        "generated_at": "2026-08-28T03:20:34.402999",
-        "rows_crawled": "33",
-        "ok_rows": "9",
-        "partial_rows": "1",
-        "failed_rows": "23",
-        "fulfilled": "10/33 (30.3%)",
-        "live_url_success": "171/201 (85.1%)",
-        "live_url_failures": "30",
+        "generated_at": "2026-08-28T09:17:45.261966",
+        "rows_crawled": "1",
+        "ok_rows": "0",
+        "partial_rows": "0",
+        "failed_rows": "1",
+        "fulfilled": "0/1 (0.0%)",
+        "live_url_success": "8/9 (88.9%)",
+        "live_url_failures": "1",
         "restored_from_previous_evidence": "0"
       },
       "run_log": {
-        "rows": 201,
-        "success_urls": 171,
-        "failed_urls": 30,
+        "rows": 9,
+        "success_urls": 8,
+        "failed_urls": 1,
         "fallback_urls": 0
       },
       "curation": {
@@ -218,7 +218,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-28T09:07:31+08:00",
+          "generated_at_hkt": "2026-08-28T09:17:45+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -270,7 +270,7 @@
                 }
               ],
               "core_metric_count": 5,
-              "fetched_at_hkt": "2026-08-27T03:01:02.231751+08:00",
+              "fetched_at_hkt": "2026-08-28T09:17:02.140027+08:00",
               "verification_status": "official_document_extracted"
             },
             {
@@ -420,7 +420,54 @@
             {
               "row": 2,
               "company": "HKT",
-              "status": "no_official_report_discovered"
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-07-29",
+              "due_at_hkt": "2026-07-30T03:00:00+08:00",
+              "source_url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf",
+              "source_title": "2026 Interim Results Announcement",
+              "content_hash": "239862bac00ac84c87fea99aa0958073c0f5864fb80549d8751360e5eaccf662",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$18,685 million",
+                  "evidence": "Total revenue increased by 8% to HK$18,685 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$6,586 million",
+                  "evidence": "Total EBITDA grew by 3% to HK$6,586 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$2,153 million",
+                  "evidence": "Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$1,042 million",
+                  "evidence": "CAPITAL EXPENDITURE2 Capital expenditure including capitalised interest for the six months ended 30 June 2026 was HK$1,042 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "34.80 HK cents",
+                  "evidence": "dividend of 34.80 HK cents"
+                },
+                {
+                  "metric_key": "5g_customers",
+                  "metric": "5G用户数",
+                  "value": "2.2 million",
+                  "evidence": "5G customer base expanded by 16% to 2.2 million"
+                }
+              ],
+              "core_metric_count": 5,
+              "fetched_at_hkt": "2026-08-28T09:17:02.140027+08:00",
+              "verification_status": "official_document_extracted"
             },
             {
               "row": 5,
@@ -571,7 +618,7 @@
             }
           ],
           "quality": {
-            "ok": false,
+            "ok": true,
             "checked_rows": [
               2,
               5,
@@ -580,23 +627,30 @@
               15,
               17
             ],
-            "failures": [
-              "第2行 HKT 未发现可读取的官方财报"
-            ]
+            "failures": []
           },
           "database_changed": true,
-          "database_updated": false,
+          "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
+        },
+        "financial_frontend_publish": {
+          "ok": false,
+          "returnCode": 0,
+          "status": "busy",
+          "site_version": "",
+          "public_url": "",
+          "commit": "",
+          "error": "{\"status\": \"busy\"}\n"
         }
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 156175,
-        "lines": 783
+        "bytes": 162447,
+        "lines": 815
       },
       "status_detail": "",
       "interrupted": false,
-      "resumed_at_hkt": "2026-08-28T09:16:34+08:00"
+      "resumed_at_hkt": "2026-08-28T09:18:39+08:00"
     },
     "strategic_news": {
       "crawl_run_id": "20260828_073012_958746",
