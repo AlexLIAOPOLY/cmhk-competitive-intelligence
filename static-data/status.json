@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 7,
-      "partial": 1
+      "ok": 8,
+      "partial": 5
     },
     "visuals": {
       "crawl": {
@@ -16,12 +16,12 @@
         "completedAt": "2026-08-29 03:08:52"
       },
       "quality": {
-        "ok": 7,
-        "partial": 1,
-        "failed": 25,
+        "ok": 8,
+        "partial": 5,
+        "failed": 20,
         "fieldTotal": 205,
         "missingFields": 2,
-        "rawSources": 205
+        "rawSources": 211
       },
       "blocks": [
         {
@@ -40,7 +40,7 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 119
+          "value": 118
         },
         {
           "label": "government_public_info",
@@ -48,7 +48,7 @@
         },
         {
           "label": "commercial_data",
-          "value": 17
+          "value": 24
         },
         {
           "label": "government_statistics",
@@ -70,7 +70,7 @@
         },
         {
           "label": "US",
-          "value": 19
+          "value": 25
         },
         {
           "label": "EU",
@@ -92,15 +92,15 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 146
+          "value": 155
         },
         {
           "label": "cache:httpx",
-          "value": 33
+          "value": 29
         },
         {
           "label": "curl_chrome_ua",
-          "value": 18
+          "value": 19
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -112,28 +112,40 @@
         }
       ],
       "rejection": {
-        "accepted": 122,
-        "rejected": 3,
-        "qualityRejected": 3,
-        "evidenceGaps": 107,
-        "reportedRejected": 110,
-        "review": 7,
-        "total": 239,
-        "qualityTotal": 132,
-        "rejectRate": 2,
-        "passRate": 92,
+        "accepted": 71,
+        "rejected": 92,
+        "qualityRejected": 92,
+        "evidenceGaps": 76,
+        "reportedRejected": 168,
+        "review": 21,
+        "total": 260,
+        "qualityTotal": 184,
+        "rejectRate": 50,
+        "passRate": 39,
         "reasons": [
           {
-            "label": "用户数仅有比例变化而无客户规模",
-            "value": 2
+            "label": "在线模型不可用，离线结果不直接发布",
+            "value": 92
           },
           {
             "label": "云指标缺少云业务专属口径",
+            "value": 2
+          },
+          {
+            "label": "用户数仅有比例变化而无客户规模",
+            "value": 1
+          },
+          {
+            "label": "定性指标为截断网页片段",
+            "value": 1
+          },
+          {
+            "label": "未通过指标格式与单位门禁",
             "value": 1
           }
         ],
-        "runId": "scheduled_20260828_030019_583185",
-        "completedAt": "2026-08-28T03:36:15+08:00"
+        "runId": "scheduled_20260829_030001_119063",
+        "completedAt": "2026-08-29T03:21:26+08:00"
       },
       "newsFunnel": {
         "scope": "午后扫描（2026-08-28@14:00）",
@@ -329,7 +341,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-29 03:07:01",
+    "latestOutputText": "2026-08-29 03:16:02",
     "outputs": [
       {
         "name": "8月19日周报.docx",

@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-29T03:12:40+08:00",
+  "checked_at_hkt": "2026-08-29T03:21:49+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -46,9 +46,9 @@
       "run_status": "running",
       "backend_pid": 31866,
       "worker_pid": 0,
-      "phase": "Agent审核",
-      "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
-      "heartbeat_at_hkt": "2026-08-29T03:12:27+08:00",
+      "phase": "审核归档",
+      "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+      "heartbeat_at_hkt": "2026-08-29T03:21:26+08:00",
       "started_at_hkt": "2026-08-29T03:00:01+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -56,8 +56,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260829_030001_119063.jsonl"
       },
       "stream_log": {
-        "bytes": 48831,
-        "lines": 649
+        "bytes": 101388,
+        "lines": 793
       },
       "final_audit": {},
       "run_log": {},
