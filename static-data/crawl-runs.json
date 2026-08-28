@@ -2,6 +2,20 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260828_120152_318124",
+      "trigger": "新聞偏好學習與自動勾選 Agent",
+      "scope": "爬蟲後選材（2026-08-28@07:30）",
+      "task_kind": "news-selection-agent",
+      "run_status": "running",
+      "phase": "LangChain 分批判斷",
+      "progress_detail": "正在處理第 4/8 組，本組 20 條候選。",
+      "heartbeat_at_hkt": "2026-08-28T12:03:53+08:00",
+      "started_at_hkt": "2026-08-28T12:01:52+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260828_091932_446502",
       "trigger": "四库与观察结论自动更新",
       "scope": "Agent审核 scheduled_20260828_030019_583185 · 父任务 20260828_030019_583185",
@@ -47139,6 +47153,6 @@
       }
     }
   ],
-  "total": 242,
+  "total": 243,
   "truncated": false
 }

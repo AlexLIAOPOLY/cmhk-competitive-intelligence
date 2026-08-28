@@ -1,6 +1,27 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260828_120152_318124": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260828_120152_318124",
+        "task_run_id": "20260828_120152_318124",
+        "title": "新聞偏好學習與自動勾選 Agent",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻偏好学习 Agent",
+        "scope": "爬蟲後選材（2026-08-28@07:30）",
+        "run_status": "running",
+        "phase": "LangChain 分批判斷",
+        "progress_detail": "正在處理第 4/8 組，本組 20 條候選。",
+        "status_detail": "",
+        "started_at_hkt": "2026-08-28T12:01:52+08:00",
+        "heartbeat_at_hkt": "2026-08-28T12:03:53+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260828_091932_446502": {
       "ok": true,
       "run": {
@@ -984,7 +1005,7 @@
         "heartbeat_at_hkt": "2026-08-20T16:03:54+08:00",
         "completed_at_hkt": "2026-08-20T16:03:54+08:00",
         "duration_ms": 850727,
-        "retry_index": 2
+        "retry_index": 1
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -1005,27 +1026,6 @@
         "heartbeat_at_hkt": "2026-08-20T15:47:44+08:00",
         "completed_at_hkt": "2026-08-20T15:47:44+08:00",
         "duration_ms": 1607,
-        "retry_index": 1
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260820_154539_674650": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260820_154539_674650",
-        "task_run_id": "20260820_154539_674650",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "午后扫描（2026-08-20@14:00）",
-        "run_status": "failed",
-        "phase": "已中断",
-        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:40+08:00；最后进度：[2026-08-20 15:47:40] AI紧凑补审：第 1/28 批对 4 条执行紧凑协议补审。",
-        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:40+08:00；最后进度：[2026-08-20 15:47:40] AI紧凑补审：第 1/28 批对 4 条执行紧凑协议补审。",
-        "started_at_hkt": "2026-08-20T15:45:39+08:00",
-        "heartbeat_at_hkt": "2026-08-20T15:47:40+08:00",
-        "completed_at_hkt": "2026-08-20T15:47:40+08:00",
-        "duration_ms": 121453,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
