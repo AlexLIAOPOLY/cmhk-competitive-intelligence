@@ -74,7 +74,7 @@
             <section class="market-graph-detail" id="market-graph-detail" aria-live="polite" hidden></section>
           </div>
           <dialog class="market-graph-dialog" id="market-graph-dialog">
-            <div class="market-graph-dialog-shell"><header><span id="market-graph-dialog-status">共现关系</span><div><button type="button" data-graph-reset>复位</button><button type="button" aria-label="关闭大图" data-graph-close>×</button></div></header><div class="market-graph-dialog-body"><div class="market-graph-canvas" id="market-graph-dialog-canvas"></div><div class="market-graph-legend"><span class="entity">主体</span><span class="topic">议题</span><span class="concept">概念</span></div><section class="market-graph-inspector" id="market-graph-dialog-detail"><div class="market-graph-inspector-empty">选择节点或关系查看证据</div></section></div></div>
+            <div class="market-graph-dialog-shell"><header><h2>情报知识图谱</h2><div><span id="market-graph-dialog-status">共现关系</span><button type="button" data-graph-reset>复位</button><button type="button" aria-label="关闭大图" data-graph-close>×</button></div></header><div class="market-graph-dialog-body"><div class="market-graph-canvas" id="market-graph-dialog-canvas"></div><div class="market-graph-legend"><span class="entity">主体</span><span class="topic">议题</span><span class="concept">概念</span></div><section class="market-graph-inspector" id="market-graph-dialog-detail"><div class="market-graph-inspector-empty"><strong>选择一个节点或关系</strong><span>下方会展开关联路径、证据摘要和新闻原文。</span></div></section></div></div>
           </dialog>
         </aside>
       </section>
@@ -166,11 +166,31 @@
     return (data.evidence || []).slice(0, 4).map((item) => `<a class="market-graph-evidence-row" href="${esc(item.source_url || "#")}" target="_blank" rel="noopener noreferrer"><span>${esc(item.title)}</span><small>${esc(item.source)} · ${esc(item.source_date)} <b aria-hidden="true">↗</b></small></a>`).join("");
   }
 
+  function inspectorHtml(element) {
+    const cy = element.cy(); const data = element.data(); let title = data.label; let description = data.description; let meta = ""; let relations = [];
+    if (element.isNode()) {
+      const type = { entity: "主体", topic: "议题", concept: "概念" }[data.type] || "节点";
+      meta = `${type} · ${data.count} 条证据`;
+      relations = element.connectedEdges().toArray().sort((a, b) => Number(b.data("weight")) - Number(a.data("weight"))).map((edge) => {
+        const neighbor = edge.source().id() === element.id() ? edge.target() : edge.source();
+        return { id: neighbor.id(), label: neighbor.data("label"), relation: edge.data("label"), weight: edge.data("weight") };
+      });
+    } else {
+      const source = cy.getElementById(data.source); const target = cy.getElementById(data.target);
+      title = data.label; meta = `${source.data("label")} → ${target.data("label")} · ${data.weight} 条证据`;
+      relations = [source, target].map((node) => ({ id: node.id(), label: node.data("label"), relation: "关联节点", weight: node.data("count") }));
+    }
+    const paths = relations.slice(0, 8).map((relation) => `<button type="button" data-graph-focus="${esc(relation.id)}"><span>${esc(relation.relation)} →</span><strong>${esc(relation.label)}</strong><small>${relation.weight} 条</small></button>`).join("");
+    const proofs = (data.evidence || []).slice(0, 8).map((item) => `<article><div><span>${esc(item.source)} · ${esc(item.source_date)}</span><small>${esc(item.id)}</small></div><a href="${esc(item.source_url || "#")}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>${item.summary ? `<p>${esc(item.summary)}</p>` : ""}<a class="market-graph-source-link" href="${esc(item.source_url || "#")}" target="_blank" rel="noopener noreferrer">打开新闻原文 <span>↗</span></a></article>`).join("");
+    return `<header><div><strong>${esc(title)}</strong><span>${esc(meta)}</span></div><p>${esc(description)}</p></header><div class="market-graph-inspector-grid"><section><h3>关联路径 <span>${relations.length}</span></h3><div class="market-graph-path-list">${paths || "暂无关联路径"}</div></section><section><h3>证据新闻 <span>${(data.evidence || []).length}</span></h3><div class="market-graph-proof-list">${proofs || "暂无证据新闻"}</div></section></div>`;
+  }
+
   function selectGraphElement(element, detailId = "market-graph-detail") {
     const cy = element?.cy?.(); if (!cy || !element.length) return;
     cy.elements().addClass("is-muted").removeClass("is-neighbor"); const neighborhood = element.isNode() ? element.closedNeighborhood() : element.connectedNodes().union(element);
     neighborhood.removeClass("is-muted").addClass("is-neighbor"); cy.elements().unselect(); element.select();
     const data = element.data(); const detail = $(detailId); if (!detail) return; detail.hidden = false;
+    if (detailId === "market-graph-dialog-detail") { detail.innerHTML = inspectorHtml(element); return; }
     if (element.isNode()) { const type = { entity: "主体", topic: "议题", concept: "概念" }[data.type]; detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${type} · ${data.count} 条证据</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence-list">${evidenceHtml(data)}</div>`; }
     else { const source = cy.getElementById(data.source).data("label"); const target = cy.getElementById(data.target).data("label"); detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${esc(source)} → ${esc(target)}</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence-list">${evidenceHtml(data)}</div>`; }
   }
@@ -219,6 +239,8 @@
     const view = event.target.closest("[data-market-view]"); if (view) return switchView(view.dataset.marketView);
     const keyword = event.target.closest("[data-market-keyword]"); if (keyword) { state.keyword = state.keyword === keyword.dataset.marketKeyword ? "" : keyword.dataset.marketKeyword; return renderAll(); }
     if (event.target.closest("#market-graph-expand")) return openFullscreen(); if (event.target.closest("[data-graph-close]")) return $("market-graph-dialog").close();
+    const focus = event.target.closest("[data-graph-focus]");
+    if (focus && state.fullscreenGraph) { const element = state.fullscreenGraph.getElementById(focus.dataset.graphFocus); if (element.length) { selectGraphElement(element, "market-graph-dialog-detail"); state.fullscreenGraph.animate({ center: { eles: element }, zoom: Math.max(state.fullscreenGraph.zoom(), 1.1) }, { duration: 260 }); } return; }
     if (event.target.closest("[data-graph-reset]")) { state.fullscreenGraph?.elements().removeClass("is-muted is-neighbor").unselect(); state.fullscreenGraph?.fit(state.fullscreenGraph.elements(), 52); }
   });
 
