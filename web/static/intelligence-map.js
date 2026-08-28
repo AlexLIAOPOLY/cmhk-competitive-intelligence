@@ -7,7 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
-  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null, aiPromise: null, aiController: null };
+  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -133,7 +133,7 @@
           </dialog>
         </aside>
       </section>
-      <section class="market-ai-section" aria-label="AI 情报洞察"><div class="market-ai-title"><button class="market-ai-title-button" type="button" data-insight-refresh aria-label="重新生成4条AI情报洞察" title="点击重新分析已审核新闻"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8zM18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><strong>AI 情报洞察</strong></button></div><div id="market-ai-insights" aria-live="polite"></div></section>
+      <section class="market-daily-section" aria-label="每日情报分类统计"><div class="market-daily-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Zm3 7h3m2 0h3m-8 4h3m2 0h3"/></svg><strong>每日情报统计</strong></div><div class="market-daily-table-wrap" id="market-daily-table"></div></section>
     </section>`;
   }
 
@@ -214,7 +214,7 @@
   }
 
   function graphLayout(fullscreen = false) {
-    return { name: "cose", animate: false, fit: true, randomize: false, padding: fullscreen ? 42 : 24, nodeDimensionsIncludeLabels: true, componentSpacing: fullscreen ? 58 : 44, nodeRepulsion: () => fullscreen ? 5200 : 4000, nodeOverlap: 10, idealEdgeLength: (edge) => Math.max(fullscreen ? 52 : 42, (fullscreen ? 76 : 62) - Math.min(Number(edge.data("weight")) || 1, 5) * 4), edgeElasticity: () => 32, gravity: fullscreen ? .5 : .65, numIter: 1400 };
+    return { name: "cose", animate: false, fit: true, randomize: false, padding: fullscreen ? 46 : 36, nodeDimensionsIncludeLabels: true, componentSpacing: fullscreen ? 58 : 44, nodeRepulsion: () => fullscreen ? 5200 : 4000, nodeOverlap: 10, idealEdgeLength: (edge) => Math.max(fullscreen ? 52 : 42, (fullscreen ? 76 : 62) - Math.min(Number(edge.data("weight")) || 1, 5) * 4), edgeElasticity: () => 32, gravity: fullscreen ? .5 : .65, numIter: 1400 };
   }
 
   function evidenceHtml(data) {
@@ -278,23 +278,28 @@
     panel.querySelectorAll("[data-market-view]").forEach((button) => { const active = button.dataset.marketView === state.view; button.classList.toggle("act", active); button.setAttribute("aria-selected", String(active)); });
     $("market-graph-canvas").classList.toggle("is-active", state.view === "graph"); $("market-keyword-cloud").classList.toggle("is-active", state.view === "cloud");
     panel.querySelector(".market-knowledge-graph > .market-graph-legend").hidden = state.view !== "graph"; $("market-graph-status").hidden = state.view !== "graph"; $("market-graph-expand").hidden = state.view !== "graph";
-    if (state.view === "graph") requestAnimationFrame(() => { state.graph?.resize(); state.graph?.fit(state.graph.elements(), 24); }); else requestAnimationFrame(() => layoutWordCloud($("market-keyword-cloud")));
+    if (state.view === "graph") requestAnimationFrame(() => { state.graph?.resize(); state.graph?.fit(state.graph.elements(), 38); }); else requestAnimationFrame(() => layoutWordCloud($("market-keyword-cloud")));
     if (!automatic || !document.hidden) scheduleViewRotation();
   }
 
-  function renderAiInsights(payload = state.payload?.aiInsight) {
-    const target = $("market-ai-insights"); if (!target) return;
-    const rows = payload?.insights;
-    if (!Array.isArray(rows) || rows.length !== 4) {
-      target.innerHTML = '<div class="market-ai-empty">点击“AI 情报洞察”，生成4条基于已审核新闻的发现。</div>';
-      return;
-    }
-    target.innerHTML = rows.map((item, index) => `<article style="--accent:${palette[(index + 1) % palette.length]}"><strong>${esc(item.title)}</strong><p>${esc(item.body)}</p></article>`).join("");
+  function renderDailyTable(items) {
+    const target = $("market-daily-table"); if (!target) return;
+    const dates = [...new Set(items.map((item) => item.sourceDate).filter(Boolean))].sort().reverse();
+    const categoryCounts = new Map();
+    items.forEach((item) => categoryCounts.set(item.category, (categoryCounts.get(item.category) || 0) + 1));
+    const categories = ranked(categoryCounts).map(([category]) => category);
+    if (!dates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
+    const counts = new Map();
+    items.forEach((item) => { const key = `${item.sourceDate}::${item.category}`; counts.set(key, (counts.get(key) || 0) + 1); });
+    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(graphTopic(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
+      const values = categories.map((category) => counts.get(`${date}::${category}`) || 0);
+      return `<tr><th scope="row">${esc(date)}</th>${values.map((count) => `<td class="${count ? "has-news" : ""}">${count || "—"}</td>`).join("")}<td class="daily-total">${values.reduce((sum, count) => sum + count, 0)}</td></tr>`;
+    }).join("")}</tbody></table>`;
   }
 
   function renderAll() {
     const allItems = state.payload?.items || []; const items = state.keyword ? allItems.filter((item) => termsFor(item).includes(state.keyword)) : allItems;
-    renderTrend(items); renderWordCloud(allItems); renderGraph(items); renderAiInsights(); switchView(state.view);
+    renderTrend(items); renderWordCloud(allItems); renderGraph(items); renderDailyTable(allItems); switchView(state.view);
   }
 
   function openFullscreen() {
@@ -303,7 +308,6 @@
   }
 
   panel.addEventListener("click", (event) => {
-    if (event.target.closest("[data-insight-refresh]")) return generateAiInsights();
     const view = event.target.closest("[data-market-view]"); if (view) return switchView(view.dataset.marketView);
     const keyword = event.target.closest("[data-market-keyword]"); if (keyword) { state.keyword = state.keyword === keyword.dataset.marketKeyword ? "" : keyword.dataset.marketKeyword; return renderAll(); }
     if (event.target.closest("#market-graph-expand")) return openFullscreen(); if (event.target.closest("[data-graph-close]")) return $("market-graph-dialog").close();
@@ -331,31 +335,6 @@
       } finally { window.clearTimeout(timeout); }
     })().catch(() => null).finally(() => { state.refreshPromise = null; });
     return state.refreshPromise;
-  }
-
-  async function generateAiInsights() {
-    if (state.aiPromise) return state.aiPromise;
-    const button = panel.querySelector("[data-insight-refresh]"); const target = $("market-ai-insights"); const previous = target.innerHTML;
-    button.disabled = true; button.classList.add("is-refreshing"); button.setAttribute("aria-busy", "true");
-    if (!state.payload?.aiInsight?.insights?.length) target.innerHTML = '<div class="market-ai-loading">内部AI正在分析已审核新闻…</div>';
-    state.aiPromise = (async () => {
-      await refreshData();
-      if (!state.payload?.evidenceHash) throw new Error("情报数据未就绪");
-      state.aiController?.abort(); state.aiController = new AbortController();
-      const timeout = window.setTimeout(() => state.aiController.abort(), 95000);
-      try {
-        const response = await fetch("/api/competitor-intelligence-map/insights-stream", { method: "POST", cache: "no-store", signal: state.aiController.signal, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true, evidenceHash: state.payload.evidenceHash, generationNonce: `${Date.now()}:${globalThis.crypto?.randomUUID?.() || ""}` }) });
-        if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
-        const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ""; let result = null; let failure = "";
-        const consume = (flush = false) => { buffer = buffer.replaceAll("\r\n", "\n"); const events = buffer.split("\n\n"); buffer = events.pop() || ""; if (flush && buffer.trim()) { events.push(buffer); buffer = ""; } events.forEach((part) => { const line = part.split("\n").find((entry) => entry.startsWith("data:")); if (!line) return; const event = JSON.parse(line.replace(/^data:\s*/, "")); if (event.type === "done") result = event; if (event.type === "error") failure = event.error || "AI洞察生成失败"; }); };
-        while (true) { const chunk = await reader.read(); if (chunk.done) { buffer += decoder.decode(); consume(true); break; } buffer += decoder.decode(chunk.value, { stream: true }); consume(); }
-        if (failure || !result?.insights || result.insights.length !== 4) throw new Error(failure || "AI未返回4条有效洞察");
-        if (result.evidenceHash !== state.payload.evidenceHash) throw new Error("情报已更新，请再次点击生成");
-        state.payload.aiInsight = result; renderAiInsights(result);
-        try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
-      } finally { window.clearTimeout(timeout); }
-    })().catch(() => { if (previous) target.innerHTML = previous; else renderAiInsights(null); }).finally(() => { state.aiPromise = null; state.aiController = null; button.disabled = false; button.classList.remove("is-refreshing"); button.removeAttribute("aria-busy"); });
-    return state.aiPromise;
   }
 
   async function initialize() {
