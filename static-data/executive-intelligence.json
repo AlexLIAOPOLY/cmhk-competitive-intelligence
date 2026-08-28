@@ -14383,7 +14383,7 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-29T03:25:02+08:00",
+      "generated_at_hkt": "2026-08-29T03:30:03+08:00",
       "model": "deterministic-evidence-fallback",
       "summaries": [
         {
@@ -15498,7 +15498,7 @@
         }
       ],
       "discovery_model": "deterministic-evidence-fallback",
-      "discovery_generated_at_hkt": "2026-08-29T03:25:05+08:00",
+      "discovery_generated_at_hkt": "2026-08-29T03:30:04+08:00",
       "discovery_fallback_used": true,
       "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：跨库AI发现只有思考内容，没有最终输出",
       "evidence_hash": "f6da25e3e1867c50f47b19f1c9c28e9cfd26e70dddd477ea2abe108ffc8ddd48",
