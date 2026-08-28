@@ -2,6 +2,33 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260829_033732_371655",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+      "status_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-29T03:37:33+08:00",
+      "started_at_hkt": "2026-08-29T03:37:32+08:00",
+      "completed_at_hkt": "2026-08-29T03:37:33+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 919,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_fcee5a6c77b3c1c3851dc044",
+        "content_sha256": "fcee5a6c77b3c1c3851dc044c9be65637a5d3af622dac97bd26320469f94f0ee",
+        "release_manifest_sha256": "e8172ec6c52aeb753f88dccd3f314f939a2331b68ab417ef8f2a8d3f3bce2afc",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": "20260829_032232_884664"
+      }
+    },
+    {
       "crawl_run_id": "20260829_032728_617407",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -63,7 +90,7 @@
       "run_status": "running",
       "phase": "更新主页UI",
       "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-      "heartbeat_at_hkt": "2026-08-29T03:30:04+08:00",
+      "heartbeat_at_hkt": "2026-08-29T03:39:21+08:00",
       "started_at_hkt": "2026-08-29T03:22:32+08:00",
       "completed_at_hkt": "",
       "final_audit": {},
@@ -59314,6 +59341,6 @@
       }
     }
   ],
-  "total": 255,
+  "total": 256,
   "truncated": false
 }

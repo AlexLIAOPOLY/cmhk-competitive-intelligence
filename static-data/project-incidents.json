@@ -2,6 +2,54 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "b1f00cbb47dbab511cabb542",
+      "task_id": "incident:b1f00cbb47dbab511cabb542",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
+      "suggestions": [
+        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
+        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
+      ],
+      "occurred_at_hkt": "2026-08-29T03:37:07+08:00",
+      "started_at_hkt": "2026-08-28T22:25:04+08:00",
+      "heartbeat_at_hkt": "2026-08-29T03:37:07+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "dc1a181ee8f90204c4867a1c",
+      "task_id": "incident:dc1a181ee8f90204c4867a1c",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-29T03:37:07+08:00",
+      "started_at_hkt": "2026-08-29T03:36:03+08:00",
+      "heartbeat_at_hkt": "2026-08-29T03:37:07+08:00",
+      "completed_at_hkt": "2026-08-29T03:38:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "271cd66f2a356a823ee8ced4",
       "task_id": "incident:271cd66f2a356a823ee8ced4",
       "title": "主项目后台任务",
@@ -95,30 +143,6 @@
       "started_at_hkt": "2026-08-29T01:55:04+08:00",
       "heartbeat_at_hkt": "2026-08-29T01:55:04+08:00",
       "completed_at_hkt": "2026-08-29T01:56:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b1f00cbb47dbab511cabb542",
-      "task_id": "incident:b1f00cbb47dbab511cabb542",
-      "title": "主项目Web后台",
-      "kind": "web-app",
-      "kind_label": "主项目Web后台",
-      "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "Web后台日志出现未处理异常",
-      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
-      "suggestions": [
-        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
-        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
-      ],
-      "occurred_at_hkt": "2026-08-29T01:45:36+08:00",
-      "started_at_hkt": "2026-08-28T22:25:04+08:00",
-      "heartbeat_at_hkt": "2026-08-29T01:45:36+08:00",
-      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -291,7 +315,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-29T03:16:44+08:00",
-      "heartbeat_at_hkt": "2026-08-29T03:30:07+08:00",
+      "heartbeat_at_hkt": "2026-08-29T03:39:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12065,30 +12089,6 @@
       "started_at_hkt": "2026-08-24T19:12:57+08:00",
       "heartbeat_at_hkt": "2026-08-24T19:14:27+08:00",
       "completed_at_hkt": "2026-08-24T19:14:57+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b486004dd5b4f21fba0bc005",
-      "task_id": "incident:b486004dd5b4f21fba0bc005",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-24T17:57:49+08:00",
-      "started_at_hkt": "2026-08-24T17:57:49+08:00",
-      "heartbeat_at_hkt": "2026-08-24T17:57:49+08:00",
-      "completed_at_hkt": "2026-08-24T17:58:19+08:00",
       "handled_at_hkt": ""
     }
   ],
