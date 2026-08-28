@@ -1160,9 +1160,9 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻AI补审队列",
       "scope": "strategic-news",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
       "severity": "P2",
       "severity_label": "高",
       "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
@@ -1174,6 +1174,30 @@
       "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
       "started_at_hkt": "2026-08-28T12:31:38+08:00",
       "heartbeat_at_hkt": "2026-08-28T12:31:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "9e915a9bcf32d58313ab624a",
+      "task_id": "incident:9e915a9bcf32d58313ab624a",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T12:36:33+08:00",
+      "heartbeat_at_hkt": "2026-08-28T12:36:33+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2157,7 +2181,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T12:28:08+08:00",
-      "heartbeat_at_hkt": "2026-08-28T12:31:38+08:00",
+      "heartbeat_at_hkt": "2026-08-28T12:37:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12075,30 +12099,6 @@
       "started_at_hkt": "2026-08-21T13:05:34+08:00",
       "heartbeat_at_hkt": "2026-08-21T13:06:04+08:00",
       "completed_at_hkt": "2026-08-21T13:06:34+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "97c3343d0b4f6837370c44c1",
-      "task_id": "incident:97c3343d0b4f6837370c44c1",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-21T13:01:03+08:00",
-      "started_at_hkt": "2026-08-21T13:01:03+08:00",
-      "heartbeat_at_hkt": "2026-08-21T13:01:03+08:00",
-      "completed_at_hkt": "2026-08-21T13:01:33+08:00",
       "handled_at_hkt": ""
     }
   ],
