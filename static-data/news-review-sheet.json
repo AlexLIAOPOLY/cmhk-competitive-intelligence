@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-28T14:24:08+08:00",
+  "updatedAt": "2026-08-28T14:28:45+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -68,13 +68,7 @@
         "网络安全",
         "AI安全关注度升温催化网络安全需求，反映信息安全领域市场需求增长，可能影响电信行业网络安全投入与产品策略。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：网络安全） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "reviewedAt": "2026-08-27T08:22:16+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 4,
@@ -169,13 +163,7 @@
         "深港融合",
         "【参政议政】万人演练 见证深港融合加速属于可验证的宏观与地缘事件，影响客户与渠道。",
         "Agentic Search 覆盖补搜（模块：香港本地新闻；命中：深港融合） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 9,
@@ -194,13 +182,7 @@
         "工业和信息化部",
         "工业和信息化部：前7个月电信业务收入累计完成1.02万亿元属于可验证的市场需求事件，影响竞争格局。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：工业和信息化部） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "reviewedAt": "2026-08-28T03:42:09+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 10,
@@ -219,13 +201,7 @@
         "",
         "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256GB中阶影相神器显示正式监控竞对发生具体经营事件，影响产品与定价。",
         "Agentic Search 覆盖补搜（模块：竞争对手） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 11,
@@ -244,13 +220,7 @@
         "AI",
         "打造两座新护国神山! 台中市长卢秀燕：让AI在台中「长出手脚」进真实世界属于可验证的关键技术事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:37:10+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 13,
@@ -269,13 +239,7 @@
         "War",
         "霍尔木兹海峡航运量骤降推高油价，影响能源成本与全球供应链稳定性。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 14,
@@ -294,13 +258,7 @@
         "",
         "Vodafone Idea（Vi）是Vodafone集团在印度的合资运营商，属于被监测国际对标运营商范畴。新闻涉及AGR问题解决后的经营策略转向、网络投资进展及对行业资费上调的立场，是具体的竞对经营动作。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 15,
@@ -319,13 +277,7 @@
         "工业和信息化部",
         "工信部明确推动人工智能基金加大投资、打造人工智能+制造开源项目并预告十五五规划发布，涉及AI产业资本投入与政策方向，可影响相关市场需求与投资。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：工业和信息化部） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 16,
@@ -344,13 +296,7 @@
         "",
         "国产芯片大规模承载AI系统，反映算力基础设施与国产芯片供给的具体部署，可影响算力成本与供应韧性。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 17,
@@ -369,13 +315,7 @@
         "AI",
         "盖茨就AI对就业市场的冲击发表具体警告，涉及AI技术对社会经济结构的深远影响，可作为电信行业评估AI趋势与劳动力市场变化的战略参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ],
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
-      }
+      ]
     },
     {
       "rowNumber": 19,
@@ -421,10 +361,10 @@
         "后台固定战略词库（模块：政策监管） → Bing News搜索"
       ],
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:42:09+00:00"
       }
     },
     {
@@ -474,7 +414,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "reviewedAt": "2026-08-28T04:37:10+00:00"
       }
     },
     {
@@ -499,7 +439,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:37:10+00:00"
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -521,10 +461,10 @@
         "后台固定战略词库（模块：竞争对手；命中：Vodafone） → Bing News搜索"
       ],
       "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "reviewedAt": "2026-08-28T03:42:09+00:00"
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -774,7 +714,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "reviewedAt": "2026-08-28T04:37:10+00:00"
       }
     },
     {
@@ -796,10 +736,10 @@
         "后台固定竞对词库（HKT；命中：香港電訊） → Google News搜索"
       ],
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:42:09+00:00"
       }
     },
     {
@@ -1646,10 +1586,10 @@
         "后台固定战略词库（模块：竞争对手；命中：SoftBank） → Google News搜索"
       ],
       "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "reviewedAt": "2026-08-28T03:48:09+00:00"
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -1921,10 +1861,10 @@
         "后台固定竞对词库（i-CABLE；命中：有線寬頻） → Bing News搜索"
       ],
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:48:09+00:00"
       }
     },
     {
@@ -2899,7 +2839,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:37:10+00:00"
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -3174,7 +3114,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "reviewedAt": "2026-08-28T04:37:10+00:00"
       }
     },
     {
@@ -3249,7 +3189,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:37:10+00:00"
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -3474,7 +3414,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:37:10+00:00"
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
@@ -3524,7 +3464,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "reviewedAt": "2026-08-28T04:37:10+00:00"
       }
     },
     {
@@ -3749,7 +3689,7 @@
         "id": "news-auto-screening-bot",
         "name": "新闻自动初筛机器人",
         "avatarUrl": "",
-        "reviewedAt": "2026-08-28T04:10:37+00:00"
+        "reviewedAt": "2026-08-28T04:37:10+00:00"
       }
     },
     {
@@ -4044,7 +3984,13 @@
         "",
         "内存芯片公司对全球股市回报贡献显著，反映AI与存储芯片需求驱动的市场变化，与数据中心、算力基础设施相关。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 166,
@@ -4063,7 +4009,13 @@
         "AI",
         "美AI失控入侵报告：1200智能体暗建通信渠道交换逾7万条消息- 国际属于可验证的关键技术事件，影响网络与运营。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 167,
@@ -4082,7 +4034,13 @@
         "AI",
         "美国银行下调Intuit评级至中性，AI竞争压力加剧增长隐忧属于可验证的关键技术事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 168,
@@ -4101,7 +4059,13 @@
         "",
         "英伟达作为AI算力核心供应商，其收入指引和产能瓶颈反映AI基础设施需求持续强劲，与监控的算力、服务器、大模型等关键词存在实质关联，影响电信行业AI部署的成本与供应链。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 169,
@@ -4120,7 +4084,13 @@
         "算力",
         "华为升腾910C芯片被抢购一空，反映国产算力供需紧张，影响AI基础设施部署成本与供应。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 170,
@@ -4139,7 +4109,13 @@
         "大模型",
         "中国大模型厂商采用匿名实测新策略，反映行业竞争与监管环境变化，影响AI产业格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：大模型） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 171,
@@ -4158,7 +4134,13 @@
         "",
         "记忆体股高开低走，美光科技跌3%，川普政府拟推出新一轮半导体关税属于可验证的关键技术事件，影响供应韧性。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 172,
@@ -4177,7 +4159,13 @@
         "",
         "迈威尔科技作为数据中心芯片与网络基础设施关键供应商，营收强劲增长并上调远期指引，反映数据中心和AI网络基础设施需求持续扩张，影响电信行业供应链与算力成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 173,
@@ -4196,7 +4184,13 @@
         "AI",
         "金管局主导的GenAI测试有57家企业参与，涉及反诈骗等具体应用，反映香港金融业AI技术部署与合规需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 174,
@@ -4215,7 +4209,13 @@
         "5G",
         "中华电信推出5G儿童智慧手表资费促销，属竞对产品与资费动作，可用于对标。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 175,
@@ -4234,7 +4234,13 @@
         "AI",
         "论坛聚焦AI对创意产业IP的影响，涉及AI技术在香港创意经济中的应用与法律框架讨论，属行业层面的技术与政策交叉议题。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 178,
@@ -4272,7 +4278,13 @@
         "AI",
         "台湾地方政府推动AI与智慧城市论坛，涉及AI应用落地和城市数字化趋势，对电信行业智慧城市业务有参考意义。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-27T08:22:16+00:00"
+      }
     },
     {
       "rowNumber": 180,
