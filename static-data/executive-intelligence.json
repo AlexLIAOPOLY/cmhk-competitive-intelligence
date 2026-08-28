@@ -1871,38 +1871,53 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4889.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/01e%20-%20Annual%20Repor.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4745.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4825.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5217.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/e1-Annual-Report.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5303.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/e01_Annual%20Report.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
@@ -1930,10 +1945,13 @@
                 },
                 {
                   "label": "FY2023",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4991.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/e01-2023%20Annual%20Re.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
@@ -1988,45 +2006,67 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 797.15,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 672.102,
+                  "unit": "百万港元",
+                  "verification_count": 2,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2016_2017_annual.pdf",
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 615.243,
+                  "unit": "百万港元",
+                  "verification_count": 2,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf",
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 632.247,
+                  "unit": "百万港元",
+                  "verification_count": 2,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf",
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 378.985,
+                  "unit": "百万港元",
+                  "verification_count": 2,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf",
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 444.621,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
@@ -2113,17 +2153,23 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 682.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4766.0,
+                  "unit": "百万港元",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source_user_accepted_display",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
@@ -2200,10 +2246,14 @@
                 },
                 {
                   "label": "FY2024",
-                  "unit": "",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6.0,
+                  "unit": "百万港元",
+                  "verification_count": 2,
+                  "verification_status": "official_comparative_restated_display",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2024/ar2024.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
@@ -2357,7 +2407,7 @@
                   "unit": "百万户",
                   "verification_count": 3,
                   "source_urls": [
-                    "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+                    "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
                     "https://www.hkt.com/api-service/assets/e01-2018.02.06%20(201.pdf",
                     "https://www.hkt.com/api-service/assets/HKT%202017%20Annual%20Res.pdf"
                   ]

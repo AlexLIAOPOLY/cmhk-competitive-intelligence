@@ -3,10 +3,10 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-08-28T06:29:40+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
+      "at": "2026-08-28T07:45:24+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
       "action": "news_review.update",
       "target": "BYK3u",
       "target_type": "record",
@@ -17,10 +17,10 @@
     },
     {
       "id": "event-002",
-      "at": "2026-08-28T06:29:40+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
+      "at": "2026-08-28T07:43:55+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
       "action": "news_review.update",
       "target": "BYK3u",
       "target_type": "record",
@@ -31,10 +31,10 @@
     },
     {
       "id": "event-003",
-      "at": "2026-08-28T06:29:40+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
+      "at": "2026-08-28T07:43:55+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
       "action": "news_review.update",
       "target": "BYK3u",
       "target_type": "record",
@@ -283,7 +283,7 @@
     },
     {
       "id": "event-021",
-      "at": "2026-08-28T04:37:10+00:00",
+      "at": "2026-08-28T06:29:40+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -297,7 +297,7 @@
     },
     {
       "id": "event-022",
-      "at": "2026-08-28T04:37:10+00:00",
+      "at": "2026-08-28T06:29:40+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -311,7 +311,7 @@
     },
     {
       "id": "event-023",
-      "at": "2026-08-28T04:37:10+00:00",
+      "at": "2026-08-28T06:29:40+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -409,7 +409,7 @@
     },
     {
       "id": "event-030",
-      "at": "2026-08-28T04:10:37+00:00",
+      "at": "2026-08-28T04:37:10+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -423,7 +423,7 @@
     },
     {
       "id": "event-031",
-      "at": "2026-08-28T04:10:37+00:00",
+      "at": "2026-08-28T04:37:10+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -437,7 +437,7 @@
     },
     {
       "id": "event-032",
-      "at": "2026-08-28T04:10:37+00:00",
+      "at": "2026-08-28T04:37:10+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
