@@ -2,6 +2,54 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "ca73ec6c1ad1ef0adec48ea4",
+      "task_id": "incident:ca73ec6c1ad1ef0adec48ea4",
+      "title": "公司内部AI审核",
+      "kind": "strategic-news",
+      "kind_label": "公司内部AI审核",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "内部AI请求持续返回 HTTP 400",
+      "impact": "候选审核、去重或观察结论可能进入延期/回退，完整任务可能最终失败。",
+      "suggestions": [
+        "检查当前模型路由、请求协议、模型名称与网关返回体。",
+        "确认主模型和救援模型是否同时失败，并保留未审核候选等待后续恢复。"
+      ],
+      "occurred_at_hkt": "2026-08-28T16:56:37+08:00",
+      "started_at_hkt": "2026-08-28T16:56:37+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:56:37+08:00",
+      "completed_at_hkt": "2026-08-28T16:57:07+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "e4f4e3fdba3e2bb8aad43ead",
+      "task_id": "incident:e4f4e3fdba3e2bb8aad43ead",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T16:56:37+08:00",
+      "started_at_hkt": "2026-08-28T16:56:37+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:56:37+08:00",
+      "completed_at_hkt": "2026-08-28T16:57:07+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "298166d74bd3a721f0be8f34",
       "task_id": "incident:298166d74bd3a721f0be8f34",
       "title": "主项目后台任务",
@@ -3429,7 +3477,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T16:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-28T16:56:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T17:01:08+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11583,7 +11631,7 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T16:56:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T17:01:08+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12045,56 +12093,6 @@
       "started_at_hkt": "2026-08-24T09:08:24+08:00",
       "heartbeat_at_hkt": "2026-08-24T09:09:24+08:00",
       "completed_at_hkt": "2026-08-24T09:09:54+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0d7055a749271315be06e4d6",
-      "task_id": "incident:0d7055a749271315be06e4d6",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "本批4条记录未能完成AI批量编辑，已回退进入紧凑补审流程；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "检查公司内部AI服务的响应日志，确认返回JSON缺少'items'字段的具体原因（如模型输出截断、接口变更等）。",
-        "关联对应任务归档和候选ID，确认本批4条记录是否已成功进入紧凑补审队列，并检查补审状态。",
-        "若紧凑补审已完成且结果有效，验证任务归档状态为正常；若补审未完成或失败，保留已有结果并仅恢复失败步骤。",
-        "修复后，监控后续AI批量编辑任务的JSON响应完整性，确保不再出现字段缺失。"
-      ],
-      "occurred_at_hkt": "2026-08-24T09:07:22+08:00",
-      "started_at_hkt": "2026-08-24T09:07:22+08:00",
-      "heartbeat_at_hkt": "2026-08-24T09:07:22+08:00",
-      "completed_at_hkt": "2026-08-24T09:07:54+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "2b6c172d44031f25f06c6003",
-      "task_id": "incident:2b6c172d44031f25f06c6003",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "频率调度器超过5分钟没有轮询心跳",
-      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
-      "suggestions": [
-        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
-        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
-      ],
-      "occurred_at_hkt": "2026-08-24T03:06:05+08:00",
-      "started_at_hkt": "2026-08-24T03:06:22+08:00",
-      "heartbeat_at_hkt": "2026-08-24T03:37:05+08:00",
-      "completed_at_hkt": "2026-08-24T03:37:35+08:00",
       "handled_at_hkt": ""
     }
   ],
