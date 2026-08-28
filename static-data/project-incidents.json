@@ -45,7 +45,7 @@
       ],
       "occurred_at_hkt": "2026-08-28T08:37:25+08:00",
       "started_at_hkt": "2026-08-28T03:36:42+08:00",
-      "heartbeat_at_hkt": "2026-08-28T08:52:40+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:05:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -71,6 +71,54 @@
       "started_at_hkt": "2026-08-28T08:14:34+08:00",
       "heartbeat_at_hkt": "2026-08-28T08:14:34+08:00",
       "completed_at_hkt": "2026-08-28T08:15:04+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "aa3df08f573a7979f7a1dddf",
+      "task_id": "incident:aa3df08f573a7979f7a1dddf",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T09:00:02+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:01:02+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "de4428d98663bbdd94ed697c",
+      "task_id": "incident:de4428d98663bbdd94ed697c",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-28T08:13:54+08:00",
+      "started_at_hkt": "2026-08-28T09:04:32+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:05:03+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -741,7 +789,7 @@
       ],
       "occurred_at_hkt": "2026-08-28T03:41:27+08:00",
       "started_at_hkt": "2026-08-28T03:41:33+08:00",
-      "heartbeat_at_hkt": "2026-08-28T08:52:40+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:05:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1029,7 +1077,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 03:20:34",
       "started_at_hkt": "2026-08-28T03:29:09+08:00",
-      "heartbeat_at_hkt": "2026-08-28T08:52:40+08:00",
+      "heartbeat_at_hkt": "2026-08-28T09:05:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12053,54 +12101,6 @@
       "started_at_hkt": "2026-08-21T11:46:33+08:00",
       "heartbeat_at_hkt": "2026-08-21T11:47:03+08:00",
       "completed_at_hkt": "2026-08-21T11:47:33+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "29653469d884058a36fadcf5",
-      "task_id": "incident:29653469d884058a36fadcf5",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
-      "started_at_hkt": "2026-08-21T11:51:34+08:00",
-      "heartbeat_at_hkt": "2026-08-21T11:52:04+08:00",
-      "completed_at_hkt": "2026-08-21T11:52:34+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "591f5f6cc73d05458ed8e0de",
-      "task_id": "incident:591f5f6cc73d05458ed8e0de",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-21T10:21:31+08:00",
-      "started_at_hkt": "2026-08-21T11:58:36+08:00",
-      "heartbeat_at_hkt": "2026-08-21T11:58:36+08:00",
-      "completed_at_hkt": "2026-08-21T11:59:06+08:00",
       "handled_at_hkt": ""
     }
   ],
