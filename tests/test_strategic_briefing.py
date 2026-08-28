@@ -1260,6 +1260,8 @@ class StrategicBriefingTests(unittest.TestCase):
                     RuntimeError("temporary EOF"),
                     response,
                     response,
+                    response,
+                    response,
                 ],
             ) as lark_api,
             mock.patch.object(briefing.time, "sleep") as sleep,
@@ -1298,20 +1300,27 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(message_id, "om_notification")
         self.assertEqual(repeated_message_id, "om_notification")
         self.assertEqual(identity, "bot")
-        self.assertEqual(lark_api.call_count, 3)
+        self.assertEqual(lark_api.call_count, 5)
         first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
         second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
         self.assertEqual(first_uuid, second_uuid)
         self.assertEqual(
             first_uuid,
-            lark_api.call_args_list[2].kwargs["data"]["uuid"],
+            lark_api.call_args_list[3].kwargs["data"]["uuid"],
+        )
+        requirements_chat_uuid = lark_api.call_args_list[2].kwargs["data"]["uuid"]
+        self.assertNotEqual(first_uuid, requirements_chat_uuid)
+        self.assertEqual(
+            requirements_chat_uuid,
+            lark_api.call_args_list[4].kwargs["data"]["uuid"],
         )
         self.assertEqual(
-            {call.kwargs["data"]["receive_id"] for call in lark_api.call_args_list},
-            {briefing.PROJECT_CHAT_ID},
+            [
+                call.kwargs["data"]["receive_id"]
+                for call in lark_api.call_args_list[1:3]
+            ],
+            list(briefing.TARGET_CHAT_IDS),
         )
-        self.assertEqual(list(briefing.TARGET_CHAT_IDS), [briefing.PROJECT_CHAT_ID])
-        self.assertNotIn(briefing.REQUIREMENTS_CHAT_ID, briefing.TARGET_CHAT_IDS)
         self.assertNotIn("uuid", lark_api.call_args_list[0].kwargs["params"])
         self.assertRegex(
             first_uuid,
@@ -1319,9 +1328,15 @@ class StrategicBriefingTests(unittest.TestCase):
         )
         sleep.assert_called_once_with(1)
 
-    def test_group_push_is_project_chat_only_and_listen_stays_on_requirements_chat(self):
-        self.assertEqual(briefing.DEFAULT_TARGET_CHAT_IDS, (briefing.PROJECT_CHAT_ID,))
-        self.assertEqual(list(briefing.TARGET_CHAT_IDS), [briefing.PROJECT_CHAT_ID])
+    def test_group_push_targets_both_groups_and_listens_on_requirements_chat(self):
+        self.assertEqual(
+            briefing.DEFAULT_TARGET_CHAT_IDS,
+            (briefing.PROJECT_CHAT_ID, briefing.REQUIREMENTS_CHAT_ID),
+        )
+        self.assertEqual(
+            list(briefing.TARGET_CHAT_IDS),
+            [briefing.PROJECT_CHAT_ID, briefing.REQUIREMENTS_CHAT_ID],
+        )
         self.assertEqual(briefing.TARGET_CHAT_ID, briefing.PROJECT_CHAT_ID)
         self.assertEqual(briefing.LISTEN_CHAT_ID, briefing.REQUIREMENTS_CHAT_ID)
         self.assertNotEqual(briefing.TARGET_CHAT_ID, briefing.LISTEN_CHAT_ID)

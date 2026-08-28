@@ -551,11 +551,11 @@ MONITOR_SHEET_URL = (
 PROJECT_CHAT_ID = "oc_f86adbf0010f3e648400c377bf26179b"
 PROJECT_CHAT_NAME = "揭榜-竞争对手与行业情报监测AI应用"
 REQUIREMENTS_CHAT_ID = "oc_22bf3c7febc4bab295fedfb0b8e6c176"
-# 需求沟通群不再接收任何主动推送，只保留读取群内线索与审核回复的能力。
+# 需求沟通群同时用于每日战略新闻投递和群内线索／审核回复读取。
 LISTEN_CHAT_ID = (
     os.environ.get("CMHK_STRATEGY_LISTEN_CHAT_ID") or REQUIREMENTS_CHAT_ID
 ).strip()
-DEFAULT_TARGET_CHAT_IDS = (PROJECT_CHAT_ID,)
+DEFAULT_TARGET_CHAT_IDS = (PROJECT_CHAT_ID, REQUIREMENTS_CHAT_ID)
 _configured_target_chat_ids = os.environ.get("CMHK_STRATEGY_CHAT_IDS", "").strip()
 if _configured_target_chat_ids:
     TARGET_CHAT_IDS = tuple(
