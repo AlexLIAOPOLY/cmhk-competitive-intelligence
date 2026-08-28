@@ -76,6 +76,13 @@ AUTH = AuthService(ROOT)
 NEWS_REVIEW_AUDIT_STATE_PATH = AUTH.state_dir / "news-review-sheet-audit-state.json"
 NEWS_REVIEW_ACTOR_OVERRIDES_PATH = AUTH.state_dir / "news-review-actor-overrides.json"
 NEWS_REVIEW_SHEET_EDIT_EVENT_PATH = AUTH.state_dir / "feishu-sheet-edit-events.jsonl"
+NEWS_SELECTION_DECISIONS_PATH = ROOT / "agent_knowledge" / "news_selection_agent" / "decisions.jsonl"
+NEWS_AUTO_SCREENING_ACTOR = {
+    "id": "news-auto-screening-bot",
+    "name": "新闻自动初筛机器人",
+    "avatarUrl": "",
+    "role": "SYSTEM",
+}
 NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
 NEWS_REVIEW_ACTOR_BACKFILL_LOCK = threading.Lock()
 NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT = 0.0
@@ -4166,7 +4173,7 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
 
 
 def attach_news_review_actors(snapshot: dict) -> dict:
-    """Attach the latest authenticated human reviewer to each reviewed row."""
+    """Attach the latest verified human or robot reviewer to each reviewed row."""
     refresh_news_review_actor_overrides()
     overrides = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
     overrides = overrides if isinstance(overrides, dict) else {}
@@ -4262,6 +4269,177 @@ def refresh_news_review_actor_overrides(*, force: bool = False) -> dict[str, dic
     return overrides
 
 
+def _iso_timestamp(value: object) -> float | None:
+    try:
+        return datetime.fromisoformat(str(value or "").replace("Z", "+00:00")).timestamp()
+    except (TypeError, ValueError):
+        return None
+
+
+def _news_auto_screening_decisions() -> list[dict]:
+    """Load verified per-cell decisions written by the automatic screening Agent."""
+    try:
+        lines = NEWS_SELECTION_DECISIONS_PATH.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    decisions: list[dict] = []
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except (TypeError, ValueError):
+            continue
+        if (
+            not isinstance(record, dict)
+            or record.get("event") != "decision"
+            or record.get("write_verified") is not True
+            or not record.get("agent_run_id")
+        ):
+            continue
+        try:
+            row_number = int(record.get("row_number") or 0)
+        except (TypeError, ValueError):
+            continue
+        recorded_at = _iso_timestamp(record.get("recorded_at"))
+        if row_number < 2 or recorded_at is None:
+            continue
+        automated_fields = {str(value) for value in record.get("automated_fields") or []}
+        for field_key, field_label, before_key, after_key in (
+            ("app", "是否纳入滚动", "app_before", "app_status"),
+            ("weekly", "是否纳入周报", "weekly_before", "weekly_status"),
+        ):
+            if field_key not in automated_fields:
+                continue
+            decisions.append({
+                "row_number": row_number,
+                "title": str(record.get("title") or "").strip(),
+                "field": field_label,
+                "before": str(record.get(before_key) or ""),
+                "after": str(record.get(after_key) or ""),
+                "recorded_at": recorded_at,
+                "recorded_at_iso": str(record.get("recorded_at") or ""),
+                "agent_run_id": str(record.get("agent_run_id") or ""),
+                "model": str(record.get("model") or ""),
+                "writer_profile": str(record.get("writer_profile") or ""),
+                "writer_identity": str(record.get("writer_identity") or ""),
+                "remediation": str(record.get("remediation") or ""),
+            })
+    return decisions
+
+
+def _news_auto_screening_match(
+    *,
+    row_number: int,
+    title: str,
+    field: str,
+    before: str,
+    after: str,
+    event_at: object,
+    decisions: list[dict] | None = None,
+) -> dict | None:
+    """Match one sheet change to a verified Agent write without borrowing a human editor."""
+    event_timestamp = _iso_timestamp(event_at)
+    if event_timestamp is None:
+        return None
+    normalized_title = str(title or "").strip()
+    matches: list[tuple[int, float, dict]] = []
+    for decision in decisions if decisions is not None else _news_auto_screening_decisions():
+        if (
+            int(decision.get("row_number") or 0) != row_number
+            or str(decision.get("field") or "") != field
+            or str(decision.get("after") or "") != after
+        ):
+            continue
+        decision_title = str(decision.get("title") or "").strip()
+        if normalized_title and decision_title and not (
+            normalized_title.startswith(decision_title[:200])
+            or decision_title.startswith(normalized_title[:200])
+        ):
+            continue
+        recorded_at = float(decision.get("recorded_at") or 0)
+        delay_seconds = event_timestamp - recorded_at
+        if delay_seconds < 0 or delay_seconds > 1800:
+            continue
+        exact_before = int(str(decision.get("before") or "") == before)
+        # Remediation writes may replace a legacy Agent value (for example 暂缓)
+        # rather than the stale original "before" captured in the decision row.
+        if not exact_before and str(decision.get("writer_identity") or "") != "bot":
+            continue
+        matches.append((exact_before, recorded_at, decision))
+    if not matches:
+        return None
+    return max(matches, key=lambda item: (item[0], item[1]))[2]
+
+
+def repair_news_auto_screening_audit() -> int:
+    """Correct legacy footprints that assigned verified robot writes to a human."""
+    path = AUTH.operation_audit_path
+    try:
+        raw_lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return 0
+    decisions = _news_auto_screening_decisions()
+    if not decisions:
+        return 0
+    corrected = 0
+    output_lines: list[str] = []
+    for raw_line in raw_lines:
+        try:
+            event = json.loads(raw_line)
+        except (TypeError, ValueError):
+            output_lines.append(raw_line)
+            continue
+        details = event.get("details") if isinstance(event, dict) and isinstance(event.get("details"), dict) else {}
+        try:
+            row_number = int(details.get("sheet_row") or 0)
+        except (TypeError, ValueError):
+            row_number = 0
+        match = None
+        if (
+            isinstance(event, dict)
+            and event.get("action") == "news_review.update"
+            and event.get("result") == "success"
+            and str(event.get("actor_id") or "") != NEWS_AUTO_SCREENING_ACTOR["id"]
+        ):
+            match = _news_auto_screening_match(
+                row_number=row_number,
+                title=str(details.get("target_label") or event.get("target_label") or ""),
+                field=str(details.get("field") or ""),
+                before=str(details.get("before") or ""),
+                after=str(details.get("after") or ""),
+                event_at=event.get("at"),
+                decisions=decisions,
+            )
+        if match:
+            event["actor_id"] = NEWS_AUTO_SCREENING_ACTOR["id"]
+            event["actor_open_id"] = ""
+            event["actor_name"] = NEWS_AUTO_SCREENING_ACTOR["name"]
+            event["actor_avatar_url"] = ""
+            event["actor_role"] = NEWS_AUTO_SCREENING_ACTOR["role"]
+            details.update({
+                "source_label": "新闻自动初筛",
+                "identity_note": "由新闻自动初筛机器人写入；已按行号、标题、字段、状态和时间窗口与 Agent 决策审计核验",
+                "agent_run_id": str(match.get("agent_run_id") or ""),
+                "agent_recorded_at": str(match.get("recorded_at_iso") or ""),
+                "model": str(match.get("model") or ""),
+                "writer_profile": str(match.get("writer_profile") or ""),
+                "identity_corrected": True,
+            })
+            event["details"] = details
+            corrected += 1
+        output_lines.append(json.dumps(event, ensure_ascii=False, separators=(",", ":")))
+    if not corrected:
+        return 0
+    backup_path = path.with_name(f"{path.name}.before-news-auto-screening-identity-repair")
+    if not backup_path.exists():
+        backup_path.write_text("\n".join(raw_lines) + "\n", encoding="utf-8")
+        os.chmod(backup_path, 0o600)
+    temp_path = path.with_name(f".{path.name}.news-auto-screening.tmp")
+    temp_path.write_text("\n".join(output_lines) + "\n", encoding="utf-8")
+    os.chmod(temp_path, 0o600)
+    temp_path.replace(path)
+    return corrected
+
+
 def sync_news_review_sheet_audit(
     snapshot: dict,
     *,
@@ -4335,6 +4513,9 @@ def sync_news_review_sheet_audit(
                 "avatarUrl": operator_profiles[0].get("avatar_url", "") if len(operator_profiles) == 1 else "",
                 "role": "EXTERNAL",
             }
+        agent_decisions = _news_auto_screening_decisions()
+        audit_at = datetime.now().astimezone().isoformat()
+        used_editor_event = False
         if same_sheet and isinstance(previous_rows, dict):
             for row_key, current in current_rows.items():
                 before_row = previous_rows.get(row_key)
@@ -4350,36 +4531,60 @@ def sync_news_review_sheet_audit(
                     after = str(after_decisions[column_index] or "")
                     if before == after or (row_number, column_index, before, after) in ignored:
                         continue
-                    if actor is None:
-                        # Keep the previous value as the comparison baseline until
-                        # the matching Feishu editor event can be resolved.
-                        current["decisions"][column_index] = before
-                        continue
                     field_label = str(headers[column_index] if len(headers) > column_index else f"审批列{column_index + 1}")
                     title = str(current.get("title") or f"飞书审核表第 {row_number} 行")
+                    agent_match = _news_auto_screening_match(
+                        row_number=row_number,
+                        title=title,
+                        field=field_label,
+                        before=before,
+                        after=after,
+                        event_at=audit_at,
+                        decisions=agent_decisions,
+                    )
+                    cell_actor = NEWS_AUTO_SCREENING_ACTOR if agent_match else actor
+                    if cell_actor is None:
+                        # Keep the previous value as the comparison baseline until
+                        # either a verified Agent write or a Feishu editor resolves it.
+                        current["decisions"][column_index] = before
+                        continue
+                    if not agent_match:
+                        used_editor_event = True
+                    details = {
+                        "source_label": "新闻自动初筛" if agent_match else "飞书表格",
+                        "target_label": title,
+                        "sheet_row": row_number,
+                        "decision_rows": [row_number],
+                        "field": field_label,
+                        "before": before,
+                        "after": after,
+                    }
+                    if agent_match:
+                        details.update({
+                            "identity_note": "由新闻自动初筛机器人写入；已按行号、标题、字段、状态和时间窗口与 Agent 决策审计核验",
+                            "agent_run_id": str(agent_match.get("agent_run_id") or ""),
+                            "agent_recorded_at": str(agent_match.get("recorded_at_iso") or ""),
+                            "model": str(agent_match.get("model") or ""),
+                            "writer_profile": str(agent_match.get("writer_profile") or ""),
+                        })
+                    else:
+                        details.update({
+                            "identity_note": "操作者来自飞书 drive.file.edit_v1 事件，并经组织通讯录解析",
+                            "feishu_event_id": str(editor_event.get("event_id") or ""),
+                        })
                     events.append(AUTH.record_operation(
-                        actor=actor,
+                        actor=cell_actor,
                         action="news_review.update",
                         target=sheet_id,
                         source="feishu_sheet",
-                        details={
-                            "source_label": "飞书表格",
-                            "target_label": title,
-                            "sheet_row": row_number,
-                            "decision_rows": [row_number],
-                            "field": field_label,
-                            "before": before,
-                            "after": after,
-                            "identity_note": "操作者来自飞书 drive.file.edit_v1 事件，并经组织通讯录解析",
-                            "feishu_event_id": str(editor_event.get("event_id") or ""),
-                        },
+                        details=details,
                     ))
         next_state = {
             "sheet_id": sheet_id,
             "rows": current_rows,
             "last_feishu_event_ms": int(
                 (editor_event.get("create_time_ms") or previous_event_ms)
-                if events
+                if used_editor_event
                 else previous_event_ms
             ),
         }
@@ -6541,6 +6746,9 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    corrected_footprints = repair_news_auto_screening_audit()
+    if corrected_footprints:
+        print(f"已校正 {corrected_footprints} 条新闻自动初筛机器人身份足迹", flush=True)
     interrupted = reconcile_interrupted_crawl_runs()
     if interrupted:
         print(f"Reconciled {len(interrupted)} interrupted crawl run(s)", flush=True)

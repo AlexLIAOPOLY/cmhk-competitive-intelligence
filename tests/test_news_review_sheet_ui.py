@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import nullcontext
 from datetime import datetime
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -265,6 +266,99 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
                 saved = service._read(state_path, {})
                 self.assertEqual(saved["rows"]["2"]["decisions"][0], "待审核")
+
+    def test_verified_agent_write_uses_robot_instead_of_latest_human_editor(self) -> None:
+        def snapshot(status: str) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{"rowNumber": 8, "values": sheet_row(status, "待审核", "未同步", "", "", "", "机器人新闻")}],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            service = AuthService(root)
+            decisions_path = root / "decisions.jsonl"
+            decisions_path.write_text(json.dumps({
+                "event": "decision",
+                "recorded_at": datetime.now().astimezone().isoformat(),
+                "agent_run_id": "agent-run-1",
+                "row_number": 8,
+                "title": "机器人新闻",
+                "automated_fields": ["app"],
+                "app_before": "待审核",
+                "app_status": "不接受",
+                "write_verified": True,
+                "writer_identity": "bot",
+                "writer_profile": "bot-profile-1",
+            }, ensure_ascii=False) + "\n", encoding="utf-8")
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", service.state_dir / "news-review-sheet-audit-state.json"),
+                mock.patch.object(web_app, "NEWS_SELECTION_DECISIONS_PATH", decisions_path),
+                mock.patch.object(web_app, "sheet_edit_events", return_value=[{
+                    "event_id": "unrelated-human-event",
+                    "create_time_ms": 1787638413000,
+                    "operators": [{"open_id": "ou_alice"}],
+                }]),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice", "name": "Alice Chen", "avatar_url": "https://example.com/alice.png",
+                }),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                events = web_app.sync_news_review_sheet_audit(snapshot("不接受"))
+
+            self.assertEqual(len(events), 1)
+            self.assertEqual(events[0]["actor_id"], "news-auto-screening-bot")
+            self.assertEqual(events[0]["actor_name"], "新闻自动初筛机器人")
+            self.assertEqual(events[0]["actor_role"], "SYSTEM")
+            self.assertEqual(events[0]["details"]["agent_run_id"], "agent-run-1")
+            self.assertNotIn("feishu_event_id", events[0]["details"])
+
+    def test_legacy_robot_footprint_is_corrected_without_touching_earlier_manual_review(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            service = AuthService(root)
+            decisions_path = root / "decisions.jsonl"
+            decisions_path.write_text(json.dumps({
+                "event": "decision",
+                "recorded_at": "2026-08-28T12:07:01+08:00",
+                "agent_run_id": "agent-run-1",
+                "row_number": 8,
+                "title": "机器人新闻",
+                "automated_fields": ["app"],
+                "app_before": "待审核",
+                "app_status": "不接受",
+                "write_verified": True,
+            }, ensure_ascii=False) + "\n", encoding="utf-8")
+            manual = service.record_operation(
+                actor={"id": "human-1", "name": "人工审核人"},
+                action="news_review.update",
+                source="feishu_sheet",
+                details={"sheet_row": 8, "target_label": "机器人新闻", "decision_rows": [8], "field": "是否纳入滚动", "before": "待审核", "after": "接受"},
+            )
+            robot = service.record_operation(
+                actor={"id": "human-1", "name": "被误用的人工审核人"},
+                action="news_review.update",
+                source="feishu_sheet",
+                details={"sheet_row": 8, "target_label": "机器人新闻", "decision_rows": [8], "field": "是否纳入滚动", "before": "待审核", "after": "不接受"},
+            )
+            lines = service.operation_audit_path.read_text(encoding="utf-8").splitlines()
+            records = [json.loads(line) for line in lines]
+            records[0]["at"] = "2026-08-28T03:42:09+00:00"
+            records[1]["at"] = "2026-08-28T04:10:37+00:00"
+            service.operation_audit_path.write_text("\n".join(json.dumps(item, ensure_ascii=False) for item in records) + "\n", encoding="utf-8")
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_SELECTION_DECISIONS_PATH", decisions_path),
+            ):
+                corrected = web_app.repair_news_auto_screening_audit()
+
+            by_id = {item["id"]: item for item in service.operation_audit(limit=10)}
+            self.assertEqual(corrected, 1)
+            self.assertEqual(by_id[manual["id"]]["actor_id"], "human-1")
+            self.assertEqual(by_id[robot["id"]]["actor_id"], "news-auto-screening-bot")
+            self.assertTrue(by_id[robot["id"]]["details"]["identity_corrected"])
 
     def test_new_sheet_rows_establish_a_baseline_without_false_footprints(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
