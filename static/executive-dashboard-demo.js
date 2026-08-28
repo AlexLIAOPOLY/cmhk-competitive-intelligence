@@ -458,6 +458,7 @@
 
   function normalizeFinancialReport(report) {
     const values = new Map((report.metrics || []).map((metric) => [metric.metric_key, metric.value]));
+    const period = report.period || "最新披露期";
     const revenue = metricNumber(values.get("revenue"));
     const ebitda = metricNumber(values.get("ebitda"));
     const profit = metricNumber(values.get("net_profit"));
@@ -470,15 +471,15 @@
     return {
       key: companyKey(report.company),
       company: companyKey(report.company) === "three" ? "3香港" : report.company,
-      period: report.period || "最新披露期",
+      period,
       metrics: normalized.map(({ label, numeric, unit, decimals }, index) => {
         const disclosed = Number.isFinite(numeric);
         return {
           label,
           value: disclosed ? numeric.toFixed(decimals) : "—",
           unit: disclosed ? unit : "",
-          trend: disclosed ? "最新披露" : "未披露",
-          periods: [disclosed ? "最新披露" : "未披露"],
+          trend: disclosed ? period : "未披露",
+          periods: [disclosed ? period : "未披露"],
           values: [disclosed ? numeric : 0],
           valueLabels: [disclosed ? numeric.toFixed(decimals) : "—"],
           gauge: disclosed ? (index === 1 ? Math.min(100, numeric * 2) : 72) : 0
@@ -714,12 +715,15 @@
       unit,
       rows: metrics.map(({ profile, metric }) => {
         const numeric = metric?.value === "—" ? null : Number(metric?.values?.at(-1));
+        const periodNote = sectionKey === "finance" && metric?.value !== "—"
+          ? (profile.key === "cmhk" ? "2026首7月" : (metric?.periods?.at(-1) || ""))
+          : "";
         return {
           company: comparisonCompanyNames[profile.key] || profile.company,
           value: Number.isFinite(numeric) ? numeric : null,
           chartDisplay: metric?.value === "—" ? "—" : (metric?.value || "—"),
-          periodNote: sectionKey === "finance" && profile.key === "cmhk" && metric?.value !== "—" ? "2026首7月" : "",
-          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}${sectionKey === "finance" && profile.key === "cmhk" ? "｜2026首7月" : ""}`,
+          periodNote,
+          display: metric?.value === "—" ? "—" : `${metric?.value || "—"}${metric?.unit ? ` ${metric.unit}` : ""}${periodNote ? `｜${periodNote}` : ""}`,
           status: metric?.value === "—" ? "未披露" : (metric?.trend || "最新披露")
         };
       })
