@@ -2762,7 +2762,7 @@ def _run_scan_impl(
             "error": _clean_text(exc, 600),
             "readback_verified": False,
         }
-        logging.exception("新闻偏好学习 Agent 失败，原新闻爬虫结果仍保留")
+        logging.exception("新闻自动初筛失败，原新闻爬虫结果仍保留")
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,

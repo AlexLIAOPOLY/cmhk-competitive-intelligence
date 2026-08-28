@@ -2469,7 +2469,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             previous = existing_sheet.get(row["news_id"], {})
             agent_decision = agent_decisions.get(row["news_id"], {})
             approved_by = (
-                "新闻偏好学习 Agent"
+                "新闻自动初筛"
                 if agent_decision.get("write_verified") is True
                 and agent_decision.get("app_status") == "接受"
                 else "飞书表格人工审核"
@@ -2491,12 +2491,12 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "approved_by": approved_by,
                     "approval_agent_run_id": (
                         _text(agent_decision.get("agent_run_id"), 120)
-                        if approved_by == "新闻偏好学习 Agent"
+                        if approved_by == "新闻自动初筛"
                         else ""
                     ),
                     "approval_model": (
                         _text(agent_decision.get("model"), 120)
-                        if approved_by == "新闻偏好学习 Agent"
+                        if approved_by == "新闻自动初筛"
                         else ""
                     ),
                     "approval_source": SHEET_SOURCE,

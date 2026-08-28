@@ -231,7 +231,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=310"', html)
+        self.assertIn('src="/static/app.js?v=311"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -297,7 +297,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=310"', html)
+        self.assertIn('src="/static/app.js?v=311"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -680,6 +680,19 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(task["title"], "战略新闻定时爬虫")
         self.assertEqual(task["lines"], 6)
 
+    def test_news_selection_task_uses_news_auto_screening_name(self) -> None:
+        task = web_app._normalize_crawl_task(
+            {
+                "crawl_run_id": "selection-1",
+                "task_kind": "news-selection-agent",
+                "trigger": "新闻偏好学习与自动勾选 Agent",
+                "run_status": "completed",
+            }
+        )
+
+        self.assertEqual(task["kind_label"], "新闻自动初筛")
+        self.assertEqual(task["title"], "新闻自动初筛")
+
     def test_same_strategic_slot_is_numbered_as_retry_chain(self) -> None:
         slot = "晨间扫描（2026-08-18@09:00）"
         other_slot = "午后扫描（2026-08-18@15:00）"
@@ -865,7 +878,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertIn('href="/static/leadership-board.css?v=19"', html)
-        self.assertIn('src="/static/app.js?v=310"', html)
+        self.assertIn('src="/static/app.js?v=311"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
         self.assertNotIn('["pointerenter", "focusin", "touchstart"]', snapshot_builder)

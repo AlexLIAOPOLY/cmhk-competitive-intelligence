@@ -3458,7 +3458,7 @@ function unifiedTaskKindLabel(task) {
   if (task.kind === "weekly-report") return "周报生成";
   if (task.kind === "carrier-performance") return "业绩摘要";
   if (task.kind === "audio-generation") return "音频生成";
-  if (task.kind === "news-selection-agent") return "新闻偏好学习 Agent";
+  if (task.kind === "news-selection-agent") return "新闻自动初筛";
   return "后台任务";
 }
 

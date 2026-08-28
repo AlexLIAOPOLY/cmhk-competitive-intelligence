@@ -4054,7 +4054,7 @@ def _normalize_crawl_task(run: dict) -> dict:
     task_kind = str(run.get("task_kind") or "crawl")
     kind_labels = {
         "strategic-news": "新闻爬虫",
-        "news-selection-agent": "新闻偏好学习 Agent",
+        "news-selection-agent": "新闻自动初筛",
         "four-database-source-discovery": "01:00四库资料搜索",
         "executive-intelligence-refresh": "四库刷新",
         "crawl": "爬虫",
@@ -4067,7 +4067,11 @@ def _normalize_crawl_task(run: dict) -> dict:
         "task_run_id": crawl_id,
         "kind": task_kind,
         "kind_label": kind_labels.get(task_kind, "后台任务"),
-        "title": str(run.get("trigger") or "爬虫任务"),
+        "title": (
+            "新闻自动初筛"
+            if task_kind == "news-selection-agent"
+            else str(run.get("trigger") or "爬虫任务")
+        ),
         "scope": str(run.get("scope") or "未记录范围"),
         "run_status": str(run.get("run_status") or "completed"),
         "started_at_hkt": str(run.get("started_at_hkt") or ""),

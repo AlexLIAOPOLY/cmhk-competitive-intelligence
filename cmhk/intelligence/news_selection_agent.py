@@ -474,7 +474,7 @@ def run_news_selection_agent(
     """Learn human choices and auto-review only this crawl's pending rows."""
     started = time.monotonic()
     run = start_crawl_run(
-        trigger="新闻偏好学习与自动勾选 Agent",
+        trigger="新闻自动初筛",
         scope=f"爬虫后选材（{_text(idempotency_key, 120) or '未命名轮次'}）",
         task_kind="news-selection-agent",
         parent_crawl_run_id=parent_crawl_run_id,
@@ -704,7 +704,7 @@ def run_news_selection_agent(
         )
         return result
     except Exception as exc:
-        detail = "新闻偏好学习 Agent 失败：" + _text(exc, 700)
+        detail = "新闻自动初筛失败：" + _text(exc, 700)
         try:
             append_crawl_run_event(
                 stream_log_path,
