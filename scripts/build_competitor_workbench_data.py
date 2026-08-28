@@ -28,6 +28,7 @@ SOURCES = (
 REQUESTED_OVERVIEW_SOURCES = (
     ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
     ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
+    ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json",
 )
 REQUESTED_OVERVIEW_DATASET_ID = "requested_overview_010304_2016_2025"
 KNOWLEDGE_BASE_META = {
@@ -158,8 +159,6 @@ def add_requested_overview_cells(
                         continue
                     source_urls = list(dict.fromkeys(str(url) for url in (point.get("source_urls") or []) if url))
                     verification_count = int(point.get("verification_count") or 0)
-                    if verification_count < 3 or len(source_urls) < 3:
-                        raise ValueError(f"three-source gate failed: {domain_id}/{focus_id}/{company}/{point.get('label')}")
                     year = int(str(point.get("label") or "").removeprefix("FY"))
                     unit = unit_keys.get(str(point.get("unit") or ""), str(point.get("unit") or ""))
                     meta = metric_meta.setdefault(metric, {
@@ -174,6 +173,7 @@ def add_requested_overview_cells(
                         meta["units"].append(unit)
                     meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                     availability[(company, metric)].add(year)
+                    fully_verified = verification_count >= 3 and len(source_urls) >= 3
                     cells.append({
                         "dataset": REQUESTED_OVERVIEW_DATASET_ID,
                         "company": company,
@@ -185,12 +185,12 @@ def add_requested_overview_cells(
                         "period": f"FY{year}",
                         "periodEnd": f"{year}-12-31",
                         "scope": f"战略总览{index}；{focus.get('label') or focus_id}绝对值；沿用公司原生披露口径",
-                        "basis": "三份不同官方文件核验",
-                        "status": "official_three_distinct_sources_verified",
-                        "source": source_urls[0],
+                        "basis": "三份不同官方文件核验" if fully_verified else "官方数值已入库；来源数量不足不影响展示",
+                        "status": "official_three_distinct_sources_verified" if fully_verified else str(point.get("verification_status") or "official_source_count_below_three_displayed"),
+                        "source": source_urls[0] if source_urls else "",
                         "sources": source_urls,
                         "verificationCount": verification_count,
-                        "note": "不展示增速或利润率；不同单位不直接比较。",
+                        "note": "不展示增速或利润率；不同单位不直接比较。" if fully_verified else "来源质量仅作提示，不再作为前端隐藏条件；已有数值必须展示。",
                     })
 
 
@@ -294,7 +294,7 @@ def main() -> None:
         "id": REQUESTED_OVERVIEW_DATASET_ID,
         "label": "战略总览01/03/04十年数据",
         "type": "营收 + EBITDA + 净利润 + 后付费用户数 + 云收入/利润/资本开支",
-        "scope": "01香港电讯市场 + 03内地运营商 + 04全球云厂商 · 2016–2025 · 三来源门禁",
+        "scope": "01香港电讯市场 + 03内地运营商 + 04全球云厂商 · 2016–2025 · 已有数值不因来源数量隐藏",
         "companyCount": len({cell["company"] for cell in overview_cells}),
         "metricCount": len({cell["metric"] for cell in overview_cells}),
         "cellCount": len(overview_cells),
@@ -307,7 +307,10 @@ def main() -> None:
         digest.update(source.name.encode("utf-8"))
         digest.update(source.read_bytes())
     payload = {
-        "generatedAt": datetime.fromtimestamp(max(source.stat().st_mtime for source in SOURCES), tz=timezone.utc).isoformat(),
+        "generatedAt": datetime.fromtimestamp(
+            max(source.stat().st_mtime for source in SOURCES + REQUESTED_OVERVIEW_SOURCES),
+            tz=timezone.utc,
+        ).isoformat(),
         "evidenceVersion": digest.hexdigest(),
         "sourceDatasets": [source.parent.name for source in SOURCES] + [REQUESTED_OVERVIEW_DATASET_ID],
         "knowledgeBases": knowledge_bases,

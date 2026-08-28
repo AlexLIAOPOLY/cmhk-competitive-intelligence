@@ -147,6 +147,34 @@
       "evidence_note": "华为2024年报物业、厂房及设备附注披露全年新增52476百万元人民币；按本地FY2024展示汇率1美元兑7.189元人民币折算为7299.5百万美元。该值为华为集团资产新增口径，不是华为云独立资本开支。"
     }
   ],
+  "historical_public_facts": [
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "revenue",
+      "period": "FY2016",
+      "value": 18355.611,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2015/16官方年报披露集团全年营收18,355.611百万港元；来源数量不足三份仍保留展示。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "ebitda",
+      "period": "FY2016",
+      "value": 2660.528,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2015/16官方年报披露集团全年EBITDA 2,660.528百万港元；来源数量不足三份仍保留展示。"
+    }
+  ],
   "gap_classifications": [
     {"domain": "local", "focus": "revenue", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立营收。"},
     {"domain": "local", "focus": "ebitda", "entity": "CMHK", "status": "public_not_found", "display": "未见独立披露", "note": "中国移动集团披露未单列CMHK独立EBITDA。"},

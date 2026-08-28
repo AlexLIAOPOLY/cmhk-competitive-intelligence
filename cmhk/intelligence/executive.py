@@ -732,16 +732,21 @@ def _annual_financial_value(
             "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
             "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
         ]))
-    if len(urls) < 3:
-        return None
     value = sum(float(_verified_number(row) or 0) for row in selected)
     return {
         "value": value,
         "unit": str(selected[0].get("official_unit") or selected[0].get("unit") or ""),
         "period": f"FY{year}",
         "source_urls": urls,
-        "source_url": urls[0],
+        "source_url": urls[0] if urls else "",
         "verification_count": len(urls),
+        "verification_status": (
+            "official_three_distinct_sources_verified"
+            if len(urls) >= 3
+            else "official_source_count_below_three_displayed"
+            if urls
+            else "official_value_without_source_url_displayed"
+        ),
     }
 
 
@@ -813,6 +818,39 @@ def _direct_annual_financial_value(
     }
 
 
+def _audited_historical_financial_value(
+    company: str, metric: str, year: int
+) -> dict[str, Any] | None:
+    """Return a source-backed annual value retained for display despite a short source list."""
+    audit = _read_json_optional(ONLINE_GAP_AUDIT_PATH, {})
+    fact = next((
+        item for item in (audit.get("historical_public_facts") or [])
+        if isinstance(item, dict)
+        and str(item.get("entity") or "") == company
+        and str(item.get("metric") or "") == metric
+        and str(item.get("period") or "") == f"FY{year}"
+        and _number(item.get("value")) is not None
+    ), None)
+    if not fact:
+        return None
+    source_urls = [
+        str(url) for url in (fact.get("source_urls") or [])
+        if str(url).startswith(("https://", "http://"))
+    ]
+    return {
+        "value": float(_number(fact.get("value")) or 0),
+        "unit": str(fact.get("unit") or "millions HKD"),
+        "period": f"FY{year}",
+        "source_urls": source_urls,
+        "source_url": source_urls[0] if source_urls else "",
+        "verification_count": len(source_urls),
+        "verification_status": str(
+            fact.get("verification_status")
+            or "official_source_count_below_three_displayed"
+        ),
+    }
+
+
 def _annual_financial_trend(
     rows: list[dict[str, Any]], subject: str, metric: str, *, divisor: float = 1.0, unit: str,
     start_year: int = 2016, end_year: int = 2025,
@@ -823,12 +861,14 @@ def _annual_financial_trend(
         annual = (
             _direct_annual_financial_value(direct_reports or [], company, metric, year)
             or _annual_financial_value(rows, subject, metric, year)
+            or _audited_historical_financial_value(company, metric, year)
         )
         trend.append({
             "label": f"FY{year}",
             "value": round(float(annual["value"]) / divisor, 3) if annual else None,
             "unit": unit if annual else "",
             "verification_count": int((annual or {}).get("verification_count") or 0),
+            "verification_status": str((annual or {}).get("verification_status") or ""),
             "source_urls": list((annual or {}).get("source_urls") or []),
         })
     return trend
