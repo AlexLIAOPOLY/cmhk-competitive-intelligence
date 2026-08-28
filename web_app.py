@@ -4177,7 +4177,9 @@ def attach_news_review_actors(snapshot: dict) -> dict:
     refresh_news_review_actor_overrides()
     overrides = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
     overrides = overrides if isinstance(overrides, dict) else {}
-    reviewers: dict[int, dict[str, str]] = {}
+    reviewers_by_row_title: dict[tuple[int, str], dict[str, str]] = {}
+    reviewers_by_title: dict[str, dict[str, str]] = {}
+    reviewers_without_title: dict[int, dict[str, str]] = {}
     for event in AUTH.operation_audit(limit=1000):
         if event.get("action") != "news_review.update" or event.get("result") != "success":
             continue
@@ -4187,6 +4189,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
                 continue
         details = event.get("details") if isinstance(event.get("details"), dict) else {}
         decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
+        reviewed_title = str(details.get("target_label") or event.get("target_label") or "").strip()
         reviewer = {
             "id": str((override or {}).get("id") or event.get("actor_id") or ""),
             "name": str((override or {}).get("name") or event.get("actor_name") or "未知用户"),
@@ -4198,14 +4201,25 @@ def attach_news_review_actors(snapshot: dict) -> dict:
                 row_number = int(raw_row_number)
             except (TypeError, ValueError):
                 continue
-            reviewers.setdefault(row_number, reviewer)
+            if reviewed_title:
+                reviewers_by_row_title.setdefault((row_number, reviewed_title), reviewer)
+                reviewers_by_title.setdefault(reviewed_title, reviewer)
+            else:
+                reviewers_without_title.setdefault(row_number, reviewer)
     for row in snapshot.get("rows") or []:
         if not isinstance(row, dict):
             continue
         try:
-            reviewer = reviewers.get(int(row.get("rowNumber") or 0))
+            row_number = int(row.get("rowNumber") or 0)
         except (TypeError, ValueError):
-            reviewer = None
+            row_number = 0
+        values = row.get("values") if isinstance(row.get("values"), list) else []
+        title = str(values[6] if len(values) > 6 else "").strip()
+        reviewer = (
+            reviewers_by_row_title.get((row_number, title))
+            or reviewers_by_title.get(title)
+            or reviewers_without_title.get(row_number)
+        )
         if reviewer:
             row["reviewer"] = reviewer
     return snapshot

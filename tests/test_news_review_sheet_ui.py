@@ -181,6 +181,26 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
 
+    def test_reviewer_is_not_borrowed_by_a_new_title_inserted_at_the_same_row(self) -> None:
+        snapshot = {"rows": [
+            {"rowNumber": 8, "values": sheet_row("待审核", "待审核", "未同步", "", "", "", "新插入新闻")},
+            {"rowNumber": 18, "values": sheet_row("不接受", "不接受", "已移除", "", "", "", "原机器人新闻")},
+        ]}
+        events = [{
+            "at": "2026-08-28T04:10:37+00:00",
+            "actor_id": "news-auto-screening-bot",
+            "actor_name": "新闻自动初筛机器人",
+            "actor_role": "SYSTEM",
+            "action": "news_review.update",
+            "result": "success",
+            "details": {"decision_rows": [8], "target_label": "原机器人新闻"},
+        }]
+        with mock.patch.object(web_app.AUTH, "operation_audit", return_value=events):
+            result = web_app.attach_news_review_actors(snapshot)
+
+        self.assertNotIn("reviewer", result["rows"][0])
+        self.assertEqual(result["rows"][1]["reviewer"]["name"], "新闻自动初筛机器人")
+
     def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             service = AuthService(Path(temp_dir))
