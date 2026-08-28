@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-29T04:51:06+08:00",
+  "checked_at_hkt": "2026-08-29T04:55:55+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -729,160 +729,31 @@
       }
     },
     "four_database_refresh": {
-      "crawl_run_id": "20260829_032232_884664",
+      "crawl_run_id": "20260829_045259_185265",
       "trigger": "四库与观察结论自动更新",
-      "scope": "Agent审核 scheduled_20260829_030001_119063 · 父任务 20260829_030001_119063",
+      "scope": "Agent审核 scheduled_20260829_030001_119063 · 父任务 20260829_030001_119063 · 守护补跑",
       "task_kind": "executive-intelligence-refresh",
       "parent_crawl_run_id": "20260829_030001_119063",
-      "run_status": "completed",
-      "backend_pid": 3407,
-      "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "在线AI连续 3 次未通过后，已使用通过全部证据门禁的确定性回退；15个洞察及公开页面回读完整。",
-      "heartbeat_at_hkt": "2026-08-29T03:40:21+08:00",
-      "started_at_hkt": "2026-08-29T03:22:32+08:00",
-      "completed_at_hkt": "2026-08-29T03:40:21+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 1067960,
+      "run_status": "running",
+      "backend_pid": 24394,
+      "worker_pid": 24394,
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-29T04:55:16+08:00",
+      "started_at_hkt": "2026-08-29T04:52:59+08:00",
+      "completed_at_hkt": "",
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260829_032232_884664.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260829_045259_185265.jsonl"
       },
       "stream_log": {
-        "bytes": 10273,
-        "lines": 59
+        "bytes": 2342,
+        "lines": 14
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {},
-      "status_detail": "在线AI连续 3 次未通过后，已使用通过全部证据门禁的确定性回退；15个洞察及公开页面回读完整。",
-      "failure_stage": "",
-      "operational_summary": {
-        "attempts": 3,
-        "agent_run_id": "scheduled_20260829_030001_119063",
-        "failed_domains": [],
-        "status": "completed_with_fallback",
-        "notification_policy": "local_log_only",
-        "model_analysis": {
-          "ok": true,
-          "generated_at_hkt": "2026-08-29T03:39:20+08:00",
-          "model": "deterministic-evidence-fallback",
-          "domains": 4,
-          "focuses_expected": 15,
-          "focuses_passed": 15,
-          "reused": false,
-          "fallback_used": true,
-          "fallback_reason": "HTTP Error 400: Bad Request",
-          "evidence_hash": "f6da25e3e1867c50f47b19f1c9c28e9cfd26e70dddd477ea2abe108ffc8ddd48",
-          "discovery_model": "deterministic-evidence-fallback",
-          "discovery_fallback_used": true,
-          "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：跨库AI发现只有思考内容，没有最终输出"
-        },
-        "pages_publish": {
-          "ok": true,
-          "attempts": 1,
-          "status": "published",
-          "site_version": "980cf0a0069663cab94786042f57cfb77ba422508d12b865380cf9da46d7adf9",
-          "item_count": 8,
-          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-          "commit": "2c18cb2d92fe3037ce854699ae1c5f6ab1e1adc4",
-          "snapshot_source_url": ""
-        },
-        "feishu_detail_log": {
-          "ok": true,
-          "written": 0,
-          "skipped": 659,
-          "sheet_title": "四库爬虫明细日志",
-          "row_start": 10610,
-          "row_end": 11268,
-          "readback_verified": true,
-          "readback_reason": "previously_verified_event_ids"
-        },
-        "failure_stage": "",
-        "overview_source_recrawl": {
-          "ok": true,
-          "path": "",
-          "official_urls": 608,
-          "retrieved": 487,
-          "failed": 121,
-          "postpaid_rows": 140,
-          "postpaid_values": 20,
-          "content_changed": 5,
-          "first_observation": 4,
-          "fingerprint_baseline_upgraded": 0,
-          "domains": {
-            "local": {
-              "official_urls": 140,
-              "retrieved": 140,
-              "failed": 0,
-              "content_changed": 2,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "international": {
-              "official_urls": 100,
-              "retrieved": 52,
-              "failed": 48,
-              "content_changed": 0,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "mainland": {
-              "official_urls": 239,
-              "retrieved": 229,
-              "failed": 10,
-              "content_changed": 0,
-              "first_observation": 4,
-              "fingerprint_baseline_upgraded": 0
-            },
-            "cloud": {
-              "official_urls": 135,
-              "retrieved": 72,
-              "failed": 63,
-              "content_changed": 3,
-              "first_observation": 0,
-              "fingerprint_baseline_upgraded": 0
-            }
-          },
-          "annual_facts": 310,
-          "fact_sources": 422
-        },
-        "ui_value_changes": {
-          "baseline_available": true,
-          "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
-          "changed": 0,
-          "added": 0,
-          "removed": 0,
-          "domains": {
-            "local": {
-              "baseline_available": true,
-              "changed": 0,
-              "added": 0,
-              "removed": 0
-            },
-            "international": {
-              "baseline_available": true,
-              "changed": 0,
-              "added": 0,
-              "removed": 0
-            },
-            "mainland": {
-              "baseline_available": true,
-              "changed": 0,
-              "added": 0,
-              "removed": 0
-            },
-            "cloud": {
-              "baseline_available": true,
-              "changed": 0,
-              "added": 0,
-              "removed": 0
-            }
-          },
-          "items": []
-        }
-      }
+      "metrics_refresh": {}
     }
   },
   "pipeline": {

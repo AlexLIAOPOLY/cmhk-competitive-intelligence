@@ -2,6 +2,47 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260829_045326_996446",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+      "status_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-29T04:53:27+08:00",
+      "started_at_hkt": "2026-08-29T04:53:26+08:00",
+      "completed_at_hkt": "2026-08-29T04:53:27+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 835,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_fcee5a6c77b3c1c3851dc044",
+        "content_sha256": "fcee5a6c77b3c1c3851dc044c9be65637a5d3af622dac97bd26320469f94f0ee",
+        "release_manifest_sha256": "e8172ec6c52aeb753f88dccd3f314f939a2331b68ab417ef8f2a8d3f3bce2afc",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": "20260829_045259_185265"
+      }
+    },
+    {
+      "crawl_run_id": "20260829_045259_185265",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 scheduled_20260829_030001_119063 · 父任务 20260829_030001_119063 · 守护补跑",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-29T04:55:16+08:00",
+      "started_at_hkt": "2026-08-29T04:52:59+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260829_033732_371655",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -59470,6 +59511,6 @@
       }
     }
   ],
-  "total": 256,
+  "total": 258,
   "truncated": false
 }
