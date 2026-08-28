@@ -2,68 +2,112 @@
   "ok": true,
   "status": {
     "results": {
-      "count": 1,
-      "ok": 0,
-      "partial": 0
+      "count": 33,
+      "ok": 7,
+      "partial": 1
     },
     "visuals": {
       "crawl": {
-        "success": 8,
-        "failed": 1,
+        "success": 198,
+        "failed": 7,
         "fallback": 0,
-        "total": 9,
-        "successRate": 89,
-        "completedAt": "2026-08-28 09:17:45"
+        "total": 205,
+        "successRate": 97,
+        "completedAt": "2026-08-29 03:08:52"
       },
       "quality": {
-        "ok": 0,
-        "partial": 0,
-        "failed": 1,
-        "fieldTotal": 13,
-        "missingFields": 0,
-        "rawSources": 9
+        "ok": 7,
+        "partial": 1,
+        "failed": 25,
+        "fieldTotal": 205,
+        "missingFields": 2,
+        "rawSources": 205
       },
       "blocks": [
         {
+          "label": "运营动态",
+          "value": 20
+        },
+        {
+          "label": "产品资费",
+          "value": 8
+        },
+        {
           "label": "经营指标",
-          "value": 1
+          "value": 5
         }
       ],
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 6
+          "value": 119
+        },
+        {
+          "label": "government_public_info",
+          "value": 26
         },
         {
           "label": "commercial_data",
-          "value": 3
+          "value": 17
+        },
+        {
+          "label": "government_statistics",
+          "value": 9
+        },
+        {
+          "label": "regulator_public_info",
+          "value": 7
+        },
+        {
+          "label": "exchange_public_disclosure",
+          "value": 4
         }
       ],
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 6
+          "value": 104
         },
         {
           "label": "US",
-          "value": 2
+          "value": 19
         },
         {
           "label": "EU",
-          "value": 1
+          "value": 13
+        },
+        {
+          "label": "international",
+          "value": 9
+        },
+        {
+          "label": "UK",
+          "value": 7
+        },
+        {
+          "label": "ES",
+          "value": 7
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 5
+          "value": 146
         },
         {
           "label": "cache:httpx",
-          "value": 3
+          "value": 33
+        },
+        {
+          "label": "curl_chrome_ua",
+          "value": 18
         },
         {
           "label": "curl_direct_chrome_ua",
+          "value": 7
+        },
+        {
+          "label": "cache:curl_direct_chrome_ua",
           "value": 1
         }
       ],
@@ -192,16 +236,36 @@
       "todayNewsRounds": [],
       "entities": [
         {
+          "label": "HKBN",
+          "value": 4
+        },
+        {
           "label": "HKT",
-          "value": 1
+          "value": 3
         },
         {
           "label": "csl",
-          "value": 1
+          "value": 3
         },
         {
           "label": "1O1O",
-          "value": 1
+          "value": 3
+        },
+        {
+          "label": "3HK",
+          "value": 3
+        },
+        {
+          "label": "Hutchison",
+          "value": 3
+        },
+        {
+          "label": "SmarTone",
+          "value": 3
+        },
+        {
+          "label": "行业资讯",
+          "value": 3
         }
       ],
       "outputs": [
@@ -265,7 +329,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-29 03:01:02",
+    "latestOutputText": "2026-08-29 03:07:01",
     "outputs": [
       {
         "name": "8月19日周报.docx",
