@@ -179,8 +179,8 @@ class NewsReviewActorTests(unittest.TestCase):
             result = web_app.attach_news_review_actors(snapshot)
 
         reviewers = result["rows"][0]["reviewers"]
-        self.assertEqual(reviewers["是否纳入滚动"]["role"], "SYSTEM")
-        self.assertEqual(reviewers["是否纳入周报"]["name"], "人工审核人")
+        self.assertEqual(reviewers["纳入滚动栏"]["role"], "SYSTEM")
+        self.assertEqual(reviewers["纳入周报"]["name"], "人工审核人")
 
     def test_latest_successful_decision_actor_is_attached_to_review_row(self) -> None:
         snapshot = {"rows": [{"rowNumber": 2, "values": ["接受"]}, {"rowNumber": 3, "values": ["待审核"]}]}

@@ -581,7 +581,7 @@ class ReportFileNameTests(unittest.TestCase):
                     {"task_kind": "news-selection-agent", "crawl_run_id": "selection-1"}
                 )
 
-        self.assertEqual(items[0]["resultLabel"], "APP接受 / 周报不接受")
+        self.assertEqual(items[0]["resultLabel"], "滚动栏接受 / 周报不接受")
         self.assertIn("写入身份：bot", items[0]["extra"])
         self.assertIn("逐格回读：通过", items[0]["extra"])
 

@@ -4761,7 +4761,7 @@ def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
         period_status = "final"
         period_policy = (
             f"本期统计区间为{planned_range['start']}至{planned_range['end']}；"
-            "仅纳入飞书滚动新闻候选池中人工或偏好学习Agent标记为“是否纳入周报=接受”的新闻。"
+            "仅纳入飞书滚动新闻候选池中人工或偏好学习Agent标记为“纳入周报=接受”的新闻。"
         )
     else:
         start = period.planned_start
@@ -4787,7 +4787,7 @@ def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
     if not rows:
         raise RuntimeError(
             f"本期双周窗口{effective_range['start']}至{effective_range['end']}"
-            "没有“是否纳入周报=接受”的有效新闻；请检查飞书表人工或偏好Agent选择。"
+            "没有“纳入周报=接受”的有效新闻；请检查飞书表人工或偏好Agent选择。"
         )
 
     sources: list[dict] = []
@@ -4900,7 +4900,7 @@ def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
                 "selectionSource": "feishu_weekly_review",
                 "policy": (
                     period_policy
-                    + " 入报选择只认飞书“是否纳入周报”最终状态；写作程序不得绕过该状态增补或替换新闻。"
+                    + " 入报选择只认飞书“纳入周报”最终状态；写作程序不得绕过该状态增补或替换新闻。"
                 ),
             },
             ensure_ascii=False,

@@ -2245,7 +2245,7 @@ def news_selection_items_for_crawl_run(run: object) -> list[dict]:
         automated_fields = [str(value) for value in record.get("automated_fields") or []]
         result_parts = []
         if "app" in automated_fields:
-            result_parts.append(f"APP{app_status}")
+            result_parts.append(f"滚动栏{app_status}")
         if "weekly" in automated_fields:
             result_parts.append(f"周报{weekly_status}")
         items.append(
@@ -2260,7 +2260,7 @@ def news_selection_items_for_crawl_run(run: object) -> list[dict]:
                     (
                         f"新闻ID：{record.get('news_id') or '未记录'}",
                         f"飞书行号：{record.get('row_number') or '未记录'}",
-                        f"APP：{record.get('app_before') or '未记录'} → {app_status}（置信度 {record.get('app_confidence', '—')}）",
+                        f"滚动栏：{record.get('app_before') or '未记录'} → {app_status}（置信度 {record.get('app_confidence', '—')}）",
                         f"周报：{record.get('weekly_before') or '未记录'} → {weekly_status}（置信度 {record.get('weekly_confidence', '—')}）",
                         f"模型：{record.get('model') or '未记录'}",
                         f"写入身份：{record.get('writer_identity') or '未记录'} · {record.get('writer_profile') or '未记录'}",
@@ -4204,6 +4204,15 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
     }
 
 
+def _news_review_field_label(value: object) -> str:
+    """Return the current display label while accepting historical audit names."""
+    return {
+        "是否纳入滚动": "纳入滚动栏",
+        "纳入滚动": "纳入滚动栏",
+        "是否纳入周报": "纳入周报",
+    }.get(str(value or "").strip(), str(value or "").strip())
+
+
 def attach_news_review_actors(snapshot: dict) -> dict:
     """Attach the latest verified human or robot reviewer to each reviewed row."""
     refresh_news_review_actor_overrides()
@@ -4225,7 +4234,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         details = event.get("details") if isinstance(event.get("details"), dict) else {}
         decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
         reviewed_title = str(details.get("target_label") or event.get("target_label") or "").strip()
-        reviewed_field = str(details.get("field") or "").strip()
+        reviewed_field = _news_review_field_label(details.get("field"))
         reviewer = {
             "id": str((override or {}).get("id") or event.get("actor_id") or ""),
             "name": str((override or {}).get("name") or event.get("actor_name") or "未知用户"),
@@ -4271,7 +4280,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         if reviewer:
             row["reviewer"] = reviewer
         field_reviewers: dict[str, dict[str, str]] = {}
-        for field_name in ("是否纳入滚动", "是否纳入周报"):
+        for field_name in ("纳入滚动栏", "纳入周报"):
             field_reviewer = (
                 reviewers_by_row_title_field.get((row_number, title, field_name))
                 or reviewers_by_title_field.get((title, field_name))
@@ -4377,8 +4386,8 @@ def _news_auto_screening_decisions() -> list[dict]:
             continue
         automated_fields = {str(value) for value in record.get("automated_fields") or []}
         for field_key, field_label, before_key, after_key in (
-            ("app", "是否纳入滚动", "app_before", "app_status"),
-            ("weekly", "是否纳入周报", "weekly_before", "weekly_status"),
+            ("app", "纳入滚动栏", "app_before", "app_status"),
+            ("weekly", "纳入周报", "weekly_before", "weekly_status"),
         ):
             if field_key not in automated_fields:
                 continue
@@ -4418,7 +4427,7 @@ def _news_auto_screening_match(
     for decision in decisions if decisions is not None else _news_auto_screening_decisions():
         if (
             int(decision.get("row_number") or 0) != row_number
-            or str(decision.get("field") or "") != field
+            or _news_review_field_label(decision.get("field")) != _news_review_field_label(field)
             or str(decision.get("after") or "") != after
         ):
             continue

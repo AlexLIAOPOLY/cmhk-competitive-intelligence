@@ -68,8 +68,8 @@ PENDING_CYCLE_STATE_KEY = "pending_cycle"
 MAX_SUCCESSFUL_CYCLE_RESULTS = 32
 
 HEADERS = [
-    "是否纳入滚动",
-    "是否纳入周报",
+    "纳入滚动栏",
+    "纳入周报",
     "同步状态",
     "检索日期",
     "地域",
@@ -2083,6 +2083,7 @@ def _normalized_status(value: Any) -> str:
         "已接受": "接受",
         "纳入": "接受",
         "纳入滚动": "接受",
+        "纳入滚动栏": "接受",
         "拒绝": "不接受",
         "不采纳": "不接受",
         "稍后": "暂缓",
@@ -3087,7 +3088,7 @@ def run_cycle(
             _progress(
                 progress_callback,
                 "人工审核状态同步",
-                "正在读取飞书中的接受、不接受、暂缓状态，更新APP发布池及同步标记。",
+                "正在读取飞书中的接受、不接受、暂缓状态，更新滚动栏发布池及同步标记。",
             )
             review_result = apply_reviews(sync_result["sheet_id"])
             _progress(

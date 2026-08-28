@@ -54,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=32', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=146', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=147', INDEX)
         self.assertIn('/static/app.js?v=311', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -547,7 +547,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "历史去重",
             "新增新闻",
             "新闻自动初筛",
-            "纳入 APP",
+            "纳入滚动栏",
             "纳入周报",
         ):
             self.assertIn(label, SCRIPT)
@@ -615,7 +615,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=146', INDEX)
+        self.assertIn('workspace-tabs.js?v=147', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=132', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
@@ -633,8 +633,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1850, 680]", SCRIPT)
         self.assertIn('key: "news-selection-agent", label: "新闻自动初筛"', SCRIPT)
-        self.assertIn('`周报确认 ${number(selectionSummary.weeklyAccepted)} 条`', SCRIPT)
-        self.assertIn('`APP 纳入 ${number(selectionSummary.appAccepted)} 条`', SCRIPT)
+        self.assertIn('`纳入周报 ${number(selectionSummary.weeklyAccepted)} 条`', SCRIPT)
+        self.assertIn('`纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`', SCRIPT)
         self.assertIn('appMachineRows', SCRIPT)
         self.assertIn('appHumanRows', SCRIPT)
         self.assertIn('weeklyMachineRows', SCRIPT)

@@ -794,7 +794,7 @@ def run_news_selection_agent(
                     crawl_run_id,
                     stream_log_path,
                     "机器人分批写入与回读",
-                    f"第 {write_batch_index}/{write_batch_total} 批由飞书机器人 {FEISHU_BOT_PROFILE} 写入 {len(changes)} 格；APP接受 {app_batch_accept} 条、APP不接受 {sum(item['app_before'] == '待审核' for item in decision_batch) - app_batch_accept} 条，双周报接受 {weekly_batch_accept} 条、双周报不接受 {sum(item['weekly_before'] == '待审核' for item in decision_batch) - weekly_batch_accept} 条；逐格回读通过。",
+                    f"第 {write_batch_index}/{write_batch_total} 批由飞书机器人 {FEISHU_BOT_PROFILE} 写入 {len(changes)} 格；滚动栏接受 {app_batch_accept} 条、滚动栏不接受 {sum(item['app_before'] == '待审核' for item in decision_batch) - app_batch_accept} 条，周报接受 {weekly_batch_accept} 条、周报不接受 {sum(item['weekly_before'] == '待审核' for item in decision_batch) - weekly_batch_accept} 条；逐格回读通过。",
                 )
             result = {
                 "status": "completed",
@@ -825,7 +825,7 @@ def run_news_selection_agent(
                 crawl_run_id,
                 stream_log_path,
                 "自动勾选与回读完成",
-                f"仅处理检索日期为 {selection_date} 的本轮新增新闻 {len(decisions)} 条，由飞书机器人写入 {result['changed_count']} 格；APP接受 {result['app_accepted_count']} 条、不接受 {sum(item['app_before'] == '待审核' for item in decisions) - result['app_accepted_count']} 条，双周报接受 {result['weekly_accepted_count']} 条、不接受 {sum(item['weekly_before'] == '待审核' for item in decisions) - result['weekly_accepted_count']} 条；逐格回读全部通过。",
+                f"仅处理检索日期为 {selection_date} 的本轮新增新闻 {len(decisions)} 条，由飞书机器人写入 {result['changed_count']} 格；滚动栏接受 {result['app_accepted_count']} 条、不接受 {sum(item['app_before'] == '待审核' for item in decisions) - result['app_accepted_count']} 条，周报接受 {result['weekly_accepted_count']} 条、不接受 {sum(item['weekly_before'] == '待审核' for item in decisions) - result['weekly_accepted_count']} 条；逐格回读全部通过。",
             )
 
         if idempotency_key:
