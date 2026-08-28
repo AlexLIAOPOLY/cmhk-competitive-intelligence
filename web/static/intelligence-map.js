@@ -101,7 +101,8 @@
         responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
         onClick(_event, active) {
           if (!active.length) return;
-          const point = active[0]; const date = dates[point.index]; const category = datasets[point.datasetIndex].label;
+          const point = active.find((candidate) => datasets[candidate.datasetIndex].data[candidate.index] > 0) || active[0];
+          const date = dates[point.index]; const category = datasets[point.datasetIndex].label;
           const evidence = items.filter((item) => item.sourceDate === date && item.category === category);
           $("market-trend-detail").innerHTML = `<strong>${esc(date)} · ${esc(category)} · ${evidence.length} 条</strong><span>${evidence.slice(0, 2).map((item) => esc(item.title)).join("；") || "当日无对应情报"}</span>`;
         },
