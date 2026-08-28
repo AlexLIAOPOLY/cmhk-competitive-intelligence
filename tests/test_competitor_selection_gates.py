@@ -41,12 +41,15 @@ def comparable_window(company_ids, metric_key, years):
 
 
 class CompetitorSelectionGateTests(unittest.TestCase):
-    def test_company_metric_and_year_controls_do_not_hide_choices_for_history_gaps(self):
+    def test_company_metric_and_year_controls_restore_compatible_selection_filters(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
-        self.assertIn("return new Set(data.companies.map((company) => company.id));", SCRIPT)
-        self.assertIn("const comparableMetrics = data.metrics;", SCRIPT)
-        self.assertNotIn('!validYears.has(years) ? "disabled"', SCRIPT)
-        self.assertIn("年份选择不因历史缺值受限", SCRIPT)
+        self.assertIn("selectedCompanies.includes(company.id) || competitorHasCommonMetric", SCRIPT)
+        self.assertIn("data.metrics.filter((metric) => competitorHasCommonMetric", SCRIPT)
+        self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
+        self.assertIn("至少保留一个共同披露年", SCRIPT)
+        self.assertIn('classList.add("is-disappearing")', SCRIPT)
+        self.assertIn("transitionCompetitorOptions", SCRIPT)
+        self.assertIn("visibleCompetitorIds(data, selection.companies, selection.years, selection.metric)", SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
 
     def test_three_local_competitors_have_ten_years_where_a_numeric_series_exists(self):
