@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-28T14:28:39+08:00",
+  "generated_at": "2026-08-28T14:33:47+08:00",
   "items": [
+    {
+      "id": "NEWS-263116B713DD26",
+      "title": "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256G",
+      "summary": "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256GB中阶影相神器 ezone.hk",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMihANBVV95cUxPUXNhbEFRaWRCZnE2ZUd6UjByZm1lQ1BqM1IxdzFHc1NyY3VyWmpYY0lmV2k2cFFzSHJ5TkpJTEJ3NUUtVWU3RmI2MWdTNFRsZFZ0VW1WRko4ZlpqVW5PVC1EUEtXN0w1N291bm1Mc0lJa3NQcGwxU09fN1M0QTEtNzZ2bUtIT0swY0VCVGIzaUpwT09XOVV3a1YyYzdCNERSdzV1RDRWTUNGcjJqUkVlRE9nQ01qalRaU1FaY2xJNHA3dE9IUzJEODRRN3JVUDMzNHFFUHA3MHdNMXJDWW1LeUxJU1g4UDlzYmhPNEhBWmxWLVJnZ0lHWHhVbHZIMkNXaDEwaGZBTTY5czJ2anpqTVZqcXctSy14U2VRN0VveWtUcnVBMFlFMW5GSWpUUzdlU1JOYnZhSHRTM3RfWGhnWTZQOERCdkZldEhjSXhSZVZnbnF6a2Vyd2NDUVlyY3o5dmN5U1E2UVAtdmhpd0pETW53ZmRCVmJNOHlVYVZHWTcxa1cz?oc=5",
+      "published_at": "2026-08-28T13:31:00+08:00"
+    },
     {
       "id": "NEWS-2BB4C619AAE3EA",
       "title": "金管局：57家企业参与GenAI测试反诈骗等应用",
@@ -57,14 +65,6 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://hk.finance.yahoo.com/news/%E7%AC%AC-%E6%9C%9Fgena-%E6%B2%99%E7%9B%92-%E5%85%B1%E6%9C%8930%E5%AE%B6%E9%87%91%E8%9E%8D%E6%A9%9F%E6%A7%8B%E5%92%8C27%E5%AE%B6%E6%8A%80%E8%A1%93%E5%90%88%E4%BD%9C%E5%A4%A5%E4%BC%B4%E5%8F%83%E8%88%87-092006818.html",
       "published_at": "2026-08-27T10:20:00+08:00"
-    },
-    {
-      "id": "NEWS-D14FBE54A841DF",
-      "title": "澳门「三五」规划公布 李家超宣布香港首个五年规划将于9月公布",
-      "summary": "澳门第三个五年规划正式公布，引起香港关注；李家超宣布将于9月16日公布香港首个五年规划及2026年施政报告。",
-      "category": "政策监管",
-      "source_url": "https://www.dotdotnews.com/a/202608/26/AP6a8ed60de4b04b6c5d37e3e0.html",
-      "published_at": "2026-08-26T21:03:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "5d46b198d3787839dd2e915cf23009e8145f1a6e3d233e1201d96c4f4957e0df"
+  "site_version": "03fdd3b08a15ce90e9c08308cec1f6bfb0603898f548e8ea74991c63cca44a10"
 }

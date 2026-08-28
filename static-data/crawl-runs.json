@@ -2,6 +2,41 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260828_142847_146547",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-08-28@14:00）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 10 条，由机器人写入 20 格，逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 10 条，由机器人写入 20 格，逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-28T14:29:39+08:00",
+      "started_at_hkt": "2026-08-28T14:28:47+08:00",
+      "completed_at_hkt": "2026-08-28T14:29:39+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 52524,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 10,
+        "changed_count": 20,
+        "app_accepted_count": 1,
+        "weekly_accepted_count": 1,
+        "deferred_field_count": 0,
+        "human_example_count": 60,
+        "human_correction_count": 0,
+        "model": "DeepSeek-V4-Pro",
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "task_run_id": "20260828_142847_146547"
+      }
+    },
+    {
       "crawl_run_id": "20260828_142550_413049",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-08-28@14:00）",
@@ -47285,6 +47320,6 @@
       }
     }
   ],
-  "total": 248,
+  "total": 249,
   "truncated": false
 }
