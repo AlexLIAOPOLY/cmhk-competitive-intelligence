@@ -21,13 +21,15 @@
 .intelligence-map-loading,
 .intelligence-map-empty {
   display: grid;
-  min-height: 320px;
+  min-height: calc(100dvh - 92px);
   place-items: center;
   color: var(--map-muted);
-  border: 1px solid var(--map-line);
-  border-radius: 14px;
-  background: var(--map-panel);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: .01em;
 }
+
+.intelligence-map-empty { min-height: 260px; border: 1px solid var(--map-line); border-radius: 14px; background: var(--map-panel); }
 
 .intelligence-map-workbench {
   display: grid;

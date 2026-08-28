@@ -5,6 +5,7 @@
   if (!panel) return;
 
   const palette = ["#18c8e6", "#4e8eff", "#2fc1b4", "#8a63ea", "#f3a719"];
+  const cacheKey = "cmhk-intelligence-map-v1";
   const state = { payload: null, filters: { days: "all", category: "all", region: "all" } };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const countBy = (values) => values.reduce((counts, value) => value ? counts.set(value, (counts.get(value) || 0) + 1) : counts, new Map());
@@ -193,15 +194,29 @@
   });
 
   async function initialize() {
-    await window.CMHKAuth?.ready;
-    if (!window.CMHKAuth?.hasModule("competitor")) return;
     try {
-      const response = await fetch("/api/competitor-intelligence-map", { cache: "no-store" });
+      const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+      if (cached?.ok && Array.isArray(cached.items)) {
+        state.payload = cached;
+        render();
+      }
+    } catch (_error) { /* A fresh request below remains authoritative. */ }
+    try {
+      await Promise.race([
+        window.CMHKAuth?.ready,
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error("auth timeout")), 4000)),
+      ]);
+      if (!window.CMHKAuth?.hasModule("competitor")) return;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 4000);
+      const response = await fetch("/api/competitor-intelligence-map", { cache: "no-store", signal: controller.signal });
+      window.clearTimeout(timeout);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       state.payload = await response.json();
       render();
+      try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* Cache is optional. */ }
     } catch (_error) {
-      panel.innerHTML = '<div class="intelligence-map-empty" role="status">情报图谱数据暂时无法读取，请稍后刷新。</div>';
+      if (!state.payload) panel.innerHTML = '<div class="intelligence-map-loading" role="status">暂时无法读取情报图谱，请稍后刷新。</div>';
     }
   }
 
