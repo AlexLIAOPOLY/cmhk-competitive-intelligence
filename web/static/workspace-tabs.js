@@ -351,28 +351,22 @@
     return { ok, reason: ok ? "" : "no_audited_rows", unit: units[0], allYears, commonYears, visibleYears, sharedVisibleYears, companyYears, coveredCompanies, pointsPerCompany };
   }
 
-  function competitorHasCommonMetric(data, companyIds, years, metricKey = "") {
+  function competitorHasAuditedMetric(data, companyIds, metricKey = "") {
+    const rows = [...data.cells, ...(data.gaps || [])];
     const metrics = metricKey ? data.metrics.filter((metric) => metric.key === metricKey) : data.metrics;
-    const windows = years ? [years] : [3, 5, 10, 99];
-    return metrics.some((metric) => windows.some((windowYears) => {
-      const cells = data.cells.filter((cell) => companyIds.includes(cell.company) && cell.metric === metric.key);
-      if (new Set(cells.map((cell) => cell.company)).size !== companyIds.length) return false;
-      if (new Set(cells.map((cell) => cell.unit).filter(Boolean)).size !== 1) return false;
-      const companyYears = companyIds.map((company) => new Set(cells.filter((cell) => cell.company === company).map((cell) => cell.year)));
-      const allYears = [...new Set(cells.map((cell) => cell.year))].sort((a, b) => a - b);
-      const commonYears = allYears.filter((year) => companyYears.every((set) => set.has(year)));
-      const commonAnchor = commonYears.at(-1);
-      if (!commonAnchor) return false;
-      const visibleYears = windowYears === 99
-        ? Array.from({ length: allYears.at(-1) - allYears[0] + 1 }, (_item, index) => allYears[0] + index)
-        : Array.from({ length: windowYears }, (_item, index) => commonAnchor - windowYears + 1 + index);
-      return visibleYears.some((year) => companyYears.every((set) => set.has(year)))
-        && companyYears.every((set) => visibleYears.some((year) => set.has(year)));
-    }));
+    return metrics.some((metric) => {
+      const metricRows = rows.filter((row) => companyIds.includes(row.company) && row.metric === metric.key);
+      const coveredCompanies = new Set(metricRows.map((row) => row.company));
+      const units = new Set(metricRows.map((row) => row.unit).filter(Boolean));
+      return coveredCompanies.size === companyIds.length && units.size === 1;
+    });
   }
 
   function visibleCompetitorIds(data, selectedCompanies, years, metricKey = "") {
-    return new Set(data.companies.map((company) => company.id));
+    if (!selectedCompanies.length) return new Set(data.companies.map((company) => company.id));
+    return new Set(data.companies
+      .filter((company) => selectedCompanies.includes(company.id) || competitorHasAuditedMetric(data, [...selectedCompanies, company.id], metricKey))
+      .map((company) => company.id));
   }
 
   function renderCompetitor({ revealedCompanies = [] } = {}) {
@@ -386,15 +380,14 @@
     }, {});
     const visibleCompanies = visibleCompetitorIds(data, selection.companies, selection.years, selection.metric);
     const metricUnit = (metric) => {
-      const selectedCells = data.cells.filter((cell) => (!selection.companies.length || selection.companies.includes(cell.company)) && cell.metric === metric.key);
-      const units = [...new Set(selectedCells.map((cell) => cell.unit).filter(Boolean))];
+      const selectedRows = [...data.cells, ...(data.gaps || [])].filter((row) => (!selection.companies.length || selection.companies.includes(row.company)) && row.metric === metric.key);
+      const units = [...new Set(selectedRows.map((row) => row.unit).filter(Boolean))];
       return units.length === 1 ? (metric.unitLabels?.[units[0]] || units[0]) : "按所选竞对确定单位";
     };
     const comparableMetrics = selection.companies.length
-      ? data.metrics.filter((metric) => [...data.cells, ...(data.gaps || [])].some((row) => selection.companies.includes(row.company) && row.metric === metric.key))
+      ? data.metrics.filter((metric) => competitorHasAuditedMetric(data, selection.companies, metric.key))
       : data.metrics;
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
-    const yearOptions = [3, 5, 10, 99];
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
