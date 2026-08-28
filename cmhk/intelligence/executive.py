@@ -745,12 +745,85 @@ def _annual_financial_value(
     }
 
 
+def _financial_report_year(report: dict[str, Any]) -> int | None:
+    match = re.fullmatch(r"FY\s*(20\d{2})", str(report.get("period") or "").strip(), re.I)
+    return int(match.group(1)) if match else None
+
+
+def _financial_report_metric_value(report: dict[str, Any], metric: str) -> float | None:
+    report_key = {"net_income": "net_profit"}.get(metric, metric)
+    item = next(
+        (entry for entry in (report.get("metrics") or []) if entry.get("metric_key") == report_key),
+        None,
+    )
+    if not item:
+        return None
+    raw = str(item.get("value") or "").strip()
+    match = re.search(r"-?\s*(?:HK\$)?\s*([\d,]+(?:\.\d+)?)", raw, re.I)
+    if not match:
+        return None
+    value = float(match.group(1).replace(",", ""))
+    if raw.startswith("-") or (raw.startswith("(") and raw.endswith(")")):
+        value *= -1
+    lowered = raw.lower()
+    if "billion" in lowered:
+        value *= 1000
+    elif "thousand" in lowered:
+        value /= 1000
+    return value
+
+
+def _official_local_financial_reports(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    reports = [
+        report for report in (payload.get("reports") or [])
+        if report.get("verification_status") == "official_document_extracted"
+    ]
+    reports.sort(
+        key=lambda report: (str(report.get("publication_date") or ""), _period_rank(report.get("period"))),
+        reverse=True,
+    )
+    return reports
+
+
+def _direct_annual_financial_value(
+    reports: list[dict[str, Any]], company: str, metric: str, year: int
+) -> dict[str, Any] | None:
+    aliases = {
+        "HKT": {"HKT"},
+        "SmarTone": {"SmarTone"},
+        "3HK": {"3HK", "3HK / Hutchison", "Hutchison"},
+    }
+    report = next((
+        item for item in reports
+        if str(item.get("company") or "") in aliases.get(company, {company})
+        and _financial_report_year(item) == year
+    ), None)
+    value = _financial_report_metric_value(report or {}, metric)
+    if report is None or value is None:
+        return None
+    source_url = str(report.get("source_url") or "")
+    return {
+        "value": value,
+        "unit": "millions HKD",
+        "period": f"FY{year}",
+        "source_urls": [source_url] if source_url else [],
+        "source_url": source_url,
+        "verification_count": 1 if source_url else 0,
+        "verification_status": "official_document_extracted",
+    }
+
+
 def _annual_financial_trend(
-    rows: list[dict[str, Any]], subject: str, metric: str, *, divisor: float = 1.0, unit: str
+    rows: list[dict[str, Any]], subject: str, metric: str, *, divisor: float = 1.0, unit: str,
+    start_year: int = 2016, end_year: int = 2025,
+    direct_reports: list[dict[str, Any]] | None = None, company: str = "",
 ) -> list[dict[str, Any]]:
     trend: list[dict[str, Any]] = []
-    for year in range(2016, 2026):
-        annual = _annual_financial_value(rows, subject, metric, year)
+    for year in range(start_year, end_year + 1):
+        annual = (
+            _direct_annual_financial_value(direct_reports or [], company, metric, year)
+            or _annual_financial_value(rows, subject, metric, year)
+        )
         trend.append({
             "label": f"FY{year}",
             "value": round(float(annual["value"]) / divisor, 3) if annual else None,
@@ -998,10 +1071,12 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _requested_hong_kong_domain(
-    financial_payload: dict[str, Any], operating_payload: dict[str, Any], operating_sources: dict[str, Any]
+    financial_payload: dict[str, Any], operating_payload: dict[str, Any], operating_sources: dict[str, Any],
+    local_financial_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     financial_rows = financial_payload.get("rows") or []
     operating_rows = operating_payload.get("rows") or []
+    financial_reports = _official_local_financial_reports(local_financial_payload or {})
     source_registry = {
         str(source.get("source_id") or ""): str(source.get("url") or "")
         for source in (operating_sources.get("sources") or [])
@@ -1022,6 +1097,16 @@ def _requested_hong_kong_domain(
         "annualized_roa_pct": 5.65,
         "annualized_receivables_to_revenue_pct": 4.10,
     }
+    overview_report_companies = {"HKT", "SmarTone", "3HK", "3HK / Hutchison", "Hutchison"}
+    latest_annual_year = max(
+        [2025] + [
+            year for report in financial_reports
+            if str(report.get("company") or "") in overview_report_companies
+            and (year := _financial_report_year(report)) is not None
+        ]
+    )
+    annual_start_year = latest_annual_year - 9
+    baseline_annual_window = latest_annual_year == 2025
 
     def cmhk_reference_components() -> list[dict[str, Any]]:
         period = cmhk_reference_ppt["period"]
@@ -1051,10 +1136,27 @@ def _requested_hong_kong_domain(
     profit_items: list[dict[str, Any]] = []
     postpaid_items: list[dict[str, Any]] = []
     for name, subject, operator in entities:
-        revenue = _annual_financial_value(financial_rows, subject, "revenue", 2025)
-        ebitda = _annual_financial_value(financial_rows, subject, "ebitda", 2025)
-        profit = _annual_financial_value(financial_rows, subject, "net_income", 2025)
-        previous_profit = _annual_financial_value(financial_rows, subject, "net_income", 2024)
+        available_years = [
+            year for year in range(latest_annual_year, annual_start_year - 1, -1)
+            if (
+                _direct_annual_financial_value(financial_reports, operator, "revenue", year)
+                or _annual_financial_value(financial_rows, subject, "revenue", year)
+            )
+        ]
+        operator_year = available_years[0] if available_years else latest_annual_year
+        revenue = (
+            _direct_annual_financial_value(financial_reports, operator, "revenue", operator_year)
+            or _annual_financial_value(financial_rows, subject, "revenue", operator_year)
+        )
+        ebitda = (
+            _direct_annual_financial_value(financial_reports, operator, "ebitda", operator_year)
+            or _annual_financial_value(financial_rows, subject, "ebitda", operator_year)
+        )
+        profit = (
+            _direct_annual_financial_value(financial_reports, operator, "net_income", operator_year)
+            or _annual_financial_value(financial_rows, subject, "net_income", operator_year)
+        )
+        annual_period = f"FY{operator_year}"
         missing_note = "CMHK未公开独立公司口径，保留缺口" if name == "CMHK" else "三来源数据待补"
         if name == "CMHK":
             revenue = {
@@ -1069,33 +1171,33 @@ def _requested_hong_kong_domain(
             }
         revenue_items.append({
             "name": name, "value": round(float(revenue["value"]), 1) if revenue else None,
-            "unit": "百万港元" if revenue else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025",
-            "detail": (f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else "FY2025营收 · 三份不同官方文件核验") if revenue else missing_note,
-            "analysis": (f"{cmhk_reference_ppt['period']}主营业务收入为{cmhk_reference_ppt['revenue_m_hkd']:,.1f}百万港元；该值为首7月累计，不与FY2025全年值直接排名。" if name == "CMHK" else f"FY2025营收为{float(revenue['value']):,.1f}百万港元；沿用公司原披露财年。") if revenue else f"{missing_note}，不以母集团或其他运营商数据替代。",
-            "components": cmhk_reference_components() if name == "CMHK" else ([_component("营收", round(float(revenue["value"]), 1), "百万港元", "FY2025")] if revenue else [_component("营收", detail=missing_note)]),
+            "unit": "百万港元" if revenue else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else annual_period,
+            "detail": (f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else ("FY2025营收 · 三份不同官方文件核验" if baseline_annual_window else f"{annual_period}营收 · 官方全年财报")) if revenue else missing_note,
+            "analysis": (f"{cmhk_reference_ppt['period']}主营业务收入为{cmhk_reference_ppt['revenue_m_hkd']:,.1f}百万港元；该值为首7月累计，不与FY2025全年值直接排名。" if name == "CMHK" and baseline_annual_window else f"{cmhk_reference_ppt['period']}主营业务收入为{cmhk_reference_ppt['revenue_m_hkd']:,.1f}百万港元；该值为首7月累计，不与全年值直接排名。" if name == "CMHK" else f"FY2025营收为{float(revenue['value']):,.1f}百万港元；沿用公司原披露财年。" if baseline_annual_window else f"{annual_period}营收为{float(revenue['value']):,.1f}百万港元；沿用公司最新正式全年披露。") if revenue else f"{missing_note}，不以母集团或其他运营商数据替代。",
+            "components": cmhk_reference_components() if name == "CMHK" else ([_component("营收", round(float(revenue["value"]), 1), "百万港元", annual_period)] if revenue else [_component("营收", detail=missing_note)]),
             "component_count": len(cmhk_reference_components()) if name == "CMHK" else 1, "source_url": str((revenue or {}).get("source_url") or ""),
             "verification_count": int((revenue or {}).get("verification_count") or 0),
-            "trend": _annual_financial_trend(financial_rows, subject, "revenue", unit="百万港元"),
+            "trend": _annual_financial_trend(financial_rows, subject, "revenue", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         ebitda_items.append({
             "name": name, "value": round(float(ebitda["value"]), 1) if ebitda else None,
-            "unit": "百万港元" if ebitda else "", "period": "FY2025",
-            "detail": "FY2025 EBITDA金额" if ebitda else missing_note,
-            "analysis": f"FY2025 EBITDA为{float(ebitda['value']):,.1f}百万港元；只展示金额，不混入利润率。" if ebitda else f"{missing_note}，不估算EBITDA。",
-            "components": [_component("EBITDA", round(float(ebitda["value"]), 1), "百万港元", "FY2025")] if ebitda else [_component("EBITDA", detail=missing_note)],
+            "unit": "百万港元" if ebitda else "", "period": annual_period,
+            "detail": ("FY2025 EBITDA金额" if baseline_annual_window else f"{annual_period} EBITDA金额") if ebitda else missing_note,
+            "analysis": f"{'FY2025' if baseline_annual_window else annual_period} EBITDA为{float(ebitda['value']):,.1f}百万港元；只展示金额，不混入利润率。" if ebitda else f"{missing_note}，不估算EBITDA。",
+            "components": [_component("EBITDA", round(float(ebitda["value"]), 1), "百万港元", annual_period)] if ebitda else [_component("EBITDA", detail=missing_note)],
             "component_count": 1, "source_url": str((ebitda or {}).get("source_url") or ""),
             "verification_count": int((ebitda or {}).get("verification_count") or 0),
-            "trend": _annual_financial_trend(financial_rows, subject, "ebitda", unit="百万港元"),
+            "trend": _annual_financial_trend(financial_rows, subject, "ebitda", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         profit_items.append({
             "name": name, "value": round(float(profit["value"]), 1) if profit else None,
-            "unit": "百万港元" if profit else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025",
-            "detail": f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else ("FY2025净利润金额" if profit else missing_note),
-            "analysis": (f"{cmhk_reference_ppt['period']}净利润为{cmhk_reference_ppt['net_profit_m_hkd']:,.1f}百万港元；为累计值，不与FY2025全年利润直接排名。" if name == "CMHK" else f"FY2025净利润为{float(profit['value']):,.1f}百万港元；只展示金额，不混入同比增速。") if profit else f"{missing_note}，不估算净利润。",
-            "components": [_component("净利润", round(float(profit["value"]), 1), "百万港元", cmhk_reference_ppt["period"] if name == "CMHK" else "FY2025")] if profit else [_component("净利润", detail=missing_note)],
+            "unit": "百万港元" if profit else "", "period": cmhk_reference_ppt["period"] if name == "CMHK" else annual_period,
+            "detail": f"{cmhk_reference_ppt['period']}累计 · 用户提供参考PPT" if name == "CMHK" else (("FY2025净利润金额" if baseline_annual_window else f"{annual_period}净利润金额") if profit else missing_note),
+            "analysis": (f"{cmhk_reference_ppt['period']}净利润为{cmhk_reference_ppt['net_profit_m_hkd']:,.1f}百万港元；为累计值，不与FY2025全年利润直接排名。" if name == "CMHK" and baseline_annual_window else f"{cmhk_reference_ppt['period']}净利润为{cmhk_reference_ppt['net_profit_m_hkd']:,.1f}百万港元；为累计值，不与全年利润直接排名。" if name == "CMHK" else f"FY2025净利润为{float(profit['value']):,.1f}百万港元；只展示金额，不混入同比增速。" if baseline_annual_window else f"{annual_period}净利润为{float(profit['value']):,.1f}百万港元；只展示金额，不混入同比增速。") if profit else f"{missing_note}，不估算净利润。",
+            "components": [_component("净利润", round(float(profit["value"]), 1), "百万港元", cmhk_reference_ppt["period"] if name == "CMHK" else annual_period)] if profit else [_component("净利润", detail=missing_note)],
             "component_count": 1, "source_url": str((profit or {}).get("source_url") or ""),
             "verification_count": int((profit or {}).get("verification_count") or 0),
-            "trend": _annual_financial_trend(financial_rows, subject, "net_income", unit="百万港元"),
+            "trend": _annual_financial_trend(financial_rows, subject, "net_income", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         customer = operating_row(operator, "mobile_postpaid_customers")
         customer_value = _verified_number(customer)
@@ -1116,7 +1218,7 @@ def _requested_hong_kong_domain(
                     "verification_count": len(_row_source_urls(row, source_registry)) if row else 0,
                     "source_urls": _row_source_urls(row, source_registry),
                 }
-                for year in range(2016, 2026)
+                for year in range(annual_start_year, latest_annual_year + 1)
                 for row in [operating_row(operator, "mobile_postpaid_customers", year)]
             ],
         })
@@ -1125,10 +1227,22 @@ def _requested_hong_kong_domain(
         available = [item for item in items if _number(item.get("value")) is not None]
         lead = max(available, key=lambda item: float(item["value"])) if available else {"name": "-", "value": "-", "unit": ""}
         comparable = (
-            [item for item in available if str(item.get("period") or "") == "FY2025"]
-            if fid in {"revenue", "net_profit"}
+            [item for item in available if str(item.get("period") or "") == f"FY{latest_annual_year}"]
+            if fid in {"revenue", "ebitda", "net_profit"}
             else available
         )
+        if len(comparable) < 2 and fid in {"revenue", "ebitda", "net_profit"}:
+            period_counts: dict[str, int] = {}
+            for item in available:
+                period = str(item.get("period") or "")
+                if period.startswith("FY"):
+                    period_counts[period] = period_counts.get(period, 0) + 1
+            comparison_period = max(
+                (period for period, count in period_counts.items() if count >= 2),
+                key=_period_rank,
+                default="",
+            )
+            comparable = [item for item in available if item.get("period") == comparison_period]
         comparison_lead = max(comparable, key=lambda item: float(item["value"])) if comparable else lead
         low = min(comparable, key=lambda item: float(item["value"])) if comparable else comparison_lead
         if len(comparable) >= 2:
@@ -1143,20 +1257,21 @@ def _requested_hong_kong_domain(
         else:
             insight = "当前可比原值不足两家；这一口径缺口限制客户价值和客户质量的穿透比较，不能由总用户或5G用户替代。"
         return {"id": fid, "label": label, "visual": "rows", "headline": headline,
-                "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"},
+                "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available and baseline_annual_window else f"{lead['name']} {lead.get('period') or f'FY{latest_annual_year}'}" if available else "三来源数据待补"},
                 "context": context, "insight": insight, "items": items}
 
     focuses = [
-        focus("revenue", "营收", revenue_items, "HKT资源底盘最厚", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
-        focus("ebitda", "EBITDA", ebitda_items, "HKT造血能力最强", "2016–2025原表；当前卡片显示FY2025"),
-        focus("net_profit", "净利润", profit_items, "HKT稳健三港承压", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025"),
+        focus("revenue", "营收", revenue_items, "HKT资源底盘最厚", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025" if baseline_annual_window else f"CMHK为2026首7月累计；其他公司显示各自最新正式全年期；年度窗口FY{annual_start_year}–FY{latest_annual_year}"),
+        focus("ebitda", "EBITDA", ebitda_items, "HKT造血能力最强", "2016–2025原表；当前卡片显示FY2025" if baseline_annual_window else f"年度窗口FY{annual_start_year}–FY{latest_annual_year}；各公司显示各自最新正式全年期"),
+        focus("net_profit", "净利润", profit_items, "HKT稳健三港承压", "CMHK为2026首7月累计；其他公司当前卡片显示FY2025" if baseline_annual_window else f"CMHK为2026首7月累计；其他公司显示各自最新正式全年期；年度窗口FY{annual_start_year}–FY{latest_annual_year}"),
         focus("postpaid", "后付费用户数", postpaid_items, "HKT客户底盘更稳", "只展示公司原生后付费用户数"),
     ]
     return {"id": "local", "index": "01", "title": "本地运营商", "kicker": "CMHK｜HKT｜SmarTone｜3HK",
-            "metric": focuses[0]["metric"], "context": "CMHK补充2026首7月累计值；其他公司保留2016–2025财年窗口",
+            "metric": focuses[0]["metric"], "context": "CMHK补充2026首7月累计值；其他公司保留2016–2025财年窗口" if baseline_annual_window else f"CMHK补充2026首7月累计值；正式全年窗口自动滚动为FY{annual_start_year}–FY{latest_annual_year}",
             "insight": "营收、EBITDA、净利润与后付费用户数只展示绝对值；缺口不填充。",
             "entities": revenue_items, "focuses": focuses, "relations": [],
-            "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, postpaid_items) for item in items])}
+            "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, postpaid_items) for item in items]),
+            "latest_financial_results": financial_reports}
 
 
 def _component_list(customer_value: float | None, arpu_value: float | None) -> list[dict[str, Any]]:
@@ -2241,7 +2356,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     financial_payload = _read_json(INTERNATIONAL_PATH)
     global_payload = _read_json(GLOBAL_OPERATOR_PATH)
     local = _requested_hong_kong_domain(
-        financial_payload, _read_json(LOCAL_OPERATING_PATH), _read_json(LOCAL_OPERATING_SOURCES_PATH)
+        financial_payload, _read_json(LOCAL_OPERATING_PATH), _read_json(LOCAL_OPERATING_SOURCES_PATH),
+        _read_json_optional(LOCAL_FINANCIAL_PATH, {}),
     )
     # 第二数据域沿用原有布局，展示合并后的六家国际运营商。
     international = _requested_international_domain(global_payload)

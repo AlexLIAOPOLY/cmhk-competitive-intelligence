@@ -16,14 +16,33 @@ mkdir -p "$STATE_DIR" "$STAGE_ROOT" "$(dirname "$LOG_FILE")"
 chmod 700 "$STATE_DIR" "$STAGE_ROOT"
 
 interrupt_strategic=0
-if [[ "${1:-}" == "--interrupt-strategic" ]]; then
-  interrupt_strategic=1
-  shift
-fi
-if (( $# > 0 )); then
-  echo "Usage: $0 [--interrupt-strategic]" >&2
-  exit 2
-fi
+overlay_files=()
+while (( $# > 0 )); do
+  case "$1" in
+    --interrupt-strategic)
+      interrupt_strategic=1
+      shift
+      ;;
+    --overlay-file)
+      shift
+      if (( $# == 0 )); then
+        echo "--overlay-file requires a workspace-relative file path." >&2
+        exit 2
+      fi
+      overlay_file="$1"
+      if [[ "$overlay_file" == /* || "$overlay_file" == *".."* || ! -f "$SOURCE/$overlay_file" ]]; then
+        echo "Invalid overlay file: $overlay_file" >&2
+        exit 2
+      fi
+      overlay_files+=("$overlay_file")
+      shift
+      ;;
+    *)
+      echo "Usage: $0 [--interrupt-strategic] [--overlay-file RELATIVE_FILE ...]" >&2
+      exit 2
+      ;;
+  esac
+done
 
 queue_lock_acquired=0
 request_published=0
@@ -101,7 +120,13 @@ mkdir -p "$release_dir"
 # Build an immutable release while the caller still has Desktop access. The
 # background LaunchAgent only reads this private staging directory, never the
 # live workspace, and the running Web process never sees a half-copied release.
-rsync -a \
+if (( ${#overlay_files[@]} > 0 )); then
+  for overlay_file in "${overlay_files[@]}"; do
+    mkdir -p "$release_dir/$(dirname "$overlay_file")"
+    rsync -a "$SOURCE/$overlay_file" "$release_dir/$overlay_file"
+  done
+else
+  rsync -a \
   --exclude='.git/' \
   --exclude='Codex/' \
   --exclude='agent_chat_threads/' \
@@ -131,14 +156,15 @@ rsync -a \
   --exclude='__pycache__/' \
   --exclude='*.pyc' \
   --exclude='.DS_Store' \
-  "$SOURCE/" "$release_dir/"
+    "$SOURCE/" "$release_dir/"
 
-mkdir -p "$release_dir/Codex/agent/skills"
-rsync -a --delete \
-  "$SOURCE/Codex/agent/skills/" \
-  "$release_dir/Codex/agent/skills/"
-if [[ -f "/Users/liaowang/Downloads/模板.docx" ]]; then
-  cp "/Users/liaowang/Downloads/模板.docx" "$release_dir/weekly_report_template.docx"
+  mkdir -p "$release_dir/Codex/agent/skills"
+  rsync -a --delete \
+    "$SOURCE/Codex/agent/skills/" \
+    "$release_dir/Codex/agent/skills/"
+  if [[ -f "/Users/liaowang/Downloads/模板.docx" ]]; then
+    cp "/Users/liaowang/Downloads/模板.docx" "$release_dir/weekly_report_template.docx"
+  fi
 fi
 
 cp "$SOURCE/scripts/queued_web_app_reload_worker.sh" "$WORKER_COPY"
