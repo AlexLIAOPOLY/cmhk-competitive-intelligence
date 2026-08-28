@@ -84,6 +84,7 @@ def build_competitor_intelligence_map(root: Path) -> dict:
             "source": str(raw.get("source") or "未标注来源").strip(),
             "sourceDate": source_date,
             "sourceUrl": str(raw.get("source_url") or "").strip(),
+            "keywords": keywords,
             "entities": _labels(evidence_text, ENTITY_ALIASES),
             "concepts": _labels(evidence_text, CONCEPT_ALIASES),
         })
