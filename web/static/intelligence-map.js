@@ -7,7 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
-  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "" };
+  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -78,7 +78,7 @@
           </dialog>
         </aside>
       </section>
-      <section class="market-ai-section" aria-label="AI 情报洞察"><div class="market-ai-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8zM18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><strong>AI 情报洞察</strong></div><div id="market-ai-insights"></div></section>
+      <section class="market-ai-section" aria-label="AI 情报洞察"><div class="market-ai-title"><div><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8zM18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><strong>AI 情报洞察</strong></span><button type="button" data-insight-refresh aria-label="刷新已审核情报" title="立即读取最新已审核情报"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7v5h-5M5 17v-5h5M17.4 9A6 6 0 0 0 6.5 7M6.6 15A6 6 0 0 0 17.5 17"/></svg>刷新</button></div><span id="market-insight-refresh-status" role="status">每 5 分钟自动更新</span></div><div id="market-ai-insights"></div></section>
     </section>`;
   }
 
@@ -214,24 +214,69 @@
   }
 
   panel.addEventListener("click", (event) => {
+    if (event.target.closest("[data-insight-refresh]")) return refreshData({ manual: true });
     const view = event.target.closest("[data-market-view]"); if (view) return switchView(view.dataset.marketView);
     const keyword = event.target.closest("[data-market-keyword]"); if (keyword) { state.keyword = state.keyword === keyword.dataset.marketKeyword ? "" : keyword.dataset.marketKeyword; return renderAll(); }
     if (event.target.closest("#market-graph-expand")) return openFullscreen(); if (event.target.closest("[data-graph-close]")) return $("market-graph-dialog").close();
     if (event.target.closest("[data-graph-reset]")) { state.fullscreenGraph?.elements().removeClass("is-muted is-neighbor").unselect(); state.fullscreenGraph?.fit(state.fullscreenGraph.elements(), 52); }
   });
 
+  function refreshStatus(copy, busy = false) {
+    const status = $("market-insight-refresh-status"); const button = panel.querySelector("[data-insight-refresh]");
+    if (status) status.textContent = copy;
+    if (button) { button.disabled = busy; button.classList.toggle("is-refreshing", busy); button.setAttribute("aria-busy", String(busy)); }
+  }
+
+  function payloadSignature(payload) {
+    return `${payload?.updatedAt || ""}:${(payload?.items || []).map((item) => `${item.id}:${item.sourceDate}`).join("|")}`;
+  }
+
+  async function refreshData({ manual = false } = {}) {
+    if (state.refreshPromise) return state.refreshPromise;
+    refreshStatus(manual ? "正在手动刷新…" : "正在读取最新情报…", true);
+    state.refreshPromise = (async () => {
+      const controller = new AbortController(); const timeout = window.setTimeout(() => controller.abort(), 4000);
+      try {
+        const response = await fetch(`/api/competitor-intelligence-map?_=${Date.now()}`, { cache: "no-store", signal: controller.signal });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json(); const signature = payloadSignature(payload); const changed = signature !== state.signature;
+        state.payload = payload; state.lastRefreshAt = Date.now(); state.signature = signature;
+        if (changed) renderAll();
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
+        const time = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+        refreshStatus(`${changed ? (manual ? "手动刷新" : "自动更新") : "已是最新"} · ${time} · 每 5 分钟更新`);
+        return state.payload;
+      } finally { window.clearTimeout(timeout); }
+    })().catch(() => { refreshStatus("刷新失败 · 点击标题重试"); return null; }).finally(() => { state.refreshPromise = null; panel.querySelector("[data-insight-refresh]")?.removeAttribute("aria-busy"); });
+    return state.refreshPromise;
+  }
+
   async function initialize() {
     pageMarkup();
     $("market-graph-dialog").addEventListener("close", () => { state.fullscreenGraph?.destroy(); state.fullscreenGraph = null; });
-    try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; renderAll(); } } catch (_error) { /* cache is optional */ }
+    try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; state.signature = payloadSignature(cached); renderAll(); } } catch (_error) { /* cache is optional */ }
     try {
       await Promise.race([window.CMHKAuth?.ready, new Promise((_, reject) => setTimeout(() => reject(new Error("auth timeout")), 4000))]);
       if (!window.CMHKAuth?.hasModule("competitor")) return;
-      const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 4000); const response = await fetch("/api/competitor-intelligence-map", { cache: "no-store", signal: controller.signal }); clearTimeout(timeout);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`); state.payload = await response.json(); renderAll();
-      try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
+      await refreshData();
+      if (!state.payload) throw new Error("intelligence unavailable");
     } catch (_error) { if (!state.payload) panel.innerHTML = '<div class="intelligence-map-loading">暂时无法读取情报图谱，请稍后刷新。</div>'; }
   }
 
+  function schedulePolling() {
+    window.clearTimeout(state.pollTimer); state.pollTimer = null;
+    if (document.hidden || panel.hidden) return;
+    state.pollTimer = window.setTimeout(async () => { await refreshData(); schedulePolling(); }, 300000);
+  }
+  window.addEventListener("workspace-tab-change", (event) => {
+    if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; return; }
+    if (Date.now() - state.lastRefreshAt >= 60000) refreshData();
+    schedulePolling();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && !panel.hidden && Date.now() - state.lastRefreshAt >= 60000) refreshData();
+    schedulePolling();
+  });
   initialize();
+  schedulePolling();
 })();

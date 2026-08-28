@@ -95,7 +95,7 @@ def build_competitor_intelligence_map(root: Path) -> dict:
         "ok": True,
         "source": "strategy_briefing/published.json",
         "sourceLabel": "已审核战略情报",
-        "updatedAt": str(payload.get("updated_at") or datetime.now().astimezone().isoformat(timespec="seconds")),
+        "updatedAt": str(payload.get("updated_at") or datetime.fromtimestamp(source_path.stat().st_mtime).astimezone().isoformat(timespec="seconds")) if source_path.exists() else "",
         "coverageStart": dates[0] if dates else "",
         "coverageEnd": dates[-1] if dates else "",
         "items": items,

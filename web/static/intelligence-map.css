@@ -214,8 +214,17 @@
   border-radius: 3px;
   background: var(--map-card);
 }
-.market-ai-title { display: flex; align-items: flex-start; gap: 9px; padding-top: 2px; color: var(--map-text); font-size: 13px; }
+.market-ai-title { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding-top: 2px; color: var(--map-text); font-size: 13px; }
+.market-ai-title > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.market-ai-title > div > span { display: flex; align-items: center; gap: 9px; }
+.market-ai-title button { display: flex; align-items: center; gap: 4px; height: 25px; padding: 0 7px; border: 1px solid var(--map-line); border-radius: 3px; background: transparent; color: var(--map-muted); font: inherit; font-size: 9px; cursor: pointer; }
+.market-ai-title button:hover { border-color: var(--map-cyan); color: var(--map-cyan); }
+.market-ai-title button:disabled { cursor: wait; opacity: .7; }
 .market-ai-title svg { width: 17px; fill: none; stroke: #4ea5ff; stroke-width: 1.6; }
+.market-ai-title button svg { width: 12px; stroke: currentColor; }
+.market-ai-title button.is-refreshing svg { animation: market-insight-pulse .9s ease-in-out infinite alternate; }
+.market-ai-title > span { color: var(--map-muted); font-size: 8px; line-height: 1.45; }
+@keyframes market-insight-pulse { to { opacity: .35; transform: scale(.88); } }
 #market-ai-insights { display: grid; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 #market-ai-insights article { min-width: 0; padding: 4px 18px; border-left: 2px solid var(--accent); }
 #market-ai-insights strong { color: var(--map-text); font-size: 11px; }
@@ -252,4 +261,5 @@
   .market-knowledge-graph > .market-graph-canvas,
   .market-knowledge-graph > .market-keyword-cloud,
   .market-keyword { transition: none; }
+  .market-ai-title button.is-refreshing svg { animation: none; }
 }

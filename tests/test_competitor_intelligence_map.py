@@ -43,9 +43,17 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn("grid-template-columns: minmax(0, 1.85fr) minmax(350px, 1fr)", STYLE)
         self.assertIn("min-height: 156px", STYLE)
         self.assertIn('cytoscape-3.34.0.min.js', INDEX)
+        self.assertIn('data-insight-refresh', SCRIPT)
+        self.assertIn('window.setTimeout', SCRIPT)
+        self.assertIn('300000', SCRIPT)
+        self.assertIn('60000', SCRIPT)
+        self.assertIn('workspace-tab-change', SCRIPT)
+        self.assertIn('cache: "no-store"', SCRIPT)
+        self.assertIn('controller.abort()', SCRIPT)
+        self.assertIn('4000', SCRIPT)
 
     def test_live_endpoint_is_used(self):
-        self.assertIn('fetch("/api/competitor-intelligence-map"', SCRIPT)
+        self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)
         self.assertIn("build_competitor_intelligence_map(ROOT)", WEB_APP)
 
