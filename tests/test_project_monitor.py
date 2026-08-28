@@ -143,10 +143,16 @@ class FakeCommandRunner:
             )
         if len(args) >= 3 and args[1:3] == ["sheets", "+cells-get"]:
             all_rows = [list(project_monitor.ERROR_LEDGER_COLUMNS), *self.ledger_rows]
-            cells = [
-                [[{"value": value} if value != "" else {} for value in row][index] for index in range(17)]
-                for row in all_rows
-            ]
+            requested_range = args[args.index("--range") + 1]
+            range_match = re.fullmatch(r"A(\d+):Q(\d+)", requested_range)
+            if range_match is None:
+                return subprocess.CompletedProcess(args, 1, "", "unexpected ledger range")
+            start_row, end_row = (int(value) for value in range_match.groups())
+            row_indices = list(range(start_row, end_row + 1))
+            cells = []
+            for row_number in row_indices:
+                row = all_rows[row_number - 1] if row_number <= len(all_rows) else [""] * 17
+                cells.append([{"value": value} if value != "" else {} for value in row])
             return subprocess.CompletedProcess(
                 args,
                 0,
@@ -158,10 +164,10 @@ class FakeCommandRunner:
                             "has_more": False,
                             "ranges": [
                                 {
-                                    "actual_range": f"A1:Q{len(all_rows)}",
-                                    "range": f"A1:Q{len(all_rows)}",
+                                    "actual_range": requested_range,
+                                    "range": requested_range,
                                     "cells": cells,
-                                    "row_indices": list(range(1, len(all_rows) + 1)),
+                                    "row_indices": row_indices,
                                     "col_indices": [chr(ord("A") + index) for index in range(17)],
                                     "truncated": False,
                                 }
@@ -1683,6 +1689,29 @@ class ProjectMonitorTests(unittest.TestCase):
         rows, mapping = monitor._read_error_ledger()
         self.assertEqual(mapping[incident_id], 4)
         self.assertEqual(rows[mapping[incident_id] - 2][12], "李四")
+
+    def test_error_ledger_is_read_in_bounded_chunks_without_losing_rows(self):
+        ledger_rows = []
+        for index in range(project_monitor.ERROR_LEDGER_READ_CHUNK_ROWS + 5):
+            row = [""] * 17
+            row[0] = f"incident-{index:03d}"
+            row[13] = "待处理"
+            ledger_rows.append(row)
+        self.runner.ledger_rows = ledger_rows
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+
+        rows, mapping = monitor._read_error_ledger()
+
+        read_calls = [call for call in self.runner.calls if "+cells-get" in call]
+        self.assertGreater(len(read_calls), 1)
+        self.assertEqual(
+            read_calls[0][read_calls[0].index("--range") + 1],
+            f"A1:Q{project_monitor.ERROR_LEDGER_READ_CHUNK_ROWS}",
+        )
+        self.assertIn("--max-chars", read_calls[0])
+        self.assertEqual(len(mapping), len(ledger_rows))
+        self.assertEqual(rows[0][0], "incident-000")
+        self.assertEqual(rows[-1][0], ledger_rows[-1][0])
 
     def test_sensitive_values_are_redacted_before_incident_storage(self):
         monitor = self._monitor()

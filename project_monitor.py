@@ -120,6 +120,10 @@ ERROR_LEDGER_OPERATIONAL_MAX_ROWS = max(
     1000,
     int(os.environ.get("CMHK_ERROR_LEDGER_MAX_ROWS", "200000")),
 )
+ERROR_LEDGER_READ_CHUNK_ROWS = max(
+    10,
+    int(os.environ.get("CMHK_ERROR_LEDGER_READ_CHUNK_ROWS", "50")),
+)
 TERMINAL_STATUSES = {"completed", "failed"}
 SENSITIVE_RE = re.compile(
     r"(?i)(authorization\s*[:=]\s*bearer\s+|api[_-]?key\s*[:=]\s*|app[_-]?secret\s*[:=]\s*)[^\s,;\"']+"
@@ -3346,57 +3350,92 @@ class ProjectMonitor:
         if not isinstance(main_sheet, dict) or str(main_sheet.get("sheet_name") or "") != "主表":
             raise RuntimeError("目标工作簿的主表身份校验失败")
         row_count = max(2, int(ledger_sheet.get("row_count") or 0))
-        cells_payload = self._json_from_process(
-            self._run(
-                [
-                    "lark-cli",
-                    "sheets",
-                    "+cells-get",
-                    "--spreadsheet-token",
-                    token,
-                    "--sheet-id",
-                    sheet_id,
-                    "--range",
-                    f"A1:Q{row_count}",
-                    "--include",
-                    "value",
-                    "--as",
-                    "bot",
-                    "--profile",
-                    profile,
-                    "--format",
-                    "json",
-                ],
-                timeout=30,
-            )
-        )
-        cells_data = (
-            cells_payload.get("data") if isinstance(cells_payload.get("data"), dict) else {}
-        )
-        if cells_data.get("has_more"):
-            raise RuntimeError("错误台账单元格回读被截断")
-        ranges = cells_data.get("ranges") if isinstance(cells_data.get("ranges"), list) else []
-        if len(ranges) != 1 or not isinstance(ranges[0], dict):
-            raise RuntimeError("错误台账单元格回读未返回唯一范围")
-        result = ranges[0]
-        if result.get("truncated"):
-            raise RuntimeError("错误台账单元格回读范围被截断")
-        row_indices = result.get("row_indices") if isinstance(result.get("row_indices"), list) else []
-        col_indices = result.get("col_indices") if isinstance(result.get("col_indices"), list) else []
-        raw_cells = result.get("cells") if isinstance(result.get("cells"), list) else []
-        if col_indices != [chr(ord("A") + index) for index in range(17)]:
-            raise RuntimeError("错误台账单元格回读列范围不一致")
         rows_by_number: dict[int, list[str]] = {}
-        for index, raw_row in enumerate(raw_cells):
-            if index >= len(row_indices):
-                break
-            row_number = int(row_indices[index])
-            cells = raw_row if isinstance(raw_row, list) else []
-            values: list[str] = []
-            for column in range(17):
-                cell = cells[column] if column < len(cells) and isinstance(cells[column], dict) else {}
-                values.append(str(cell.get("value") or ""))
-            rows_by_number[row_number] = values
+        expected_columns = [chr(ord("A") + index) for index in range(17)]
+        for chunk_start in range(1, row_count + 1, ERROR_LEDGER_READ_CHUNK_ROWS):
+            chunk_end = min(row_count, chunk_start + ERROR_LEDGER_READ_CHUNK_ROWS - 1)
+            cells_payload = self._json_from_process(
+                self._run(
+                    [
+                        "lark-cli",
+                        "sheets",
+                        "+cells-get",
+                        "--spreadsheet-token",
+                        token,
+                        "--sheet-id",
+                        sheet_id,
+                        "--range",
+                        f"A{chunk_start}:Q{chunk_end}",
+                        "--include",
+                        "value",
+                        "--max-chars",
+                        "1000000",
+                        "--as",
+                        "bot",
+                        "--profile",
+                        profile,
+                        "--format",
+                        "json",
+                    ],
+                    timeout=30,
+                )
+            )
+            cells_data = (
+                cells_payload.get("data")
+                if isinstance(cells_payload.get("data"), dict)
+                else {}
+            )
+            if cells_data.get("has_more"):
+                raise RuntimeError(
+                    f"错误台账单元格回读被截断：{chunk_start}:{chunk_end}"
+                )
+            ranges = (
+                cells_data.get("ranges")
+                if isinstance(cells_data.get("ranges"), list)
+                else []
+            )
+            if len(ranges) != 1 or not isinstance(ranges[0], dict):
+                raise RuntimeError(
+                    f"错误台账单元格回读未返回唯一范围：{chunk_start}:{chunk_end}"
+                )
+            result = ranges[0]
+            if result.get("truncated"):
+                raise RuntimeError(
+                    f"错误台账单元格回读范围被截断：{chunk_start}:{chunk_end}"
+                )
+            row_indices = (
+                result.get("row_indices")
+                if isinstance(result.get("row_indices"), list)
+                else []
+            )
+            col_indices = (
+                result.get("col_indices")
+                if isinstance(result.get("col_indices"), list)
+                else []
+            )
+            raw_cells = (
+                result.get("cells") if isinstance(result.get("cells"), list) else []
+            )
+            if col_indices != expected_columns:
+                raise RuntimeError(
+                    f"错误台账单元格回读列范围不一致：{chunk_start}:{chunk_end}"
+                )
+            for index, raw_row in enumerate(raw_cells):
+                if index >= len(row_indices):
+                    break
+                row_number = int(row_indices[index])
+                if row_number < chunk_start or row_number > chunk_end:
+                    raise RuntimeError("错误台账单元格回读行号超出请求范围")
+                cells = raw_row if isinstance(raw_row, list) else []
+                values: list[str] = []
+                for column in range(17):
+                    cell = (
+                        cells[column]
+                        if column < len(cells) and isinstance(cells[column], dict)
+                        else {}
+                    )
+                    values.append(str(cell.get("value") or ""))
+                rows_by_number[row_number] = values
         header = rows_by_number.get(1, [])
         if tuple(header) != ERROR_LEDGER_COLUMNS:
             raise RuntimeError("错误台账表头被修改，自动写入已停止")
