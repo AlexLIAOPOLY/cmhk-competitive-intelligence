@@ -193,6 +193,84 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(payload["decisions"], repaired_payload["decisions"])
         self.assertEqual(fake_model.invoke.call_count, 2)
 
+    def test_batches_supplement_model_omissions(self):
+        targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
+        first = {
+            "learned_rules": [],
+            "avoid_patterns": [],
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "首轮",
+                }
+            ],
+        }
+        supplement = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-2",
+                    "app_status": "不接受",
+                    "weekly_status": "接受",
+                    "app_confidence": 0.8,
+                    "weekly_confidence": 0.9,
+                    "reason": "补判",
+                }
+            ]
+        }
+
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[(first, "model"), (supplement, "model")],
+        ) as invoke:
+            payload, _model = agent._invoke_langchain_batches([], targets)
+
+        self.assertEqual(invoke.call_count, 2)
+        self.assertEqual(payload["_supplemented_count"], 1)
+        self.assertEqual(payload["_fallback_count"], 0)
+        self.assertEqual(
+            {item["news_id"] for item in payload["decisions"]},
+            {"NEWS-1", "NEWS-2"},
+        )
+
+    def test_langchain_locally_repairs_only_missing_json_commas(self):
+        malformed = """{
+          "learned_rules": ["香港相关优先"]
+          "avoid_patterns": [],
+          "app_preference_summary": "APP",
+          "weekly_preference_summary": "周报",
+          "decisions": [{
+            "news_id": "NEWS-1",
+            "app_status": "接受"
+            "weekly_status": "不接受",
+            "app_confidence": 0.9,
+            "weekly_confidence": 0.8,
+            "reason": "测试"
+          }]
+        }"""
+        fake_model = mock.Mock()
+        fake_model.invoke.return_value = SimpleNamespace(content=malformed)
+
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
+        ):
+            payload, model = agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
+
+        self.assertEqual(model, "DeepSeek-V4-Pro")
+        self.assertTrue(payload["_format_repaired"])
+        self.assertEqual(payload["decisions"][0]["weekly_status"], "不接受")
+        fake_model.invoke.assert_called_once()
+
+    def test_missing_comma_repair_rejects_unescaped_string_content(self):
+        with self.assertRaises(json.JSONDecodeError):
+            agent._repair_missing_json_commas('{"reason": "say "hello""}')
+
     def test_run_creates_separate_log_updates_skill_and_writes_only_pending_cells(self):
         human_values = _row(
             title="历史人工接受",

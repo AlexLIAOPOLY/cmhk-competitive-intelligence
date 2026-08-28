@@ -140,6 +140,34 @@ def _json_object(value: Any) -> dict[str, Any]:
     return parsed
 
 
+def _repair_missing_json_commas(value: Any, *, max_repairs: int = 8) -> dict[str, Any]:
+    """Repair only parser-proven missing delimiters in an otherwise JSON object."""
+    content = value if isinstance(value, str) else str(value or "")
+    content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip(), flags=re.I)
+    match = re.search(r"\{[\s\S]*\}", content)
+    candidate = match.group(0) if match else content
+    for _ in range(max(0, max_repairs)):
+        try:
+            parsed = json.loads(candidate)
+        except json.JSONDecodeError as exc:
+            if exc.msg != "Expecting ',' delimiter" or exc.pos >= len(candidate):
+                raise
+            next_char = candidate[exc.pos]
+            if next_char not in {'"', "{", "["}:
+                raise
+            previous_index = exc.pos - 1
+            while previous_index >= 0 and candidate[previous_index].isspace():
+                previous_index -= 1
+            if previous_index < 0 or candidate[previous_index] not in '"}]0123456789':
+                raise
+            candidate = candidate[: exc.pos] + "," + candidate[exc.pos :]
+            continue
+        if not isinstance(parsed, dict):
+            raise ValueError("模型结果必须是 JSON 对象")
+        return parsed
+    raise ValueError("JSON 缺失分隔符超出有界修复范围")
+
+
 def _latest_agent_decisions(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     latest: dict[str, dict[str, Any]] = {}
     for record in records:
@@ -323,6 +351,12 @@ def _invoke_langchain(
             try:
                 return _json_object(response_content), model_name
             except Exception as parse_exc:
+                try:
+                    repaired = _repair_missing_json_commas(response_content)
+                    repaired["_format_repaired"] = True
+                    return repaired, model_name
+                except Exception:
+                    pass
                 repair_response = model.invoke(
                     [
                         SystemMessage(
@@ -342,7 +376,11 @@ def _invoke_langchain(
                         ),
                     ]
                 )
-                repaired = _json_object(getattr(repair_response, "content", ""))
+                repair_content = getattr(repair_response, "content", "")
+                try:
+                    repaired = _json_object(repair_content)
+                except Exception:
+                    repaired = _repair_missing_json_commas(repair_content)
                 repaired["_format_repaired"] = True
                 return repaired, model_name
         except Exception as exc:
@@ -398,12 +436,61 @@ def _invoke_langchain_batches(
         if progress_callback:
             progress_callback(batch_index, total, len(batch))
         payload, model_name = _invoke_langchain(examples, batch)
+        original_ids = {
+            _text(item.get("news_id"), 80)
+            for item in (payload.get("decisions") or [])
+            if isinstance(item, dict)
+        }
+        supplemented_count = 0
+        for _attempt in range(2):
+            decided_ids = {
+                _text(item.get("news_id"), 80)
+                for item in (payload.get("decisions") or [])
+                if isinstance(item, dict)
+            }
+            missing_targets = [
+                item for item in batch if item["news_id"] not in decided_ids
+            ]
+            if not missing_targets:
+                break
+            supplement, supplement_model = _invoke_langchain(examples, missing_targets)
+            payload.setdefault("decisions", []).extend(supplement.get("decisions") or [])
+            payload["_format_repaired"] = bool(
+                payload.get("_format_repaired") or supplement.get("_format_repaired")
+            )
+            model_name = ", ".join(dict.fromkeys([model_name, supplement_model]))
+        decided_ids = {
+            _text(item.get("news_id"), 80)
+            for item in (payload.get("decisions") or [])
+            if isinstance(item, dict)
+        }
+        supplemented_count = len(decided_ids - original_ids)
+        missing_targets = [item for item in batch if item["news_id"] not in decided_ids]
+        for item in missing_targets:
+            payload.setdefault("decisions", []).append(
+                {
+                    "news_id": item["news_id"],
+                    "app_status": "不接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.0,
+                    "weekly_confidence": 0.0,
+                    "reason": "模型多轮未返回完整判断，按信息不足保守不接受",
+                }
+            )
+        payload["_supplemented_count"] = supplemented_count
+        payload["_fallback_count"] = len(missing_targets)
         payloads.append(payload)
         model_names.append(model_name)
     first = payloads[0] if payloads else {}
     return {
         "_format_repaired": any(
             payload.get("_format_repaired") is True for payload in payloads
+        ),
+        "_supplemented_count": sum(
+            int(payload.get("_supplemented_count") or 0) for payload in payloads
+        ),
+        "_fallback_count": sum(
+            int(payload.get("_fallback_count") or 0) for payload in payloads
         ),
         "learned_rules": list(
             dict.fromkeys(
@@ -591,6 +678,20 @@ def run_news_selection_agent(
                     stream_log_path,
                     "模型格式自动修复",
                     "模型首次返回的 JSON 格式不完整；已通过 LangChain 仅修复语法并重新校验，业务判断未重写。",
+                )
+            if int(model_payload.get("_supplemented_count") or 0):
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "遗漏候选补判",
+                    f"首轮模型结果遗漏候选；已单独补判 {int(model_payload['_supplemented_count'])} 条并通过完整性校验。",
+                )
+            if int(model_payload.get("_fallback_count") or 0):
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "保守兜底判断",
+                    f"模型多轮仍遗漏 {int(model_payload['_fallback_count'])} 条；已按信息不足标记为不接受，未放大进入 APP 或双周报的范围。",
                 )
             decisions = _normalized_decisions(model_payload, targets)
             SKILL_PATH.parent.mkdir(parents=True, exist_ok=True)
