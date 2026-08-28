@@ -58,7 +58,74 @@ def load_ai_config(include_key: bool = True) -> dict[str, Any]:
         api_key = str(config.get("api_key") or "")
         config["api_key"] = mask_api_key(api_key)
         config["has_api_key"] = bool(api_key)
+        api_keys = config.get("api_keys")
+        if isinstance(api_keys, list):
+            config["api_keys"] = [
+                mask_api_key(str(value or "")) for value in api_keys
+            ]
+        strategy_api_keys = config.get("strategy_api_keys")
+        if isinstance(strategy_api_keys, list):
+            config["strategy_api_keys"] = [
+                mask_api_key(str(value or "")) for value in strategy_api_keys
+            ]
+        model_api_keys = config.get("model_api_keys")
+        if isinstance(model_api_keys, dict):
+            config["model_api_keys"] = {
+                str(model): [
+                    mask_api_key(str(value or ""))
+                    for value in (values if isinstance(values, list) else [values])
+                ]
+                for model, values in model_api_keys.items()
+            }
     return config
+
+
+def api_key_candidates(
+    config: dict[str, Any] | None = None,
+    *,
+    requested_key: Any = "",
+    model: str = "",
+) -> list[str]:
+    """Return deduplicated global keys plus keys explicitly scoped to a model."""
+    config = config or load_ai_config(include_key=True)
+
+    def reveal(value: Any) -> str:
+        getter = getattr(value, "get_secret_value", None)
+        if callable(getter):
+            value = getter()
+        return str(value or "").strip()
+
+    values: list[Any] = [requested_key]
+    configured_pool = config.get("api_keys")
+    if isinstance(configured_pool, str):
+        configured_pool = [configured_pool]
+    if isinstance(configured_pool, list) and any(reveal(value) for value in configured_pool):
+        values.extend(configured_pool)
+    else:
+        values.append(config.get("api_key"))
+        strategy_keys = config.get("strategy_api_keys")
+        if isinstance(strategy_keys, str):
+            strategy_keys = [strategy_keys]
+        if isinstance(strategy_keys, list):
+            values.extend(strategy_keys)
+
+    normalized_model = str(model or "").strip().casefold()
+    model_keys = config.get("model_api_keys")
+    if normalized_model and isinstance(model_keys, dict):
+        for route_model, route_values in model_keys.items():
+            if str(route_model or "").strip().casefold() != normalized_model:
+                continue
+            if isinstance(route_values, str):
+                route_values = [route_values]
+            if isinstance(route_values, list):
+                values.extend(route_values)
+
+    result: list[str] = []
+    for value in values:
+        key = reveal(value)
+        if key and key not in result:
+            result.append(key)
+    return result
 
 
 def save_ai_config(payload: dict[str, Any]) -> dict[str, Any]:
@@ -80,10 +147,23 @@ def save_ai_config(payload: dict[str, Any]) -> dict[str, Any]:
         "api_key": api_key,
         "extra_parameters": extra_parameters,
     }
+    incoming_pool = payload.get("api_keys")
+    if isinstance(incoming_pool, str):
+        incoming_pool = [incoming_pool]
+    if isinstance(incoming_pool, list):
+        api_keys = list(
+            dict.fromkeys(
+                str(value or "").strip()
+                for value in incoming_pool
+                if str(value or "").strip()
+            )
+        )
+        if api_keys:
+            config["api_keys"] = api_keys
     # These fields are managed locally because they may contain several secret
     # keys. Preserve them when the ordinary single-key settings form is saved.
-    for field in ("strategy_api_keys", "model_api_keys"):
-        if field in current:
+    for field in ("api_keys", "strategy_api_keys", "model_api_keys"):
+        if field not in config and field in current:
             config[field] = current[field]
     AI_CONFIG_PATH.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
     return load_ai_config(include_key=False)

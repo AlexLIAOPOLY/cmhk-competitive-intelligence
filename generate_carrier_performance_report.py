@@ -28,6 +28,7 @@ from docx.text.paragraph import Paragraph
 from opencc import OpenCC
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
 from cmhk.data.company_metrics import build_company_metrics_payload
@@ -985,9 +986,13 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
     try:
         wait_for_internal_ai_slot("carrier-performance-editor")
         started = time.monotonic()
-        with urlopen_with_local_proxy_fallback(
+        with open_llm_request(
             request,
             timeout=PERFORMANCE_AI_TIMEOUT_SECONDS,
+            config=config,
+            requested_key=api_key,
+            model=model,
+            open_func=urlopen_with_local_proxy_fallback,
         ) as response:
             chunks = []
             while True:

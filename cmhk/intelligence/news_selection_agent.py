@@ -18,7 +18,7 @@ try:
 except ImportError:  # pragma: no cover - deployment fallback
     OpenCC = None
 
-from ai_config import load_ai_config
+from ai_config import api_key_candidates, load_ai_config
 from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from cmhk.crawl.run_registry import (
     append_crawl_run_event,
@@ -288,13 +288,17 @@ def _model_routes() -> list[tuple[str, str]]:
         os.environ.get("CMHK_NEWS_SELECTION_MODEL", "").strip()
         or _text(config.get("model"), 120)
     )
-    primary_keys = [
-        _text(value, 500)
-        for value in (config.get("strategy_api_keys") or [])
-        if _text(value, 500)
-    ]
-    if _text(config.get("api_key"), 500):
-        primary_keys.append(_text(config.get("api_key"), 500))
+    if config.get("api_keys"):
+        primary_keys = api_key_candidates(config, model=primary_model)
+    else:
+        legacy_keys = config.get("strategy_api_keys") or []
+        if isinstance(legacy_keys, str):
+            legacy_keys = [legacy_keys]
+        primary_keys = [
+            _text(value, 500) for value in legacy_keys if _text(value, 500)
+        ]
+        if primary_key := _text(config.get("api_key"), 500):
+            primary_keys.append(primary_key)
     routes = [(primary_model, key) for key in dict.fromkeys(primary_keys) if primary_model]
     for model, values in (config.get("model_api_keys") or {}).items():
         keys = [values] if isinstance(values, str) else values

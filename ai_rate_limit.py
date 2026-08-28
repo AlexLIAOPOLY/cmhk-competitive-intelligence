@@ -14,6 +14,13 @@ from typing import Any, Callable, Iterator
 
 from langchain_deepseek import ChatDeepSeek as _ChatDeepSeek
 
+from ai_config import load_ai_config
+from ai_key_rotation import (
+    is_key_unavailable_error,
+    mark_api_key_unavailable,
+    ordered_api_keys,
+)
+
 
 DEFAULT_REQUESTS_PER_MINUTE = 14
 _RESERVATION_ACTIVE: ContextVar[bool] = ContextVar(
@@ -143,33 +150,97 @@ def _reserved_model_call(operation: str) -> Iterator[None]:
 class RateLimitedChatDeepSeek(_ChatDeepSeek):
     """LangChain DeepSeek client sharing the same process-independent quota."""
 
+    def _keys(self) -> list[str]:
+        return ordered_api_keys(
+            load_ai_config(include_key=True),
+            requested_key=self.openai_api_key,
+            model=str(self.model_name or ""),
+        )
+
+    @staticmethod
+    def _headers(api_key: str, kwargs: dict[str, Any]) -> dict[str, Any]:
+        headers = dict(kwargs.get("extra_headers") or {})
+        headers["Authorization"] = f"Bearer {api_key}"
+        return headers
+
     def _generate(self, *args: Any, **kwargs: Any) -> Any:
-        with _reserved_model_call("langchain-generate"):
-            return super()._generate(*args, **kwargs)
+        keys = self._keys()
+        for index, api_key in enumerate(keys):
+            try:
+                with _reserved_model_call("langchain-generate"):
+                    return super()._generate(
+                        *args,
+                        **{**kwargs, "extra_headers": self._headers(api_key, kwargs)},
+                    )
+            except Exception as exc:
+                if not is_key_unavailable_error(exc) or index >= len(keys) - 1:
+                    raise
+                mark_api_key_unavailable(api_key)
+        raise RuntimeError("内部模型请求未执行")
 
     def _stream(self, *args: Any, **kwargs: Any) -> Iterator[Any]:
-        with _reserved_model_call("langchain-stream"):
-            yield from super()._stream(*args, **kwargs)
+        keys = self._keys()
+        for index, api_key in enumerate(keys):
+            emitted = False
+            try:
+                with _reserved_model_call("langchain-stream"):
+                    for item in super()._stream(
+                        *args,
+                        **{**kwargs, "extra_headers": self._headers(api_key, kwargs)},
+                    ):
+                        emitted = True
+                        yield item
+                return
+            except Exception as exc:
+                if emitted or not is_key_unavailable_error(exc) or index >= len(keys) - 1:
+                    raise
+                mark_api_key_unavailable(api_key)
+        raise RuntimeError("内部模型请求未执行")
 
     async def _agenerate(self, *args: Any, **kwargs: Any) -> Any:
-        if _RESERVATION_ACTIVE.get():
-            return await super()._agenerate(*args, **kwargs)
-        await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-agenerate")
-        token = _RESERVATION_ACTIVE.set(True)
-        try:
-            return await super()._agenerate(*args, **kwargs)
-        finally:
-            _RESERVATION_ACTIVE.reset(token)
+        keys = self._keys()
+        for index, api_key in enumerate(keys):
+            if not _RESERVATION_ACTIVE.get():
+                await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-agenerate")
+                token = _RESERVATION_ACTIVE.set(True)
+            else:
+                token = None
+            try:
+                return await super()._agenerate(
+                    *args,
+                    **{**kwargs, "extra_headers": self._headers(api_key, kwargs)},
+                )
+            except Exception as exc:
+                if not is_key_unavailable_error(exc) or index >= len(keys) - 1:
+                    raise
+                mark_api_key_unavailable(api_key)
+            finally:
+                if token is not None:
+                    _RESERVATION_ACTIVE.reset(token)
+        raise RuntimeError("内部模型请求未执行")
 
     async def _astream(self, *args: Any, **kwargs: Any) -> Any:
-        if not _RESERVATION_ACTIVE.get():
-            await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-astream")
-            token = _RESERVATION_ACTIVE.set(True)
-        else:
-            token = None
-        try:
-            async for item in super()._astream(*args, **kwargs):
-                yield item
-        finally:
-            if token is not None:
-                _RESERVATION_ACTIVE.reset(token)
+        keys = self._keys()
+        for index, api_key in enumerate(keys):
+            emitted = False
+            if not _RESERVATION_ACTIVE.get():
+                await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-astream")
+                token = _RESERVATION_ACTIVE.set(True)
+            else:
+                token = None
+            try:
+                async for item in super()._astream(
+                    *args,
+                    **{**kwargs, "extra_headers": self._headers(api_key, kwargs)},
+                ):
+                    emitted = True
+                    yield item
+                return
+            except Exception as exc:
+                if emitted or not is_key_unavailable_error(exc) or index >= len(keys) - 1:
+                    raise
+                mark_api_key_unavailable(api_key)
+            finally:
+                if token is not None:
+                    _RESERVATION_ACTIVE.reset(token)
+        raise RuntimeError("内部模型请求未执行")

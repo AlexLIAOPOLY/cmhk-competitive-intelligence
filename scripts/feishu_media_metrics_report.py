@@ -29,6 +29,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from ai_config import load_ai_config  # noqa: E402
+from ai_key_rotation import open_llm_request  # noqa: E402
 from cmhk.integrations.feishu_runtime import lark_cli_env, resolve_lark_cli  # noqa: E402
 
 
@@ -685,7 +686,13 @@ def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: 
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with open_llm_request(
+            request,
+            timeout=120,
+            config=ai,
+            requested_key=api_key,
+            model=model,
+        ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
         raise ReportError(f"DeepSeek-V4-Pro 校验失败：{type(exc).__name__}") from exc

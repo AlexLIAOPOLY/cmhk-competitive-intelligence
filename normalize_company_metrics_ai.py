@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from cmhk.agent.rag import estimate_tokens
@@ -1899,7 +1900,14 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     )
     try:
         wait_for_internal_ai_slot("company-metrics-normalization")
-        with urlopen_with_local_proxy_fallback(req, timeout=180) as resp:
+        with open_llm_request(
+            req,
+            timeout=180,
+            config=config,
+            requested_key=api_key,
+            model=model,
+            open_func=urlopen_with_local_proxy_fallback,
+        ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:1000]

@@ -33,6 +33,7 @@ from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+from ai_key_rotation import open_llm_request
 from cmhk.integrations.feishu_sheet_rollover import (
     active_part,
     capacity_decision,
@@ -2002,7 +2003,14 @@ class ProjectMonitor:
         )
         wait_for_internal_ai_slot("project-monitor-diagnosis", deadline_monotonic=time.monotonic() + 45)
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=35) as response:
+            with open_llm_request(
+                request,
+                timeout=35,
+                config=config,
+                requested_key=api_key,
+                model=model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")[:500]
@@ -2200,7 +2208,14 @@ class ProjectMonitor:
                 method="POST",
             )
             wait_for_internal_ai_slot("project-monitor-resolution", deadline_monotonic=time.monotonic() + 45)
-            with urlopen_with_local_proxy_fallback(request, timeout=35) as response:
+            with open_llm_request(
+                request,
+                timeout=35,
+                config=config,
+                requested_key=api_key,
+                model=model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
             raw = final_chat_message_text(response_payload, operation="运维告警结案")
             payload = load_json_response(raw, operation="运维告警结案")

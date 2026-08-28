@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import wait_for_internal_ai_slot
 from cmhk.data.source_identity import canonical_source_document_identity, is_derived_value
 
@@ -2150,7 +2151,13 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
     )
     try:
         wait_for_internal_ai_slot("rag-answer")
-        with urllib.request.urlopen(req, timeout=90) as resp:
+        with open_llm_request(
+            req,
+            timeout=90,
+            config=config,
+            requested_key=api_key,
+            model=model,
+        ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:800]
@@ -2271,7 +2278,13 @@ def stream_llm_with_rag(question: str):
     )
     try:
         wait_for_internal_ai_slot("rag-stream")
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with open_llm_request(
+            req,
+            timeout=120,
+            config=config,
+            requested_key=api_key,
+            model=model,
+        ) as resp:
             for raw in resp:
                 line = raw.decode("utf-8", errors="ignore").strip()
                 if not line or not line.startswith("data:"):

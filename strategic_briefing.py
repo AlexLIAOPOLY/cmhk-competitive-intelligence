@@ -22,7 +22,8 @@ from zoneinfo import ZoneInfo
 
 from opencc import OpenCC
 
-from ai_config import load_ai_config
+from ai_config import api_key_candidates, load_ai_config
+from ai_key_rotation import is_key_unavailable_error
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import load_json_response
 from cmhk.crawl.run_registry import (
@@ -3041,18 +3042,6 @@ def _call_internal_ai(
             )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
-    configured_keys = config.get("strategy_api_keys")
-    strategy_api_keys = [
-        _clean_text(value, 500)
-        for value in (
-            configured_keys if isinstance(configured_keys, list) else []
-        )
-        if _clean_text(value, 500)
-    ]
-    fallback_key = _clean_text(config.get("api_key"), 500)
-    if fallback_key:
-        strategy_api_keys.append(fallback_key)
-    strategy_api_keys = list(dict.fromkeys(strategy_api_keys)) or [""]
     configured_model = str(config.get("model") or "")
     # Prefer the higher-quality review model for strategic-news decisions. Speed
     # is secondary here because an incorrect exclusion can hide a useful signal.
@@ -3065,6 +3054,20 @@ def _call_internal_ai(
     )
     if not base_url or not model:
         raise RuntimeError("公司内部 AI 配置不完整")
+    if config.get("api_keys"):
+        strategy_api_keys = api_key_candidates(config, model=model)
+    else:
+        legacy_strategy_keys = config.get("strategy_api_keys") or []
+        if isinstance(legacy_strategy_keys, str):
+            legacy_strategy_keys = [legacy_strategy_keys]
+        strategy_api_keys = [
+            _clean_text(value, 500)
+            for value in legacy_strategy_keys
+            if _clean_text(value, 500)
+        ]
+        if fallback_key := _clean_text(config.get("api_key"), 500):
+            strategy_api_keys.append(fallback_key)
+    strategy_api_keys = list(dict.fromkeys(strategy_api_keys)) or [""]
     routes: list[tuple[str, str]] = [
         (model, api_key) for api_key in strategy_api_keys
     ]
@@ -3152,18 +3155,10 @@ def _call_internal_ai(
                     else {}
                 )
                 error = error if isinstance(error, dict) else {}
-                error_type = _clean_text(error.get("type"), 120).casefold()
-                error_code = _clean_text(error.get("code"), 120).casefold()
-                error_message = _clean_text(error.get("message"), 300).casefold()
-                key_unavailable = (
-                    "budget_exceeded" in {error_type, error_code}
-                    or "budget has been exceeded" in error_message
-                    or error_type
-                    in {"key_model_access_denied", "team_model_access_denied"}
-                    or error_code
-                    in {"key_model_access_denied", "team_model_access_denied"}
-                    or "not allowed to access model" in error_message
-                    or "can only access models" in error_message
+                key_unavailable = is_key_unavailable_error(
+                    exc,
+                    status_code=exc.code,
+                    raw_body=raw_error.encode("utf-8", errors="ignore"),
                 )
                 strict_tool_rejected = (
                     "tools" in request_body

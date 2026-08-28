@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Callable
 
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from ai_response_compat import deepseek_nonthinking_parameters, final_chat_message_text
 
@@ -204,7 +205,13 @@ def generate_market_news_insights(
         if stream_callback:
             stream_callback({"type": "status", "message": "内部AI正在分析已审核新闻"})
         wait_for_internal_ai_slot("market-news-insights")
-        with urllib.request.urlopen(request, timeout=90) as response:
+        with open_llm_request(
+            request,
+            timeout=90,
+            config=config,
+            requested_key=api_key,
+            model=model,
+        ) as response:
             upstream = json.loads(response.read().decode("utf-8"))
     finally:
         reset_internal_ai_priority(priority)

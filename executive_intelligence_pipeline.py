@@ -24,6 +24,7 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
+from ai_key_rotation import open_llm_request
 
 
 ROOT = Path(__file__).resolve().parent
@@ -2844,7 +2845,14 @@ def generate_model_focus_insight(
         )
         wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=30) as response:
+            with open_llm_request(
+                request,
+                timeout=30,
+                config=config,
+                requested_key=api_key,
+                model=attempt_model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
@@ -3201,7 +3209,14 @@ def generate_model_domain_summaries(
         )
         wait_for_internal_ai_slot("executive-intelligence-analysis")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+            with open_llm_request(
+                request,
+                timeout=180,
+                config=config,
+                requested_key=api_key,
+                model=str(body.get("model") or ""),
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
@@ -3270,7 +3285,14 @@ def generate_model_domain_summaries(
                 )
                 wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}")
                 try:
-                    with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+                    with open_llm_request(
+                        request,
+                        timeout=180,
+                        config=config,
+                        requested_key=api_key,
+                        model=str(body.get("model") or ""),
+                        open_func=urlopen_with_local_proxy_fallback,
+                    ) as response:
                         domain_payload = json.loads(response.read().decode("utf-8"))
                     domain_content = final_chat_message_text(
                         domain_payload, operation=f"{domain_id}领域AI洞察"
@@ -3387,7 +3409,14 @@ def generate_model_domain_summaries(
                         )
                         wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}-{focus_id}")
                         try:
-                            with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+                            with open_llm_request(
+                                request,
+                                timeout=180,
+                                config=config,
+                                requested_key=api_key,
+                                model=focus_model,
+                                open_func=urlopen_with_local_proxy_fallback,
+                            ) as response:
                                 focus_payload = json.loads(response.read().decode("utf-8"))
                             focus_content = final_chat_message_text(
                                 focus_payload, operation=f"{domain_id}.{focus_id} AI洞察"
@@ -3608,7 +3637,14 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         )
         wait_for_internal_ai_slot("executive-intelligence-discoveries")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+            with open_llm_request(
+                request,
+                timeout=180,
+                config=config,
+                requested_key=api_key,
+                model=discovery_model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
@@ -3835,7 +3871,14 @@ def regenerate_model_discovery(
         )
         wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=15) as response:
+            with open_llm_request(
+                request,
+                timeout=15,
+                config=config,
+                requested_key=api_key,
+                model=model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
             parsed = load_json_response(
                 final_chat_message_text(response_payload, operation="跨库AI发现重生成"),

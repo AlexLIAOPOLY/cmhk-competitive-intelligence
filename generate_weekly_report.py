@@ -30,6 +30,7 @@ import httpx
 from opencc import OpenCC
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
 from cmhk.data.company_metrics import build_company_metrics_payload
@@ -1366,7 +1367,14 @@ def _call_weekly_writer_llm(items: list[dict]) -> dict:
     )
     try:
         wait_for_internal_ai_slot("weekly-report-writer")
-        with urlopen_with_local_proxy_fallback(request, timeout=WEEKLY_WRITER_TIMEOUT_SECONDS) as response:
+        with open_llm_request(
+            request,
+            timeout=WEEKLY_WRITER_TIMEOUT_SECONDS,
+            config=config,
+            requested_key=api_key,
+            model=model,
+            open_func=urlopen_with_local_proxy_fallback,
+        ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:500]
@@ -2073,9 +2081,13 @@ def _call_weekly_quality_reviewer_llm(items: list[dict]) -> dict:
     )
     try:
         wait_for_internal_ai_slot("weekly-report-reviewer")
-        with urlopen_with_local_proxy_fallback(
+        with open_llm_request(
             request,
             timeout=WEEKLY_REVIEW_TIMEOUT_SECONDS,
+            config=config,
+            requested_key=api_key,
+            model=model,
+            open_func=urlopen_with_local_proxy_fallback,
         ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:

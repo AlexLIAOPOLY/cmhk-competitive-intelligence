@@ -35,6 +35,7 @@ from cmhk.crawl.run_registry import (
     start_crawl_run,
 )
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
+from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from cmhk.data.company_metrics import build_company_metrics_payload
 from executive_company_benchmarks import build_company_benchmarks
@@ -400,7 +401,13 @@ def analyze_chat_image(payload: dict) -> dict:
         method="POST",
     )
     wait_for_internal_ai_slot("chat-image-analyze")
-    with urllib.request.urlopen(request, timeout=90) as response:
+    with open_llm_request(
+        request,
+        timeout=90,
+        config=config,
+        requested_key=api_key,
+        model=model,
+    ) as response:
         result = json.loads(response.read().decode("utf-8"))
     from ai_response_compat import final_chat_message_text
     content = final_chat_message_text(result, operation="图片识别")
@@ -643,7 +650,13 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                 )
                 if stream_callback:
                     stream_callback({"type": "status", "stage": "generating", "message": "AI 已连接，正在生成结果"})
-                with urllib.request.urlopen(request, timeout=90 if stream_callback else 60) as response:
+                with open_llm_request(
+                    request,
+                    timeout=90 if stream_callback else 60,
+                    config=config,
+                    requested_key=api_key,
+                    model=model,
+                ) as response:
                     if stream_callback:
                         reasoning_started = False
                         non_sse_parts: list[bytes] = []
@@ -702,7 +715,13 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                                 headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                                 method="POST",
                             )
-                            with urllib.request.urlopen(fallback_request, timeout=60) as fallback_response:
+                            with open_llm_request(
+                                fallback_request,
+                                timeout=60,
+                                config=config,
+                                requested_key=api_key,
+                                model=model,
+                            ) as fallback_response:
                                 fallback_result = json.loads(fallback_response.read().decode("utf-8"))
                             from ai_response_compat import final_chat_message_text
                             complete_text = final_chat_message_text(
@@ -833,7 +852,13 @@ def transcribe_chat_audio(payload: dict) -> dict:
         method="POST",
     )
     wait_for_internal_ai_slot("chat-audio-transcription")
-    with urllib.request.urlopen(request, timeout=90) as response:
+    with open_llm_request(
+        request,
+        timeout=90,
+        config=config,
+        requested_key=api_key,
+        model=CHAT_STT_MODEL,
+    ) as response:
         result = json.loads(response.read().decode("utf-8"))
     transcript = str(result.get("text") or result.get("transcript") or "").strip()
     if not transcript:
@@ -1039,7 +1064,13 @@ def generate_chat_thread_title(first_user: str) -> str:
     )
     try:
         wait_for_internal_ai_slot("chat-thread-title")
-        with urllib.request.urlopen(req, timeout=12) as resp:
+        with open_llm_request(
+            req,
+            timeout=12,
+            config=config,
+            requested_key=api_key,
+            model=model,
+        ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
         content = str(payload.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
         if not content:
@@ -6559,7 +6590,12 @@ class AppHandler(BaseHTTPRequestHandler):
                     headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
                     method="GET",
                 )
-                with urllib.request.urlopen(request, timeout=30) as response:
+                with open_llm_request(
+                    request,
+                    timeout=30,
+                    config=saved,
+                    requested_key=api_key,
+                ) as response:
                     model_payload = json.loads(response.read().decode("utf-8"))
                 models = sorted(
                     {
@@ -6615,7 +6651,13 @@ class AppHandler(BaseHTTPRequestHandler):
                     method="POST",
                 )
                 wait_for_internal_ai_slot("ai-settings-test")
-                with urllib.request.urlopen(request, timeout=45) as response:
+                with open_llm_request(
+                    request,
+                    timeout=45,
+                    config=config,
+                    requested_key=api_key,
+                    model=model,
+                ) as response:
                     response.read()
                 result = {
                     "ok": True,
