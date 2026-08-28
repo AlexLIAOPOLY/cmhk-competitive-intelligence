@@ -7,6 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
+  const activeRefreshIntervalMs = 30000;
   const state = { payload: null, graph: null, fullscreenGraph: null, graphPayload: null, keyword: "", receivedStart: "", receivedEnd: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, layoutFrame: null, resizeObserver: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -288,7 +289,10 @@
   });
 
   function payloadSignature(payload) {
-    return `${payload?.evidenceHash || ""}:${payload?.receivedHash || ""}`;
+    // A completed crawl is a new batch even when it finds the same items (or
+    // zero items). Include its timestamp so the graph, cloud and table redraw
+    // for every completed discovery batch instead of only for content changes.
+    return `${payload?.evidenceHash || ""}:${payload?.receivedHash || ""}:${payload?.receivedAt || ""}`;
   }
 
   async function refreshData() {
@@ -327,16 +331,16 @@
   function schedulePolling() {
     window.clearTimeout(state.pollTimer); state.pollTimer = null;
     if (document.hidden || panel.hidden) return;
-    state.pollTimer = window.setTimeout(async () => { await refreshData(); schedulePolling(); }, 300000);
+    state.pollTimer = window.setTimeout(async () => { await refreshData(); schedulePolling(); }, activeRefreshIntervalMs);
   }
   window.addEventListener("workspace-tab-change", (event) => {
     if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; return; }
-    if (Date.now() - state.lastRefreshAt >= 60000) refreshData();
+    if (Date.now() - state.lastRefreshAt >= activeRefreshIntervalMs) refreshData();
     schedulePolling(); scheduleVisualLayout();
   });
   window.addEventListener("resize", scheduleVisualLayout);
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && !panel.hidden && Date.now() - state.lastRefreshAt >= 60000) refreshData();
+    if (!document.hidden && !panel.hidden && Date.now() - state.lastRefreshAt >= activeRefreshIntervalMs) refreshData();
     schedulePolling();
   });
   initialize();

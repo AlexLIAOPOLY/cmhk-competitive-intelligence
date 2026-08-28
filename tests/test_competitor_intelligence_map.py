@@ -80,14 +80,15 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertNotIn('每 5 分钟自动更新', SCRIPT)
         self.assertNotIn('/api/competitor-intelligence-map/insights-stream', SCRIPT)
         self.assertIn('window.setTimeout', SCRIPT)
-        self.assertIn('300000', SCRIPT)
-        self.assertIn('60000', SCRIPT)
+        self.assertIn('const activeRefreshIntervalMs = 30000', SCRIPT)
+        self.assertIn('payload?.receivedAt || ""', SCRIPT)
         self.assertIn('workspace-tab-change', SCRIPT)
         self.assertIn('cache: "no-store"', SCRIPT)
         self.assertIn('controller.abort()', SCRIPT)
         self.assertIn('4000', SCRIPT)
 
     def test_live_endpoint_is_used(self):
+        self.assertIn('/static/intelligence-map.js?v=21', INDEX)
         self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)
         self.assertIn("build_competitor_intelligence_map(ROOT)", WEB_APP)
