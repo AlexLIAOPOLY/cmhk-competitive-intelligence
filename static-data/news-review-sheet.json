@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-28T11:42:09+08:00",
+  "updatedAt": "2026-08-28T11:48:08+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -1307,9 +1307,9 @@
     {
       "rowNumber": 69,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -1321,7 +1321,13 @@
         "有線寬頻",
         "《业绩》有线宽频(01097.HK)中期亏损扩至2.77亿元显示正式监控竞对发生具体经营事件，影响资本配置。",
         "后台固定竞对词库（i-CABLE；命中：有線寬頻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:48:09+00:00"
+      }
     },
     {
       "rowNumber": 70,
@@ -2257,9 +2263,9 @@
     {
       "rowNumber": 119,
       "values": [
+        "接受",
         "待审核",
-        "待审核",
-        "未同步",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -2271,7 +2277,13 @@
         "香港宽频",
         "香港宽频是正式监控竞对，南向资金减持反映资本市场对其持股变化，属于竞对资本市场动态。",
         "后台固定竞对词库（HKBN；命中：香港宽频） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:48:09+00:00"
+      }
     },
     {
       "rowNumber": 120,

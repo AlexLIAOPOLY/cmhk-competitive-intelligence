@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-28T11:42:03+08:00",
+  "generated_at": "2026-08-28T11:48:04+08:00",
   "items": [
+    {
+      "id": "NEWS-88159DDFE485E1",
+      "title": "《业绩》有线宽频(01097.HK)中期亏损扩至2.77亿元",
+      "summary": "有线宽频(01097.HK)公布6月止六个月中期业绩，收入2.44亿元，按年下降11.9%。亏损由上年同期2.17亿元，扩至2.77亿元，每股亏损3.9仙。不派息。",
+      "category": "竞对动态",
+      "source_url": "https://hk.finance.yahoo.com/news/%E6%A5%AD%E7%B8%BE-%E6%9C%89%E7%B7%9A%E5%AF%AC%E9%A0%BB-01097-hk-%E4%B8%AD%E6%9C%9F%E8%99%A7%E6%90%8D%E6%93%B4%E8%87%B32-180433876.html",
+      "published_at": "2026-08-27T19:04:00+08:00"
+    },
     {
       "id": "NEWS-A3338874AE8B6A",
       "title": "香港电讯参与GenA.I.沙盒 开发AI代理身份验证方案",
@@ -17,6 +25,14 @@
       "category": "政策监管",
       "source_url": "https://www.wenweipo.com/a/202608/27/AP6a8fd2e6e4b0c1e500266f28.html",
       "published_at": "2026-08-27T15:02:00+08:00"
+    },
+    {
+      "id": "NEWS-39FE461DAD2975",
+      "title": "香港宽频遭南向资金减持500股",
+      "summary": "8月27日南向资金减持香港宽频500股，近5个交易日中有4天遭减持，累计净减持15.45万股。",
+      "category": "竞对动态",
+      "source_url": "https://www.sohu.com/a/1068580337_122123195",
+      "published_at": "2026-08-27T14:52:00+08:00"
     },
     {
       "id": "NEWS-D14FBE54A841DF",
@@ -49,22 +65,6 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3365195/hong-kong-exports-jump-507-july-driven-growth-ai-related-electronics",
       "published_at": "2026-08-25T22:59:00+08:00"
-    },
-    {
-      "id": "NEWS-BD66B7519E0063",
-      "title": "SmarTone与港怡医院合作推出遥距医疗服务",
-      "summary": "SmarTone宣布与港怡医院合作推出遥距医疗项目，并在元朗YOHO Midtown开设首个TeleCare SmartHub。",
-      "category": "竞对动态",
-      "source_url": "https://www.telecompaper.com/news/smartone-starts-telemedicine-hubs-with-gleneagles-hospital--1580730",
-      "published_at": "2026-08-25T10:22:00+08:00"
-    },
-    {
-      "id": "NEWS-6B1134F856EB3F",
-      "title": "世界机器人大会开幕，逾10%参展商为粤企",
-      "summary": "世界机器人大会展示约3000件产品，超过10%的参展商来自广东，凸显大湾区在机器人产业链上的优势。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
-      "published_at": "2026-08-20"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "9c6ec90eebf17de6725131735603bbd4ff8fd5afedea965cc6409a02a49056e4"
+  "site_version": "a3dd97e7acb942dd09d9d3d291c11649ed0627483b94a7265024d702ebb0832c"
 }
