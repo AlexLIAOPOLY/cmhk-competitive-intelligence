@@ -2,6 +2,33 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260828_222004_999004",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_824b0f9c555c5b69c7d0cff3 完成，共 3051 行；数据截至 2026-06-30。",
+      "status_detail": "发布 qcm_824b0f9c555c5b69c7d0cff3 完成，共 3051 行；数据截至 2026-06-30。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-28T22:20:05+08:00",
+      "started_at_hkt": "2026-08-28T22:20:04+08:00",
+      "completed_at_hkt": "2026-08-28T22:20:05+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 571,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_824b0f9c555c5b69c7d0cff3",
+        "content_sha256": "824b0f9c555c5b69c7d0cff3d0d3400d28a51555b259120a3a315e8200619407",
+        "release_manifest_sha256": "64d8706a779b61af90a8c110421498048080456ef6c5a5811377a08267bf26a9",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": ""
+      }
+    },
+    {
       "crawl_run_id": "20260828_142847_146547",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-08-28@14:00）",
@@ -47320,6 +47347,6 @@
       }
     }
   ],
-  "total": 249,
+  "total": 250,
   "truncated": false
 }
