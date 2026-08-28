@@ -2,6 +2,54 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "76bbc3619bc8d74fef72b15e",
+      "task_id": "incident:76bbc3619bc8d74fef72b15e",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T16:01:36+08:00",
+      "started_at_hkt": "2026-08-28T16:01:36+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:01:36+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "b9d0ced428cca35566ca2c05",
+      "task_id": "incident:b9d0ced428cca35566ca2c05",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
+      "suggestions": [
+        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
+        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
+      ],
+      "occurred_at_hkt": "2026-08-28T15:58:06+08:00",
+      "started_at_hkt": "2026-08-28T15:58:06+08:00",
+      "heartbeat_at_hkt": "2026-08-28T15:58:06+08:00",
+      "completed_at_hkt": "2026-08-28T15:58:36+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "376f7dc9b87b9ec2f006127e",
       "task_id": "incident:376f7dc9b87b9ec2f006127e",
       "title": "主项目后台任务",
@@ -3069,7 +3117,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T15:20:07+08:00",
-      "heartbeat_at_hkt": "2026-08-28T15:56:05+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:01:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12049,56 +12097,6 @@
       "started_at_hkt": "2026-08-23T09:02:31+08:00",
       "heartbeat_at_hkt": "2026-08-23T09:03:01+08:00",
       "completed_at_hkt": "2026-08-23T09:03:31+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "18db00f9d40bcce7b7a957e2",
-      "task_id": "incident:18db00f9d40bcce7b7a957e2",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮爬虫任务未能完成前端发布，用户可能无法看到最新财报数据，但已有成功阶段和旧数据仍可正常访问。",
-      "suggestions": [
-        "检查 GitHub Pages 发布状态，确认 site_version 和 HTTPS 证书是否正常。",
-        "验证前端关键资源（如 HTML、JS、CSS）是否可访问，排查是否因并发发布导致“busy”状态。",
-        "等待当前发布任务完成后，手动触发前端发布验证或重试定时爬虫任务。",
-        "修复后验证前端页面是否成功展示最新财报数据，并确认任务状态更新为成功。"
-      ],
-      "occurred_at_hkt": "2026-08-23T04:45:23+08:00",
-      "started_at_hkt": "2026-08-23T03:45:39+08:00",
-      "heartbeat_at_hkt": "2026-08-23T05:15:23+08:00",
-      "completed_at_hkt": "2026-08-23T05:15:53+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "1bbd65c3d194edede21a409a",
-      "task_id": "incident:1bbd65c3d194edede21a409a",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "频率调度器超过5分钟没有轮询心跳",
-      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
-      "suggestions": [
-        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
-        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
-      ],
-      "occurred_at_hkt": "2026-08-23T03:50:14+08:00",
-      "started_at_hkt": "2026-08-23T03:50:40+08:00",
-      "heartbeat_at_hkt": "2026-08-23T05:15:53+08:00",
-      "completed_at_hkt": "2026-08-23T05:16:23+08:00",
       "handled_at_hkt": ""
     }
   ],
