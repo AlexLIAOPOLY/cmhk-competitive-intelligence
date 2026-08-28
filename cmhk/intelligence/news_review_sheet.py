@@ -2368,7 +2368,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
 
             agent_decisions = selection_provenance_map()
         except Exception:
-            logging.exception("读取新闻偏好 Agent 决策来源失败，继续按飞书状态发布")
+            logging.exception("读取新闻自动初筛决策来源失败，继续按飞书状态发布")
             agent_decisions = {}
         sheet_id = sheet_id or ensure_sheet()
         state = _read_json(STATE_PATH, {})

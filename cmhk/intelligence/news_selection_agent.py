@@ -707,7 +707,7 @@ def run_news_selection_agent(
             ok=True,
             duration_ms=round((time.monotonic() - started) * 1000),
             progress_detail=(
-                f"新闻偏好学习与自动勾选完成；处理 {result['candidate_count']} 条，"
+                f"新闻自动初筛完成；处理 {result['candidate_count']} 条，"
                 f"由机器人写入 {result['changed_count']} 格，逐格回读通过。"
             ),
             summary=result,
