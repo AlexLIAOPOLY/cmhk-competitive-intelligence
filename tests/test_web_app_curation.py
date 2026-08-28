@@ -3982,27 +3982,16 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
 
 
 class IntelligenceEntityScrollTests(unittest.TestCase):
-    def test_financial_results_are_visible_on_card_drawer_and_run_log(self) -> None:
+    def test_financial_results_stay_in_drawer_and_run_log_without_an_extra_focus_tab(self) -> None:
         app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
+        public_app = (Path(__file__).resolve().parents[1] / "web/static/intelligence-public/intelligence.js").read_text(encoding="utf-8")
+        public_page = (Path(__file__).resolve().parents[1] / "web/static/intelligence-public/index.html").read_text(encoding="utf-8")
         styles = (Path(__file__).resolve().parents[1] / "web/static/styles.css").read_text(encoding="utf-8")
-        leadership_styles = (Path(__file__).resolve().parents[1] / "web/static/leadership-board.css").read_text(encoding="utf-8")
 
-        self.assertIn('id: "financials"', app)
-        self.assertIn('label: "重要财务指标"', app)
-        self.assertIn('visual: "financial"', app)
-        self.assertIn('data-intelligence-financial-metric="${key}"', app)
-        self.assertIn('selectedFinancialMetricByDomain', app)
-        self.assertIn('comparisonChart(...selectedMetricDefinition)', app)
-        self.assertIn('role="tabpanel"', app)
-        self.assertIn('aria-controls="intelligence-financial-panel-', app)
-        self.assertIn('["ArrowLeft", "ArrowRight", "Home", "End"]', app)
-        self.assertIn('class="intelligence-financial-metric-tabs"', app)
-        self.assertIn('["revenue", "收入对比", "亿港元", "columns"]', app)
-        self.assertIn('["net_profit", "净利润对比", "亿港元", "ranking"]', app)
-        self.assertIn('["ebitda", "EBITDA", "亿港元", "lollipop"]', app)
-        self.assertIn('["capital_expenditure", "资本开支", "亿港元", "disclosure"]', app)
-        self.assertIn('["dividend", "派息", "港仙", "dots"]', app)
-        self.assertIn('["5g_customers", "5G用户", "万户", "disclosure"]', app)
+        self.assertIn('focus?.id !== "financials"', app)
+        self.assertNotIn('label: "重要财务指标"', app)
+        self.assertIn('focus?.id !== "financials"', public_app)
+        self.assertNotIn("重要财务指标", public_page)
         self.assertIn("function localizedMetricParts", app)
         self.assertIn("function localizeChineseMagnitudeText", app)
         self.assertNotIn('class="intelligence-financial-more"', app)
@@ -4034,8 +4023,6 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
         self.assertIn(".intelligence-financial-metric-tabs button.is-active::after", styles)
         self.assertNotIn(".intelligence-financial-more-popover {", styles)
         self.assertNotIn(".intelligence-financial-more > summary i {", styles)
-        self.assertIn("width: min(100%, 760px);", leadership_styles)
-        self.assertIn("min-width: max-content;", leadership_styles)
 
     def test_domain_title_is_display_only_and_relation_title_regenerates_discovery(self) -> None:
         app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
