@@ -89,6 +89,7 @@ NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT = 0.0
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
+MARKET_NEWS_INSIGHT_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_CACHE: dict[str, object] = {}
 SCHEDULER_OVERVIEW_CACHE_SECONDS = 90
@@ -5745,6 +5746,43 @@ class AppHandler(BaseHTTPRequestHandler):
                 except Exception:
                     logging.exception("failed to persist fault-resolution runtime incident")
                 json_response(self, {"ok": False, "error": f"飞书同步失败：{exc}"}, 502)
+            return
+        if parsed.path == "/api/competitor-intelligence-map/insights-stream":
+            try:
+                payload = read_request_json(self)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("X-Accel-Buffering", "no")
+            self.send_header("Content-Encoding", "identity")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            if not MARKET_NEWS_INSIGHT_LOCK.acquire(blocking=False):
+                write_sse(self, {"type": "error", "error": "AI情报洞察正在生成，请稍后再试"})
+                self.close_connection = True
+                return
+            try:
+                from cmhk.intelligence.market_news_insights import generate_market_news_insights
+
+                result = generate_market_news_insights(
+                    ROOT,
+                    force=bool(payload.get("force")),
+                    requested_revision=str(payload.get("evidenceHash") or ""),
+                    generation_nonce=str(payload.get("generationNonce") or "")[:160],
+                    stream_callback=lambda event: write_sse(self, event),
+                )
+                write_sse(self, {"type": "done", **result})
+            except ValueError as exc:
+                write_sse(self, {"type": "error", "status": 409, "error": str(exc)})
+            except Exception as exc:
+                logging.error("UI_RUNTIME_INCIDENT market-news-ai-insight: %s: %s", type(exc).__name__, exc)
+                write_sse(self, {"type": "error", "status": 503, "error": str(exc)})
+            finally:
+                MARKET_NEWS_INSIGHT_LOCK.release()
+            self.close_connection = True
             return
         if parsed.path == "/api/competitor-insight-stream":
             try:

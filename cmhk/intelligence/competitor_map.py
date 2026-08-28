@@ -7,6 +7,8 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from cmhk.intelligence.market_news_insights import evidence_hash, load_cached_insights
+
 
 ENTITY_ALIASES = {
     "HKT / csl": ("hkt", "csl", "香港电讯", "香港電訊", "电讯盈科", "電訊盈科", "pccw"),
@@ -91,6 +93,7 @@ def build_competitor_intelligence_map(root: Path) -> dict:
 
     items.sort(key=lambda item: (item["sourceDate"], item["id"]), reverse=True)
     dates = sorted({item["sourceDate"] for item in items})
+    revision = evidence_hash(items)
     return {
         "ok": True,
         "source": "strategy_briefing/published.json",
@@ -98,5 +101,7 @@ def build_competitor_intelligence_map(root: Path) -> dict:
         "updatedAt": str(payload.get("updated_at") or datetime.fromtimestamp(source_path.stat().st_mtime).astimezone().isoformat(timespec="seconds")) if source_path.exists() else "",
         "coverageStart": dates[0] if dates else "",
         "coverageEnd": dates[-1] if dates else "",
+        "evidenceHash": revision,
+        "aiInsight": load_cached_insights(root, revision),
         "items": items,
     }

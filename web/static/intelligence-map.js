@@ -7,7 +7,7 @@
   const palette = ["#16c8e5", "#4d8dff", "#26b9aa", "#8962e9", "#f2a516"];
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
-  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null };
+  const state = { payload: null, chart: null, graph: null, fullscreenGraph: null, graphPayload: null, view: "graph", keyword: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, viewTimer: null, aiPromise: null, aiController: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -32,7 +32,7 @@
     return { "政策与监管": "政策监管", "竞争对手": "竞对动态", "基础设施/网络/技术类": "基础设施／网络／技术", "市场/产品类": "市场／产品", "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观／国际" }[value] || value || "其他情报";
   }
 
-  function connectedGraph(nodes, candidateEdges, maxNodes = 26, maxEdges = 40) {
+  function connectedGraph(nodes, candidateEdges, maxNodes = 20, maxEdges = 28) {
     const adjacency = new Map();
     candidateEdges.forEach((edge) => {
       if (!adjacency.has(edge.source)) adjacency.set(edge.source, new Set());
@@ -133,7 +133,7 @@
           </dialog>
         </aside>
       </section>
-      <section class="market-ai-section" aria-label="AI 情报洞察"><div class="market-ai-title"><div><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8zM18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><strong>AI 情报洞察</strong></span><button type="button" data-insight-refresh aria-label="刷新已审核情报" title="立即读取最新已审核情报"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7v5h-5M5 17v-5h5M17.4 9A6 6 0 0 0 6.5 7M6.6 15A6 6 0 0 0 17.5 17"/></svg>刷新</button></div><span id="market-insight-refresh-status" role="status">每 5 分钟自动更新</span></div><div id="market-ai-insights"></div></section>
+      <section class="market-ai-section" aria-label="AI 情报洞察"><div class="market-ai-title"><button class="market-ai-title-button" type="button" data-insight-refresh aria-label="重新生成4条AI情报洞察" title="点击重新分析已审核新闻"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8zM18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg><strong>AI 情报洞察</strong></button></div><div id="market-ai-insights" aria-live="polite"></div></section>
     </section>`;
   }
 
@@ -206,10 +206,9 @@
   function graphStyle() {
     return [
       { selector: "node", style: { "background-color": (node) => typeColors[node.data("type")], "border-color": "#09182a", "border-width": 2, width: "mapData(count,1,8,20,42)", height: "mapData(count,1,8,20,42)", label: "data(label)", color: "#c9d9e8", "font-family": "inherit", "font-size": 9, "font-weight": 600, "text-wrap": "wrap", "text-max-width": 82, "text-valign": "bottom", "text-margin-y": 5 } },
-      { selector: "edge", style: { width: "mapData(weight,1,6,1,3.6)", "line-color": "#263c54", "target-arrow-color": "#263c54", "target-arrow-shape": "triangle", "arrow-scale": .65, "curve-style": "bezier", label: "", color: "#647d96", "font-size": 7, "font-family": "inherit", "text-rotation": "autorotate", "text-background-color": "#081729", "text-background-opacity": .82, "text-background-padding": 2 } },
+      { selector: "edge", style: { width: "mapData(weight,1,6,1,3.6)", "line-color": "#263c54", "target-arrow-color": "#263c54", "target-arrow-shape": "triangle", "arrow-scale": .65, "curve-style": "bezier", label: "data(label)", color: "#536c86", "font-size": 7, "font-family": "inherit", "text-rotation": "autorotate", "text-background-color": "#081729", "text-background-opacity": .76, "text-background-padding": 2 } },
       { selector: ":selected", style: { "overlay-opacity": 0, "border-color": "#e1edf7", "border-width": 3 } },
       { selector: "edge:selected", style: { "line-color": "#16c8e5", "target-arrow-color": "#16c8e5", width: 3.2, color: "#dbe9f5" } },
-      { selector: "edge.is-hover, edge:selected", style: { label: "data(label)", "text-opacity": 1 } },
       { selector: ".is-muted", style: { opacity: .13, "text-opacity": 0 } }, { selector: ".is-neighbor", style: { opacity: 1, "text-opacity": 1 } },
     ];
   }
@@ -283,17 +282,19 @@
     if (!automatic || !document.hidden) scheduleViewRotation();
   }
 
-  function insights(items) {
-    const count = (values) => { const map = new Map(); values.filter(Boolean).forEach((value) => map.set(value, (map.get(value) || 0) + 1)); return ranked(map); };
-    const topics = count(items.map((item) => item.category)); const entities = count(items.flatMap((item) => item.entities || [])); const concepts = count(items.flatMap((item) => item.concepts || []));
-    const latest = items.map((item) => item.sourceDate).sort().at(-1); let recent = "暂无近期变化。";
-    if (latest) { const end = new Date(`${latest}T00:00:00`); const floor = new Date(end); floor.setDate(end.getDate() - 6); recent = `近 7 日新增 ${items.filter((item) => item.sourceDate >= floor.toISOString().slice(0, 10)).length} 条已审核情报。`; }
-    return [["近期变化", recent, palette[1]], ["议题集中", topics[0] ? `${topics[0][0]} ${topics[0][1]} 条，占当前情报 ${Math.round(topics[0][1] / Math.max(1, items.length) * 100)}%。` : "暂无议题数据。", palette[3]], ["主体集中", entities.slice(0, 3).map(([name, total]) => `${name}${total}条`).join("、") || "暂无主体命中。", "#25c576"], ["热点集中", concepts.slice(0, 3).map(([name, total]) => `${name}${total}条`).join("、") || "暂无热点命中。", palette[4]]].map(([title, copy, color]) => `<article style="--accent:${color}"><strong>${title}</strong><p>${esc(copy)}</p></article>`).join("");
+  function renderAiInsights(payload = state.payload?.aiInsight) {
+    const target = $("market-ai-insights"); if (!target) return;
+    const rows = payload?.insights;
+    if (!Array.isArray(rows) || rows.length !== 4) {
+      target.innerHTML = '<div class="market-ai-empty">点击“AI 情报洞察”，生成4条基于已审核新闻的发现。</div>';
+      return;
+    }
+    target.innerHTML = rows.map((item, index) => `<article style="--accent:${palette[(index + 1) % palette.length]}"><strong>${esc(item.title)}</strong><p>${esc(item.body)}</p></article>`).join("");
   }
 
   function renderAll() {
     const allItems = state.payload?.items || []; const items = state.keyword ? allItems.filter((item) => termsFor(item).includes(state.keyword)) : allItems;
-    renderTrend(items); renderWordCloud(allItems); renderGraph(items); $("market-ai-insights").innerHTML = insights(items); switchView(state.view);
+    renderTrend(items); renderWordCloud(allItems); renderGraph(items); renderAiInsights(); switchView(state.view);
   }
 
   function openFullscreen() {
@@ -302,7 +303,7 @@
   }
 
   panel.addEventListener("click", (event) => {
-    if (event.target.closest("[data-insight-refresh]")) return refreshData({ manual: true });
+    if (event.target.closest("[data-insight-refresh]")) return generateAiInsights();
     const view = event.target.closest("[data-market-view]"); if (view) return switchView(view.dataset.marketView);
     const keyword = event.target.closest("[data-market-keyword]"); if (keyword) { state.keyword = state.keyword === keyword.dataset.marketKeyword ? "" : keyword.dataset.marketKeyword; return renderAll(); }
     if (event.target.closest("#market-graph-expand")) return openFullscreen(); if (event.target.closest("[data-graph-close]")) return $("market-graph-dialog").close();
@@ -311,19 +312,12 @@
     if (event.target.closest("[data-graph-reset]")) { state.fullscreenGraph?.elements().removeClass("is-muted is-neighbor").unselect(); state.fullscreenGraph?.fit(state.fullscreenGraph.elements(), 52); }
   });
 
-  function refreshStatus(copy, busy = false) {
-    const status = $("market-insight-refresh-status"); const button = panel.querySelector("[data-insight-refresh]");
-    if (status) status.textContent = copy;
-    if (button) { button.disabled = busy; button.classList.toggle("is-refreshing", busy); button.setAttribute("aria-busy", String(busy)); }
-  }
-
   function payloadSignature(payload) {
-    return `${payload?.updatedAt || ""}:${(payload?.items || []).map((item) => `${item.id}:${item.sourceDate}`).join("|")}`;
+    return String(payload?.evidenceHash || "");
   }
 
-  async function refreshData({ manual = false } = {}) {
+  async function refreshData() {
     if (state.refreshPromise) return state.refreshPromise;
-    refreshStatus(manual ? "正在手动刷新…" : "正在读取最新情报…", true);
     state.refreshPromise = (async () => {
       const controller = new AbortController(); const timeout = window.setTimeout(() => controller.abort(), 4000);
       try {
@@ -333,12 +327,35 @@
         state.payload = payload; state.lastRefreshAt = Date.now(); state.signature = signature;
         if (changed) renderAll();
         try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
-        const time = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
-        refreshStatus(`${changed ? (manual ? "手动刷新" : "自动更新") : "已是最新"} · ${time} · 每 5 分钟更新`);
         return state.payload;
       } finally { window.clearTimeout(timeout); }
-    })().catch(() => { refreshStatus("刷新失败 · 点击标题重试"); return null; }).finally(() => { state.refreshPromise = null; panel.querySelector("[data-insight-refresh]")?.removeAttribute("aria-busy"); });
+    })().catch(() => null).finally(() => { state.refreshPromise = null; });
     return state.refreshPromise;
+  }
+
+  async function generateAiInsights() {
+    if (state.aiPromise) return state.aiPromise;
+    const button = panel.querySelector("[data-insight-refresh]"); const target = $("market-ai-insights"); const previous = target.innerHTML;
+    button.disabled = true; button.classList.add("is-refreshing"); button.setAttribute("aria-busy", "true");
+    if (!state.payload?.aiInsight?.insights?.length) target.innerHTML = '<div class="market-ai-loading">内部AI正在分析已审核新闻…</div>';
+    state.aiPromise = (async () => {
+      await refreshData();
+      if (!state.payload?.evidenceHash) throw new Error("情报数据未就绪");
+      state.aiController?.abort(); state.aiController = new AbortController();
+      const timeout = window.setTimeout(() => state.aiController.abort(), 95000);
+      try {
+        const response = await fetch("/api/competitor-intelligence-map/insights-stream", { method: "POST", cache: "no-store", signal: state.aiController.signal, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true, evidenceHash: state.payload.evidenceHash, generationNonce: `${Date.now()}:${globalThis.crypto?.randomUUID?.() || ""}` }) });
+        if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
+        const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ""; let result = null; let failure = "";
+        const consume = (flush = false) => { buffer = buffer.replaceAll("\r\n", "\n"); const events = buffer.split("\n\n"); buffer = events.pop() || ""; if (flush && buffer.trim()) { events.push(buffer); buffer = ""; } events.forEach((part) => { const line = part.split("\n").find((entry) => entry.startsWith("data:")); if (!line) return; const event = JSON.parse(line.replace(/^data:\s*/, "")); if (event.type === "done") result = event; if (event.type === "error") failure = event.error || "AI洞察生成失败"; }); };
+        while (true) { const chunk = await reader.read(); if (chunk.done) { buffer += decoder.decode(); consume(true); break; } buffer += decoder.decode(chunk.value, { stream: true }); consume(); }
+        if (failure || !result?.insights || result.insights.length !== 4) throw new Error(failure || "AI未返回4条有效洞察");
+        if (result.evidenceHash !== state.payload.evidenceHash) throw new Error("情报已更新，请再次点击生成");
+        state.payload.aiInsight = result; renderAiInsights(result);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
+      } finally { window.clearTimeout(timeout); }
+    })().catch(() => { if (previous) target.innerHTML = previous; else renderAiInsights(null); }).finally(() => { state.aiPromise = null; state.aiController = null; button.disabled = false; button.classList.remove("is-refreshing"); button.removeAttribute("aria-busy"); });
+    return state.aiPromise;
   }
 
   async function initialize() {

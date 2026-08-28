@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from cmhk.intelligence.competitor_map import build_competitor_intelligence_map
+from cmhk.intelligence.market_news_insights import _validate_insights, evidence_hash
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,8 +39,8 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('randomize: false', SCRIPT)
         self.assertIn('function scheduleViewRotation()', SCRIPT)
         self.assertIn('10000', SCRIPT)
-        self.assertIn('label: ""', SCRIPT)
-        self.assertIn('edge.is-hover, edge:selected', SCRIPT)
+        self.assertIn('label: "data(label)"', SCRIPT)
+        self.assertIn('maxNodes = 20, maxEdges = 28', SCRIPT)
         self.assertIn('cy.on("tap", "node, edge"', SCRIPT)
         self.assertIn('pointHoverRadius: 5', SCRIPT)
         self.assertIn('datalabels: false', SCRIPT)
@@ -56,10 +57,14 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertNotIn("全部议题", SCRIPT)
         self.assertNotIn("全部区域", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
-        self.assertIn("grid-template-columns: minmax(0, 1.85fr) minmax(350px, 1fr)", STYLE)
+        self.assertIn("grid-template-columns: minmax(0, 1.4fr) minmax(420px, 1fr)", STYLE)
         self.assertIn("min-height: 156px", STYLE)
         self.assertIn('cytoscape-3.34.0.min.js', INDEX)
         self.assertIn('data-insight-refresh', SCRIPT)
+        self.assertIn('重新生成4条AI情报洞察', SCRIPT)
+        self.assertNotIn('market-insight-refresh-status', SCRIPT)
+        self.assertNotIn('每 5 分钟自动更新', SCRIPT)
+        self.assertIn('/api/competitor-intelligence-map/insights-stream', SCRIPT)
         self.assertIn('window.setTimeout', SCRIPT)
         self.assertIn('300000', SCRIPT)
         self.assertIn('60000', SCRIPT)
@@ -72,6 +77,7 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)
         self.assertIn("build_competitor_intelligence_map(ROOT)", WEB_APP)
+        self.assertIn('parsed.path == "/api/competitor-intelligence-map/insights-stream"', WEB_APP)
 
     def test_backend_shapes_only_dated_approved_records(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -103,6 +109,17 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn("AI / 算力", payload["items"][0]["concepts"])
         self.assertIn("5G / 6G", payload["items"][0]["concepts"])
         self.assertIn("keywords", payload["items"][0])
+        self.assertEqual(payload["evidenceHash"], evidence_hash(payload["items"]))
+        self.assertIsNone(payload["aiInsight"])
+
+    def test_ai_insights_require_exactly_four_evidence_backed_rows(self):
+        rows = [
+            {"title": f"洞察{i}", "body": "这是基于已审核新闻形成的有效跨新闻分析发现。", "evidenceIds": ["n1"]}
+            for i in range(1, 5)
+        ]
+        self.assertEqual(len(_validate_insights(rows, {"n1"})), 4)
+        with self.assertRaises(RuntimeError):
+            _validate_insights(rows[:3], {"n1"})
 
 
 if __name__ == "__main__":
