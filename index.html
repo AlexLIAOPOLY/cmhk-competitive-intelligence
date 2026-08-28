@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="./static/news-review-sheet.css?v=4" />
   <link rel="stylesheet" href="./static/workspace-tabs.css?v=132" />
+  <link rel="stylesheet" href="./static/intelligence-map.css?v=1" />
   <link rel="stylesheet" href="./static/organization-admin.css?v=26" />
   </head>
   <body class="dashboard-page">
@@ -95,6 +96,7 @@
               <button class="workspace-tab" id="workspace-tab-news" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-news" tabindex="-1" data-workspace-tab="news"><span class="workspace-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v5"></path><path d="M15 3v5h5M5 3v18h7"></path><circle cx="17" cy="17" r="3.5"></circle><path d="m19.7 19.7 2.3 2.3"></path></svg></span><span class="workspace-tab-label">新闻采集</span></button>
               <button class="workspace-tab" id="workspace-tab-review" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-review" tabindex="-1" data-workspace-tab="review"><span class="workspace-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h11M9 12h11M9 19h7"></path><path d="m3 5 1.5 1.5L7 4M3 12l1.5 1.5L7 11M3 19l1.5 1.5L7 18"></path></svg></span><span class="workspace-tab-label">新闻审核</span></button>
               <button class="workspace-tab" id="workspace-tab-competitor" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-competitor" tabindex="-1" data-workspace-tab="competitor"><span class="workspace-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7M2 20h20"></path></svg></span><span class="workspace-tab-label">竞对分析</span></button>
+              <button class="workspace-tab" id="workspace-tab-intelligence-map" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-intelligence-map" tabindex="-1" data-workspace-tab="intelligence-map"><span class="workspace-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="12" cy="17" r="2.5"></circle><path d="m7.8 8 3 6.8M16.2 7.2l-3 7.6M8 7h8"></path></svg></span><span class="workspace-tab-label">情报图谱</span></button>
             </section>
             <section class="workspace-nav-group" aria-labelledby="workspace-group-products">
               <h2 id="workspace-group-products">报告与触达</h2>
@@ -272,6 +274,9 @@
       </section>
 
       <section class="workspace-module-shell" id="workspace-panel-competitor" role="tabpanel" aria-labelledby="workspace-tab-competitor" data-workspace-panel="competitor" hidden></section>
+      <section class="workspace-module-shell intelligence-map-shell" id="workspace-panel-intelligence-map" role="tabpanel" aria-labelledby="workspace-tab-intelligence-map" data-workspace-panel="intelligence-map" hidden>
+        <div class="intelligence-map-loading" role="status">正在汇总已审核情报…</div>
+      </section>
       <section class="workspace-module-shell workspace-monitoring-shell" id="workspace-panel-monitoring" role="tabpanel" aria-labelledby="workspace-tab-monitoring" data-workspace-panel="monitoring" hidden>
         <iframe class="workspace-monitoring-frame" data-src="./executive-dashboard-demo.html?embedded=1&amp;v=2" title="战略监控体系" loading="lazy"></iframe>
       </section>
@@ -630,13 +635,14 @@
     <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>
     <script defer src="./static/auth-client.js?v=3"></script>
     <script defer src="./static/workspace-tabs.js?v=public-8"></script>
+    <script defer src="./static/intelligence-map.js?v=1"></script>
     <script defer src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>
     <script defer src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"></script>
     <script defer src="./static/vendor/marked-15.0.12.umd.js?v=1"></script>
     <script defer src="./static/confirm-dialog.js?v=3"></script>
     <script defer src="./static/custom-select.js?v=2"></script>
     <script defer src="./static/app.js?v=311"></script>
-    <script defer src="./static/news-review-sheet.js?v=6"></script>
-    <script defer src="./static/organization-admin.js?v=31"></script>
+    <script defer src="./static/news-review-sheet.js?v=7"></script>
+    <script defer src="./static/organization-admin.js?v=32"></script>
   </body>
 </html>

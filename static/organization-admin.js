@@ -170,10 +170,11 @@
   }
 
   function eventPerson(event) {
+    const automaticScreeningRobot = String(event.actor_id) === "news-auto-screening-bot";
     return state.users.find((user) => String(user.id) === String(event.actor_id)) || {
       id: event.actor_id,
       name: event.actor_name || "未知用户",
-      avatar_url: event.actor_avatar_url,
+      avatar_url: event.actor_avatar_url || (automaticScreeningRobot ? "./static/assets/news-auto-screening-robot-avatar-v1.png" : ""),
       roleLabel: event.actor_role === "SYSTEM" ? "自动化机器人" : "",
       title: event.actor_role === "SYSTEM" ? "新闻自动初筛" : "",
       status: "active",
@@ -315,7 +316,7 @@
         }
         catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
       }
-      const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=200"), request("/api/project-incidents?limit=500")]);
+      const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=all"), request("/api/project-incidents?limit=500")]);
       const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
       const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
       state.users = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
