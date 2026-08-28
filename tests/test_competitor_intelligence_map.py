@@ -21,15 +21,22 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('id="workspace-panel-intelligence-map"', INDEX)
         self.assertIn('<span class="workspace-tab-label">情报图谱</span>', INDEX)
 
-    def test_layout_has_filters_trend_network_and_evidence_insights(self):
-        self.assertIn('data-map-filter="days"', SCRIPT)
-        self.assertIn('data-map-filter="category"', SCRIPT)
-        self.assertIn('data-map-filter="region"', SCRIPT)
+    def test_layout_has_interactive_trend_network_word_cloud_and_insights(self):
+        self.assertNotIn('data-map-filter="days"', SCRIPT)
+        self.assertNotIn('data-map-filter="category"', SCRIPT)
+        self.assertNotIn('data-map-filter="region"', SCRIPT)
         self.assertIn("trendChart(items)", SCRIPT)
         self.assertIn("networkGraph(items)", SCRIPT)
+        self.assertIn("wordCloud(items)", SCRIPT)
+        self.assertIn('data-trend-point', SCRIPT)
+        self.assertIn('data-trend-series', SCRIPT)
+        self.assertIn('data-map-node', SCRIPT)
+        self.assertIn('data-network-view="cloud"', SCRIPT)
+        self.assertNotIn("议题变化趋势</strong>", SCRIPT)
         self.assertIn("基于已审核证据自动归纳", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr)", STYLE)
+        self.assertIn("min-height: 124px", STYLE)
 
     def test_live_endpoint_is_used(self):
         self.assertIn('fetch("/api/competitor-intelligence-map"', SCRIPT)

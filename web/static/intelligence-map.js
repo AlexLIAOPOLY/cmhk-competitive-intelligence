@@ -6,28 +6,10 @@
 
   const palette = ["#18c8e6", "#4e8eff", "#2fc1b4", "#8a63ea", "#f3a719"];
   const cacheKey = "cmhk-intelligence-map-v1";
-  const state = { payload: null, filters: { days: "all", category: "all", region: "all" } };
+  const state = { payload: null, hiddenCategories: new Set(), networkView: "graph", selectedTrend: null, selectedNode: null };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const countBy = (values) => values.reduce((counts, value) => value ? counts.set(value, (counts.get(value) || 0) + 1) : counts, new Map());
   const ranked = (counts) => [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
-
-  function filteredItems() {
-    const all = state.payload?.items || [];
-    let floor = "";
-    if (state.filters.days !== "all" && all.length) {
-      const latest = new Date(`${all.map((item) => item.sourceDate).sort().at(-1)}T00:00:00`);
-      latest.setDate(latest.getDate() - Number(state.filters.days) + 1);
-      floor = latest.toISOString().slice(0, 10);
-    }
-    return all.filter((item) => (!floor || item.sourceDate >= floor)
-      && (state.filters.category === "all" || item.category === state.filters.category)
-      && (state.filters.region === "all" || item.region === state.filters.region));
-  }
-
-  function filterOptions(values, selected, allLabel) {
-    return `<option value="all">${allLabel}</option>${[...new Set(values)].sort((a, b) => a.localeCompare(b, "zh-CN"))
-      .map((value) => `<option value="${esc(value)}"${value === selected ? " selected" : ""}>${esc(value)}</option>`).join("")}`;
-  }
 
   function trendChart(items) {
     const dates = [...new Set(items.map((item) => item.sourceDate))].sort();
@@ -50,11 +32,15 @@
       ? `<text class="axis-label" x="${x(index)}" y="${height - 12}" text-anchor="middle">${date.slice(5)}</text>` : "").join("");
     const series = categories.map((category, categoryIndex) => {
       const color = palette[categoryIndex];
-      const points = dates.map((date, index) => ({ x: x(index), y: y(items.filter((item) => item.sourceDate === date && item.category === category).length) }));
-      return `<polyline class="series" stroke="${color}" points="${points.map((point) => `${point.x},${point.y}`).join(" ")}"></polyline>${points.map((point) => `<circle class="point" stroke="${color}" cx="${point.x}" cy="${point.y}" r="2.6"></circle>`).join("")}`;
+      const hidden = state.hiddenCategories.has(category);
+      const points = dates.map((date, index) => ({ date, count: items.filter((item) => item.sourceDate === date && item.category === category).length, x: x(index) }));
+      return `<g class="series-group${hidden ? " is-hidden" : ""}" data-series-group="${esc(category)}"><polyline class="series" stroke="${color}" points="${points.map((point) => `${point.x},${y(point.count)}`).join(" ")}"></polyline>${points.map((point) => `<g class="trend-point" tabindex="0" role="button" aria-label="${esc(point.date)}，${esc(category)}，${point.count} 条" data-trend-point data-category="${esc(category)}" data-date="${point.date}" data-count="${point.count}"><circle class="point-hit" cx="${point.x}" cy="${y(point.count)}" r="9"></circle><circle class="point" stroke="${color}" cx="${point.x}" cy="${y(point.count)}" r="2.8"></circle><title>${esc(point.date)} · ${esc(category)} · ${point.count} 条</title></g>`).join("")}</g>`;
     }).join("");
-    return `<div class="intelligence-trend-legend">${categories.map((category, index) => `<span><i style="--legend-color:${palette[index]}"></i>${esc(category)}</span>`).join("")}</div>
-      <svg class="intelligence-trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="议题变化趋势图">${grid}${series}${labels}</svg>`;
+    const selected = state.selectedTrend;
+    const evidence = selected ? items.filter((item) => item.sourceDate === selected.date && item.category === selected.category) : [];
+    return `<div class="intelligence-trend-legend" aria-label="点击图例显示或隐藏曲线">${categories.map((category, index) => `<button type="button" data-trend-series="${esc(category)}" aria-pressed="${String(!state.hiddenCategories.has(category))}" class="${state.hiddenCategories.has(category) ? "is-muted" : ""}"><i style="--legend-color:${palette[index]}"></i>${esc(category)}</button>`).join("")}</div>
+      <svg class="intelligence-trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="可交互议题变化趋势图">${grid}${series}${labels}</svg>
+      <div class="intelligence-selection-detail" data-trend-detail aria-live="polite">${selected ? `<strong>${esc(selected.date)} · ${esc(selected.category)} · ${selected.count} 条</strong><span>${evidence.length ? evidence.slice(0, 2).map((item) => esc(item.title)).join("；") : "当日无对应情报"}</span>` : "悬停查看数值，点击数据点查看对应情报"}</div>`;
   }
 
   function graphData(items) {
@@ -113,14 +99,40 @@
     const edgeMarkup = edges.map((edge) => {
       const source = positions.get(edge.source);
       const target = positions.get(edge.target);
-      return `<line class="edge" style="--edge-width:${Math.min(3.5, 1 + edge.count * .32)}" x1="${source.x}" y1="${source.y}" x2="${target.x}" y2="${target.y}"><title>共同出现 ${edge.count} 条</title></line>`;
+      return `<line class="edge" data-edge-source="${esc(edge.source)}" data-edge-target="${esc(edge.target)}" style="--edge-width:${Math.min(3.5, 1 + edge.count * .32)}" x1="${source.x}" y1="${source.y}" x2="${target.x}" y2="${target.y}"><title>共同出现 ${edge.count} 条</title></line>`;
     }).join("");
     const nodeMarkup = nodes.map((node) => {
       const point = positions.get(node.id);
       const radius = Math.min(16, 6 + Math.sqrt(node.count) * 2.2);
-      return `<g class="node" style="--node-color:${nodeColor[node.type]}" transform="translate(${point.x} ${point.y})"><circle r="${radius}"><title>${esc(node.label)} · ${node.count} 条证据</title></circle><text y="${radius + 14}">${esc(node.label)}</text></g>`;
+      return `<g class="node${state.selectedNode?.id === node.id ? " is-selected" : ""}" tabindex="0" role="button" aria-label="${esc(node.label)}，${node.count} 条证据" data-map-node="${esc(node.id)}" data-node-label="${esc(node.label)}" data-node-type="${esc(node.type)}" data-node-count="${node.count}" style="--node-color:${nodeColor[node.type]}" transform="translate(${point.x} ${point.y})"><circle r="${radius}"><title>${esc(node.label)} · ${node.count} 条证据</title></circle><text y="${radius + 14}">${esc(node.label)}</text></g>`;
     }).join("");
     return `<svg class="intelligence-network-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="情报主体、议题与概念关联图">${edgeMarkup}${nodeMarkup}</svg>`;
+  }
+
+  function wordCloud(items) {
+    const words = new Map();
+    const add = (label, type) => {
+      const key = `${type}:${label}`;
+      const word = words.get(key) || { id: key, label, type, count: 0 };
+      word.count += 1;
+      words.set(key, word);
+    };
+    items.forEach((item) => {
+      add(item.category, "topic");
+      item.entities.forEach((label) => add(label, "entity"));
+      item.concepts.forEach((label) => add(label, "concept"));
+    });
+    const rankedWords = [...words.values()].sort((a, b) => b.count - a.count).slice(0, 32);
+    const maxCount = Math.max(1, ...rankedWords.map((word) => word.count));
+    return `<div class="intelligence-word-cloud" role="list" aria-label="可交互情报词云">${rankedWords.map((word, index) => `<button type="button" role="listitem" data-map-node="${esc(word.id)}" data-node-label="${esc(word.label)}" data-node-type="${esc(word.type)}" data-node-count="${word.count}" class="${state.selectedNode?.id === word.id ? "is-selected" : ""}" style="--word-size:${12 + Math.round(word.count / maxCount * 18)}px;--word-color:${palette[index % palette.length]}">${esc(word.label)}<small>${word.count}</small></button>`).join("")}</div>`;
+  }
+
+  function relationDetail(items) {
+    const selected = state.selectedNode;
+    if (!selected) return "悬停查看关系，点击节点或词语查看对应情报";
+    const evidence = items.filter((item) => item.category === selected.label || item.entities.includes(selected.label) || item.concepts.includes(selected.label));
+    const typeLabel = { entity: "主体", topic: "议题", concept: "概念" }[selected.type] || "节点";
+    return `<strong>${esc(selected.label)} · ${typeLabel} · ${selected.count} 条</strong><span>${evidence.slice(0, 2).map((item) => esc(item.title)).join("；") || "暂无对应情报标题"}</span>`;
   }
 
   function insights(items) {
@@ -149,30 +161,20 @@
   }
 
   function render() {
-    const all = state.payload?.items || [];
-    const items = filteredItems();
-    const dates = items.map((item) => item.sourceDate).sort();
-    const range = dates.length ? `${dates[0].slice(5)} — ${dates.at(-1).slice(5)}` : "暂无数据";
+    const items = state.payload?.items || [];
     panel.innerHTML = `<div class="intelligence-map-workbench">
       <section class="intelligence-map-main" id="intelligenceMapMain">
         <div class="intelligence-trend-panel">
-          <header class="intelligence-map-header">
-            <div class="intelligence-map-heading"><strong>议题变化趋势</strong><span>${esc(range)} · ${items.length} 条已审核情报</span></div>
-            <div class="intelligence-map-filters" aria-label="情报图谱筛选">
-              <select data-map-filter="days" aria-label="时间范围"><option value="all">全部时间</option><option value="7"${state.filters.days === "7" ? " selected" : ""}>近 7 日</option><option value="14"${state.filters.days === "14" ? " selected" : ""}>近 14 日</option><option value="30"${state.filters.days === "30" ? " selected" : ""}>近 30 日</option></select>
-              <select data-map-filter="category" aria-label="议题">${filterOptions(all.map((item) => item.category), state.filters.category, "全部议题")}</select>
-              <select data-map-filter="region" aria-label="区域">${filterOptions(all.map((item) => item.region), state.filters.region, "全部区域")}</select>
-            </div>
-          </header>
           ${trendChart(items)}
         </div>
         <div class="intelligence-network-panel">
           <header class="intelligence-map-network-header">
-            <div class="intelligence-map-heading"><strong>情报关联</strong><span>主体、议题与概念的共同出现关系</span></div>
-            <div class="intelligence-map-network-actions"><span class="intelligence-map-mode">图谱</span><button class="intelligence-map-icon-button" type="button" data-map-fullscreen aria-label="全屏查看情报关联"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"></path></svg></button></div>
+            <div class="intelligence-map-network-actions" role="group" aria-label="关系视图"><button class="intelligence-map-mode${state.networkView === "graph" ? " is-active" : ""}" type="button" data-network-view="graph" aria-pressed="${String(state.networkView === "graph")}">图谱</button><button class="intelligence-map-mode${state.networkView === "cloud" ? " is-active" : ""}" type="button" data-network-view="cloud" aria-pressed="${String(state.networkView === "cloud")}">词云</button></div>
+            <button class="intelligence-map-icon-button" type="button" data-map-fullscreen aria-label="全屏查看情报关联"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"></path></svg></button>
           </header>
-          <div class="intelligence-network-legend"><span><i style="--node-color:#6679e8"></i>主体</span><span><i style="--node-color:#55aaf0"></i>议题</span><span><i style="--node-color:#23c574"></i>概念</span></div>
-          <div class="intelligence-network-canvas">${networkGraph(items)}</div>
+          ${state.networkView === "graph" ? '<div class="intelligence-network-legend"><span><i style="--node-color:#6679e8"></i>主体</span><span><i style="--node-color:#55aaf0"></i>议题</span><span><i style="--node-color:#23c574"></i>概念</span></div>' : ""}
+          <div class="intelligence-network-canvas">${state.networkView === "cloud" ? wordCloud(items) : networkGraph(items)}</div>
+          <div class="intelligence-selection-detail" data-network-detail aria-live="polite">${relationDetail(items)}</div>
         </div>
       </section>
       <section class="intelligence-insight-strip" aria-label="AI 情报洞察">
@@ -182,15 +184,59 @@
     </div>`;
   }
 
-  panel.addEventListener("change", (event) => {
-    const filter = event.target.closest("[data-map-filter]");
-    if (!filter) return;
-    state.filters[filter.dataset.mapFilter] = filter.value;
-    render();
-  });
   panel.addEventListener("click", (event) => {
-    if (!event.target.closest("[data-map-fullscreen]")) return;
-    panel.querySelector("#intelligenceMapMain")?.requestFullscreen?.();
+    const series = event.target.closest("[data-trend-series]");
+    if (series) {
+      const category = series.dataset.trendSeries;
+      if (state.hiddenCategories.has(category)) state.hiddenCategories.delete(category);
+      else state.hiddenCategories.add(category);
+      render();
+      return;
+    }
+    const point = event.target.closest("[data-trend-point]");
+    if (point) {
+      state.selectedTrend = { category: point.dataset.category, date: point.dataset.date, count: Number(point.dataset.count || 0) };
+      render();
+      return;
+    }
+    const node = event.target.closest("[data-map-node]");
+    if (node) {
+      state.selectedNode = { id: node.dataset.mapNode, label: node.dataset.nodeLabel, type: node.dataset.nodeType, count: Number(node.dataset.nodeCount || 0) };
+      render();
+      return;
+    }
+    const view = event.target.closest("[data-network-view]");
+    if (view) {
+      state.networkView = view.dataset.networkView;
+      state.selectedNode = null;
+      render();
+      return;
+    }
+    if (event.target.closest("[data-map-fullscreen]")) panel.querySelector("#intelligenceMapMain")?.requestFullscreen?.();
+  });
+
+  panel.addEventListener("pointerover", (event) => {
+    const series = event.target.closest("[data-trend-series], [data-series-group]");
+    if (series) panel.querySelectorAll("[data-series-group]").forEach((group) => group.classList.toggle("is-hover-muted", group.dataset.seriesGroup !== (series.dataset.trendSeries || series.dataset.seriesGroup)));
+    const node = event.target.closest("[data-map-node]");
+    if (!node || state.networkView !== "graph") return;
+    const id = node.dataset.mapNode;
+    const connected = new Set([id]);
+    panel.querySelectorAll("[data-edge-source]").forEach((edge) => {
+      const active = edge.dataset.edgeSource === id || edge.dataset.edgeTarget === id;
+      edge.classList.toggle("is-hover-muted", !active);
+      if (active) connected.add(edge.dataset.edgeSource === id ? edge.dataset.edgeTarget : edge.dataset.edgeSource);
+    });
+    panel.querySelectorAll("[data-map-node]").forEach((item) => item.classList.toggle("is-hover-muted", !connected.has(item.dataset.mapNode)));
+  });
+  panel.addEventListener("pointerout", (event) => {
+    if (!event.target.closest("[data-trend-series], [data-series-group], [data-map-node]")) return;
+    panel.querySelectorAll(".is-hover-muted").forEach((item) => item.classList.remove("is-hover-muted"));
+  });
+  panel.addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key) || !event.target.closest("[data-trend-point], [data-map-node]")) return;
+    event.preventDefault();
+    event.target.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   });
 
   async function initialize() {
