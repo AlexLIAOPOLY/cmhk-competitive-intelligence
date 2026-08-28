@@ -404,27 +404,36 @@
         <fieldset><legend><i>02</i>选择指标 <small>${selection.companies.length >= 2 ? "仅展示所选竞对同单位可比指标" : "所有已入库指标均可查看"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选竞对暂无共同指标"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
         <fieldset><legend><i>03</i>选择年限 <small>至少保留一个共同披露年</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${selection.companies.length && !validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${selection.companies.length && !validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
-    panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
+    const transitionCompetitorOptions = (nextVisible, revealed = []) => {
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
-      const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
-      state.competitorSelection.companies = selected;
-      const nextVisible = visibleCompetitorIds(data, selected, selection.years, selection.metric);
+      const appearing = revealed.length ? revealed : [...nextVisible].filter((company) => !previouslyVisible.has(company));
       const disappearing = [...panel.querySelectorAll("[data-competitor-option]")].filter((item) => !nextVisible.has(item.dataset.competitorOption));
-      const revealed = [...nextVisible].filter((company) => !previouslyVisible.has(company));
       if (!disappearing.length) {
-        renderCompetitor({ revealedCompanies: revealed });
+        renderCompetitor({ revealedCompanies: appearing });
         return;
       }
-      panel.querySelectorAll("[data-competitor-company]").forEach((item) => { item.disabled = true; });
+      panel.querySelectorAll("input,select,button").forEach((item) => { item.disabled = true; });
       disappearing.forEach((item) => item.classList.add("is-disappearing"));
       panel.querySelectorAll(".competitor-option-group").forEach((group) => {
         const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
         if (!remaining) group.classList.add("is-disappearing");
       });
-      window.setTimeout(() => renderCompetitor(), motionPreference.matches ? 0 : 430);
+      window.setTimeout(() => renderCompetitor({ revealedCompanies: appearing }), motionPreference.matches ? 0 : 430);
+    };
+    panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
+      const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
+      state.competitorSelection.companies = selected;
+      const nextVisible = visibleCompetitorIds(data, selected, selection.years, selection.metric);
+      transitionCompetitorOptions(nextVisible);
     }));
-    panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => { state.competitorSelection.metric = event.target.value; renderCompetitor(); });
-    panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => { state.competitorSelection.years = Number(input.value); renderCompetitor(); }));
+    panel.querySelector("[data-competitor-metric]")?.addEventListener("change", (event) => {
+      state.competitorSelection.metric = event.target.value;
+      transitionCompetitorOptions(visibleCompetitorIds(data, selection.companies, selection.years, selection.metric));
+    });
+    panel.querySelectorAll('[name="competitor-years"]').forEach((input) => input.addEventListener("change", () => {
+      state.competitorSelection.years = Number(input.value);
+      transitionCompetitorOptions(visibleCompetitorIds(data, selection.companies, selection.years, selection.metric));
+    }));
     panel.querySelector("[data-competitor-clear]")?.addEventListener("click", () => {
       const currentlyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
       state.competitorSelection = { companies: [], metric: "", years: null };
@@ -890,7 +899,7 @@
     renderCompetitorStrategicIndicatorCopy(copy, finalText, fallback ? [] : highlights);
   }
 
-  function syncCompetitorInsightRows(card, items) {
+  function syncCompetitorInsightRows(card, items, { streaming = false } = {}) {
     const list = card?.querySelector("[data-competitor-insight-list]");
     if (!list) return;
     const body = card.querySelector(".competitor-insight-body");
@@ -909,9 +918,13 @@
       const copy = li.querySelector("span");
       const nextCopy = String(item || "").replace(/^(竞争格局|公司分化|公司定位|业务含义|数据格局|共同年度|解读边界)[：|｜]\s*/, "");
       if (label.textContent !== labels[index]) label.textContent = labels[index];
-      if (copy.textContent !== nextCopy) copy.textContent = nextCopy;
+      const currentCopy = copy.textContent;
+      const isContinuousDraft = !currentCopy || nextCopy.startsWith(currentCopy);
+      if (copy.textContent !== nextCopy && (!streaming || isContinuousDraft)) copy.textContent = nextCopy;
     });
-    while (list.children.length > items.length) list.lastElementChild.remove();
+    if (!streaming) {
+      while (list.children.length > items.length) list.lastElementChild.remove();
+    }
     if (body && shouldFollow) {
       window.requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
     }
@@ -948,7 +961,7 @@
       }
     });
     if (candidates.length < 3 && labelled.size === 0) {
-      const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
+      const sentences = candidates.join(" ").split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
       if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
     }
     const labels = ["竞争格局", "公司定位", "业务含义"];
@@ -1008,7 +1021,7 @@
     card.classList.add("is-streaming");
     setCompetitorInsightStatus(card, `AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
-    syncCompetitorInsightRows(card, drafts);
+    syncCompetitorInsightRows(card, drafts, { streaming: true });
   }
 
   function scheduleCompetitorInsightRecovery(payload, requestId, card, error) {
