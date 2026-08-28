@@ -27,11 +27,11 @@
     "conflicts_and_scope_breaks.json",
     "conflicts_and_scope_breaks.csv"
   ],
-  "row_count": 834,
+  "row_count": 843,
   "quality": {
     "status": "backlog_open",
-    "source_count": 368,
-    "available_value_rows": 599,
+    "source_count": 369,
+    "available_value_rows": 608,
     "three_distinct_source_certified_rows": 498,
     "three_source_certified_rows_by_operator": {
       "AT&T": 42,
@@ -45,7 +45,7 @@
       "中国移动": 80,
       "中国联通": 65
     },
-    "below_three_source_rows": 101
+    "below_three_source_rows": 110
   },
   "linked_existing_datasets": [
     "quarterly_competitor_metrics_2026-06-18"

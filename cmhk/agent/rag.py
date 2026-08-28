@@ -715,6 +715,9 @@ def _global_operator_exact_metric_chunks(
         matched_metrics.discard("ebit")
     if "adjusted_ebitda" in matched_metrics:
         matched_metrics.discard("ebitda")
+    elif "ntt_group" in matched_subjects and "ebitda" in matched_metrics:
+        matched_metrics.discard("ebitda")
+        matched_metrics.add("adjusted_ebitda")
     if "postpaid_phone_arpu" in matched_metrics or "postpaid_arpa" in matched_metrics:
         matched_metrics.discard("mobile_arpu")
     if "ntt_group" in matched_subjects and "postpaid_connections" in matched_metrics:
@@ -756,12 +759,15 @@ def _global_operator_exact_metric_chunks(
                 clause_metrics.discard("broadband_arpu")
             if "5g_network_penetration" in clause_metrics:
                 clause_metrics.discard("5g_network_subscribers")
+            if "ntt_group" in clause_subjects and "ebitda" in clause_metrics:
+                clause_metrics.discard("ebitda")
+                clause_metrics.add("adjusted_ebitda")
             clause_years = {
                 int(value)
                 for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", clause)
             }
             for start_text, end_text in re.findall(
-                r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+                r"(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))(?!\d)",
                 clause,
             ):
                 start_year, end_year = int(start_text), int(end_text)
@@ -789,7 +795,7 @@ def _global_operator_exact_metric_chunks(
         for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)
     }
     for start_text, end_text in re.findall(
-        r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+        r"(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))(?!\d)",
         normalized,
     ):
         start_year, end_year = int(start_text), int(end_text)
@@ -903,6 +909,80 @@ def _global_operator_exact_metric_chunks(
             "如果值为未披露，只能回答未披露或商用前不适用，不能当作0、行业汇总或估算值。"
         )
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+    return chunks
+
+
+def _requested_overview_exact_metric_chunks(
+    question: str,
+    dataset_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    dataset_id = "requested_overview_010304_2016_2025"
+    if dataset_ids is not None and dataset_id not in dataset_ids:
+        return []
+    csv_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "annual_facts.csv"
+    if not csv_path.exists():
+        return []
+    normalized = re.sub(r"\s+", " ", question or "").strip()
+    lowered = normalized.lower()
+    metric_aliases = {
+        "revenue": ["营收", "收入", "revenue"],
+        "ebitda": ["ebitda"],
+        "net_profit": ["净利润", "纯利", "net profit", "net income"],
+        "postpaid": ["后付费", "后付客户", "postpaid"],
+        "profit": ["云利润", "经营利润", "operating profit"],
+        "investment": ["资本开支", "投资", "capex"],
+    }
+    metrics = {metric for metric, aliases in metric_aliases.items() if any(alias in lowered for alias in aliases)}
+    if not metrics:
+        return []
+    years = {int(value) for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)}
+    for start_text, end_text in re.findall(
+        r"(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))(?!\d)",
+        normalized,
+    ):
+        start_year, end_year = int(start_text), int(end_text)
+        if start_year <= end_year:
+            years.update(range(start_year, end_year + 1))
+    try:
+        with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+    except Exception:
+        return []
+    entities = {
+        str(row.get("entity") or "")
+        for row in rows
+        if str(row.get("entity") or "").lower() in lowered
+    }
+    if not entities:
+        return []
+    filtered = []
+    for row in rows:
+        if str(row.get("entity") or "") not in entities or str(row.get("metric") or "") not in metrics:
+            continue
+        row_year_match = re.search(r"20\d{2}", str(row.get("period") or ""))
+        if years and (not row_year_match or int(row_year_match.group()) not in years):
+            continue
+        filtered.append(row)
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for row in filtered:
+        grouped.setdefault((str(row.get("entity") or ""), str(row.get("metric") or "")), []).append(row)
+    source = csv_path.relative_to(ROOT).as_posix()
+    chunks: list[dict[str, Any]] = []
+    for (entity, metric), group in sorted(grouped.items()):
+        group.sort(key=lambda row: str(row.get("period") or ""))
+        values = " | ".join(
+            f"{row.get('period')}={row.get('value')} {row.get('unit')}"
+            f"[verification_status={row.get('verification_status')},source_count={row.get('source_count')},source_urls={row.get('source_urls')}]"
+            for row in group
+        )
+        chunks.append({
+            "source": source,
+            "text": (
+                f"战略总览精确年度事实：entity={entity}; metric={metric}; point_count={len(group)}; values={values}. "
+                "单一官方来源、两来源和三来源数据均为可展示事实；来源数量只作质量标注，不得因此省略已有数值。"
+            ),
+            "links": [{"label": source, "url": _local_ref(source)}],
+        })
     return chunks
 
 
@@ -1887,6 +1967,7 @@ def retrieve_context(question: str, limit: int = 8, dataset_ids: set[str] | None
         for key in ["OFCA", "宏观", "政策", "渗透率", "频谱", "移动用户", "宽带", "Key Communications Statistics"]
     )
     exact_chunks = _product_tariff_exact_chunks(question, dataset_ids=dataset_ids)
+    exact_chunks.extend(_requested_overview_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_global_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_local_hk_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids))

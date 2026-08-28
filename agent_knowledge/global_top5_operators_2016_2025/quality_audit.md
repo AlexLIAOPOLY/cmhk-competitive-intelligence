@@ -1,9 +1,9 @@
 # 全球重点十家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：834
-- 有值行：599
-- 来源条目：368
+- 明细行：843
+- 有值行：608
+- 来源条目：369
 - 重复键：0
 - 无效来源引用：0
 
@@ -12,7 +12,7 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 64
+- `official_single_source`: 73
 - `official_three_distinct_sources_verified`: 498
 - `official_two_distinct_sources`: 21
 - `source_gap_confirmed`: 208

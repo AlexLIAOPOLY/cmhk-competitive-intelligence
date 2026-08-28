@@ -173,6 +173,72 @@
         "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
       ],
       "evidence_note": "SmarTone 2015/16官方年报披露集团全年EBITDA 2,660.528百万港元；来源数量不足三份仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "revenue",
+      "period": "FY2016",
+      "value": 274197,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告比较表披露FY2016收入274,197百万元人民币；单一官方来源仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "ebitda",
+      "period": "FY2016",
+      "value": 79498,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告比较表披露FY2016 EBITDA 79,498百万元人民币；单一官方来源仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "net_income",
+      "period": "FY2016",
+      "value": 625,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告比较表披露FY2016本公司权益持有人应占盈利625百万元人民币；单一官方来源仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "revenue",
+      "period": "FY2017",
+      "value": 274829,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告披露FY2017收入274,829百万元人民币；单一官方来源仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "ebitda",
+      "period": "FY2017",
+      "value": 81425,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告披露FY2017 EBITDA 81,425百万元人民币；单一官方来源仍保留展示。"
+    },
+    {
+      "domain": "mainland",
+      "entity": "中国联通",
+      "metric": "net_income",
+      "period": "FY2017",
+      "value": 1828,
+      "unit": "millions CNY",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": ["https://www.chinaunicom.com.hk/en/media/press/p180315.pdf"],
+      "evidence_note": "中国联通2017年官方业绩公告披露FY2017本公司权益持有人应占盈利1,828百万元人民币；单一官方来源仍保留展示。"
     }
   ],
   "gap_classifications": [

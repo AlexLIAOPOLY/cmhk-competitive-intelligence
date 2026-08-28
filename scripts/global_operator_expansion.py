@@ -101,7 +101,10 @@ SERIES = {
         "revenue": ([11391.0, 11782.1, 11879.8, 11899.4, 11944.0, 12156.4, 13136.2, 13374.6, 13704.7, 14409.1], "JPY_billion"),
         "net_profit": ([800.1, 897.9, 854.6, 855.3, 916.2, 1181.1, 1213.1, 1279.5, 1000.0, 1037.0], "JPY_billion"),
         "reported_mobile_connections": ({2023: 89.940, 2024: 91.407, 2025: 93.065}, "million_connections"),
-        "adjusted_ebitda": ({2025: 3423.3}, "JPY_billion"),
+        "adjusted_ebitda": ({
+            2016: 3183.3, 2017: 3237.1, 2018: 3241.4, 2019: 2968.6, 2020: 3111.6,
+            2021: 3247.1, 2022: 3290.2, 2023: 3418.1, 2024: 3239.3, 2025: 3423.3,
+        }, "JPY_billion"),
         "adjusted_ebitda_margin": ({2025: 23.8}, "percent"),
         "mobile_service_subscriptions": ({
             2016: 74.880, 2017: 76.370, 2018: 78.453, 2019: 80.326, 2020: 82.632,
@@ -218,6 +221,29 @@ def apply_expansion(
                         }
             source_map[operator_id][value_year] = ids
 
+    ntt_highlights_id = "ntt_group_financial_highlights_2025"
+    ntt_ebitda, ntt_ebitda_unit = _values("ntt_group", "adjusted_ebitda")
+    sources[ntt_highlights_id] = {
+        "source_id": ntt_highlights_id,
+        "source_document_id": "ntt_group:financial_highlights:2025",
+        "operator_id": "ntt_group",
+        "year": 2025,
+        "label": "NTT Financial Highlights FY2025 official workbook",
+        "url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+        "source_type": "official_financial_highlights_workbook",
+        "publisher": OPERATORS["ntt_group"]["legal_name"],
+        "comparative_evidence": {
+            f"FY{year}": {
+                "adjusted_ebitda": {
+                    "value": value,
+                    "unit": ntt_ebitda_unit,
+                    "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row",
+                }
+            }
+            for year, value in ntt_ebitda.items()
+        },
+    }
+
     scopes = {
         "verizon": "Verizon consolidated; postpaid connections aggregate Consumer and Business retail connections; ARPA is per account and must not be labelled ARPU",
         "deutsche_telekom": "Deutsche Telekom consolidated financials; postpaid customers and phone ARPU are T-Mobile US segment metrics, not Group-wide customer KPIs",
@@ -227,15 +253,24 @@ def apply_expansion(
     for operator_id in OPERATORS:
         for metric_key in SERIES[operator_id]:
             values, unit = _values(operator_id, metric_key)
+            source_ids = {year: source_map[operator_id][year] for year in values}
+            if operator_id == "ntt_group" and metric_key == "adjusted_ebitda":
+                source_ids = {
+                    year: ([ntt_highlights_id] if year < 2025 else source_map[operator_id][year])
+                    for year in values
+                }
+            source_note = (
+                "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. "
+                "The official Financial Highlights workbook is retained as a single source. "
+                if operator_id == "ntt_group" and metric_key == "adjusted_ebitda" else
+                "Three distinct official underlying documents bind every stored value. "
+            )
             add_series(
                 operator_id,
                 metric_key,
                 values,
                 unit=unit,
                 scope=scopes[operator_id],
-                source_ids={year: source_map[operator_id][year] for year in values},
-                note=(
-                    "Three distinct official underlying documents bind every stored value. "
-                    "Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
-                ),
+                source_ids=source_ids,
+                note=source_note + "Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied.",
             )

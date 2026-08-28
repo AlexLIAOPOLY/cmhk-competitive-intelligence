@@ -29,6 +29,7 @@ REQUESTED_OVERVIEW_SOURCES = (
     ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
     ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
     ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json",
+    ROOT / "agent_knowledge/requested_overview_010304_2016_2025/annual_facts.json",
 )
 REQUESTED_OVERVIEW_DATASET_ID = "requested_overview_010304_2016_2025"
 KNOWLEDGE_BASE_META = {
@@ -274,8 +275,8 @@ def main() -> None:
                         "derivedFromMetric": metric,
                     })
     add_requested_overview_cells(cells, company_meta, metric_meta, availability)
-    viable = {key for key, years in availability.items() if len(years) >= 2}
-    cells = [cell for cell in cells if (cell["company"], cell["metric"]) in viable]
+    # A valid official value must remain visible even when the issuer disclosed
+    # only one year.  History length is presentation metadata, not a data gate.
     active_companies = {cell["company"] for cell in cells}
     active_metrics = {cell["metric"] for cell in cells}
     knowledge_bases = []

@@ -53,17 +53,20 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("## 三来源认证行（按运营商）", audit_text)
         self.assertIn("- Bharti Airtel: 98", audit_text)
 
-    def test_requested_international_operators_are_complete_and_three_source_verified(self):
+    def test_requested_international_operators_keep_all_official_values(self):
         requested = {"verizon", "deutsche_telekom", "att", "ntt_group"}
         rows = [row for row in self.rows if row["operator_id"] in requested]
-        self.assertEqual(len(rows), 158)
+        self.assertEqual(len(rows), 167)
         self.assertEqual({row["operator_id"] for row in rows}, requested)
         self.assertTrue({"revenue", "net_profit", "reported_mobile_connections", "adjusted_ebitda",
                          "adjusted_ebitda_margin", "postpaid_connections"}.issubset(
                             {row["metric_key"] for row in rows}
                          ))
-        self.assertTrue(all(row["verification_status"] == "official_three_distinct_sources_verified" for row in rows))
-        self.assertTrue(all(row["distinct_source_document_count"] >= 3 for row in rows))
+        self.assertFalse(any(row["verification_status"] == "source_gap_confirmed" for row in rows))
+        ntt_ebitda = [row for row in rows if row["operator_id"] == "ntt_group" and row["metric_key"] == "adjusted_ebitda"]
+        self.assertEqual(len(ntt_ebitda), 10)
+        self.assertEqual(ntt_ebitda[0]["verification_status"], "official_single_source")
+        self.assertEqual(ntt_ebitda[0]["distinct_source_document_count"], 1)
         self.assertFalse(any("comcast" in str(row).lower() for row in self.rows))
 
     def test_xiaojing_exact_retrieval_recognizes_requested_operators(self):

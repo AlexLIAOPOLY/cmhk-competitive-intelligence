@@ -12346,6 +12346,11 @@
             "unit": "JPY_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3183.3,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 74.88,
             "unit": "million_subscriptions",
@@ -12372,6 +12377,11 @@
           },
           "net_profit": {
             "value": 800.1,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3183.3,
             "unit": "JPY_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
           },
@@ -12404,6 +12414,11 @@
             "unit": "JPY_billion",
             "locator": "FY2016 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3183.3,
+            "unit": "JPY_billion",
+            "locator": "FY2016 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 74.88,
             "unit": "million_subscriptions",
@@ -12430,6 +12445,11 @@
           },
           "net_profit": {
             "value": 897.9,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3237.1,
             "unit": "JPY_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
           },
@@ -12462,6 +12482,11 @@
             "unit": "JPY_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3237.1,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 76.37,
             "unit": "million_subscriptions",
@@ -12488,6 +12513,11 @@
           },
           "net_profit": {
             "value": 897.9,
+            "unit": "JPY_billion",
+            "locator": "FY2017 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3237.1,
             "unit": "JPY_billion",
             "locator": "FY2017 audited financial/KPI comparative table"
           },
@@ -12520,6 +12550,11 @@
             "unit": "JPY_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3241.4,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 78.453,
             "unit": "million_subscriptions",
@@ -12546,6 +12581,11 @@
           },
           "net_profit": {
             "value": 854.6,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3241.4,
             "unit": "JPY_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
           },
@@ -12578,6 +12618,11 @@
             "unit": "JPY_billion",
             "locator": "FY2018 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3241.4,
+            "unit": "JPY_billion",
+            "locator": "FY2018 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 78.453,
             "unit": "million_subscriptions",
@@ -12604,6 +12649,11 @@
           },
           "net_profit": {
             "value": 855.3,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 2968.6,
             "unit": "JPY_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
           },
@@ -12636,6 +12686,11 @@
             "unit": "JPY_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 2968.6,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 80.326,
             "unit": "million_subscriptions",
@@ -12662,6 +12717,11 @@
           },
           "net_profit": {
             "value": 855.3,
+            "unit": "JPY_billion",
+            "locator": "FY2019 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 2968.6,
             "unit": "JPY_billion",
             "locator": "FY2019 audited financial/KPI comparative table"
           },
@@ -12694,6 +12754,11 @@
             "unit": "JPY_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3111.6,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 82.632,
             "unit": "million_subscriptions",
@@ -12720,6 +12785,11 @@
           },
           "net_profit": {
             "value": 916.2,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3111.6,
             "unit": "JPY_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
           },
@@ -12752,6 +12822,11 @@
             "unit": "JPY_billion",
             "locator": "FY2020 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3111.6,
+            "unit": "JPY_billion",
+            "locator": "FY2020 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 82.632,
             "unit": "million_subscriptions",
@@ -12778,6 +12853,11 @@
           },
           "net_profit": {
             "value": 1181.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3247.1,
             "unit": "JPY_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
           },
@@ -12810,6 +12890,11 @@
             "unit": "JPY_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3247.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 84.752,
             "unit": "million_subscriptions",
@@ -12836,6 +12921,11 @@
           },
           "net_profit": {
             "value": 1181.1,
+            "unit": "JPY_billion",
+            "locator": "FY2021 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3247.1,
             "unit": "JPY_billion",
             "locator": "FY2021 audited financial/KPI comparative table"
           },
@@ -12868,6 +12958,11 @@
             "unit": "JPY_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3290.2,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 87.495,
             "unit": "million_subscriptions",
@@ -12897,6 +12992,11 @@
             "unit": "JPY_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3290.2,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 87.495,
             "unit": "million_subscriptions",
@@ -12923,6 +13023,11 @@
           },
           "net_profit": {
             "value": 1213.1,
+            "unit": "JPY_billion",
+            "locator": "FY2022 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3290.2,
             "unit": "JPY_billion",
             "locator": "FY2022 audited financial/KPI comparative table"
           },
@@ -12960,6 +13065,11 @@
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3418.1,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 89.94,
             "unit": "million_subscriptions",
@@ -12992,6 +13102,11 @@
           "reported_mobile_connections": {
             "value": 89.94,
             "unit": "million_connections",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3418.1,
+            "unit": "JPY_billion",
             "locator": "FY2023 audited financial/KPI comparative table"
           },
           "mobile_service_subscriptions": {
@@ -13028,6 +13143,11 @@
             "unit": "million_connections",
             "locator": "FY2023 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3418.1,
+            "unit": "JPY_billion",
+            "locator": "FY2023 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 89.94,
             "unit": "million_subscriptions",
@@ -13060,6 +13180,11 @@
           "reported_mobile_connections": {
             "value": 91.407,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3239.3,
+            "unit": "JPY_billion",
             "locator": "FY2024 audited financial/KPI comparative table"
           },
           "mobile_service_subscriptions": {
@@ -13101,6 +13226,11 @@
             "unit": "million_connections",
             "locator": "FY2024 audited financial/KPI comparative table"
           },
+          "adjusted_ebitda": {
+            "value": 3239.3,
+            "unit": "JPY_billion",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
           "mobile_service_subscriptions": {
             "value": 91.407,
             "unit": "million_subscriptions",
@@ -13138,6 +13268,11 @@
           "reported_mobile_connections": {
             "value": 91.407,
             "unit": "million_connections",
+            "locator": "FY2024 audited financial/KPI comparative table"
+          },
+          "adjusted_ebitda": {
+            "value": 3239.3,
+            "unit": "JPY_billion",
             "locator": "FY2024 audited financial/KPI comparative table"
           },
           "mobile_service_subscriptions": {
@@ -13296,6 +13431,88 @@
             "value": 3960,
             "unit": "JPY_per_user_month",
             "locator": "FY2025 audited financial/KPI comparative table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_group_financial_highlights_2025",
+      "source_document_id": "ntt_group:financial_highlights:2025",
+      "operator_id": "ntt_group",
+      "year": 2025,
+      "label": "NTT Financial Highlights FY2025 official workbook",
+      "url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "source_type": "official_financial_highlights_workbook",
+      "publisher": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "comparative_evidence": {
+        "FY2016": {
+          "adjusted_ebitda": {
+            "value": 3183.3,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2017": {
+          "adjusted_ebitda": {
+            "value": 3237.1,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2018": {
+          "adjusted_ebitda": {
+            "value": 3241.4,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2019": {
+          "adjusted_ebitda": {
+            "value": 2968.6,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2020": {
+          "adjusted_ebitda": {
+            "value": 3111.6,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2021": {
+          "adjusted_ebitda": {
+            "value": 3247.1,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2022": {
+          "adjusted_ebitda": {
+            "value": 3290.2,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2023": {
+          "adjusted_ebitda": {
+            "value": 3418.1,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2024": {
+          "adjusted_ebitda": {
+            "value": 3239.3,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
+          }
+        },
+        "FY2025": {
+          "adjusted_ebitda": {
+            "value": 3423.3,
+            "unit": "JPY_billion",
+            "locator": "U.S. GAAP or IFRS Financial Highlights EBITDA row"
           }
         }
       }

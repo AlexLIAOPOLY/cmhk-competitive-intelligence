@@ -49,7 +49,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
     def test_evidence_version_is_content_hash(self):
         self.assertRegex(self.payload["evidenceVersion"], r"^[0-9a-f]{64}$")
 
-    def test_page_contains_every_multi_year_official_database_cell(self):
+    def test_page_contains_every_official_database_cell_including_single_year(self):
         source_rows = []
         availability = defaultdict(set)
         for source in SOURCES:
@@ -60,7 +60,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
                     key = (row["operator"], row["metric_key"])
                     availability[key].add(int(row["year"]))
                     source_rows.append((row["operator"], row["metric_key"], int(row["year"])))
-        expected = {row for row in source_rows if len(availability[row[:2]]) >= 2}
+        expected = set(source_rows)
         actual = {
             (row["company"], row["metric"], row["year"])
             for row in self.payload["cells"]
@@ -77,8 +77,8 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             ],
         )
         bases = {item["id"]: item for item in self.payload["knowledgeBases"]}
-        self.assertEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 583)
-        self.assertEqual(bases["local_hk_operator_operating_metrics_2016_2025"]["cellCount"], 167)
+        self.assertGreaterEqual(bases["global_top5_operators_2016_2025"]["cellCount"], 599)
+        self.assertGreaterEqual(bases["local_hk_operator_operating_metrics_2016_2025"]["cellCount"], 172)
         self.assertGreaterEqual(bases["requested_overview_010304_2016_2025"]["cellCount"], 242)
         self.assertEqual(sum(item["cellCount"] for item in bases.values()), len(self.payload["cells"]))
 
@@ -113,6 +113,10 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             self.assertEqual(companies[company]["group"], "国际运营商")
         self.assertTrue({"revenue", "ebitda", "net_profit", "network_towers", "total_data_traffic"} <= metrics)
         self.assertIn("reported_mobile_connections", metrics)
+        cells = {(item["company"], item["metric"], item["year"]) for item in self.payload["cells"]}
+        self.assertIn(("Deutsche Telekom", "postpaid_phone_arpu", 2025), cells)
+        self.assertIn(("NTT Group", "adjusted_ebitda", 2025), cells)
+        self.assertIn(("3HK", "5g_population_coverage", 2021), cells)
 
     def test_four_international_operators_share_ten_year_postpaid_comparison(self):
         selected = {"Verizon", "Deutsche Telekom", "AT&T", "NTT Group"}

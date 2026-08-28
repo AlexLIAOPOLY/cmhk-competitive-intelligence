@@ -29,6 +29,11 @@ INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中�
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
     "official_only",
+    "official_single_source",
+    "official_single_source_user_accepted_display",
+    "official_two_distinct_sources_verified",
+    "official_source_count_below_three_displayed",
+    "official_derived_from_reported_quarters",
     "official_derived_from_verified_rows",
     "multi_source_or_multi_snapshot_verified",
     "official_three_distinct_sources_verified",
@@ -1197,7 +1202,7 @@ def _requested_hong_kong_domain(
             or _annual_financial_value(financial_rows, subject, "net_income", operator_year)
         )
         annual_period = f"FY{operator_year}"
-        missing_note = "CMHK未公开独立公司口径，保留缺口" if name == "CMHK" else "三来源数据待补"
+        missing_note = "CMHK未公开独立公司口径，保留缺口" if name == "CMHK" else "官方公开数据待补"
         if name == "CMHK":
             revenue = {
                 "value": cmhk_reference_ppt["revenue_m_hkd"],
@@ -1297,7 +1302,7 @@ def _requested_hong_kong_domain(
         else:
             insight = "当前可比原值不足两家；这一口径缺口限制客户价值和客户质量的穿透比较，不能由总用户或5G用户替代。"
         return {"id": fid, "label": label, "visual": "rows", "headline": headline,
-                "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available and baseline_annual_window else f"{lead['name']} {lead.get('period') or f'FY{latest_annual_year}'}" if available else "三来源数据待补"},
+                "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available and baseline_annual_window else f"{lead['name']} {lead.get('period') or f'FY{latest_annual_year}'}" if available else "官方公开数据待补"},
                 "context": context, "insight": insight, "items": items}
 
     focuses = [
@@ -1335,15 +1340,15 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
         revenue = _annual_financial_value(financial_rows, operator, "revenue", 2025)
         ebitda = _annual_financial_value(financial_rows, operator, "ebitda", 2025)
         profit = _annual_financial_value(financial_rows, operator, "net_income", 2025)
-        gap = "三来源数据待补"
+        gap = "官方公开数据待补"
         revenue_item = _financial_item(operator, revenue, "营收", "亿元", gap)
-        revenue_item["trend"] = _annual_financial_trend(financial_rows, operator, "revenue", divisor=100, unit="亿元")
+        revenue_item["trend"] = _annual_financial_trend(financial_rows, operator, "revenue", divisor=100, unit="亿元", company=operator)
         revenue_items.append(revenue_item)
         ebitda_item = _financial_item(operator, ebitda, "EBITDA", "亿元", gap)
-        ebitda_item["trend"] = _annual_financial_trend(financial_rows, operator, "ebitda", divisor=100, unit="亿元")
+        ebitda_item["trend"] = _annual_financial_trend(financial_rows, operator, "ebitda", divisor=100, unit="亿元", company=operator)
         ebitda_items.append(ebitda_item)
         profit_item = _financial_item(operator, profit, "净利润", "亿元", gap)
-        profit_item["trend"] = _annual_financial_trend(financial_rows, operator, "net_income", divisor=100, unit="亿元")
+        profit_item["trend"] = _annual_financial_trend(financial_rows, operator, "net_income", divisor=100, unit="亿元", company=operator)
         profit_items.append(profit_item)
         mobile_customer = _published_annual_row(operating_rows, operator, "mobile_subscribers", 2025)
         mobile_customer_value = _verified_number(mobile_customer)
@@ -1377,6 +1382,8 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
                     "value": round(float(value) / 100, 4) if (value := _verified_number(row)) is not None else None,
                     "unit": "亿户" if value is not None else "",
                     "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
+                    "verification_status": str((row or {}).get("verification_status") or ""),
+                    "source_urls": _row_source_urls(row),
                 }
                 for year in range(2016, 2026)
                 for row in [_published_annual_row(operating_rows, operator, "mobile_subscribers", year)]
@@ -1404,7 +1411,7 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
             "net_profit": "中国移动盈利韧性最强",
             "postpaid": "中国移动客户底盘最厚",
         }[fid]
-        return {"id": fid, "label": label, "visual": "rows", "headline": headline, "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "三来源数据待补"}, "context": context, "insight": insight, "items": items}
+        return {"id": fid, "label": label, "visual": "rows", "headline": headline, "metric": {"value": lead["value"], "unit": lead.get("unit") or "", "label": f"{lead['name']} FY2025" if available else "官方公开数据待补"}, "context": context, "insight": insight, "items": items}
     focuses = [focus("revenue", "营收", revenue_items, "2016–2025原表；当前卡片显示FY2025"), focus("ebitda", "EBITDA", ebitda_items, "FY2025 EBITDA金额"), focus("net_profit", "净利润", profit_items, "FY2025净利润金额"), focus("postpaid", "移动客户数", mobile_customer_items, "公司披露的移动客户/移动用户；联通约值为官方期初加全年净增推导")]
     return {"id": "mainland", "index": "03", "title": "内地运营商", "kicker": "移动｜电信｜联通", "metric": focuses[0]["metric"], "context": "2016–2025十年窗口；全部卡片只展示绝对数", "insight": "营收、EBITDA、净利润与移动客户数只展示绝对值；移动客户数沿用各公司官方口径，推导值明确标约。", "entities": revenue_items, "focuses": focuses, "relations": [], "sources": _dedupe_sources([_source(item["name"], item.get("source_url")) for items in (revenue_items, ebitda_items, profit_items, mobile_customer_items) for item in items])}
 
@@ -1412,10 +1419,12 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
 def _financial_item(name: str, row: dict[str, Any] | None, label: str, unit: str, gap: str) -> dict[str, Any]:
     original_value = _number((row or {}).get("value"))
     value = original_value / 100 if original_value is not None and unit == "亿元" else original_value
-    return {"name": name, "value": round(value, 2) if value is not None else None, "unit": unit if value is not None else "", "period": "FY2025", "detail": f"FY2025{label} · 三来源核验" if value is not None else gap,
+    source_count = int((row or {}).get("verification_count") or (row or {}).get("distinct_source_document_count") or 0)
+    return {"name": name, "value": round(value, 2) if value is not None else None, "unit": unit if value is not None else "", "period": "FY2025", "detail": f"FY2025{label} · 官方披露 · {source_count}个来源" if value is not None else gap,
             "analysis": f"FY2025{label}为{value:,.2f}{unit}；沿用公司原披露口径。" if value is not None else gap,
             "components": [_component(label, round(value, 2), unit, "FY2025")] if value is not None else [_component(label, detail=gap)], "component_count": 1,
-            "source_url": str((row or {}).get("source_url") or ""), "verification_count": int((row or {}).get("verification_count") or 0)}
+            "source_url": str((row or {}).get("source_url") or ""), "verification_count": source_count,
+            "verification_status": str((row or {}).get("verification_status") or "")}
 
 
 def _legacy_merged_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
@@ -1424,8 +1433,8 @@ def _legacy_merged_international_domain(payload: dict[str, Any]) -> dict[str, An
     rows = [
         row for row in (payload.get("rows") or [])
         if row.get("operator") in requested
-        and row.get("verification_status") == "official_three_distinct_sources_verified"
-        and int(row.get("distinct_source_document_count") or 0) >= 3
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+        and _verified_number(row) is not None
     ]
 
     def row_for(operator: str, metric: str, year: int) -> dict[str, Any] | None:
@@ -1652,7 +1661,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 f"FY{comparison_year}云收入折算为{revenue_usd:,.1f}百万美元（原值{revenue_value:,.1f}百万{revenue_currency}）；只展示收入金额。"
                 if revenue_usd is not None else "未收录通过三份独立来源核验的云收入金额，保留缺口。"
             ),
-            "components": revenue_components or [_component("云收入", detail="三来源数据待补")],
+            "components": revenue_components or [_component("云收入", detail="官方公开数据待补")],
             "component_count": 1,
             "source_url": str((revenue_row or row or {}).get("primary_source_url") or ""),
             "trend": amount_trend(vendor, ("cloud_revenue", "proxy_segment_revenue")),
@@ -1742,7 +1751,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 f"FY{comparison_year}{profit_amount_label}折算为{profit_amount_usd:,.1f}百万美元（原值{profit_amount_original:,.1f}百万{profit_amount_currency}）；只展示金额，利润定义按厂商原披露标注。"
                 if profit_amount_usd is not None else "未收录通过三份独立来源核验的云利润金额，保留缺口。"
             ),
-            "components": [_component(profit_amount_label, round(profit_amount_usd, 1), "百万美元", f"FY{comparison_year}")] if profit_amount_usd is not None else [_component("云利润", detail="三来源数据待补")],
+            "components": [_component(profit_amount_label, round(profit_amount_usd, 1), "百万美元", f"FY{comparison_year}")] if profit_amount_usd is not None else [_component("云利润", detail="官方公开数据待补")],
             "component_count": 1,
             "source_url": str((profit_amount_row or row or {}).get("primary_source_url") or ""),
             "trend": amount_trend(vendor, profit_amount_keys),
@@ -1785,7 +1794,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             "components": (
                 [_component("集团资本开支", round(capex_value, 1), capex_unit, f"FY{capex_row.get('fiscal_year')}")]
-                if capex_value is not None and capex_row else [_component("集团资本开支", detail="三来源数据待补")]
+                if capex_value is not None and capex_row else [_component("集团资本开支", detail="官方公开数据待补")]
             ),
             "component_count": 1,
             "source_url": str((capex_row or row or {}).get("primary_source_url") or ""),
@@ -1802,7 +1811,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "name": "Huawei", "value": None, "unit": "", "period": f"FY{comparison_year}",
             "detail": f"FY{comparison_year}云业务收入已披露；同比增速缺口",
             "analysis": f"FY{comparison_year}云业务收入折算为{revenue_usd:,.1f}百万美元（原值{revenue_value:,.1f}百万{currency}）；同比增速缺口不估算。" if revenue_usd is not None else "云业务收入及同比增速均待三来源补齐。",
-            "components": [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{currency} · {comparison_year}年均汇率"), _component("云业务收入同比", detail="三来源数据待补")] if revenue_usd is not None else [_component("云业务收入及同比", detail="三来源数据待补")],
+            "components": [_component("云业务收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year} · 原值{revenue_value:,.1f}百万{currency} · {comparison_year}年均汇率"), _component("云业务收入同比", detail="官方公开数据待补")] if revenue_usd is not None else [_component("云业务收入及同比", detail="官方公开数据待补")],
             "component_count": 2 if revenue_usd is not None else 1, "source_url": source_url,
         })
         revenue_amount_items.append({
@@ -1810,17 +1819,17 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "unit": "百万美元" if revenue_usd is not None else "", "period": f"FY{comparison_year}",
             "detail": f"FY{comparison_year}云收入金额 · 统一折算美元" if revenue_usd is not None else "三来源云收入金额待补",
             "analysis": f"FY{comparison_year}云收入折算为{revenue_usd:,.1f}百万美元（原值{revenue_value:,.1f}百万{currency}）；只展示收入金额。" if revenue_usd is not None else "三来源云收入金额待补。",
-            "components": [_component("云收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year}")] if revenue_usd is not None else [_component("云收入", detail="三来源数据待补")],
+            "components": [_component("云收入", round(revenue_usd, 1), "百万美元", f"FY{comparison_year}")] if revenue_usd is not None else [_component("云收入", detail="官方公开数据待补")],
             "component_count": 1, "source_url": source_url,
             "trend": amount_trend(vendor, ("cloud_revenue", "proxy_segment_revenue")),
         })
         profit_amount_items.append({"name": "Huawei", "value": None, "unit": "", "period": f"FY{comparison_year}", "detail": "三来源云利润金额待补",
-                                    "analysis": "原表尚未收录可通过三份不同来源核验的云利润金额，保留缺口。", "components": [_component("云利润", detail="三来源数据待补")], "component_count": 1, "source_url": source_url,
+                                    "analysis": "原表尚未收录公开披露的云利润金额，保留缺口。", "components": [_component("云利润", detail="官方公开数据待补")], "component_count": 1, "source_url": source_url,
                                     "trend": amount_trend(vendor, profit_amount_keys)})
         for bucket, label in ((profit_items, "云业务利润或利润率"), (capex_items, "集团资本开支")):
-            bucket.append({"name": "Huawei", "value": None, "unit": "", "period": "", "detail": "三来源数据待补",
+            bucket.append({"name": "Huawei", "value": None, "unit": "", "period": "", "detail": "官方公开数据待补",
                            "analysis": f"原表尚未收录可通过三份不同来源核验的{label}，保留缺口。",
-                           "components": [_component(label, detail="三来源数据待补")], "component_count": 1, "source_url": source_url,
+                           "components": [_component(label, detail="官方公开数据待补")], "component_count": 1, "source_url": source_url,
                            "trend": amount_trend(vendor, ("group_capex",)) if bucket is capex_items else []})
     growth_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     revenue_amount_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
@@ -2152,11 +2161,20 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
                      and row.get("metric_key") == metric and int(row.get("year") or 0) == year), None)
 
     def history(operator: str, metric: str) -> list[dict[str, Any]]:
-        return [
-            {"label": f"FY{year}", "value": value}
-            for year in range(2016, 2026)
-            if (value := _verified_number(row_for(operator, metric, year))) is not None
-        ]
+        result: list[dict[str, Any]] = []
+        for year in range(2016, 2026):
+            row = row_for(operator, metric, year)
+            value = _verified_number(row)
+            if value is None:
+                continue
+            result.append({
+                "label": f"FY{year}",
+                "value": value,
+                "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
+                "verification_status": str((row or {}).get("verification_status") or ""),
+                "source_urls": _row_source_urls(row),
+            })
+        return result
 
     def make_item(
         operator: str, metric: str, value: float, unit: str, detail: str, analysis: str,
@@ -2171,6 +2189,8 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "component_count": len(components or [None]),
             "source_url": str(row.get("primary_source_url") or ""),
             "verification_count": int(row.get("distinct_source_document_count") or 0),
+            "verification_status": str(row.get("verification_status") or ""),
+            "source_urls": _row_source_urls(row),
         }
         if trend:
             result["trend"] = trend
@@ -2191,7 +2211,7 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
 
     def usd_trend(operator: str, metric: str) -> list[dict[str, Any]]:
         return [
-            {"label": point["label"], "value": round(usd_billions(operator, float(point["value"])), 2)}
+            {**point, "value": round(usd_billions(operator, float(point["value"])), 2)}
             for point in history(operator, metric)
         ]
     revenue_items: list[dict[str, Any]] = []

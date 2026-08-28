@@ -72,6 +72,25 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
             }
             self.assertEqual(actual, expected)
 
+    def test_xiaojing_retrieves_single_source_overview_facts_exactly(self) -> None:
+        chunks = rag.retrieve_context("中国联通 FY2016 EBITDA和净利润", limit=2)
+        self.assertEqual(len(chunks), 2)
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("FY2016=794.98 亿元", combined)
+        self.assertIn("FY2016=6.25 亿元", combined)
+        self.assertIn("official_single_source_user_accepted_display", combined)
+
+    def test_ntt_generic_ebitda_question_returns_full_official_series(self) -> None:
+        chunks = rag._global_operator_exact_metric_chunks(
+            "NTT Group FY2016到FY2025 EBITDA",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        self.assertEqual(len(chunks), 1)
+        self.assertIn("metric_key=adjusted_ebitda", chunks[0]["text"])
+        self.assertIn("point_count=10", chunks[0]["text"])
+        self.assertIn("FY2016=3183.3", chunks[0]["text"])
+        self.assertIn("FY2025=3423.3", chunks[0]["text"])
+
     def test_xiaojing_maps_ntt_postpaid_question_to_explicit_substitute(self) -> None:
         question = (
             "列出Verizon、Deutsche Telekom、AT&T、NTT Group的FY2025"

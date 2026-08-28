@@ -23361,6 +23361,39 @@
       "period": "FY2016",
       "period_end": "2017-03-31",
       "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3183.3,
+      "official_value": 3183.3,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2016,
+      "period": "FY2016",
+      "period_end": "2017-03-31",
+      "grain": "annual",
       "metric_key": "mobile_service_subscriptions",
       "metric_zh": "移动电话服务订阅数（非后付费口径）",
       "value": 74.88,
@@ -23469,6 +23502,39 @@
         "ntt_group_annual_2021_for_2016"
       ],
       "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2017,
+      "period": "FY2017",
+      "period_end": "2018-03-31",
+      "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3237.1,
+      "official_value": 3237.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",
@@ -23595,6 +23661,39 @@
       "period": "FY2018",
       "period_end": "2019-03-31",
       "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3241.4,
+      "official_value": 3241.4,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2018,
+      "period": "FY2018",
+      "period_end": "2019-03-31",
+      "grain": "annual",
       "metric_key": "mobile_service_subscriptions",
       "metric_zh": "移动电话服务订阅数（非后付费口径）",
       "value": 78.453,
@@ -23703,6 +23802,39 @@
         "ntt_group_annual_2021_for_2018"
       ],
       "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2019,
+      "period": "FY2019",
+      "period_end": "2020-03-31",
+      "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 2968.6,
+      "official_value": 2968.6,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",
@@ -23829,6 +23961,39 @@
       "period": "FY2020",
       "period_end": "2021-03-31",
       "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3111.6,
+      "official_value": 3111.6,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2020,
+      "period": "FY2020",
+      "period_end": "2021-03-31",
+      "grain": "annual",
       "metric_key": "mobile_service_subscriptions",
       "metric_zh": "移动电话服务订阅数（非后付费口径）",
       "value": 82.632,
@@ -23937,6 +24102,39 @@
         "ntt_group_annual_2022_for_2020"
       ],
       "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2021,
+      "period": "FY2021",
+      "period_end": "2022-03-31",
+      "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3247.1,
+      "official_value": 3247.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",
@@ -24063,6 +24261,39 @@
       "period": "FY2022",
       "period_end": "2023-03-31",
       "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3290.2,
+      "official_value": 3290.2,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2022,
+      "period": "FY2022",
+      "period_end": "2023-03-31",
+      "grain": "annual",
       "metric_key": "mobile_service_subscriptions",
       "metric_zh": "移动电话服务订阅数（非后付费口径）",
       "value": 87.495,
@@ -24171,6 +24402,39 @@
         "ntt_group_annual_2024_for_2022"
       ],
       "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2024-03-31",
+      "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3418.1,
+      "official_value": 3418.1,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",
@@ -24327,6 +24591,39 @@
         "ntt_group_annual_2025_for_2023"
       ],
       "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+    },
+    {
+      "operator_id": "ntt_group",
+      "operator": "NTT Group",
+      "legal_name": "NTT, Inc. (formerly Nippon Telegraph and Telephone Corporation)",
+      "year": 2024,
+      "period": "FY2024",
+      "period_end": "2025-03-31",
+      "grain": "annual",
+      "metric_key": "adjusted_ebitda",
+      "metric_zh": "公司披露的调整后EBITDA",
+      "value": 3239.3,
+      "official_value": 3239.3,
+      "unit": "JPY_billion",
+      "comparator": "=",
+      "scope": "NTT consolidated financials; mobile phone service subscriptions and mobile ARPU are NTT DOCOMO metrics; subscriptions include MVNO and communications-module contracts and are not labelled postpaid customers",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "ntt_group:financial_highlights:2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "ntt_group_financial_highlights_2025",
+      "primary_source_url": "https://www.group.ntt/en/ir/fin/excel/fy2025highlight0508.xlsx",
+      "verification_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "candidate_sources": [
+        "ntt_group_financial_highlights_2025"
+      ],
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",
@@ -24560,7 +24857,7 @@
         "ntt_group_release_2025_for_2025",
         "ntt_group_presentation_2025_for_2025"
       ],
-      "quality_note": "Three distinct official underlying documents bind every stored value. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
+      "quality_note": "FY2016 uses the U.S. GAAP highlights series; FY2017 onward uses IFRS. The official Financial Highlights workbook is retained as a single source. Native issuer units and reported scope are retained; no FX conversion, interpolation, or cross-operator definition substitution is applied."
     },
     {
       "operator_id": "ntt_group",

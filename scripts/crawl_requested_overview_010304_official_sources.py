@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import csv
 import hashlib
 import json
 import re
 import ssl
+import sys
 import urllib.error
 import urllib.request
 from datetime import datetime
@@ -23,6 +25,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from cmhk.intelligence.executive import build_executive_intelligence_snapshot
+
 OUT_DIR = ROOT / "agent_knowledge/requested_overview_010304_2016_2025"
 YEARS = tuple(range(2016, 2026))
 SAFE = {
@@ -221,6 +228,66 @@ def fetch(url: str) -> dict[str, Any]:
         return {"url": url, "ok": False, "status": None, "error": f"{type(exc).__name__}: {exc}"}
 
 
+def write_integrated_dataset(generated_at: str) -> dict[str, int]:
+    """Materialize every visible 01/03/04 annual fact for Small AI retrieval."""
+    snapshot = build_executive_intelligence_snapshot()
+    domain_indexes = {"local": "01", "mainland": "03", "cloud": "04"}
+    facts: list[dict[str, Any]] = []
+    for domain in snapshot.get("domains") or []:
+        domain_id = str(domain.get("id") or "")
+        if domain_id not in domain_indexes:
+            continue
+        for focus in domain.get("focuses") or []:
+            for entity in focus.get("items") or []:
+                for point in entity.get("trend") or []:
+                    if point.get("value") is None:
+                        continue
+                    source_urls = list(dict.fromkeys(str(url) for url in point.get("source_urls") or [] if url))
+                    facts.append({
+                        "domain": domain_indexes[domain_id],
+                        "domain_name": str(domain.get("title") or domain_id),
+                        "entity": str(entity.get("name") or ""),
+                        "metric": str(focus.get("id") or ""),
+                        "metric_label": str(focus.get("label") or focus.get("id") or ""),
+                        "period": str(point.get("label") or ""),
+                        "value": point.get("value"),
+                        "unit": str(point.get("unit") or entity.get("unit") or ""),
+                        "verification_status": str(point.get("verification_status") or "official_source_count_below_three_displayed"),
+                        "source_count": int(point.get("verification_count") or len(source_urls)),
+                        "source_urls": source_urls,
+                        "scope_note": str(entity.get("detail") or ""),
+                    })
+    facts.sort(key=lambda row: (row["domain"], row["entity"], row["metric"], row["period"]))
+    sources = sorted({url for fact in facts for url in fact["source_urls"]})
+    (OUT_DIR / "annual_facts.json").write_text(json.dumps({"rows": facts}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    fieldnames = ["domain", "domain_name", "entity", "metric", "metric_label", "period", "value", "unit", "verification_status", "source_count", "source_urls", "scope_note"]
+    with (OUT_DIR / "annual_facts.csv").open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for fact in facts:
+            writer.writerow({**fact, "source_urls": json.dumps(fact["source_urls"], ensure_ascii=False)})
+    (OUT_DIR / "sources.json").write_text(json.dumps({"sources": [{"url": url} for url in sources]}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    manifest = {
+        "id": "requested_overview_010304_2016_2025",
+        "title": "战略总览01/03/04竞对年度事实库",
+        "summary": "香港运营商、内地运营商及全球云厂商2016–2025年度绝对值；来源数量只作质量标注，不作为展示门槛。",
+        "source_type": "official_public_integrated_read_model",
+        "updated_at": generated_at,
+        "default_load": True,
+        "tags": ["competitor", "strategic_overview", "annual_facts", "2016_2025", "xiao_jing_ai"],
+        "entrypoints": ["README.md", "annual_facts.json", "annual_facts.csv", "sources.json", "official_source_recrawl.json"],
+        "row_count": len(facts),
+        "source_count": len(sources),
+    }
+    (OUT_DIR / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (OUT_DIR / "README.md").write_text(
+        "# 战略总览01/03/04竞对年度事实库\n\n"
+        "本数据包把页面实际展示的2016–2025年度绝对值同步给小竞AI。单一官方来源、两来源和三来源数据均保留；来源数量只用于质量标注，不再决定是否入库或展示。\n",
+        encoding="utf-8",
+    )
+    return {"annual_facts": len(facts), "fact_sources": len(sources)}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workers", type=int, default=8)
@@ -280,6 +347,8 @@ def main() -> int:
         "source_crawl": crawled,
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    (OUT_DIR / "official_source_recrawl.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    payload["summary"].update(write_integrated_dataset(payload["generated_at"]))
     (OUT_DIR / "official_source_recrawl.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload["summary"], ensure_ascii=False))
     return 0 if payload["summary"]["retrieved"] else 1

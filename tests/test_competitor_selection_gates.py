@@ -36,8 +36,8 @@ def comparable_window(company_ids, metric_key, years):
     else:
         visible_years = range(common_years[-1] - years + 1, common_years[-1] + 1)
     shared_years = [year for year in visible_years if all(year in values for values in company_years)]
-    return len(shared_years) >= 2 and all(
-        sum(year in values for year in visible_years) >= 2 for values in company_years
+    return len(shared_years) >= 1 and all(
+        sum(year in values for year in visible_years) >= 1 for values in company_years
     )
 
 
@@ -63,7 +63,7 @@ class CompetitorSelectionGateTests(unittest.TestCase):
 
     def test_company_metric_and_year_controls_share_the_same_gate(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
-        self.assertIn("sharedVisibleYears.length >= 2", SCRIPT)
+        self.assertIn("sharedVisibleYears.length >= 1", SCRIPT)
         self.assertIn("competitorHasCommonMetric(data, [...selectedCompanies, company.id], years, metricKey)", SCRIPT)
         self.assertIn("competitorHasCommonMetric(data, selection.companies, selection.years, metric.key)", SCRIPT)
         self.assertIn("const windows = years ? [years] : [3, 5, 10, 99];", SCRIPT)
