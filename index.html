@@ -19,7 +19,7 @@
     <main class="app-shell">
       <header class="brand-bar">
         <a class="brand-mark" href="./" aria-label="返回主页面">
-          <img class="cm-logo-image" src="./static/assets/public/china-mobile-blue-logo.png?v=2" alt="中國移動 China Mobile" />
+          <img class="cm-logo-image" src="./static/assets/china-mobile-blue-logo.png?v=2" alt="中國移動 China Mobile" />
         </a>
         <div class="intelligence-page-identity" aria-label="CMHK市场竞争全景">
           <strong>CMHK市场竞争全景</strong>
@@ -40,7 +40,7 @@
           </a>
           <button class="icon-button" id="logButton" type="button" title="任务日志" aria-label="任务日志">▤</button>
           <button class="icon-button chat-fab" id="chatFab" type="button" title="打开小竞AI" aria-label="打开小竞AI">
-            <img src="./static/assets/public/xiaojing-ai-logo-mark.png?v=2" alt="" aria-hidden="true" />
+            <img src="./static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" aria-hidden="true" />
           </button>
         </div>
         <div class="header-runtime-status">
@@ -104,7 +104,7 @@
             </section>
             <section class="workspace-nav-group" aria-labelledby="workspace-group-assistant">
               <h2 id="workspace-group-assistant">智能工具</h2>
-              <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span class="workspace-tab-icon" aria-hidden="true"><img src="./static/assets/public/xiaojing-ai-logo-mark.png?v=2" alt="" /></span><span class="workspace-tab-label">小竞AI</span></button>
+              <button class="workspace-tab" id="workspace-tab-ai" type="button" role="tab" aria-selected="false" aria-controls="workspace-panel-ai" tabindex="-1" data-workspace-tab="ai"><span class="workspace-tab-icon" aria-hidden="true"><img src="./static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" /></span><span class="workspace-tab-label">小竞AI</span></button>
             </section>
             <section class="workspace-nav-group" aria-labelledby="workspace-group-tools">
               <h2 id="workspace-group-tools">运维系统</h2>
@@ -230,7 +230,7 @@
           <section class="news-review-workspace" id="newsReviewWorkspace" role="dialog" aria-modal="true" aria-labelledby="newsReviewTitle" hidden>
             <header class="news-review-topbar">
               <div class="news-review-brand">
-                <img src="./static/assets/public/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+                <img src="./static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
                 <div>
                   <strong id="newsReviewTitle">滚动新闻审核表</strong>
                   <span id="newsReviewSyncText" role="status" hidden>连接飞书审核表</span>
@@ -345,7 +345,7 @@
           <div class="messages" id="messages">
             <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
               <span class="chat-empty-mark" aria-hidden="true">
-                <img src="./static/assets/public/xiaojing-ai-logo-mark.png?v=2" alt="" />
+                <img src="./static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" />
               </span>
               <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
               <p>选择一个方向，或直接在下方输入你的问题</p>
@@ -580,63 +580,16 @@
           <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-    </div>    <script data-public-early-shell>
-(() => {
-  "use strict";
-  const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
-  const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
-  if (!tabs.length || !panels.length) return;
-
-  function activate(tab) {
-    const workspace = tab.dataset.workspaceTab;
-    tabs.forEach((item) => {
-      const selected = item === tab;
-      item.classList.toggle("is-active", selected);
-      item.setAttribute("aria-selected", String(selected));
-      item.tabIndex = selected ? 0 : -1;
-    });
-    panels.forEach((panel) => {
-      const selected = panel.dataset.workspacePanel === workspace;
-      panel.hidden = !selected;
-      panel.classList.toggle("is-active", selected);
-      if (selected) {
-        const frame = panel.querySelector("iframe[data-src]");
-        if (frame && !frame.src) frame.src = frame.dataset.src;
-      }
-    });
-    document.body.classList.toggle("workspace-dashboard-active", workspace === "dashboard");
-    document.body.classList.toggle("workspace-ai-active", workspace === "ai");
-    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
-    params.set("workspace", workspace);
-    history.replaceState(null, "", `${location.pathname}${location.search}#${params}`);
-  }
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => activate(tab));
-    tab.addEventListener("keydown", (event) => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      event.preventDefault();
-      const index = tabs.indexOf(tab);
-      const target = event.key === 'Home' ? tabs[0]
-        : event.key === 'End' ? tabs[tabs.length - 1]
-        : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
-      target.focus();
-      activate(target);
-    });
-  });
-  window.CMHK_PUBLIC_EARLY_SHELL = Object.freeze({ activate });
-})();
-</script>
-    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>
-    <script defer src="./static/auth-client.js?v=3"></script>
-    <script defer src="./static/workspace-tabs.js?v=public-8"></script>
-    <script defer src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>
-    <script defer src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"></script>
-    <script defer src="./static/vendor/marked-15.0.12.umd.js?v=1"></script>
-    <script defer src="./static/confirm-dialog.js?v=3"></script>
-    <script defer src="./static/custom-select.js?v=2"></script>
-    <script defer src="./static/app.js?v=308"></script>
-    <script defer src="./static/news-review-sheet.js?v=6"></script>
-    <script defer src="./static/organization-admin.js?v=30"></script>
+    </div>    <script src="./static/public-snapshot-bootstrap.js?v=6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="./static/auth-client.js?v=3"></script>
+    <script src="./static/confirm-dialog.js?v=3"></script>
+    <script src="./static/custom-select.js?v=2"></script>
+    <script src="./static/app.js?v=308"></script>
+    <script src="./static/news-review-sheet.js?v=6"></script>
+    <script src="./static/organization-admin.js?v=30"></script>
+    <script src="./static/workspace-tabs.js?v=public-7"></script>
   </body>
 </html>

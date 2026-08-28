@@ -683,7 +683,8 @@ body.intelligence-drawer-open { overflow: hidden; }
 body {
   margin: 0;
   background:
-    linear-gradient(180deg, rgba(240, 244, 248, 0.5), rgba(234, 243, 251, 0.6));
+    linear-gradient(180deg, rgba(240, 244, 248, 0.5), rgba(234, 243, 251, 0.6)),
+    url("./assets/mobile-intelligence-bg.png") center / cover fixed no-repeat;
   background-color: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -851,7 +852,8 @@ select {
   gap: 24px;
   padding: 18px 24px 17px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 255, 0.5) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 255, 0.5) 100%),
+    url("./assets/mobile-intelligence-bg.png") center / cover no-repeat;
   border-bottom: 1px solid var(--border);
 }
 
@@ -6251,7 +6253,8 @@ pre {
   padding: 28px 30px;
   border-radius: 12px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.72) 48%, rgba(214, 238, 255, 0.48) 100%);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.72) 48%, rgba(214, 238, 255, 0.48) 100%),
+    url("./assets/mobile-intelligence-bg.png") center right / cover no-repeat;
 }
 
 .company-data-hero h1 {
