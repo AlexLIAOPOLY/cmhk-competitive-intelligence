@@ -14335,11 +14335,11 @@
   "refresh": {
     "ok": false,
     "status": "running",
-    "started_at_hkt": "2026-08-29T04:52:59+08:00",
+    "started_at_hkt": "2026-08-29T04:58:37+08:00",
     "agent_run_id": "scheduled_20260829_030001_119063",
     "dry_run": false,
     "task_run_id": "20260829_045259_185265",
-    "attempt": 1,
+    "attempt": 2,
     "domains": {},
     "ui_contract": {
       "domain_ids": [
@@ -14370,7 +14370,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-08-29T04:52:59+08:00"
+    "last_checked_at_hkt": "2026-08-29T04:58:37+08:00"
   },
   "ai": {
     "agent_run_id": "scheduled_20260829_030001_119063",
@@ -14383,7 +14383,7 @@
       "macro": 4
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-08-29T04:56:02+08:00",
+      "generated_at_hkt": "2026-08-29T05:01:01+08:00",
       "model": "deterministic-evidence-fallback",
       "summaries": [
         {
@@ -15498,7 +15498,7 @@
         }
       ],
       "discovery_model": "deterministic-evidence-fallback",
-      "discovery_generated_at_hkt": "2026-08-29T04:56:03+08:00",
+      "discovery_generated_at_hkt": "2026-08-29T05:01:03+08:00",
       "discovery_fallback_used": true,
       "discovery_fallback_reason": "AI跨库发现连续三次未通过门禁：跨库AI发现只有思考内容，没有最终输出",
       "evidence_hash": "f6da25e3e1867c50f47b19f1c9c28e9cfd26e70dddd477ea2abe108ffc8ddd48",
