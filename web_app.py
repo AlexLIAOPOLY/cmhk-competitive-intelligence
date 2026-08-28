@@ -4188,7 +4188,21 @@ def _project_monitor_handlers() -> dict[str, dict]:
         previous_at = str(previous.get("handled_at_hkt") or previous.get("completed_at_hkt") or "")
         if handled_at >= previous_at:
             handlers[incident_id] = handled
-    return handlers
+    return {
+        incident_id: handled
+        for incident_id, handled in handlers.items()
+        if str(handled.get("status") or "completed") == "completed"
+        and str(handled.get("operator_name") or "").strip()
+    }
+
+
+def sync_project_monitor_sheet_handlers(*, force: bool = False) -> dict:
+    """Consume direct Feishu ledger edits before serving the alarm screen."""
+    try:
+        return CardActionHandler(runtime_root=ROOT).sync_handlers_from_sheet(force=force)
+    except Exception as exc:
+        logging.exception("project monitor sheet handler reconciliation failed")
+        return {"status": "failed", "changes": 0, "error": str(exc)[:240]}
 
 
 def _handler_public_fields(handled: dict) -> dict[str, str]:
@@ -4198,6 +4212,7 @@ def _handler_public_fields(handled: dict) -> dict[str, str]:
         "handler_id": str(user.get("id") or ""),
         "handler_open_id": open_id,
         "handler_name": str(handled.get("operator_name") or user.get("name") or ""),
+        "handler_source": str(handled.get("source") or ""),
         "handler_avatar_url": str(user.get("avatarUrl") or ""),
         "handled_at_hkt": str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or ""),
         "manual_repaired_at_hkt": str(handled.get("handled_at_hkt") or handled.get("completed_at_hkt") or ""),
@@ -4840,7 +4855,7 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "superseded": "已由新口径接管",
         }
         if handled:
-            phase = "人工修复"
+            phase = "机器人处理" if str(handled.get("source") or "") == "feishu_robot" else "人工修复"
         elif status == "open":
             phase = "待处理"
         elif status == "recovery_pending" or resolution.get("status") == "awaiting_evidence":
@@ -5579,8 +5594,17 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = max(1, min(500, int(query.get("limit", ["100"])[0])))
             except Exception:
                 limit = 100
+            sheet_sync = sync_project_monitor_sheet_handlers()
             incidents = load_project_incident_index(limit)
-            json_response(self, {"ok": True, "incidents": incidents, "total": count_project_incidents()})
+            json_response(
+                self,
+                {
+                    "ok": True,
+                    "incidents": incidents,
+                    "total": count_project_incidents(),
+                    "sheetSync": sheet_sync,
+                },
+            )
             return
         if path in {"/api/alert-report.pdf", "/api/log-report.pdf"}:
             report_type = "alert" if path == "/api/alert-report.pdf" else "log"

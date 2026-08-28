@@ -114,6 +114,7 @@ class CardActionHandlerTests(unittest.TestCase):
                             "error": "crawl returned 1",
                             "diagnosis": {
                                 "ok": True,
+                                "source": "llm",
                                 "model": "deepseek-v4",
                                 "severity": "P1",
                                 "severity_reason": "关键定时任务已失败，需要立即处理。",
@@ -165,6 +166,7 @@ class CardActionHandlerTests(unittest.TestCase):
                 "error": "crawl returned 1",
                 "diagnosis": {
                     "ok": True,
+                    "source": "llm",
                     "model": "deepseek-v4",
                     "severity": "P1",
                     "severity_reason": "关键定时任务已失败，需要立即处理。",
@@ -316,6 +318,105 @@ class CardActionHandlerTests(unittest.TestCase):
         self.assertEqual(self.runner.resolution_update_calls(), [])
         saved = json.loads(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()[-1])
         self.assertEqual(saved["incident_id"], INCIDENT_ID)
+
+    def test_direct_feishu_checkbox_updates_app_journal_and_team_footprint(self):
+        baseline = self.handler.sync_handlers_from_sheet(force=True)
+        self.assertEqual(baseline["status"], "initialized")
+        self.runner.ledger_rows[0][12:14] = ["陈四", "已处理"]
+        event_path = self.root / "var" / "auth" / "feishu-sheet-edit-events.jsonl"
+        event_path.parent.mkdir(parents=True, exist_ok=True)
+        event_path.write_text(
+            json.dumps(
+                {
+                    "event_id": "evt_sheet_human",
+                    "event_type": "drive.file.edit_v1",
+                    "create_time": "1786881600000",
+                    "file_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+                    "file_type": "sheet",
+                    "operators": [{"open_id": OPERATOR_ID, "union_id": OPERATOR_UNION_ID}],
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        self.handler.auth_service.feishu_profile_by_open_id = lambda *_args: {
+            "id": "user-chen",
+            "open_id": OPERATOR_ID,
+            "name": "陈四",
+            "avatar_url": "",
+        }
+
+        result = self.handler.sync_handlers_from_sheet()
+
+        self.assertEqual(result["changes"], 1)
+        saved = json.loads(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual(saved["source"], "feishu_sheet")
+        self.assertEqual(saved["operator_name"], "陈四")
+        self.assertEqual(saved["feishu_sync"], "readback_verified")
+        audit = self.handler.auth_service.operation_audit()[0]
+        self.assertEqual(audit["source"], "feishu_sheet")
+        self.assertEqual(audit["actor_name"], "陈四")
+        self.assertEqual(audit["details"]["sheet_row"], 2)
+
+    def test_direct_robot_checkbox_updates_app_journal_and_team_footprint(self):
+        self.handler.sync_handlers_from_sheet(force=True)
+        self.runner.ledger_rows[0][12:14] = ["项目监控机器人", "已处理"]
+
+        result = self.handler.sync_handlers_from_sheet(force=True)
+
+        self.assertEqual(result["changes"], 1)
+        saved = json.loads(self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual(saved["source"], "feishu_robot")
+        self.assertEqual(saved["operator_name"], "项目监控机器人")
+        audit = self.handler.auth_service.operation_audit()[0]
+        self.assertEqual(audit["source"], "feishu_sheet")
+        self.assertEqual(audit["actor_name"], "项目监控机器人")
+
+    def test_new_pending_sheet_row_is_baselined_without_false_clear_action(self):
+        self.handler.sync_handlers_from_sheet(force=True)
+        second_id = "abcdef1234567890abcdef12"
+        self.runner.ledger_rows.append([
+            second_id, "2026-08-16T20:00:00+08:00", "", "P3 中", "规则判定",
+            "[QA] 新待处理行", "qa", "QA", "无", "QA", "无", "否", "", "待处理",
+            "2026-08-16T20:00:00+08:00", "qa", "未发送",
+        ])
+
+        result = self.handler.sync_handlers_from_sheet(force=True)
+
+        self.assertEqual(result["changes"], 0)
+        self.assertFalse(self.handler.web_actions_path.exists())
+
+    def test_app_write_is_not_double_counted_when_sheet_event_arrives(self):
+        self.handler.sync_handlers_from_sheet(force=True)
+        self.handler.mark_incident_handled_from_web(INCIDENT_ID, OPERATOR_ID, OPERATOR_UNION_ID)
+        before = self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()
+
+        result = self.handler.sync_handlers_from_sheet(force=True)
+
+        after = self.handler.web_actions_path.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(result["changes"], 0)
+        self.assertEqual(result["ignored_existing"], 1)
+        self.assertEqual(len(after), len(before))
+
+    def test_dashboard_can_handle_after_a_non_completed_sheet_journal_entry(self):
+        self.handler.web_actions_path.write_text(
+            json.dumps({
+                "status": "cleared",
+                "incident_id": INCIDENT_ID,
+                "operator_name": "",
+                "handled_at_hkt": "2026-08-16T19:59:00+08:00",
+            }) + "\n",
+            encoding="utf-8",
+        )
+
+        result = self.handler.mark_incident_handled_from_web(
+            INCIDENT_ID,
+            OPERATOR_ID,
+            OPERATOR_UNION_ID,
+        )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["operator_name"], "陈四")
 
     def test_dashboard_resolution_rejects_non_feishu_login(self):
         with self.assertRaisesRegex(ValueError, "飞书身份"):

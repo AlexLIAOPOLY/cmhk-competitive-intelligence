@@ -34,6 +34,7 @@ from project_monitor import (
     _to_simplified,
 )
 from cmhk.auth.service import AuthService
+from cmhk.integrations.feishu_sheet_edit_events import sheet_edit_events
 from cmhk.services.subscriptions import SubscriptionService
 
 
@@ -90,6 +91,8 @@ class CardActionHandler:
         self.events_path = self.state_dir / "events.jsonl"
         self.web_actions_path = self.state_dir / "web_actions.jsonl"
         self.web_actions_lock_path = self.state_dir / "web_actions.lock"
+        self.sheet_sync_state_path = self.state_dir / "sheet_handler_sync.json"
+        self.sheet_edit_event_path = self.runtime_root / "var" / "auth" / "feishu-sheet-edit-events.jsonl"
         self.lock_path = self.state_dir / "card_actions.lock"
         self.processing_lock_path = self.state_dir / "card_actions_processing.lock"
         self.monitor_state_path = self.state_dir / "state.json"
@@ -247,6 +250,193 @@ class CardActionHandler:
             raise RuntimeError("错误台账处理人或处理状态写入后回读不一致")
         return {"row": row_number, "handler_name": operator_name, "newly_handled": True}
 
+    @staticmethod
+    def _sheet_handler_rows(rows: list[list[Any]]) -> dict[str, dict[str, Any]]:
+        snapshot: dict[str, dict[str, Any]] = {}
+        for offset, row in enumerate(rows, start=2):
+            incident_id = str(row[0] if row else "").strip()
+            if not INCIDENT_ID_RE.fullmatch(incident_id):
+                continue
+            snapshot[incident_id] = {
+                "row": offset,
+                "handler_name": str(row[12] if len(row) > 12 else "").strip(),
+                "status": str(row[13] if len(row) > 13 else "").strip(),
+            }
+        return snapshot
+
+    def _latest_web_action(self, incident_id: str) -> dict[str, Any]:
+        try:
+            lines = self.web_actions_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return {}
+        for line in reversed(lines):
+            try:
+                item = json.loads(line)
+            except (TypeError, ValueError):
+                continue
+            if isinstance(item, dict) and str(item.get("incident_id") or "") == incident_id:
+                return item
+        return {}
+
+    def sync_handlers_from_sheet(self, *, force: bool = False) -> dict[str, Any]:
+        """Mirror direct M/N edits into the App action journal and audit trail.
+
+        ``drive.file.edit_v1`` identifies workbook editors but not cell ranges.
+        A persisted M/N snapshot therefore supplies the row-level part of the
+        evidence chain. App/card writes are deduplicated against their existing
+        action journals while the shared process lock prevents a race between
+        the Feishu write and the journal append.
+        """
+        sync_state = _read_json(self.sheet_sync_state_path, {})
+        if not isinstance(sync_state, dict):
+            sync_state = {}
+        try:
+            event_mtime_ns = self.sheet_edit_event_path.stat().st_mtime_ns
+        except OSError:
+            event_mtime_ns = 0
+        if (
+            not force
+            and isinstance(sync_state.get("rows"), dict)
+            and event_mtime_ns <= int(sync_state.get("event_file_mtime_ns") or 0)
+        ):
+            return {"status": "unchanged", "changes": 0}
+
+        self.web_actions_lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.web_actions_lock_path.open("a+", encoding="utf-8") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            rows, _mapping = self.monitor._read_error_ledger()
+            current = self._sheet_handler_rows(rows)
+            previous = sync_state.get("rows") if isinstance(sync_state.get("rows"), dict) else None
+            try:
+                previous_event_ms = int(sync_state.get("last_feishu_event_ms") or 0)
+            except (TypeError, ValueError):
+                previous_event_ms = 0
+            editor_events = sheet_edit_events(
+                path=self.sheet_edit_event_path,
+                after_ms=previous_event_ms,
+            )
+            latest_event = editor_events[-1] if editor_events else {}
+            latest_event_ms = max(
+                [previous_event_ms]
+                + [int(item.get("create_time_ms") or 0) for item in editor_events]
+            )
+            if previous is None:
+                _atomic_json(
+                    self.sheet_sync_state_path,
+                    {
+                        "version": 1,
+                        "rows": current,
+                        "last_feishu_event_ms": latest_event_ms,
+                        "event_file_mtime_ns": event_mtime_ns,
+                        "last_checked_at_hkt": _iso(self.now()),
+                    },
+                )
+                return {"status": "initialized", "changes": 0, "rows": len(current)}
+
+            operator = next(
+                (
+                    item
+                    for item in reversed(latest_event.get("operators") or [])
+                    if isinstance(item, dict) and str(item.get("open_id") or "").strip()
+                ),
+                {},
+            )
+            operator_open_id = str(operator.get("open_id") or "").strip()
+            operator_union_id = str(operator.get("union_id") or "").strip()
+            profile: dict[str, str] = {}
+            if operator_open_id:
+                try:
+                    profile = self.auth_service.feishu_profile_by_open_id(
+                        operator_open_id,
+                        operator_union_id,
+                    )
+                except Exception:
+                    profile = {}
+            editor_name = str(profile.get("name") or "").strip()
+            actor = {
+                "id": str(profile.get("id") or operator_open_id or "project-monitor-bot"),
+                "name": editor_name or "项目监控机器人",
+                "avatarUrl": str(profile.get("avatar_url") or ""),
+                "role": "EXTERNAL" if editor_name else "SYSTEM",
+                "feishuOpenId": operator_open_id,
+            }
+            changes = 0
+            ignored_existing = 0
+            for incident_id, after in current.items():
+                before = previous.get(incident_id) if isinstance(previous.get(incident_id), dict) else {}
+                before_pair = (str(before.get("handler_name") or ""), str(before.get("status") or ""))
+                after_pair = (str(after.get("handler_name") or ""), str(after.get("status") or ""))
+                if before_pair == after_pair:
+                    continue
+                completed = after_pair[1] == "已处理" and bool(after_pair[0])
+                before_completed = before_pair[1] == "已处理" and bool(before_pair[0])
+                if not completed and not before_completed:
+                    # New rows and ordinary pending-state edits are baseline
+                    # maintenance, not reversals of a handled action.
+                    continue
+                latest_action = self._latest_web_action(incident_id)
+                if completed and (
+                    str(latest_action.get("status") or "completed") == "completed"
+                    and str(latest_action.get("operator_name") or "") == after_pair[0]
+                ):
+                    ignored_existing += 1
+                    continue
+                handled_at = _iso(self.now())
+                result = {
+                    "type": "incident_sheet_handler_reconciled",
+                    "status": "completed" if completed else "cleared",
+                    "source": "feishu_sheet" if editor_name else "feishu_robot",
+                    "incident_id": incident_id,
+                    "operator_id": operator_open_id,
+                    "operator_union_id": operator_union_id,
+                    "operator_name": after_pair[0] if completed else "",
+                    "editor_name": actor["name"],
+                    "sheet_row": after.get("row"),
+                    "newly_handled": completed,
+                    "feishu_sync": "readback_verified",
+                    "feishu_event_id": str(latest_event.get("event_id") or ""),
+                    "handled_at_hkt": handled_at,
+                }
+                _append_jsonl(self.web_actions_path, result)
+                self.auth_service.record_operation(
+                    actor=actor,
+                    action="fault.mark_handled" if completed else "fault.clear_handled",
+                    target=incident_id,
+                    source="feishu_sheet",
+                    details={
+                        "handler_name": after_pair[0],
+                        "sheet_row": after.get("row"),
+                        "before_handler_name": before_pair[0],
+                        "before_status": before_pair[1],
+                        "after_status": after_pair[1],
+                        "feishu_sync": "readback_verified",
+                        "feishu_event_id": str(latest_event.get("event_id") or ""),
+                        "identity_note": (
+                            "飞书表格人工编辑事件与 M/N 行级差异已交叉核验"
+                            if editor_name
+                            else "未匹配人工编辑者，按项目监控机器人写入并完成 M/N 读回核验"
+                        ),
+                    },
+                )
+                changes += 1
+
+            _atomic_json(
+                self.sheet_sync_state_path,
+                {
+                    "version": 1,
+                    "rows": current,
+                    "last_feishu_event_ms": latest_event_ms,
+                    "event_file_mtime_ns": event_mtime_ns,
+                    "last_checked_at_hkt": _iso(self.now()),
+                },
+            )
+            return {
+                "status": "reconciled",
+                "changes": changes,
+                "ignored_existing": ignored_existing,
+                "rows": len(current),
+            }
+
     def mark_incident_handled_from_web(
         self,
         incident_id: str,
@@ -290,7 +480,11 @@ class CardActionHandler:
                 if isinstance(item, dict) and str(item.get("incident_id") or "") == incident_id:
                     previous = item
                     break
-            if previous:
+            if (
+                previous
+                and str(previous.get("status") or "completed") == "completed"
+                and str(previous.get("operator_name") or "").strip()
+            ):
                 if str(previous.get("operator_id") or "") != operator_open_id:
                     raise RuntimeError(f"该告警已由 {previous.get('operator_name') or '其他人员'} 标记处理")
                 return {**previous, "newly_handled": False}

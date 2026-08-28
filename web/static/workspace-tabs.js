@@ -2272,7 +2272,7 @@
         <div class="operational-report-control is-fault" aria-label="导出报警统计报告"><label>PDF 报告<select data-alert-report-period><option value="daily">日报</option><option value="weekly">周报</option><option value="monthly">月报</option><option value="annual">年报</option></select></label><button class="workspace-button" type="button" data-download-alert-report>导出 PDF</button></div>
       </div></header>
       <div class="fault-action-feedback" id="faultActionFeedback" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-      <div class="workspace-table-wrap fault-table-wrap" tabindex="0" aria-label="报警记录列表，可滚动"><table class="workspace-table fault-table"><thead><tr><th>人工修复</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>报警原因</th><th>解决原因</th>${faultSortableHeader("handler", "修复人员")}${faultSortableHeader("time", "发生时间")}<th>修复时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
+      <div class="workspace-table-wrap fault-table-wrap" tabindex="0" aria-label="报警记录列表，可滚动"><table class="workspace-table fault-table"><thead><tr><th>处理确认</th>${faultSortableHeader("status", "状态")}${faultSortableHeader("severity", "紧急程度")}${faultSortableHeader("task", "报警任务")}<th>报警原因</th><th>解决原因</th>${faultSortableHeader("handler", "处理主体")}${faultSortableHeader("time", "发生时间")}<th>处理时间</th><th>详情</th></tr></thead><tbody id="faultTableBody"></tbody></table></div>
       <footer class="fault-monitor-footer"><span class="fault-monitor-note" id="faultMonitorStatus" role="status" aria-live="polite"></span></footer>
     </section><dialog class="fault-detail" id="faultDetail"><form method="dialog"><button aria-label="关闭详情">×</button></form><div id="faultDetailBody"></div></dialog></div>`;
     panel.querySelector('[data-fault-filter="status"]').value = state.faultFilters.status;
@@ -2294,7 +2294,7 @@
   }
 
   function faultStatus(task) {
-    if (task.handler_name) return { key: "completed", label: "人工修复", tone: "is-ok" };
+    if (task.handler_name) return { key: "completed", label: task.handler_source === "feishu_robot" ? "机器人处理" : "人工修复", tone: "is-ok" };
     if (task.incident_status === "open") return { key: "attention", label: "待处理", tone: "is-alert" };
     if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return { key: "attention", label: "待验证", tone: "is-running" };
     if (task.incident_status === "resolved") return { key: "completed", label: task.resolution_type_label || task.phase || "已结案", tone: "is-ok" };
@@ -2318,7 +2318,9 @@
     if (task.recovery_cause) return task.recovery_cause;
     if (task.incident_status === "open") return "尚未结案，等待处理或恢复证据。";
     if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return "告警条件当前未再出现，但正向恢复证据不足，暂不判定已恢复。";
-    if (task.handler_name) return "已由人工标记修复；本次记录没有填写结构化解决原因。";
+    if (task.handler_name) return task.handler_source === "feishu_robot"
+      ? "已由项目监控机器人标记处理；飞书主表与 App 状态已同步。"
+      : "已由人工标记修复；本次记录没有填写结构化解决原因。";
     if (task.incident_status === "resolved" && !task.resolution_type) return "历史记录未保存结构化解决原因，不能据此判断为自动恢复。";
     return task.verification_summary || "尚未记录解决原因。";
   }
@@ -2394,8 +2396,9 @@
       const checked = Boolean(task.handler_name);
       const closedByMonitor = task.incident_status === "resolved" && !checked;
       const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
-      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}人工修复并同步飞书` : task.incident_status === "resolved" ? `监控已按证据结案：${task.phase || "已验证"}` : canResolve ? "记录人工修复并同步原飞书消息" : "请使用飞书账号登录后记录人工修复";
-      const repairTimes = `<small>结案 · ${esc(task.resolved_at_hkt || task.completed_at_hkt || "—")}</small><small>人工 · ${esc(task.manual_repaired_at_hkt || "—")}</small>`;
+      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}处理并同步飞书` : task.incident_status === "resolved" ? `监控已按证据结案：${task.phase || "已验证"}` : canResolve ? "记录人工修复并同步原飞书消息" : "请使用飞书账号登录后记录人工修复";
+      const handlerTimeLabel = task.handler_source === "feishu_robot" ? "机器人" : "人工";
+      const repairTimes = `<small>结案 · ${esc(task.resolved_at_hkt || task.completed_at_hkt || "—")}</small><small>${handlerTimeLabel} · ${esc(task.manual_repaired_at_hkt || "—")}</small>`;
       return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || closedByMonitor || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.alarm_type || "未分类告警")}</small></td><td><span class="fault-resolution-cause">${esc(faultResolutionReason(task))}</span><small>${esc(task.resolution_type_label || task.phase || "尚未结案")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td class="fault-repair-times">${repairTimes}</td><td><span class="fault-open-label">查看</span></td></tr>`;
     }).join("") : '<tr><td colspan="10" class="fault-empty">没有符合筛选条件的记录。</td></tr>';
   }
@@ -2407,7 +2410,7 @@
     if (!task || !dialog || !body) return;
     const status = faultStatus(task);
     const severity = faultSeverity(task);
-    const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], ["人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
+    const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], [task.handler_source === "feishu_robot" ? "机器人处理时间" : "人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
     const confirmedFacts = Array.isArray(task.confirmed_facts) ? task.confirmed_facts.filter(Boolean) : [];
     const inferences = Array.isArray(task.inferences) ? task.inferences.filter(Boolean) : [];
     const resolutionEvidence = Array.isArray(task.resolution_evidence) ? task.resolution_evidence.filter(Boolean) : [];
