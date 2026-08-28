@@ -2255,7 +2255,7 @@ def load_weekly_report_candidates(
     *,
     sheet_id: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Load only manually approved weekly-report rows inside one report window."""
+    """Load human- or preference-Agent-approved weekly rows in one report window."""
     start = _publication_date(window_start)
     end = _publication_date(window_end)
     if not start or not end or start > end:
@@ -2328,6 +2328,13 @@ def load_weekly_report_candidates(
 
 def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
     with _LOCK:
+        try:
+            from cmhk.intelligence.news_selection_agent import selection_provenance_map
+
+            agent_decisions = selection_provenance_map()
+        except Exception:
+            logging.exception("读取新闻偏好 Agent 决策来源失败，继续按飞书状态发布")
+            agent_decisions = {}
         sheet_id = sheet_id or ensure_sheet()
         state = _read_json(STATE_PATH, {})
         candidate_gate_metadata = (
@@ -2426,6 +2433,13 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                 blocked_rows[row["row_number"]] = "重复新闻"
                 continue
             previous = existing_sheet.get(row["news_id"], {})
+            agent_decision = agent_decisions.get(row["news_id"], {})
+            approved_by = (
+                "新闻偏好学习 Agent"
+                if agent_decision.get("write_verified") is True
+                and agent_decision.get("app_status") == "接受"
+                else "飞书表格人工审核"
+            )
             accepted_items.append(
                 {
                     "id": row["news_id"],
@@ -2440,7 +2454,17 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "information_flow": row["information_flow"],
                     "published_at": metadata.get("published_at") or row["source_date"],
                     "approved_at": previous.get("approved_at") or now_text,
-                    "approved_by": "飞书表格人工审核",
+                    "approved_by": approved_by,
+                    "approval_agent_run_id": (
+                        _text(agent_decision.get("agent_run_id"), 120)
+                        if approved_by == "新闻偏好学习 Agent"
+                        else ""
+                    ),
+                    "approval_model": (
+                        _text(agent_decision.get("model"), 120)
+                        if approved_by == "新闻偏好学习 Agent"
+                        else ""
+                    ),
                     "approval_source": SHEET_SOURCE,
                     "approval_sheet_id": sheet_id,
                 }

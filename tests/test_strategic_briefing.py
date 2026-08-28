@@ -494,6 +494,17 @@ class StrategicBriefingTests(unittest.TestCase):
                 "cmhk.intelligence.news_review_sheet.run_cycle",
                 side_effect=record_review,
             ),
+            mock.patch(
+                "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+                return_value={
+                    "status": "completed",
+                    "task_run_id": "selection_test_run",
+                    "human_example_count": 12,
+                    "candidate_count": 0,
+                    "changed_count": 0,
+                    "readback_verified": True,
+                },
+            ) as selection_agent,
             mock.patch.object(briefing, "polish_candidates_before_review", return_value=[]),
             mock.patch.object(briefing, "_load_candidates", return_value=[]),
             mock.patch.object(briefing, "_save_candidates"),
@@ -540,6 +551,13 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["message_id"], "om_after_completion")
         self.assertEqual(result["task_run_id"], "strategic_test_run")
+        self.assertEqual(result["selection_agent"]["task_run_id"], "selection_test_run")
+        selection_agent.assert_called_once_with(
+            new_items=[],
+            sheet_id="",
+            parent_crawl_run_id="strategic_test_run",
+            idempotency_key="2026-07-29@14:00-test",
+        )
         task_log = "\n".join(
             str(call.args[1].get("text") or "")
             for call in append_crawl_event.call_args_list
@@ -553,6 +571,7 @@ class StrategicBriefingTests(unittest.TestCase):
             "AI审核结果",
             "历史语义去重",
             "飞书写入与逐格回读",
+            "選材 Agent 完成",
             "群通知准备",
         ):
             self.assertIn(expected_phase, task_log)

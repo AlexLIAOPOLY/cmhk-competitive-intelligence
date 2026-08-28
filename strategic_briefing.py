@@ -2407,6 +2407,12 @@ def _run_scan(
             "readback_verified": review.get("readback_verified") is True,
             "notification_status": result.get("notification_status") or "",
             "message_id": result.get("message_id") or "",
+            "selection_agent_status": str(
+                (result.get("selection_agent") or {}).get("status") or ""
+            ),
+            "selection_agent_changed": int(
+                (result.get("selection_agent") or {}).get("changed_count") or 0
+            ),
         }
         detail = (
             f"扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；"
@@ -2722,6 +2728,51 @@ def _run_scan_impl(
             f"写入后逐格回读已确认。"
         ),
     )
+    selection_agent_result: dict[str, Any] = {}
+    try:
+        from cmhk.intelligence.news_selection_agent import (
+            run_news_selection_agent,
+        )
+
+        selection_agent_result = run_news_selection_agent(
+            new_items=[
+                item
+                for item in (review_result.get("new_items") or [])
+                if isinstance(item, dict)
+            ],
+            sheet_id=_clean_text(review_result.get("sheet_id"), 120),
+            parent_crawl_run_id=crawl_run_id,
+            idempotency_key=slot_key,
+        )
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            "選材 Agent 完成",
+            (
+                f"獨立任務 {selection_agent_result.get('task_run_id') or '已歸檔'}；"
+                f"學習人工樣本 {int(selection_agent_result.get('human_example_count') or 0)} 條，"
+                f"處理本輪候選 {int(selection_agent_result.get('candidate_count') or 0)} 條，"
+                f"自動寫入 {int(selection_agent_result.get('changed_count') or 0)} 格，"
+                "逐格回讀已確認。"
+            ),
+        )
+    except Exception as exc:
+        selection_agent_result = {
+            "status": "failed",
+            "error": _clean_text(exc, 600),
+            "readback_verified": False,
+        }
+        logging.exception("新聞偏好學習 Agent 失敗，原新聞爬蟲結果仍保留")
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            "選材 Agent 失敗",
+            (
+                "獨立選材任務已在任務日志記為失敗；未覆蓋既有人工決策。"
+                f"原因：{selection_agent_result['error']}"
+            ),
+        )
+    review_result["selection_agent"] = selection_agent_result
     _save_candidates(_load_candidates() + ranked)
     candidate_count = _reviewed_candidate_count(review_result, len(ranked))
     state["seen_urls"] = (
@@ -2782,6 +2833,7 @@ def _run_scan_impl(
         "message_id": "",
         "feishu_identity": "",
         "review_sheet": review_result,
+        "selection_agent": selection_agent_result,
         "candidates": ranked,
     }
     _atomic_write_json(_scan_run_path(slot_key), run_payload)

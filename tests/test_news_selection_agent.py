@@ -1,0 +1,226 @@
+from __future__ import annotations
+
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from cmhk.intelligence import news_review_sheet
+from cmhk.intelligence import news_selection_agent as agent
+
+
+def _row(
+    *,
+    title: str,
+    url: str,
+    app: str = "待审核",
+    weekly: str = "待审核",
+) -> list[str]:
+    return [
+        app,
+        weekly,
+        "未同步",
+        "2026-08-28",
+        "香港",
+        "电信与网络",
+        title,
+        title + "摘要",
+        "测试媒体",
+        "2026-08-28 09:00",
+        url,
+        "5G、香港",
+        "影响香港电讯市场",
+        "固定监控 → 新闻搜索",
+    ]
+
+
+class NewsSelectionAgentTests(unittest.TestCase):
+    def test_human_examples_exclude_unchanged_agent_choices_but_learn_corrections(self):
+        rows = [
+            {
+                **news_review_sheet._row_dict(
+                    _row(title="自动结果", url="https://example.com/auto", app="接受", weekly="不接受"),
+                    2,
+                )
+            },
+            {
+                **news_review_sheet._row_dict(
+                    _row(title="人工纠正", url="https://example.com/corrected", app="不接受", weekly="接受"),
+                    3,
+                )
+            },
+            {
+                **news_review_sheet._row_dict(
+                    _row(title="纯人工", url="https://example.com/human", app="接受", weekly="接受"),
+                    4,
+                )
+            },
+        ]
+        decisions = {
+            rows[0]["news_id"]: {
+                "app_status": "接受",
+                "weekly_status": "不接受",
+            },
+            rows[1]["news_id"]: {
+                "app_status": "接受",
+                "weekly_status": "不接受",
+            },
+        }
+
+        examples, corrected = agent._human_examples(rows, decisions)
+
+        self.assertEqual(corrected, 1)
+        self.assertEqual({item["title"] for item in examples}, {"人工纠正", "纯人工"})
+        corrected_item = next(item for item in examples if item["title"] == "人工纠正")
+        self.assertTrue(corrected_item["human_correction_of_agent"])
+
+    def test_low_confidence_is_deferred_independently_for_each_field(self):
+        target = {
+            "news_id": "NEWS-1",
+            "row_number": 2,
+            "title": "候选",
+            "app_before": "待审核",
+            "weekly_before": "待审核",
+        }
+        payload = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.4,
+                    "reason": "历史人工通常只把这类消息放入APP",
+                }
+            ]
+        }
+
+        decision = agent._normalized_decisions(payload, [target])[0]
+
+        self.assertEqual(decision["app_status"], "接受")
+        self.assertEqual(decision["weekly_status"], "暂缓")
+
+    def test_large_candidate_set_is_split_into_bounded_langchain_batches(self):
+        targets = [{"news_id": f"NEWS-{index}"} for index in range(45)]
+
+        def invoke(_examples, batch):
+            return {
+                "learned_rules": ["规则"],
+                "avoid_patterns": [],
+                "app_preference_summary": "APP",
+                "weekly_preference_summary": "周报",
+                "decisions": [
+                    {
+                        "news_id": item["news_id"],
+                        "app_status": "接受",
+                        "weekly_status": "不接受",
+                        "app_confidence": 0.9,
+                        "weekly_confidence": 0.9,
+                        "reason": "测试",
+                    }
+                    for item in batch
+                ],
+            }, "DeepSeek-V4-Pro"
+
+        progress = []
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=invoke) as call:
+            payload, model = agent._invoke_langchain_batches(
+                [],
+                targets,
+                progress_callback=lambda index, total, count: progress.append(
+                    (index, total, count)
+                ),
+            )
+
+        self.assertEqual(call.call_count, 3)
+        self.assertEqual(len(payload["decisions"]), 45)
+        self.assertEqual(model, "DeepSeek-V4-Pro")
+        self.assertEqual(progress, [(1, 3, 20), (2, 3, 20), (3, 3, 5)])
+
+    def test_run_creates_separate_log_updates_skill_and_writes_only_pending_cells(self):
+        human_values = _row(
+            title="历史人工接受",
+            url="https://example.com/human",
+            app="接受",
+            weekly="不接受",
+        )
+        target_values = _row(
+            title="本轮候选",
+            url="https://example.com/current",
+        )
+        target_id = news_review_sheet._row_dict(target_values, 3)["news_id"]
+        snapshot = {
+            "rows": [
+                {"rowNumber": 2, "values": human_values},
+                {"rowNumber": 3, "values": target_values},
+            ]
+        }
+        model_payload = {
+            "learned_rules": ["香港本地电讯商的明确业务动作优先进入APP"],
+            "avoid_patterns": ["纯转载且没有新增事实"],
+            "app_preference_summary": "偏好及时、与香港市场直接相关的新闻",
+            "weekly_preference_summary": "偏好有持续影响和可复用事实的新闻",
+            "decisions": [
+                {
+                    "news_id": target_id,
+                    "app_status": "接受",
+                    "weekly_status": "暂缓",
+                    "app_confidence": 0.92,
+                    "weekly_confidence": 0.73,
+                    "reason": "适合即时APP，周报价值仍需观察",
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            updates = []
+
+            def update(changes, *, sheet_id):
+                updates.extend(changes)
+                return {"changedCount": len(changes), "readbackVerified": True}
+
+            with (
+                mock.patch.object(agent, "AGENT_DIR", root),
+                mock.patch.object(agent, "AUDIT_PATH", root / "decisions.jsonl"),
+                mock.patch.object(agent, "STATE_PATH", root / "state.json"),
+                mock.patch.object(agent, "SKILL_PATH", root / "SKILL.md"),
+                mock.patch.object(
+                    agent,
+                    "start_crawl_run",
+                    return_value={
+                        "crawl_run_id": "selection-run",
+                        "stream_log_path": str(root / "selection-run.jsonl"),
+                    },
+                ) as start,
+                mock.patch.object(agent, "heartbeat_crawl_run"),
+                mock.patch.object(agent, "append_crawl_run_event"),
+                mock.patch.object(agent, "finalize_operational_crawl_run") as finalize,
+                mock.patch.object(agent, "_invoke_langchain", return_value=(model_payload, "DeepSeek-V4-Pro")),
+                mock.patch.object(news_review_sheet, "review_sheet_snapshot", return_value=snapshot),
+                mock.patch.object(news_review_sheet, "update_review_sheet_cells", side_effect=update),
+            ):
+                result = agent.run_news_selection_agent(
+                    new_items=[{"news_id": target_id}],
+                    sheet_id="sheet-1",
+                    parent_crawl_run_id="parent-run",
+                    idempotency_key="2026-08-28@07:30-test",
+                )
+
+            self.assertEqual(start.call_args.kwargs["task_kind"], "news-selection-agent")
+            self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "parent-run")
+            self.assertEqual(result["candidate_count"], 1)
+            self.assertEqual(result["changed_count"], 2)
+            self.assertEqual(
+                [(item["columnIndex"], item["value"]) for item in updates],
+                [(0, "接受"), (1, "暂缓")],
+            )
+            self.assertIn("不可變邊界", (root / "SKILL.md").read_text(encoding="utf-8"))
+            audit = json.loads((root / "decisions.jsonl").read_text(encoding="utf-8"))
+            self.assertTrue(audit["write_verified"])
+            self.assertEqual(audit["parent_crawl_run_id"], "parent-run")
+            self.assertTrue(finalize.call_args.kwargs["ok"])
+
+
+if __name__ == "__main__":
+    unittest.main()
