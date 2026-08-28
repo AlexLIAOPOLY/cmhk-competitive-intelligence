@@ -107,6 +107,7 @@
           $("market-trend-detail").innerHTML = `<strong>${esc(date)} · ${esc(category)} · ${evidence.length} 条</strong><span>${evidence.slice(0, 2).map((item) => esc(item.title)).join("；") || "当日无对应情报"}</span>`;
         },
         plugins: {
+          datalabels: false,
           legend: { position: "top", labels: { color: "#8da3bb", usePointStyle: true, pointStyle: "line", boxWidth: 24, font: { size: 11 } } },
           tooltip: { backgroundColor: "#0b1728", borderColor: "rgba(84,136,177,.45)", borderWidth: 1, titleColor: "#dbe9f5", bodyColor: "#a8bdd2", padding: 10 },
         },

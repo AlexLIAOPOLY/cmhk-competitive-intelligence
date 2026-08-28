@@ -32,6 +32,7 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('name: "cose"', SCRIPT)
         self.assertIn('cy.on("tap", "node, edge"', SCRIPT)
         self.assertIn('pointHoverRadius: 5', SCRIPT)
+        self.assertIn('datalabels: false', SCRIPT)
         self.assertIn('market-graph-evidence-row', SCRIPT)
         self.assertIn('${esc(item.title)}</span><small>${esc(item.source)}', SCRIPT)
         self.assertNotIn('class="market-graph-evidence">', SCRIPT)
