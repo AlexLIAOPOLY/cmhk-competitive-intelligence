@@ -286,12 +286,12 @@
     const target = $("market-daily-table"); if (!target) return;
     const dates = [...new Set(items.map((item) => item.sourceDate).filter(Boolean))].sort().reverse();
     const categoryCounts = new Map();
-    items.forEach((item) => categoryCounts.set(item.category, (categoryCounts.get(item.category) || 0) + 1));
+    items.forEach((item) => { const category = graphTopic(item.category); categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1); });
     const categories = ranked(categoryCounts).map(([category]) => category);
     if (!dates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
     const counts = new Map();
-    items.forEach((item) => { const key = `${item.sourceDate}::${item.category}`; counts.set(key, (counts.get(key) || 0) + 1); });
-    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(graphTopic(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
+    items.forEach((item) => { const key = `${item.sourceDate}::${graphTopic(item.category)}`; counts.set(key, (counts.get(key) || 0) + 1); });
+    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col">${esc(category)}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
       const values = categories.map((category) => counts.get(`${date}::${category}`) || 0);
       return `<tr><th scope="row">${esc(date)}</th>${values.map((count) => `<td class="${count ? "has-news" : ""}">${count || "—"}</td>`).join("")}<td class="daily-total">${values.reduce((sum, count) => sum + count, 0)}</td></tr>`;
     }).join("")}</tbody></table>`;
