@@ -134,6 +134,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
             'const pdf = `./static/report-previews/${key}.pdf`;',
         )
 
+    def test_public_css_drops_the_heavy_root_background(self):
+        source = '''body { background:
+          linear-gradient(#fff, #eef),
+          url("/static/assets/mobile-intelligence-bg.png") center / cover fixed no-repeat;
+        }'''
+        rewritten = publisher._rewrite_public_css(source)
+        self.assertNotIn("mobile-intelligence-bg.png", rewritten)
+        self.assertIn("linear-gradient", rewritten)
+
     def test_public_subscription_snapshot_never_exports_recipient_records(self):
         payload = publisher._public_subscriptions(
             {
@@ -839,6 +848,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./executive-dashboard-demo.html?embedded=1', html)
             self.assertIn('defer src="./static/public-snapshot-bootstrap.js?v=6"', html)
             self.assertIn('defer src="./static/workspace-tabs.js?v=public-8"', html)
+            self.assertIn('data-public-early-shell', html)
+            self.assertIn('CMHK_PUBLIC_EARLY_SHELL', html)
+            self.assertIn('tab.addEventListener("click", () => activate(tab))', html)
+            self.assertLess(
+                html.index('data-public-early-shell'),
+                html.index('src="./static/public-snapshot-bootstrap.js?v=6"'),
+            )
             self.assertIn('src="./static/vendor/chart-4.4.0.umd.js?v=1"', html)
             self.assertIn(
                 'src="./static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"',
@@ -868,6 +884,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('"/api/weekly-report-preview"', bootstrap)
             self.assertIn('"/api/crawl-run-log"', bootstrap)
             self.assertTrue((destination / "static" / "app.js").is_file())
+            public_style = (destination / "static" / "styles.css").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn("mobile-intelligence-bg.png", public_style)
             self.assertGreater(
                 (destination / "static" / "vendor" / "chart-4.4.0.umd.js").stat().st_size,
                 200_000,
@@ -899,6 +919,18 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 public_workspace,
             )
             self.assertTrue((destination / "static" / "assets" / "china-mobile-blue-logo.png").is_file())
+            self.assertIn(
+                'src="./static/assets/public/china-mobile-blue-logo.png',
+                html,
+            )
+            self.assertIn(
+                'src="./static/assets/public/xiaojing-ai-logo-mark.png',
+                html,
+            )
+            self.assertLess(
+                (destination / "static" / "assets" / "public" / "china-mobile-blue-logo.png").stat().st_size,
+                60_000,
+            )
             self.assertTrue((destination / "static-data" / "executive-intelligence.json").is_file())
             self.assertTrue((destination / "executive-dashboard-demo.html").is_file())
             self.assertFalse((destination / "intelligence").exists())

@@ -57,6 +57,54 @@ PUBLIC_VENDOR_FILES = (
     "marked-15.0.12-LICENSE.md",
 )
 
+PUBLIC_EARLY_SHELL = r'''<script data-public-early-shell>
+(() => {
+  "use strict";
+  const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
+  const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
+  if (!tabs.length || !panels.length) return;
+
+  function activate(tab) {
+    const workspace = tab.dataset.workspaceTab;
+    tabs.forEach((item) => {
+      const selected = item === tab;
+      item.classList.toggle("is-active", selected);
+      item.setAttribute("aria-selected", String(selected));
+      item.tabIndex = selected ? 0 : -1;
+    });
+    panels.forEach((panel) => {
+      const selected = panel.dataset.workspacePanel === workspace;
+      panel.hidden = !selected;
+      panel.classList.toggle("is-active", selected);
+      if (selected) {
+        const frame = panel.querySelector("iframe[data-src]");
+        if (frame && !frame.src) frame.src = frame.dataset.src;
+      }
+    });
+    document.body.classList.toggle("workspace-dashboard-active", workspace === "dashboard");
+    document.body.classList.toggle("workspace-ai-active", workspace === "ai");
+    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+    params.set("workspace", workspace);
+    history.replaceState(null, "", `${location.pathname}${location.search}#${params}`);
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => activate(tab));
+    tab.addEventListener("keydown", (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const index = tabs.indexOf(tab);
+      const target = event.key === 'Home' ? tabs[0]
+        : event.key === 'End' ? tabs[tabs.length - 1]
+        : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      target.focus();
+      activate(target);
+    });
+  });
+  window.CMHK_PUBLIC_EARLY_SHELL = Object.freeze({ activate });
+})();
+</script>'''
+
 PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
   "use strict";
   const nativeFetch = window.fetch.bind(window);
@@ -791,6 +839,16 @@ def _rewrite_static_css(source: str) -> str:
     )
 
 
+def _rewrite_public_css(source: str) -> str:
+    source = _rewrite_static_css(source)
+    return re.sub(
+        r',\s*url\(["\']?\./assets/mobile-intelligence-bg\.png["\']?\)'
+        r'[^;]*',
+        '',
+        source,
+    )
+
+
 def _rewrite_root_javascript(source: str) -> str:
     return (
         source.replace('"/static/', '"./static/')
@@ -821,6 +879,14 @@ def _build_site(
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     html = html.replace('href="/static/', 'href="./static/')
     html = html.replace('src="/static/', 'src="./static/')
+    html = html.replace(
+        './static/assets/china-mobile-blue-logo.png',
+        './static/assets/public/china-mobile-blue-logo.png',
+    )
+    html = html.replace(
+        './static/assets/logo/xiaojing-ai-logo-mark.png',
+        './static/assets/public/xiaojing-ai-logo-mark.png',
+    )
     html = html.replace('href="/executive-dashboard-demo.html', 'href="./executive-dashboard-demo.html')
     html = html.replace('src="/executive-dashboard-demo.html', 'src="./executive-dashboard-demo.html')
     html = html.replace('class="brand-mark" href="/"', 'class="brand-mark" href="./"')
@@ -840,6 +906,7 @@ def _build_site(
     )
     html = html.replace(
         '    <script defer src="./static/auth-client.js?v=3"></script>',
+        f'    {PUBLIC_EARLY_SHELL}\n'
         '    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
         '    <script defer src="./static/auth-client.js?v=3"></script>',
     )
@@ -857,7 +924,7 @@ def _build_site(
         source_path = STATIC_DIR / name
         content = source_path.read_text(encoding="utf-8")
         if source_path.suffix == ".css":
-            content = _rewrite_static_css(content)
+            content = _rewrite_public_css(content)
         elif source_path.suffix == ".js":
             content = _rewrite_root_javascript(content)
         if name == "workspace-tabs.js":
