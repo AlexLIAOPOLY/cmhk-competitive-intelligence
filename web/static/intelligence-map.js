@@ -137,7 +137,7 @@
           </dialog>
         </aside>
       </section>
-      <section class="market-daily-section" aria-label="每日情报分类统计"><div class="market-daily-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v3M19 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Zm3 7h3m2 0h3m-8 4h3m2 0h3"/></svg><strong>每日情报统计</strong></div><div class="market-daily-table-wrap" id="market-daily-table"></div></section>
+      <section class="market-daily-section" aria-label="每日情报分类统计"><div class="market-daily-table-wrap" id="market-daily-table"></div></section>
     </section>`;
   }
 
@@ -288,17 +288,20 @@
 
   function renderDailyTable(items) {
     const target = $("market-daily-table"); if (!target) return;
-    const dates = [...new Set(items.map((item) => item.sourceDate).filter(Boolean))].sort().reverse();
+    const observedDates = [...new Set(items.map((item) => item.sourceDate).filter(Boolean))].sort();
     const categoryCounts = new Map();
     items.forEach((item) => { const category = graphTopic(item.category); categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1); });
     const categories = ranked(categoryCounts).map(([category]) => category);
-    if (!dates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
+    if (!observedDates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
+    const dates = [];
+    for (let day = new Date(`${observedDates[0]}T00:00:00Z`), end = new Date(`${observedDates.at(-1)}T00:00:00Z`); day <= end; day.setUTCDate(day.getUTCDate() + 1)) dates.push(day.toISOString().slice(0, 10));
+    dates.reverse();
     const counts = new Map();
     items.forEach((item) => { const key = `${item.sourceDate}::${graphTopic(item.category)}`; counts.set(key, (counts.get(key) || 0) + 1); });
-    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(dailyCategoryLabel(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
+    target.innerHTML = `<table><caption>每日情报统计 <span>${esc(observedDates[0])} — ${esc(observedDates.at(-1))} · 全部 ${items.length} 条</span></caption><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(dailyCategoryLabel(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
       const values = categories.map((category) => counts.get(`${date}::${category}`) || 0);
       return `<tr><th scope="row">${esc(date)}</th>${values.map((count) => `<td class="${count ? "has-news" : ""}">${count || "—"}</td>`).join("")}<td class="daily-total">${values.reduce((sum, count) => sum + count, 0)}</td></tr>`;
-    }).join("")}</tbody></table>`;
+    }).join("")}</tbody><tfoot><tr><th scope="row">全部</th>${categories.map((category) => `<td>${categoryCounts.get(category) || 0}</td>`).join("")}<td>${items.length}</td></tr></tfoot></table>`;
   }
 
   function renderAll() {
