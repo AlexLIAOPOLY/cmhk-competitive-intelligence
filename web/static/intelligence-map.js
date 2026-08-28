@@ -32,6 +32,10 @@
     return { "政策与监管": "政策监管", "竞争对手": "竞对动态", "基础设施/网络/技术类": "基础设施／网络／技术", "市场/产品类": "市场／产品", "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观／国际" }[value] || value || "其他情报";
   }
 
+  function dailyCategoryLabel(value) {
+    return { "基础设施／网络／技术": "网络技术", "宏观／国际": "宏观国际", "市场／产品": "市场产品", "基建与地产": "基建地产", "战略与合作": "战略合作" }[value] || value;
+  }
+
   function connectedGraph(nodes, candidateEdges, maxNodes = 20, maxEdges = 28) {
     const adjacency = new Map();
     candidateEdges.forEach((edge) => {
@@ -291,7 +295,7 @@
     if (!dates.length || !categories.length) { target.innerHTML = '<div class="market-daily-empty">暂无已审核情报</div>'; return; }
     const counts = new Map();
     items.forEach((item) => { const key = `${item.sourceDate}::${graphTopic(item.category)}`; counts.set(key, (counts.get(key) || 0) + 1); });
-    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col">${esc(category)}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
+    target.innerHTML = `<table><thead><tr><th scope="col">日期</th>${categories.map((category) => `<th scope="col" title="${esc(category)}">${esc(dailyCategoryLabel(category))}</th>`).join("")}<th scope="col">合计</th></tr></thead><tbody>${dates.map((date) => {
       const values = categories.map((category) => counts.get(`${date}::${category}`) || 0);
       return `<tr><th scope="row">${esc(date)}</th>${values.map((count) => `<td class="${count ? "has-news" : ""}">${count || "—"}</td>`).join("")}<td class="daily-total">${values.reduce((sum, count) => sum + count, 0)}</td></tr>`;
     }).join("")}</tbody></table>`;

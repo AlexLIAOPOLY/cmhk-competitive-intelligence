@@ -242,8 +242,10 @@
 .market-daily-title { display: flex; align-items: flex-start; gap: 9px; padding-top: 2px; color: var(--map-text); font-size: 13px; }
 .market-daily-title svg { width: 17px; fill: none; stroke: #4ea5ff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
 .market-daily-table-wrap { min-width: 0; overflow: auto; border: 1px solid rgba(57, 91, 121, .42); border-radius: 3px; scrollbar-color: rgba(76, 129, 169, .55) transparent; }
-.market-daily-table-wrap table { width: 100%; min-width: 650px; border-collapse: collapse; color: #9bb0c4; font-size: 10px; font-variant-numeric: tabular-nums; }
-.market-daily-table-wrap th, .market-daily-table-wrap td { height: 32px; padding: 0 14px; border-bottom: 1px solid rgba(57, 91, 121, .3); text-align: center; white-space: nowrap; }
+.market-daily-table-wrap table { width: 100%; min-width: 700px; table-layout: fixed; border-collapse: collapse; color: #9bb0c4; font-size: 9.5px; font-variant-numeric: tabular-nums; }
+.market-daily-table-wrap th, .market-daily-table-wrap td { height: 32px; padding: 0 5px; border-bottom: 1px solid rgba(57, 91, 121, .3); text-align: center; white-space: nowrap; }
+.market-daily-table-wrap th:first-child { width: 88px; }
+.market-daily-table-wrap th:last-child { width: 52px; }
 .market-daily-table-wrap thead th { position: sticky; top: 0; z-index: 2; color: #b9c9d9; font-weight: 650; background: #0b1728; }
 .market-daily-table-wrap tbody th { position: sticky; left: 0; z-index: 1; color: #8fa9c1; font-weight: 550; text-align: left; background: #0b1728; }
 .market-daily-table-wrap tbody tr:hover { background: rgba(34, 110, 156, .08); }
@@ -273,7 +275,7 @@
   .market-trend-detail strong, .market-trend-detail span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .market-keyword-stage { height: 390px; padding: 9px; }
   .market-graph-toolbar > span { display: none; }
-  .market-daily-table-wrap table { min-width: 610px; }
+  .market-daily-table-wrap table { min-width: 700px; }
   .market-graph-dialog { width: 96vw; height: 90vh; }
   .market-graph-dialog-body { grid-template-rows: minmax(280px, 1fr) 330px; }
   .market-graph-inspector > header, .market-graph-inspector-grid { display: block; }
