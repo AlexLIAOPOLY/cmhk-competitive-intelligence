@@ -162,7 +162,7 @@
   }
 
   function evidenceHtml(data) {
-    return (data.evidence || []).slice(0, 3).map((item) => `<a href="${esc(item.source_url || "#")}" target="_blank" rel="noopener noreferrer" title="${esc(item.title)}">${esc(item.source)} · ${esc(item.source_date.slice(5))}</a>`).join("");
+    return (data.evidence || []).slice(0, 4).map((item) => `<a class="market-graph-evidence-row" href="${esc(item.source_url || "#")}" target="_blank" rel="noopener noreferrer"><span>${esc(item.title)}</span><small>${esc(item.source)} · ${esc(item.source_date)} <b aria-hidden="true">↗</b></small></a>`).join("");
   }
 
   function selectGraphElement(element, detailId = "market-graph-detail") {
@@ -170,8 +170,8 @@
     cy.elements().addClass("is-muted").removeClass("is-neighbor"); const neighborhood = element.isNode() ? element.closedNeighborhood() : element.connectedNodes().union(element);
     neighborhood.removeClass("is-muted").addClass("is-neighbor"); cy.elements().unselect(); element.select();
     const data = element.data(); const detail = $(detailId); if (!detail) return; detail.hidden = false;
-    if (element.isNode()) { const type = { entity: "主体", topic: "议题", concept: "概念" }[data.type]; detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${type} · ${data.count} 条证据</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence">${evidenceHtml(data)}</div>`; }
-    else { const source = cy.getElementById(data.source).data("label"); const target = cy.getElementById(data.target).data("label"); detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${esc(source)} → ${esc(target)}</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence">${evidenceHtml(data)}</div>`; }
+    if (element.isNode()) { const type = { entity: "主体", topic: "议题", concept: "概念" }[data.type]; detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${type} · ${data.count} 条证据</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence-list">${evidenceHtml(data)}</div>`; }
+    else { const source = cy.getElementById(data.source).data("label"); const target = cy.getElementById(data.target).data("label"); detail.innerHTML = `<div class="market-graph-detail-head"><strong>${esc(data.label)}</strong><span>${esc(source)} → ${esc(target)}</span></div><p>${esc(data.description)}</p><div class="market-graph-evidence-list">${evidenceHtml(data)}</div>`; }
   }
 
   function makeGraph(container, payload, fullscreen = false) {
