@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-28T12:04:04+08:00",
+  "generated_at": "2026-08-28T12:10:04+08:00",
   "items": [
+    {
+      "id": "NEWS-2BB4C619AAE3EA",
+      "title": "金管局：57家企业参与GenAI测试反诈骗等应用",
+      "summary": "金管局表示57家企业参与生成式AI测试，应用于反诈骗等场景，并继续「AI对抗AI」策略。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE91ZEdQdVo2NkNWbTNGMVhMT2w3OFFtV2x0cGhTNnJPNHV2NXk2bnowUGctWXhyNVRKbFBDYUhPQXBaMzZfckpNX0E3LUdTWG1uc2lxVVNoZ0t4LVNNSGMxYmZrTWMyc3d5Nm83R1YxaWdPdVNa?oc=5",
+      "published_at": "2026-08-28T04:24:28+08:00"
+    },
+    {
+      "id": "NEWS-B5B8FA8A4D7007",
+      "title": "HKT.AI化身家居与伴学智囊",
+      "summary": "HKT.AI化身家居与伴学智囊 信报网站",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPbHNEU0FwZUZjYmoxTDltaVpqLWZPa3hXR3F6SnhiaXluVVRsWXFzTFctbzBEbGh5YUlUYktDNE9tdHg3SnktX3luN1p1RmZ2SXUtcG1KemNFMjd0Y1FhYU5yM0RkV01kcllQYWVfcnYwS2N3QTVKRW91VHZ0WTJweFVXdGFhS2xaWWg3d2p3Q1hfQmdqeVMyOS1raG1rSmhHMXR0SzdXVzhuekg0ckY0b1c4ZkJ4WklQeC02LVhfUDVBOFRpMXM2dllqOFluTEloSWpYRHBITQ?oc=5",
+      "published_at": "2026-08-28T02:29:23+08:00"
+    },
     {
       "id": "NEWS-88159DDFE485E1",
       "title": "《业绩》有线宽频(01097.HK)中期亏损扩至2.77亿元",
@@ -35,36 +51,20 @@
       "published_at": "2026-08-27T14:52:00+08:00"
     },
     {
+      "id": "NEWS-A003A46A754250",
+      "title": "第一期GenA.I.沙盒++共有30家金融机构和27家技术合作伙伴参与",
+      "summary": "金管局、证监会、保监局及积金局联同数码港今日(8月27日)公布第一期生成式人工智能（GenA.I.)沙盒++参与者名单。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://hk.finance.yahoo.com/news/%E7%AC%AC-%E6%9C%9Fgena-%E6%B2%99%E7%9B%92-%E5%85%B1%E6%9C%8930%E5%AE%B6%E9%87%91%E8%9E%8D%E6%A9%9F%E6%A7%8B%E5%92%8C27%E5%AE%B6%E6%8A%80%E8%A1%93%E5%90%88%E4%BD%9C%E5%A4%A5%E4%BC%B4%E5%8F%83%E8%88%87-092006818.html",
+      "published_at": "2026-08-27T10:20:00+08:00"
+    },
+    {
       "id": "NEWS-D14FBE54A841DF",
       "title": "澳门「三五」规划公布 李家超宣布香港首个五年规划将于9月公布",
       "summary": "澳门第三个五年规划正式公布，引起香港关注；李家超宣布将于9月16日公布香港首个五年规划及2026年施政报告。",
       "category": "政策监管",
       "source_url": "https://www.dotdotnews.com/a/202608/26/AP6a8ed60de4b04b6c5d37e3e0.html",
       "published_at": "2026-08-26T21:03:00+08:00"
-    },
-    {
-      "id": "NEWS-39A932A5B8AD57",
-      "title": "SmarTone与csl 5G速度对比测试：启德10个热点结果公布",
-      "summary": "Techritual在启德10个热点对SmarTone与csl进行5G速度实测并公布结果，csl为被评测竞对。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1STVNMNEg5NDZxOXdkWjBtSnpYd2pQTUVtOFhEbzhQWlFsaGVfckp3QzFNX1NKbFdyVnNYOENDRTNlRldxM0N4S1lPUEN0RGpZSXBQRHBOY28?oc=5",
-      "published_at": "2026-08-26T19:10:54+08:00"
-    },
-    {
-      "id": "NEWS-2AB0C58A00B9A8",
-      "title": "香港外贸连涨29个月超预期",
-      "summary": "香港外贸连续29个月增长并超出预期，市场关注下半年预测是否上调。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBOM0NILW90c1BxMTdTdUJaVVBmY1FqTEJhQTRfQ0F2V1RUYjBKaDQzMFJPbDRhU1VxclRQVTJVTmRoclRKNENvTEx1SEtiTVlGeHlBVncwUXExY0hLM1dmQmIyTHlDRjN3emU1dlFXeWhEXzZkbjNR?oc=5",
-      "published_at": "2026-08-26T08:24:45+08:00"
-    },
-    {
-      "id": "NEWS-A5D069F6628A1C",
-      "title": "香港7月出口按年升50.7% 受AI电子产品带动",
-      "summary": "香港7月出口按年升50.7%，受AI相关电子产品强劲增长带动，政府预期需求持续。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3365195/hong-kong-exports-jump-507-july-driven-growth-ai-related-electronics",
-      "published_at": "2026-08-25T22:59:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "bc974efffb203721d126a652315811240e662cf59981e4e7c5f8fd2ab320bba8"
+  "site_version": "68b643140e0df1a9bb612a6ea2b70943b753ea43a9d6666abc641b33feb64329"
 }

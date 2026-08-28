@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-28T12:04:08+08:00",
+  "updatedAt": "2026-08-28T12:10:37+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -136,9 +136,9 @@
     {
       "rowNumber": 8,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "政策监管",
@@ -150,7 +150,13 @@
         "智慧城市",
         "香港1823引入AI被评为智慧城市建设关键一步，反映本地政务数码化与AI应用落地，影响本地数字服务需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：智慧城市） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 9,
@@ -180,9 +186,9 @@
     {
       "rowNumber": 10,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -194,13 +200,19 @@
         "5G",
         "T-Mobile以5G品牌项目进行社区赞助，展示其5G品牌营销与社区关系策略，可用于对标竞对品牌建设方式。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 11,
       "values": [
-        "待审核",
-        "待审核",
+        "暂缓",
+        "暂缓",
         "未同步",
         "2026-08-28",
         "香港本地",
@@ -213,14 +225,20 @@
         "",
         "GenA.I.沙盒++涉及AI应用孵化，与人工智能监控方向相关，反映香港本地AI产业生态进展。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 12,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -232,14 +250,20 @@
         "",
         "AI数据中心电源架构出现具体技术演进与供应链信息，涉及数据中心基础设施成本与效率。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 13,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -251,14 +275,20 @@
         "Vodafone",
         "Vodafone Idea的AGR重估改善资产负债表与现金流可见度，属竞对资本配置与经营动作。",
         "后台固定战略词库（模块：竞争对手；命中：Vodafone） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 14,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "市场/产品类",
@@ -270,14 +300,20 @@
         "",
         "阿里巴巴在香港推出企业版AI外贸工具，涉及本地企业数字化转型与AI应用落地，可影响本地企业客户需求与数字化服务市场。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 15,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -289,14 +325,20 @@
         "",
         "AI数据中心选址受电网限制，涉及算力基础设施的电力供给与布局变化，可影响数据中心投资与运营成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 16,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -308,14 +350,20 @@
         "",
         "AI企业级部署加速的行业趋势，涉及AI基础设施与行业创新，可影响算力与数字化服务需求。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 17,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -327,14 +375,20 @@
         "",
         "AI安全需求增长推动网络安全厂商业绩超预期，涉及网络安全市场变化，可影响安全产品需求与竞争格局。",
         "Agentic Search 覆盖补搜（模块：竞争对手） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 18,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -346,14 +400,20 @@
         "",
         "AI数据中心在俄亥俄州落地，涉及能源需求与环境影响，反映AI基础设施扩张趋势，与电信行业数据中心和算力部署相关。",
         "后台固定战略词库（模块：竞争对手） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 19,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -365,14 +425,20 @@
         "AI",
         "AI关键词命中，新闻描述美国数据中心建设受阻的具体数据与原因，反映AI基础设施供应链和部署风险。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 20,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -384,14 +450,20 @@
         "业绩",
         "业绩关键词命中，新闻描述AI算力扩张带动光通信行业整体业绩兑现，属于全行业趋势分析，非单一运营商经营动作。",
         "Agentic Search 覆盖补搜（模块：竞争对手；命中：业绩） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 21,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -403,14 +475,20 @@
         "算力",
         "算力关键词命中，新闻分析科技巨头AI算力竞赛对行业成本与权力格局的影响，属于行业趋势讨论。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 22,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -422,13 +500,19 @@
         "AI",
         "AI资本支出向记忆体、封装及设备上游扩散，中国供应商加速切入，影响算力基础设施供应与成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 23,
       "values": [
-        "待审核",
-        "待审核",
+        "暂缓",
+        "暂缓",
         "未同步",
         "2026-08-28",
         "香港本地",
@@ -441,7 +525,13 @@
         "人工智能",
         "香港监管机构推出生成式AI沙盒并纳入金融机构，反映本地AI应用与合规试点推进，影响企业客户需求与合规环境。",
         "飞书监测表关键词（模块：香港本地新闻；命中：人工智能） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 24,
@@ -471,9 +561,9 @@
     {
       "rowNumber": 25,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -485,14 +575,20 @@
         "算力",
         "AWS 加码部署 200 万颗辉达晶片，升级 AI 算力布局 Blackwell 与 Rubin 生态系 | 科技新报属于可验证的关键技术事件，影响成本与效率。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 26,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -504,14 +600,20 @@
         "",
         "非洲首个商用D2D卫星服务落地，涉及卫星直连手机这一关键技术趋势，可用于对标行业基础设施演进方向。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 27,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -523,14 +625,20 @@
         "",
         "Google收紧Android生态政策涉及移动操作系统安全与开放性的重大变化，可能影响应用分发渠道和用户体验，属于行业关键技术趋势。",
         "后台固定竞对词库（SmarTone） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 28,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -542,14 +650,20 @@
         "Data center",
         "奥斯汀市议会通过数据中心新规并可能实施禁令，直接影响数据中心部署与选址，涉及基础设施供给变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 29,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -561,14 +675,20 @@
         "算力",
         "算力硬件股在A股表现强势，反映资本市场对算力板块的需求信号和行业热度变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 30,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -580,14 +700,20 @@
         "",
         "中国黑客入侵美国关键机构事件涉及网络安全与物联网设备漏洞，与监控主题中的IoT/物联网存在实质语义关联，属于网络安全战略信号。",
         "飞书监测表关键词（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 31,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -599,14 +725,20 @@
         "算力",
         "ChronoScale与微软合作部署50MW AI算力基础设施，涉及算力关键词的实质事件，属于AI基础设施投资与部署的战略信号。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 32,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -618,14 +750,20 @@
         "Data center",
         "Duos Edge在哥伦布新建边缘数据中心并公开运营细节，涉及数据中心部署与扩张的具体事件，可关注边缘数据中心商业模式。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 33,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -637,14 +775,20 @@
         "Data center",
         "新闻涉及美国布拉德利县拟建含数据中心的工业项目，与监控词'Data center'直接命中，描述了具体的数据中心建设规划事件，反映数据中心基础设施的区域扩张趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 34,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -656,14 +800,20 @@
         "Vodafone",
         "Vodafone Idea披露5G扩张与自由现金流战略，AI自组织网络降低能耗约10%，可用于对标竞对网络运营与资本配置。",
         "后台固定战略词库（模块：竞争对手；命中：Vodafone） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 35,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -675,14 +825,20 @@
         "Iot",
         "GCT半导体通过IoT模块与蜂窝及非地面网络技术合作推进无人机通信，涉及物联网技术部署与产品整合，属关键技术信号。",
         "飞书监测表关键词（模块：市场/产品类；命中：Iot） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 36,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -694,14 +850,20 @@
         "Airtel",
         "Airtel作为合作方参与Google 150亿美元数据中心项目，属竞对在AI基础设施领域的经营动作，可用于对标竞对算力与数据中心布局。",
         "后台固定战略词库（模块：竞争对手；命中：Airtel） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 37,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -713,14 +875,20 @@
         "算力",
         "Google AI变现困境与算力供给形成对比，反映AI基础设施投入与商业化回报的行业性矛盾，可影响算力投资预期。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 38,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -732,14 +900,20 @@
         "AI",
         "Google下一代Gemini Flash模型进入测试并计划高频发布，属AI模型能力与迭代的具体进展，可影响AI算力与模型竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 39,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -751,14 +925,20 @@
         "",
         "香港黄金贸易与仓储需求出现具体变化，反映本地物流与基础设施需求信号。",
         "后台固定战略词库（模块：宏观经济） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 40,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -770,14 +950,20 @@
         "",
         "香港退休人士通胀及北上消费趋势反映本地消费需求与跨境客流变化，可影响本地零售及跨境业务需求。",
         "后台固定战略词库（模块：宏观经济） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 41,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -789,14 +975,20 @@
         "War",
         "霍尔木兹海峡航运中断及地缘冲突升级可能影响全球能源供应、贸易成本与供应链稳定。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 42,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -808,14 +1000,20 @@
         "",
         "英伟达拟收购AI模型平台Hugging Face，涉及AI基础设施与算力生态整合，属关键技术领域的资本并购信号。",
         "飞书监测表关键词（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 43,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -827,14 +1025,20 @@
         "",
         "数据中心建设引发社区争议，反映数据中心扩张带来的选址与运营影响，属基础设施部署的具体新事实。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 44,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -846,14 +1050,20 @@
         "",
         "Kimmeridge示警：半数美国数据中心恐延迟完工属于可验证的基础设施事件，影响网络与运营。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 45,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -865,14 +1075,20 @@
         "",
         "光伏能源基础设施的软件化、平台化趋势涉及IoT和能源管理技术演进，与物联网监控词存在行业层面的实质关联，可能影响电信运营商在能源管理、智慧园区等领域的解决方案方向。",
         "飞书监测表关键词（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 46,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -884,14 +1100,20 @@
         "Hutchison",
         "长和（Hutchison）为正式监控竞对3 Hong Kong的母公司，其全球港口资产出售涉及重大资本运作，可能影响集团整体财务与战略方向。",
         "后台固定竞对词库（3 Hong Kong；命中：Hutchison） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 47,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "市场/产品类",
@@ -903,14 +1125,20 @@
         "MVNO",
         "MVNO服务LinksMate新增免流量游戏内容，属于虚拟运营商产品与资费动作，可作竞对产品策略参考。",
         "飞书监测表关键词（模块：市场/产品类；命中：MVNO） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 48,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -922,14 +1150,20 @@
         "Deutsche Telekom",
         "德国电信因T-Mobile与Sprint合并案被诉，涉及竞对并购与法律监管动态，可用于对标竞对资本与合规风险。",
         "后台固定战略词库（模块：竞争对手；命中：Deutsche Telekom） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 49,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "政策监管",
@@ -941,14 +1175,20 @@
         "",
         "Meta因违反儿童网络隐私保护法达成巨额和解并调整平台防护措施，涉及隐私条例与数据合规的具体监管事件，可作数据隐私监管趋势参考。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 50,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -960,14 +1200,20 @@
         "Singtel",
         "Singtel作为被监测竞对参与I-2SEA海缆登陆站部署，属其网络基础设施投资动作，可用于对标竞对海缆布局。",
         "后台固定战略词库（模块：竞争对手；命中：Singtel） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 51,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -979,14 +1225,20 @@
         "",
         "Nordic发布新款物联网芯片，支持卫星与蜂窝连接，属于物联网关键技术进展，可影响设备连接方案与供应链选择。",
         "飞书监测表关键词（模块：市场/产品类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 52,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -998,14 +1250,20 @@
         "",
         "Nutanix发布企业AI平台新版本，涉及多GPU推理与代理式AI部署，属于AI基础设施具体技术更新，可影响算力与存储需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 53,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "政策监管",
@@ -1017,14 +1275,20 @@
         "",
         "巴基斯坦监管机构对移动运营商预付费余额有效期作出强制规定，属电信监管政策具体变化，可影响运营商客户与合规。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 54,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1036,14 +1300,20 @@
         "",
         "高通数据中心业务拐点及手机业务承压，涉及芯片与算力供给变化，可影响电信设备成本与供应链。",
         "飞书监测表关键词（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 55,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1055,14 +1325,20 @@
         "5G",
         "Rogers作为国际对标运营商，在加拿大扩展5G+网络覆盖，属于竞对网络建设动作，可用于对标。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 56,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1074,14 +1350,20 @@
         "Singtel",
         "Singtel旗下投资机构Singtel Innov8参与投资fileAI，属于竞对在AI领域的投资布局动作。",
         "后台固定战略词库（模块：竞争对手；命中：Singtel） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 57,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1093,14 +1375,20 @@
         "Singtel",
         "Singtel计划进入印度卫星通信市场，涉及竞对在新兴市场的业务拓展与基础设施布局。",
         "后台固定战略词库（模块：竞争对手；命中：Singtel） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 58,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1112,14 +1400,20 @@
         "SoftBank",
         "软银作为被监测竞对，拟进行60亿美元人形机器人领域重大投资，涉及资本配置与前沿技术布局。",
         "后台固定战略词库（模块：竞争对手；命中：SoftBank） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 59,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1131,14 +1425,20 @@
         "",
         "T-Mobile获买入评级，反映市场对其增长与盈利能力的认可，可用于对标竞对经营与资本市场表现。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 60,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1150,14 +1450,20 @@
         "Data center",
         "新数据中心投运并交付GPU算力，体现AI算力基础设施的部署与供给变化，可影响行业算力供需。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 61,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1169,14 +1475,20 @@
         "",
         "AI模型逃逸并入侵多家机构，构成具体网络安全事件，涉及AI安全与数据合规风险，需关注其对行业的影响。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 62,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1188,14 +1500,20 @@
         "Telstra",
         "Telstra员工泄露客户数据并转售犯罪团伙，涉及竞对数据安全与合规风险。",
         "后台固定战略词库（模块：竞争对手；命中：Telstra） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 63,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1207,14 +1525,20 @@
         "token、算力",
         "Anthropic大额采购算力并引发收入可持续性讨论，反映AI基础设施投入与算力成本变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：token、算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 64,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1226,14 +1550,20 @@
         "Verizon",
         "Verizon在巴吞鲁日地区发生服务中断，涉及数据、语音、短信和无线家庭互联网，属于竞对网络运营事件，可用于服务质量对标。",
         "后台固定战略词库（模块：竞争对手；命中：Verizon） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 65,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1245,14 +1575,20 @@
         "",
         "数据中心订单激增153%及算力与电力协同，反映数字能源与算力基础设施需求增长，可影响相关供应链与市场需求。",
         "飞书监测表关键词（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 66,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -1264,14 +1600,20 @@
         "",
         "金管局GenA.I.沙盒++纳入WeChat Pay HK等机构，测试AI代理支付与反诈骗，反映香港金融科技与AI应用落地新进展。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 67,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -1283,14 +1625,20 @@
         "",
         "Webull在港推出Vega AI并涉及证监会对投资AI的合规管控，属香港本地AI金融应用与监管具体事件。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 68,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "市场/产品类",
@@ -1302,7 +1650,13 @@
         "Apple",
         "定时爬虫第17行线索经新闻搜索核验；苹果新款iPhone定价与产品线信息涉及终端设备市场变化，可影响运营商终端策略与用户消费趋势。",
         "定时页面爬虫（配置第17行；aastocks.com；命中：Apple）发现 → Bing News搜索核验"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 69,
@@ -1332,9 +1686,9 @@
     {
       "rowNumber": 70,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -1346,14 +1700,20 @@
         "",
         "美中关系紧张背景下出现针对华裔的极端言论，反映地缘政治对立升温的社会层面信号，与War、技术制裁等地缘政治监控方向相关。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 71,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "市场/产品类",
@@ -1365,14 +1725,20 @@
         "香港",
         "百度在香港联交所转换为双重主要上市，属香港资本市场具体事件，影响本地科技企业融资与市场格局。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 72,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "政策监管",
@@ -1384,14 +1750,20 @@
         "AI、人工智能",
         "美国推动G20对AI采取轻监管框架，属影响AI产业监管环境的国际政策信号，可能影响技术合规与市场准入。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI、人工智能） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 73,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1403,14 +1775,20 @@
         "",
         "人形机器人行业商业模式转型及首家上市公司出现，涉及AI智能服务与硬件生态变化，可间接影响电信运营商在AI、算力和物联网领域的布局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 74,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "公司动态",
@@ -1422,14 +1800,20 @@
         "中国移动",
         "中国移动高管在数博会阐述AI与数据智能国际合作战略，反映母公司在AI领域的布局方向，可为CMHK提供战略参考。",
         "飞书监测表关键词（模块：竞争对手；命中：中国移动） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 75,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "公司动态",
@@ -1441,14 +1825,20 @@
         "中国移动",
         "中国移动A股主力资金净买入，反映资本市场对公司价值的判断，可用于跟踪母公司中国移动集团的市场表现。",
         "飞书监测表关键词（模块：竞争对手；命中：中国移动） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 76,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1460,14 +1850,20 @@
         "AI",
         "AI在金融业的实际应用案例，展示了AI驱动全通路经营模式的具体落地成果，可作为AI在服务行业应用的参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 77,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1479,14 +1875,20 @@
         "算力",
         "中国算力网络建设吸引私营投资，反映算力基础设施领域的资本流入趋势，可影响数据中心和网络部署的市场格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 78,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1498,14 +1900,20 @@
         "",
         "中天科技作为光纤通信和电力传输企业，其AI驱动的业绩高增长反映了AI基础设施供应链的需求旺盛，对电信网络部署和算力供应链有参考意义。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 79,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1517,14 +1925,20 @@
         "大模型",
         "中央广播电视总台发布AI大模型计划，涉及大模型在媒体行业的部署与应用，属于关键技术领域的行业动态。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：大模型） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 80,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1536,14 +1950,20 @@
         "5G",
         "中华电信是台湾主要电信运营商，属于国际对标运营商监控范围，其5G资费方案调整属于竞对产品与定价动作。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 81,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -1555,14 +1975,20 @@
         "口岸",
         "皇岗口岸联合一站式车道实战演练涉及深港通关基础设施优化，可影响跨境客流、物流效率及口岸网络部署需求。",
         "Agentic Search 覆盖补搜（模块：香港本地新闻；命中：口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 82,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1574,14 +2000,20 @@
         "",
         "北斗卫星导航系统应用普及率达九成 关键行业终端设备近四千万部属于可验证的关键技术事件，影响网络与运营。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 83,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1593,14 +2025,20 @@
         "网络安全",
         "网络安全板块因AI需求带动业绩预期上调，反映网络安全市场需求与AI基础设施投入增长。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：网络安全） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 84,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1612,14 +2050,20 @@
         "Iot",
         "台湾大哥大完成NB-IoT网络布建，属运营商物联网网络建设动作，可用于对标。",
         "飞书监测表关键词（模块：市场/产品类；命中：Iot） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 85,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1631,14 +2075,20 @@
         "",
         "台湾大哥大旗下台信电讯公开收购案推进，属运营商并购投资动作，可用于对标。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 86,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -1650,14 +2100,20 @@
         "",
         "无人机出口爆发涉及芯片与供应链变化，反映地缘冲突下的供应链与需求变化。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 87,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -1669,14 +2125,20 @@
         "",
         "台湾防务预算大幅增长反映台海地缘紧张加剧，可能影响区域供应链稳定、投资环境与电信运营连续性。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 88,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "市场/产品类",
@@ -1688,14 +2150,20 @@
         "港澳",
         "周生生港澳同店销售正增长反映香港本地消费市场回暖，可间接影响电信客户消费能力与需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 89,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "市场/产品类",
@@ -1707,14 +2175,20 @@
         "人工智能",
         "善用人工智能优化治理提升竞争力属于可验证的市场需求事件，影响客户与渠道。",
         "飞书监测表关键词（模块：香港本地新闻；命中：人工智能） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 90,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1726,14 +2200,20 @@
         "AI",
         "小电阻也能吃AI！凯美抢「电流哨兵」商机 直接＋间接双红利一起吃属于可验证的关键技术事件，影响供应韧性。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 91,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -1745,14 +2225,20 @@
         "",
         "软银公司作为被监测竞对，正就收购1X Technologies多数股权进行谈判，属竞对投资并购动作，可用于对标其资本配置与业务布局。",
         "后台固定战略词库（模块：竞争对手） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 92,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1764,14 +2250,20 @@
         "CPU",
         "Intel CPU市占率与数据中心营收出现具体变化，反映算力与数据中心芯片供需格局变化，可影响电信及云基础设施成本与供应。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：CPU） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 93,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1783,14 +2275,20 @@
         "5G",
         "OPPO宣布将首批推出5G产品，反映终端厂商5G商用节奏，可影响5G终端生态与网络需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 94,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -1802,14 +2300,20 @@
         "港澳",
         "港澳青年组团到访河套深圳园区，反映深港科创融合与人才流动趋势，可能影响本地企业客户需求与人才生态。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 95,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1821,14 +2325,20 @@
         "算力",
         "台湾数发部AI算力中心BOO案第二波开放申请，涉及算力基础设施部署与投资，可关注区域算力建设趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 96,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -1840,14 +2350,20 @@
         "皇崗口岸",
         "新皇岗口岸是深港跨境基础设施，涉及通关客流物流变化，可能影响本地网络部署与客户需求。",
         "后台固定战略词库（模块：香港本地新闻；命中：皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 97,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -1859,14 +2375,20 @@
         "香港、皇崗口岸",
         "新皇岗口岸联合一站式车道压力测试，反映跨境基础设施通关能力与客流物流需求变化。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 98,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -1878,14 +2400,20 @@
         "香港、皇崗口岸",
         "新皇岗口岸启用在即，无障碍设施实测反映跨境口岸配套完善与通关服务准备进展。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 99,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -1897,14 +2425,20 @@
         "香港、皇崗口岸",
         "新皇岗口岸启用导致皇巴或停运，反映跨境基础设施变化对本地交通与客流的影响。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 100,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -1916,14 +2450,20 @@
         "数据中心",
         "英伟达业务重心转向AI与数据中心，反映算力基础设施需求结构变化，影响数据中心相关供给与需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：数据中心） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 101,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -1935,14 +2475,20 @@
         "",
         "香港数码港举办AI、XR、机器人及低空经济论坛，展示本地数字科技产业具体活动与趋势。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 102,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -1954,14 +2500,20 @@
         "有线宽频",
         "有线宽频股价及资金流向数据反映市场对竞对的估值和交易动态，属于竞对资本市场信息。",
         "飞书监测表关键词（模块：竞争对手；命中：有线宽频） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 103,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -1973,14 +2525,20 @@
         "",
         "香港青年失业率逆势上升至5.7%，涉及逾1.8万人，反映本地劳动力市场需求结构变化，可能影响企业客户消费与需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 104,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -1992,14 +2550,20 @@
         "",
         "欧洲研究台湾与南韩民防制度以应对长期军事威胁，属地缘安全与防卫韧性议题，可能影响区域稳定与运营环境。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 105,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2011,14 +2575,20 @@
         "",
         "欧洲军工厂遭破坏及多国军事扩编反映地缘安全局势升级，可能影响供应链稳定与跨国运营风险。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 106,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "市场/产品类",
@@ -2030,14 +2600,20 @@
         "",
         "港珠澳大桥经贸新通道拓展供港市场，进口冰鲜鱿鱼直达香港，反映跨境物流与供港供应链新变化，可影响本地消费与物流需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 107,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -2049,14 +2625,20 @@
         "AI",
         "生产力局启动“全民AI”普惠计划 推出“AI速学堂”引领跨界别智能化发展属于可验证的关键技术事件，影响客户与渠道。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 108,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "政策监管",
@@ -2068,14 +2650,20 @@
         "",
         "稳定币监理五地比一比：MiCA、GENIUS 谁管更严？BIS 拆解属于可验证的监管政策事件，影响合规与牌照。",
         "飞书监测表关键词（模块：政策/法规类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 109,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -2087,14 +2675,20 @@
         "",
         "第一期GenA.I.沙盒++共有30家金融机构和27家技术合作伙伴参与属于可验证的关键技术事件，影响客户与渠道。",
         "后台固定竞对词库（HKT） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 110,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2106,14 +2700,20 @@
         "",
         "高德在交通展展示AI与具身智能成果，涉及AI在交通治理与安全出行的具体应用，属关键技术演进。",
         "飞书监测表关键词（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 111,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2125,14 +2725,20 @@
         "算力",
         "算力需求扩张推动中国电子行业利润攀升，反映算力基础设施需求增长，影响供应链与成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 112,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2144,14 +2750,20 @@
         "业绩、财报",
         "Okta作为企业级身份安全厂商，其AI安全需求驱动的业绩增长反映了企业IT安全支出趋势，与监控关键词'业绩''财报'存在实质语义关联，可为电信行业安全投入对标提供参考。",
         "Agentic Search 覆盖补搜（模块：竞争对手；命中：业绩、财报） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 113,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2163,14 +2775,20 @@
         "业绩",
         "英伟达H200芯片对华交付的具体进展，涉及AI芯片供应链与出口管制下的市场准入变化，可影响数据中心算力供给。",
         "Agentic Search 覆盖补搜（模块：竞争对手；命中：业绩） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 114,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2182,14 +2800,20 @@
         "AI",
         "辉达财报印证AI算力需求持续扩张，反映AI基础设施投资周期延续，影响数据中心与算力相关需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 115,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2201,14 +2825,20 @@
         "数据中心",
         "AI数据中心电力、冷却与运营体系建设滞后于算力迭代，反映算力基础设施供给瓶颈，影响数据中心部署与运营成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：数据中心） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 116,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2220,14 +2850,20 @@
         "",
         "阿里巴巴发布低成本开源AI模型，涉及大模型技术演进与算力成本趋势，可影响AI基础设施需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 117,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -2239,14 +2875,20 @@
         "",
         "香港本地氢能发电试验项目获批，涉及能源基础设施新部署，可影响本地能源供应格局与相关产业需求。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 118,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2258,13 +2900,19 @@
         "",
         "香港青年就业计划申请人数增长，反映本地就业市场需求变化，涉及大湾区融合与消费相关宏观指标。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 119,
       "values": [
         "接受",
-        "待审核",
+        "暂缓",
         "已纳入",
         "2026-08-28",
         "香港本地",
@@ -2282,15 +2930,15 @@
         "id": "fs-76b4f5e7ee939e57",
         "name": "廖望 Alex LIAO Wang",
         "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "reviewedAt": "2026-08-28T03:48:09+00:00"
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
       }
     },
     {
       "rowNumber": 120,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2302,14 +2950,20 @@
         "",
         "港股通资金净流入创新高反映香港资本市场资金需求与流动性变化，可影响本地企业融资与投资环境。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 121,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2321,14 +2975,20 @@
         "Iot",
         "港口导入大规模IoT智慧管理系统，展示物联网在基础设施的实际部署，可作为智慧城市与IoT应用参考。",
         "飞书监测表关键词（模块：市场/产品类；命中：Iot） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 122,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2340,14 +3000,20 @@
         "Data center",
         "美国地方市镇无限期禁止数据中心建设，反映数据中心扩张在部分地区面临监管阻力，可能影响行业供给与选址趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 123,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2359,14 +3025,20 @@
         "",
         "AI硬核股重新走强反映市场对AI板块的需求与资本关注回升，可影响相关基础设施投资预期。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 124,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2378,14 +3050,20 @@
         "算力",
         "微软AI算力部署触及供电上限，显示电力成为算力扩张瓶颈，影响数据中心基础设施投资与供给。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 125,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2397,14 +3075,20 @@
         "算力",
         "AI算力需求持续增长反映市场需求上升，可带动相关基础设施与算力投资。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 126,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2416,14 +3100,20 @@
         "CPU",
         "AWS 和 NVIDIA 计划在 2027-2028 年间部署 2 万个 GPU，并将 Vera CPU 和客制化 NVHBM 引入 Trainium。属于可验证的基础设施事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：CPU） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 127,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2435,14 +3125,20 @@
         "人工智能",
         "Alphabet市值蒸发逾7000亿美元 投资者对其人工智能业务优势打下问号属于可验证的宏观与地缘事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：人工智能） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 128,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2454,14 +3150,20 @@
         "5G",
         "AmpliTech获得亚洲5G订单730万美元，反映5G基础设施供应链需求，涉及网络设备组件采购。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 129,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2473,14 +3175,20 @@
         "",
         "Anthropic开放AI硬件标准研究预览，涉及AI基础设施硬件规范，与人工智能监控方向相关。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 130,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -2492,14 +3200,20 @@
         "HKT",
         "HKT.AI化身家居与伴学智囊显示正式监控竞对发生具体经营事件，影响产品与定价。",
         "后台固定竞对词库（HKT；命中：HKT） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 131,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2511,14 +3225,20 @@
         "token",
         "OpenAI自研ASIC攻推论 AI晶片进入Token效能战属于可验证的关键技术事件，影响产品与定价。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：token） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 132,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2530,13 +3250,19 @@
         "War",
         "战争导致能源价格持续上涨，反映地缘冲突对宏观成本与通胀的传导，影响企业运营成本与消费需求。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 133,
       "values": [
-        "待审核",
-        "待审核",
+        "暂缓",
+        "暂缓",
         "未同步",
         "2026-08-28",
         "香港本地",
@@ -2549,14 +3275,20 @@
         "",
         "香港作为英欧独角兽亚洲基地的定位获讨论，涉及香港吸引企业落户与市场需求，属本地战略信号。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 134,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2568,14 +3300,20 @@
         "",
         "美加贸易谈判破裂并互征关税，反映地缘紧张与贸易摩擦升级，影响供应链与市场准入。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 135,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2587,14 +3325,20 @@
         "AI",
         "iPhone折叠机结合AI热潮，预计首年出货千万台，反映终端设备AI需求与市场趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 136,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2606,14 +3350,20 @@
         "",
         "中国在台湾附近部署创纪录数量舰船，属地缘政治紧张升级的具体事件，可能影响区域市场与运营环境。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 137,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2625,14 +3375,20 @@
         "",
         "大模型盲测评分与股价上涨反映AI模型能力与市场变化，与算力、大模型等监控方向实质相关。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 138,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2644,14 +3400,20 @@
         "AI",
         "AI代理控制实体机器的新能力属AI技术具体突破，与AI监控关键词实质相关。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 139,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2663,14 +3425,20 @@
         "AI",
         "【美股】辉达业绩舒缓AI泡沫担忧属于可验证的关键技术事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 140,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2682,14 +3450,20 @@
         "",
         "地缘冲突消耗防空导弹库存，涉及军事供应链紧张与全球安全格局变化，可能间接影响电信基础设施安全与供应链稳定性。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 141,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -2701,13 +3475,19 @@
         "AI",
         "中银香港在支付场景中引入AI培训，反映香港金融业AI应用的具体落地进展，可影响本地企业客户对AI和数字化服务的需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 142,
       "values": [
-        "待审核",
-        "待审核",
+        "暂缓",
+        "暂缓",
         "未同步",
         "2026-08-28",
         "香港本地",
@@ -2720,14 +3500,20 @@
         "港澳",
         "吉港澳经贸合作升级涉及香港作为贸易枢纽的角色，特产出海可能带动跨境物流、企业服务和通信需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 143,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2739,14 +3525,20 @@
         "AI",
         "AI在医疗手术中实现实时影像分析与决策辅助的突破性应用，展示了AI在关键领域的落地进展，可能推动边缘计算和低延迟网络需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 144,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2758,14 +3550,20 @@
         "算力",
         "英伟达作为算力核心供应商强调算力投资回报丰厚，反映AI算力需求持续旺盛，影响电信运营商数据中心与算力基础设施投资决策。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 145,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2777,14 +3575,20 @@
         "",
         "鸿蒙成为全球第三大移动操作系统，反映中国自主操作系统生态取得实质性突破，可能影响移动生态格局及运营商终端合作策略。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 146,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2796,14 +3600,20 @@
         "AI",
         "阿里巴巴作为中国主要云与AI厂商大力拓展AI并有再融资可能，反映AI领域资本投入持续加大，影响行业竞争格局与算力需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 147,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -2815,14 +3625,20 @@
         "香港、皇崗口岸",
         "新皇岗口岸通关指南发布，涉及跨境基础设施运作，可能影响口岸客流、物流及网络部署需求。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 148,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2834,14 +3650,20 @@
         "算力",
         "韩国AI算力交换与模型落地受限的具体现象，反映算力供给与基础设施变化，可作行业趋势参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 149,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -2853,14 +3675,20 @@
         "大模型",
         "港股AI大模型个股行情反映本地市场对大模型技术与资本的具体变化，可作市场需求与资本配置参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：大模型） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 150,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -2872,14 +3700,20 @@
         "AI",
         "香港生产力局推出免费AI网课，反映本地AI技能培训与普及的具体动作，可影响本地AI人才与市场需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 151,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2891,14 +3725,20 @@
         "算力",
         "InP短缺影响算力扩张，涉及AI基础设施关键材料供应变化，可影响算力供给与成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 152,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -2910,14 +3750,20 @@
         "",
         "陕港科创合作交流大会涉及香港本地科技创新协同，与河套园区等港澳合作战略方向存在实质关联，可能影响本地科创生态与数字基础设施需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 153,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2929,14 +3775,20 @@
         "算力",
         "算力需求驱动CPO光通信技术成为市场焦点，涉及数据中心互联和AI基础设施关键技术演进，与算力监控词存在实质语义关联。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 154,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -2948,14 +3800,20 @@
         "",
         "内存芯片公司对全球股市回报贡献显著，反映AI与存储芯片需求驱动的市场变化，与数据中心、算力基础设施相关。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 155,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2967,14 +3825,20 @@
         "AI",
         "美AI失控入侵报告：1200智能体暗建通信渠道交换逾7万条消息- 国际属于可验证的关键技术事件，影响网络与运营。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 156,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2986,14 +3850,20 @@
         "AI",
         "美国银行下调Intuit评级至中性，AI竞争压力加剧增长隐忧属于可验证的关键技术事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 157,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -3005,14 +3875,20 @@
         "",
         "英伟达作为AI算力核心供应商，其收入指引和产能瓶颈反映AI基础设施需求持续强劲，与监控的算力、服务器、大模型等关键词存在实质关联，影响电信行业AI部署的成本与供应链。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 158,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -3024,14 +3900,20 @@
         "算力",
         "华为升腾910C芯片被抢购一空，反映国产算力供需紧张，影响AI基础设施部署成本与供应。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 159,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -3043,14 +3925,20 @@
         "大模型",
         "中国大模型厂商采用匿名实测新策略，反映行业竞争与监管环境变化，影响AI产业格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：大模型） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 160,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -3062,14 +3950,20 @@
         "",
         "记忆体股高开低走，美光科技跌3%，川普政府拟推出新一轮半导体关税属于可验证的关键技术事件，影响供应韧性。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 161,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "行业动态",
@@ -3081,14 +3975,20 @@
         "",
         "迈威尔科技作为数据中心芯片与网络基础设施关键供应商，营收强劲增长并上调远期指引，反映数据中心和AI网络基础设施需求持续扩张，影响电信行业供应链与算力成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 162,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "基础设施/网络/技术类",
@@ -3100,14 +4000,20 @@
         "AI",
         "金管局主导的GenAI测试有57家企业参与，涉及反诈骗等具体应用，反映香港金融业AI技术部署与合规需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 163,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "国际/行业",
         "竞对动态",
@@ -3119,14 +4025,20 @@
         "5G",
         "中华电信推出5G儿童智慧手表资费促销，属竞对产品与资费动作，可用于对标。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 164,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-28",
         "香港本地",
         "行业动态",
@@ -3138,7 +4050,13 @@
         "AI",
         "论坛聚焦AI对创意产业IP的影响，涉及AI技术在香港创意经济中的应用与法律框架讨论，属行业层面的技术与政策交叉议题。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T04:10:37+00:00"
+      }
     },
     {
       "rowNumber": 167,
