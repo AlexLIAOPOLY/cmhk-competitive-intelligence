@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "298166d74bd3a721f0be8f34",
+      "task_id": "incident:298166d74bd3a721f0be8f34",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-28T16:51:37+08:00",
+      "started_at_hkt": "2026-08-28T16:51:37+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:51:37+08:00",
+      "completed_at_hkt": "2026-08-28T16:52:07+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "1174886513eff1b4fb541c3f",
       "task_id": "incident:1174886513eff1b4fb541c3f",
       "title": "主项目后台任务",
@@ -3405,7 +3429,7 @@
       ],
       "occurred_at_hkt": "2026-08-28 09:17:45",
       "started_at_hkt": "2026-08-28T16:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-28T16:51:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:56:07+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11559,7 +11583,7 @@
       ],
       "occurred_at_hkt": "2026-08-24T17:03:59+08:00",
       "started_at_hkt": "2026-08-28T16:37:11+08:00",
-      "heartbeat_at_hkt": "2026-08-28T16:51:07+08:00",
+      "heartbeat_at_hkt": "2026-08-28T16:56:07+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12071,32 +12095,6 @@
       "started_at_hkt": "2026-08-24T03:06:22+08:00",
       "heartbeat_at_hkt": "2026-08-24T03:37:05+08:00",
       "completed_at_hkt": "2026-08-24T03:37:35+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "3adb7ed6dc9139a80e187f89",
-      "task_id": "incident:3adb7ed6dc9139a80e187f89",
-      "title": "战略新闻定时扫描 09:00",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻定时扫描 09:00",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "历史结案（旧口径）",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻定时扫描未完整成功",
-      "impact": "已确认：09:00战略新闻定时扫描的完整流程未成功完成。推断：决策层可能未收到当日关键战略资讯，影响战略决策时效性；若飞书消息已部分写入但未回读确认，存在数据不一致风险；后续14:00扫描可能受进程锁或队列残留影响。",
-      "suggestions": [
-        "检查飞书消息发送日志及API调用记录，确认09:00批次消息是否实际发送成功，以及是否有错误返回码或限流记录。",
-        "检查战略通知链路的回读验证日志，确认数据写入与回读是否一致，排查是否存在数据丢失或格式异常。",
-        "检查进程锁状态及候选队列残留，确认是否有未消费的消息或锁未释放，避免影响后续14:00定时任务。",
-        "修复后通过模拟测试或手动触发一次非生产环境的端到端验证，确认扫描、写入、回读、通知全链路恢复正常。"
-      ],
-      "occurred_at_hkt": "2026-08-23T09:48:06+08:00",
-      "started_at_hkt": "2026-08-23T09:48:07+08:00",
-      "heartbeat_at_hkt": "2026-08-23T09:48:07+08:00",
-      "completed_at_hkt": "2026-08-24T17:35:31+08:00",
       "handled_at_hkt": ""
     }
   ],

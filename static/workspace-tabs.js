@@ -351,7 +351,7 @@
     return { ok, reason: ok ? "" : "no_audited_rows", unit: units[0], allYears, commonYears, visibleYears, sharedVisibleYears, companyYears, coveredCompanies, pointsPerCompany };
   }
 
-  function competitorHasUsableMetric(data, companyIds, years, metricKey = "") {
+  function competitorHasCompleteMetric(data, companyIds, years, metricKey = "") {
     const rows = [...data.cells, ...(data.gaps || [])];
     const metrics = metricKey ? data.metrics.filter((metric) => metric.key === metricKey) : data.metrics;
     return metrics.some((metric) => {
@@ -362,10 +362,14 @@
       const windows = years ? [years] : [3, 5, 10, 99];
       return windows.some((windowYears) => {
         const comparison = competitorComparableWindow(data, companyIds, metric.key, windowYears);
-        return comparison.ok && data.cells.some((cell) => companyIds.includes(cell.company)
-          && cell.metric === metric.key
-          && comparison.visibleYears.includes(cell.year)
-          && Number.isFinite(cell.value));
+        if (!comparison.ok || !comparison.visibleYears.length) return false;
+        const disclosed = new Set(data.cells
+          .filter((cell) => companyIds.includes(cell.company)
+            && cell.metric === metric.key
+            && comparison.visibleYears.includes(cell.year)
+            && Number.isFinite(cell.value))
+          .map((cell) => `${cell.company}|${cell.year}`));
+        return companyIds.every((company) => comparison.visibleYears.every((year) => disclosed.has(`${company}|${year}`)));
       });
     });
   }
@@ -373,7 +377,7 @@
   function visibleCompetitorIds(data, selectedCompanies, years, metricKey = "") {
     if (!selectedCompanies.length) return new Set(data.companies.map((company) => company.id));
     return new Set(data.companies
-      .filter((company) => selectedCompanies.includes(company.id) || competitorHasUsableMetric(data, [...selectedCompanies, company.id], years, metricKey))
+      .filter((company) => selectedCompanies.includes(company.id) || competitorHasCompleteMetric(data, [...selectedCompanies, company.id], years, metricKey))
       .map((company) => company.id));
   }
 
@@ -393,19 +397,19 @@
       return units.length === 1 ? (metric.unitLabels?.[units[0]] || units[0]) : "按所选竞对确定单位";
     };
     const comparableMetrics = selection.companies.length
-      ? data.metrics.filter((metric) => competitorHasUsableMetric(data, selection.companies, selection.years, metric.key))
+      ? data.metrics.filter((metric) => competitorHasCompleteMetric(data, selection.companies, selection.years, metric.key))
       : data.metrics;
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     const yearOptions = [3, 5, 10, 99];
     const validYears = new Set(selection.companies.length && selection.metric
-      ? yearOptions.filter((years) => competitorHasUsableMetric(data, selection.companies, years, selection.metric))
+      ? yearOptions.filter((years) => competitorHasCompleteMetric(data, selection.companies, years, selection.metric))
       : yearOptions);
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 1 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company, optionIndex) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" style="--option-order:${optionIndex}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
-        <fieldset><legend><i>02</i>选择指标 <small>仅显示所选竞对及年份内至少有一个披露值的指标</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选组合暂无披露数值"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
-        <fieldset><legend><i>03</i>选择年限 <small>仅可选含披露值的窗口，缺值仍展示审计理由</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${!validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${!validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
+        <fieldset><legend><i>02</i>选择指标 <small>仅显示所选竞对在整个年份窗口均有披露值的指标</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选组合暂无完整披露数据"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
+        <fieldset><legend><i>03</i>选择年限 <small>仅可选所选竞对逐年数据完整的窗口</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${!validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${!validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
     const transitionCompetitorOptions = (nextVisible, revealed = []) => {
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
