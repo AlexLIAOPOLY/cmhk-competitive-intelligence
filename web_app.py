@@ -4099,6 +4099,7 @@ def _normalize_crawl_task(run: dict) -> dict:
         "news-selection-agent": "新闻自动初筛",
         "four-database-source-discovery": "01:00四库资料搜索",
         "executive-intelligence-refresh": "四库刷新",
+        "quarterly-data-release": "季度数据发布",
         "crawl": "爬虫",
     }
     operational_summary = run.get("operational_summary") if isinstance(run.get("operational_summary"), dict) else {}

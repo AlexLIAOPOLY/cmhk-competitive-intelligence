@@ -143,6 +143,23 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("更新失败", app)
         self.assertIn("预警发送失败", app)
 
+    def test_quarterly_release_is_visible_as_an_independent_task(self) -> None:
+        task = web_app._normalize_crawl_task(
+            {
+                "crawl_run_id": "release-1",
+                "task_kind": "quarterly-data-release",
+                "trigger": "季度竞对数据发布",
+                "scope": "quarterly_competitor_metrics",
+                "run_status": "completed",
+                "stream_log": {"lines": 9, "bytes": 1200},
+                "operational_summary": {"release_id": "qcm_test", "row_count": 3054},
+            }
+        )
+
+        self.assertEqual(task["kind_label"], "季度数据发布")
+        self.assertEqual(task["title"], "季度竞对数据发布")
+        self.assertEqual(task["lines"], 9)
+
     def test_status_reports_any_running_unified_task(self) -> None:
         with mock.patch.object(
             web_app,

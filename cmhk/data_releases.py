@@ -15,9 +15,10 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 DATASET_KEY = "quarterly_competitor_metrics"
@@ -36,6 +37,19 @@ REQUIRED_COLUMNS = frozenset(
     }
 )
 HEX_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+ReleaseEventSink = Callable[[str, str, str, dict[str, Any]], None]
+
+
+def _emit_release_event(
+    sink: ReleaseEventSink | None,
+    phase: str,
+    message: str,
+    *,
+    level: str = "info",
+    data: dict[str, Any] | None = None,
+) -> None:
+    if sink is not None:
+        sink(phase, message, level, dict(data or {}))
 
 
 def sha256_file(path: Path) -> str:
@@ -211,11 +225,33 @@ def publish_quarterly_release(
     release_root: str | Path,
     *,
     project_root: str | Path | None = None,
+    event_sink: ReleaseEventSink | None = None,
 ) -> dict[str, Any]:
     """Publish one immutable release and atomically advance ``current.json``."""
 
-    validated = validate_quarterly_dataset(Path(dataset_dir))
+    dataset_path = Path(dataset_dir).expanduser().resolve()
     root = Path(release_root).expanduser().resolve()
+    _emit_release_event(
+        event_sink,
+        "读取输入",
+        "开始读取季度竞对数据集与发布目录。",
+        data={"dataset_dir": str(dataset_path), "release_root": str(root)},
+    )
+    validated = validate_quarterly_dataset(dataset_path)
+    _emit_release_event(
+        event_sink,
+        "数据门禁",
+        "数据结构、自然键与质量字段校验通过。",
+        level="success",
+        data={
+            "source_dataset_id": validated["manifest"].get("id"),
+            "row_count": validated["rows"],
+            "data_as_of": validated["data_as_of"],
+            "verification_count_below_2": validated["verification_count_below_2"],
+            "blocked_status_rows": validated["blocked_status_rows"],
+            "entrypoint_count": len(validated["entrypoints"]),
+        },
+    )
     root.mkdir(parents=True, exist_ok=True)
     source_artifacts = [
         {
@@ -232,6 +268,17 @@ def publish_quarterly_release(
     ]
     content_sha256 = hashlib.sha256(_stable_json(fingerprint_input)).hexdigest()
     release_id = f"qcm_{content_sha256[:24]}"
+    _emit_release_event(
+        event_sink,
+        "内容指纹",
+        "已计算本次发布内容指纹。",
+        data={
+            "release_id": release_id,
+            "content_sha256": content_sha256,
+            "artifact_count": len(source_artifacts),
+            "total_bytes": sum(int(item["size"]) for item in source_artifacts),
+        },
+    )
     release_relative = Path("releases") / release_id
     release_dir = root / release_relative
     release_manifest_path = release_dir / "release.json"
@@ -251,6 +298,12 @@ def publish_quarterly_release(
                 if actual_sha != artifact["sha256"]:
                     raise RuntimeError(f"release copy hash mismatch: {artifact['path']}")
                 copied.append({key: artifact[key] for key in ("path", "size", "sha256")})
+                _emit_release_event(
+                    event_sink,
+                    "文件固化",
+                    f"已固化并复核文件：{artifact['path']}。",
+                    data={key: artifact[key] for key in ("path", "size", "sha256")},
+                )
             source_manifest = validated["manifest"]
             release_manifest = {
                 "schema_version": RELEASE_SCHEMA_VERSION,
@@ -289,6 +342,35 @@ def publish_quarterly_release(
         raise RuntimeError("existing release manifest does not match its directory")
     if release_manifest.get("content_sha256") != content_sha256:
         raise RuntimeError("existing release content fingerprint is inconsistent")
+    for artifact in release_manifest.get("artifacts") or []:
+        target = release_dir / str(artifact.get("path") or "")
+        if (
+            not target.is_file()
+            or target.is_symlink()
+            or target.stat().st_size != int(artifact.get("size") or -1)
+            or sha256_file(target) != artifact.get("sha256")
+        ):
+            raise RuntimeError(f"existing release artifact verification failed: {artifact.get('path')}")
+        if not created:
+            _emit_release_event(
+                event_sink,
+                "文件复核",
+                f"既有不可变版本文件复核通过：{artifact['path']}。",
+                level="success",
+                data={key: artifact[key] for key in ("path", "size", "sha256")},
+            )
+    _emit_release_event(
+        event_sink,
+        "不可变版本",
+        "不可变发布版本已创建。" if created else "相同内容版本已存在，复用原发布目录。",
+        level="success",
+        data={
+            "release_id": release_id,
+            "created": created,
+            "release_manifest_sha256": release_manifest_sha256,
+            "artifact_count": len(release_manifest.get("artifacts") or []),
+        },
+    )
     pointer = {
         "schema_version": POINTER_SCHEMA_VERSION,
         "dataset_key": DATASET_KEY,
@@ -301,6 +383,19 @@ def publish_quarterly_release(
         "content_sha256": content_sha256,
     }
     _atomic_write_json(root / "current.json", pointer)
+    _emit_release_event(
+        event_sink,
+        "发布指针",
+        "current.json 已原子指向本次不可变版本。",
+        level="success",
+        data={
+            "release_id": release_id,
+            "current_pointer": str(root / "current.json"),
+            "release_manifest_sha256": release_manifest_sha256,
+            "row_count": pointer["row_count"],
+            "data_as_of": pointer.get("data_as_of"),
+        },
+    )
     return {
         "ok": True,
         "created": created,
@@ -309,6 +404,110 @@ def publish_quarterly_release(
         "current_pointer": str(root / "current.json"),
         **pointer,
     }
+
+
+def publish_quarterly_release_task(
+    dataset_dir: str | Path,
+    release_root: str | Path,
+    *,
+    project_root: str | Path | None = None,
+    parent_crawl_run_id: str = "",
+    trigger_kind: str = "手动",
+) -> dict[str, Any]:
+    """Publish through an independently auditable task in the crawler task console."""
+
+    from cmhk.crawl.run_registry import (
+        append_crawl_run_event,
+        finalize_operational_crawl_run,
+        heartbeat_crawl_run,
+        start_crawl_run,
+    )
+
+    started = time.monotonic()
+    task = start_crawl_run(
+        trigger="季度竞对数据发布",
+        scope=f"{DATASET_KEY} · {Path(dataset_dir).name}",
+        task_kind="quarterly-data-release",
+        parent_crawl_run_id=parent_crawl_run_id,
+        phase="发布准备",
+        progress_detail="已建立独立发布任务，准备读取数据集。",
+    )
+    task_run_id = str(task["crawl_run_id"])
+    stream_log_path = str(task["stream_log_path"])
+
+    def event_sink(
+        phase: str, message: str, level: str, data: dict[str, Any]
+    ) -> None:
+        timestamp = datetime.now(UTC).isoformat(timespec="seconds")
+        heartbeat_crawl_run(task_run_id, phase, message, append_log=False)
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "release-log",
+                "timestamp": timestamp,
+                "level": level,
+                "phase": phase,
+                "message": message,
+                "data": data,
+            },
+        )
+
+    event_sink(
+        "任务启动",
+        f"独立季度竞对数据发布任务已启动；触发方式：{trigger_kind}。",
+        "info",
+        {
+            "task_run_id": task_run_id,
+            "parent_crawl_run_id": parent_crawl_run_id,
+            "trigger_kind": trigger_kind,
+        },
+    )
+    try:
+        result = publish_quarterly_release(
+            dataset_dir,
+            release_root,
+            project_root=project_root,
+            event_sink=event_sink,
+        )
+        duration_ms = int((time.monotonic() - started) * 1000)
+        summary = {
+            "release_id": result["release_id"],
+            "content_sha256": result["content_sha256"],
+            "release_manifest_sha256": result["release_manifest_sha256"],
+            "row_count": result["row_count"],
+            "data_as_of": result.get("data_as_of"),
+            "created": result["created"],
+            "parent_crawl_run_id": parent_crawl_run_id,
+        }
+        event_sink("任务完成", "季度竞对数据版本发布完成。", "success", summary)
+        finalize_operational_crawl_run(
+            task_run_id,
+            ok=True,
+            duration_ms=duration_ms,
+            progress_detail=(
+                f"发布 {result['release_id']} 完成，共 {result['row_count']} 行；"
+                f"数据截至 {result.get('data_as_of') or '未标注'}。"
+            ),
+            summary=summary,
+        )
+        return {**result, "task_id": f"crawl:{task_run_id}", "task_run_id": task_run_id}
+    except Exception as exc:
+        duration_ms = int((time.monotonic() - started) * 1000)
+        event_sink(
+            "任务失败",
+            f"季度竞对数据发布失败：{exc}",
+            "error",
+            {"error_type": type(exc).__name__},
+        )
+        finalize_operational_crawl_run(
+            task_run_id,
+            ok=False,
+            duration_ms=duration_ms,
+            progress_detail=f"季度竞对数据发布失败：{exc}",
+            failure_stage="季度数据发布",
+            summary={"error": str(exc), "parent_crawl_run_id": parent_crawl_run_id},
+        )
+        raise
 
 
 def default_release_root(project_root: str | Path) -> Path:
@@ -340,6 +539,7 @@ __all__ = [
     "DATASET_KEY",
     "default_release_root",
     "publish_quarterly_release",
+    "publish_quarterly_release_task",
     "resolve_release_request",
     "sha256_file",
     "validate_quarterly_dataset",

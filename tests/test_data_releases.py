@@ -5,9 +5,11 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from cmhk.data_releases import (
     publish_quarterly_release,
+    publish_quarterly_release_task,
     resolve_release_request,
     sha256_file,
     validate_quarterly_dataset,
@@ -142,6 +144,70 @@ class DataReleaseTests(unittest.TestCase):
             self.assertIsNone(
                 resolve_release_request(root, "/data-releases/quarterly/missing.json")
             )
+
+    def test_publish_emits_detailed_quality_hash_file_and_pointer_events(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            events: list[tuple[str, str, str, dict]] = []
+
+            result = publish_quarterly_release(
+                self._dataset(root),
+                root / "releases-output",
+                project_root=root,
+                event_sink=lambda phase, message, level, data: events.append(
+                    (phase, message, level, data)
+                ),
+            )
+
+        phases = [event[0] for event in events]
+        self.assertEqual(phases[:3], ["读取输入", "数据门禁", "内容指纹"])
+        self.assertIn("文件固化", phases)
+        self.assertEqual(phases[-2:], ["不可变版本", "发布指针"])
+        quality = next(event[3] for event in events if event[0] == "数据门禁")
+        self.assertEqual(quality["row_count"], 1)
+        self.assertEqual(quality["data_as_of"], "2026-06-30")
+        pointer = events[-1][3]
+        self.assertEqual(pointer["release_id"], result["release_id"])
+        self.assertEqual(len(pointer["release_manifest_sha256"]), 64)
+
+    def test_publish_task_is_independent_and_links_parent_by_release_log(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            events: list[dict] = []
+            with (
+                mock.patch(
+                    "cmhk.crawl.run_registry.start_crawl_run",
+                    return_value={
+                        "crawl_run_id": "release-task-1",
+                        "stream_log_path": str(root / "release-task-1.jsonl"),
+                    },
+                ) as start,
+                mock.patch("cmhk.crawl.run_registry.heartbeat_crawl_run"),
+                mock.patch(
+                    "cmhk.crawl.run_registry.append_crawl_run_event",
+                    side_effect=lambda _path, payload: events.append(payload),
+                ),
+                mock.patch(
+                    "cmhk.crawl.run_registry.finalize_operational_crawl_run"
+                ) as finalize,
+            ):
+                result = publish_quarterly_release_task(
+                    self._dataset(root),
+                    root / "releases-output",
+                    project_root=root,
+                    parent_crawl_run_id="refresh-parent-1",
+                    trigger_kind="四库刷新",
+                )
+
+        self.assertEqual(result["task_id"], "crawl:release-task-1")
+        self.assertEqual(start.call_args.kwargs["task_kind"], "quarterly-data-release")
+        self.assertEqual(
+            start.call_args.kwargs["parent_crawl_run_id"], "refresh-parent-1"
+        )
+        self.assertEqual(events[0]["phase"], "任务启动")
+        self.assertEqual(events[-1]["phase"], "任务完成")
+        self.assertEqual(events[-1]["data"]["release_id"], result["release_id"])
+        self.assertTrue(finalize.call_args.kwargs["ok"])
 
 
 if __name__ == "__main__":

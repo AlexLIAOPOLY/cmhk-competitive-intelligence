@@ -25,7 +25,7 @@ from zoneinfo import ZoneInfo
 
 from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
 from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
-from cmhk.data_releases import default_release_root, publish_quarterly_release
+from cmhk.data_releases import default_release_root, publish_quarterly_release_task
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from ai_key_rotation import open_llm_request
@@ -4532,7 +4532,9 @@ def _promote_directory(stage: Path, target: Path) -> None:
     shutil.rmtree(backup, ignore_errors=True)
 
 
-def _refresh_builder_domain(domain: str, *, dry_run: bool = False) -> dict[str, Any]:
+def _refresh_builder_domain(
+    domain: str, *, dry_run: bool = False, parent_task_run_id: str = ""
+) -> dict[str, Any]:
     configs = {
         "international": {
             "script": ROOT / "scripts/build_quarterly_metrics_knowledge.py",
@@ -4585,10 +4587,12 @@ def _refresh_builder_domain(domain: str, *, dry_run: bool = False) -> dict[str, 
                 _promote_directory(stage, Path(config["target"]))
         release = None
         if domain == "international" and not dry_run:
-            release = publish_quarterly_release(
+            release = publish_quarterly_release_task(
                 Path(config["target"]),
                 default_release_root(ROOT),
                 project_root=ROOT,
+                parent_crawl_run_id=parent_task_run_id,
+                trigger_kind="四库刷新",
             )
         return {
             "ok": True,
@@ -4825,7 +4829,11 @@ def run_pipeline(
                     f"正在重建{label}数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
                 )
                 try:
-                    state["domains"][domain] = _refresh_builder_domain(domain, dry_run=dry_run)
+                    state["domains"][domain] = _refresh_builder_domain(
+                        domain,
+                        dry_run=dry_run,
+                        parent_task_run_id=task_run_id,
+                    )
                     _append_log(f"{domain} ok changed={state['domains'][domain]['changed']}")
                     validation = state["domains"][domain].get("validation") or {}
                     changed = "已更新" if state["domains"][domain].get("changed") else "无数据变化"
