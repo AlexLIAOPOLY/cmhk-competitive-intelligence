@@ -175,6 +175,206 @@
       "evidence_note": "SmarTone 2015/16官方年报披露集团全年EBITDA 2,660.528百万港元；来源数量不足三份仍保留展示。"
     },
     {
+      "domain": "local",
+      "entity": "3HK",
+      "metric": "net_income",
+      "period": "FY2016",
+      "value": 682,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+      ],
+      "evidence_note": "HTHKH 2017官方年报比较表披露经同一控制合并会计法重列后FY2016股东应占利润682百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "3HK",
+      "metric": "net_income",
+      "period": "FY2017",
+      "value": 4766,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+      ],
+      "evidence_note": "HTHKH 2017官方年报披露FY2017股东应占利润4,766百万港元；其中包含出售固网业务及其他项目的4,223百万港元一次性净收益，跨年解读必须保留该口径提示。"
+    },
+    {
+      "domain": "local",
+      "entity": "3HK",
+      "metric": "net_income",
+      "period": "FY2024",
+      "value": 6,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2024/ar2024.pdf",
+        "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf"
+      ],
+      "evidence_note": "HTHKH 2024官方年报披露FY2024股东应占利润6百万港元；2025年报将FY2024澳门业务列为终止经营后的重列比较数仍为6百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2016",
+      "value": 4889,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/01e%20-%20Annual%20Repor.pdf"
+      ],
+      "evidence_note": "HKT 2016官方年报披露FY2016股份合订单位持有人应占利润4,889百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2017",
+      "value": 4745,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf"
+      ],
+      "evidence_note": "HKT 2018官方年报按HKFRS 9、15及提前采用HKFRS 16重列FY2017，股份合订单位持有人应占利润电由原报的5,097百万港元调整为4,745百万港元；工作台采用后续可比重列口径。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2018",
+      "value": 4825,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf"
+      ],
+      "evidence_note": "HKT 2018官方年报披露FY2018股份合订单位持有人应占利润4,825百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2019",
+      "value": 5217,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/e1-Annual-Report.pdf"
+      ],
+      "evidence_note": "HKT 2019官方年报披露FY2019股份合订单位持有人应占利润5,217百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2020",
+      "value": 5303,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/e01_Annual%20Report.pdf"
+      ],
+      "evidence_note": "HKT 2020官方年报披露FY2020股份合订单位持有人应占利润5,303百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "HKT",
+      "metric": "net_income",
+      "period": "FY2023",
+      "value": 4991,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/e01-2023%20Annual%20Re.pdf"
+      ],
+      "evidence_note": "HKT 2023官方年报披露FY2023股份合订单位持有人应占利润4,991百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2016",
+      "value": 797.15,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2015/16官方年报披露FY2016公司权益持有人应占利润797.150百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2017",
+      "value": 672.102,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2016_2017_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2016/17及2017/18官方年报比较数披露FY2017公司权益持有人应占利润672.102百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2018",
+      "value": 615.243,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2017/18及2018/19官方年报比较数披露FY2018公司权益持有人应占利润615.243百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2019",
+      "value": 632.247,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2018/19及2019/20官方年报比较数披露FY2019公司权益持有人应占利润632.247百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2020",
+      "value": 378.985,
+      "unit": "millions HKD",
+      "verification_status": "official_comparative_restated_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2019/20及2020/21官方年报比较数披露FY2020公司权益持有人应占利润378.985百万港元。"
+    },
+    {
+      "domain": "local",
+      "entity": "SmarTone",
+      "metric": "net_income",
+      "period": "FY2021",
+      "value": 444.621,
+      "unit": "millions HKD",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+      ],
+      "evidence_note": "SmarTone 2020/21官方年报披露FY2021公司权益持有人应占利润444.621百万港元。"
+    },
+    {
       "domain": "mainland",
       "entity": "中国联通",
       "metric": "revenue",

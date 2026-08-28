@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T00:00:00+08:00",
+  "generated_at": "2026-08-28T15:45:00+08:00",
   "sources": [
     {
       "source_id": "hkt_ar_2016",
@@ -60,7 +60,7 @@
       "operator_id": "hkt",
       "year": 2017,
       "label": "HKT 2017 Annual Report",
-      "url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+      "url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
       "source_type": "official_annual_report",
       "publisher": "HKT Trust and HKT Limited"
     },
@@ -542,6 +542,15 @@
       "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
     },
     {
+      "source_id": "smartone_ar_2016",
+      "operator_id": "smartone",
+      "year": 2016,
+      "label": "SmarTone FY2016 Annual Report",
+      "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
       "source_id": "smartone_ar_2017",
       "operator_id": "smartone",
       "year": 2017,
@@ -620,6 +629,15 @@
       "label": "SmarTone FY2025 Annual Report",
       "url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf",
       "source_type": "official_annual_report",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_presentation_2021",
+      "operator_id": "smartone",
+      "year": 2021,
+      "label": "SmarTone FY2021 Annual Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2021annual_present.pdf",
+      "source_type": "official_results_presentation",
       "publisher": "SmarTone Telecommunications Holdings Limited"
     },
     {

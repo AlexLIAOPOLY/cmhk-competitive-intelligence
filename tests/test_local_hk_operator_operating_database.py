@@ -61,14 +61,15 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["official_value"], "50")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["comparator"], ">=")
 
-    def test_missing_disclosure_is_not_zero_or_estimate(self) -> None:
+    def test_unfilled_gaps_remain_missing_and_normalized_disclosures_are_labelled(self) -> None:
         hgc = self.row("hgc", 2025, "mobile_postpaid_arpu")
         self.assertEqual(hgc["official_value"], "")
         self.assertEqual(hgc["verification_status"], "source_gap_confirmed")
         self.assertIn("not estimated", hgc["quality_note"])
         smartone = self.row("smartone", 2025, "5g_penetration")
-        self.assertEqual(smartone["official_value"], "")
-        self.assertEqual(smartone["verification_status"], "source_gap_confirmed")
+        self.assertEqual(smartone["official_value"], "40")
+        self.assertEqual(smartone["verification_status"], "official_qualitative_continuity_normalized")
+        self.assertIn("broadly stable", smartone["quality_note"])
         hkt_traffic = self.row("hkt", 2025, "annual_mobile_data_traffic")
         self.assertEqual(hkt_traffic["official_value"], "")
         self.assertEqual(hkt_traffic["verification_status"], "source_gap_confirmed")
@@ -89,6 +90,31 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(len(chunks), 1)
         self.assertIn("official_value=2.096 million_customers", chunks[0]["text"])
         self.assertIn("period_end=2025-12-31", chunks[0]["text"])
+
+    def test_xiaojing_reads_full_three_operator_ten_year_series_with_provenance(self) -> None:
+        chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "请列出3HK、HKT、SmarTone 2016至2025年5G渗透率",
+            dataset_ids={DATASET_ID},
+        )
+        self.assertEqual(len(chunks), 30)
+        text = "\n".join(item["text"] for item in chunks)
+        self.assertIn("operator=3HK", text)
+        self.assertIn("operator=HKT", text)
+        self.assertIn("operator=SmarTone", text)
+        self.assertIn("verification_status=operational_zero_from_precommercial_timeline", text)
+        self.assertIn("verification_status=official_derived_from_disclosed_growth_bridge", text)
+        self.assertIn("verification_status=official_range_normalized", text)
+        self.assertIn("verification_status=official_qualitative_continuity_normalized", text)
+
+        churn_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "请列出3HK、HKT、SmarTone 2016至2025年移动后付月流失率",
+            dataset_ids={DATASET_ID},
+        )
+        self.assertEqual(len(churn_chunks), 30)
+        churn_text = "\n".join(item["text"] for item in churn_chunks)
+        self.assertIn("operator=SmarTone", churn_text)
+        self.assertIn("period=FY2025", churn_text)
+        self.assertIn("未披露（source_gap_confirmed）", churn_text)
 
         postpaid_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "HKT和3HK的FY2025后付费用户数分别是多少？",

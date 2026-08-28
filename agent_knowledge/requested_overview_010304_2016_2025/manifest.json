@@ -3,7 +3,7 @@
   "title": "战略总览01/03/04竞对年度事实库",
   "summary": "香港运营商、内地运营商及全球云厂商2016–2025年度绝对值；来源数量只作质量标注，不作为展示门槛。",
   "source_type": "official_public_integrated_read_model",
-  "updated_at": "2026-08-28T12:30:27.961607+08:00",
+  "updated_at": "2026-08-28T15:24:57.127093+08:00",
   "default_load": true,
   "tags": [
     "competitor",
@@ -19,6 +19,6 @@
     "sources.json",
     "official_source_recrawl.json"
   ],
-  "row_count": 295,
-  "source_count": 423
+  "row_count": 310,
+  "source_count": 427
 }

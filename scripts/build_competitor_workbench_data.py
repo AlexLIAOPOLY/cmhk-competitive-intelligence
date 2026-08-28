@@ -130,6 +130,12 @@ def add_requested_overview_cells(
     availability: dict[tuple[str, str], set[int]],
 ) -> None:
     snapshot = build_executive_intelligence_snapshot()
+    audit = json.loads(REQUESTED_OVERVIEW_SOURCES[2].read_text(encoding="utf-8"))
+    evidence_notes = {
+        (str(item.get("entity") or ""), str(item.get("metric") or ""), str(item.get("period") or "")): str(item.get("evidence_note") or "")
+        for item in (audit.get("historical_public_facts") or [])
+        if isinstance(item, dict)
+    }
     domain_meta = {
         "local": ("01", "香港运营商"),
         "mainland": ("03", "内地运营商"),
@@ -191,7 +197,7 @@ def add_requested_overview_cells(
                         "source": source_urls[0] if source_urls else "",
                         "sources": source_urls,
                         "verificationCount": verification_count,
-                        "note": "不展示增速或利润率；不同单位不直接比较。" if fully_verified else "来源质量仅作提示，不再作为前端隐藏条件；已有数值必须展示。",
+                        "note": evidence_notes.get((company, focus_id if focus_id != "net_profit" else "net_income", f"FY{year}"), "") or ("不展示增速或利润率；不同单位不直接比较。" if fully_verified else "来源质量仅作提示，不再作为前端隐藏条件；已有数值必须展示。"),
                     })
 
 

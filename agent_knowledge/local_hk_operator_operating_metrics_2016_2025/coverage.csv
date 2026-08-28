@@ -361,7 +361,7 @@ hkbn,HKBN,2025,total_base_stations,source_gap_confirmed
 hkbn,HKBN,2025,total_customers,source_gap_confirmed
 hkt,HKT,2016,5g_base_stations,source_gap_confirmed
 hkt,HKT,2016,5g_customers,source_gap_confirmed
-hkt,HKT,2016,5g_penetration,source_gap_confirmed
+hkt,HKT,2016,5g_penetration,available
 hkt,HKT,2016,annual_mobile_data_traffic,source_gap_confirmed
 hkt,HKT,2016,consumer_broadband_customers,source_gap_confirmed
 hkt,HKT,2016,homes_passed_or_connected,source_gap_confirmed
@@ -373,7 +373,7 @@ hkt,HKT,2016,total_base_stations,source_gap_confirmed
 hkt,HKT,2016,total_customers,source_gap_confirmed
 hkt,HKT,2017,5g_base_stations,source_gap_confirmed
 hkt,HKT,2017,5g_customers,source_gap_confirmed
-hkt,HKT,2017,5g_penetration,source_gap_confirmed
+hkt,HKT,2017,5g_penetration,available
 hkt,HKT,2017,annual_mobile_data_traffic,source_gap_confirmed
 hkt,HKT,2017,consumer_broadband_customers,source_gap_confirmed
 hkt,HKT,2017,homes_passed_or_connected,source_gap_confirmed
@@ -385,7 +385,7 @@ hkt,HKT,2017,total_base_stations,source_gap_confirmed
 hkt,HKT,2017,total_customers,source_gap_confirmed
 hkt,HKT,2018,5g_base_stations,source_gap_confirmed
 hkt,HKT,2018,5g_customers,source_gap_confirmed
-hkt,HKT,2018,5g_penetration,source_gap_confirmed
+hkt,HKT,2018,5g_penetration,available
 hkt,HKT,2018,annual_mobile_data_traffic,source_gap_confirmed
 hkt,HKT,2018,consumer_broadband_customers,source_gap_confirmed
 hkt,HKT,2018,homes_passed_or_connected,source_gap_confirmed
@@ -397,7 +397,7 @@ hkt,HKT,2018,total_base_stations,source_gap_confirmed
 hkt,HKT,2018,total_customers,source_gap_confirmed
 hkt,HKT,2019,5g_base_stations,source_gap_confirmed
 hkt,HKT,2019,5g_customers,source_gap_confirmed
-hkt,HKT,2019,5g_penetration,source_gap_confirmed
+hkt,HKT,2019,5g_penetration,available
 hkt,HKT,2019,annual_mobile_data_traffic,source_gap_confirmed
 hkt,HKT,2019,consumer_broadband_customers,source_gap_confirmed
 hkt,HKT,2019,homes_passed_or_connected,source_gap_confirmed
@@ -409,7 +409,7 @@ hkt,HKT,2019,total_base_stations,source_gap_confirmed
 hkt,HKT,2019,total_customers,source_gap_confirmed
 hkt,HKT,2020,5g_base_stations,source_gap_confirmed
 hkt,HKT,2020,5g_customers,available
-hkt,HKT,2020,5g_penetration,source_gap_confirmed
+hkt,HKT,2020,5g_penetration,available
 hkt,HKT,2020,annual_mobile_data_traffic,source_gap_confirmed
 hkt,HKT,2020,consumer_broadband_customers,source_gap_confirmed
 hkt,HKT,2020,homes_passed_or_connected,source_gap_confirmed
@@ -601,19 +601,19 @@ icable,i-CABLE,2025,total_base_stations,source_gap_confirmed
 icable,i-CABLE,2025,total_customers,source_gap_confirmed
 smartone,SmarTone,2016,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2016,5g_customers,source_gap_confirmed
-smartone,SmarTone,2016,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2016,5g_penetration,available
 smartone,SmarTone,2016,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2016,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2016,homes_passed_or_connected,source_gap_confirmed
 smartone,SmarTone,2016,mobile_data_dou,source_gap_confirmed
 smartone,SmarTone,2016,mobile_postpaid_arpu,source_gap_confirmed
-smartone,SmarTone,2016,mobile_postpaid_churn,source_gap_confirmed
+smartone,SmarTone,2016,mobile_postpaid_churn,available
 smartone,SmarTone,2016,mobile_postpaid_customers,source_gap_confirmed
 smartone,SmarTone,2016,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2016,total_customers,source_gap_confirmed
 smartone,SmarTone,2017,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2017,5g_customers,source_gap_confirmed
-smartone,SmarTone,2017,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2017,5g_penetration,available
 smartone,SmarTone,2017,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2017,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2017,homes_passed_or_connected,source_gap_confirmed
@@ -625,7 +625,7 @@ smartone,SmarTone,2017,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2017,total_customers,available
 smartone,SmarTone,2018,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2018,5g_customers,source_gap_confirmed
-smartone,SmarTone,2018,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2018,5g_penetration,available
 smartone,SmarTone,2018,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2018,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2018,homes_passed_or_connected,source_gap_confirmed
@@ -637,7 +637,7 @@ smartone,SmarTone,2018,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2018,total_customers,available
 smartone,SmarTone,2019,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2019,5g_customers,source_gap_confirmed
-smartone,SmarTone,2019,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2019,5g_penetration,available
 smartone,SmarTone,2019,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2019,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2019,homes_passed_or_connected,source_gap_confirmed
@@ -661,7 +661,7 @@ smartone,SmarTone,2020,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2020,total_customers,available
 smartone,SmarTone,2021,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2021,5g_customers,source_gap_confirmed
-smartone,SmarTone,2021,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2021,5g_penetration,available
 smartone,SmarTone,2021,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2021,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2021,homes_passed_or_connected,source_gap_confirmed
@@ -709,7 +709,7 @@ smartone,SmarTone,2024,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2024,total_customers,source_gap_confirmed
 smartone,SmarTone,2025,5g_base_stations,source_gap_confirmed
 smartone,SmarTone,2025,5g_customers,source_gap_confirmed
-smartone,SmarTone,2025,5g_penetration,source_gap_confirmed
+smartone,SmarTone,2025,5g_penetration,available
 smartone,SmarTone,2025,annual_mobile_data_traffic,source_gap_confirmed
 smartone,SmarTone,2025,consumer_broadband_customers,source_gap_confirmed
 smartone,SmarTone,2025,homes_passed_or_connected,source_gap_confirmed
@@ -721,7 +721,7 @@ smartone,SmarTone,2025,total_base_stations,source_gap_confirmed
 smartone,SmarTone,2025,total_customers,source_gap_confirmed
 three_hk,3HK,2016,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2016,5g_customers,source_gap_confirmed
-three_hk,3HK,2016,5g_penetration,source_gap_confirmed
+three_hk,3HK,2016,5g_penetration,available
 three_hk,3HK,2016,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2016,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2016,homes_passed_or_connected,source_gap_confirmed
@@ -733,7 +733,7 @@ three_hk,3HK,2016,total_base_stations,source_gap_confirmed
 three_hk,3HK,2016,total_customers,available
 three_hk,3HK,2017,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2017,5g_customers,source_gap_confirmed
-three_hk,3HK,2017,5g_penetration,source_gap_confirmed
+three_hk,3HK,2017,5g_penetration,available
 three_hk,3HK,2017,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2017,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2017,homes_passed_or_connected,source_gap_confirmed
@@ -745,7 +745,7 @@ three_hk,3HK,2017,total_base_stations,source_gap_confirmed
 three_hk,3HK,2017,total_customers,available
 three_hk,3HK,2018,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2018,5g_customers,source_gap_confirmed
-three_hk,3HK,2018,5g_penetration,source_gap_confirmed
+three_hk,3HK,2018,5g_penetration,available
 three_hk,3HK,2018,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2018,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2018,homes_passed_or_connected,source_gap_confirmed
@@ -757,7 +757,7 @@ three_hk,3HK,2018,total_base_stations,source_gap_confirmed
 three_hk,3HK,2018,total_customers,available
 three_hk,3HK,2019,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2019,5g_customers,source_gap_confirmed
-three_hk,3HK,2019,5g_penetration,source_gap_confirmed
+three_hk,3HK,2019,5g_penetration,available
 three_hk,3HK,2019,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2019,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2019,homes_passed_or_connected,source_gap_confirmed
@@ -769,7 +769,7 @@ three_hk,3HK,2019,total_base_stations,source_gap_confirmed
 three_hk,3HK,2019,total_customers,available
 three_hk,3HK,2020,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2020,5g_customers,source_gap_confirmed
-three_hk,3HK,2020,5g_penetration,source_gap_confirmed
+three_hk,3HK,2020,5g_penetration,available
 three_hk,3HK,2020,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2020,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2020,homes_passed_or_connected,source_gap_confirmed
@@ -781,7 +781,7 @@ three_hk,3HK,2020,total_base_stations,source_gap_confirmed
 three_hk,3HK,2020,total_customers,available
 three_hk,3HK,2021,5g_base_stations,source_gap_confirmed
 three_hk,3HK,2021,5g_customers,source_gap_confirmed
-three_hk,3HK,2021,5g_penetration,source_gap_confirmed
+three_hk,3HK,2021,5g_penetration,available
 three_hk,3HK,2021,annual_mobile_data_traffic,source_gap_confirmed
 three_hk,3HK,2021,consumer_broadband_customers,source_gap_confirmed
 three_hk,3HK,2021,homes_passed_or_connected,source_gap_confirmed

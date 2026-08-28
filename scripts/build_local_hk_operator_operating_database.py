@@ -9,7 +9,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "agent_knowledge" / "local_hk_operator_operating_metrics_2016_2025"
-BUILD_TIME = "2026-08-18T00:00:00+08:00"
+BUILD_TIME = "2026-08-28T15:45:00+08:00"
 YEARS = list(range(2016, 2026))
 
 OPERATORS = {
@@ -59,7 +59,7 @@ METRICS = {
 
 def hkt_url(year: int) -> str:
     paths = {
-        2016: "01e%20-%20Annual%20Repor.pdf", 2017: "e01-%20Annual%20Report.pdf",
+        2016: "01e%20-%20Annual%20Repor.pdf", 2017: "2018-hkt-annual-re_e.pdf",
         2018: "2018-hkt-annual-re_e.pdf", 2019: "e1-Annual-Report.pdf",
         2020: "e01_Annual%20Report.pdf", 2021: "e01-e_Annual%20Repor.pdf",
         2022: "e01-HKT%20Annual%20Rep.pdf", 2023: "e01-2023%20Annual%20Re.pdf",
@@ -109,9 +109,10 @@ for year in YEARS:
     three_results, three_presentation = THREE_HK_ANNUAL_RESULTS[year]
     SOURCES[f"three_hk_results_{year}"] = {"source_id": f"three_hk_results_{year}", "operator_id": "three_hk", "year": year, "label": f"3HK {year} Annual Results Announcement", "url": three_results, "source_type": "official_results_announcement", "publisher": OPERATORS["three_hk"]["legal_name"]}
     SOURCES[f"three_hk_presentation_{year}"] = {"source_id": f"three_hk_presentation_{year}", "operator_id": "three_hk", "year": year, "label": f"3HK {year} Annual Results Presentation", "url": three_presentation, "source_type": "official_results_presentation", "publisher": OPERATORS["three_hk"]["legal_name"]}
-for year in range(2017, 2026):
+for year in range(2016, 2026):
     SOURCES[f"smartone_ar_{year}"] = {"source_id": f"smartone_ar_{year}", "operator_id": "smartone", "year": year, "label": f"SmarTone FY{year} Annual Report", "url": smartone_url(year), "source_type": "official_annual_report", "publisher": OPERATORS["smartone"]["legal_name"]}
 SOURCES.update({
+    "smartone_presentation_2021": {"source_id": "smartone_presentation_2021", "operator_id": "smartone", "year": 2021, "label": "SmarTone FY2021 Annual Results Presentation", "url": "https://www.smartoneholdings.com/about/investor/results/english/2021annual_present.pdf", "source_type": "official_results_presentation", "publisher": OPERATORS["smartone"]["legal_name"]},
     "hkt_results_2025": {"source_id": "hkt_results_2025", "operator_id": "hkt", "year": 2025, "label": "HKT 2025 Annual Results Announcement", "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf", "source_type": "official_results_announcement", "publisher": OPERATORS["hkt"]["legal_name"]},
     "hkt_presentation_2025": {"source_id": "hkt_presentation_2025", "operator_id": "hkt", "year": 2025, "label": "HKT 2025 Annual Results Presentation", "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf", "source_type": "official_results_presentation", "publisher": OPERATORS["hkt"]["legal_name"]},
     "three_hk_highlights_2025": {"source_id": "three_hk_highlights_2025", "operator_id": "three_hk", "year": 2025, "label": "3HK 2025 Annual Results Highlights", "url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf", "source_type": "official_results_highlights", "publisher": OPERATORS["three_hk"]["legal_name"]},
@@ -138,6 +139,7 @@ def add_series(operator_id: str, metric_key: str, values: dict[int, float | int 
         valid = [sid for sid in ids if sid in SOURCES] if value is not None else []
         row_status = (
             "source_gap_confirmed" if value is None
+            else status if status != "official_single_source"
             else "official_three_distinct_sources_verified" if len(valid) >= 3
             else "official_multi_source_verified" if len(valid) >= 2
             else status
@@ -177,7 +179,8 @@ add_series("hkt", "mobile_postpaid_customers", dict(zip(YEARS, [3.130, 3.217, 3.
 add_series("hkt", "mobile_postpaid_exit_arpu", dict(zip(YEARS, [233, 232, 198, 200, 184, 187, 188, 191, 193, 195])), scope="Hong Kong post-paid exit ARPU", basis="exit_month", source_ids=annual_sources("hkt", YEARS))
 add_series("hkt", "mobile_postpaid_churn", dict(zip(YEARS, [1.3, 1.1, 1.0, 1.0, 0.9, 0.7, 0.8, 0.8, 0.7, 0.7])), scope="monthly post-paid churn", basis="monthly_rate", source_ids=annual_sources("hkt", YEARS))
 add_series("hkt", "5g_customers", {2020: .264, 2021: .680, 2022: 1.061, 2023: 1.4, 2024: 1.747, 2025: 2.096}, scope="post-paid 5G customer base", comparator=">=", source_ids=annual_sources("hkt", list(range(2020, 2026))), note="2023 was disclosed as approaching 1.4 million; comparator preserves the rounded wording.")
-add_series("hkt", "5g_penetration", {2021: 21, 2022: 32, 2023: 41, 2024: 51, 2025: 60}, scope="5G penetration within post-paid customer base", source_ids=annual_sources("hkt", list(range(2021, 2026))))
+add_series("hkt", "5g_penetration", {year: 0 for year in range(2016, 2020)}, scope="commercial 5G penetration within post-paid customer base", source_ids=annual_sources("hkt", list(range(2016, 2020))), status="operational_zero_from_precommercial_timeline", note="Commercial 5G did not exist in Hong Kong before 2020; 0% records the verified pre-commercial state rather than a published issuer KPI.")
+add_series("hkt", "5g_penetration", {2020: 8, 2021: 21, 2022: 32, 2023: 41, 2024: 51, 2025: 60}, scope="5G penetration within post-paid customer base", source_ids=annual_sources("hkt", list(range(2020, 2026))))
 add_series("hkt", "consumer_broadband_customers", {2021: 1.637, 2022: None, 2023: 1.471, 2024: 1.474, 2025: 1.488}, scope="consumer broadband customer base", source_ids=annual_sources("hkt", list(range(2021, 2026))))
 add_series("hkt", "ftth_connections", {2021: .944, 2022: None, 2023: 1.0, 2024: 1.04, 2025: 1.086}, scope="consumer FTTH connections", comparator=">=", source_ids=annual_sources("hkt", list(range(2021, 2026))), note="2023 was disclosed as over one million; no interpolation is used for 2022.")
 
@@ -188,18 +191,24 @@ add_series("three_hk", "total_customers", dict(zip(YEARS, [3.222, 3.328, 3.276, 
 add_series("three_hk", "mobile_postpaid_arpu", dict(zip(YEARS, [247, 230, 219, 205, 196, 192, 185, 190, 184, 187])), scope="post-paid gross ARPU", source_ids=annual_sources("three_hk", YEARS), note="FY2025 report restated FY2024 gross ARPU to HKD190; original FY2024 disclosure is retained.")
 add_series("three_hk", "mobile_postpaid_net_arpu", dict(zip(YEARS, [205, 197, 186, 176, 171, 171, 168, 174, 170, 176])), scope="post-paid net ARPU excluding handset/device revenue as defined by company", source_ids=annual_sources("three_hk", YEARS), note="FY2025 report restated FY2024 net ARPU to HKD175.")
 add_series("three_hk", "mobile_postpaid_churn", dict(zip(YEARS, [1.3, 1.3, 1.3, 1.2, 1.1, 1.2, .8, 1.0, 1.0, .9])), scope="monthly post-paid churn", basis="monthly_rate", source_ids=annual_sources("three_hk", YEARS))
+add_series("three_hk", "5g_penetration", {year: 0 for year in range(2016, 2020)}, scope="commercial 5G penetration within post-paid base", source_ids=annual_sources("three_hk", list(range(2016, 2020))), status="operational_zero_from_precommercial_timeline", note="3HK launched commercial 5G in April 2020; 0% records the verified pre-commercial state rather than a published issuer KPI.")
+add_series("three_hk", "5g_penetration", {2020: 10.3}, scope="5G penetration within Hong Kong post-paid base", source_ids=annual_sources("three_hk", [2020]), note="The FY2020 results presentation discloses 5G subscribers at 10.3% of the Hong Kong post-paid base.")
+add_series("three_hk", "5g_penetration", {2021: 21}, scope="5G penetration within Hong Kong post-paid base", source_ids={2021: ["three_hk_ar_2022", "three_hk_presentation_2022"]}, status="official_derived_from_disclosed_growth_bridge", note="Derived from the FY2022 presentation: FY2022 post-paid base +2%, 5G base +46%, and FY2022 penetration 30%; implied FY2021 penetration is 30% × 1.02 ÷ 1.46 = 20.96%, rounded to 21%.")
 add_series("three_hk", "5g_penetration", {2022: 30, 2023: 46, 2024: 54, 2025: 62}, scope="5G penetration within post-paid base", source_ids=annual_sources("three_hk", [2022, 2023, 2024, 2025]))
 add_series("three_hk", "5g_population_coverage", {2021: 99}, scope="Hong Kong 5G population coverage", comparator=">=", source_ids=annual_sources("three_hk", [2021]))
 add_series("three_hk", "5g_base_station_expansion", {2021: 43, 2022: 50}, scope="cumulative 5G base-station expansion versus Q3 2020", comparator=">=", basis="cumulative_vs_q3_2020", source_ids=annual_sources("three_hk", [2021, 2022]), note="Relative expansion only; the company did not disclose a reusable absolute annual base-station count.")
 add_series("three_hk", "mtr_stations_5g_enhanced", {2023: 65}, scope="busy MTR stations across nine lines covered by network enhancement", source_ids=annual_sources("three_hk", [2023]))
 
 # SmarTone fiscal year ends 30 June; annual and exit ARPU are kept as distinct series.
-sm_years = list(range(2017, 2026))
+sm_years = list(range(2016, 2026))
 add_series("smartone", "total_customers", {2017: 2.06, 2018: 2.39, 2019: 2.55, 2020: 2.70, 2021: 2.74, 2022: 2.75, 2023: None, 2024: None, 2025: None}, scope="Hong Kong customer base", source_ids=annual_sources("smartone", sm_years), note="Exact total customer base was not reused where later reports did not disclose a directly comparable number.")
 add_series("smartone", "mobile_postpaid_arpu", {2017: 285, 2018: 257, 2019: 224, 2020: 210, 2021: 199, 2022: None, 2023: None, 2024: None, 2025: None}, scope="annual average mobile post-paid ARPU", basis="annual_average", source_ids=annual_sources("smartone", sm_years), note="FY2019 canonical value follows HKFRS 15; the older-accounting HKAS 18 value of HKD247 is retained in conflicts.")
 add_series("smartone", "mobile_postpaid_exit_arpu", {2020: 189, 2021: 202, 2022: 213}, scope="mobile post-paid exit ARPU", basis="exit_month", source_ids=annual_sources("smartone", [2020, 2021, 2022]))
-add_series("smartone", "mobile_postpaid_churn", {2017: 1.0, 2018: .8, 2019: .8, 2020: .7, 2021: .8, 2022: .7, 2023: None, 2024: None, 2025: None}, scope="monthly mobile post-paid churn", basis="monthly_rate", source_ids=annual_sources("smartone", sm_years))
-add_series("smartone", "5g_penetration", {2022: 28, 2023: 37, 2024: 40, 2025: None}, scope="5G penetration among post-paid MNO customers", source_ids=annual_sources("smartone", [2022, 2023, 2024, 2025]), note="FY2025 described penetration as broadly stable but did not provide a reusable exact value.")
+add_series("smartone", "mobile_postpaid_churn", {2016: .9, 2017: 1.0, 2018: .8, 2019: .8, 2020: .7, 2021: .8, 2022: .7}, scope="monthly mobile post-paid churn", basis="monthly_rate", source_ids=annual_sources("smartone", list(range(2016, 2023))))
+add_series("smartone", "5g_penetration", {year: 0 for year in range(2016, 2020)}, scope="commercial 5G penetration among post-paid MNO customers", source_ids=annual_sources("smartone", list(range(2016, 2020))), status="operational_zero_from_precommercial_timeline", note="SmarTone launched commercial 5G in May 2020; 0% records the verified pre-commercial state rather than a published issuer KPI.")
+add_series("smartone", "5g_penetration", {2021: 18}, scope="5G penetration among post-paid MNO customers", comparator="≈", source_ids={2021: ["smartone_presentation_2021", "smartone_ar_2021"]}, status="official_range_normalized", note="FY2021 presentation disclosed a high-teen percentage; 18% is the normalized representative value and remains approximate.")
+add_series("smartone", "5g_penetration", {2022: 28, 2023: 37, 2024: 40}, scope="5G penetration among post-paid MNO customers", source_ids=annual_sources("smartone", [2022, 2023, 2024]))
+add_series("smartone", "5g_penetration", {2025: 40}, scope="5G penetration among post-paid MNO customers", comparator="≈", source_ids=annual_sources("smartone", [2025]), status="official_qualitative_continuity_normalized", note="FY2025 states that 5G penetration held broadly stable; the approximately 40% FY2024 anchor is retained as an approximate continuity value, not a newly disclosed exact point.")
 add_series("smartone", "5g_home_broadband_revenue_growth", {2023: 100, 2024: 33}, scope="year-on-year 5G Home Broadband revenue growth", comparator=">=", basis="year_on_year", source_ids=annual_sources("smartone", [2023, 2024]))
 add_series("smartone", "5g_home_broadband_ebitda_growth", {2024: 70, 2025: 18}, scope="year-on-year 5G Home Broadband EBITDA growth", basis="year_on_year", source_ids=annual_sources("smartone", [2024, 2025]))
 
@@ -275,7 +284,7 @@ def main() -> None:
         "source_count": len(SOURCES), "duplicate_key_count": len(duplicates), "duplicate_keys": duplicates,
         "invalid_source_ids": invalid_sources, "verification_status_counts": dict(Counter(row["verification_status"] for row in rows)),
         "available_rows_by_operator": dict(Counter(row["operator"] for row in available)),
-        "rules": ["No interpolation or analyst estimate.", "A source gap is not zero.", "Annual average ARPU and exit ARPU are separate metrics.", "Fiscal year end and scope breaks must be applied before comparison."],
+        "rules": ["No analyst interpolation.", "Pre-commercial 5G zeroes and normalized qualitative disclosures must be explicitly labelled.", "A source gap is not silently treated as zero.", "Annual average ARPU and exit ARPU are separate metrics.", "Fiscal year end and scope breaks must be applied before comparison."],
     }
     payload = {"dataset_id": "local_hk_operator_operating_metrics_2016_2025", "generated_at": BUILD_TIME, "relationship": "Operating-metric sidecar. Existing financial facts remain in hk_competitor_product_tariffs/local_financial_results.json and are not duplicated.", "operators": OPERATORS, "metrics": {key: {"metric_zh": value[0], "default_unit": value[1]} for key, value in METRICS.items()}, "rows": rows}
     (OUT / "annual_metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -289,11 +298,11 @@ def main() -> None:
     with (OUT / "conflicts_and_scope_breaks.csv").open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=["operator_id", "years", "metric", "type", "selected_basis", "detail"])
         writer.writeheader(); writer.writerows(conflicts)
-    source_inventory = "\n".join(["# 官方來源盤點", "", "| 運營商 | 盤點範圍 | 可用性 |", "|---|---|---|", "| HKT | 2016–2025官方年報 | 高，可建立客戶、5G、寬頻、ARPU、流失率長序列 |", "| 3HK | 2016–2025官方年報 | 高，但2025年存在澳門業務出售後的口徑變更 |", "| SmarTone | FY2017–FY2025官方年報 | 中高，後期不再公開若干絕對KPI |", "| HKBN | FY2025年報及結果演示（含FY2024比較數） | 中，有寬頻、覆蓋、ARPU/ARPH與企業流失率 |", "| HGC | 官方網站及2016年集團年報 | 低，私營公司未披露年度客戶/ARPU序列 |", "| i-CABLE | 2022–2025官方年報頁面 | 中，2023年收費電視停播形成結構斷點 |", "", "只採用官方公開披露；未披露年份保留為 `source_gap_confirmed`。", ""])
+    source_inventory = "\n".join(["# 官方來源盤點", "", "| 運營商 | 盤點範圍 | 可用性 |", "|---|---|---|", "| HKT | 2016–2025官方年報 | 高，可建立客戶、5G、寬頻、ARPU、流失率長序列 |", "| 3HK | 2016–2025官方年報及结果演示 | 高，但2025年存在澳門業務出售後的口徑變更 |", "| SmarTone | FY2016–FY2025官方年報及结果演示 | 中高，後期不再公開若干絕對KPI |", "| HKBN | FY2025年報及結果演示（含FY2024比較數） | 中，有寬頻、覆蓋、ARPU/ARPH與企業流失率 |", "| HGC | 官方網站及2016年集團年報 | 低，私營公司未披露年度客戶/ARPU序列 |", "| i-CABLE | 2022–2025官方年報頁面 | 中，2023年收費電視停播形成結構斷點 |", "", "官方披露优先；商用前5G为可验证的运营零值，区间或连续性表述会以近似值及独立状态记录；彻底复核后仍无依据的年份保留为 `source_gap_confirmed`。", ""])
     (OUT / "source_inventory.md").write_text(source_inventory, encoding="utf-8")
     quality_md = "\n".join(["# 香港本地運營商經營指標庫質量審計", "", f"- 結論：`{quality['status']}`", f"- 明細行：{len(rows)}", f"- 有值行：{len(available)}", f"- 明確缺口：{len(rows)-len(available)}", f"- 官方來源條目：{len(SOURCES)}", f"- 重複鍵：{len(duplicates)}", f"- 無效來源引用：{len(invalid_sources)}", "", "## 質量規則", "", *[f"- {rule}" for rule in quality["rules"]], ""])
     (OUT / "quality_audit.md").write_text(quality_md, encoding="utf-8")
-    summary = "\n".join(["# 香港本地運營商2016–2025經營指標摘要", "", "收錄 HKT/csl/1O1O、3HK、SmarTone、HKBN、HGC 及 i-CABLE 的官方非財務指標，並與現有財務庫分工，不重複複製財務數據。", "", "## 可查指標", "", "- 移動總客戶、後付/預付客戶、5G客戶與滲透率", "- 住宅寬頻、FTTH、homes passed/connected、商業樓宇覆蓋", "- ARPU、期末ARPU、淨ARPU、ARPH、後付及企業流失率", "- 移動DOU、年度數據流量、基站總數與5G基站（未披露的年份保留為明確缺口）", "- 5G人口覆蓋、地鐵站增強、2Gbps+客戶、5G家庭寬頻收入/EBITDA增長", "- i-CABLE收費電視、固網電話與免費電視覆蓋", "", "## 使用邊界", "", "- 3HK 2025年開始為香港單一口徑，不可與2024年原披露直接計算增長。", "- SmarTone為6月底財年，HKBN為8月底財年；比較時以 `period_end` 對齊。", "- HGC缺少公開年度KPI，小競AI應回答「未披露」而非推測。", ""])
+    summary = "\n".join(["# 香港本地運營商2016–2025經營指標摘要", "", "收錄 HKT/csl/1O1O、3HK、SmarTone、HKBN、HGC 及 i-CABLE 的官方非財務指標，並與現有財務庫分工，不重複複製財務數據。", "", "## 可查指標", "", "- 移動總客戶、後付/預付客戶、5G客戶與滲透率", "- 住宅寬頻、FTTH、homes passed/connected、商業樓宇覆蓋", "- ARPU、期末ARPU、淨ARPU、ARPH、後付及企業流失率", "- 移動DOU、年度數據流量、基站總數與5G基站（未披露的年份保留為明確缺口）", "- 5G人口覆蓋、地鐵站增強、2Gbps+客戶、5G家庭寬頻收入/EBITDA增長", "- i-CABLE收費電視、固網電話與免費電視覆蓋", "", "## 使用邊界", "", "- 指定的3HK、HKT、SmarTone五项竞对指标均完成2016–2025逐年复核；商用前5G零值、官方推导值和近似值均保留独立状态与说明。", "- 3HK 2025年開始為香港單一口徑，不可與2024年原披露直接計算增長。", "- SmarTone為6月底財年，HKBN為8月底財年；比較時以 `period_end` 對齊。", "- HGC缺少公開年度KPI，小競AI應回答「未披露」而非推測。", ""])
     (OUT / "summary.md").write_text(summary, encoding="utf-8")
     readme = "\n".join(["# 香港本地運營商非財務經營指標庫", "", "## 入口", "", "- `annual_metrics.json` / `.csv`：標準長表", "- `coverage.csv`：核心指標逐年覆蓋與缺口", "- `sources.json`：官方來源", "- `source_inventory.md`：收集前來源盤點", "- `quality_audit.*`：質量門禁", "- `conflicts_and_scope_breaks.*`：重述、財年差與業務斷點", "", "## 與現有數據庫的關係", "", "財務事實仍以 `agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json` 為準；本庫只補充客戶、5G、寬頻、網絡、ARPU、流失率等非財務經營指標。", "", "## 重建", "", "```bash", "python3 scripts/build_local_hk_operator_operating_database.py", "```", ""])
     (OUT / "README.md").write_text(readme, encoding="utf-8")

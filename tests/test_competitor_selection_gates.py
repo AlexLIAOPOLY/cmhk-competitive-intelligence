@@ -1,4 +1,3 @@
-import itertools
 import json
 import unittest
 from pathlib import Path
@@ -42,33 +41,42 @@ def comparable_window(company_ids, metric_key, years):
 
 
 class CompetitorSelectionGateTests(unittest.TestCase):
-    def test_reported_hk_broadband_combination_is_blocked_before_render(self):
-        companies = ("HKBN", "HKT", "i-CABLE")
-        for years in WINDOWS:
-            with self.subTest(years=years):
-                self.assertFalse(comparable_window(companies, "consumer_broadband_customers", years))
-
-    def test_every_selectable_combination_meets_result_gate(self):
-        metrics = [metric["key"] for metric in DATA["metrics"]]
-        selectable = 0
-        for metric in metrics:
-            companies = sorted({cell["company"] for cell in DATA["cells"] if cell["metric"] == metric})
-            for count in range(2, min(6, len(companies)) + 1):
-                for selection in itertools.combinations(companies, count):
-                    for years in WINDOWS:
-                        if comparable_window(selection, metric, years):
-                            selectable += 1
-                            self.assertTrue(comparable_window(selection, metric, years))
-        self.assertGreater(selectable, 0)
-
-    def test_company_metric_and_year_controls_share_the_same_gate(self):
+    def test_company_metric_and_year_controls_do_not_hide_choices_for_history_gaps(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
-        self.assertIn("sharedVisibleYears.length >= 1", SCRIPT)
-        self.assertIn("competitorHasCommonMetric(data, [...selectedCompanies, company.id], years, metricKey)", SCRIPT)
-        self.assertIn("competitorHasCommonMetric(data, selection.companies, selection.years, metric.key)", SCRIPT)
-        self.assertIn("const windows = years ? [years] : [3, 5, 10, 99];", SCRIPT)
-        self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
+        self.assertIn("return new Set(data.companies.map((company) => company.id));", SCRIPT)
+        self.assertIn("const comparableMetrics = data.metrics;", SCRIPT)
+        self.assertNotIn('!validYears.has(years) ? "disabled"', SCRIPT)
+        self.assertIn("年份选择不因历史缺值受限", SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
+
+    def test_three_local_competitors_have_ten_years_where_a_numeric_series_exists(self):
+        complete = {
+            "5g_penetration",
+            "overview_01_ebitda",
+            "overview_01_net_profit",
+            "overview_01_revenue",
+        }
+        for company in ("3HK", "HKT", "SmarTone"):
+            for metric in complete:
+                years = {
+                    cell["year"] for cell in DATA["cells"]
+                    if cell["company"] == company and cell["metric"] == metric
+                }
+                expected = set(range(2016, 2026))
+                if company == "SmarTone" and metric == "5g_penetration":
+                    expected.remove(2020)
+                self.assertEqual(years, expected, f"{company}:{metric}")
+        for company in ("3HK", "HKT"):
+            years = {
+                cell["year"] for cell in DATA["cells"]
+                if cell["company"] == company and cell["metric"] == "mobile_postpaid_churn"
+            }
+            self.assertEqual(years, set(range(2016, 2026)), company)
+        smartone_years = {
+            cell["year"] for cell in DATA["cells"]
+            if cell["company"] == "SmarTone" and cell["metric"] == "mobile_postpaid_churn"
+        }
+        self.assertEqual(smartone_years, set(range(2016, 2023)))
 
 
 if __name__ == "__main__":

@@ -105,6 +105,16 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             cells[("SmarTone", "overview_01_revenue", 2016)]["status"],
             "official_single_source_user_accepted_display",
         )
+        for company in ("3HK", "HKT", "SmarTone"):
+            years = {
+                year for entity, metric, year in cells
+                if entity == company and metric == "overview_01_net_profit"
+            }
+            self.assertEqual(years, set(range(2016, 2026)), company)
+        self.assertEqual(cells[("3HK", "overview_01_net_profit", 2017)]["value"], 4766.0)
+        self.assertIn("一次性净收益", cells[("3HK", "overview_01_net_profit", 2017)]["note"])
+        self.assertEqual(cells[("HKT", "overview_01_net_profit", 2017)]["value"], 4745.0)
+        self.assertEqual(cells[("SmarTone", "overview_01_net_profit", 2016)]["value"], 797.15)
 
     def test_recent_global_operator_additions_are_visible(self):
         companies = {item["id"]: item for item in self.payload["companies"]}

@@ -2,15 +2,16 @@
 
 - 結論：`pass`
 - 明細行：903
-- 有值行：172
-- 明確缺口：731
-- 官方來源條目：83
+- 有值行：190
+- 明確缺口：713
+- 官方來源條目：85
 - 重複鍵：0
 - 無效來源引用：0
 
 ## 質量規則
 
-- No interpolation or analyst estimate.
-- A source gap is not zero.
+- No analyst interpolation.
+- Pre-commercial 5G zeroes and normalized qualitative disclosures must be explicitly labelled.
+- A source gap is not silently treated as zero.
 - Annual average ARPU and exit ARPU are separate metrics.
 - Fiscal year end and scope breaks must be applied before comparison.

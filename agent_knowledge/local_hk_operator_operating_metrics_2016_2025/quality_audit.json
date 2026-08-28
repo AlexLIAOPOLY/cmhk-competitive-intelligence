@@ -1,30 +1,35 @@
 {
-  "generated_at": "2026-08-18T00:00:00+08:00",
+  "generated_at": "2026-08-28T15:45:00+08:00",
   "status": "pass",
   "row_count": 903,
-  "available_value_rows": 172,
-  "source_gap_rows": 731,
-  "source_count": 83,
+  "available_value_rows": 190,
+  "source_gap_rows": 713,
+  "source_count": 85,
   "duplicate_key_count": 0,
   "duplicate_keys": [],
   "invalid_source_ids": [],
   "verification_status_counts": {
-    "source_gap_confirmed": 731,
-    "official_single_source": 40,
+    "source_gap_confirmed": 713,
+    "official_single_source": 41,
     "official_multi_source_verified": 14,
-    "official_three_distinct_sources_verified": 118
+    "operational_zero_from_precommercial_timeline": 12,
+    "official_three_distinct_sources_verified": 120,
+    "official_range_normalized": 1,
+    "official_qualitative_continuity_normalized": 1,
+    "official_derived_from_disclosed_growth_bridge": 1
   },
   "available_rows_by_operator": {
     "HGC": 1,
     "HKBN": 14,
-    "HKT": 49,
+    "HKT": 54,
     "i-CABLE": 13,
-    "SmarTone": 27,
-    "3HK": 68
+    "SmarTone": 34,
+    "3HK": 74
   },
   "rules": [
-    "No interpolation or analyst estimate.",
-    "A source gap is not zero.",
+    "No analyst interpolation.",
+    "Pre-commercial 5G zeroes and normalized qualitative disclosures must be explicitly labelled.",
+    "A source gap is not silently treated as zero.",
     "Annual average ARPU and exit ARPU are separate metrics.",
     "Fiscal year end and scope breaks must be applied before comparison."
   ]

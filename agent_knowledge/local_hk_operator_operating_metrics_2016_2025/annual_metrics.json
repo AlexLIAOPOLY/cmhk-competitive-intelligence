@@ -1,6 +1,6 @@
 {
   "dataset_id": "local_hk_operator_operating_metrics_2016_2025",
-  "generated_at": "2026-08-18T00:00:00+08:00",
+  "generated_at": "2026-08-28T15:45:00+08:00",
   "relationship": "Operating-metric sidecar. Existing financial facts remain in hk_competitor_product_tariffs/local_financial_results.json and are not duplicated.",
   "operators": {
     "cmhk": {
@@ -8799,18 +8799,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid customer base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "hkt_ar_2016",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/01e%20-%20Annual%20Repor.pdf",
+      "verification_sources": [
+        "hkt_ar_2016",
+        "hkt_results_2016",
+        "hkt_presentation_2016"
+      ],
+      "quality_note": "Commercial 5G did not exist in Hong Kong before 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "hkt",
@@ -9110,18 +9114,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid customer base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "hkt_ar_2017",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
+      "verification_sources": [
+        "hkt_ar_2017",
+        "hkt_results_2017",
+        "hkt_presentation_2017"
+      ],
+      "quality_note": "Commercial 5G did not exist in Hong Kong before 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "hkt",
@@ -9257,7 +9265,7 @@
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
       "primary_source_id": "hkt_ar_2017",
-      "primary_source_url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
       "verification_sources": [
         "hkt_ar_2017",
         "hkt_results_2017",
@@ -9284,7 +9292,7 @@
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
       "primary_source_id": "hkt_ar_2017",
-      "primary_source_url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
       "verification_sources": [
         "hkt_ar_2017",
         "hkt_results_2017",
@@ -9311,7 +9319,7 @@
       "verification_status": "official_three_distinct_sources_verified",
       "verification_count": 3,
       "primary_source_id": "hkt_ar_2017",
-      "primary_source_url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
       "verification_sources": [
         "hkt_ar_2017",
         "hkt_results_2017",
@@ -9421,18 +9429,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid customer base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "hkt_ar_2018",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
+      "verification_sources": [
+        "hkt_ar_2018",
+        "hkt_results_2018",
+        "hkt_presentation_2018"
+      ],
+      "quality_note": "Commercial 5G did not exist in Hong Kong before 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "hkt",
@@ -9732,18 +9744,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid customer base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "hkt_ar_2019",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/e1-Annual-Report.pdf",
+      "verification_sources": [
+        "hkt_ar_2019",
+        "hkt_results_2019",
+        "hkt_presentation_2019"
+      ],
+      "quality_note": "Commercial 5G did not exist in Hong Kong before 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "hkt",
@@ -10047,18 +10063,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 8,
+      "official_value": 8,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "5G penetration within post-paid customer base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "primary_source_id": "hkt_ar_2020",
+      "primary_source_url": "https://www.hkt.com/api-service/assets/e01_Annual%20Report.pdf",
+      "verification_sources": [
+        "hkt_ar_2020",
+        "hkt_results_2020",
+        "hkt_presentation_2020"
+      ],
+      "quality_note": ""
     },
     {
       "operator_id": "hkt",
@@ -15047,18 +15067,20 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 1,
+      "primary_source_id": "smartone_ar_2016",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2016"
+      ],
+      "quality_note": "SmarTone launched commercial 5G in May 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "smartone",
@@ -15185,18 +15207,20 @@
       "grain": "annual",
       "metric_key": "mobile_postpaid_churn",
       "metric_zh": "移動後付月流失率",
-      "value": null,
-      "official_value": null,
+      "value": 0.9,
+      "official_value": 0.9,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
-      "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "scope": "monthly mobile post-paid churn",
+      "basis": "monthly_rate",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "primary_source_id": "smartone_ar_2016",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2016"
+      ],
+      "quality_note": ""
     },
     {
       "operator_id": "smartone",
@@ -15323,18 +15347,20 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 1,
+      "primary_source_id": "smartone_ar_2017",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2016_2017_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2017"
+      ],
+      "quality_note": "SmarTone launched commercial 5G in May 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "smartone",
@@ -15605,18 +15631,20 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 1,
+      "primary_source_id": "smartone_ar_2018",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2018"
+      ],
+      "quality_note": "SmarTone launched commercial 5G in May 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "smartone",
@@ -15887,18 +15915,20 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 1,
+      "primary_source_id": "smartone_ar_2019",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2019"
+      ],
+      "quality_note": "SmarTone launched commercial 5G in May 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "smartone",
@@ -16476,18 +16506,21 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 18,
+      "official_value": 18,
       "unit": "percent",
-      "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "comparator": "≈",
+      "scope": "5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "official_range_normalized",
+      "verification_count": 2,
+      "primary_source_id": "smartone_presentation_2021",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/results/english/2021annual_present.pdf",
+      "verification_sources": [
+        "smartone_presentation_2021",
+        "smartone_ar_2021"
+      ],
+      "quality_note": "FY2021 presentation disclosed a high-teen percentage; 18% is the normalized representative value and remains approximate."
     },
     {
       "operator_id": "smartone",
@@ -16796,7 +16829,7 @@
       "verification_sources": [
         "smartone_ar_2022"
       ],
-      "quality_note": "FY2025 described penetration as broadly stable but did not provide a reusable exact value."
+      "quality_note": ""
     },
     {
       "operator_id": "smartone",
@@ -17128,7 +17161,7 @@
       "verification_sources": [
         "smartone_ar_2023"
       ],
-      "quality_note": "FY2025 described penetration as broadly stable but did not provide a reusable exact value."
+      "quality_note": ""
     },
     {
       "operator_id": "smartone",
@@ -17259,14 +17292,14 @@
       "official_value": null,
       "unit": "percent",
       "comparator": "=",
-      "scope": "monthly mobile post-paid churn",
-      "basis": "monthly_rate",
+      "scope": "reviewed official public disclosures",
+      "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 0,
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "quality_note": ""
+      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
     },
     {
       "operator_id": "smartone",
@@ -17456,7 +17489,7 @@
       "verification_sources": [
         "smartone_ar_2024"
       ],
-      "quality_note": "FY2025 described penetration as broadly stable but did not provide a reusable exact value."
+      "quality_note": ""
     },
     {
       "operator_id": "smartone",
@@ -17587,14 +17620,14 @@
       "official_value": null,
       "unit": "percent",
       "comparator": "=",
-      "scope": "monthly mobile post-paid churn",
-      "basis": "monthly_rate",
+      "scope": "reviewed official public disclosures",
+      "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 0,
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "quality_note": ""
+      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
     },
     {
       "operator_id": "smartone",
@@ -17748,18 +17781,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 40,
+      "official_value": 40,
       "unit": "percent",
-      "comparator": "=",
+      "comparator": "≈",
       "scope": "5G penetration among post-paid MNO customers",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "FY2025 described penetration as broadly stable but did not provide a reusable exact value."
+      "verification_status": "official_qualitative_continuity_normalized",
+      "verification_count": 3,
+      "primary_source_id": "smartone_ar_2025",
+      "primary_source_url": "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_annual.pdf",
+      "verification_sources": [
+        "smartone_ar_2025",
+        "smartone_results_2025",
+        "smartone_presentation_2025"
+      ],
+      "quality_note": "FY2025 states that 5G penetration held broadly stable; the approximately 40% FY2024 anchor is retained as an approximate continuity value, not a newly disclosed exact point."
     },
     {
       "operator_id": "smartone",
@@ -17890,14 +17927,14 @@
       "official_value": null,
       "unit": "percent",
       "comparator": "=",
-      "scope": "monthly mobile post-paid churn",
-      "basis": "monthly_rate",
+      "scope": "reviewed official public disclosures",
+      "basis": "year_end",
       "verification_status": "source_gap_confirmed",
       "verification_count": 0,
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "quality_note": ""
+      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
     },
     {
       "operator_id": "smartone",
@@ -18024,18 +18061,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "three_hk_ar_2016",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2016/ar2016.pdf",
+      "verification_sources": [
+        "three_hk_ar_2016",
+        "three_hk_results_2016",
+        "three_hk_presentation_2016"
+      ],
+      "quality_note": "3HK launched commercial 5G in April 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "three_hk",
@@ -18370,18 +18411,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "three_hk_ar_2017",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf",
+      "verification_sources": [
+        "three_hk_ar_2017",
+        "three_hk_results_2017",
+        "three_hk_presentation_2017"
+      ],
+      "quality_note": "3HK launched commercial 5G in April 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "three_hk",
@@ -18716,18 +18761,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "three_hk_ar_2018",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2018/ar2018.pdf",
+      "verification_sources": [
+        "three_hk_ar_2018",
+        "three_hk_results_2018",
+        "three_hk_presentation_2018"
+      ],
+      "quality_note": "3HK launched commercial 5G in April 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "three_hk",
@@ -19062,18 +19111,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 0,
+      "official_value": 0,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "commercial 5G penetration within post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "operational_zero_from_precommercial_timeline",
+      "verification_count": 3,
+      "primary_source_id": "three_hk_ar_2019",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2019/ar2019.pdf",
+      "verification_sources": [
+        "three_hk_ar_2019",
+        "three_hk_results_2019",
+        "three_hk_presentation_2019"
+      ],
+      "quality_note": "3HK launched commercial 5G in April 2020; 0% records the verified pre-commercial state rather than a published issuer KPI."
     },
     {
       "operator_id": "three_hk",
@@ -19408,18 +19461,22 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 10.3,
+      "official_value": 10.3,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "5G penetration within Hong Kong post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "official_three_distinct_sources_verified",
+      "verification_count": 3,
+      "primary_source_id": "three_hk_ar_2020",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2020/ar2020.pdf",
+      "verification_sources": [
+        "three_hk_ar_2020",
+        "three_hk_results_2020",
+        "three_hk_presentation_2020"
+      ],
+      "quality_note": "The FY2020 results presentation discloses 5G subscribers at 10.3% of the Hong Kong post-paid base."
     },
     {
       "operator_id": "three_hk",
@@ -19781,18 +19838,21 @@
       "grain": "annual",
       "metric_key": "5g_penetration",
       "metric_zh": "5G滲透率",
-      "value": null,
-      "official_value": null,
+      "value": 21,
+      "official_value": 21,
       "unit": "percent",
       "comparator": "=",
-      "scope": "reviewed official public disclosures",
+      "scope": "5G penetration within Hong Kong post-paid base",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "quality_note": "No directly reusable exact annual value found in the reviewed official public disclosures; not estimated and not treated as zero."
+      "verification_status": "official_derived_from_disclosed_growth_bridge",
+      "verification_count": 2,
+      "primary_source_id": "three_hk_ar_2022",
+      "primary_source_url": "https://www.hthkh.com/en/ir/reports/ar2022/ar2022.pdf",
+      "verification_sources": [
+        "three_hk_ar_2022",
+        "three_hk_presentation_2022"
+      ],
+      "quality_note": "Derived from the FY2022 presentation: FY2022 post-paid base +2%, 5G base +46%, and FY2022 penetration 30%; implied FY2021 penetration is 30% × 1.02 ÷ 1.46 = 20.96%, rounded to 21%."
     },
     {
       "operator_id": "three_hk",

@@ -193,6 +193,38 @@
       "entity": "3HK",
       "metric": "net_profit",
       "metric_label": "净利润",
+      "period": "FY2016",
+      "value": 682.0,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "3HK",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2017",
+      "value": 4766.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2017/ar2017.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "3HK",
+      "metric": "net_profit",
+      "metric_label": "净利润",
       "period": "FY2018",
       "value": 404.0,
       "unit": "百万港元",
@@ -293,6 +325,23 @@
         "https://www.hthkh.com/en/ir/reports/ar2023/analysis.pdf",
         "https://www.hthkh.com/en/ir/reports/ar2023/cashflows.pdf",
         "https://www.hthkh.com/en/ir/reports/ar2023/financialposition.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "3HK",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2024",
+      "value": 6.0,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 2,
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports/ar2024/ar2024.pdf",
+        "https://www.hthkh.com/en/ir/reports/ar2025/ar2025.pdf"
       ],
       "scope_note": "FY2025净利润金额"
     },
@@ -868,6 +917,86 @@
       "entity": "HKT",
       "metric": "net_profit",
       "metric_label": "净利润",
+      "period": "FY2016",
+      "value": 4889.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/staticfiles/HKTCorpsite2/About%20HKT/Investor%20relations/Announcements%20%26%20notices/2017/Feb/01e%20-%20Annual%20Report.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2017",
+      "value": 4745.0,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/cms/api-service/assets/view/2018-hkt-annual-report.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2018",
+      "value": 4825.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/cms/api-service/assets/view/2018-hkt-annual-report.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2019",
+      "value": 5217.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/cms/api-service/assets/view/e1-Annual-Report.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2020",
+      "value": 5303.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/staticfiles/HKTCorpsite2/About%20HKT/Investor%20relations/Announcements%20%26%20notices/2021/Mar/e01_Annual%20Report.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
       "period": "FY2021",
       "value": 4808.0,
       "unit": "百万港元",
@@ -895,6 +1024,22 @@
         "https://www.hkexnews.hk/listedco/listconews/sehk/2022/0908/2022090800325.pdf",
         "https://www.hkexnews.hk/listedco/listconews/sehk/2023/0331/2023033101585.pdf",
         "https://www.hkexnews.hk/listedco/listconews/sehk/2024/0402/2024040202244.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "HKT",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2023",
+      "value": 4991.0,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.hkt.com/api-service/assets/e01-2023%20Annual%20Re.pdf"
       ],
       "scope_note": "FY2025净利润金额"
     },
@@ -1496,6 +1641,106 @@
         "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"
       ],
       "scope_note": "FY2025 EBITDA金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2016",
+      "value": 797.15,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2015_2016_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2017",
+      "value": 672.102,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 2,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2016_2017_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2018",
+      "value": 615.243,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 2,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2017_2018_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2019",
+      "value": 632.247,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 2,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2018_2019_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2020",
+      "value": 378.985,
+      "unit": "百万港元",
+      "verification_status": "official_comparative_restated_display",
+      "source_count": 2,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2019_2020_annual.pdf",
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
+    },
+    {
+      "domain": "01",
+      "domain_name": "本地运营商",
+      "entity": "SmarTone",
+      "metric": "net_profit",
+      "metric_label": "净利润",
+      "period": "FY2021",
+      "value": 444.621,
+      "unit": "百万港元",
+      "verification_status": "official_single_source_user_accepted_display",
+      "source_count": 1,
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/investor/financial_reports/english/2020_2021_annual.pdf"
+      ],
+      "scope_note": "FY2025净利润金额"
     },
     {
       "domain": "01",

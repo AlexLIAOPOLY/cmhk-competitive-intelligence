@@ -936,6 +936,12 @@ def _requested_overview_exact_metric_chunks(
     if not metrics:
         return []
     years = {int(value) for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)}
+    for start, end in re.findall(
+        r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-—–])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+        normalized,
+    ):
+        lower, upper = sorted((int(start), int(end)))
+        years.update(range(lower, upper + 1))
     for start_text, end_text in re.findall(
         r"(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))(?!\d)",
         normalized,
@@ -1036,7 +1042,7 @@ def _local_hk_operator_exact_metric_chunks(
         "mobile_postpaid_exit_arpu": ["期末arpu", "exit arpu"],
         "mobile_postpaid_net_arpu": ["淨arpu", "净arpu", "net arpu"],
         "mobile_postpaid_net_ampu": ["淨ampu", "净ampu", "net ampu", "ampu"],
-        "mobile_postpaid_churn": ["後付流失率", "后付流失率", "churn"],
+        "mobile_postpaid_churn": ["移動後付月流失率", "移动后付月流失率", "後付流失率", "后付流失率", "churn"],
         "pay_tv_customers": ["收費電視客戶", "收费电视客户", "pay tv customers", "pay-tv customers"],
         "telephony_customers": ["固網電話客戶", "固网电话客户", "telephony customers"],
         "5g_population_coverage": ["5g人口覆蓋", "5g population coverage"],
@@ -1063,6 +1069,12 @@ def _local_hk_operator_exact_metric_chunks(
     if "5g_home_broadband_ebitda_growth" in matched_metrics:
         matched_metrics.discard("5g_home_broadband_revenue_growth")
     years = {int(value) for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)}
+    for start, end in re.findall(
+        r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-—–])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+        normalized,
+    ):
+        lower, upper = sorted((int(start), int(end)))
+        years.update(range(lower, upper + 1))
     if not matched_subjects or not matched_metrics:
         return []
 
