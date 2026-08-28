@@ -4308,10 +4308,26 @@ def _period_rank(value: Any) -> tuple[int, int, int]:
     iso = re.search(r"(20\d{2})-(\d{2})-(\d{2})", text)
     if iso:
         return tuple(int(item) for item in iso.groups())
-    quarter = re.search(r"Q([1-4])\s+(20\d{2})", text)
+    quarter = re.search(r"Q([1-4])\s+(20\d{2})", text, re.I)
     if quarter:
         return int(quarter.group(2)), int(quarter.group(1)) * 3, 31
+    half = re.search(r"H([12])\s+(20\d{2})", text, re.I)
+    if half:
+        return int(half.group(2)), 6 if half.group(1) == "1" else 12, 30 if half.group(1) == "1" else 31
+    named_month = re.search(
+        r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b.*?\b(\d{1,2}),\s*(20\d{2})",
+        text,
+        re.I,
+    )
+    if named_month:
+        month = {
+            "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+            "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+        }[named_month.group(1).lower()]
+        return int(named_month.group(3)), month, int(named_month.group(2))
     year = re.search(r"(20\d{2})", text)
+    if year and re.search(r"(?:\bFY\s*|\bannual\b)", text, re.I):
+        return int(year.group(1)), 12, 31
     return (int(year.group(1)), 0, 0) if year else (0, 0, 0)
 
 

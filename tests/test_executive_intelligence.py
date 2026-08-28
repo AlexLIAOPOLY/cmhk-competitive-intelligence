@@ -3,13 +3,17 @@ from __future__ import annotations
 import json
 import unittest
 
-from cmhk.intelligence.executive import _international_domain, build_executive_intelligence_snapshot
+from cmhk.intelligence.executive import _international_domain, _period_rank, build_executive_intelligence_snapshot
 
 
 class ExecutiveIntelligenceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.snapshot = build_executive_intelligence_snapshot()
+
+    def test_period_rank_places_half_year_after_first_quarter(self):
+        self.assertGreater(_period_rank("H1 2026"), _period_rank("Q1 2026"))
+        self.assertEqual(_period_rank("FY2025"), (2025, 12))
 
     def test_four_domains_are_present_and_backed_by_entities(self):
         domains = self.snapshot["domains"]

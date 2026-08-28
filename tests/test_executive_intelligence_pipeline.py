@@ -15,6 +15,11 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_period_rank_understands_half_year_and_canonical_named_month(self):
+        self.assertEqual(pipeline._period_rank("H1 2026"), (2026, 6, 30))
+        self.assertEqual(pipeline._period_rank("Jun '26 Jun 30, 2026"), (2026, 6, 30))
+        self.assertGreater(pipeline._period_rank("H1 2026"), pipeline._period_rank("Q1 2026"))
+
     def test_ui_numeric_comparison_ignores_equal_values_and_new_fields(self):
         previous = {
             "domains": {

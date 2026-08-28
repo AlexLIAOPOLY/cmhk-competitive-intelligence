@@ -106,10 +106,19 @@ def _verified_number(row: dict[str, Any] | None) -> float | None:
 
 
 def _period_rank(value: Any) -> tuple[int, int]:
-    match = re.search(r"Q([1-4])\s+(20\d{2})", str(value or ""))
+    text = str(value or "")
+    iso = re.search(r"(20\d{2})-(\d{2})(?:-\d{2})?", text)
+    if iso:
+        return int(iso.group(1)), int(iso.group(2))
+    match = re.search(r"Q([1-4])\s+(20\d{2})", text, re.I)
     if match:
         return int(match.group(2)), int(match.group(1))
-    year = re.search(r"(20\d{2})", str(value or ""))
+    half = re.search(r"H([12])\s+(20\d{2})", text, re.I)
+    if half:
+        return int(half.group(2)), 6 if half.group(1) == "1" else 12
+    year = re.search(r"(20\d{2})", text)
+    if year and re.search(r"(?:\bFY\s*|\bannual\b)", text, re.I):
+        return int(year.group(1)), 12
     return (int(year.group(1)), 0) if year else (0, 0)
 
 
