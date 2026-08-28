@@ -46,6 +46,7 @@ KNOWLEDGE_BASE_META = {
 }
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
 BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
+FULL_AUDIT_OPERATOR_IDS = {"hkt", "three_hk", "smartone"}
 COMPANY_GROUPS = {
     "中国移动": "内地运营商",
     "中国电信": "内地运营商",
@@ -203,6 +204,7 @@ def add_requested_overview_cells(
 
 def main() -> None:
     cells: list[dict] = []
+    gaps: list[dict] = []
     company_meta: dict[str, dict] = {}
     metric_meta: dict[str, dict] = {}
     availability: dict[tuple[str, str], set[int]] = defaultdict(set)
@@ -215,10 +217,9 @@ def main() -> None:
                 metric = text(row, "metric_key")
                 try:
                     year = int(text(row, "year"))
-                    value = float(raw.replace(",", ""))
                 except (TypeError, ValueError):
                     continue
-                if not company or not metric or status in BLOCKED_STATUSES:
+                if not company or not metric:
                     continue
                 native_unit = text(row, "unit")
                 unit = "million_subscribers" if metric == "postpaid_connections" else native_unit
@@ -238,6 +239,33 @@ def main() -> None:
                 if unit not in meta["units"]:
                     meta["units"].append(unit)
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
+                if not raw:
+                    if source == LOCAL_HK_SOURCE and text(row, "operator_id") in FULL_AUDIT_OPERATOR_IDS and text(row, "audit_outcome") == "source_gap_confirmed":
+                        try:
+                            reviewed_sources = json.loads(text(row, "reviewed_source_urls") or "[]")
+                        except json.JSONDecodeError:
+                            reviewed_sources = []
+                        gaps.append({
+                            "dataset": source.parent.name,
+                            "company": company,
+                            "metric": metric,
+                            "year": year,
+                            "unit": unit,
+                            "period": text(row, "period"),
+                            "periodEnd": text(row, "period_end"),
+                            "status": status,
+                            "reasonCode": text(row, "gap_reason_code"),
+                            "reason": text(row, "gap_reason") or text(row, "quality_note"),
+                            "reviewedSources": list(dict.fromkeys(str(url) for url in reviewed_sources if url)),
+                            "reviewedSourceCount": int(text(row, "reviewed_source_count") or 0),
+                        })
+                    continue
+                try:
+                    value = float(raw.replace(",", ""))
+                except (TypeError, ValueError):
+                    continue
+                if status in BLOCKED_STATUSES:
+                    continue
                 availability[(company, metric)].add(year)
                 cell = {
                     "dataset": source.parent.name,
@@ -283,18 +311,20 @@ def main() -> None:
     add_requested_overview_cells(cells, company_meta, metric_meta, availability)
     # A valid official value must remain visible even when the issuer disclosed
     # only one year.  History length is presentation metadata, not a data gate.
-    active_companies = {cell["company"] for cell in cells}
-    active_metrics = {cell["metric"] for cell in cells}
+    active_companies = {cell["company"] for cell in cells} | {gap["company"] for gap in gaps}
+    active_metrics = {cell["metric"] for cell in cells} | {gap["metric"] for gap in gaps}
     knowledge_bases = []
     for source in SOURCES:
         dataset_id = source.parent.name
         dataset_cells = [cell for cell in cells if cell["dataset"] == dataset_id]
+        dataset_gaps = [gap for gap in gaps if gap["dataset"] == dataset_id]
         knowledge_bases.append({
             "id": dataset_id,
             **KNOWLEDGE_BASE_META[source],
             "companyCount": len({cell["company"] for cell in dataset_cells}),
             "metricCount": len({cell["metric"] for cell in dataset_cells}),
             "cellCount": len(dataset_cells),
+            "gapCount": len(dataset_gaps),
         })
     overview_cells = [cell for cell in cells if cell["dataset"] == REQUESTED_OVERVIEW_DATASET_ID]
     knowledge_bases.append({
@@ -324,9 +354,10 @@ def main() -> None:
         "companies": [value for key, value in sorted(company_meta.items()) if key in active_companies],
         "metrics": [value for key, value in sorted(metric_meta.items(), key=lambda item: item[1]["label"]) if key in active_metrics],
         "cells": cells,
+        "gaps": gaps,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"wrote {OUTPUT} companies={len(payload['companies'])} metrics={len(payload['metrics'])} cells={len(cells)}")
+    print(f"wrote {OUTPUT} companies={len(payload['companies'])} metrics={len(payload['metrics'])} cells={len(cells)} gaps={len(gaps)}")
 
 
 if __name__ == "__main__":

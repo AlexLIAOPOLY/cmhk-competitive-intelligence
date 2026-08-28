@@ -1,6 +1,10 @@
 ﻿operator_id,years,metric,type,selected_basis,detail
 three_hk,2024-2025,customers_and_arpu,scope_change_and_restatement,retain original historical rows; record 2025 restated comparators,"FY2025 isolates Hong Kong after disposal of the Macau operation and restates FY2024 postpaid 1.316m, prepaid 3.162m, total 4.478m, gross ARPU HKD190 and net ARPU HKD175."
+three_hk,2016,mobile_postpaid_net_ampu,scope_restatement,FY2017 restated comparable HKD189,FY2016 originally reported local postpaid net AMPU HKD161; FY2017 restated the comparable postpaid net AMPU to HKD189 after excluding MVNO revenue.
+hkt,2021,consumer_broadband_customers,metric_scope_correction,retail consumer broadband access lines 1.461m,The prior 1.637m value was total broadband access lines including business and wholesale and has been removed from the consumer series.
 smartone,2019,mobile_postpaid_arpu,accounting_standard_change,HKFRS 15 annual ARPU HKD224,The same report also showed HKD247 under the former HKAS 18 basis.
+smartone,2020-2025,mobile_postpaid_exit_arpu,presentation_label_shortening,"continuous June/exit series 189, 202, 213, 224, 224, 222",FY2020-FY2022 explicitly call the KPI exit ARPU; later presentations shorten the title but retain June year-end points and the same continuous series.
+smartone,2024-2025,5g_penetration,exact_then_qualitative,FY2024 exact presentation 39%; FY2025 approximate continuity 39%,FY2024 annual report rounds to approximately 40% while the official presentation states 39%; FY2025 says broadly stable without a new exact point.
 smartone,2017-2025,period_end,fiscal_year_difference,30 June fiscal year end,Do not align SmarTone FY labels with HKT/3HK/i-CABLE calendar years without using period_end.
 hkbn,2024-2025,period_end,fiscal_year_difference,31 August fiscal year end,Do not align HKBN FY labels with calendar-year operators without using period_end.
 icable,2023-2025,pay_tv_customers,service_discontinuation,leave later annual rows absent/gap,Pay-TV service ceased in June 2023; no zero or synthetic continuation is inserted.

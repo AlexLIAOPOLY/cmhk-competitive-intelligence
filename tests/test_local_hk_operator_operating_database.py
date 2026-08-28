@@ -49,6 +49,12 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(quality["duplicate_key_count"], 0)
         self.assertEqual(quality["invalid_source_ids"], [])
         self.assertGreaterEqual(quality["available_value_rows"], 160)
+        self.assertEqual(quality["full_audit"]["expected_rows"], 930)
+        self.assertEqual(quality["full_audit"]["actual_rows"], 930)
+        self.assertEqual(quality["full_audit"]["metric_count"], 31)
+        self.assertEqual(quality["full_audit"]["gaps_without_reason"], [])
+        self.assertEqual(quality["full_audit"]["gaps_without_review_sources"], [])
+        self.assertEqual(quality["full_audit"]["values_without_sources"], [])
 
     def test_known_official_values_and_period_ends(self) -> None:
         self.assertEqual(self.row("hkt", 2025, "5g_customers")["official_value"], "2.096")
@@ -60,19 +66,38 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(self.row("icable", 2022, "pay_tv_customers")["official_value"], "0.662")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["official_value"], "50")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["comparator"], ">=")
+        self.assertEqual(self.row("hkt", 2021, "consumer_broadband_customers")["official_value"], "1.461")
+        self.assertEqual(self.row("three_hk", 2016, "mobile_postpaid_net_ampu")["official_value"], "189")
+        self.assertEqual(self.row("smartone", 2016, "mobile_postpaid_arpu")["official_value"], "301")
+        self.assertEqual(self.row("smartone", 2024, "5g_penetration")["official_value"], "39")
+        self.assertEqual(self.row("smartone", 2025, "5g_penetration")["official_value"], "39")
 
     def test_unfilled_gaps_remain_missing_and_normalized_disclosures_are_labelled(self) -> None:
         hgc = self.row("hgc", 2025, "mobile_postpaid_arpu")
         self.assertEqual(hgc["official_value"], "")
         self.assertEqual(hgc["verification_status"], "source_gap_confirmed")
-        self.assertIn("not estimated", hgc["quality_note"])
+        self.assertTrue(hgc["gap_reason"])
         smartone = self.row("smartone", 2025, "5g_penetration")
-        self.assertEqual(smartone["official_value"], "40")
+        self.assertEqual(smartone["official_value"], "39")
         self.assertEqual(smartone["verification_status"], "official_qualitative_continuity_normalized")
         self.assertIn("broadly stable", smartone["quality_note"])
         hkt_traffic = self.row("hkt", 2025, "annual_mobile_data_traffic")
         self.assertEqual(hkt_traffic["official_value"], "")
         self.assertEqual(hkt_traffic["verification_status"], "source_gap_confirmed")
+
+    def test_every_three_operator_metric_year_is_value_or_audited_gap(self) -> None:
+        target = [row for row in self.rows if row["operator_id"] in {"hkt", "three_hk", "smartone"}]
+        self.assertEqual(len(target), 930)
+        self.assertEqual(len({(row["operator_id"], row["year"], row["metric_key"]) for row in target}), 930)
+        for row in target:
+            if row["official_value"]:
+                self.assertTrue(row["verification_sources"], row)
+            else:
+                self.assertEqual(row["audit_outcome"], "source_gap_confirmed", row)
+                self.assertTrue(row["gap_reason_code"], row)
+                self.assertTrue(row["gap_reason"], row)
+                self.assertGreater(int(row["reviewed_source_count"]), 0, row)
+                self.assertTrue(row["reviewed_source_urls"], row)
 
     def test_scope_breaks_are_machine_readable(self) -> None:
         conflicts = json.loads((DATASET / "conflicts_and_scope_breaks.json").read_text(encoding="utf-8"))["items"]
@@ -115,6 +140,8 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("operator=SmarTone", churn_text)
         self.assertIn("period=FY2025", churn_text)
         self.assertIn("未披露（source_gap_confirmed）", churn_text)
+        self.assertIn("gap_reason=", churn_text)
+        self.assertIn("reviewed_source_urls=[", churn_text)
 
         postpaid_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "HKT和3HK的FY2025后付费用户数分别是多少？",
@@ -150,6 +177,18 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("metric_key=annual_mobile_data_traffic", traffic_chunks[0]["text"])
         self.assertIn("未披露（source_gap_confirmed）", traffic_chunks[0]["text"])
 
+    def test_xiaojing_does_not_truncate_multi_metric_audit_request(self) -> None:
+        chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "请列出3HK、HKT、SmarTone 2016至2025年5G渗透率、移动后付月流失率、总客户数、移动后付期末ARPU和5G人口覆盖率",
+            dataset_ids={DATASET_ID},
+        )
+        self.assertEqual(len(chunks), 150)
+        text = "\n".join(chunk["text"] for chunk in chunks)
+        for operator in ("3HK", "HKT", "SmarTone"):
+            self.assertIn(f"operator={operator}", text)
+        for metric in ("5g_penetration", "mobile_postpaid_churn", "total_customers", "mobile_postpaid_exit_arpu", "5g_population_coverage"):
+            self.assertIn(f"metric_key={metric}", text)
+
     def test_aliases_and_metric_disambiguation(self) -> None:
         chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "香港寬頻HKBN FY2025住宅ARPU和ARPH",
@@ -175,6 +214,26 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("metric_key=5g_base_station_expansion", first_source)
         self.assertIn("official_value=50 percent", first_source)
         self.assertIn("local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv", first_source)
+
+    def test_agent_does_not_honor_small_model_limit_for_exact_ten_year_table(self) -> None:
+        dataset_token = agent.SELECTED_DATASET_IDS.set({DATASET_ID})
+        request_token = agent.CURRENT_USER_REQUEST.set(
+            "请列出3HK、HKT、SmarTone 2016至2025年5G人口覆盖率，并说明未披露原因"
+        )
+        try:
+            result = agent._search_local_reports_only("3HK 5G覆盖率", 4)
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+            agent.SELECTED_DATASET_IDS.reset(dataset_token)
+        self.assertIn("row_count=30", result)
+        self.assertEqual(result.count("\nROW|"), 30)
+        self.assertIn("operator=3HK", result)
+        self.assertIn("operator=HKT", result)
+        self.assertIn("operator=SmarTone", result)
+        self.assertIn("reason=", result)
+        self.assertIn("OFFICIAL_SOURCE|", result)
+        self.assertIn('"retained_chunks": 30', result)
+        self.assertIn('"skipped_chunks": 0', result)
 
 
 if __name__ == "__main__":

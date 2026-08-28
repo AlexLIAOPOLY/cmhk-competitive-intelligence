@@ -42,7 +42,7 @@ from cmhk.agent.production import (
 )
 from cmhk.crawl.run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from cmhk.agent.rag import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
+from cmhk.agent.rag import _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
 from cmhk.reporting.charts import render_chart
 
 
@@ -933,6 +933,85 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
     """Return local retrieval evidence without deciding how the Agent uses it."""
     limit = max(1, int(max_results or 12))
     selected_ids = _effective_selected_dataset_ids()
+    original_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
+    exact_request = original_request or _clean_search_text(query, 1200)
+    exact_local_rows = _local_hk_operator_exact_metric_chunks(exact_request, dataset_ids=selected_ids)
+    # Exact annual questions have a fixed cardinality (for example, one KPI x
+    # three operators x ten years = 30 rows).  A model-provided max_results is
+    # a relevance hint, not permission to truncate that authoritative table.
+    if exact_local_rows:
+        limit = max(limit, min(300, len(exact_local_rows)))
+        source = str(exact_local_rows[0].get("source") or "")
+        source_ref = f"/references/{source}" if source else ""
+        source_index: dict[str, int] = {}
+        row_lines = []
+        for chunk in exact_local_rows:
+            row = chunk.get("exact_metric_row") or {}
+            row_urls = []
+            primary_url = str(row.get("primary_source_url") or "").strip()
+            if primary_url:
+                row_urls.append(primary_url)
+            for url in row.get("reviewed_source_urls") or []:
+                clean_url = str(url or "").strip()
+                if clean_url and clean_url not in row_urls:
+                    row_urls.append(clean_url)
+            source_refs = []
+            for url in row_urls:
+                if url not in source_index:
+                    source_index[url] = len(source_index) + 1
+                source_refs.append(str(source_index[url]))
+            value = str(row.get("official_value") or "").strip()
+            comparator = str(row.get("comparator") or "").strip()
+            if value:
+                value_field = f"{value} {row.get('unit') or ''}".strip()
+                audit_field = f"status={row.get('verification_status') or row.get('audit_outcome') or 'verified'}"
+            else:
+                value_field = "未披露"
+                audit_field = (
+                    f"status={row.get('verification_status') or row.get('audit_outcome') or 'source_gap_confirmed'}"
+                    f"|reason_code={row.get('gap_reason_code') or 'not_numerically_disclosed'}"
+                    f"|reason={row.get('gap_reason') or '官方材料未数值披露'}"
+                    f"|reviewed={row.get('reviewed_source_count') or len(row_urls)}"
+                )
+            row_lines.append(
+                "|".join(
+                    [
+                        "ROW",
+                        f"operator={row.get('operator')}",
+                        f"period={row.get('period')}",
+                        f"metric_key={row.get('metric_key')}",
+                        f"metric_zh={row.get('metric_zh')}",
+                        f"official_value={value_field}",
+                        f"comparator={comparator or '='}",
+                        audit_field,
+                        f"source_refs={','.join(source_refs) or '-'}",
+                    ]
+                )
+            )
+        source_lines = [f"OFFICIAL_SOURCE|{index}|{url}" for url, index in source_index.items()]
+        header = (
+            f"[来源 1: {source} · 精确年度全表]\n"
+            f"香港本地运营商精确年度指标全表；row_count={len(row_lines)}。"
+            "以下ROW不得删行；有值逐年列出，未披露逐年说明reason并引用source_refs；"
+            "未披露不得当作0或推测。"
+        )
+        meta_link = {"label": source, "url": source_ref} if source_ref else None
+        meta_data = {
+            "type": "meta",
+            "sources": [source] if source else [],
+            "links": [meta_link] if meta_link else [],
+            "references": [{"index": 1, "source": source, "links": [meta_link] if meta_link else []}],
+            "contextAudit": {
+                "mode": "exact_annual_table",
+                "input_chunks": len(exact_local_rows),
+                "retained_chunks": len(row_lines),
+                "skipped_chunks": 0,
+            },
+            "retrievalQuality": {"status": "exact_complete", "row_count": len(row_lines)},
+        }
+        return "\n".join([header, *row_lines, *source_lines]) + (
+            f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
+        )
     chunks = retrieve_context(
         query,
         limit=limit,
@@ -941,7 +1020,6 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
     # Models may shorten a tool query and accidentally drop a decisive metric
     # qualifier. Keep exact rows matched from the original user request at the
     # front of every local search in the same turn.
-    original_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
     if original_request and original_request != _clean_search_text(query, 1200):
         original_chunks = retrieve_context(
             original_request,

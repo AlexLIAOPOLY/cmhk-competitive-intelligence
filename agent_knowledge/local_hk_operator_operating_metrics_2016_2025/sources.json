@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T15:45:00+08:00",
+  "generated_at": "2026-08-28T16:40:00+08:00",
   "sources": [
     {
       "source_id": "hkt_ar_2016",
@@ -638,6 +638,60 @@
       "label": "SmarTone FY2021 Annual Results Presentation",
       "url": "https://www.smartoneholdings.com/about/investor/results/english/2021annual_present.pdf",
       "source_type": "official_results_presentation",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_presentation_2022",
+      "operator_id": "smartone",
+      "year": 2022,
+      "label": "SmarTone FY2022 Annual Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2022_annual_present.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_results_2022",
+      "operator_id": "smartone",
+      "year": 2022,
+      "label": "SmarTone FY2022 Annual Results",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2022_annual_results.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_presentation_2023",
+      "operator_id": "smartone",
+      "year": 2023,
+      "label": "SmarTone FY2023 Annual Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2023_annual_present.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_results_2023",
+      "operator_id": "smartone",
+      "year": 2023,
+      "label": "SmarTone FY2023 Annual Results",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2023_annual_results.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_presentation_2024",
+      "operator_id": "smartone",
+      "year": 2024,
+      "label": "SmarTone FY2024 Annual Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2024_annual_present.pdf",
+      "source_type": "official_results_presentation",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_results_2024",
+      "operator_id": "smartone",
+      "year": 2024,
+      "label": "SmarTone FY2024 Annual Results",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2024_annual_results.pdf",
+      "source_type": "official_results_announcement",
       "publisher": "SmarTone Telecommunications Holdings Limited"
     },
     {

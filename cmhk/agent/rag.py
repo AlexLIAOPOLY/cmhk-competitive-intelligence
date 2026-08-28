@@ -1045,7 +1045,7 @@ def _local_hk_operator_exact_metric_chunks(
         "mobile_postpaid_churn": ["移動後付月流失率", "移动后付月流失率", "後付流失率", "后付流失率", "churn"],
         "pay_tv_customers": ["收費電視客戶", "收费电视客户", "pay tv customers", "pay-tv customers"],
         "telephony_customers": ["固網電話客戶", "固网电话客户", "telephony customers"],
-        "5g_population_coverage": ["5g人口覆蓋", "5g population coverage"],
+        "5g_population_coverage": ["5g人口覆蓋", "5g人口覆盖", "5g population coverage"],
         "mobile_data_dou": ["移動dou", "移动dou", "戶均流量", "户均流量", "data usage per user"],
         "annual_mobile_data_traffic": ["年度移動數據流量", "年度移动数据流量", "總流量", "总流量", "annual mobile data traffic"],
         "total_base_stations": ["基站總數", "基站总数", "total base stations"],
@@ -1100,9 +1100,21 @@ def _local_hk_operator_exact_metric_chunks(
     source = csv_path.relative_to(ROOT).as_posix()
     registry_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "sources.json"
     chunks: list[dict[str, Any]] = []
-    for row in filtered[:30]:
+    # One metric across three operators is 30 annual rows.  Keep enough room
+    # for a user to request several audited metrics together without silently
+    # dropping later operators or years; the downstream context budget still
+    # performs the final size-aware selection.
+    for row in filtered[:300]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
         value_text = f"{row.get('official_value')} {row.get('unit')}" if row.get("official_value") else "未披露（source_gap_confirmed）"
+        gap_reason = (row.get("gap_reason") or row.get("quality_note") or "").strip()
+        reviewed_source_urls = (row.get("reviewed_source_urls") or "[]").strip()
+        try:
+            parsed_reviewed_source_urls = json.loads(reviewed_source_urls)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            parsed_reviewed_source_urls = []
+        if not isinstance(parsed_reviewed_source_urls, list):
+            parsed_reviewed_source_urls = []
         text = (
             f"香港本地運營商精確年度指標行：operator={row.get('operator')}; operator_id={row.get('operator_id')}; "
             f"period={row.get('period')}; period_end={row.get('period_end')}; metric_key={row.get('metric_key')}; "
@@ -1110,9 +1122,34 @@ def _local_hk_operator_exact_metric_chunks(
             f"scope={row.get('scope')}; basis={row.get('basis')}; verification_status={row.get('verification_status')}; "
             f"verification_count={row.get('verification_count')}; {_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; "
-            f"quality_note={row.get('quality_note')}.如果狀態為source_gap_confirmed，只能回答未披露，不能當作0或推測。"
+            f"audit_outcome={row.get('audit_outcome')}; gap_reason_code={row.get('gap_reason_code')}; "
+            f"gap_reason={gap_reason}; reviewed_source_count={row.get('reviewed_source_count')}; "
+            f"reviewed_source_urls={reviewed_source_urls}; quality_note={row.get('quality_note')}."
+            "如果狀態為source_gap_confirmed，必須回答未披露並說明gap_reason與已復核官方來源，不能當作0或推測。"
         )
-        chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+        chunks.append({
+            "source": source,
+            "text": text,
+            "links": [{"label": source, "url": _local_ref(source)}],
+            "exact_metric_row": {
+                "operator": row.get("operator"),
+                "operator_id": row.get("operator_id"),
+                "period": row.get("period"),
+                "period_end": row.get("period_end"),
+                "metric_key": row.get("metric_key"),
+                "metric_zh": row.get("metric_zh"),
+                "official_value": row.get("official_value"),
+                "unit": row.get("unit"),
+                "comparator": row.get("comparator"),
+                "verification_status": row.get("verification_status"),
+                "audit_outcome": row.get("audit_outcome"),
+                "gap_reason_code": row.get("gap_reason_code"),
+                "gap_reason": gap_reason,
+                "reviewed_source_count": row.get("reviewed_source_count"),
+                "reviewed_source_urls": [str(url) for url in parsed_reviewed_source_urls if str(url).strip()],
+                "primary_source_url": row.get("primary_source_url"),
+            },
+        })
     return chunks
 
 

@@ -3,7 +3,7 @@
   "title": "香港本地運營商2016–2025非財務經營指標庫",
   "summary": "HKT、3HK、SmarTone、HKBN、HGC、i-CABLE客戶、5G、寬頻、網絡、ARPU、流失率及其他官方KPI。",
   "source_type": "official_public_multi_source",
-  "updated_at": "2026-08-28T15:45:00+08:00",
+  "updated_at": "2026-08-28T16:40:00+08:00",
   "tags": [
     "hong_kong_carriers",
     "local_operators",
@@ -20,6 +20,9 @@
     "summary.md",
     "annual_metrics.json",
     "annual_metrics.csv",
+    "full_metric_audit_2016_2025.json",
+    "full_metric_audit_2016_2025.csv",
+    "full_metric_audit_2016_2025.md",
     "sources.json",
     "source_inventory.md",
     "coverage.csv",
@@ -28,11 +31,13 @@
     "conflicts_and_scope_breaks.json",
     "conflicts_and_scope_breaks.csv"
   ],
-  "row_count": 903,
+  "row_count": 1427,
   "quality": {
     "status": "pass",
-    "source_count": 85,
-    "available_value_rows": 190
+    "source_count": 91,
+    "available_value_rows": 281,
+    "full_audit_rows": 930,
+    "full_audit_expected_rows": 930
   },
   "linked_existing_datasets": [
     "hk_competitor_product_tariffs"

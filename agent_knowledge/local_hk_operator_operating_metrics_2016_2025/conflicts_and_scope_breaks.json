@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T15:45:00+08:00",
+  "generated_at": "2026-08-28T16:40:00+08:00",
   "items": [
     {
       "operator_id": "three_hk",
@@ -10,12 +10,44 @@
       "detail": "FY2025 isolates Hong Kong after disposal of the Macau operation and restates FY2024 postpaid 1.316m, prepaid 3.162m, total 4.478m, gross ARPU HKD190 and net ARPU HKD175."
     },
     {
+      "operator_id": "three_hk",
+      "years": "2016",
+      "metric": "mobile_postpaid_net_ampu",
+      "type": "scope_restatement",
+      "selected_basis": "FY2017 restated comparable HKD189",
+      "detail": "FY2016 originally reported local postpaid net AMPU HKD161; FY2017 restated the comparable postpaid net AMPU to HKD189 after excluding MVNO revenue."
+    },
+    {
+      "operator_id": "hkt",
+      "years": "2021",
+      "metric": "consumer_broadband_customers",
+      "type": "metric_scope_correction",
+      "selected_basis": "retail consumer broadband access lines 1.461m",
+      "detail": "The prior 1.637m value was total broadband access lines including business and wholesale and has been removed from the consumer series."
+    },
+    {
       "operator_id": "smartone",
       "years": "2019",
       "metric": "mobile_postpaid_arpu",
       "type": "accounting_standard_change",
       "selected_basis": "HKFRS 15 annual ARPU HKD224",
       "detail": "The same report also showed HKD247 under the former HKAS 18 basis."
+    },
+    {
+      "operator_id": "smartone",
+      "years": "2020-2025",
+      "metric": "mobile_postpaid_exit_arpu",
+      "type": "presentation_label_shortening",
+      "selected_basis": "continuous June/exit series 189, 202, 213, 224, 224, 222",
+      "detail": "FY2020-FY2022 explicitly call the KPI exit ARPU; later presentations shorten the title but retain June year-end points and the same continuous series."
+    },
+    {
+      "operator_id": "smartone",
+      "years": "2024-2025",
+      "metric": "5g_penetration",
+      "type": "exact_then_qualitative",
+      "selected_basis": "FY2024 exact presentation 39%; FY2025 approximate continuity 39%",
+      "detail": "FY2024 annual report rounds to approximately 40% while the official presentation states 39%; FY2025 says broadly stable without a new exact point."
     },
     {
       "operator_id": "smartone",
