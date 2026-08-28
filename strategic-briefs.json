@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-28T11:37:05+08:00",
+  "generated_at": "2026-08-28T11:42:03+08:00",
   "items": [
+    {
+      "id": "NEWS-A3338874AE8B6A",
+      "title": "香港电讯参与GenA.I.沙盒 开发AI代理身份验证方案",
+      "summary": "香港电讯参与监管机构的生成式人工智能沙盒，开发AI代理身份验证方案。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMi2gJBVV95cUxORExhQXk5alQydnBxdlpwTGZKS3lxSDBTQ2dLaTlYOTZjanpuQnZVX0ZmcnNqS3dmUHBjY1YtT2gzTDdPTmlrQVBkQ0ljZ3M5c0dkUGc0XzRmWGxTZWVlUEpITnFjTUx2UEJ3SUpmSXZGdU00WWYtd183VjNVUV9oQmc4d1B5OGg3Vy14WFctdUFOSURoa2RYd3NNaWFzQ3FZZ3h4Y2x6cVRpYVE5RTgwcE1NdXVISFY1VFBOcTEzTElrLWZNMjF5eUtVSUN1bmExSjdyN2YySVJmZWJGMU1qTmdCczk4bHRFNXQ5VUdFUHdFaWpDTU51cWE3MkFGU0t5YkNMejZGaV8yOEotWmlfNng0WU9xUm1MYVZoSG9lQkcwQXBpMVFQZW9yREIxRnQ0SVdNQ1BSLXFZak5HeUctYnI5S1pxV2VzVlc4SmN0UzViRlpDQmdDS2tR?oc=5",
+      "published_at": "2026-08-27T17:40:00+08:00"
+    },
+    {
+      "id": "NEWS-DFAD0C28810EAB",
+      "title": "数字办宣布1823年内推出四项AI提升项目",
+      "summary": "数字政策办公室宣布1823将于今年内推出来电语音达、电邮撷取易、投诉分流快及诉求一览通四项AI项目，并就「AI+」政务转型提供支援。",
+      "category": "政策监管",
+      "source_url": "https://www.wenweipo.com/a/202608/27/AP6a8fd2e6e4b0c1e500266f28.html",
+      "published_at": "2026-08-27T15:02:00+08:00"
+    },
     {
       "id": "NEWS-D14FBE54A841DF",
       "title": "澳门「三五」规划公布 李家超宣布香港首个五年规划将于9月公布",
@@ -49,22 +65,6 @@
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12Xy1NSGNVT2RkeTdGaGVZa3NGQ3hhcG05TVdZX0VYUE9Fa2pESVJaMmZlQ3RlamZ2MThLOG12dFBWcklHbVcwSXRNOHhqU2N6ODN3dDJSa0VzZXZqelVpdlRPNzVkZnZNTXpMZVJfbGxYcFRt?oc=5",
       "published_at": "2026-08-20"
-    },
-    {
-      "id": "NEWS-3A40133739FCB4",
-      "title": "港怡伙数码通在元朗首设遥距医健站",
-      "summary": "港怡医院与数码通合作在元朗设立首个遥距医健站，提供视像诊症及送药服务，计划明年扩展至10个屋苑。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0ySkNqLTVXU3BKNjlzdF9LR2otcVhKRjRUaXVfeUlUYVpUcFJWcnhPQ1p4aTllc0V4ejA4SWo5X2RBaF9wd2VWZVF0UEVEbkIzVC1YZnlGdF9pSVJMSUVFOE1UU3o5X0lfZnFuZ1VUMENtaGRrSUVZ?oc=5",
-      "published_at": "2026-08-19"
-    },
-    {
-      "id": "NEWS-B68F4E938DEEB7",
-      "title": "河套深港科技创新合作区启航 谱写创科新篇",
-      "summary": "评论文章指出河套深港科技创新合作区建设正当其时，将推动香港创科发展。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBVMHVuaUd4SzBRU0IxVG5zOVN5XzBZSVRJLUVNQ3I4bmc2YjVBME1mTHc1RlI3emg2cV81Z0RWTVZIX0J3Vk0zM1V5U3FNR3lvN05qQWpNTHFXSVNjNVFaekpZYmpWcTNzUTZGTnBuNDlBY0tyeVV3?oc=5",
-      "published_at": "2026-08-16"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "b89021e6645715c0486cb15f334a7c591351d9096a2fee88edbddec88de36e0f"
+  "site_version": "9c6ec90eebf17de6725131735603bbd4ff8fd5afedea965cc6409a02a49056e4"
 }

@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-28T11:37:09+08:00",
+  "updatedAt": "2026-08-28T11:42:09+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -155,9 +155,9 @@
     {
       "rowNumber": 9,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "政策监管",
@@ -169,7 +169,13 @@
         "",
         "香港数字办推出AI政务转型项目，涉及本地公共服务数码化与AI应用落地，影响本地数字服务与技术需求。",
         "后台固定战略词库（模块：政策监管） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:42:09+00:00"
+      }
     },
     {
       "rowNumber": 10,
@@ -440,9 +446,9 @@
     {
       "rowNumber": 24,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-28",
         "香港本地",
         "竞对动态",
@@ -454,7 +460,13 @@
         "香港電訊",
         "香港电讯作为被监测竞对，参与AI沙盒并开发身份验证方案，属其技术与产品经营动作。",
         "后台固定竞对词库（HKT；命中：香港電訊） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "reviewedAt": "2026-08-28T03:42:09+00:00"
+      }
     },
     {
       "rowNumber": 25,
