@@ -153,6 +153,35 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
 
 
 class NewsReviewActorTests(unittest.TestCase):
+    def test_review_actor_is_attached_separately_for_app_and_weekly_fields(self) -> None:
+        snapshot = {"rows": [{"rowNumber": 2, "values": sheet_row("接受", "接受", "已纳入", "", "", "", "分字段审核新闻")}]}
+        events = [
+            {
+                "at": "2026-08-28T14:30:00+08:00",
+                "actor_id": "human-1",
+                "actor_name": "人工审核人",
+                "actor_role": "USER",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"decision_rows": [2], "target_label": "分字段审核新闻", "field": "是否纳入周报"},
+            },
+            {
+                "at": "2026-08-28T14:29:00+08:00",
+                "actor_id": "news-auto-screening-bot",
+                "actor_name": "新闻自动初筛机器人",
+                "actor_role": "SYSTEM",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"decision_rows": [2], "target_label": "分字段审核新闻", "field": "是否纳入滚动"},
+            },
+        ]
+        with mock.patch.object(web_app.AUTH, "operation_audit", return_value=events):
+            result = web_app.attach_news_review_actors(snapshot)
+
+        reviewers = result["rows"][0]["reviewers"]
+        self.assertEqual(reviewers["是否纳入滚动"]["role"], "SYSTEM")
+        self.assertEqual(reviewers["是否纳入周报"]["name"], "人工审核人")
+
     def test_latest_successful_decision_actor_is_attached_to_review_row(self) -> None:
         snapshot = {"rows": [{"rowNumber": 2, "values": ["接受"]}, {"rowNumber": 3, "values": ["待审核"]}]}
         events = [
@@ -200,7 +229,6 @@ class NewsReviewActorTests(unittest.TestCase):
 
         self.assertNotIn("reviewer", result["rows"][0])
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "新闻自动初筛机器人")
-
     def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             service = AuthService(Path(temp_dir))

@@ -4180,6 +4180,9 @@ def attach_news_review_actors(snapshot: dict) -> dict:
     reviewers_by_row_title: dict[tuple[int, str], dict[str, str]] = {}
     reviewers_by_title: dict[str, dict[str, str]] = {}
     reviewers_without_title: dict[int, dict[str, str]] = {}
+    reviewers_by_row_title_field: dict[tuple[int, str, str], dict[str, str]] = {}
+    reviewers_by_title_field: dict[tuple[str, str], dict[str, str]] = {}
+    reviewers_without_title_field: dict[tuple[int, str], dict[str, str]] = {}
     for event in AUTH.operation_audit(limit=1000):
         if event.get("action") != "news_review.update" or event.get("result") != "success":
             continue
@@ -4190,10 +4193,12 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         details = event.get("details") if isinstance(event.get("details"), dict) else {}
         decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
         reviewed_title = str(details.get("target_label") or event.get("target_label") or "").strip()
+        reviewed_field = str(details.get("field") or "").strip()
         reviewer = {
             "id": str((override or {}).get("id") or event.get("actor_id") or ""),
             "name": str((override or {}).get("name") or event.get("actor_name") or "未知用户"),
             "avatarUrl": str((override or {}).get("avatar_url") or event.get("actor_avatar_url") or ""),
+            "role": str(event.get("actor_role") or ""),
             "reviewedAt": str(event.get("at") or ""),
         }
         for raw_row_number in decision_rows:
@@ -4204,8 +4209,19 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             if reviewed_title:
                 reviewers_by_row_title.setdefault((row_number, reviewed_title), reviewer)
                 reviewers_by_title.setdefault(reviewed_title, reviewer)
+                if reviewed_field:
+                    reviewers_by_row_title_field.setdefault(
+                        (row_number, reviewed_title, reviewed_field), reviewer
+                    )
+                    reviewers_by_title_field.setdefault(
+                        (reviewed_title, reviewed_field), reviewer
+                    )
             else:
                 reviewers_without_title.setdefault(row_number, reviewer)
+                if reviewed_field:
+                    reviewers_without_title_field.setdefault(
+                        (row_number, reviewed_field), reviewer
+                    )
     for row in snapshot.get("rows") or []:
         if not isinstance(row, dict):
             continue
@@ -4222,6 +4238,17 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         )
         if reviewer:
             row["reviewer"] = reviewer
+        field_reviewers: dict[str, dict[str, str]] = {}
+        for field_name in ("是否纳入滚动", "是否纳入周报"):
+            field_reviewer = (
+                reviewers_by_row_title_field.get((row_number, title, field_name))
+                or reviewers_by_title_field.get((title, field_name))
+                or reviewers_without_title_field.get((row_number, field_name))
+            )
+            if field_reviewer:
+                field_reviewers[field_name] = field_reviewer
+        if field_reviewers:
+            row["reviewers"] = field_reviewers
     return snapshot
 
 
