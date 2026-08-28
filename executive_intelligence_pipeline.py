@@ -25,6 +25,7 @@ from zoneinfo import ZoneInfo
 
 from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
 from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
+from cmhk.data_releases import default_release_root, publish_quarterly_release
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from ai_key_rotation import open_llm_request
@@ -4582,12 +4583,20 @@ def _refresh_builder_domain(domain: str, *, dry_run: bool = False) -> dict[str, 
                     _promote_directory(promote_stage, Path(config["target"]))
             else:
                 _promote_directory(stage, Path(config["target"]))
+        release = None
+        if domain == "international" and not dry_run:
+            release = publish_quarterly_release(
+                Path(config["target"]),
+                default_release_root(ROOT),
+                project_root=ROOT,
+            )
         return {
             "ok": True,
             "changed": changed,
             "promoted": bool(changed and not dry_run),
             "validation": validation,
             "merge": merge,
+            "release": release,
             "stdout_tail": (proc.stdout or "")[-600:],
         }
 

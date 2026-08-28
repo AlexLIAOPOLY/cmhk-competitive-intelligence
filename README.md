@@ -18,6 +18,8 @@ CMHK 竞争情报采集、研判、报告、订阅、监控和小竞AI系统。
 
 根目录只保留正式运行入口、部署文件以及尚有兼容约束的当前运行文件。详细边界和清理规则见 [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)。
 
+季度／半年度竞对经营指标是下游沙盘的统一数据源。刷新完成后会自动发布不可变 release，并原子更新 `current.json`；同机和跨服务器消费、鉴权与回滚说明见 [季度竞对数据发布](docs/QUARTERLY_DATA_RELEASES.md)。
+
 ## 验证
 
 ```bash

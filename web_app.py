@@ -9,6 +9,7 @@ import mimetypes
 import os
 import queue
 import re
+import secrets
 import subprocess
 import sys
 import threading
@@ -38,6 +39,7 @@ from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_con
 from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from cmhk.data.company_metrics import build_company_metrics_payload
+from cmhk.data_releases import default_release_root, resolve_release_request
 from executive_company_benchmarks import build_company_benchmarks
 from cmhk.crawl.extractors import row_fields
 from cmhk.agent.rag import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
@@ -74,6 +76,7 @@ from cmhk.reporting.operational_pdf import generate_operational_report_pdf, repo
 
 ROOT = Path(__file__).resolve().parent
 AUTH = AuthService(ROOT)
+QUARTERLY_RELEASE_ROOT = default_release_root(ROOT)
 NEWS_REVIEW_AUDIT_STATE_PATH = AUTH.state_dir / "news-review-sheet-audit-state.json"
 NEWS_REVIEW_ACTOR_OVERRIDES_PATH = AUTH.state_dir / "news-review-actor-overrides.json"
 NEWS_REVIEW_SHEET_EDIT_EVENT_PATH = AUTH.state_dir / "feishu-sheet-edit-events.jsonl"
@@ -5259,6 +5262,16 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path.startswith("/data-releases/quarterly/"):
+            if not self.authorize_data_release():
+                return
+            target = resolve_release_request(QUARTERLY_RELEASE_ROOT, parsed.path)
+            if target is None:
+                self.send_response(404)
+                self.end_headers()
+                return
+            self.serve_head(target)
+            return
         if parsed.path in {"/", "/company-data", "/company-data.html", "/executive-dashboard-demo", "/executive-dashboard-demo.html", "/static/index.html"}:
             if not AUTH.authorize_page(self, parsed.path):
                 return
@@ -5313,6 +5326,15 @@ class AppHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         if AUTH.handle(self, "GET", parsed):
+            return
+        if path.startswith("/data-releases/quarterly/"):
+            if not self.authorize_data_release():
+                return
+            target = resolve_release_request(QUARTERLY_RELEASE_ROOT, path)
+            if target is None:
+                json_response(self, {"ok": False, "error": "release file not found"}, 404)
+                return
+            self.serve_file(target)
             return
         if path in {"/", "/company-data", "/company-data.html", "/executive-dashboard-demo", "/executive-dashboard-demo.html", "/static/index.html"}:
             if not AUTH.authorize_page(self, path):
@@ -6819,6 +6841,30 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt: str, *args) -> None:
         print(f"[web] {self.address_string()} - {fmt % args}")
+
+    def authorize_data_release(self) -> bool:
+        """Allow loopback by default and bearer-authenticated server consumers."""
+
+        configured = os.environ.get("CMHK_DATA_RELEASE_TOKEN", "").strip()
+        if configured:
+            authorization = str(self.headers.get("Authorization") or "")
+            supplied = (
+                authorization.removeprefix("Bearer ").strip()
+                if authorization.startswith("Bearer ")
+                else ""
+            )
+            if secrets.compare_digest(supplied, configured):
+                return True
+            json_response(self, {"ok": False, "error": "release authorization failed"}, 401)
+            return False
+        if is_loopback_client(str(self.client_address[0])):
+            return True
+        json_response(
+            self,
+            {"ok": False, "error": "remote release access requires CMHK_DATA_RELEASE_TOKEN"},
+            403,
+        )
+        return False
 
     def serve_file(self, path: Path, download: bool = False) -> None:
         if not path.exists() or not path.is_file():
