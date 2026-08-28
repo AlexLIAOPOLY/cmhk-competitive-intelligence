@@ -195,7 +195,10 @@
     const title = `${name}最后复核${reviewer.reviewedAt ? ` · ${new Date(reviewer.reviewedAt).toLocaleString("zh-HK", { hour12: false })}` : ""}`;
     let image = "";
     try {
-      const raw = String(reviewer.avatarUrl || "").trim();
+      const raw = String(
+        reviewer.avatarUrl
+        || (String(reviewer.id || "") === "news-auto-screening-bot" ? "/static/assets/news-auto-screening-robot-avatar-v1.png" : "")
+      ).trim();
       if (!raw) throw new Error("missing avatar URL");
       const url = new URL(raw, location.origin);
       if (!["http:", "https:"].includes(url.protocol)) throw new Error("unsupported avatar URL");

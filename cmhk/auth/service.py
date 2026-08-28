@@ -508,12 +508,13 @@ class AuthService:
             os.chmod(self.operation_audit_path, 0o600)
         return event
 
-    def operation_audit(self, *, limit: int = 200) -> list[dict[str, Any]]:
+    def operation_audit(self, *, limit: int | None = 200) -> list[dict[str, Any]]:
         try:
             lines = self.operation_audit_path.read_text(encoding="utf-8").splitlines()
         except OSError:
             return []
         events: list[dict[str, Any]] = []
+        maximum = None if limit is None else max(1, min(1000, int(limit or 200)))
         for line in reversed(lines):
             try:
                 item = json.loads(line)
@@ -521,7 +522,7 @@ class AuthService:
                 continue
             if isinstance(item, dict):
                 events.append(item)
-            if len(events) >= max(1, min(1000, int(limit or 200))):
+            if maximum is not None and len(events) >= maximum:
                 break
         return events
 
@@ -1153,10 +1154,14 @@ class AuthService:
                 self._send_json(handler, 403, {"ok": False, "message": "当前账号无权查看操作审计"})
                 return True
             query = parse_qs(parsed.query)
-            try:
-                limit = max(1, min(1000, int((query.get("limit") or ["200"])[0])))
-            except (TypeError, ValueError):
-                limit = 200
+            raw_limit = str((query.get("limit") or ["200"])[0]).strip().lower()
+            if raw_limit == "all":
+                limit = None
+            else:
+                try:
+                    limit = max(1, min(1000, int(raw_limit)))
+                except (TypeError, ValueError):
+                    limit = 200
             self._send_json(handler, 200, {"ok": True, "events": self.operation_audit(limit=limit)})
             return True
         if path == "/api/auth/admin/directory/search" and method == "GET":

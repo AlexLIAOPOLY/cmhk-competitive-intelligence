@@ -351,6 +351,21 @@ class AuthServiceTest(unittest.TestCase):
         self.service.handle(denied, "GET", urlparse("/api/auth/admin/audit"))
         self.assertEqual(denied.status, 403)
 
+    def test_operation_audit_all_returns_more_than_the_default_200_events(self):
+        _, admin_session = self.dev_login()
+        actor = self.service.current_actor(FakeHandler(cookie=admin_session, origin=""))
+        for index in range(205):
+            self.service.record_operation(
+                actor=actor,
+                action="news_review.update",
+                target=f"news-{index}",
+            )
+        self.assertEqual(len(self.service.operation_audit()), 200)
+        admin = FakeHandler(cookie=admin_session, origin="")
+        self.service.handle(admin, "GET", urlparse("/api/auth/admin/audit?limit=all"))
+        self.assertEqual(admin.status, 200)
+        self.assertEqual(len(admin.payload()["events"]), 205)
+
     def test_directory_search_keeps_real_avatar_and_job_title(self):
         directory_users = [{
                 "name": "测试成员",

@@ -5,12 +5,13 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "web" / "static" / "index.html").read_text(encoding="utf-8")
 SCRIPT = (ROOT / "web" / "static" / "organization-admin.js").read_text(encoding="utf-8")
+REVIEW_SCRIPT = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")
 STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding="utf-8")
 
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=31', INDEX)
+        self.assertIn('/static/organization-admin.js?v=32', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
 
     def test_member_detail_starts_empty_until_a_member_is_selected(self):
@@ -80,6 +81,12 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_automatic_screening_actor_is_rendered_as_a_robot(self):
         self.assertIn('event.actor_role === "SYSTEM" ? "自动化机器人"', SCRIPT)
         self.assertIn('event.actor_role === "SYSTEM" ? "新闻自动初筛"', SCRIPT)
+        self.assertIn('/static/assets/news-auto-screening-robot-avatar-v1.png', SCRIPT)
+        self.assertIn('/static/assets/news-auto-screening-robot-avatar-v1.png', REVIEW_SCRIPT)
+
+    def test_team_footprint_requests_the_complete_audit_stream(self):
+        self.assertIn('request("/api/auth/admin/audit?limit=all")', SCRIPT)
+        self.assertNotIn('request("/api/auth/admin/audit?limit=200")', SCRIPT)
 
     def test_subscription_page_changes_and_messages_have_readable_footprint_actions(self):
         self.assertIn('"subscription.settings_update": "修改订阅设置"', SCRIPT)
