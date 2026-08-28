@@ -22,9 +22,61 @@
     return { id: item.id, title: item.title, summary: item.summary, source: item.source, source_date: item.sourceDate, source_url: item.sourceUrl };
   }
 
+  function keywordValues(item) {
+    const aliases = { "人工智能": "AI", aigc: "AI", "5g": "5G", "6g": "6G" };
+    const stopwords = new Set(["香港", "中国", "中國", "香港本地", "国际", "國際", "行业", "行業", "新闻", "新聞", "公司", "市场", "市場", "业务", "業務", "服务", "服務"]);
+    return [...new Set(String(item.keywords || "").split(/[、，,；;|]+/).map((term) => term.trim().replace(/^#+/, "")).filter((term) => term.length > 1 && !stopwords.has(term)).map((term) => aliases[term] || aliases[term.toLowerCase()] || term))];
+  }
+
+  function graphTopic(value) {
+    return { "政策与监管": "政策监管", "竞争对手": "竞对动态" }[value] || value || "其他情报";
+  }
+
+  function connectedGraph(nodes, candidateEdges, maxNodes = 26, maxEdges = 40) {
+    const adjacency = new Map();
+    candidateEdges.forEach((edge) => {
+      if (!adjacency.has(edge.source)) adjacency.set(edge.source, new Set());
+      if (!adjacency.has(edge.target)) adjacency.set(edge.target, new Set());
+      adjacency.get(edge.source).add(edge.target); adjacency.get(edge.target).add(edge.source);
+    });
+    const unseen = new Set(adjacency.keys()); const components = [];
+    while (unseen.size) {
+      const start = unseen.values().next().value; const ids = new Set([start]); const queue = [start]; unseen.delete(start);
+      while (queue.length) adjacency.get(queue.shift()).forEach((id) => { if (unseen.delete(id)) { ids.add(id); queue.push(id); } });
+      const componentEdges = candidateEdges.filter((edge) => ids.has(edge.source) && ids.has(edge.target));
+      components.push({ ids, edges: componentEdges, score: componentEdges.reduce((sum, edge) => sum + edge.weight, 0) });
+    }
+    const core = components.sort((a, b) => b.score - a.score || b.ids.size - a.ids.size)[0];
+    if (!core) return { nodes: [], edges: [] };
+
+    const parent = new Map([...core.ids].map((id) => [id, id]));
+    const find = (id) => { let root = id; while (parent.get(root) !== root) root = parent.get(root); while (parent.get(id) !== id) { const next = parent.get(id); parent.set(id, root); id = next; } return root; };
+    const treeEdges = [];
+    core.edges.forEach((edge) => { const sourceRoot = find(edge.source); const targetRoot = find(edge.target); if (sourceRoot !== targetRoot) { parent.set(sourceRoot, targetRoot); treeEdges.push(edge); } });
+
+    const selectedIds = new Set(core.ids);
+    while (selectedIds.size > maxNodes) {
+      const degree = new Map([...selectedIds].map((id) => [id, 0]));
+      treeEdges.forEach((edge) => { if (selectedIds.has(edge.source) && selectedIds.has(edge.target)) { degree.set(edge.source, degree.get(edge.source) + 1); degree.set(edge.target, degree.get(edge.target) + 1); } });
+      const leaf = [...selectedIds].filter((id) => degree.get(id) <= 1).sort((a, b) => nodes.get(a).count - nodes.get(b).count || ({ entity: 0, concept: 1, topic: 2 }[nodes.get(a).type] - ({ entity: 0, concept: 1, topic: 2 }[nodes.get(b).type])) || nodes.get(a).label.localeCompare(nodes.get(b).label, "zh-CN"))[0];
+      if (!leaf) break;
+      selectedIds.delete(leaf);
+    }
+    const requiredEdges = treeEdges.filter((edge) => selectedIds.has(edge.source) && selectedIds.has(edge.target));
+    const requiredIds = new Set(requiredEdges.map((edge) => edge.id));
+    const extraEdges = core.edges.filter((edge) => selectedIds.has(edge.source) && selectedIds.has(edge.target) && !requiredIds.has(edge.id));
+    const selectedEdges = [...requiredEdges, ...extraEdges.slice(0, Math.max(0, maxEdges - requiredEdges.length))].sort((a, b) => b.weight - a.weight || a.id.localeCompare(b.id, "zh-CN"));
+    const typeOrder = { entity: 0, topic: 1, concept: 2 };
+    const selectedNodes = [...selectedIds].map((id) => nodes.get(id)).sort((a, b) => typeOrder[a.type] - typeOrder[b.type] || b.count - a.count || a.label.localeCompare(b.label, "zh-CN"));
+    return { nodes: selectedNodes, edges: selectedEdges };
+  }
+
   function graphData(items) {
     const nodes = new Map();
     const edges = new Map();
+    const keywordCounts = new Map();
+    items.forEach((item) => keywordValues(item).forEach((term) => keywordCounts.set(term, (keywordCounts.get(term) || 0) + 1)));
+    const graphKeywords = new Set(ranked(keywordCounts).slice(0, 12).map(([label]) => label));
     const touch = (id, label, type, item) => {
       const node = nodes.get(id) || { id, label, type, count: 0, description: `${label}在已审核情报中的关联证据`, evidence: [] };
       node.count += 1;
@@ -39,23 +91,26 @@
       edges.set(id, edge);
     };
     items.forEach((item) => {
-      const topic = `topic:${item.category}`;
-      touch(topic, item.category, "topic", item);
-      (item.entities || []).forEach((entity) => {
+      const topicLabel = graphTopic(item.category);
+      const topic = `topic:${topicLabel}`;
+      touch(topic, topicLabel, "topic", item);
+      const entityIds = (item.entities || []).map((entity) => {
         const entityId = `entity:${entity}`;
         touch(entityId, entity, "entity", item);
         link(entityId, topic, "涉及议题", item);
+        return entityId;
       });
-      (item.concepts || []).forEach((concept) => {
+      const concepts = [...new Set([...(item.concepts || []), ...keywordValues(item).filter((term) => graphKeywords.has(term))])];
+      concepts.forEach((concept) => {
         const conceptId = `concept:${concept}`;
         touch(conceptId, concept, "concept", item);
-        link(topic, conceptId, "关联概念", item);
-        (item.entities || []).forEach((entity) => link(`entity:${entity}`, conceptId, "共同出现", item));
+        link(topic, conceptId, "包含概念", item);
+        entityIds.forEach((entityId) => link(entityId, conceptId, "关联概念", item));
       });
+      entityIds.forEach((source, index) => entityIds.slice(index + 1).forEach((target) => link(source, target, "共同出现", item)));
     });
-    const selectedNodes = [...nodes.values()].sort((a, b) => b.count - a.count).slice(0, 26);
-    const ids = new Set(selectedNodes.map((node) => node.id));
-    return { nodes: selectedNodes, edges: [...edges.values()].filter((edge) => ids.has(edge.source) && ids.has(edge.target)).sort((a, b) => b.weight - a.weight).slice(0, 40) };
+    const candidateEdges = [...edges.values()].sort((a, b) => b.weight - a.weight || a.label.localeCompare(b.label, "zh-CN") || a.id.localeCompare(b.id, "zh-CN"));
+    return connectedGraph(nodes, candidateEdges);
   }
 
   function pageMarkup() {
@@ -159,7 +214,7 @@
   }
 
   function graphLayout(fullscreen = false) {
-    return { name: "cose", animate: false, fit: true, randomize: true, padding: fullscreen ? 58 : 30, nodeDimensionsIncludeLabels: true, componentSpacing: fullscreen ? 130 : 82, nodeRepulsion: () => fullscreen ? 10000 : 6500, nodeOverlap: fullscreen ? 22 : 14, idealEdgeLength: () => fullscreen ? 108 : 74, edgeElasticity: () => fullscreen ? 90 : 68, gravity: fullscreen ? .15 : .22, numIter: fullscreen ? 1700 : 1300 };
+    return { name: "cose", animate: false, fit: true, randomize: false, padding: fullscreen ? 36 : 20, nodeDimensionsIncludeLabels: false, componentSpacing: fullscreen ? 48 : 36, nodeRepulsion: () => fullscreen ? 3200 : 2600, nodeOverlap: 6, idealEdgeLength: (edge) => Math.max(30, 52 - Math.min(Number(edge.data("weight")) || 1, 5) * 4), edgeElasticity: () => 32, gravity: fullscreen ? .8 : 1, numIter: 1200 };
   }
 
   function evidenceHtml(data) {
@@ -199,7 +254,7 @@
     if (!container || !window.cytoscape) return null; container.innerHTML = "";
     const cy = window.cytoscape({ container, elements: [...payload.nodes.map((node) => ({ group: "nodes", data: node })), ...payload.edges.map((edge) => ({ group: "edges", data: edge }))], minZoom: fullscreen ? .35 : .45, maxZoom: fullscreen ? 3 : 2.4, boxSelectionEnabled: false, style: graphStyle(), layout: graphLayout(fullscreen) });
     cy.on("tap", "node, edge", (event) => selectGraphElement(event.target, fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"));
-    cy.on("tap", (event) => { if (event.target === cy) { cy.elements().removeClass("is-muted is-neighbor").unselect(); const detail = $(fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"); if (detail) detail.hidden = true; } });
+    cy.on("tap", (event) => { if (event.target === cy) { cy.elements().removeClass("is-muted is-neighbor").unselect(); const detail = $(fullscreen ? "market-graph-dialog-detail" : "market-graph-detail"); if (detail && fullscreen) { detail.hidden = false; detail.innerHTML = '<div class="market-graph-inspector-empty"><strong>选择一个节点或关系</strong><span>下方会展开关联路径、证据摘要和新闻原文。</span></div>'; } else if (detail) detail.hidden = true; } });
     cy.on("mouseover", "node, edge", () => { container.style.cursor = "pointer"; }); cy.on("mouseout", "node, edge", () => { container.style.cursor = "grab"; }); return cy;
   }
 
