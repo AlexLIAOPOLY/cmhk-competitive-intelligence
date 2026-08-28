@@ -2747,13 +2747,13 @@ def _run_scan_impl(
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
-            "選材 Agent 完成",
+            "选材 Agent 完成",
             (
-                f"獨立任務 {selection_agent_result.get('task_run_id') or '已歸檔'}；"
-                f"學習人工樣本 {int(selection_agent_result.get('human_example_count') or 0)} 條，"
-                f"處理本輪候選 {int(selection_agent_result.get('candidate_count') or 0)} 條，"
-                f"自動寫入 {int(selection_agent_result.get('changed_count') or 0)} 格，"
-                "逐格回讀已確認。"
+                f"独立任务 {selection_agent_result.get('task_run_id') or '已归档'}；"
+                f"学习人工样本 {int(selection_agent_result.get('human_example_count') or 0)} 条，"
+                f"处理本轮候选 {int(selection_agent_result.get('candidate_count') or 0)} 条，"
+                f"自动写入 {int(selection_agent_result.get('changed_count') or 0)} 格，"
+                "逐格回读已确认。"
             ),
         )
     except Exception as exc:
@@ -2762,13 +2762,13 @@ def _run_scan_impl(
             "error": _clean_text(exc, 600),
             "readback_verified": False,
         }
-        logging.exception("新聞偏好學習 Agent 失敗，原新聞爬蟲結果仍保留")
+        logging.exception("新闻偏好学习 Agent 失败，原新闻爬虫结果仍保留")
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
-            "選材 Agent 失敗",
+            "选材 Agent 失败",
             (
-                "獨立選材任務已在任務日志記為失敗；未覆蓋既有人工決策。"
+                "独立选材任务已在任务日志记为失败；未覆盖既有人工决策。"
                 f"原因：{selection_agent_result['error']}"
             ),
         )

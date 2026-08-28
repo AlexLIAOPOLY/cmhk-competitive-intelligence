@@ -571,7 +571,7 @@ class StrategicBriefingTests(unittest.TestCase):
             "AI审核结果",
             "历史语义去重",
             "飞书写入与逐格回读",
-            "選材 Agent 完成",
+            "选材 Agent 完成",
             "群通知准备",
         ):
             self.assertIn(expected_phase, task_log)
