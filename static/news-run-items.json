@@ -1,4 +1,126 @@
 {
+  "20260828_140003_972611": [
+    {
+      "newsId": "NEWS-DA2CB658ADFDBA",
+      "title": "AI军备竞赛拉响安全警报：OpenAI、微软等116家企业联名呼吁强化网络防御",
+      "summary": "当地时间8月27日，一封汇集了OpenAI、Anthropic、微软、谷歌母公司Alphabet以及亚马逊等116家企业和机构签名的联名信公开发布。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "头部财经",
+      "publishedAt": "2026-08-28T07:00:00+08:00",
+      "url": "https://www.top168.com/news/show-976233.html",
+      "inclusionReason": "AI军备竞赛拉响安全警报：OpenAI、微软等116家企业联名呼吁强化网络防御属于可验证的网络安全事件，影响网络与运营。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-F049D134874CCC",
+      "title": "AI安全关注度升温催化网络安全需求，信息安全ETF易方达受多重利好",
+      "summary": "信息安全ETF易方达（562920）跟踪中证信息安全主题指数，反映信息安全领域上市公司整体表现，AI安全关注度升温催化网络安全需求。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-08-28T07:00:00+08:00",
+      "url": "https://i.ifeng.com/c/8vx7W4Kn0CV",
+      "inclusionReason": "AI安全关注度升温催化网络安全需求，反映信息安全领域市场需求增长，可能影响电信行业网络安全投入与产品策略。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-3BA3EDBE8E3F93",
+      "title": "Astrum Space与Black Spade Acquisition III进行业务合并公开",
+      "summary": "Astrum Space正在开发新一代S2D广播网络，拥有L波段频谱资源和GEO轨道资源，采用批发模式服务亚太地区移动网络运营商和广播公司。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "蕃新聞",
+      "publishedAt": "2026-08-28T07:00:00+08:00",
+      "url": "https://n.yam.com/Article/20260828136553",
+      "inclusionReason": "Astrum Space拥有L波段频谱和GEO轨道资源，计划通过SPAC合并上市，其广播网络面向亚太移动网络运营商，涉及频谱资源和卫星通信基础设施变化。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-914918A8DC8B0D",
+      "title": "超大规模数据中心运营商Yotta即将IPO，目标估值60亿美元",
+      "summary": "Yotta Data Services董事长宣布公司正讨论进入资本市场，目标估值60亿美元，拟通过IPO融资9亿美元。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "Mint",
+      "publishedAt": "2026-08-28T06:43:00+08:00",
+      "url": "https://www.livemint.com/companies/news/hyperscale-data-center-operator-yotta-set-for-ipo-very-soon-11787894999345.html",
+      "inclusionReason": "超大规模数据中心运营商Yotta即将IPO，目标估值60亿美元，反映数据中心行业资本活跃度和市场需求增长，与电信行业数据中心基础设施投资趋势相关。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-478FED429B57C0",
+      "title": "SK Telecom、Kakao、KT入选韩国AI for All计划",
+      "summary": "SK Telecom、Kakao与KT组成的联合体被选为政府AI for All计划运营方，将建设免费国产AI服务。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "The Chosun Ilbo on MSN",
+      "publishedAt": "2026-08-28T06:43:41+08:00",
+      "url": "https://www.msn.com/en-xl/news/other/sk-telecom-kakao-kt-selected-for-ai-for-all-initiative/ar-AA2b4JZv",
+      "inclusionReason": "SK Telecom作为联合体成员被选为政府AI计划运营方，带来新业务机会。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-3000379B053779",
+      "title": "美国拟对芯片及数据中心服务器加征全面关税",
+      "summary": "特朗普政府拟对进口半导体加征新关税，可能覆盖数据中心服务器、笔记本电脑和游戏机。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "Free Press Journal",
+      "publishedAt": "2026-08-28T06:30:00+08:00",
+      "url": "https://www.freepressjournal.in/tech/us-weighs-sweeping-chip-tariffs-as-tech-industry-warns-of-ai-setback",
+      "inclusionReason": "芯片及数据中心服务器关税将推高数据中心建设与运营成本，影响供应与成本。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-4B9373EDF66BF8",
+      "title": "【参政议政】万人演练 见证深港融合加速",
+      "summary": "【参政议政】万人演练 见证深港融合加速 香港商报",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "香港本地",
+      "source": "香港商报",
+      "publishedAt": "2026-08-28T08:34:26+08:00",
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFB6N2FnNHdZN3Q5SHpRS3ZkeHlzbjdNb3M3OExCTDJNUFhvdUprdnlPR2xUdUZMUXRPRjVqRjdkbjBDQzFMY0pmdXFqcDJPb25tU1k0R2RTZGNqRDEyRVJMQkt6Qk1zZ29VUTUybUtPZXNxQQ?oc=5",
+      "inclusionReason": "【参政议政】万人演练 见证深港融合加速属于可验证的宏观与地缘事件，影响客户与渠道。",
+      "businessImpact": "客户与渠道"
+    },
+    {
+      "newsId": "NEWS-315003AD6B72FA",
+      "title": "工业和信息化部：前7个月电信业务收入累计完成1.02万亿元",
+      "summary": "新华财经北京8月28日电 据工业和信息化部28日消息，前7个月，通信业总体运行平稳。",
+      "category": "市场/产品类",
+      "region": "国际/行业",
+      "source": "经济观察网",
+      "publishedAt": "2026-08-28T07:00:00+08:00",
+      "url": "https://www.eeo.com.cn/2026/0828/1014047.shtml",
+      "inclusionReason": "工业和信息化部：前7个月电信业务收入累计完成1.02万亿元属于可验证的市场需求事件，影响竞争格局。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-263116B713DD26",
+      "title": "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256G",
+      "summary": "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256GB中阶影相神器 ezone.hk",
+      "category": "竞对动态",
+      "region": "香港本地",
+      "source": "ezone.hk",
+      "publishedAt": "2026-08-28T13:31:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMihANBVV95cUxPUXNhbEFRaWRCZnE2ZUd6UjByZm1lQ1BqM1IxdzFHc1NyY3VyWmpYY0lmV2k2cFFzSHJ5TkpJTEJ3NUUtVWU3RmI2MWdTNFRsZFZ0VW1WRko4ZlpqVW5PVC1EUEtXN0w1N291bm1Mc0lJa3NQcGwxU09fN1M0QTEtNzZ2bUtIT0swY0VCVGIzaUpwT09XOVV3a1YyYzdCNERSdzV1RDRWTUNGcjJqUkVlRE9nQ01qalRaU1FaY2xJNHA3dE9IUzJEODRRN3JVUDMzNHFFUHA3MHdNMXJDWW1LeUxJU1g4UDlzYmhPNEhBWmxWLVJnZ0lHWHhVbHZIMkNXaDEwaGZBTTY5czJ2anpqTVZqcXctSy14U2VRN0VveWtUcnVBMFlFMW5GSWpUUzdlU1JOYnZhSHRTM3RfWGhnWTZQOERCdkZldEhjSXhSZVZnbnF6a2Vyd2NDUVlyY3o5dmN5U1E2UVAtdmhpd0pETW53ZmRCVmJNOHlVYVZHWTcxa1cz?oc=5",
+      "inclusionReason": "平价手机逆市减价！HUAWEI Nova 14网店狂减一千$1,699即可入手12GB+256GB中阶影相神器显示正式监控竞对发生具体经营事件，影响产品与定价。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-CD5F140DCD6348",
+      "title": "打造两座新护国神山! 台中市长卢秀燕：让AI在台中「长出手脚」进真实世界",
+      "summary": "AI不再只是电脑萤幕里的虚拟软体，台中正在把晶片、精密制造与顶尖人才完美结合，帮AI接上真正的手脚与身体。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "TVBS新聞網 on MSN",
+      "publishedAt": "2026-08-28T06:30:57+08:00",
+      "url": "https://www.msn.com/zh-tw/news/other/%E6%89%93%E9%80%A0%E5%85%A9%E5%BA%A7%E6%96%B0%E8%AD%B7%E5%9C%8B%E7%A5%9E%E5%B1%B1-%E5%8F%B0%E4%B8%AD%E5%B8%82%E9%95%B7%E7%9B%A7%E7%A7%80%E7%87%95-%E8%AE%93ai%E5%9C%A8%E5%8F%B0%E4%B8%AD-%E9%95%B7%E5%87%BA%E6%89%8B%E8%85%B3-%E9%80%B2%E7%9C%9F%E5%AF%A6%E4%B8%96%E7%95%8C/ar-AA2b5Jbb",
+      "inclusionReason": "打造两座新护国神山! 台中市长卢秀燕：让AI在台中「长出手脚」进真实世界属于可验证的关键技术事件，影响竞争格局。",
+      "businessImpact": "竞争格局"
+    }
+  ],
   "20260828_073012_958746": [
     {
       "newsId": "NEWS-6D5C7C17BC139F",

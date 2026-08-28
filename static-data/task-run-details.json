@@ -1,14 +1,56 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260828_141216_357458": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260828_141216_357458",
+        "task_run_id": "20260828_141216_357458",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-28@14:00）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻偏好学习 Agent 失败：后台战略新闻任务正在更新飞书审核表，请稍后刷新",
+        "status_detail": "新闻偏好学习 Agent 失败：后台战略新闻任务正在更新飞书审核表，请稍后刷新",
+        "started_at_hkt": "2026-08-28T14:12:16+08:00",
+        "heartbeat_at_hkt": "2026-08-28T14:12:17+08:00",
+        "completed_at_hkt": "2026-08-28T14:12:17+08:00",
+        "duration_ms": 1047,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260828_140003_972611": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260828_140003_972611",
+        "task_run_id": "20260828_140003_972611",
+        "title": "战略新闻定时爬虫",
+        "kind": "strategic-news",
+        "kind_label": "新闻爬虫",
+        "scope": "午后扫描（2026-08-28@14:00）",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 31 条，AI保留 10 条，历史重复 0 条，新增 10 条。",
+        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 31 条，AI保留 10 条，历史重复 0 条，新增 10 条。",
+        "started_at_hkt": "2026-08-28T14:00:03+08:00",
+        "heartbeat_at_hkt": "2026-08-28T14:12:23+08:00",
+        "completed_at_hkt": "2026-08-28T14:12:23+08:00",
+        "duration_ms": 739704,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260828_120152_318124": {
       "ok": true,
       "run": {
         "task_id": "crawl:20260828_120152_318124",
         "task_run_id": "20260828_120152_318124",
-        "title": "新闻偏好学习与自动勾选 Agent",
+        "title": "新闻自动初筛",
         "kind": "news-selection-agent",
-        "kind_label": "新闻偏好学习 Agent",
+        "kind_label": "新闻自动初筛",
         "scope": "爬虫后选材（2026-08-28@07:30）",
         "run_status": "completed",
         "phase": "已完成",
@@ -984,48 +1026,6 @@
         "heartbeat_at_hkt": "2026-08-21T08:06:38+08:00",
         "completed_at_hkt": "2026-08-21T08:06:38+08:00",
         "duration_ms": 225264,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260820_154943_333677": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260820_154943_333677",
-        "task_run_id": "20260820_154943_333677",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "午后扫描（2026-08-20@14:00）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
-        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 41 条，AI保留 10 条，历史重复 2 条，新增 8 条。",
-        "started_at_hkt": "2026-08-20T15:49:43+08:00",
-        "heartbeat_at_hkt": "2026-08-20T16:03:54+08:00",
-        "completed_at_hkt": "2026-08-20T16:03:54+08:00",
-        "duration_ms": 850727,
-        "retry_index": 1
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260820_154743_965736": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260820_154743_965736",
-        "task_run_id": "20260820_154743_965736",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "午后扫描（2026-08-20@14:00）",
-        "run_status": "failed",
-        "phase": "已中断",
-        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:44+08:00；最后进度：[2026-08-20 15:47:44] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
-        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-20T15:47:44+08:00；最后进度：[2026-08-20 15:47:44] 固定监控与Agentic Search：正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
-        "started_at_hkt": "2026-08-20T15:47:43+08:00",
-        "heartbeat_at_hkt": "2026-08-20T15:47:44+08:00",
-        "completed_at_hkt": "2026-08-20T15:47:44+08:00",
-        "duration_ms": 1607,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"

@@ -174,6 +174,9 @@
       id: event.actor_id,
       name: event.actor_name || "未知用户",
       avatar_url: event.actor_avatar_url,
+      roleLabel: event.actor_role === "SYSTEM" ? "自动化机器人" : "",
+      title: event.actor_role === "SYSTEM" ? "新闻自动初筛" : "",
+      status: "active",
     };
   }
 
