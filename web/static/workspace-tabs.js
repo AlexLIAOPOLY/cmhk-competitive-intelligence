@@ -869,7 +869,7 @@
     renderCompetitorStrategicIndicatorCopy(copy, finalText, fallback ? [] : highlights);
   }
 
-  function syncCompetitorInsightRows(card, items) {
+  function syncCompetitorInsightRows(card, items, { streaming = false } = {}) {
     const list = card?.querySelector("[data-competitor-insight-list]");
     if (!list) return;
     const body = card.querySelector(".competitor-insight-body");
@@ -888,9 +888,13 @@
       const copy = li.querySelector("span");
       const nextCopy = String(item || "").replace(/^(竞争格局|公司分化|公司定位|业务含义|数据格局|共同年度|解读边界)[：|｜]\s*/, "");
       if (label.textContent !== labels[index]) label.textContent = labels[index];
-      if (copy.textContent !== nextCopy) copy.textContent = nextCopy;
+      const currentCopy = copy.textContent;
+      const isContinuousDraft = !currentCopy || nextCopy.startsWith(currentCopy);
+      if (copy.textContent !== nextCopy && (!streaming || isContinuousDraft)) copy.textContent = nextCopy;
     });
-    while (list.children.length > items.length) list.lastElementChild.remove();
+    if (!streaming) {
+      while (list.children.length > items.length) list.lastElementChild.remove();
+    }
     if (body && shouldFollow) {
       window.requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
     }
@@ -927,7 +931,7 @@
       }
     });
     if (candidates.length < 3 && labelled.size === 0) {
-      const sentences = (candidates.join(" ") || text).split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
+      const sentences = candidates.join(" ").split(/(?<=[。！？!?])\s*/).map((item) => item.trim()).filter(Boolean);
       if (sentences.length > candidates.length) candidates.splice(0, candidates.length, ...sentences);
     }
     const labels = ["竞争格局", "公司定位", "业务含义"];
@@ -987,7 +991,7 @@
     card.classList.add("is-streaming");
     setCompetitorInsightStatus(card, `AI 正在流式生成 · 已收到 ${String(text).length} 字`);
     card.querySelector("[data-competitor-insight-badge]").textContent = "AI STREAM";
-    syncCompetitorInsightRows(card, drafts);
+    syncCompetitorInsightRows(card, drafts, { streaming: true });
   }
 
   function scheduleCompetitorInsightRecovery(payload, requestId, card, error) {

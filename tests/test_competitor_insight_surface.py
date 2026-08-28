@@ -37,7 +37,9 @@ class CompetitorInsightSurfaceTests(unittest.TestCase):
         self.assertIn("let li = list.children[index]", sync_rows)
         self.assertIn("if (!li)", sync_rows)
         self.assertIn("copy.textContent !== nextCopy", sync_rows)
-        self.assertIn("syncCompetitorInsightRows(card, drafts)", render_draft)
+        self.assertIn("if (!streaming)", sync_rows)
+        self.assertIn("nextCopy.startsWith(currentCopy)", sync_rows)
+        self.assertIn("syncCompetitorInsightRows(card, drafts, { streaming: true })", render_draft)
         self.assertNotIn("replaceChildren", render_draft)
 
     def test_partial_labelled_stream_does_not_backfill_missing_rows(self):
@@ -46,6 +48,8 @@ class CompetitorInsightSurfaceTests(unittest.TestCase):
         )[0]
 
         self.assertIn("candidates.length < 3 && labelled.size === 0", parser)
+        self.assertIn('const sentences = candidates.join(" ").split', parser)
+        self.assertNotIn('candidates.join(" ") || text', parser)
 
 
 if __name__ == "__main__":
