@@ -2,8 +2,8 @@
   "ok": true,
   "sheetTitle": "滚动新闻候选池_20260826_1055",
   "headers": [
-    "是否纳入滚动",
-    "是否纳入周报",
+    "纳入滚动栏",
+    "纳入周报",
     "同步状态",
     "检索日期",
     "地域",
@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-28T18:29:47+08:00",
+  "updatedAt": "2026-08-28T18:35:23+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -52,14 +52,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -94,14 +94,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -136,14 +136,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -178,14 +178,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -220,14 +220,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -262,14 +262,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -304,14 +304,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -346,14 +346,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -388,14 +388,14 @@
         "reviewedAt": "2026-08-28T07:43:55+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
           "role": "EXTERNAL",
           "reviewedAt": "2026-08-28T07:43:55+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
@@ -430,14 +430,14 @@
         "reviewedAt": "2026-08-28T06:29:40+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T06:29:40+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -567,14 +567,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -609,14 +609,14 @@
         "reviewedAt": "2026-08-28T03:42:09+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
           "role": "EXTERNAL",
           "reviewedAt": "2026-08-28T03:42:09+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
@@ -651,14 +651,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -693,14 +693,14 @@
         "reviewedAt": "2026-08-28T04:37:10+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:37:10+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -735,14 +735,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -777,14 +777,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -819,14 +819,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -861,14 +861,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -903,14 +903,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -945,14 +945,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -987,14 +987,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1029,14 +1029,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1071,14 +1071,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1113,14 +1113,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1155,14 +1155,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1197,14 +1197,14 @@
         "reviewedAt": "2026-08-28T04:37:10+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:37:10+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1239,14 +1239,14 @@
         "reviewedAt": "2026-08-28T03:42:09+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
           "role": "EXTERNAL",
           "reviewedAt": "2026-08-28T03:42:09+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
@@ -1281,14 +1281,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1323,14 +1323,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1365,14 +1365,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1407,14 +1407,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1449,14 +1449,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1491,14 +1491,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1533,14 +1533,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1575,14 +1575,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1617,14 +1617,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1659,14 +1659,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1701,14 +1701,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1743,14 +1743,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1785,14 +1785,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1827,14 +1827,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1869,14 +1869,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1911,14 +1911,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1953,14 +1953,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -1995,14 +1995,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2037,14 +2037,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2079,14 +2079,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2121,14 +2121,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2163,14 +2163,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2205,14 +2205,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2247,14 +2247,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2289,14 +2289,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2331,14 +2331,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2373,14 +2373,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2415,14 +2415,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2457,14 +2457,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2499,14 +2499,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2541,14 +2541,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2583,14 +2583,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2625,14 +2625,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2667,14 +2667,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2709,14 +2709,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2751,14 +2751,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2793,14 +2793,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2835,14 +2835,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2877,14 +2877,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2919,14 +2919,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -2961,14 +2961,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3003,14 +3003,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3045,14 +3045,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3087,14 +3087,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3129,14 +3129,14 @@
         "reviewedAt": "2026-08-28T07:45:24+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
           "role": "EXTERNAL",
           "reviewedAt": "2026-08-28T03:48:09+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
@@ -3171,14 +3171,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3213,14 +3213,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3255,14 +3255,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3297,14 +3297,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3339,14 +3339,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3381,14 +3381,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3423,14 +3423,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3465,14 +3465,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3507,14 +3507,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3549,14 +3549,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3591,14 +3591,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3633,14 +3633,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3675,14 +3675,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3717,14 +3717,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3759,14 +3759,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3801,14 +3801,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3843,14 +3843,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3885,14 +3885,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3927,14 +3927,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -3969,14 +3969,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4011,14 +4011,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4053,14 +4053,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4095,14 +4095,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4137,14 +4137,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4179,14 +4179,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4221,14 +4221,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4263,14 +4263,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4305,14 +4305,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4347,14 +4347,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4389,14 +4389,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4431,14 +4431,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4473,14 +4473,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4515,14 +4515,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4557,14 +4557,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4599,14 +4599,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4641,14 +4641,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4683,14 +4683,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4725,14 +4725,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4767,14 +4767,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4809,14 +4809,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4851,14 +4851,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4893,14 +4893,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4935,14 +4935,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -4977,14 +4977,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5019,14 +5019,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5061,14 +5061,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5103,14 +5103,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5145,14 +5145,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5187,14 +5187,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5229,14 +5229,14 @@
         "reviewedAt": "2026-08-28T04:37:10+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
           "role": "EXTERNAL",
           "reviewedAt": "2026-08-28T03:48:09+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5271,14 +5271,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5313,14 +5313,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5355,14 +5355,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5397,14 +5397,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5439,14 +5439,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5481,14 +5481,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5523,14 +5523,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5565,14 +5565,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5607,14 +5607,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5649,14 +5649,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5691,14 +5691,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5733,14 +5733,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5775,14 +5775,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5817,14 +5817,14 @@
         "reviewedAt": "2026-08-28T04:37:10+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:37:10+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5859,14 +5859,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5901,14 +5901,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5943,14 +5943,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -5985,14 +5985,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6027,14 +6027,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6069,14 +6069,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6111,14 +6111,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6153,14 +6153,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6195,14 +6195,14 @@
         "reviewedAt": "2026-08-28T04:37:10+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:37:10+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6237,14 +6237,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6279,14 +6279,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6321,14 +6321,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6363,14 +6363,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6405,14 +6405,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6447,14 +6447,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6489,14 +6489,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6531,14 +6531,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6573,14 +6573,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6615,14 +6615,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6657,14 +6657,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6699,14 +6699,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6741,14 +6741,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6783,14 +6783,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6825,14 +6825,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6867,14 +6867,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6909,14 +6909,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6951,14 +6951,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -6993,14 +6993,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -7035,14 +7035,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -7077,14 +7077,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -7119,14 +7119,14 @@
         "reviewedAt": "2026-08-28T04:10:37+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
           "role": "SYSTEM",
           "reviewedAt": "2026-08-28T04:10:37+00:00"
         },
-        "是否纳入周报": {
+        "纳入周报": {
           "id": "news-auto-screening-bot",
           "name": "新闻自动初筛机器人",
           "avatarUrl": "",
@@ -7180,7 +7180,7 @@
         "reviewedAt": "2026-08-27T08:22:16+00:00"
       },
       "reviewers": {
-        "是否纳入滚动": {
+        "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
           "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
