@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T03:53:09+08:00",
+  "checked_at_hkt": "2026-08-30T03:58:11+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -45,13 +45,13 @@
       "backend_pid": 41226,
       "worker_pid": 0,
       "phase": "失败",
-      "progress_detail": "",
+      "progress_detail": "续跑财报数据库已更新，但前端发布验证失败：{\"status\": \"busy\"}\n。",
       "failure_stage": "financial_frontend_publish",
-      "heartbeat_at_hkt": "2026-08-30T03:27:53+08:00",
+      "heartbeat_at_hkt": "2026-08-30T03:57:59+08:00",
       "started_at_hkt": "2026-08-30T03:00:11+08:00",
-      "completed_at_hkt": "2026-08-30T03:27:53+08:00",
+      "completed_at_hkt": "2026-08-30T03:57:59+08:00",
       "crawl_return_code": 1,
-      "duration_ms": 1662812,
+      "duration_ms": 3468955,
       "feishu": {
         "main_sheet_id": "9c638d",
         "log_sheet_id": "3a76f2",
@@ -207,7 +207,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-30T03:26:21+08:00",
+          "generated_at_hkt": "2026-08-30T03:57:59+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -630,24 +630,24 @@
             ],
             "failures": []
           },
-          "database_changed": true,
+          "database_changed": false,
           "database_updated": true,
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
         },
         "financial_frontend_publish": {
           "ok": false,
-          "returnCode": 1,
-          "status": "failed",
+          "returnCode": 0,
+          "status": "busy",
           "site_version": "",
           "public_url": "",
           "commit": "",
-          "error": ""
+          "error": "{\"status\": \"busy\"}\n"
         }
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 103655,
-        "lines": 749
+        "bytes": 107917,
+        "lines": 754
       }
     },
     "strategic_news": {
