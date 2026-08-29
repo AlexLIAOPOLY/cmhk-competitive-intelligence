@@ -1233,11 +1233,17 @@ class ProjectMonitor:
         """Return the source checkout used by auxiliary main-project daemons."""
         return Path(self.environ.get("CMHK_MONITOR_SOURCE_ROOT") or self.runtime_root)
 
+    def _media_metrics_state_path(self) -> Path:
+        runtime_path = self.runtime_root / "var" / "feishu_media_metrics" / "state.json"
+        if runtime_path.is_file():
+            return runtime_path
+        return self._source_root() / "var" / "feishu_media_metrics" / "state.json"
+
     def _detect_feishu_media_metrics(self) -> list[dict[str, Any]]:
         """Detect missed 10:00/17:00 media-metrics reports."""
         now = self.now()
         grace = max(5, int(self.config.get("media_metrics_grace_minutes") or 20))
-        state_path = self._source_root() / "var" / "feishu_media_metrics" / "state.json"
+        state_path = self._media_metrics_state_path()
         state = _read_json(state_path, {})
         sent_slots = state.get("sent_slots") if isinstance(state, dict) else {}
         sent_slots = sent_slots if isinstance(sent_slots, dict) else {}
@@ -1292,7 +1298,7 @@ class ProjectMonitor:
             return []
         slot = max(scheduled_slots)
         slot_key = slot.strftime("%Y%m%d-%H%M")
-        state_path = self._source_root() / "var" / "feishu_media_metrics" / "state.json"
+        state_path = self._media_metrics_state_path()
         state = _read_json(state_path, {})
         if not isinstance(state, dict):
             return []
@@ -1349,7 +1355,7 @@ class ProjectMonitor:
         monitor_text = self._read_new_log_text(monitor_path)
         card_actions_path = log_root / "project_monitor_card_actions.stderr.log"
         card_actions_text = self._read_new_log_text(card_actions_path)
-        media_metrics_path = self._source_root() / "var" / "feishu_media_metrics" / "daemon.stderr.log"
+        media_metrics_path = self.runtime_root / "var" / "feishu_media_metrics" / "daemon.stderr.log"
         media_metrics_text = self._read_new_log_text(media_metrics_path)
         issues: list[dict[str, Any]] = []
         heartbeat_path = self.runtime_root / "var" / "frequency_scheduler" / "heartbeat.json"

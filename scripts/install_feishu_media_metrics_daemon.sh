@@ -2,15 +2,16 @@
 set -euo pipefail
 
 repo_dir="${0:A:h:h}"
+runtime_dir="${CMHK_RUNTIME_ROOT:-$HOME/cmhk_public_crawl_app}"
 label="com.liaowang.cmhk-feishu-media-metrics"
 agent_file="$HOME/Library/LaunchAgents/${label}.plist"
-log_dir="$repo_dir/var/feishu_media_metrics"
+log_dir="$runtime_dir/var/feishu_media_metrics"
 
 mkdir -p "$HOME/Library/LaunchAgents" "$log_dir"
 
 # First installation is a test-only activation: acknowledge today's elapsed
 # slots so loading the daemon can never cause an immediate group send.
-python3 - "$repo_dir/var/feishu_media_metrics/state.json" <<'PY'
+python3 - "$repo_dir/var/feishu_media_metrics/state.json" "$runtime_dir/var/feishu_media_metrics/state.json" <<'PY'
 import json
 import sys
 from datetime import datetime
@@ -18,6 +19,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 target = Path(sys.argv[1])
+mirror = Path(sys.argv[2])
 state = json.loads(target.read_text(encoding="utf-8")) if target.exists() else {}
 sent = state.setdefault("sent_slots", {})
 now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
@@ -27,9 +29,11 @@ for hour in (10, 17):
         sent.setdefault(scheduled.strftime("%Y%m%d-%H00"), "suppressed-at-test-install")
 target.parent.mkdir(parents=True, exist_ok=True)
 target.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+mirror.parent.mkdir(parents=True, exist_ok=True)
+mirror.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 PY
 
-python3 - "$agent_file" "$repo_dir" "$log_dir" <<'PY'
+python3 - "$agent_file" "$repo_dir" "$log_dir" "$runtime_dir" <<'PY'
 import plistlib
 import sys
 from pathlib import Path
@@ -37,6 +41,7 @@ from pathlib import Path
 target = Path(sys.argv[1])
 root = Path(sys.argv[2])
 logs = Path(sys.argv[3])
+runtime = Path(sys.argv[4])
 payload = {
     "Label": "com.liaowang.cmhk-feishu-media-metrics",
     "ProgramArguments": [
@@ -55,6 +60,7 @@ payload = {
         "LARK_CLI_NO_PROXY": "1",
         "LARKSUITE_CLI_NO_UPDATE_NOTIFIER": "1",
         "LARKSUITE_CLI_NO_SKILLS_NOTIFIER": "1",
+        "CMHK_FEISHU_MEDIA_METRICS_STATE_MIRROR": str(runtime / "var" / "feishu_media_metrics" / "state.json"),
     },
     "StandardOutPath": str(logs / "daemon.stdout.log"),
     "StandardErrorPath": str(logs / "daemon.stderr.log"),

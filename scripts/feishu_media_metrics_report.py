@@ -72,10 +72,18 @@ def load_json(path: Path, default: Any = None) -> Any:
 
 
 def save_json(path: Path, payload: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    temporary.replace(path)
+    serialized = json.dumps(payload, ensure_ascii=False, indent=2)
+    targets = [path]
+    mirror_text = str(os.environ.get("CMHK_FEISHU_MEDIA_METRICS_STATE_MIRROR") or "").strip()
+    if mirror_text:
+        mirror = Path(mirror_text)
+        if mirror != path:
+            targets.append(mirror)
+    for target in targets:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        temporary = target.with_suffix(target.suffix + ".tmp")
+        temporary.write_text(serialized, encoding="utf-8")
+        temporary.replace(target)
 
 
 def _cli_payload(text: str) -> dict[str, Any] | None:

@@ -2,6 +2,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -16,6 +17,18 @@ SPEC.loader.exec_module(MODULE)
 
 
 class FeishuMediaMetricsReportTests(unittest.TestCase):
+    def test_save_json_atomically_updates_launchd_safe_mirror(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            primary = root / "source" / "state.json"
+            mirror = root / "runtime" / "state.json"
+            with patch.dict(
+                MODULE.os.environ,
+                {"CMHK_FEISHU_MEDIA_METRICS_STATE_MIRROR": str(mirror)},
+            ):
+                MODULE.save_json(primary, {"sent_slots": {"slot": "message"}})
+            self.assertEqual(json.loads(primary.read_text()), json.loads(mirror.read_text()))
+
     def test_file_statistics_can_use_server_bot_profile(self):
         result = MODULE.CommandResult(
             payload={"ok": True, "data": {"statistics": {"uv": 8, "pv": 12}}},
