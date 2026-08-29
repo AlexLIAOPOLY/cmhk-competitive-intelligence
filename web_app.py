@@ -145,6 +145,113 @@ CHAT_TITLE_TASK_LOCK = threading.Lock()
 CHAT_TITLE_PENDING: dict[str, str] = {}
 CHAT_TITLE_ACTIVE: set[str] = set()
 CHAT_APPROVAL_LOCK = threading.Lock()
+CHAT_STREAM_SESSION_LOCK = threading.RLock()
+CHAT_STREAM_SESSIONS: dict[str, "ChatStreamSession"] = {}
+CHAT_STREAM_SESSION_TTL_SECONDS = 30 * 60
+CHAT_STREAM_HEARTBEAT_SECONDS = 10
+
+
+class ChatStreamSession:
+    """Keep one Agent turn alive while browsers disconnect and reconnect."""
+
+    def __init__(self, request_id: str, fingerprint: str, producer_factory) -> None:
+        self.request_id = request_id
+        self.fingerprint = fingerprint
+        self.session_id = uuid.uuid4().hex
+        self.events: list[dict[str, object]] = []
+        self.condition = threading.Condition()
+        self.complete = False
+        self.last_touched = time.monotonic()
+        self.producer_factory = producer_factory
+
+    def start(self) -> None:
+        threading.Thread(
+            target=self._run,
+            name=f"chat-stream-{self.request_id[:32]}",
+            daemon=True,
+        ).start()
+
+    def _append(self, event: dict[str, object]) -> None:
+        with self.condition:
+            sequenced = dict(event)
+            sequenced["seq"] = len(self.events) + 1
+            self.events.append(sequenced)
+            self.last_touched = time.monotonic()
+            if sequenced.get("type") == "done":
+                self.complete = True
+            self.condition.notify_all()
+
+    def _run(self) -> None:
+        saw_done = False
+        try:
+            for event in self.producer_factory():
+                normalized = dict(event or {})
+                self._append(normalized)
+                if normalized.get("type") == "done":
+                    saw_done = True
+                    break
+        except Exception as exc:
+            logging.exception("chat stream producer failed for %s", self.request_id)
+            self._append({"type": "error", "text": str(exc)})
+        finally:
+            if not saw_done:
+                self._append({"type": "done"})
+
+    def events_after(self, sequence: int):
+        cursor = max(0, sequence)
+        while True:
+            heartbeat = False
+            with self.condition:
+                self.last_touched = time.monotonic()
+                while cursor >= len(self.events) and not self.complete:
+                    notified = self.condition.wait(timeout=CHAT_STREAM_HEARTBEAT_SECONDS)
+                    self.last_touched = time.monotonic()
+                    if not notified and cursor >= len(self.events) and not self.complete:
+                        heartbeat = True
+                        break
+                pending = self.events[cursor:]
+                finished = self.complete and cursor + len(pending) >= len(self.events)
+            if heartbeat:
+                # Ephemeral keepalive: it is not buffered and therefore does
+                # not consume a sequence number or duplicate on reconnect.
+                yield {"type": "heartbeat", "seq": cursor}
+                continue
+            for event in pending:
+                cursor = int(event.get("seq") or cursor + 1)
+                yield event
+            if finished:
+                return
+
+
+def _chat_stream_fingerprint(payload: dict) -> str:
+    stable = {key: value for key, value in payload.items() if key != "resumeAfter"}
+    return json.dumps(stable, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def get_or_create_chat_stream_session(
+    request_id: str,
+    payload: dict,
+    producer_factory,
+) -> ChatStreamSession:
+    fingerprint = _chat_stream_fingerprint(payload)
+    now = time.monotonic()
+    with CHAT_STREAM_SESSION_LOCK:
+        expired = [
+            key
+            for key, session in CHAT_STREAM_SESSIONS.items()
+            if session.complete and now - session.last_touched > CHAT_STREAM_SESSION_TTL_SECONDS
+        ]
+        for key in expired:
+            CHAT_STREAM_SESSIONS.pop(key, None)
+        existing = CHAT_STREAM_SESSIONS.get(request_id)
+        if existing:
+            if existing.fingerprint != fingerprint:
+                raise ValueError("同一请求标识不能用于不同对话内容")
+            return existing
+        session = ChatStreamSession(request_id, fingerprint, producer_factory)
+        CHAT_STREAM_SESSIONS[request_id] = session
+        session.start()
+        return session
 CHAT_APPROVAL_WAITERS: dict[tuple[str, str], dict[str, object]] = {}
 CHAT_STARTER_POOL = (
     {
@@ -6908,31 +7015,52 @@ class AppHandler(BaseHTTPRequestHandler):
             active_thread_id = re.sub(
                 r"[^A-Za-z0-9_.:-]", "", str(payload.get("threadId") or "")
             )[:160]
+            try:
+                resume_after = max(0, int(payload.get("resumeAfter") or 0))
+            except (TypeError, ValueError):
+                resume_after = 0
+            runtime_context = request_runtime_context(self)
+            try:
+                session = get_or_create_chat_stream_session(
+                    request_id,
+                    payload,
+                    lambda: stream_agent_with_approvals(
+                        message,
+                        request_id=request_id,
+                        force_web_search=web_search_enabled,
+                        selected_skill_ids=[str(item) for item in selected_skill_ids],
+                        selected_dataset_ids=[str(item) for item in selected_dataset_ids],
+                        thinking_enabled=thinking_enabled,
+                        approved_action_ids=[str(item) for item in approved_action_ids],
+                        conversation_history=conversation_history,
+                        emit_context_events=emit_context_events,
+                        loaded_skill_ids=[str(item) for item in loaded_skill_ids],
+                        runtime_context=runtime_context,
+                        active_thread_id=active_thread_id,
+                    ),
+                )
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 409)
+                return
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Cache-Control", "no-cache, no-transform")
             self.send_header("Connection", "close")
+            self.send_header("X-Accel-Buffering", "no")
+            self.send_header("X-CMHK-Chat-Session", session.session_id)
             self.end_headers()
 
-            for event in stream_agent_with_approvals(
-                message,
-                request_id=request_id,
-                force_web_search=web_search_enabled,
-                selected_skill_ids=[str(item) for item in selected_skill_ids],
-                selected_dataset_ids=[str(item) for item in selected_dataset_ids],
-                thinking_enabled=thinking_enabled,
-                approved_action_ids=[str(item) for item in approved_action_ids],
-                conversation_history=conversation_history,
-                emit_context_events=emit_context_events,
-                loaded_skill_ids=[str(item) for item in loaded_skill_ids],
-                runtime_context=request_runtime_context(self),
-                active_thread_id=active_thread_id,
-            ):
-                body = json.dumps(event, ensure_ascii=False)
-                self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                self.wfile.flush()
-                if event.get("type") == "done":
-                    self.close_connection = True
+            try:
+                for event in session.events_after(resume_after):
+                    body = json.dumps(event, ensure_ascii=False)
+                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+                    if event.get("type") == "done":
+                        self.close_connection = True
+            except (BrokenPipeError, ConnectionResetError):
+                # The producer is intentionally independent of this socket.
+                # A reconnect with resumeAfter replays only unseen events.
+                self.close_connection = True
             return
         json_response(self, {"ok": False, "error": "not found"}, 404)
 

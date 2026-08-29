@@ -1046,6 +1046,79 @@ class ChatApprovalProtocolTests(unittest.TestCase):
         self.assertEqual(events[-1], {"type": "done"})
 
 
+class ChatStreamReconnectTests(unittest.TestCase):
+    def setUp(self) -> None:
+        web_app.CHAT_STREAM_SESSIONS.clear()
+
+    def tearDown(self) -> None:
+        web_app.CHAT_STREAM_SESSIONS.clear()
+
+    def test_session_keeps_producing_and_replays_only_unseen_events(self) -> None:
+        calls = 0
+
+        def producer():
+            nonlocal calls
+            calls += 1
+            yield {"type": "delta", "text": "第一段"}
+            yield {"type": "delta", "text": "第二段"}
+            yield {"type": "done"}
+
+        payload = {"requestId": "reconnect-1", "message": "请回答", "resumeAfter": 0}
+        session = web_app.get_or_create_chat_stream_session("reconnect-1", payload, producer)
+        first_connection = session.events_after(0)
+        first = next(first_connection)
+        first_connection.close()
+
+        deadline = time.monotonic() + 2
+        while not session.complete and time.monotonic() < deadline:
+            time.sleep(0.01)
+        resumed = list(session.events_after(int(first["seq"])))
+        same_session = web_app.get_or_create_chat_stream_session(
+            "reconnect-1", {**payload, "resumeAfter": first["seq"]}, producer
+        )
+
+        self.assertTrue(session.complete)
+        self.assertIs(same_session, session)
+        self.assertEqual(calls, 1)
+        self.assertEqual(first, {"type": "delta", "text": "第一段", "seq": 1})
+        self.assertEqual([event["seq"] for event in resumed], [2, 3])
+        self.assertEqual([event["type"] for event in resumed], ["delta", "done"])
+
+    def test_same_request_id_rejects_different_message(self) -> None:
+        session = web_app.get_or_create_chat_stream_session(
+            "reconnect-2", {"requestId": "reconnect-2", "message": "A"}, lambda: iter([{"type": "done"}])
+        )
+        with self.assertRaisesRegex(ValueError, "同一请求标识"):
+            web_app.get_or_create_chat_stream_session(
+                "reconnect-2", {"requestId": "reconnect-2", "message": "B"}, lambda: iter([])
+            )
+        self.assertIs(web_app.CHAT_STREAM_SESSIONS["reconnect-2"], session)
+
+    def test_idle_stream_emits_unsequenced_heartbeat_without_polluting_replay(self) -> None:
+        release = web_app.threading.Event()
+
+        def producer():
+            release.wait(timeout=1)
+            yield {"type": "done"}
+
+        session = web_app.get_or_create_chat_stream_session(
+            "reconnect-heartbeat",
+            {"requestId": "reconnect-heartbeat", "message": "慢回答"},
+            producer,
+        )
+        with mock.patch.object(web_app, "CHAT_STREAM_HEARTBEAT_SECONDS", 0.01):
+            connection = session.events_after(0)
+            heartbeat = next(connection)
+            connection.close()
+        release.set()
+        deadline = time.monotonic() + 2
+        while not session.complete and time.monotonic() < deadline:
+            time.sleep(0.01)
+
+        self.assertEqual(heartbeat, {"type": "heartbeat", "seq": 0})
+        self.assertEqual(session.events, [{"type": "done", "seq": 1}])
+
+
 class ChatAudioTranscriptionTests(unittest.TestCase):
     def test_company_asr_receives_multipart_audio_and_returns_text(self) -> None:
         response = mock.MagicMock()
@@ -2680,7 +2753,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
     def test_application_does_not_install_explicit_structure_gate(self) -> None:
         self.assertFalse(hasattr(agent, "_answer_satisfies_explicit_structure"))
 
-    def test_chat_stream_requires_explicit_done_event_before_finalizing(self) -> None:
+    def test_chat_stream_reconnects_until_explicit_done_without_duplicate_events(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         send_start = app.index("async function sendChat")
         send_end = app.index("els.generateButtons.forEach", send_start)
@@ -2690,7 +2763,13 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         finalize = send_chat.index("collapseLatestModelReasoning(assistantNode);", guard)
         self.assertLess(guard, finalize)
         self.assertIn('streamError.code = "STREAM_INCOMPLETE";', send_chat)
-        self.assertIn("连接意外中断，本次回答未完成，请重新发送。", send_chat)
+        self.assertIn("while (!isDone)", send_chat)
+        self.assertIn("resumeAfter: lastEventSeq", send_chat)
+        self.assertIn("eventSeq <= lastEventSeq", send_chat)
+        self.assertIn('response.headers.get("X-CMHK-Chat-Session")', send_chat)
+        self.assertIn("正在自动重连", send_chat)
+        self.assertIn("await waitForChatReconnect", send_chat)
+        self.assertNotIn("请重新发送。", send_chat)
 
     def test_model_transport_failure_is_not_rewritten_by_an_application_wrapper(self) -> None:
         primary_error = RuntimeError(

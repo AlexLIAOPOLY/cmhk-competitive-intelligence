@@ -6571,6 +6571,42 @@ function compactChatHistory() {
     .filter((item) => item.content);
 }
 
+function chatReconnectDelay(attempt) {
+  return Math.min(15000, 600 * (2 ** Math.min(Math.max(0, attempt - 1), 5)));
+}
+
+function waitForChatReconnect(delayMs, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException("已停止生成", "AbortError"));
+      return;
+    }
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("online", finish);
+      signal.removeEventListener("abort", abort);
+      resolve();
+    };
+    const abort = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("online", finish);
+      reject(new DOMException("已停止生成", "AbortError"));
+    };
+    const timer = window.setTimeout(finish, delayMs);
+    window.addEventListener("online", finish, { once: true });
+    signal.addEventListener("abort", abort, { once: true });
+  });
+}
+
+function chatResponseIsRetryable(response) {
+  return [408, 425, 429, 500, 502, 503, 504].includes(response.status);
+}
+
 async function sendChat(message, options = {}) {
   const chatStartedAt = performance.now();
   const chatRequestId = chatThreadId();
@@ -6649,31 +6685,25 @@ async function sendChat(message, options = {}) {
     const emitContextEvents = false;
     const loadedSkillIds = Array.from(state.loadedSkillIds);
     const approvedActionIds = Array.isArray(options.approvedActionIds) ? options.approvedActionIds : [];
-    const response = await fetch("/api/chat-stream", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: requestController.signal,
-      body: JSON.stringify({
-        requestId: chatRequestId,
-        threadId: state.activeThreadId,
-        message,
-        webSearchEnabled,
-        thinkingEnabled: false,
-        selectedSkillIds,
-        selectedDatasetIds,
-        approvedActionIds,
-        conversationHistory,
-        emitContextEvents,
-        loadedSkillIds,
-      }),
-    });
-    if (!response.ok || !response.body) throw new Error("对话请求失败");
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
+    const requestPayload = {
+      requestId: chatRequestId,
+      threadId: state.activeThreadId,
+      message,
+      webSearchEnabled,
+      thinkingEnabled: false,
+      selectedSkillIds,
+      selectedDatasetIds,
+      approvedActionIds,
+      conversationHistory,
+      emitContextEvents,
+      loadedSkillIds,
+    };
     let answer = "";
     const insertedChartUrls = new Set();
     let isDone = false;
+    let lastEventSeq = 0;
+    let streamSessionId = "";
+    let reconnectAttempt = 0;
     let responseMetrics = null;
     let streamedSuggestions = [];
     let collapseReasoningOnNextDelta = false;
@@ -6746,16 +6776,91 @@ async function sendChat(message, options = {}) {
       renderAssistantToolEvent(assistantNode, event, insertedChartUrls);
     };
 
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() || "";
-      for (const part of parts) {
-        const line = part.split("\n").find((item) => item.startsWith("data:"));
-        if (!line) continue;
-        const event = JSON.parse(line.replace(/^data:\s*/, ""));
+    const setReconnectStatus = (text = "") => {
+      const body = messageBody(assistantNode);
+      if (!body) return;
+      let status = body.querySelector(".chat-reconnect-status");
+      if (!text) {
+        status?.remove();
+        assistantNode.classList.remove("is-reconnecting");
+        return;
+      }
+      if (!status) {
+        status = document.createElement("div");
+        status.className = "assistant-status-line chat-reconnect-status";
+        status.setAttribute("role", "status");
+        body.appendChild(status);
+      }
+      status.textContent = text;
+      assistantNode.classList.add("is-reconnecting");
+    };
+
+    const resetForNewServerSession = () => {
+      finishStreamingText();
+      answer = "";
+      assistantDraftRaw = "";
+      responseMetrics = null;
+      streamedSuggestions = [];
+      collapseReasoningOnNextDelta = false;
+      insertedChartUrls.clear();
+      lastEventSeq = 0;
+      resetAssistantForApprovalResume(assistantNode, assistantTimeline);
+      if (assistantHistoryEntry) {
+        assistantHistoryEntry.content = "后台已恢复，正在重新生成完整回答。";
+        assistantHistoryEntry.timeline = assistantTimeline;
+        assistantHistoryEntry.partial = true;
+      }
+    };
+
+    while (!isDone) {
+      let response;
+      try {
+        response = await fetch("/api/chat-stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: requestController.signal,
+          body: JSON.stringify({ ...requestPayload, resumeAfter: lastEventSeq }),
+        });
+      } catch (error) {
+        if (error.name === "AbortError" || requestController.signal.aborted) throw error;
+        reconnectAttempt += 1;
+        setReconnectStatus(`连接已中断，正在自动重连（第 ${reconnectAttempt} 次）…`);
+        await waitForChatReconnect(chatReconnectDelay(reconnectAttempt), requestController.signal);
+        continue;
+      }
+      if (!response.ok || !response.body) {
+        if (chatResponseIsRetryable(response)) {
+          reconnectAttempt += 1;
+          setReconnectStatus(`服务暂时不可用，正在自动重连（第 ${reconnectAttempt} 次）…`);
+          await waitForChatReconnect(chatReconnectDelay(reconnectAttempt), requestController.signal);
+          continue;
+        }
+        throw new Error(`对话请求失败（HTTP ${response.status}）`);
+      }
+      const nextSessionId = response.headers.get("X-CMHK-Chat-Session") || "";
+      if (streamSessionId && nextSessionId && nextSessionId !== streamSessionId) {
+        resetForNewServerSession();
+      }
+      if (nextSessionId) streamSessionId = nextSessionId;
+      reconnectAttempt = 0;
+      setReconnectStatus("");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const part of parts) {
+            const line = part.split("\n").find((item) => item.startsWith("data:"));
+            if (!line) continue;
+            const event = JSON.parse(line.replace(/^data:\s*/, ""));
+            const eventSeq = Number(event.seq || 0);
+            if (eventSeq && eventSeq <= lastEventSeq) continue;
+            if (eventSeq) lastEventSeq = eventSeq;
         
         if (event.type === "done") {
           const finalizedToolEvents = finalizePendingAssistantToolEvents(assistantTimeline);
@@ -6858,11 +6963,21 @@ async function sendChat(message, options = {}) {
             ].join("\n"));
           }
         }
+          }
+          if (isDone) break;
+        }
+      } catch (error) {
+        if (error.name === "AbortError" || requestController.signal.aborted) throw error;
+        console.warn("小竞AI流式连接中断，将从最后事件自动续接", error);
       }
-      if (isDone) break;
+      if (!isDone) {
+        reconnectAttempt += 1;
+        setReconnectStatus(`连接已中断，正在自动重连（第 ${reconnectAttempt} 次）…`);
+        await waitForChatReconnect(chatReconnectDelay(reconnectAttempt), requestController.signal);
+      }
     }
     if (!isDone) {
-      const streamError = new Error("回答连接意外中断，未收到完成信号，请重新发送。已生成的内容仅供参考。");
+      const streamError = new Error("回答连接已停止，未收到完成信号。");
       streamError.code = "STREAM_INCOMPLETE";
       throw streamError;
     }
@@ -6980,7 +7095,7 @@ async function sendChat(message, options = {}) {
       ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n${steered ? "（已收到插队消息，当前回答已停止）" : "（已暂停生成）"}`
       : steered ? "已收到插队消息，当前回答已停止。" : "已暂停生成。";
     const failureText = streamIncomplete && assistantDraftRaw.trim()
-      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n（连接意外中断，本次回答未完成，请重新发送。）`
+      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n（连接已停止，本次回答未完成。）`
       : `处理失败：${error.message}`;
     if (assistantNode) {
       clearConnectingPlaceholder(assistantNode);
