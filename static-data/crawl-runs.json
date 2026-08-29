@@ -2,18 +2,63 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_042926_395236",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_7ecbf0af8d75a9e89738a344 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_7ecbf0af8d75a9e89738a344 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T04:30:09+08:00",
+      "started_at_hkt": "2026-08-30T04:29:26+08:00",
+      "completed_at_hkt": "2026-08-30T04:30:09+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 42884,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_7ecbf0af8d75a9e89738a344",
+        "content_sha256": "7ecbf0af8d75a9e89738a3447087b9379ace1823720a909dd6d2f6998affe7e9",
+        "release_manifest_sha256": "b95ce751df153143d50c9cce2e202939b8ba4413923357821286dc89753d3e67",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": "20260830_042855_439139",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 8474,
+        "feishu_written": 1396,
+        "feishu_readback_verified": true
+      }
+    },
+    {
+      "crawl_run_id": "20260830_042855_439139",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 scheduled_20260830_030011_012027 · 父任务 20260830_030011_012027",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-30T04:32:36+08:00",
+      "started_at_hkt": "2026-08-30T04:28:55+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
       "crawl_run_id": "20260830_030011_012027",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "running",
-      "phase": "恢复未完成任务",
-      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
-      "status_detail": "",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-08-30T04:28:06+08:00",
+      "heartbeat_at_hkt": "2026-08-30T04:28:55+08:00",
       "started_at_hkt": "2026-08-30T03:00:11+08:00",
-      "completed_at_hkt": "",
-      "duration_ms": 3468955,
+      "completed_at_hkt": "2026-08-30T04:28:55+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 5324521,
       "final_audit": {
         "generated_at": "2026-08-30T03:07:49.939900",
         "rows_crawled": "33",
@@ -47,7 +92,7 @@
         },
         "local_financial_results": {
           "schema_version": 1,
-          "generated_at_hkt": "2026-08-30T03:57:59+08:00",
+          "generated_at_hkt": "2026-08-30T04:28:06+08:00",
           "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
           "reports": [
             {
@@ -475,13 +520,42 @@
           "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
         },
         "financial_frontend_publish": {
-          "ok": false,
+          "ok": true,
           "returnCode": 0,
-          "status": "busy",
-          "site_version": "",
-          "public_url": "",
-          "commit": "",
-          "error": "{\"status\": \"busy\"}\n"
+          "status": "published",
+          "site_version": "bbc4b37f462f1e0f4c35e29ff259ece9d03525b4e209149d0d776409b87fa225",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "427b09807119a9b6715af37166abc80d2e972328",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260830_030011_012027",
+          "bootstrap": false,
+          "page_count": 137,
+          "signal_count": 8,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260830_030011_012027.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 88806,
+          "agent_run_id": "scheduled_20260830_030011_012027",
+          "task_run_id": "20260830_042855_439139",
+          "task_id": "crawl:20260830_042855_439139",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "15_focus_analysis",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
         }
       }
     },
@@ -71704,6 +71778,6 @@
       }
     }
   ],
-  "total": 282,
+  "total": 284,
   "truncated": false
 }
