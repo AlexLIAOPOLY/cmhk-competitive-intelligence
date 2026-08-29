@@ -504,7 +504,14 @@
       const relatedEvidence = relatedValue
         ? `<strong class="competitor-related-value">相关口径：${esc(`${competitorComparator(gap.relatedPublicComparator)}${relatedValue} ${gap.relatedPublicUnit || ""}`.trim())}</strong><small>${esc(gap.relatedPublicNote || gap.relatedPublicMetric || "非目标年度同口径值")}</small>`
         : "";
-      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : `<span class="competitor-missing">— 未披露</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedLink ? `<a href="${esc(safeUrl(reviewedLink))}" target="_blank" rel="noreferrer">已复核 ${esc(gap.reviewedSourceCount || gap.reviewedSources.length)} 份官方材料</a>` : ""}`}</td>`;
+      const gapLabel = gap?.searchStatus === "not_applicable_precommercial"
+        ? "— 不适用（尚未商用）"
+        : gap?.searchStatus === "targeted_public_search_not_recorded"
+          ? "— 尚未记录定向检索"
+          : gap
+            ? "— 已检索未见直接披露"
+            : "— 尚无审计记录";
+      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedLink ? `<a href="${esc(safeUrl(reviewedLink))}" target="_blank" rel="noreferrer">已复核 ${esc(gap.reviewedSourceCount || gap.reviewedSources.length)} 份官方材料</a>` : ""}`}</td>`;
     }).join("")}</tr>`).join("");
     host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
       <div class="competitor-core-summary is-loading" role="status" aria-live="polite" aria-busy="true" data-competitor-core-summary-shell data-fallback="${esc(coreSummary)}"><strong data-competitor-core-summary><i aria-hidden="true"><u></u><u></u><u></u></i></strong></div>
