@@ -1271,6 +1271,68 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual([item["incident_id"] for item in active], [incident_id])
         self.assertEqual(monitor.state["incidents"][incident_id]["status"], "open")
 
+    def test_missed_media_slot_closes_after_verified_delivery(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "media-slot-missed"
+        condition_key = "feishu-media-metrics-slot-missed:20260816-1700"
+        monitor.state["conditions"] = {condition_key: incident_id}
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": condition_key,
+                "component": "feishu-media-metrics",
+                "status": "open",
+                "occurred_at_hkt": "2026-08-16T17:20:00+08:00",
+            }
+        }
+        state_path = self.root / "var" / "feishu_media_metrics" / "state.json"
+        state_path.write_text(
+            json.dumps(
+                {
+                    "sent_slots": {"20260816-1700": "om_verified"},
+                    "slot_deliveries": {
+                        "20260816-1700": {"readback_verified": True, "verified_at_hkt": "2026-08-16T17:24:00+08:00"}
+                    },
+                }
+            )
+        )
+
+        _, active = monitor._upsert_incidents([])
+
+        self.assertEqual(active, [])
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "media_metrics_delivery_verified")
+
+    def test_historical_pending_missed_media_slot_reconciles_from_delivery(self):
+        monitor = self._monitor(enabled=True)
+        incident_id = "historical-media-slot-missed"
+        condition_key = "feishu-media-metrics-slot-missed:20260816-1700"
+        monitor.state["incidents"] = {
+            incident_id: {
+                "incident_id": incident_id,
+                "condition_key": condition_key,
+                "component": "feishu-media-metrics",
+                "status": "recovery_pending",
+                "occurred_at_hkt": "2026-08-16T17:20:00+08:00",
+            }
+        }
+        state_path = self.root / "var" / "feishu_media_metrics" / "state.json"
+        state_path.write_text(
+            json.dumps(
+                {
+                    "sent_slots": {"20260816-1700": "om_verified"},
+                    "slot_deliveries": {"20260816-1700": {"readback_verified": True}},
+                }
+            )
+        )
+
+        monitor._recover_historical_pending_incidents(set())
+
+        record = monitor.state["incidents"][incident_id]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "media_metrics_delivery_verified")
+
     def test_strategic_slot_accepts_same_day_migrated_morning_archive(self):
         expected = self.root / "strategy_briefing" / "runs" / "2026-08-16@07-30.json"
         expected.unlink()

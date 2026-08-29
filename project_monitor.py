@@ -1739,6 +1739,11 @@ class ProjectMonitor:
                         f"launchd 服务 {label} 于 {_iso(observed_at)} 回读为 running。",
                         f"PID={int(instance.get('pid') or 0)}。",
                     ]
+            elif key.startswith("feishu-media-metrics-slot-missed:"):
+                recovery_evidence = self._feishu_media_metrics_recovery_evidence(record)
+                if recovery_evidence:
+                    reason = "media_metrics_delivery_verified"
+                    evidence = recovery_evidence
             if not reason:
                 continue
             self._mark_resolved(
@@ -1947,6 +1952,35 @@ class ProjectMonitor:
                         "action": {"type": "none", "performed": False},
                     }
                     conditions.pop(key, None)
+                continue
+            if key.startswith("feishu-media-metrics-slot-missed:"):
+                recovery_evidence = self._feishu_media_metrics_recovery_evidence(record)
+                if recovery_evidence:
+                    self._mark_resolved(
+                        record,
+                        resolution_type="normal_task_progress",
+                        reason="media_metrics_delivery_verified",
+                        evidence=recovery_evidence,
+                    )
+                    _append_jsonl(
+                        self.events_path,
+                        {
+                            "type": "incident_resolved_local_only",
+                            "at_hkt": now_text,
+                            "incident_id": record.get("incident_id"),
+                            "condition_key": key,
+                            "reason": "media_metrics_delivery_verified",
+                        },
+                    )
+                else:
+                    record["status"] = "recovery_pending"
+                    record["resolution"] = {
+                        "status": "awaiting_evidence",
+                        "type": "unverified",
+                        "evidence": ["告警条件本轮未出现，但尚无该时段群消息发送后回读证据。"],
+                        "action": {"type": "none", "performed": False},
+                    }
+                conditions.pop(key, None)
                 continue
             if key.startswith(STATEFUL_CONDITION_PREFIXES):
                 self._mark_resolved(
