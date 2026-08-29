@@ -112,6 +112,7 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
       --exclude '*.lock' \
       --exclude 'backups/' \
       --exclude 'cache_backups/' \
+      --exclude 'checkpoint_backups/' \
       --exclude 'checkpoints.sqlite' \
       --exclude 'checkpoints.sqlite-shm' \
       --exclude 'checkpoints.sqlite-wal' \
@@ -174,7 +175,7 @@ if [[ -f "$CHECKPOINT_SOURCE" ]]; then
     COMPRESSED_CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite.gz" | tr -d ' ')"
     if (( COMPRESSED_CHECKPOINT_BYTES > 95000000 )); then
       echo "Compressed checkpoint is still large (${COMPRESSED_CHECKPOINT_BYTES} bytes); splitting it into GitHub-safe parts..."
-      split -b 85000000 -d -a 3 \
+      split -b 45000000 -d -a 3 \
         "$TMP_DIR/curation_data/checkpoints.sqlite.gz" \
         "$TMP_DIR/curation_data/checkpoints.sqlite.gz.part-"
       rm "$TMP_DIR/curation_data/checkpoints.sqlite.gz"
@@ -224,6 +225,16 @@ while IFS= read -r -d '' file; do
   digest="$(shasum -a 256 "$file" | awk '{print $1}')"
   printf '%s\t%s\t%s\n' "$relative" "$bytes" "$digest" >> "$MANIFEST"
 done < <(find "$TMP_DIR" -type f ! -path "$TMP_DIR/.git/*" ! -path "$MANIFEST" -print0 | sort -z)
+
+# Fail before creating or pushing a snapshot commit if any future operational
+# artifact escapes the explicit exclusions above and exceeds GitHub's hard
+# per-file limit. Keeping this below 100 MB leaves room for size-unit rounding.
+while IFS= read -r -d '' oversized_file; do
+  relative="${oversized_file#"$TMP_DIR/"}"
+  bytes="$(wc -c < "$oversized_file" | tr -d ' ')"
+  echo "Refusing to push: snapshot file '$relative' is too large (${bytes} bytes)." >&2
+  exit 1
+done < <(find "$TMP_DIR" -type f ! -path "$TMP_DIR/.git/*" -size +95M -print0)
 
 if [[ -f "$ROOT/ai_config.json" ]]; then
   INTERNAL_KEY="$(jq -er '[.. | objects | .apiKey? // empty] | map(select(type == "string" and length > 0)) | first // empty' "$ROOT/ai_config.json" 2>/dev/null || true)"
