@@ -112,28 +112,32 @@
         }
       ],
       "rejection": {
-        "accepted": 141,
-        "rejected": 3,
-        "qualityRejected": 3,
-        "evidenceGaps": 109,
-        "reportedRejected": 112,
-        "review": 18,
-        "total": 271,
-        "qualityTotal": 162,
-        "rejectRate": 2,
-        "passRate": 87,
+        "accepted": 143,
+        "rejected": 7,
+        "qualityRejected": 7,
+        "evidenceGaps": 91,
+        "reportedRejected": 98,
+        "review": 22,
+        "total": 263,
+        "qualityTotal": 172,
+        "rejectRate": 4,
+        "passRate": 83,
         "reasons": [
           {
             "label": "置信度低于80%",
-            "value": 2
+            "value": 5
           },
           {
             "label": "用户数仅有比例变化而无客户规模",
+            "value": 2
+          },
+          {
+            "label": "未通过指标格式与单位门禁",
             "value": 1
           }
         ],
-        "runId": "repair_final_20260829_1036",
-        "completedAt": "2026-08-29T10:59:13+08:00"
+        "runId": "scheduled_20260830_030011_012027",
+        "completedAt": "2026-08-30T03:26:11+08:00"
       },
       "newsFunnel": {
         "scope": "午后扫描（2026-08-29@14:00）",
