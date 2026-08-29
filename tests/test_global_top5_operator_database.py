@@ -810,7 +810,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             dataset_ids={"global_top5_operators_2016_2025"},
         )
         gap_text = "\n".join(chunk["text"] for chunk in gap_chunks)
-        self.assertIn("未披露（source_gap_confirmed", gap_text)
+        self.assertIn("已定向检索未见直接披露（source_gap_confirmed）", gap_text)
         self.assertIn("不能当作0", gap_text)
 
     def test_china_broadnet_compound_year_metric_associations_fit_tool_limit(self):
@@ -2097,7 +2097,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         )
         combined = "\n".join(str(chunk.get("text") or "") for chunk in chunks)
         self.assertIn("period=FY2023", combined)
-        self.assertIn("official_value=未披露", combined)
+        self.assertIn("official_value=已定向检索未见直接披露（source_gap_confirmed）", combined)
+        self.assertNotIn("not_applicable_precommercial", combined)
         self.assertIn("ar2022-23", combined)
         self.assertIn("ar2023-24", combined)
         self.assertEqual(len(chunks), 4)

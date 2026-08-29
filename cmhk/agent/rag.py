@@ -930,11 +930,20 @@ def _global_operator_exact_metric_chunks(
         return chunks
     for row in filtered[:24]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
-        value_text = (
-            f"{row.get('official_value')} {row.get('unit')}"
-            if str(row.get("official_value") or "").strip()
-            else "未披露（source_gap_confirmed / not_applicable_precommercial）"
-        )
+        official_value = str(row.get("official_value") or "").strip()
+        verification_status = str(row.get("verification_status") or "").strip()
+        if official_value:
+            value_text = f"{official_value} {row.get('unit')}"
+            missing_value_instruction = ""
+        elif verification_status == "not_applicable_precommercial":
+            value_text = "不适用（not_applicable_precommercial / 尚未商用）"
+            missing_value_instruction = "该行只能回答尚未商用不适用，不能写成未检索或0。"
+        else:
+            value_text = "已定向检索未见直接披露（source_gap_confirmed）"
+            missing_value_instruction = (
+                "该行只能回答已定向检索未见同期间同口径直接值；"
+                "不能写成尚未商用或不适用，也不能当作0、行业汇总或估算值。"
+            )
         comparison_guidance = ""
         links = row_links(row)
         reviewed_urls = [link["url"] for link in links if link["url"].startswith(("https://", "http://"))]
@@ -957,7 +966,7 @@ def _global_operator_exact_metric_chunks(
             f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
             f" reviewed_source_urls={json.dumps(reviewed_urls, ensure_ascii=False)}."
             f"{comparison_guidance}"
-            "如果值为未披露，只能回答未披露或商用前不适用，不能当作0、行业汇总或估算值。"
+            f"{missing_value_instruction}"
         )
         chunks.append({"source": source, "text": text, "links": links})
     return chunks
