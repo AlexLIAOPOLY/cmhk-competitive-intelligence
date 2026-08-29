@@ -855,12 +855,19 @@ def _global_operator_exact_metric_chunks(
     }
 
     def row_links(row: dict[str, Any]) -> list[dict[str, str]]:
-        urls = [str(row.get("primary_source_url") or "").strip()]
-        try:
-            candidate_ids = json.loads(str(row.get("candidate_sources") or "[]"))
-        except json.JSONDecodeError:
-            candidate_ids = []
-        urls.extend(source_registry.get(str(source_id), "") for source_id in candidate_ids)
+        primary_url = str(row.get("primary_source_url") or "").strip()
+        urls = [primary_url]
+        # A disclosed value should cite its point-specific primary document.
+        # Candidate documents are review scope for unresolved gaps (or a
+        # fallback when a legacy numeric row has no primary URL); exposing the
+        # whole candidate set for a verified point bloats the citation footer
+        # with unrelated years from the same metric series.
+        if not str(row.get("official_value") or "").strip() or not primary_url:
+            try:
+                candidate_ids = json.loads(str(row.get("candidate_sources") or "[]"))
+            except json.JSONDecodeError:
+                candidate_ids = []
+            urls.extend(source_registry.get(str(source_id), "") for source_id in candidate_ids)
         clean_urls = list(dict.fromkeys(url for url in urls if url.startswith(("https://", "http://"))))
         return [
             {"label": source, "url": _local_ref(source)},

@@ -2099,6 +2099,17 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=未披露", combined)
         self.assertIn("ar2022-23", combined)
         self.assertIn("ar2023-24", combined)
+        all_links = {
+            str(link.get("url") or "")
+            for chunk in chunks
+            for link in (chunk.get("links") or [])
+        }
+        self.assertIn("https://www.ril.com/ar2016-17/digital-services.html", all_links)
+        self.assertIn("https://www.ril.com/ar2017-18/digital-services.html", all_links)
+        self.assertIn("https://www.ril.com/ar2022-23/digital-services.html", all_links)
+        self.assertIn("https://www.ril.com/ar2023-24/digital-services.html", all_links)
+        self.assertNotIn("https://www.ril.com/ar2015-16/digital-services.html", all_links)
+        self.assertNotIn("https://www.ril.com/ar2024-25/digital-services.html", all_links)
 
         dataset_token = agent.SELECTED_DATASET_IDS.set(
             {"global_top5_operators_2016_2025", "quarterly_competitor_metrics_2026-06-18", "competitor_product_tariffs"}
