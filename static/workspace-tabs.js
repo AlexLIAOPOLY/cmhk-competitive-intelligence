@@ -363,6 +363,10 @@
       return windows.some((windowYears) => {
         const comparison = competitorComparableWindow(data, companyIds, metric.key, windowYears);
         if (!comparison.ok || !comparison.visibleYears.length) return false;
+        if (companyIds.length === 1) {
+          const audited = new Set(metricRows.map((row) => `${row.company}|${row.year}`));
+          return comparison.visibleYears.every((year) => audited.has(`${companyIds[0]}|${year}`));
+        }
         const disclosed = new Set(data.cells
           .filter((cell) => companyIds.includes(cell.company)
             && cell.metric === metric.key
