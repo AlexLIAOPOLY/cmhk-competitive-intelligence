@@ -127,6 +127,10 @@ ERROR_LEDGER_READ_CHUNK_ROWS = max(
     10,
     int(os.environ.get("CMHK_ERROR_LEDGER_READ_CHUNK_ROWS", "50")),
 )
+ERROR_LEDGER_SYNC_BUDGET_SECONDS = max(
+    30,
+    int(os.environ.get("CMHK_ERROR_LEDGER_SYNC_BUDGET_SECONDS", "90")),
+)
 TERMINAL_STATUSES = {"completed", "failed"}
 SENSITIVE_RE = re.compile(
     r"(?i)(authorization\s*[:=]\s*bearer\s+|api[_-]?key\s*[:=]\s*|app[_-]?secret\s*[:=]\s*)[^\s,;\"']+"
@@ -3424,7 +3428,19 @@ class ProjectMonitor:
         self._ledger_verified_this_process = False
         return True
 
-    def _read_error_ledger(self) -> tuple[list[list[str]], dict[str, int]]:
+    def _ledger_command_timeout(
+        self, deadline_monotonic: float | None, maximum: float
+    ) -> float:
+        if deadline_monotonic is None:
+            return maximum
+        remaining = deadline_monotonic - time.monotonic()
+        if remaining <= 1:
+            raise TimeoutError("error ledger sync exceeded its per-cycle time budget")
+        return max(1.0, min(maximum, remaining))
+
+    def _read_error_ledger(
+        self, *, deadline_monotonic: float | None = None
+    ) -> tuple[list[list[str]], dict[str, int]]:
         config = self._error_ledger_config()
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
@@ -3447,7 +3463,7 @@ class ProjectMonitor:
                     "--format",
                     "json",
                 ],
-                timeout=25,
+                timeout=self._ledger_command_timeout(deadline_monotonic, 25),
             )
         )
         workbook_data = workbook.get("data") if isinstance(workbook.get("data"), dict) else {}
@@ -3472,6 +3488,7 @@ class ProjectMonitor:
         rows_by_number: dict[int, list[str]] = {}
         expected_columns = [chr(ord("A") + index) for index in range(17)]
         for chunk_start in range(1, row_count + 1, ERROR_LEDGER_READ_CHUNK_ROWS):
+            chunk_timeout = self._ledger_command_timeout(deadline_monotonic, 30)
             chunk_end = min(row_count, chunk_start + ERROR_LEDGER_READ_CHUNK_ROWS - 1)
             cells_payload = self._json_from_process(
                 self._run(
@@ -3496,7 +3513,7 @@ class ProjectMonitor:
                         "--format",
                         "json",
                     ],
-                    timeout=30,
+                    timeout=chunk_timeout,
                 )
             )
             cells_data = (
@@ -3867,6 +3884,9 @@ class ProjectMonitor:
         if retry_after and self.now() < retry_after:
             return
         try:
+            deadline_monotonic = (
+                time.monotonic() + ERROR_LEDGER_SYNC_BUDGET_SECONDS
+            )
             config = self._error_ledger_config()
             ledger_state.update(
                 {
@@ -3903,7 +3923,9 @@ class ProjectMonitor:
             if self._ledger_verified_this_process and not local_changed:
                 return
 
-            remote_rows, row_by_incident = self._read_error_ledger()
+            remote_rows, row_by_incident = self._read_error_ledger(
+                deadline_monotonic=deadline_monotonic
+            )
             missing_ids = [incident_id for incident_id in desired if incident_id not in row_by_incident]
             if self._maybe_rollover_error_ledger(
                 used_rows=len(remote_rows) + 1,
@@ -3918,7 +3940,9 @@ class ProjectMonitor:
                         "last_rollover_at_hkt": synced_at,
                     }
                 )
-                remote_rows, row_by_incident = self._read_error_ledger()
+                remote_rows, row_by_incident = self._read_error_ledger(
+                    deadline_monotonic=deadline_monotonic
+                )
                 missing_ids = [incident_id for incident_id in desired if incident_id not in row_by_incident]
             if missing_ids:
                 append_values = [desired[incident_id] for incident_id in missing_ids]
@@ -3935,7 +3959,9 @@ class ProjectMonitor:
                 # Re-read instead of assuming contiguous row positions from a
                 # stale pre-append snapshot. This also covers another writer
                 # appending between our read and write.
-                remote_rows, row_by_incident = self._read_error_ledger()
+                remote_rows, row_by_incident = self._read_error_ledger(
+                    deadline_monotonic=deadline_monotonic
+                )
                 for incident_id in missing_ids:
                     if incident_id not in row_by_incident:
                         raise RuntimeError(f"错误台账追加后未回读到告警ID：{incident_id}")
@@ -3961,7 +3987,9 @@ class ProjectMonitor:
                 )
 
             if missing_ids or updates or not self._ledger_verified_this_process:
-                verified_rows, verified_mapping = self._read_error_ledger()
+                verified_rows, verified_mapping = self._read_error_ledger(
+                    deadline_monotonic=deadline_monotonic
+                )
                 for incident_id, values in desired.items():
                     row_number = verified_mapping.get(incident_id)
                     if not row_number:
@@ -4135,6 +4163,14 @@ class ProjectMonitor:
         self.state["notifications_enabled_last"] = enabled
         issues = self.collect_issues()
         _, active = self._upsert_incidents(issues)
+        # Persist local truth before any Feishu/LLM call. A slow external
+        # readback must not hide a completed probe pass or leave positively
+        # verified historical recoveries looking unresolved until the whole
+        # external synchronization phase finishes.
+        self.state["last_local_check_at_hkt"] = _iso(self.now())
+        self.state["cycle_phase"] = "external_sync"
+        self.state["last_issue_count"] = len(active)
+        _atomic_json(self.state_path, self.state)
         # A card must never be delivered before its incident row exists. The
         # callback can be clicked immediately, so syncing after delivery leaves
         # a race where the click cannot resolve the incident ID.
@@ -4159,6 +4195,7 @@ class ProjectMonitor:
         # M/N (处理人员/处理状态) are never touched by this path after append.
         self._sync_error_ledger()
         self.state["last_cycle_at_hkt"] = _iso(self.now())
+        self.state["cycle_phase"] = "idle"
         self.state["cycles"] = int(self.state.get("cycles") or 0) + 1
         self.state["last_issue_count"] = len(active)
         _atomic_json(self.state_path, self.state)

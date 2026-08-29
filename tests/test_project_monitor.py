@@ -1727,6 +1727,27 @@ class ProjectMonitorTests(unittest.TestCase):
         events = self.state_dir.joinpath("events.jsonl").read_text()
         self.assertIn("error_ledger_sync_failed_local_only", events)
 
+    def test_local_probe_state_is_persisted_before_external_sync(self):
+        monitor = self._monitor(enabled=False, enable_ledger=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        with mock.patch.object(
+            monitor, "_sync_error_ledger", side_effect=RuntimeError("external wait")
+        ):
+            with self.assertRaisesRegex(RuntimeError, "external wait"):
+                monitor.run_cycle()
+
+        persisted = json.loads(monitor.state_path.read_text())
+        self.assertEqual(persisted["cycle_phase"], "external_sync")
+        self.assertTrue(persisted["last_local_check_at_hkt"])
+        self.assertEqual(persisted["last_issue_count"], 1)
+        self.assertEqual(len(persisted["incidents"]), 1)
+
+    def test_error_ledger_commands_stop_when_cycle_budget_expires(self):
+        monitor = self._monitor(enabled=False, enable_ledger=True)
+        with mock.patch("project_monitor.time.monotonic", return_value=101.0):
+            with self.assertRaisesRegex(TimeoutError, "per-cycle time budget"):
+                monitor._ledger_command_timeout(100.0, 30)
+
     def test_error_ledger_append_uses_actual_range_when_remote_row_moves(self):
         self.runner.ledger_append_row_shift = 1
         monitor = self._monitor(enabled=True, enable_ledger=True)
