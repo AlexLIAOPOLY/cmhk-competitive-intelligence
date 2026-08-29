@@ -10,8 +10,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="整理爬取证据、校验事实并规划缺口补爬。")
     parser.add_argument("legacy_limit", nargs="?", type=int)
     parser.add_argument("--limit", type=int)
-    parser.add_argument("--batch-size", type=int, default=25)
-    parser.add_argument("--ai-workers", type=int, default=3)
+    parser.add_argument("--batch-size", type=int, default=12)
+    parser.add_argument("--ai-workers", type=int, default=1)
     parser.add_argument("--search-verify-workers", type=int, default=4)
     parser.add_argument("--search-verify-online", action="store_true")
     parser.add_argument(

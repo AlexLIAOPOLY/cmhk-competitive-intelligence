@@ -377,6 +377,20 @@ class DataCurationTests(unittest.TestCase):
         self.assertEqual(fact["decision"], "accepted")
         self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
 
+    def test_customer_count_year_alone_is_not_treated_as_absolute_count(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        metric="客户数/用户数",
+                        value="2025年客户数增加",
+                        basis="报告只说明2025年客户数增加，未披露绝对数量。",
+                    )
+                ]
+            }
+        )
+        self.assertEqual(result["candidates"][0]["decision"], "rejected")
+
     def test_negative_evidence_is_not_recovered_as_qualitative_fact(self):
         result = audit_quality(
             {
@@ -483,6 +497,29 @@ class DataCurationTests(unittest.TestCase):
             }
         )
         self.assertEqual(result["candidates"][0]["decision"], "accepted")
+        self.assertEqual(result["recrawl_tasks"], [])
+
+    def test_partial_row_semantic_gap_does_not_trigger_network_recrawl(self):
+        failed = candidate(
+            status="unavailable",
+            decision="rejected",
+            reasons=["指标语义未通过"],
+        )
+        with unittest.mock.patch(
+            "data_curation.workflow._result_status", return_value="partial"
+        ):
+            result = plan_gaps(
+                {
+                    "candidates": [failed],
+                    "best_candidates": [],
+                    "best_accepted_count": 0,
+                    "recrawl_round": 0,
+                    "allow_recrawl": True,
+                    "max_recrawl_rounds": 1,
+                    "max_recrawl_rows": 3,
+                    "node_events": [],
+                }
+            )
         self.assertEqual(result["recrawl_tasks"], [])
 
     def test_cache_semantic_key_keeps_best_previous_fact(self):

@@ -13,16 +13,15 @@ class StructuredAIResponseError(ValueError):
 
 
 def deepseek_nonthinking_parameters(existing: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Return gateway parameters that disable DeepSeek reasoning explicitly.
+    """Return the documented DeepSeek parameter that disables reasoning.
 
-    ``thinking`` is the current DeepSeek API switch. ``chat_template_kwargs`` is
-    retained for compatible internal gateways that still expose the older flag.
+    Older internal routes accepted an undocumented ``chat_template_kwargs``
+    switch. Do not inject it into new requests: strict gateways can reject an
+    otherwise valid JSON-mode request when unknown top-level fields are present.
+    Existing caller-supplied compatibility fields are preserved unchanged.
     """
     params = deepcopy(existing or {})
     params["thinking"] = {"type": "disabled"}
-    template_kwargs = dict(params.get("chat_template_kwargs") or {})
-    template_kwargs["enable_thinking"] = False
-    params["chat_template_kwargs"] = template_kwargs
     return params
 
 

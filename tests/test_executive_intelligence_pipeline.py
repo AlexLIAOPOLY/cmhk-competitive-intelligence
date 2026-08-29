@@ -1916,6 +1916,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             for call in open_url.call_args_list
         ]
         self.assertEqual(request_models, ["DeepSeek-V4-Pro", "GLM"])
+        self.assertTrue(all(
+            json.loads(call.args[0].data.decode("utf-8"))["max_tokens"] == 16000
+            for call in open_url.call_args_list
+        ))
 
     def test_discovery_generation_repairs_overlong_card_copy_before_gate(self):
         evidence = {
@@ -1969,6 +1973,56 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             any(term in item["detail"] for term in pipeline._INTERPRETIVE_CONNECTORS)
             for item in result["discoveries"]
         ))
+
+    def test_discovery_depth_repair_replaces_only_shallow_detail(self):
+        evidence = {
+            "domains": [
+                {"id": "local", "focuses": [{"items": [{"value": 10}]}]},
+                {"id": "cloud", "focuses": [{"items": [{"value": 20}]}]},
+            ]
+        }
+        raw = [{
+            "from": "local",
+            "to": "cloud",
+            "title": "两域规模差异",
+            "detail": "这表明本地为10、云为20。",
+            "kind": "AI综合研判",
+            "source_urls": [],
+        }]
+        seed_detail = "本地10低于云20，差距表明资本结构分化，并非同一口径规模领先。"
+        with patch.object(
+            pipeline,
+            "_deterministic_discoveries",
+            return_value=[{"from": "local", "to": "cloud", "detail": seed_detail}],
+        ):
+            repaired, count = pipeline._repair_discovery_depth(raw, evidence)
+
+        self.assertEqual(count, 1)
+        self.assertEqual(repaired[0]["title"], raw[0]["title"])
+        self.assertEqual(repaired[0]["detail"], seed_detail)
+
+    def test_discovery_depth_repair_handles_model_selected_pair_without_seed(self):
+        evidence = {
+            "domains": [
+                {"id": "local", "focuses": [{"items": [{"value": 10}]}]},
+                {"id": "international", "focuses": [{"items": [{"value": 20}]}]},
+            ]
+        }
+        raw = [{
+            "from": "local",
+            "to": "international",
+            "title": "两域收入差异",
+            "detail": "本地收入为10，国际收入为20。",
+            "kind": "AI综合研判",
+            "source_urls": [],
+        }]
+        with patch.object(pipeline, "_deterministic_discoveries", return_value=[]):
+            repaired, count = pipeline._repair_discovery_depth(raw, evidence)
+
+        self.assertEqual(count, 1)
+        self.assertIn("收入与盈利结构", repaired[0]["detail"])
+        self.assertTrue(pipeline._has_deep_interpretation(repaired[0]["detail"]))
+        self.assertLessEqual(len(repaired[0]["detail"]), 110)
 
     def test_discovery_prompt_uses_compact_metrics_without_entity_components(self):
         evidence = {"domains": [{

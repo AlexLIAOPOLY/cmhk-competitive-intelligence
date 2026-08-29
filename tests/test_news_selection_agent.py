@@ -237,6 +237,17 @@ class NewsSelectionAgentTests(unittest.TestCase):
             {"NEWS-1", "NEWS-2"},
         )
 
+    def test_persistent_model_omission_fails_instead_of_auto_rejecting(self):
+        targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
+        incomplete = {"decisions": []}
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            return_value=(incomplete, "model"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "仍遗漏 2 条"):
+                agent._invoke_langchain_batches([], targets)
+
     def test_langchain_locally_repairs_only_missing_json_commas(self):
         malformed = """{
           "learned_rules": ["香港相关优先"]

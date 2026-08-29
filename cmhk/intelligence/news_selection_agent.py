@@ -20,6 +20,7 @@ except ImportError:  # pragma: no cover - deployment fallback
 
 from ai_config import api_key_candidates, load_ai_config
 from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
+from ai_response_compat import deepseek_nonthinking_parameters
 from cmhk.crawl.run_registry import (
     append_crawl_run_event,
     finalize_operational_crawl_run,
@@ -39,6 +40,9 @@ MAX_HISTORY_EXAMPLES = max(
 )
 MODEL_BATCH_SIZE = max(
     5, min(30, int(os.environ.get("CMHK_NEWS_SELECTION_MODEL_BATCH_SIZE", "20")))
+)
+SUPPLEMENT_BATCH_SIZE = max(
+    1, min(8, int(os.environ.get("CMHK_NEWS_SELECTION_SUPPLEMENT_BATCH_SIZE", "5")))
 )
 WRITE_BATCH_ROWS = max(
     10, min(90, int(os.environ.get("CMHK_NEWS_SELECTION_WRITE_BATCH_ROWS", "80")))
@@ -341,7 +345,9 @@ def _invoke_langchain(
             model=model_name,
             api_key=api_key,
             api_base=_text(config.get("base_url"), 500),
-            extra_body={"response_format": {"type": "json_object"}},
+            extra_body=deepseek_nonthinking_parameters(
+                {"response_format": {"type": "json_object"}}
+            ),
             temperature=0.1,
             disable_streaming=True,
             max_retries=1,
@@ -446,7 +452,10 @@ def _invoke_langchain_batches(
             if isinstance(item, dict)
         }
         supplemented_count = 0
-        for _attempt in range(2):
+        # Retry valid-but-incomplete JSON in small groups, then one candidate at
+        # a time. Persistent omissions must fail the run, not be rewritten into
+        # negative editorial decisions.
+        for attempt in range(2):
             decided_ids = {
                 _text(item.get("news_id"), 80)
                 for item in (payload.get("decisions") or [])
@@ -457,12 +466,17 @@ def _invoke_langchain_batches(
             ]
             if not missing_targets:
                 break
-            supplement, supplement_model = _invoke_langchain(examples, missing_targets)
-            payload.setdefault("decisions", []).extend(supplement.get("decisions") or [])
-            payload["_format_repaired"] = bool(
-                payload.get("_format_repaired") or supplement.get("_format_repaired")
-            )
-            model_name = ", ".join(dict.fromkeys([model_name, supplement_model]))
+            supplement_size = SUPPLEMENT_BATCH_SIZE if attempt == 0 else 1
+            for supplement_start in range(0, len(missing_targets), supplement_size):
+                supplement_targets = missing_targets[
+                    supplement_start : supplement_start + supplement_size
+                ]
+                supplement, supplement_model = _invoke_langchain(examples, supplement_targets)
+                payload.setdefault("decisions", []).extend(supplement.get("decisions") or [])
+                payload["_format_repaired"] = bool(
+                    payload.get("_format_repaired") or supplement.get("_format_repaired")
+                )
+                model_name = ", ".join(dict.fromkeys([model_name, supplement_model]))
         decided_ids = {
             _text(item.get("news_id"), 80)
             for item in (payload.get("decisions") or [])
@@ -470,19 +484,13 @@ def _invoke_langchain_batches(
         }
         supplemented_count = len(decided_ids - original_ids)
         missing_targets = [item for item in batch if item["news_id"] not in decided_ids]
-        for item in missing_targets:
-            payload.setdefault("decisions", []).append(
-                {
-                    "news_id": item["news_id"],
-                    "app_status": "不接受",
-                    "weekly_status": "不接受",
-                    "app_confidence": 0.0,
-                    "weekly_confidence": 0.0,
-                    "reason": "模型多轮未返回完整判断，按信息不足保守不接受",
-                }
+        if missing_targets:
+            missing_ids = ", ".join(item["news_id"] for item in missing_targets[:8])
+            raise RuntimeError(
+                f"LangChain 多轮补判后仍遗漏 {len(missing_targets)} 条候选：{missing_ids}"
             )
         payload["_supplemented_count"] = supplemented_count
-        payload["_fallback_count"] = len(missing_targets)
+        payload["_fallback_count"] = 0
         payloads.append(payload)
         model_names.append(model_name)
     first = payloads[0] if payloads else {}

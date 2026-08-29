@@ -15,7 +15,13 @@ from urllib.parse import urlparse
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from ai_key_rotation import open_llm_request
 from ai_rate_limit import wait_for_internal_ai_slot
-from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
+from ai_response_compat import (
+    StructuredAIResponseError,
+    final_chat_message_text,
+    load_json_response,
+    prepare_structured_chat_body,
+    unwrap_items_payload,
+)
 from cmhk.agent.rag import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
 from cmhk.data.company_metrics import (
@@ -1846,7 +1852,11 @@ def extract_json(text: str) -> Any:
         raise
 
 
-def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def call_deepseek(
+    tasks: list[dict[str, Any]],
+    *,
+    _allow_missing_supplement: bool = True,
+) -> list[dict[str, Any]]:
     config = load_ai_config(include_key=True)
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
@@ -1891,6 +1901,7 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 0.0,
+        "max_tokens": max(4000, int(os.environ.get("CMHK_CURATION_AI_MAX_TOKENS", "16000"))),
     })
     req = urllib.request.Request(
         f"{base_url}/chat/completions",
@@ -1898,22 +1909,64 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
-    try:
-        wait_for_internal_ai_slot("company-metrics-normalization")
-        with open_llm_request(
-            req,
-            timeout=180,
-            config=config,
-            requested_key=api_key,
-            model=model,
-            open_func=urlopen_with_local_proxy_fallback,
-        ) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="ignore")[:1000]
-        raise RuntimeError(f"DeepSeek HTTP {exc.code}: {detail}") from exc
-    content = final_chat_message_text(payload, operation="公司指标清洗")
-    return unwrap_items_payload(load_json_response(content, operation="公司指标清洗"), operation="公司指标清洗")
+    items: list[Any] = []
+    for structured_attempt in range(2):
+        try:
+            wait_for_internal_ai_slot("company-metrics-normalization")
+            with open_llm_request(
+                req,
+                timeout=180,
+                config=config,
+                requested_key=api_key,
+                model=model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="ignore")[:1000]
+            raise RuntimeError(f"DeepSeek HTTP {exc.code}: {detail}") from exc
+        try:
+            content = final_chat_message_text(payload, operation="公司指标清洗")
+            items = unwrap_items_payload(
+                load_json_response(content, operation="公司指标清洗"),
+                operation="公司指标清洗",
+            )
+            break
+        except StructuredAIResponseError:
+            if structured_attempt >= 1:
+                raise
+            continue
+
+    expected_ids = [str(item.get("id") or "") for item in prepared_tasks]
+    expected_set = set(expected_ids)
+    valid_by_id = {
+        str(item.get("id") or ""): item
+        for item in items
+        if isinstance(item, dict) and str(item.get("id") or "") in expected_set
+    }
+    missing_ids = [item_id for item_id in expected_ids if item_id not in valid_by_id]
+    if missing_ids and _allow_missing_supplement and len(missing_ids) < len(expected_ids):
+        missing_set = set(missing_ids)
+        missing_tasks = [
+            task for task in tasks if str(task.get("id") or "") in missing_set
+        ]
+        supplemented = call_deepseek(
+            missing_tasks,
+            _allow_missing_supplement=False,
+        )
+        valid_by_id.update(
+            {
+                str(item.get("id") or ""): item
+                for item in supplemented
+                if isinstance(item, dict) and str(item.get("id") or "") in missing_set
+            }
+        )
+        missing_ids = [item_id for item_id in expected_ids if item_id not in valid_by_id]
+    if missing_ids:
+        raise RuntimeError(
+            f"公司指标清洗结果不完整：补判后仍缺少 {len(missing_ids)} 条"
+        )
+    return [valid_by_id[item_id] for item_id in expected_ids]
 
 
 def _prepare_tasks_for_token_budget(tasks: list[dict[str, Any]], *, model: str, token_budget: int) -> list[dict[str, Any]]:

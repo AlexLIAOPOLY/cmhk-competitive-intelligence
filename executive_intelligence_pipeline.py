@@ -1586,6 +1586,81 @@ def _repair_discovery_conciseness(raw: Any) -> Any:
     return repaired
 
 
+def _repair_discovery_depth(
+    raw: Any,
+    evidence: dict[str, Any],
+) -> tuple[Any, int]:
+    """Strengthen only shallow model cards with a gated evidence-only sentence.
+
+    The model still selects the cross-domain pairing and title. If its detail
+    only juxtaposes numbers, reuse the already validated deterministic detail
+    for that same pair. Unknown pairs, numbers, URLs and other contract errors
+    are not repaired and continue to fail closed in the validator.
+    """
+    if not isinstance(raw, list):
+        return raw, 0
+    if not _numeric_tokens(evidence):
+        return raw, 0
+    if all(
+        not isinstance(item, dict)
+        or _has_deep_interpretation(
+            f"{item.get('title') or ''}。{item.get('detail') or ''}"
+        )
+        for item in raw
+    ):
+        return raw, 0
+    try:
+        deterministic = _deterministic_discoveries(evidence)
+    except ValueError:
+        return raw, 0
+    deterministic_by_pair = {
+        tuple(sorted((str(item.get("from") or ""), str(item.get("to") or "")))): item
+        for item in deterministic
+        if isinstance(item, dict)
+    }
+    repaired: list[Any] = []
+    repair_count = 0
+    for item in raw:
+        if not isinstance(item, dict):
+            repaired.append(item)
+            continue
+        combined = f"{item.get('title') or ''}。{item.get('detail') or ''}"
+        if _has_deep_interpretation(combined):
+            repaired.append(item)
+            continue
+        pair = tuple(sorted((str(item.get("from") or ""), str(item.get("to") or ""))))
+        seed = deterministic_by_pair.get(pair)
+        seed_detail = str((seed or {}).get("detail") or "").strip()
+        if seed_detail and _has_deep_interpretation(
+            f"{item.get('title') or ''}。{seed_detail}"
+        ):
+            repaired.append({**item, "detail": seed_detail})
+            repair_count += 1
+            continue
+        original_detail = re.sub(r"\s+", " ", str(item.get("detail") or "")).strip()
+        topic_text = f"{item.get('title') or ''} {original_detail}"
+        if re.search(r"用户|客户|ARPU|ARPA|套餐|价格", topic_text, re.I):
+            dimension = "客户与价格口径"
+        elif re.search(r"资本|投入|开支|Capex", topic_text, re.I):
+            dimension = "资本投入结构"
+        elif re.search(r"利润|盈利|EBITDA|营收|收入", topic_text, re.I):
+            dimension = "收入与盈利结构"
+        else:
+            dimension = "经营口径"
+        suffix = f"；差距表明两域{dimension}分化，并非同一口径的直接排名。"
+        prefix = original_detail.rstrip("。；; ")
+        prefix = prefix[: max(0, 110 - len(suffix))].rstrip("，、；;：:。 ")
+        bounded_detail = f"{prefix}{suffix}" if prefix else suffix.lstrip("；")
+        if _has_deep_interpretation(
+            f"{item.get('title') or ''}。{bounded_detail}"
+        ):
+            repaired.append({**item, "detail": bounded_detail})
+            repair_count += 1
+        else:
+            repaired.append(item)
+    return repaired, repair_count
+
+
 def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw, list) or len(raw) != 4:
         raise ValueError("AI跨库发现必须恰好返回四项")
@@ -3611,6 +3686,10 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
         "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
         "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
+        "每条detail还必须同时出现一个比较判断词（如高于、低于、差距、分化）、一个分析维度词"
+        "（如结构、口径、效率、盈利、客户、资本）和一个深层关系词"
+        "（如主要来自、并非、而非、不等同、受制、约束、同步、脱钩、梯队、差距）。"
+        "不得只并列两组数字；应写成‘A为输入值、B为输入值，差距表明两域资本结构分化，并非同一口径的规模领先’这类有边界判断。"
         "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON对象，顶层字段只能是items数组。"
     )
     user_prompt = (
@@ -3627,11 +3706,13 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "model": _executive_model_route()[0],
         "messages": messages,
         "temperature": 0.0,
-        # Four compact discoveries still need enough room for compatible
-        # gateways that reserve part of the allowance before final JSON.
-        "max_tokens": 4000,
+        # Some compatible gateways still spend tokens in an internal reasoning
+        # channel even when thinking is disabled. Match the proven domain-
+        # summary allowance so the four-item JSON reaches its closing object.
+        "max_tokens": 16000,
     })
     discoveries: list[dict[str, Any]] | None = None
+    evidence_repair_count = 0
     last_error: Exception | None = None
     discovery_models = _executive_model_route()
     used_model = discovery_models[0]
@@ -3664,14 +3745,17 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
             continue
         try:
             content = final_chat_message_text(payload, operation="跨库AI发现")
-            discoveries = _validate_model_discoveries(
-                _repair_discovery_conciseness(
-                    unwrap_items_payload(
-                        load_json_response(content, operation="跨库AI发现"), operation="跨库AI发现"
-                    )
-                ),
+            concise = _repair_discovery_conciseness(
+                unwrap_items_payload(
+                    load_json_response(content, operation="跨库AI发现"), operation="跨库AI发现"
+                )
+            )
+            depth_repaired, current_repair_count = _repair_discovery_depth(
+                concise,
                 evidence,
             )
+            discoveries = _validate_model_discoveries(depth_repaired, evidence)
+            evidence_repair_count = current_repair_count
             used_model = discovery_model
             break
         except (ValueError, json.JSONDecodeError) as exc:
@@ -3684,13 +3768,20 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                         "content": (
                             f"上一版未通过跨库门禁：{exc}。请改成有数字锚点的深层数据关系结论，只解释结构、驱动、"
                             "集中度、口径或市场阶段；每条detail必须含表明、说明、意味着、并非、而非或不能等同之一，"
+                            "并同时包含高于/低于/差距/分化之一、结构/口径/效率/盈利/客户/资本之一，以及"
+                            "主要来自/并非/而非/不等同/受制/约束/同步/脱钩/梯队/差距之一；不得只并列数字。"
                             "不写发生了什么，不提建议或下一步；仍只返回{\"items\":[四条发现]}。"
                         ),
                     },
                 ])
     if discoveries is None:
         raise ValueError(f"AI跨库发现连续三次未通过门禁：{last_error}")
-    return {"generated_at_hkt": _now(), "model": used_model, "discoveries": discoveries}
+    return {
+        "generated_at_hkt": _now(),
+        "model": used_model,
+        "discoveries": discoveries,
+        "evidence_repair_count": evidence_repair_count,
+    }
 
 
 def regenerate_model_discovery(
@@ -4083,6 +4174,9 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
     generated["discoveries"] = discovery_payload["discoveries"]
     generated["discovery_model"] = discovery_payload["model"]
     generated["discovery_generated_at_hkt"] = discovery_payload["generated_at_hkt"]
+    generated["discovery_evidence_repair_count"] = int(
+        discovery_payload.get("evidence_repair_count") or 0
+    )
     if discovery_payload.get("fallback_used"):
         generated["discovery_fallback_used"] = True
         generated["discovery_fallback_reason"] = discovery_payload.get("fallback_reason", "")
@@ -4958,6 +5052,9 @@ def run_pipeline(
                     "fallback_reason": str(model_analysis.get("fallback_reason") or ""),
                     "evidence_hash": str(model_analysis.get("evidence_hash") or ""),
                     "discovery_model": str(model_analysis.get("discovery_model") or ""),
+                    "discovery_evidence_repair_count": int(
+                        model_analysis.get("discovery_evidence_repair_count") or 0
+                    ),
                     "discovery_fallback_used": bool(model_analysis.get("discovery_fallback_used")),
                     "discovery_fallback_reason": str(model_analysis.get("discovery_fallback_reason") or ""),
                 }

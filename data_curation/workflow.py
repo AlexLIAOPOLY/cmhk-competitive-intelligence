@@ -49,6 +49,7 @@ from normalize_company_metrics_ai import (
 )
 
 from .schemas import CandidateFact, EvidenceTask, GapRecord, RecrawlTask, RunSummary
+from .checkpoint_store import maintain_checkpoint_database
 from .storage import DATA_DIR, RUNS_DIR, atomic_write_json, atomic_write_jsonl
 
 
@@ -160,6 +161,9 @@ def _metric_scope_issue(fact: CandidateFact) -> str:
         ):
             return "云指标缺少云业务专属口径"
     if re.search(r"用户数|客户数", fact.metric) and not re.search(
+        # Accept unlabelled absolute counts without treating a four-digit year
+        # such as 2025 as a customer total.
+        r"(?:\d{1,3}(?:,\d{3})+|\d{5,})\b|"
         r"\d[\d,.]*\s*(?:万户|亿户|户|万|亿|million|thousand|customers?|subscribers?|users?)\b",
         context,
         re.IGNORECASE,
@@ -783,8 +787,12 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
     online_used = False
     online_batches = 0
     fallback_batches = 0
-    batch_size = max(1, int(state.get("batch_size") or 25))
-    ai_workers = max(1, int(state.get("ai_workers") or os.environ.get("CMHK_AI_WORKERS") or 3))
+    batch_size = max(1, int(state.get("batch_size") or 12))
+    ai_workers = max(1, int(state.get("ai_workers") or os.environ.get("CMHK_AI_WORKERS") or 1))
+    ai_max_concurrency = max(
+        1,
+        int(os.environ.get("CMHK_CURATION_AI_MAX_CONCURRENCY", "1")),
+    )
     trace_events: list[dict[str, Any]] = [
         _trace(
             state,
@@ -799,6 +807,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                 "online_ai": state.get("online_ai", True),
                 "batch_size": batch_size,
                 "ai_workers": ai_workers,
+                "ai_effective_workers": min(ai_workers, ai_max_concurrency),
             },
         )
     ]
@@ -856,7 +865,10 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
 
     cleaned_by_batch: dict[int, list[dict[str, Any]]] = {}
     if state.get("online_ai", True) and batches:
-        effective_workers = min(ai_workers, len(batches))
+        # The shared gateway accepts the request rate but has repeatedly
+        # rejected simultaneous large JSON-mode generations with blank HTTP
+        # 400 responses. Default to one in-flight generation.
+        effective_workers = min(ai_workers, ai_max_concurrency, len(batches))
 
         def clean_online_batch(
             batch_item: tuple[int, list[dict[str, Any]], str],
@@ -880,8 +892,9 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                     {},
                 )
             except Exception as exc:
-                error_text = clean_text(exc, 400).lower()
-                if len(payload) > 1 and ("timed out" in error_text or "timeout" in error_text):
+                # One bounded split retry makes large or transient gateway
+                # errors recoverable without opening an unbounded retry tree.
+                if len(payload) > 1:
                     split_at = max(1, len(payload) // 2)
                     retry_chunks = [payload[:split_at], payload[split_at:]]
                     recovered: list[dict[str, Any]] = []
@@ -894,11 +907,20 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                         except Exception as retry_exc:
                             retry_errors.append(clean_text(retry_exc, 240))
                             recovered.extend(fallback_clean_batch(retry_chunk))
-                    if not retry_errors:
+                    expected_ids = {str(item.get("id") or "") for item in payload}
+                    recovered_by_id = {
+                        str(item.get("id") or ""): item
+                        for item in recovered
+                        if isinstance(item, dict) and str(item.get("id") or "") in expected_ids
+                    }
+                    missing_payload = [
+                        item for item in payload if str(item.get("id") or "") not in recovered_by_id
+                    ]
+                    if not retry_errors and not missing_payload:
                         return (
                             batch_index,
                             batch_label,
-                            recovered,
+                            [recovered_by_id[str(item.get("id") or "")] for item in payload],
                             time.monotonic() - started,
                             None,
                             {
@@ -906,9 +928,13 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                                 "retry_chunk_sizes": [len(chunk) for chunk in retry_chunks if chunk],
                             },
                         )
-                    exc = RuntimeError(
-                        f"{clean_text(exc, 180)}; split retry failed: {'; '.join(retry_errors)}"
-                    )
+                    recovered = [
+                        recovered_by_id.get(str(item.get("id") or ""))
+                        or fallback_clean_batch([item])[0]
+                        for item in payload
+                    ]
+                    detail = "; ".join(retry_errors) or f"仍遗漏 {len(missing_payload)} 条"
+                    exc = RuntimeError(f"{clean_text(exc, 180)}; split retry failed: {detail}")
                     return (
                         batch_index,
                         batch_label,
@@ -919,6 +945,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                             "timeout_split_retry": True,
                             "retry_chunk_sizes": [len(chunk) for chunk in retry_chunks if chunk],
                             "retry_errors": retry_errors,
+                            "retry_missing": len(missing_payload),
                         },
                     )
                 return (
@@ -2137,15 +2164,21 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
         )
         stats = row_stats.setdefault(
             row_ref,
-            {"gaps": 0, "failed": 0, "companies": [], "metrics": []},
+            {
+                "gaps": 0,
+                "crawl_status": _result_status(row_ref),
+                "reasons": [],
+                "companies": [],
+                "metrics": [],
+            },
         )
         stats["gaps"] += 1
+        if reason not in stats["reasons"]:
+            stats["reasons"].append(reason)
         if company not in stats["companies"]:
             stats["companies"].append(company)
         if metric not in stats["metrics"]:
             stats["metrics"].append(metric)
-        if _result_status(row_ref) in {"partial", "failed", "error"}:
-            stats["failed"] = 1
 
     recrawl_tasks: list[RecrawlTask] = []
     if (
@@ -2156,7 +2189,7 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
             row_stats.items(),
             key=lambda item: (
                 int(item[0].removeprefix("row_") or 0) in PRIMARY_PERFORMANCE_ROWS,
-                item[1]["failed"],
+                item[1]["crawl_status"] in {"failed", "error"},
                 int(item[0].removeprefix("row_") or 0) in CORE_COMPANY_ROWS,
                 item[1]["gaps"],
             ),
@@ -2164,15 +2197,25 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
         )
         for row_ref, stats in ranked_rows:
             match = re.fullmatch(r"row_(\d+)", row_ref or "")
-            if not match or (not stats["failed"] and stats["gaps"] < 3):
+            # Failed/error rows are retryable. A partial row is retryable only
+            # when the gap is genuinely caused by missing public evidence;
+            # semantic, entity, confidence and model-output problems require
+            # extraction/quality handling, not another network crawl.
+            crawl_status = str(stats.get("crawl_status") or "")
+            partial_evidence_gap = crawl_status == "partial" and any(
+                reason in {"缺少可核验公开来源", "没有可发布候选"}
+                for reason in stats.get("reasons", [])
+            )
+            if not match or not (
+                crawl_status in {"failed", "error"} or partial_evidence_gap
+            ):
                 continue
             recrawl_tasks.append(
                 RecrawlTask(
                     row_ref=row_ref,
                     row_number=int(match.group(1)),
-                    reason=f"{stats['gaps']} 个指标缺口"
-                    + ("，原爬取状态非完整成功" if stats["failed"] else "，现有证据未通过质量门禁"),
-                    priority=100 if stats["failed"] else min(90, 50 + stats["gaps"]),
+                    reason=f"{stats['gaps']} 个指标缺口，原爬取状态非完整成功",
+                    priority=100,
                     attempts=int(state.get("recrawl_round") or 0),
                     companies=stats["companies"],
                     metrics=stats["metrics"],
@@ -2747,7 +2790,7 @@ def route_after_supervisor(state: CurationState) -> str:
     return "recrawl" if state.get("supervisor_decision") == "recrawl" else "publish"
 
 
-def build_graph():
+def build_graph(current_thread_id: str = ""):
     builder = StateGraph(CurationState)
     retry = RetryPolicy(max_attempts=3, initial_interval=1.0, backoff_factor=2.0, max_interval=8.0)
     builder.add_node("ingest", ingest_evidence, retry_policy=retry)
@@ -2785,7 +2828,19 @@ def build_graph():
         from langgraph.checkpoint.sqlite import SqliteSaver
 
         DATA_DIR.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(restore_compressed_checkpoint(), check_same_thread=False)
+        checkpoint_path = restore_compressed_checkpoint()
+        maintenance = maintain_checkpoint_database(
+            checkpoint_path,
+            current_thread_id=current_thread_id,
+        )
+        if maintenance.get("maintained"):
+            print(
+                "[数据整理][检查点维护] "
+                f"线程 {maintenance.get('threads_before')}→{maintenance.get('threads_after')}，"
+                f"文件 {maintenance.get('before_bytes')}→{maintenance.get('after_bytes')} 字节。",
+                flush=True,
+            )
+        connection = sqlite3.connect(checkpoint_path, check_same_thread=False)
         checkpointer = SqliteSaver(connection)
     except ImportError:
         pass
@@ -2795,8 +2850,8 @@ def build_graph():
 def run_workflow(
     *,
     limit: int | None = None,
-    batch_size: int = 25,
-    ai_workers: int = 3,
+    batch_size: int = 12,
+    ai_workers: int = 1,
     search_verify_workers: int = 4,
     search_verify_online: bool = False,
     search_verify_online_limit: int = 0,
@@ -2833,7 +2888,7 @@ def run_workflow(
         "node_events": [],
         "agent_trace": [],
     }
-    graph = build_graph()
+    graph = build_graph(run_id)
     config = {"configurable": {"thread_id": run_id}}
     if resume:
         try:

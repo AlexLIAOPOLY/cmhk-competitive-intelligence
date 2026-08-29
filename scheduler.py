@@ -738,7 +738,7 @@ def _run_scheduled_agent_audit(
         "--max-recrawl-rounds",
         "1",
         "--ai-workers",
-        os.environ.get("CMHK_AI_WORKERS", "3"),
+        os.environ.get("CMHK_AI_WORKERS", "1"),
         "--search-verify-workers",
         os.environ.get("CMHK_SEARCH_VERIFY_WORKERS", "4"),
     ]

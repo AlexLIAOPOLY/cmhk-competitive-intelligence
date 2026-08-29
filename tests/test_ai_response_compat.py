@@ -15,7 +15,7 @@ class AIResponseCompatibilityTests(unittest.TestCase):
             {"model": "deepseek-v4", "chat_template_kwargs": {"custom": True}}
         )
         self.assertEqual(body["thinking"], {"type": "disabled"})
-        self.assertEqual(body["chat_template_kwargs"], {"custom": True, "enable_thinking": False})
+        self.assertEqual(body["chat_template_kwargs"], {"custom": True})
         self.assertEqual(body["response_format"], {"type": "json_object"})
 
     def test_final_text_never_promotes_reasoning_to_structured_answer(self):
