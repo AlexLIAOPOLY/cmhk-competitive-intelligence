@@ -9417,7 +9417,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -9903,7 +9903,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -10389,7 +10389,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -10869,7 +10869,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -11349,7 +11349,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -11877,7 +11877,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -12405,7 +12405,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -12631,6 +12631,48 @@
       "period": "FY2023",
       "period_end": "2023-08-31",
       "grain": "annual",
+      "metric_key": "commercial_buildings_covered",
+      "metric_zh": "商業樓宇覆蓋",
+      "value": 8090,
+      "official_value": 8090,
+      "unit": "buildings",
+      "comparator": "=",
+      "scope": "commercial buildings covered",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "primary_source_id": "hkbn_interim_presentation_2024",
+      "primary_source_url": "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf",
+      "verification_sources": [
+        "hkbn_interim_presentation_2024"
+      ],
+      "reviewed_source_ids": [
+        "hkbn_interim_presentation_2024"
+      ],
+      "reviewed_source_urls": [
+        "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf"
+      ],
+      "reviewed_source_count": 1,
+      "audit_outcome": "value_verified",
+      "gap_reason_code": "",
+      "gap_reason": "",
+      "gap_search_scope": "not_applicable_value_verified",
+      "global_availability_status": "value_verified",
+      "related_public_metric": "",
+      "related_public_value": "",
+      "related_public_unit": "",
+      "related_public_comparator": "",
+      "related_public_note": "",
+      "quality_note": ""
+    },
+    {
+      "operator_id": "hkbn",
+      "operator": "HKBN",
+      "legal_name": "HKBN Ltd.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-08-31",
+      "grain": "annual",
       "metric_key": "consumer_broadband_customers",
       "metric_zh": "住宅寬頻客戶",
       "value": 0.92,
@@ -12675,31 +12717,37 @@
       "grain": "annual",
       "metric_key": "homes_passed_or_connected",
       "metric_zh": "寬頻網絡覆蓋/接入家庭",
-      "value": null,
-      "official_value": null,
+      "value": 2.56,
+      "official_value": 2.56,
       "unit": "million_homes",
       "comparator": "=",
-      "scope": "reviewed official annual report, results announcement and presentation",
+      "scope": "residential homes passed",
       "basis": "year_end",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "reviewed_source_ids": [],
-      "reviewed_source_urls": [],
-      "reviewed_source_count": 0,
-      "audit_outcome": "source_gap_confirmed",
-      "gap_reason_code": "not_numerically_disclosed",
-      "gap_reason": "已逐项复核HKBN FY2023官方年报、业绩公告及业绩演示；寬頻網絡覆蓋/接入家庭没有直接可复用的年度数值，定性表述、不同口径或无基数增长未转换为数值。",
-      "gap_search_scope": "not_yet_reviewed",
-      "global_availability_status": "broader_web_search_not_yet_proven",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "primary_source_id": "hkbn_interim_presentation_2024",
+      "primary_source_url": "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf",
+      "verification_sources": [
+        "hkbn_interim_presentation_2024"
+      ],
+      "reviewed_source_ids": [
+        "hkbn_interim_presentation_2024"
+      ],
+      "reviewed_source_urls": [
+        "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf"
+      ],
+      "reviewed_source_count": 1,
+      "audit_outcome": "value_verified",
+      "gap_reason_code": "",
+      "gap_reason": "",
+      "gap_search_scope": "not_applicable_value_verified",
+      "global_availability_status": "value_verified",
       "related_public_metric": "",
       "related_public_value": "",
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": "已逐项复核HKBN FY2023官方年报、业绩公告及业绩演示；寬頻網絡覆蓋/接入家庭没有直接可复用的年度数值，定性表述、不同口径或无基数增长未转换为数值。"
+      "quality_note": ""
     },
     {
       "operator_id": "hkbn",
@@ -12844,6 +12892,48 @@
       "related_public_comparator": "",
       "related_public_note": "",
       "quality_note": "已逐项复核HKBN FY2023官方年报、业绩公告及业绩演示；移動後付客戶没有直接可复用的年度数值，定性表述、不同口径或无基数增长未转换为数值。"
+    },
+    {
+      "operator_id": "hkbn",
+      "operator": "HKBN",
+      "legal_name": "HKBN Ltd.",
+      "year": 2023,
+      "period": "FY2023",
+      "period_end": "2023-08-31",
+      "grain": "annual",
+      "metric_key": "residential_arpu",
+      "metric_zh": "住宅業務ARPU",
+      "value": null,
+      "official_value": null,
+      "unit": "HKD_per_month",
+      "comparator": "=",
+      "scope": "historical full-base residential broadband ARPU",
+      "basis": "year_end",
+      "verification_status": "source_gap_confirmed",
+      "verification_count": 0,
+      "primary_source_id": "",
+      "primary_source_url": "",
+      "verification_sources": [],
+      "reviewed_source_ids": [
+        "hkbn_ar_2023",
+        "hkbn_interim_presentation_2024"
+      ],
+      "reviewed_source_urls": [
+        "https://www.hkbn.net/group/en/newsroom/press-releases/20231102_FY23_AnnualResults",
+        "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf"
+      ],
+      "reviewed_source_count": 2,
+      "audit_outcome": "source_gap_confirmed",
+      "gap_reason_code": "not_numerically_disclosed",
+      "gap_reason": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence.",
+      "gap_search_scope": "issuer_official_annual_report_results_and_presentation",
+      "global_availability_status": "related_scope_value_found_not_directly_comparable",
+      "related_public_metric": "2H2023_residential_arpu",
+      "related_public_value": 177,
+      "related_public_unit": "HKD_per_month",
+      "related_public_comparator": "=",
+      "related_public_note": "HKBN's FY2024 interim presentation reports 2H2023 residential ARPU of HKD177; this half-year point is retained as related evidence and is not presented as the missing FY2023 full-year ARPU.",
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -13521,7 +13611,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",
@@ -14301,7 +14391,7 @@
       "related_public_unit": "",
       "related_public_comparator": "",
       "related_public_note": "",
-      "quality_note": ""
+      "quality_note": "FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence."
     },
     {
       "operator_id": "hkbn",

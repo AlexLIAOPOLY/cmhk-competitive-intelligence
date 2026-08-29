@@ -139,6 +139,7 @@ SOURCES.update({
     "cmhk_5g_customer_milestone_2022": {"source_id": "cmhk_5g_customer_milestone_2022", "operator_id": "cmhk", "year": 2022, "label": "CMHK management statement - 5G users exceeded two million in September 2022", "url": "https://hk.on.cc/hk/bkn/cnt/news/20230323/bkn-20230323090026470-0323_00822_001.html", "source_type": "public_report_direct_company_statement", "publisher": "on.cc"},
     "cmhk_5g_launch_2020": {"source_id": "cmhk_5g_launch_2020", "operator_id": "cmhk", "year": 2020, "label": "China Daily report of CMHK commercial 5G launch population coverage", "url": "https://www.chinadailyhk.com/hk/article/126287", "source_type": "public_report_direct_company_statement", "publisher": "China Daily Hong Kong"},
     "cmhk_5g_base_stations_2020": {"source_id": "cmhk_5g_base_stations_2020", "operator_id": "cmhk", "year": 2020, "label": "CGTN report of CMHK commercial 5G launch base-station count", "url": "https://news.cgtn.com/news/2020-04-02/China-Mobile-launches-5G-commercial-service-in-Hong-Kong-PmistIqGKA/index.html", "source_type": "public_report_direct_company_statement", "publisher": "CGTN"},
+    "hkbn_interim_presentation_2024": {"source_id": "hkbn_interim_presentation_2024", "operator_id": "hkbn", "year": 2023, "label": "HKBN FY2024 Interim Results Presentation with 2H2023 operating comparatives", "url": "https://webcast.irasia.com/hkbn/interim/2024/archived/documents/pre_i.pdf", "source_type": "official_interim_results_presentation", "publisher": OPERATORS["hkbn"]["legal_name"]},
 })
 HKBN_OFFICIAL_REPORT_URLS = {
     2016: "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport2016_HKEX.pdf",
@@ -339,10 +340,11 @@ hkbn_sources = {
     for year in YEARS
 }
 hkbn_dual = {year: hkbn_sources[year] for year in [2024, 2025]}
-add_series("hkbn", "homes_passed_or_connected", {2017: 2.249, 2018: 2.297, 2021: 2.466, 2022: 2.513, 2024: 2.596, 2025: 2.646}, scope="residential homes passed", source_ids=hkbn_sources)
-add_series("hkbn", "commercial_buildings_covered", {2021: 7584, 2022: 8006, 2024: 8163, 2025: 8220}, scope="commercial buildings covered", source_ids=hkbn_sources)
+hkbn_coverage_sources = {**hkbn_sources, 2023: ["hkbn_interim_presentation_2024"]}
+add_series("hkbn", "homes_passed_or_connected", {2017: 2.249, 2018: 2.297, 2021: 2.466, 2022: 2.513, 2023: 2.560, 2024: 2.596, 2025: 2.646}, scope="residential homes passed", source_ids=hkbn_coverage_sources)
+add_series("hkbn", "commercial_buildings_covered", {2021: 7584, 2022: 8006, 2023: 8090, 2024: 8163, 2025: 8220}, scope="commercial buildings covered", source_ids=hkbn_coverage_sources)
 add_series("hkbn", "consumer_broadband_customers", dict(zip(YEARS, [.857, .871, .860, .878, .886, .886, .897, .920, .907, .907])), scope="residential broadband subscriptions", source_ids=hkbn_sources)
-add_series("hkbn", "residential_arpu", {2016: 173, 2017: 168, 2018: 176, 2019: 185, 2020: 190, 2021: 192, 2022: 184, 2024: 182, 2025: 186}, scope="historical full-base residential broadband ARPU", source_ids=hkbn_sources)
+add_series("hkbn", "residential_arpu", {2016: 173, 2017: 168, 2018: 176, 2019: 185, 2020: 190, 2021: 192, 2022: 184, 2023: None, 2024: 182, 2025: 186}, scope="historical full-base residential broadband ARPU", source_ids=hkbn_sources, note="FY2023 full-year residential ARPU was not directly disclosed in the reviewed annual materials; a 2H2023 point is retained separately as related evidence.")
 add_series("hkbn", "residential_arph", {2024: 207, 2025: 217}, scope="residential ARPH", source_ids=hkbn_dual)
 add_series("hkbn", "residential_2gbps_plus_customers", {2025: 95000}, scope="residential customers on 2Gbps or faster plans", comparator=">", source_ids=hkbn_dual)
 add_series("hkbn", "enterprise_2gbps_plus_customers", {2025: 12000}, scope="enterprise GigaFast broadband customers", comparator=">", source_ids=hkbn_dual)
@@ -547,6 +549,21 @@ def main() -> None:
                     "related_public_unit": "stations",
                     "related_public_comparator": "=",
                     "related_public_note": "HKT's FY2024 presentation identifies a 24-high-traffic-station upgrade programme targeted for completion by 2026; this planned scope is not treated as completed FY2024 stations.",
+                }
+            )
+        if row["operator_id"] == "hkbn" and row["year"] == 2023 and row["metric_key"] == "residential_arpu":
+            source_id = "hkbn_interim_presentation_2024"
+            row["reviewed_source_ids"] = list(dict.fromkeys([*row["reviewed_source_ids"], source_id]))
+            row["reviewed_source_urls"] = [SOURCES[sid]["url"] for sid in row["reviewed_source_ids"]]
+            row["reviewed_source_count"] = len(row["reviewed_source_ids"])
+            row.update(
+                {
+                    "global_availability_status": "related_scope_value_found_not_directly_comparable",
+                    "related_public_metric": "2H2023_residential_arpu",
+                    "related_public_value": 177,
+                    "related_public_unit": "HKD_per_month",
+                    "related_public_comparator": "=",
+                    "related_public_note": "HKBN's FY2024 interim presentation reports 2H2023 residential ARPU of HKD177; this half-year point is retained as related evidence and is not presented as the missing FY2023 full-year ARPU.",
                 }
             )
     for row in ROWS:

@@ -328,7 +328,7 @@ hkbn,HKBN,2023,5g_customers,source_gap_confirmed,not_numerically_disclosed,0
 hkbn,HKBN,2023,5g_penetration,source_gap_confirmed,not_numerically_disclosed,0
 hkbn,HKBN,2023,annual_mobile_data_traffic,source_gap_confirmed,growth_only_no_absolute_value,0
 hkbn,HKBN,2023,consumer_broadband_customers,value_verified,,1
-hkbn,HKBN,2023,homes_passed_or_connected,source_gap_confirmed,not_numerically_disclosed,0
+hkbn,HKBN,2023,homes_passed_or_connected,value_verified,,1
 hkbn,HKBN,2023,mobile_data_dou,source_gap_confirmed,growth_only_no_absolute_value,0
 hkbn,HKBN,2023,mobile_postpaid_arpu,source_gap_confirmed,not_numerically_disclosed,0
 hkbn,HKBN,2023,mobile_postpaid_churn,source_gap_confirmed,not_numerically_disclosed,0
