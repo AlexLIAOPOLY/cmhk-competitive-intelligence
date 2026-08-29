@@ -25,6 +25,13 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_public_incident_snapshot_skips_slow_feishu_reconciliation(self):
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertIn(
+            'fetch("/api/project-incidents?limit=500&sync=0")',
+            source,
+        )
+
     def test_public_asset_manifest_covers_every_local_homepage_dependency(self):
         html = (publisher.STATIC_DIR / "index.html").read_text(encoding="utf-8")
         regex = __import__("re")

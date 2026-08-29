@@ -50,6 +50,7 @@ NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
+AI_EDITOR_EXHAUSTED_PATH = DATA_DIR / "candidate_ai_editor_exhausted.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 SEMANTIC_DEDUPE_AUDITS_DIR = DATA_DIR / "semantic_dedupe_audits"
 DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
@@ -72,6 +73,14 @@ AI_EDITOR_SINGLE_RETRY_MAX_SECONDS = min(
 AI_EDITOR_DEFERRED_RETRY_MINUTES = max(
     5,
     int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_RETRY_MINUTES", "30")),
+)
+AI_EDITOR_DEFERRED_MAX_ATTEMPTS = max(
+    4,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_ATTEMPTS", "48")),
+)
+AI_EDITOR_DEFERRED_MAX_AGE_HOURS = max(
+    24,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_AGE_HOURS", "72")),
 )
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
@@ -3694,9 +3703,24 @@ def _prepare_deferred_ai_candidates(
     raw_records = payload.get("items") if isinstance(payload, dict) else []
     if not isinstance(raw_records, list):
         raw_records = []
+    exhausted_payload = _read_json(AI_EDITOR_EXHAUSTED_PATH, {"items": []})
+    exhausted_items = (
+        exhausted_payload.get("items") if isinstance(exhausted_payload, dict) else []
+    )
+    if not isinstance(exhausted_items, list):
+        exhausted_items = []
+    quarantined_keys = {
+        str(record.get("key") or "")
+        for record in exhausted_items
+        if isinstance(record, dict)
+        and _queue_nonnegative_int(record.get("editor_version")) == AI_EDITOR_VERSION
+        and str(record.get("key") or "")
+    }
     records: dict[str, dict[str, Any]] = {}
     invalid_count = 0
     migrated_count = 0
+    exhausted_count = 0
+    expired_count = 0
     for raw_record in raw_records:
         if not isinstance(raw_record, dict) or not isinstance(raw_record.get("item"), dict):
             invalid_count += 1
@@ -3714,18 +3738,37 @@ def _prepare_deferred_ai_candidates(
             continue
         if editor_version != AI_EDITOR_VERSION:
             migrated_count += 1
-        records[key] = {
+        record = {
             **raw_record,
             "key": key,
             "editor_version": AI_EDITOR_VERSION,
             "attempts": attempts,
             "item": item,
         }
+        pending_delivery = record.get("status") == "pending_delivery"
+        age = current - queued_at
+        attempt_exhausted = attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS
+        age_expired = age >= timedelta(hours=AI_EDITOR_DEFERRED_MAX_AGE_HOURS)
+        if not pending_delivery and (attempt_exhausted or age_expired):
+            exhausted_count += int(attempt_exhausted)
+            expired_count += int(age_expired)
+            reason_parts = []
+            if attempt_exhausted:
+                reason_parts.append(f"attempts>={AI_EDITOR_DEFERRED_MAX_ATTEMPTS}")
+            if age_expired:
+                reason_parts.append(f"age_hours>={AI_EDITOR_DEFERRED_MAX_AGE_HOURS}")
+            record.update({
+                "status": "retry_exhausted",
+                "exhausted_at": _now_iso(current),
+                "exhaustion_reason": ",".join(reason_parts),
+            })
+        records[key] = record
 
     combined: list[dict[str, Any]] = []
     seen: set[str] = set()
     cooldown_count = 0
     retry_loaded_count = 0
+    quarantined_source_count = 0
     cooldown = timedelta(minutes=AI_EDITOR_DEFERRED_RETRY_MINUTES)
     for source_item in source_items:
         if not isinstance(source_item, dict):
@@ -3735,9 +3778,14 @@ def _prepare_deferred_ai_candidates(
         if key in seen:
             continue
         seen.add(key)
+        if key in quarantined_keys:
+            quarantined_source_count += 1
+            continue
         existing = records.get(key)
         if existing is not None:
             existing["item"] = item
+            if existing.get("status") == "retry_exhausted":
+                continue
             last_attempt_at = _queue_datetime(existing.get("last_attempt_at"))
             pending_delivery = existing.get("status") == "pending_delivery"
             if (
@@ -3752,6 +3800,8 @@ def _prepare_deferred_ai_candidates(
 
     for key, record in records.items():
         if key in seen:
+            continue
+        if record.get("status") == "retry_exhausted":
             continue
         last_attempt_at = _queue_datetime(record.get("last_attempt_at"))
         pending_delivery = record.get("status") == "pending_delivery"
@@ -3768,11 +3818,19 @@ def _prepare_deferred_ai_candidates(
     return combined, records, {
         "source_input_count": len(source_items),
         "loaded_count": len(raw_records),
-        "eligible_count": len(records),
+        "eligible_count": sum(
+            record.get("status") != "retry_exhausted"
+            for record in records.values()
+        ),
         "retry_loaded_count": retry_loaded_count,
         "cooldown_count": cooldown_count,
-        "expired_count": 0,
-        "exhausted_count": 0,
+        "expired_count": expired_count,
+        "exhausted_count": exhausted_count,
+        "quarantined_source_count": quarantined_source_count,
+        "dropped_count": sum(
+            record.get("status") == "retry_exhausted"
+            for record in records.values()
+        ) + quarantined_source_count,
         "invalid_count": invalid_count,
         "migrated_count": migrated_count,
     }
@@ -3801,6 +3859,48 @@ def _persist_deferred_ai_candidates(
     added_count = 0
     resolved_removed_count = 0
     pending_delivery_count = 0
+    exhausted_records = {
+        key: dict(record)
+        for key, record in records.items()
+        if record.get("status") == "retry_exhausted"
+    }
+    if exhausted_records:
+        exhausted_payload = _read_json(AI_EDITOR_EXHAUSTED_PATH, {"items": []})
+        exhausted_items = (
+            exhausted_payload.get("items")
+            if isinstance(exhausted_payload, dict)
+            else []
+        )
+        if not isinstance(exhausted_items, list):
+            exhausted_items = []
+        archived = {
+            str(record.get("key") or ""): record
+            for record in exhausted_items
+            if isinstance(record, dict) and str(record.get("key") or "")
+        }
+        archived.update(exhausted_records)
+        _atomic_write_json(
+            AI_EDITOR_EXHAUSTED_PATH,
+            {
+                "version": 1,
+                "editor_version": AI_EDITOR_VERSION,
+                "updated_at": now_text,
+                "policy": {
+                    "max_attempts": AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                    "max_age_hours": AI_EDITOR_DEFERRED_MAX_AGE_HOURS,
+                    "retention": "quarantined_for_audit",
+                },
+                "items": sorted(
+                    archived.values(),
+                    key=lambda record: (
+                        str(record.get("exhausted_at") or ""),
+                        str(record.get("key") or ""),
+                    ),
+                ),
+            },
+        )
+        for key in exhausted_records:
+            records.pop(key, None)
     for item in processed_items:
         key = _candidate_editor_key(item)
         deferred = deferred_by_key.get(key)
@@ -3853,7 +3953,9 @@ def _persist_deferred_ai_candidates(
             "updated_at": now_text,
             "policy": {
                 "retry_minutes": AI_EDITOR_DEFERRED_RETRY_MINUTES,
-                "retention": "until_resolved",
+                "max_attempts": AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                "max_age_hours": AI_EDITOR_DEFERRED_MAX_AGE_HOURS,
+                "retention": "until_resolved_or_quarantined",
             },
             "items": ordered,
         },
@@ -3863,7 +3965,7 @@ def _persist_deferred_ai_candidates(
         "added_count": added_count,
         "resolved_removed_count": resolved_removed_count,
         "pending_delivery_count": pending_delivery_count,
-        "exhausted_removed_count": 0,
+        "exhausted_removed_count": len(exhausted_records),
         "capped_count": 0,
     }
 
@@ -3908,6 +4010,8 @@ def acknowledge_deferred_ai_candidates(
             "updated_at": _now_iso(current),
             "policy": {
                 "retry_minutes": AI_EDITOR_DEFERRED_RETRY_MINUTES,
+                "max_attempts": AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                "max_age_hours": AI_EDITOR_DEFERRED_MAX_AGE_HOURS,
                 "retention": "until_ai_excluded_or_downstream_finalized",
             },
             "items": kept,

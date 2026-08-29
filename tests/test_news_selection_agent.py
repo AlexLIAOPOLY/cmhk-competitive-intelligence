@@ -331,6 +331,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 mock.patch.object(agent, "AUDIT_PATH", root / "decisions.jsonl"),
                 mock.patch.object(agent, "STATE_PATH", root / "state.json"),
                 mock.patch.object(agent, "SKILL_PATH", root / "SKILL.md"),
+                mock.patch.object(agent, "OPERATION_AUDIT_ROOT", root),
                 mock.patch.object(
                     agent,
                     "start_crawl_run",
@@ -375,6 +376,21 @@ class NewsSelectionAgentTests(unittest.TestCase):
             audit = json.loads((root / "decisions.jsonl").read_text(encoding="utf-8"))
             self.assertTrue(audit["write_verified"])
             self.assertEqual(audit["parent_crawl_run_id"], "parent-run")
+            operation_events = [
+                json.loads(line)
+                for line in (root / "var" / "auth" / "operation-audit.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            ]
+            self.assertEqual(len(operation_events), 2)
+            self.assertEqual(
+                {event["details"]["field"] for event in operation_events},
+                {"纳入滚动栏", "纳入周报"},
+            )
+            self.assertTrue(
+                all(event["actor_id"] == "news-auto-screening-bot" for event in operation_events)
+            )
+            self.assertEqual(result["operation_audit_count"], 2)
             self.assertTrue(finalize.call_args.kwargs["ok"])
 
 

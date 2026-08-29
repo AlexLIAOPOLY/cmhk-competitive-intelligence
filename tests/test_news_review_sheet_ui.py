@@ -363,6 +363,49 @@ class NewsReviewActorTests(unittest.TestCase):
             self.assertEqual(events[0]["details"]["agent_run_id"], "agent-run-1")
             self.assertNotIn("feishu_event_id", events[0]["details"])
 
+    def test_verified_agent_write_is_not_duplicated_after_direct_audit(self) -> None:
+        def snapshot(status: str) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{"rowNumber": 8, "values": sheet_row(status, "待审核", "未同步", "", "", "", "机器人新闻")}],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            service = AuthService(root)
+            decisions_path = root / "decisions.jsonl"
+            decisions_path.write_text(json.dumps({
+                "event": "decision",
+                "recorded_at": datetime.now().astimezone().isoformat(),
+                "agent_run_id": "agent-run-1",
+                "row_number": 8,
+                "title": "机器人新闻",
+                "automated_fields": ["app"],
+                "app_before": "待审核",
+                "app_status": "不接受",
+                "write_verified": True,
+                "writer_identity": "bot",
+            }, ensure_ascii=False) + "\n", encoding="utf-8")
+            event_key = "agent-run-1|8|纳入滚动栏|不接受"
+            service.record_operation(
+                actor={"id": "news-auto-screening-bot", "name": "新闻自动初筛机器人", "role": "SYSTEM"},
+                action="news_review.update",
+                target="sheet-1",
+                source="feishu_sheet",
+                details={"automation_event_key": event_key, "decision_rows": [8]},
+            )
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", service.state_dir / "news-review-sheet-audit-state.json"),
+                mock.patch.object(web_app, "NEWS_SELECTION_DECISIONS_PATH", decisions_path),
+                mock.patch.object(web_app, "sheet_edit_events", return_value=[]),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受")), [])
+
+            self.assertEqual(len(service.operation_audit(limit=20)), 1)
+
     def test_legacy_robot_footprint_is_corrected_without_touching_earlier_manual_review(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

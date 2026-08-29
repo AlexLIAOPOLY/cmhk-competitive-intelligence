@@ -3465,6 +3465,10 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             initial = briefing._persist_deferred_ai_candidates(
                 {},
@@ -3535,6 +3539,10 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             persisted = briefing._persist_deferred_ai_candidates(
                 {},
@@ -3581,6 +3589,10 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             persisted = briefing._persist_deferred_ai_candidates(
                 {},
@@ -3600,7 +3612,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(queued["items"][0]["key"], original_key)
         self.assertEqual(acknowledged["removed_count"], 1)
 
-    def test_deferred_queue_prunes_invalid_but_retains_old_and_retried_records(self):
+    def test_deferred_queue_quarantines_old_and_over_retried_records(self):
         now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)
         base_item = {
             "category": "行业动态",
@@ -3633,17 +3645,32 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             briefing._atomic_write_json(briefing.AI_EDITOR_DEFERRED_PATH, payload)
             items, records, stats = briefing._prepare_deferred_ai_candidates([], now=now)
+            record_count_before_persist = len(records)
+            persisted = briefing._persist_deferred_ai_candidates(
+                records, items, [], now=now
+            )
+            exhausted = briefing._read_json(briefing.AI_EDITOR_EXHAUSTED_PATH, {})
+            queued = briefing._read_json(briefing.AI_EDITOR_DEFERRED_PATH, {})
 
-        self.assertEqual(items, [expired_item, exhausted_item])
-        self.assertEqual(len(records), 2)
+        self.assertEqual(items, [])
+        self.assertEqual(record_count_before_persist, 2)
         self.assertEqual(stats["invalid_count"], 1)
-        self.assertEqual(stats["expired_count"], 0)
-        self.assertEqual(stats["exhausted_count"], 0)
+        self.assertEqual(stats["expired_count"], 1)
+        self.assertEqual(stats["exhausted_count"], 1)
+        self.assertEqual(stats["dropped_count"], 2)
+        self.assertEqual(persisted["exhausted_removed_count"], 2)
+        self.assertEqual(queued["items"], [])
+        self.assertEqual(len(exhausted["items"]), 2)
+        self.assertEqual(exhausted["policy"]["retention"], "quarantined_for_audit")
 
-    def test_deferred_queue_has_no_item_cap_and_retains_until_resolved(self):
+    def test_deferred_queue_has_no_item_count_cap_before_retry_limits(self):
         now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)
         items = [
             {
@@ -3663,6 +3690,10 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             stats = briefing._persist_deferred_ai_candidates(
                 {}, items, deferred, now=now
@@ -3672,7 +3703,8 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(stats["queued_count"], 605)
         self.assertEqual(stats["capped_count"], 0)
         self.assertEqual(len(saved["items"]), 605)
-        self.assertEqual(saved["policy"]["retention"], "until_resolved")
+        self.assertEqual(saved["policy"]["retention"], "until_resolved_or_quarantined")
+        self.assertEqual(saved["policy"]["max_attempts"], briefing.AI_EDITOR_DEFERRED_MAX_ATTEMPTS)
         self.assertNotIn("max_items", saved["policy"])
 
     def test_deferred_queue_migrates_previous_editor_version(self):
@@ -3700,6 +3732,10 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing,
             "AI_EDITOR_DEFERRED_PATH",
             Path(directory) / "deferred.json",
+        ), mock.patch.object(
+            briefing,
+            "AI_EDITOR_EXHAUSTED_PATH",
+            Path(directory) / "exhausted.json",
         ):
             briefing._atomic_write_json(briefing.AI_EDITOR_DEFERRED_PATH, payload)
             items, records, stats = briefing._prepare_deferred_ai_candidates([], now=now)

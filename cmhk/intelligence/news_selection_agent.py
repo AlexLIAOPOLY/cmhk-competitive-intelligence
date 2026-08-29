@@ -30,6 +30,7 @@ from cmhk.crawl.run_registry import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
+OPERATION_AUDIT_ROOT = ROOT
 HKT = ZoneInfo("Asia/Hong_Kong")
 AGENT_DIR = ROOT / "agent_knowledge" / "news_selection_agent"
 AUDIT_PATH = AGENT_DIR / "decisions.jsonl"
@@ -105,6 +106,69 @@ def _append_audit(payload: dict[str, Any]) -> None:
     AUDIT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with AUDIT_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+def _record_verified_operation_footprints(
+    decisions: list[dict[str, Any]],
+    *,
+    sheet_id: str,
+    agent_run_id: str,
+    model_name: str,
+    recorded_at: str,
+) -> int:
+    """Write verified robot cell changes directly to the unified audit log."""
+    from cmhk.auth.service import AuthService
+
+    service = AuthService(OPERATION_AUDIT_ROOT)
+    existing_keys = {
+        str(details.get("automation_event_key") or "")
+        for event in service.operation_audit(limit=1000)
+        if isinstance(event, dict)
+        and event.get("action") == "news_review.update"
+        and isinstance((details := event.get("details")), dict)
+        and details.get("automation_event_key")
+    }
+    actor = {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "role": "SYSTEM",
+    }
+    written = 0
+    for decision in decisions:
+        for field_key, field_label in (
+            ("app", "纳入滚动栏"),
+            ("weekly", "纳入周报"),
+        ):
+            if decision.get(f"{field_key}_before") != "待审核":
+                continue
+            after = str(decision.get(f"{field_key}_status") or "")
+            event_key = "|".join((agent_run_id, str(decision["row_number"]), field_label, after))
+            if event_key in existing_keys:
+                continue
+            service.record_operation(
+                actor=actor,
+                action="news_review.update",
+                target=sheet_id,
+                source="feishu_sheet",
+                details={
+                    "source_label": "新闻自动初筛",
+                    "target_label": str(decision.get("title") or "")[:500],
+                    "sheet_row": int(decision["row_number"]),
+                    "decision_rows": [int(decision["row_number"])],
+                    "field": field_label,
+                    "before": "待审核",
+                    "after": after,
+                    "identity_note": "机器人写入后已逐格回读，并直接写入统一操作审计",
+                    "agent_run_id": agent_run_id,
+                    "agent_recorded_at": recorded_at,
+                    "model": model_name,
+                    "writer_profile": FEISHU_BOT_PROFILE,
+                    "automation_event_key": event_key,
+                },
+            )
+            existing_keys.add(event_key)
+            written += 1
+    return written
 
 
 def _load_audit() -> list[dict[str, Any]]:
@@ -663,6 +727,7 @@ def run_news_selection_agent(
                 "candidate_count": 0,
                 "changed_count": 0,
                 "readback_verified": True,
+                "operation_audit_count": 0,
                 "reason": "本轮没有检索日期为当天且仍待审核的新候选",
                 "task_run_id": crawl_run_id,
             }
@@ -723,6 +788,7 @@ def run_news_selection_agent(
                 f"已把最新人工偏好摘要写入 {_display_path(SKILL_PATH)}，供下次爬虫继续学习。",
             )
             changed_count = 0
+            operation_audit_count = 0
             write_batch_total = (
                 len(decisions) + WRITE_BATCH_ROWS - 1
             ) // WRITE_BATCH_ROWS
@@ -798,6 +864,13 @@ def run_news_selection_agent(
                             "writer_profile": FEISHU_BOT_PROFILE,
                         }
                     )
+                operation_audit_count += _record_verified_operation_footprints(
+                    decision_batch,
+                    sheet_id=sheet_id,
+                    agent_run_id=crawl_run_id,
+                    model_name=model_name,
+                    recorded_at=recorded_at,
+                )
                 _progress(
                     crawl_run_id,
                     stream_log_path,
@@ -825,6 +898,7 @@ def run_news_selection_agent(
                 "skill_path": _display_path(SKILL_PATH),
                 "audit_path": _display_path(AUDIT_PATH),
                 "readback_verified": True,
+                "operation_audit_count": operation_audit_count,
                 "writer_identity": "bot",
                 "writer_profile": FEISHU_BOT_PROFILE,
                 "task_run_id": crawl_run_id,

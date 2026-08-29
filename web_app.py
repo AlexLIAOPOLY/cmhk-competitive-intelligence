@@ -4615,6 +4615,14 @@ def sync_news_review_sheet_audit(
                 "role": "EXTERNAL",
             }
         agent_decisions = _news_auto_screening_decisions()
+        recorded_agent_keys = {
+            str(details.get("automation_event_key") or "")
+            for event in AUTH.operation_audit(limit=1000)
+            if isinstance(event, dict)
+            and event.get("action") == "news_review.update"
+            and isinstance((details := event.get("details")), dict)
+            and details.get("automation_event_key")
+        }
         audit_at = datetime.now().astimezone().isoformat()
         used_editor_event = False
         if same_sheet and isinstance(previous_rows, dict):
@@ -4661,25 +4669,38 @@ def sync_news_review_sheet_audit(
                         "after": after,
                     }
                     if agent_match:
+                        automation_event_key = str(
+                            agent_match.get("automation_event_key")
+                            or "|".join((
+                                str(agent_match.get("agent_run_id") or ""),
+                                str(row_number),
+                                _news_review_field_label(field_label),
+                                after,
+                            ))
+                        )
                         details.update({
                             "identity_note": "由新闻自动初筛机器人写入；已按行号、标题、字段、状态和时间窗口与 Agent 决策审计核验",
                             "agent_run_id": str(agent_match.get("agent_run_id") or ""),
                             "agent_recorded_at": str(agent_match.get("recorded_at_iso") or ""),
                             "model": str(agent_match.get("model") or ""),
                             "writer_profile": str(agent_match.get("writer_profile") or ""),
+                            "automation_event_key": automation_event_key,
                         })
                     else:
                         details.update({
                             "identity_note": "操作者来自飞书 drive.file.edit_v1 事件，并经组织通讯录解析",
                             "feishu_event_id": str(editor_event.get("event_id") or ""),
                         })
-                    events.append(AUTH.record_operation(
-                        actor=cell_actor,
-                        action="news_review.update",
-                        target=sheet_id,
-                        source="feishu_sheet",
-                        details=details,
-                    ))
+                    if not agent_match or automation_event_key not in recorded_agent_keys:
+                        events.append(AUTH.record_operation(
+                            actor=cell_actor,
+                            action="news_review.update",
+                            target=sheet_id,
+                            source="feishu_sheet",
+                            details=details,
+                        ))
+                        if agent_match:
+                            recorded_agent_keys.add(automation_event_key)
         next_state = {
             "sheet_id": sheet_id,
             "rows": current_rows,
@@ -5617,7 +5638,14 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = max(1, min(500, int(query.get("limit", ["100"])[0])))
             except Exception:
                 limit = 100
-            sheet_sync = sync_project_monitor_sheet_handlers()
+            sync_requested = str(query.get("sync", ["1"])[0] or "1").lower() not in {
+                "0", "false", "no",
+            }
+            sheet_sync = (
+                sync_project_monitor_sheet_handlers()
+                if sync_requested
+                else {"status": "skipped", "changes": 0, "reason": "local_snapshot_read"}
+            )
             incidents = load_project_incident_index(limit)
             json_response(
                 self,

@@ -601,7 +601,10 @@ def _build_public_runtime_snapshots(source_url: str) -> dict[str, dict[str, Any]
     # Keep the public module entry without exporting recipient, invitation,
     # delivery or schedule records from the internal runtime.
     subscriptions = _public_subscriptions({})
-    incidents_payload = fetch("/api/project-incidents?limit=500")
+    # Public publication only needs the locally persisted incident index.  A
+    # live Feishu ledger reconciliation can take longer than the publisher's
+    # bounded HTTP timeout and must not block an otherwise healthy snapshot.
+    incidents_payload = fetch("/api/project-incidents?limit=500&sync=0")
     public_incidents = [
         _public_incident(item)
         for item in (incidents_payload.get("incidents") or [])
