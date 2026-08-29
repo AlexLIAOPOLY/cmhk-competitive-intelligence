@@ -18,6 +18,9 @@ from cmhk.intelligence.executive import build_executive_intelligence_snapshot
 GLOBAL_OPERATOR_SOURCE = (
     ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
 )
+GLOBAL_OPERATOR_SOURCES = (
+    ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
+)
 LOCAL_HK_SOURCE = (
     ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv"
 )
@@ -218,6 +221,12 @@ def main() -> None:
     company_meta: dict[str, dict] = {}
     metric_meta: dict[str, dict] = {}
     availability: dict[tuple[str, str], set[int]] = defaultdict(set)
+    global_source_payload = json.loads(GLOBAL_OPERATOR_SOURCES.read_text(encoding="utf-8"))
+    global_source_urls = {
+        str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
+        for item in (global_source_payload.get("sources") or [])
+        if isinstance(item, dict)
+    }
     for source in SOURCES:
         with source.open(encoding="utf-8-sig", newline="") as handle:
             for row in csv.DictReader(handle):
@@ -250,6 +259,42 @@ def main() -> None:
                     meta["units"].append(unit)
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 if not raw:
+                    if source == GLOBAL_OPERATOR_SOURCE:
+                        try:
+                            source_ids = json.loads(text(row, "candidate_sources") or "[]")
+                        except json.JSONDecodeError:
+                            source_ids = []
+                        reviewed_sources = list(
+                            dict.fromkeys(
+                                global_source_urls.get(str(source_id), "")
+                                for source_id in source_ids
+                                if global_source_urls.get(str(source_id), "")
+                            )
+                        )
+                        precommercial = status == "not_applicable_precommercial"
+                        gaps.append({
+                            "dataset": source.parent.name,
+                            "company": company,
+                            "metric": metric,
+                            "year": year,
+                            "unit": unit,
+                            "period": text(row, "period"),
+                            "periodEnd": text(row, "period_end"),
+                            "status": status,
+                            "searchStatus": (
+                                "not_applicable_precommercial"
+                                if precommercial
+                                else "targeted_public_search_no_direct_value"
+                            ),
+                            "reasonCode": (
+                                "not_applicable_precommercial"
+                                if precommercial
+                                else "official_public_material_no_direct_value"
+                            ),
+                            "reason": text(row, "quality_note"),
+                            "reviewedSources": reviewed_sources,
+                            "reviewedSourceCount": len(reviewed_sources),
+                        })
                     if source == LOCAL_HK_SOURCE and text(row, "operator_id") in FULL_AUDIT_OPERATOR_IDS and text(row, "audit_outcome") == "source_gap_confirmed":
                         try:
                             reviewed_sources = json.loads(text(row, "reviewed_source_urls") or "[]")
@@ -264,6 +309,7 @@ def main() -> None:
                             "period": text(row, "period"),
                             "periodEnd": text(row, "period_end"),
                             "status": status,
+                            "searchStatus": "targeted_public_search_no_direct_value",
                             "reasonCode": text(row, "gap_reason_code"),
                             "reason": text(row, "gap_reason") or text(row, "quality_note"),
                             "reviewedSources": list(dict.fromkeys(str(url) for url in reviewed_sources if url)),
