@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T04:33:28+08:00",
+  "checked_at_hkt": "2026-08-30T04:39:57+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -730,9 +730,9 @@
       "run_status": "running",
       "backend_pid": 88806,
       "worker_pid": 88806,
-      "phase": "生成AI洞察",
-      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
-      "heartbeat_at_hkt": "2026-08-30T04:32:36+08:00",
+      "phase": "后备重试",
+      "progress_detail": "第 1 次未完成（宏观政策支撑库），60 秒后执行第 2 次。旧数据继续保留。",
+      "heartbeat_at_hkt": "2026-08-30T04:39:08+08:00",
       "started_at_hkt": "2026-08-30T04:28:55+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -740,8 +740,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260830_042855_439139.jsonl"
       },
       "stream_log": {
-        "bytes": 3531,
-        "lines": 14
+        "bytes": 4184,
+        "lines": 18
       },
       "final_audit": {},
       "run_log": {},
