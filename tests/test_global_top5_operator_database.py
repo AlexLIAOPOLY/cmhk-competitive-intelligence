@@ -2087,6 +2087,40 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=45.1 RMB_per_user_month", first_results)
         self.assertIn("metric_key=total_connectivity_subscribers", first_results)
 
+    def test_jio_exact_gap_retrieval_does_not_mix_unrelated_dataset_citations(self):
+        question = (
+            "Jio FY2017 DOU、FY2018 ARPU和DOU、FY2023 5G用户数分别是多少？"
+        )
+        chunks = rag_llm._global_operator_exact_metric_chunks(
+            question, dataset_ids={"global_top5_operators_2016_2025"}
+        )
+        combined = "\n".join(str(chunk.get("text") or "") for chunk in chunks)
+        self.assertIn("period=FY2023", combined)
+        self.assertIn("official_value=未披露", combined)
+        self.assertIn("ar2022-23", combined)
+        self.assertIn("ar2023-24", combined)
+
+        dataset_token = agent.SELECTED_DATASET_IDS.set(
+            {"global_top5_operators_2016_2025", "quarterly_competitor_metrics_2026-06-18", "competitor_product_tariffs"}
+        )
+        request_token = agent.CURRENT_USER_REQUEST.set(question)
+        try:
+            result = agent._search_local_reports_only(question, 12)
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+            agent.SELECTED_DATASET_IDS.reset(dataset_token)
+        _text, metadata = agent._tool_text_and_metadata(result)
+        self.assertEqual(metadata["contextAudit"]["mode"], "exact_global_operator_rows")
+        self.assertTrue(metadata["references"])
+        self.assertTrue(
+            all(
+                "global_top5_operators_2016_2025" in ref["source"]
+                for ref in metadata["references"]
+            )
+        )
+        self.assertNotIn("quarterly_competitor_metrics", result)
+        self.assertNotIn("competitor_product_tariffs", result)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -827,8 +827,6 @@ def _global_operator_exact_metric_chunks(
             (row.get("metric_key") or "").strip(),
         ) not in requested_pairs:
             continue
-        if not str(row.get("official_value") or "").strip() and (row.get("operator_id") or "").strip() != "china_broadnet":
-            continue
         try:
             row_year = int((row.get("year") or "0").strip())
         except ValueError:
@@ -846,6 +844,29 @@ def _global_operator_exact_metric_chunks(
 
     source = csv_path.relative_to(ROOT).as_posix()
     registry_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "sources.json"
+    try:
+        registry_payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        registry_payload = {}
+    source_registry = {
+        str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
+        for item in (registry_payload.get("sources") or [])
+        if isinstance(item, dict)
+    }
+
+    def row_links(row: dict[str, Any]) -> list[dict[str, str]]:
+        urls = [str(row.get("primary_source_url") or "").strip()]
+        try:
+            candidate_ids = json.loads(str(row.get("candidate_sources") or "[]"))
+        except json.JSONDecodeError:
+            candidate_ids = []
+        urls.extend(source_registry.get(str(source_id), "") for source_id in candidate_ids)
+        clean_urls = list(dict.fromkeys(url for url in urls if url.startswith(("https://", "http://"))))
+        return [
+            {"label": source, "url": _local_ref(source)},
+            *[{"label": url, "url": url} for url in clean_urls],
+        ]
+
     chunks: list[dict[str, Any]] = []
     if len(years) >= 5 or postpaid_series_mode:
         grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
@@ -879,7 +900,14 @@ def _global_operator_exact_metric_chunks(
                 f"quality_note={first.get('quality_note')}; {comparison_guidance}"
                 "所有年份必须逐点读取；不得用有值、xxx或估算代替具体数值。"
             )
-            chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+            links = []
+            seen_link_urls = set()
+            for row in pair_rows:
+                for link in row_links(row):
+                    if link["url"] not in seen_link_urls:
+                        seen_link_urls.add(link["url"])
+                        links.append(link)
+            chunks.append({"source": source, "text": text, "links": links})
         return chunks
     for row in filtered[:24]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
@@ -889,6 +917,8 @@ def _global_operator_exact_metric_chunks(
             else "未披露（source_gap_confirmed / not_applicable_precommercial）"
         )
         comparison_guidance = ""
+        links = row_links(row)
+        reviewed_urls = [link["url"] for link in links if link["url"].startswith(("https://", "http://"))]
         if (
             (row.get("operator_id") or "").strip() == "ntt_group"
             and (row.get("metric_key") or "").strip() == "mobile_service_subscriptions"
@@ -906,10 +936,11 @@ def _global_operator_exact_metric_chunks(
             f"verification_status={row.get('verification_status')}; verification_count={row.get('verification_count')}; "
             f"{_strict_three_source_row_text(row, strict_sources)}; "
             f"primary_source_url={row.get('primary_source_url')}; quality_note={row.get('quality_note')}."
+            f" reviewed_source_urls={json.dumps(reviewed_urls, ensure_ascii=False)}."
             f"{comparison_guidance}"
             "如果值为未披露，只能回答未披露或商用前不适用，不能当作0、行业汇总或估算值。"
         )
-        chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+        chunks.append({"source": source, "text": text, "links": links})
     return chunks
 
 

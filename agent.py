@@ -42,7 +42,7 @@ from cmhk.agent.production import (
 )
 from cmhk.crawl.run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from cmhk.agent.rag import _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
+from cmhk.agent.rag import _global_operator_exact_metric_chunks, _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
 from cmhk.reporting.charts import render_chart
 
 
@@ -1125,6 +1125,57 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
             "retrievalQuality": {"status": "exact_complete", "row_count": len(row_lines)},
         }
         return "\n".join([header, *row_lines, *source_lines]) + (
+            f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
+        )
+    exact_global_rows = _global_operator_exact_metric_chunks(
+        exact_request, dataset_ids=selected_ids
+    )
+    if exact_global_rows:
+        result = []
+        references = []
+        links = []
+        seen_urls = set()
+        for index, chunk in enumerate(exact_global_rows, 1):
+            source = str(chunk.get("source") or "")
+            chunk_links = [
+                link
+                for link in (chunk.get("links") or [])
+                if str(link.get("url") or "").strip()
+            ]
+            result.append(
+                f"[来源 {index}: {source} · 精确年度指标]\n{chunk.get('text') or ''}"
+            )
+            references.append(
+                {
+                    "index": index,
+                    "source": f"{source} · 精确年度指标",
+                    "links": chunk_links,
+                }
+            )
+            for link in chunk_links:
+                url = str(link.get("url") or "")
+                if url not in seen_urls:
+                    seen_urls.add(url)
+                    links.append(link)
+        meta_data = {
+            "type": "meta",
+            "sources": sorted(
+                {str(chunk.get("source") or "") for chunk in exact_global_rows}
+            ),
+            "links": links,
+            "references": references,
+            "contextAudit": {
+                "mode": "exact_global_operator_rows",
+                "input_chunks": len(exact_global_rows),
+                "retained_chunks": len(exact_global_rows),
+                "skipped_chunks": 0,
+            },
+            "retrievalQuality": {
+                "status": "exact_complete",
+                "row_count": len(exact_global_rows),
+            },
+        }
+        return "\n\n".join(result) + (
             f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
         )
     chunks = retrieve_context(
