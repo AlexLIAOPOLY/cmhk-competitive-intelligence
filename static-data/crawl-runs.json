@@ -2,6 +2,33 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260829_180414_374060",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_5ab205d0cff6836d0b5d1593 完成，共 3051 行；数据截至 2026-06-30。",
+      "status_detail": "发布 qcm_5ab205d0cff6836d0b5d1593 完成，共 3051 行；数据截至 2026-06-30。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-29T18:04:15+08:00",
+      "started_at_hkt": "2026-08-29T18:04:14+08:00",
+      "completed_at_hkt": "2026-08-29T18:04:15+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 1293,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_5ab205d0cff6836d0b5d1593",
+        "content_sha256": "5ab205d0cff6836d0b5d15930a9758ab8c2975cdb52510befb8031c6a9361301",
+        "release_manifest_sha256": "11c7ed2f77334f093e826780c412310d20ec1be8e98f37b837957fd135264bba",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": ""
+      }
+    },
+    {
       "crawl_run_id": "20260829_164729_467295",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -60105,6 +60132,6 @@
       }
     }
   ],
-  "total": 274,
+  "total": 275,
   "truncated": false
 }
