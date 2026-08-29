@@ -46,6 +46,15 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(manifest["id"], DATASET_ID)
         self.assertEqual(set(payload["operators"]), {"cmhk", "hkt", "three_hk", "smartone", "hkbn", "hgc", "icable"})
         self.assertEqual(quality["status"], "pass")
+        self.assertEqual(manifest["quality"]["verified_count"], quality["available_value_rows"])
+        self.assertEqual(
+            manifest["quality"]["gap_count"],
+            quality["row_count"] - quality["available_value_rows"],
+        )
+        self.assertEqual(
+            manifest["quality"]["verification_scope"],
+            "official_public_values_with_documented_source_gaps_and_search_boundaries",
+        )
         self.assertEqual(quality["duplicate_key_count"], 0)
         self.assertEqual(quality["invalid_source_ids"], [])
         self.assertGreaterEqual(quality["available_value_rows"], 160)
@@ -174,6 +183,14 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=2.096 million_customers", chunks[0]["text"])
         self.assertIn("period_end=2025-12-31", chunks[0]["text"])
 
+        cmhk_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "CMHK 2021年總客戶數是多少？是否為年末值？",
+            dataset_ids={DATASET_ID},
+        )
+        self.assertEqual(len(cmhk_chunks), 1)
+        self.assertIn("official_value=5.0 million_customers", cmhk_chunks[0]["text"])
+        self.assertIn("basis=milestone_2021-06-16", cmhk_chunks[0]["text"])
+
     def test_xiaojing_reads_full_three_operator_ten_year_series_with_provenance(self) -> None:
         chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "请列出3HK、HKT、SmarTone 2016至2025年5G渗透率",
@@ -279,6 +296,9 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=217 HKD_per_household_month", texts)
 
     def test_public_web_backfills_and_related_scope_evidence_are_retained(self) -> None:
+        self.assertEqual(self.row("cmhk", 2020, "5g_base_stations")["official_value"], "500")
+        self.assertEqual(self.row("cmhk", 2021, "total_customers")["official_value"], "5.0")
+        self.assertEqual(self.row("cmhk", 2022, "5g_customers")["official_value"], "2.0")
         self.assertEqual(self.row("three_hk", 2020, "5g_population_coverage")["official_value"], "99")
         three_sites = self.row("three_hk", 2021, "5g_base_stations")
         self.assertEqual(three_sites["official_value"], "1300")
