@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import urlparse
 
-from cmhk.auth.service import AuthService, MODULE_LABELS, ROLE_MODULES
+from cmhk.auth.service import AuthService, MODULE_LABELS, ROLE_MODULES, _auth_env_file_path
 
 
 class FakeHandler:
@@ -47,6 +47,29 @@ class FakeHandler:
 
 
 class AuthServiceTest(unittest.TestCase):
+    def test_runtime_env_mirror_avoids_protected_config_path(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            mirror = Path(temp_dir) / "runtime.env"
+            mirror.write_text("FEISHU_APP_ID=test\n", encoding="utf-8")
+            with patch.dict(
+                os.environ,
+                {"CMHK_AUTH_RUNTIME_ENV_FILE": str(mirror)},
+                clear=False,
+            ):
+                selected = _auth_env_file_path("/protected/Desktop/.env")
+
+        self.assertEqual(selected, str(mirror))
+
+    def test_missing_runtime_env_mirror_keeps_configured_path(self):
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(
+            os.environ,
+            {"CMHK_AUTH_RUNTIME_ENV_FILE": str(Path(temp_dir) / "missing.env")},
+            clear=False,
+        ):
+            selected = _auth_env_file_path("/configured/auth.env")
+
+        self.assertEqual(selected, "/configured/auth.env")
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.env = patch.dict(os.environ, {

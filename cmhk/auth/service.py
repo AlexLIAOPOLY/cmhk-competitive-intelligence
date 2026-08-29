@@ -119,12 +119,32 @@ def _load_env_file(path: str) -> None:
             os.environ[key] = value
 
 
+def _auth_env_file_path(configured_path: str) -> str:
+    """Prefer a launchd-safe private mirror over a protected Desktop path."""
+    configured = str(configured_path or "").strip()
+    if not configured:
+        return ""
+    runtime_path = str(
+        os.environ.get("CMHK_AUTH_RUNTIME_ENV_FILE")
+        or (
+            Path.home()
+            / "Library"
+            / "Application Support"
+            / "CMHK"
+            / "auth"
+            / "runtime.env"
+        )
+    )
+    runtime_target = Path(runtime_path).expanduser()
+    return str(runtime_target) if runtime_target.is_file() else configured
+
+
 class AuthService:
     cookie_name = "cmhk_session"
     oauth_cookie_name = "cmhk_feishu_oauth"
 
     def __init__(self, root: Path):
-        _load_env_file(os.environ.get("CMHK_AUTH_ENV_FILE", ""))
+        _load_env_file(_auth_env_file_path(os.environ.get("CMHK_AUTH_ENV_FILE", "")))
         self.root = root
         self.state_dir = root / "var" / "auth"
         self.users_path = self.state_dir / "users.json"
