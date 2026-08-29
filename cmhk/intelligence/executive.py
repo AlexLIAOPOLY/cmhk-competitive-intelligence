@@ -21,6 +21,7 @@ LOCAL_FINANCIAL_PATH = (
     else LEGACY_LOCAL_FINANCIAL_PATH
 )
 GLOBAL_OPERATOR_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
+GLOBAL_OPERATOR_SOURCES_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
 LOCAL_OPERATING_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.json"
 LOCAL_OPERATING_SOURCES_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/sources.json"
 CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
@@ -31,7 +32,7 @@ DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_referenc
 ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json"
 INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
-DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, GLOBAL_OPERATOR_SOURCES_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
@@ -727,6 +728,27 @@ def _row_source_urls(row: dict[str, Any] | None, source_registry: dict[str, str]
     return list(dict.fromkeys(urls))
 
 
+def _row_provenance_urls(
+    row: dict[str, Any] | None, source_registry: dict[str, str] | None = None
+) -> list[str]:
+    """Return verified URLs plus labelled candidate documents for traceability."""
+
+    urls = _row_source_urls(row, source_registry)
+    if not row:
+        return urls
+    raw = row.get("candidate_sources") or []
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except json.JSONDecodeError:
+            raw = []
+    for source_id in raw if isinstance(raw, list) else []:
+        url = str((source_registry or {}).get(str(source_id), ""))
+        if url.startswith(("https://", "http://")):
+            urls.append(url)
+    return list(dict.fromkeys(urls))
+
+
 def _annual_financial_value(
     rows: list[dict[str, Any]], subject: str, metric: str, year: int
 ) -> dict[str, Any] | None:
@@ -1344,7 +1366,11 @@ def _component_list(customer_value: float | None, arpu_value: float | None) -> l
     return items
 
 
-def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payload: dict[str, Any]) -> dict[str, Any]:
+def _requested_mainland_domain(
+    financial_payload: dict[str, Any],
+    operating_payload: dict[str, Any],
+    source_registry: dict[str, str],
+) -> dict[str, Any]:
     financial_rows = financial_payload.get("rows") or []
     operating_rows = operating_payload.get("rows") or []
     operators = ("中国移动", "中国电信", "中国联通")
@@ -1368,6 +1394,9 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
         profit_items.append(profit_item)
         mobile_customer = _published_annual_row(operating_rows, operator, "mobile_subscribers", 2025)
         mobile_customer_value = _verified_number(mobile_customer)
+        mobile_customer_sources = _row_provenance_urls(
+            mobile_customer, source_registry
+        )
         is_derived = str((mobile_customer or {}).get("verification_status") or "") == "official_derived_from_verified_rows"
         missing_mobile_detail = "未见FY2025集团移动客户总数；5G用户数不作替代"
         mobile_customer_items.append({
@@ -1388,7 +1417,8 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
             ),
             "components": [_component("移动客户数", round(mobile_customer_value / 100, 4), "亿户", "FY2025")] if mobile_customer_value is not None else [_component("移动客户数", detail=missing_mobile_detail)],
             "component_count": 1,
-            "source_url": str((mobile_customer or {}).get("primary_source_url") or ""),
+            "source_url": mobile_customer_sources[0] if mobile_customer_sources else "",
+            "source_urls": mobile_customer_sources,
             "verification_count": int((mobile_customer or {}).get("distinct_source_document_count") or 0),
             "verification_status": str((mobile_customer or {}).get("verification_status") or ""),
             "comparator": "≈" if is_derived else "=",
@@ -1399,7 +1429,7 @@ def _requested_mainland_domain(financial_payload: dict[str, Any], operating_payl
                     "unit": "亿户" if value is not None else "",
                     "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
                     "verification_status": str((row or {}).get("verification_status") or ""),
-                    "source_urls": _row_source_urls(row),
+                    "source_urls": _row_provenance_urls(row, source_registry),
                 }
                 for year in range(2016, 2026)
                 for row in [_published_annual_row(operating_rows, operator, "mobile_subscribers", year)]
@@ -2437,7 +2467,14 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     )
     # 第二数据域沿用原有布局，展示合并后的六家国际运营商。
     international = _requested_international_domain(global_payload)
-    mainland = _requested_mainland_domain(financial_payload, global_payload)
+    global_source_registry = {
+        str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
+        for item in (_read_json(GLOBAL_OPERATOR_SOURCES_PATH).get("sources") or [])
+        if isinstance(item, dict)
+    }
+    mainland = _requested_mainland_domain(
+        financial_payload, global_payload, global_source_registry
+    )
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     domains = [local, international, mainland, cloud]
     online_gap_audit = _apply_online_gap_audit(domains)

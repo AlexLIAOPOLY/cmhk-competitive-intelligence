@@ -25178,7 +25178,7 @@
       "candidate_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -25207,7 +25207,7 @@
       "candidate_sources": [
         "reliance_jio_ar_2016"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -25441,7 +25441,7 @@
         "reliance_jio_ar_2017",
         "reliance_jio_ar_2018"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -25453,25 +25453,28 @@
       "grain": "annual",
       "metric_key": "mobile_dou",
       "metric_zh": "月户均移动数据流量DOU",
-      "value": null,
-      "official_value": null,
+      "value": 10,
+      "official_value": 10,
       "unit": "GB_per_user_month",
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "reliance_jio_ar_2017",
-        "reliance_jio_ar_2018"
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "reliance_jio_ar_2017"
       ],
-      "quality_note": ""
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "reliance_jio_ar_2017",
+      "primary_source_url": "https://www.ril.com/ar2016-17/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2017"
+      ],
+      "candidate_sources": [
+        "reliance_jio_ar_2017"
+      ],
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -25744,25 +25747,28 @@
       "grain": "annual",
       "metric_key": "mobile_arpu",
       "metric_zh": "移动ARPU",
-      "value": null,
-      "official_value": null,
+      "value": 137,
+      "official_value": 137,
       "unit": "INR_per_user_month",
       "comparator": "=",
       "scope": "exit-quarter ARPU, not full-year average",
       "basis": "exit_quarter",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "reliance_jio_ar_2018",
-        "reliance_jio_ar_2019"
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "reliance_jio_ar_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "reliance_jio_ar_2018",
+      "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2018"
+      ],
+      "candidate_sources": [
+        "reliance_jio_ar_2018"
+      ],
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -25774,25 +25780,28 @@
       "grain": "annual",
       "metric_key": "mobile_dou",
       "metric_zh": "月户均移动数据流量DOU",
-      "value": null,
-      "official_value": null,
+      "value": 9.7,
+      "official_value": 9.7,
       "unit": "GB_per_user_month",
       "comparator": "=",
       "scope": "exit-quarter average data consumption per user per month",
       "basis": "exit_quarter",
-      "verification_status": "source_gap_confirmed",
-      "verification_count": 0,
-      "distinct_source_document_count": 0,
-      "distinct_source_document_ids": [],
-      "triple_source_status": "not_applicable_missing_value",
-      "primary_source_id": "",
-      "primary_source_url": "",
-      "verification_sources": [],
-      "candidate_sources": [
-        "reliance_jio_ar_2018",
-        "reliance_jio_ar_2019"
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "reliance_jio_ar_2018"
       ],
-      "quality_note": ""
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "reliance_jio_ar_2018",
+      "primary_source_url": "https://www.ril.com/ar2017-18/digital-services.html",
+      "verification_sources": [
+        "reliance_jio_ar_2018"
+      ],
+      "candidate_sources": [
+        "reliance_jio_ar_2018"
+      ],
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -26081,7 +26090,7 @@
         "jio_2019_q4_analyst_presentation",
         "jio_2019_q4_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -26117,7 +26126,7 @@
         "jio_2019_q4_analyst_presentation",
         "jio_2019_q4_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -26375,7 +26384,7 @@
         "jio_2020_rjil_media_release",
         "jio_2020_ril_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -26412,7 +26421,7 @@
         "jio_2020_rjil_media_release",
         "jio_2020_ril_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -26697,7 +26706,7 @@
         "reliance_jio_ar_2022",
         "jio_2021_q4_analyst_presentation"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -26732,7 +26741,7 @@
         "reliance_jio_ar_2022",
         "jio_2021_q4_analyst_presentation"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -27044,7 +27053,7 @@
         "jio_2023_q4",
         "jio_2023_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -27083,7 +27092,7 @@
         "jio_2022_q4",
         "jio_2023_q4"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -27328,7 +27337,7 @@
         "reliance_jio_ar_2023",
         "reliance_jio_ar_2024"
       ],
-      "quality_note": ""
+      "quality_note": "Targeted review of the FY2023 and FY2024 official annual-report pages found FY2023 rollout coverage and site counts but no FY2023 5G subscriber total. The first comparable year-end subscriber disclosure is over 108 million in FY2024."
     },
     {
       "operator_id": "reliance_jio",
@@ -27471,7 +27480,7 @@
         "jio_2023_q4",
         "jio_2023_media_release"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -27510,7 +27519,7 @@
         "jio_2023_q4",
         "jio_2024_q4"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -27766,7 +27775,7 @@
         "jio_2024_q4",
         "jio_2024_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "Targeted review of the FY2023 and FY2024 official annual-report pages found FY2023 rollout coverage and site counts but no FY2023 5G subscriber total. The first comparable year-end subscriber disclosure is over 108 million in FY2024."
     },
     {
       "operator_id": "reliance_jio",
@@ -27907,7 +27916,7 @@
         "jio_2025_media_release",
         "jio_2024_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -27944,7 +27953,7 @@
         "jio_2024_q4",
         "jio_2025_q4"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",
@@ -28200,7 +28209,7 @@
         "jio_2025_media_release",
         "jio_2025_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "Targeted review of the FY2023 and FY2024 official annual-report pages found FY2023 rollout coverage and site counts but no FY2023 5G subscriber total. The first comparable year-end subscriber disclosure is over 108 million in FY2024."
     },
     {
       "operator_id": "reliance_jio",
@@ -28346,7 +28355,7 @@
         "jio_2025_media_release",
         "jio_2025_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 remains blank because the introductory service period did not disclose a comparable paid exit-quarter ARPU. FY2018 INR137 is retained from the official annual report even though only one exact official document is bound."
     },
     {
       "operator_id": "reliance_jio",
@@ -28388,7 +28397,7 @@
         "jio_2025_media_release",
         "jio_2025_factsheet"
       ],
-      "quality_note": ""
+      "quality_note": "FY2017 10GB and FY2018 9.7GB are retained from their official annual reports with limited-source labels rather than omitted for having fewer than three exact document bindings."
     },
     {
       "operator_id": "reliance_jio",

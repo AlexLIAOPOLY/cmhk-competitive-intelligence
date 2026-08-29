@@ -220,6 +220,25 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=0.25 percent_per_month", text)
         self.assertIn("distinct_source_document_count=4", text)
 
+    def test_jio_early_official_arpu_and_dou_values_are_retained_with_quality_labels(self):
+        dou_2017 = self.index[("reliance_jio", 2017, "mobile_dou")]
+        arpu_2018 = self.index[("reliance_jio", 2018, "mobile_arpu")]
+        dou_2018 = self.index[("reliance_jio", 2018, "mobile_dou")]
+        self.assertEqual(dou_2017["value"], 10)
+        self.assertEqual(arpu_2018["value"], 137)
+        self.assertEqual(dou_2018["value"], 9.7)
+        for row in (dou_2017, arpu_2018, dou_2018):
+            self.assertEqual(row["verification_status"], "official_single_source")
+            self.assertEqual(row["distinct_source_document_count"], 1)
+            self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
+
+        arpu_2017 = self.index[("reliance_jio", 2017, "mobile_arpu")]
+        users_2023 = self.index[("reliance_jio", 2023, "5g_network_subscribers")]
+        self.assertIsNone(arpu_2017["value"])
+        self.assertIn("did not disclose a comparable paid", arpu_2017["quality_note"])
+        self.assertIsNone(users_2023["value"])
+        self.assertIn("Targeted review", users_2023["quality_note"])
+
     def test_jio_early_financial_sources_preserve_values_without_overcertifying(self):
         ebit_2019 = self.index[("reliance_jio", 2019, "ebit")]
         self.assertEqual(ebit_2019["value"], 8784)

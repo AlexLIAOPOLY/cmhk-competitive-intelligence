@@ -2,7 +2,7 @@
 
 - 结论：`backlog_open`
 - 明细行：843
-- 有值行：608
+- 有值行：611
 - 来源条目：369
 - 重复键：0
 - 无效来源引用：0
@@ -12,10 +12,10 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 73
+- `official_single_source`: 76
 - `official_three_distinct_sources_verified`: 498
 - `official_two_distinct_sources`: 21
-- `source_gap_confirmed`: 208
+- `source_gap_confirmed`: 205
 
 ## 三来源认证行（按运营商）
 
@@ -36,7 +36,7 @@
 - Bharti Airtel: 5
 - Deutsche Telekom: 7
 - NTT Group: 7
-- Reliance Jio: 43
+- Reliance Jio: 40
 - Verizon: 7
 - 中国广电: 120
 - 中国电信: 14

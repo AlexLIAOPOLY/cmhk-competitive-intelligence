@@ -1,0 +1,82 @@
+{
+  "audit_date": "2026-08-29",
+  "policy": {
+    "disclosed_numeric_values": "included_with_quality_label_unless_conflicted_or_invalid",
+    "weak_source_count": "quality_advisory_not_omission_rule",
+    "gap_boundary": "targeted-search-no-direct-value and search-not-recorded are distinct"
+  },
+  "total_rows": 7648,
+  "datasets": [
+    {
+      "dataset_id": "quarterly_competitor_metrics_2026-06-18",
+      "row_count": 3044,
+      "numeric_rows": 2713,
+      "gap_rows": 331,
+      "invalid_numeric_rows": 0,
+      "included_rows": 2646,
+      "conflict_rows": 67,
+      "duplicate_rows": 0,
+      "numeric_without_source_reference": 0,
+      "targeted_search_no_direct_value_rows": 312,
+      "targeted_search_not_recorded_rows": 0,
+      "source_csv": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv"
+    },
+    {
+      "dataset_id": "global_top5_operators_2016_2025",
+      "row_count": 843,
+      "numeric_rows": 611,
+      "gap_rows": 232,
+      "invalid_numeric_rows": 0,
+      "included_rows": 611,
+      "conflict_rows": 0,
+      "duplicate_rows": 0,
+      "numeric_without_source_reference": 0,
+      "targeted_search_no_direct_value_rows": 205,
+      "targeted_search_not_recorded_rows": 0,
+      "source_csv": "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv"
+    },
+    {
+      "dataset_id": "local_hk_operator_operating_metrics_2016_2025",
+      "row_count": 1449,
+      "numeric_rows": 360,
+      "gap_rows": 1089,
+      "invalid_numeric_rows": 0,
+      "included_rows": 360,
+      "conflict_rows": 0,
+      "duplicate_rows": 0,
+      "numeric_without_source_reference": 0,
+      "targeted_search_no_direct_value_rows": 1089,
+      "targeted_search_not_recorded_rows": 0,
+      "source_csv": "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv"
+    },
+    {
+      "dataset_id": "competitor_product_tariffs",
+      "row_count": 2002,
+      "numeric_rows": 1998,
+      "gap_rows": 4,
+      "invalid_numeric_rows": 0,
+      "included_rows": 1998,
+      "conflict_rows": 0,
+      "duplicate_rows": 0,
+      "numeric_without_source_reference": 0,
+      "targeted_search_no_direct_value_rows": 4,
+      "targeted_search_not_recorded_rows": 0,
+      "source_csv": "agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv"
+    },
+    {
+      "dataset_id": "requested_overview_010304_2016_2025",
+      "row_count": 310,
+      "numeric_rows": 310,
+      "gap_rows": 0,
+      "invalid_numeric_rows": 0,
+      "included_rows": 310,
+      "conflict_rows": 0,
+      "duplicate_rows": 0,
+      "numeric_without_source_reference": 0,
+      "targeted_search_no_direct_value_rows": 0,
+      "targeted_search_not_recorded_rows": 0,
+      "source_csv": "agent_knowledge/requested_overview_010304_2016_2025/annual_facts.csv"
+    }
+  ],
+  "row_audit_csv": "agent_knowledge/knowledge_integrity_audits/competitor_numeric_row_audit_2026-08-29.csv"
+}

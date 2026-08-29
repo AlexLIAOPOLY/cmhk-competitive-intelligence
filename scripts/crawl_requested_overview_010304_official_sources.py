@@ -243,6 +243,16 @@ def write_integrated_dataset(generated_at: str) -> dict[str, int]:
                     if point.get("value") is None:
                         continue
                     source_urls = list(dict.fromkeys(str(url) for url in point.get("source_urls") or [] if url))
+                    verification_status = str(
+                        point.get("verification_status")
+                        or "official_source_count_below_three_displayed"
+                    )
+                    raw_source_count = point.get("verification_count")
+                    source_count = (
+                        int(raw_source_count)
+                        if raw_source_count is not None
+                        else len(source_urls)
+                    )
                     facts.append({
                         "domain": domain_indexes[domain_id],
                         "domain_name": str(domain.get("title") or domain_id),
@@ -252,10 +262,14 @@ def write_integrated_dataset(generated_at: str) -> dict[str, int]:
                         "period": str(point.get("label") or ""),
                         "value": point.get("value"),
                         "unit": str(point.get("unit") or entity.get("unit") or ""),
-                        "verification_status": str(point.get("verification_status") or "official_source_count_below_three_displayed"),
-                        "source_count": int(point.get("verification_count") or len(source_urls)),
+                        "verification_status": verification_status,
+                        "source_count": source_count,
                         "source_urls": source_urls,
-                        "scope_note": str(entity.get("detail") or ""),
+                        "scope_note": (
+                            f"{point.get('label') or ''}歷史點；"
+                            f"{verification_status}；"
+                            "來源數只作質量標註，不作展示門檻。"
+                        ),
                     })
     facts.sort(key=lambda row: (row["domain"], row["entity"], row["metric"], row["period"]))
     sources = sorted({url for fact in facts for url in fact["source_urls"]})

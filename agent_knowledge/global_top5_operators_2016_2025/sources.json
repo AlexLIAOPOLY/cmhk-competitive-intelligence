@@ -1161,7 +1161,14 @@
       "url": "https://www.ril.com/ar2016-17/digital-services.html",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
-      "source_document_id": "reliance_jio_ar_2017"
+      "source_document_id": "reliance_jio_ar_2017",
+      "evidence": {
+        "mobile_dou": {
+          "value": 10,
+          "unit": "GB_per_user_month",
+          "locator": "Digital Services customer outcome; average consumption on Jio is 10GB/month/user"
+        }
+      }
     },
     {
       "source_id": "reliance_jio_ar_2018",
@@ -1177,6 +1184,16 @@
           "value": 0.25,
           "unit": "percent_per_month",
           "locator": "Digital Services operating review; lowest monthly churn at FY2018 year end"
+        },
+        "mobile_arpu": {
+          "value": 137,
+          "unit": "INR_per_user_month",
+          "locator": "Digital Services FY2018 exit-quarter KPI; industry-leading ARPU"
+        },
+        "mobile_dou": {
+          "value": 9.7,
+          "unit": "GB_per_user_month",
+          "locator": "Digital Services FY2018 exit-quarter average data consumption"
         }
       }
     },
