@@ -2,6 +2,68 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_014013_817670",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_0f2bea39bb2f825895cc2ce4 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_0f2bea39bb2f825895cc2ce4 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T01:40:33+08:00",
+      "started_at_hkt": "2026-08-30T01:40:13+08:00",
+      "completed_at_hkt": "2026-08-30T01:40:33+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 19786,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_0f2bea39bb2f825895cc2ce4",
+        "content_sha256": "0f2bea39bb2f825895cc2ce4165a0f8452f77706d074ef2297669b56e322c692",
+        "release_manifest_sha256": "7fa486c9365dca6f6eb48bd3453c34d1d540baf8fa469fa091528751040d5c72",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": "",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 7776,
+        "feishu_written": 0,
+        "feishu_readback_verified": true
+      }
+    },
+    {
+      "crawl_run_id": "20260830_013807_618922",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_0f2bea39bb2f825895cc2ce4 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_0f2bea39bb2f825895cc2ce4 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T01:39:54+08:00",
+      "started_at_hkt": "2026-08-30T01:38:07+08:00",
+      "completed_at_hkt": "2026-08-30T01:39:54+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 106678,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_0f2bea39bb2f825895cc2ce4",
+        "content_sha256": "0f2bea39bb2f825895cc2ce4165a0f8452f77706d074ef2297669b56e322c692",
+        "release_manifest_sha256": "7fa486c9365dca6f6eb48bd3453c34d1d540baf8fa469fa091528751040d5c72",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": "",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 7776,
+        "feishu_written": 7776,
+        "feishu_readback_verified": true
+      }
+    },
+    {
       "crawl_run_id": "20260830_010001_450166",
       "trigger": "每日01:00四库资料搜索",
       "scope": "四库更新资料 2026-08-30",
@@ -71158,6 +71220,6 @@
       }
     }
   ],
-  "total": 279,
+  "total": 281,
   "truncated": false
 }
