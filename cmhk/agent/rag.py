@@ -1038,7 +1038,12 @@ def _local_hk_operator_exact_metric_chunks(
         "ftth_connections": ["ftth", "光纖入戶", "光纤入户"],
         "homes_passed_or_connected": ["homes passed", "homes connected", "家庭覆蓋", "家庭接入", "網絡覆蓋", "网络覆盖"],
         "commercial_buildings_covered": ["商業樓宇", "商业楼宇", "commercial buildings"],
-        "residential_arpu": ["住宅arpu", "residential arpu"],
+        "residential_arpu": [
+            "住宅arpu",
+            "住宅業務arpu",
+            "住宅业务arpu",
+            "residential arpu",
+        ],
         "residential_arph": ["arph", "residential arph"],
         "mobile_postpaid_arpu": ["後付arpu", "后付arpu", "postpaid arpu", "post-paid arpu", "arpu"],
         "mobile_postpaid_exit_arpu": ["期末arpu", "exit arpu"],

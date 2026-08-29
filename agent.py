@@ -315,6 +315,106 @@ def _structured_global_postpaid_answer(message: str, dataset_ids: set[str]) -> t
         f"[查看本地核验数据](/references/{source})"
     )
     return answer, {"source": source, "series": series_meta}
+
+
+def _structured_local_hk_exact_answer(
+    message: str,
+    dataset_ids: set[str],
+) -> tuple[str, dict[str, Any]] | None:
+    """Render governed local-operator rows without an open-ended model loop."""
+    chunks = _local_hk_operator_exact_metric_chunks(message, dataset_ids=dataset_ids)
+    if not chunks:
+        return None
+
+    source = str(chunks[0].get("source") or "")
+    table_rows: list[str] = []
+    structured_rows: list[dict[str, Any]] = []
+    references: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for chunk in chunks:
+        row = chunk.get("exact_metric_row") or {}
+        value = str(row.get("official_value") or "").strip()
+        comparator = str(row.get("comparator") or "=").strip()
+        unit = str(row.get("unit") or "").strip()
+        if value:
+            rendered_value = f"{comparator if comparator != '=' else ''}{value} {unit}".strip()
+            quality = "；".join(
+                [
+                    str(row.get("basis") or "未注明口径"),
+                    str(row.get("scope") or "未注明范围"),
+                    str(row.get("verification_status") or row.get("audit_outcome") or "已核验"),
+                ]
+            )
+        else:
+            rendered_value = "未披露"
+            quality = str(row.get("gap_reason") or "已审阅资料没有同期间、同口径数值")
+            related_value = str(row.get("related_public_value") or "").strip()
+            if related_value:
+                quality += (
+                    "；相关但不可替代的公开值："
+                    f"{row.get('related_public_comparator') or ''!s}"
+                    f"{related_value} {row.get('related_public_unit') or ''!s}"
+                    f"（{row.get('related_public_note') or '不同口径'!s}）"
+                )
+        source_numbers: list[str] = []
+        reviewed_links = [
+            {"label": "官方披露", "url": url}
+            for url in row.get("reviewed_source_urls") or []
+            if str(url or "").strip()
+        ]
+        for link in reviewed_links or (chunk.get("links") or []):
+            url = str(link.get("url") or "").strip()
+            if not url:
+                continue
+            if url not in seen_urls:
+                seen_urls.add(url)
+                references.append(
+                    {
+                        "index": len(references) + 1,
+                        "source": str(link.get("label") or "官方披露"),
+                        "links": [{"label": str(link.get("label") or "官方披露"), "url": url}],
+                        "sourceType": "网络",
+                    }
+                )
+            source_numbers.append(str(next(item["index"] for item in references if item["links"][0]["url"] == url)))
+        if source_numbers:
+            quality += "；来源" + "".join(f"[{index}]" for index in source_numbers)
+        table_rows.append(
+            "| "
+            + " | ".join(
+                str(item).replace("|", "\\|").replace("\n", " ")
+                for item in (
+                    row.get("operator") or row.get("operator_id") or "未注明",
+                    row.get("period") or row.get("year") or "未注明",
+                    row.get("metric_zh") or row.get("metric_key") or "未注明",
+                    rendered_value,
+                    quality,
+                )
+            )
+            + " |"
+        )
+        structured_rows.append(
+            {
+                "operator": row.get("operator") or row.get("operator_id"),
+                "period": row.get("period") or row.get("year"),
+                "metric": row.get("metric_key"),
+                "officialValue": value or None,
+                "unit": unit,
+                "relatedPublicValue": row.get("related_public_value") or None,
+                "verificationStatus": row.get("verification_status") or row.get("audit_outcome"),
+            }
+        )
+
+    answer = (
+        "## 核对结果\n\n"
+        "| 运营商 | 期间 | 指标 | 核对值 | 口径与质量 |\n"
+        "|---|---|---|---:|---|\n"
+        + "\n".join(table_rows)
+        + "\n\n数值直接来自当前本地竞对资料行，没有由模型换算或补猜。"
+        "“未披露”只表示已记录的发行人资料及定向公开网络检索未找到同期间、同口径数值，"
+        "不声称穷尽互联网每一个页面。"
+    )
+    return answer, {"source": source, "series": structured_rows, "references": references}
 WEB_SEARCH_AVAILABLE: ContextVar[bool] = ContextVar("WEB_SEARCH_AVAILABLE", default=False)
 
 
@@ -2711,9 +2811,12 @@ def stream_agent(
         thinking_enabled=thinking_enabled,
         approved_action_ids=approved_action_ids or [],
     )
-    structured_postpaid = _structured_global_postpaid_answer(original_user_message, selected_dataset_set)
-    if structured_postpaid:
-        answer, evidence = structured_postpaid
+    structured_answer = _structured_local_hk_exact_answer(
+        original_user_message,
+        selected_dataset_set,
+    ) or _structured_global_postpaid_answer(original_user_message, selected_dataset_set)
+    if structured_answer:
+        answer, evidence = structured_answer
         try:
             status_event = {"type": "status", "text": "已完成所选数据库的精确年度序列核验。"}
             recorder.observe(status_event)
@@ -2722,6 +2825,7 @@ def stream_agent(
                 "type": "meta",
                 "sources": [evidence["source"]],
                 "links": [{"label": evidence["source"], "url": f"/references/{evidence['source']}"}],
+                "references": evidence.get("references") or [],
                 "structuredEvidence": evidence["series"],
             }
             recorder.observe(meta_event)

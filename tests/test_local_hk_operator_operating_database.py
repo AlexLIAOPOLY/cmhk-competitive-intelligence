@@ -403,6 +403,21 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("related_public_comparator=>", result)
         self.assertIn("不等同目标指标", result)
 
+    def test_agent_structured_exact_answer_bypasses_model_tool_loop(self) -> None:
+        result = agent._structured_local_hk_exact_answer(
+            "HKBN FY2023宽带网络覆盖/接入家庭、商业楼宇覆盖、住宅业务ARPU分别是多少？",
+            {DATASET_ID},
+        )
+        self.assertIsNotNone(result)
+        answer, evidence = result
+        self.assertIn("2.56 million_homes", answer)
+        self.assertIn("8090 buildings", answer)
+        self.assertIn("住宅業務ARPU | 未披露", answer)
+        self.assertIn("相关但不可替代的公开值：=177 HKD_per_month", answer)
+        self.assertIn("不声称穷尽互联网每一个页面", answer)
+        self.assertEqual(len(evidence["series"]), 3)
+        self.assertGreaterEqual(len(evidence["references"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
