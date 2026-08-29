@@ -8562,7 +8562,7 @@ document.addEventListener("keydown", (event) => {
         const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `
           <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${Number(item.value) < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-            <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
+            <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${safe(item.unit)}</small></strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
             <span>${renderScrollingLabel(item.name)}</span>
           </div>
