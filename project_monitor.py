@@ -457,10 +457,13 @@ class ProjectMonitor:
             ("runtime-logs", self._detect_runtime_logs),
         )
         for name, detector in detectors:
+            self.state["current_detector"] = name
+            _atomic_json(self.state_path, self.state)
             try:
                 issues.extend(detector())
             except Exception as exc:  # each probe is an independent fault domain
                 issues.append(self._detector_failure(name, exc))
+        self.state.pop("current_detector", None)
         excluded = {str(item) for item in self.config.get("excluded_components") or []}
         return [
             issue
@@ -4156,6 +4159,9 @@ class ProjectMonitor:
         return status
 
     def run_cycle(self) -> dict[str, Any]:
+        self.state["cycle_started_at_hkt"] = _iso(self.now())
+        self.state["cycle_phase"] = "collecting"
+        _atomic_json(self.state_path, self.state)
         enabled = self.notifications_enabled
         last_enabled = bool(self.state.get("notifications_enabled_last"))
         if enabled and not last_enabled:
