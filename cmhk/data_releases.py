@@ -24,6 +24,16 @@ from typing import Any, Callable
 DATASET_KEY = "quarterly_competitor_metrics"
 POINTER_SCHEMA_VERSION = "1.0"
 RELEASE_SCHEMA_VERSION = "1.0"
+BUNDLE_CONTRACT_VERSION = 2
+RELATED_PACKAGE_IDS = ("local_hk_operator_operating_metrics_2016_2025",)
+RELATED_PACKAGE_REQUIRED_ENTRYPOINTS = frozenset(
+    {
+        "annual_metrics.csv",
+        "quality_audit.json",
+        "full_metric_audit_2016_2025.csv",
+        "full_metric_audit_2016_2025.json",
+    }
+)
 NATURAL_KEY_FIELDS = ("subject", "period", "grain", "metric_key")
 REQUIRED_COLUMNS = frozenset(
     {
@@ -204,6 +214,59 @@ def validate_quarterly_dataset(dataset_dir: Path) -> dict[str, Any]:
     }
 
 
+def _related_package_artifacts(dataset_dir: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Collect governed sibling knowledge packages into the immutable release."""
+
+    artifacts: list[dict[str, Any]] = []
+    packages: list[dict[str, Any]] = []
+    for package_id in RELATED_PACKAGE_IDS:
+        package_dir = dataset_dir.parent / package_id
+        manifest_path = package_dir / "manifest.json"
+        if not manifest_path.is_file():
+            raise RuntimeError(f"required related package is missing: {package_id}")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not isinstance(manifest, dict) or manifest.get("id") != package_id:
+            raise RuntimeError(f"related package manifest identity mismatch: {package_id}")
+        quality = manifest.get("quality") or {}
+        if not isinstance(quality, dict) or quality.get("status") != "pass":
+            raise RuntimeError(f"related package did not pass quality audit: {package_id}")
+        raw_entrypoints = manifest.get("entrypoints")
+        if not isinstance(raw_entrypoints, list) or not raw_entrypoints:
+            raise RuntimeError(f"related package has no entrypoints: {package_id}")
+        entrypoints = list(dict.fromkeys(["manifest.json", *map(str, raw_entrypoints)]))
+        missing = sorted(RELATED_PACKAGE_REQUIRED_ENTRYPOINTS - set(entrypoints))
+        if missing:
+            raise RuntimeError(
+                f"related package is missing required entrypoints ({package_id}): "
+                + ", ".join(missing)
+            )
+        prefix = Path("related_packages") / package_id
+        package_paths: list[str] = []
+        for raw_path in entrypoints:
+            relative, source = _safe_entrypoint(package_dir, raw_path)
+            release_path = (prefix / relative).as_posix()
+            artifacts.append(
+                {
+                    "path": release_path,
+                    "size": source.stat().st_size,
+                    "sha256": sha256_file(source),
+                    "source": source,
+                }
+            )
+            package_paths.append(release_path)
+        packages.append(
+            {
+                "id": package_id,
+                "release_path": prefix.as_posix(),
+                "row_count": manifest.get("row_count"),
+                "available_value_rows": quality.get("available_value_rows"),
+                "source_count": quality.get("source_count"),
+                "artifacts": package_paths,
+            }
+        )
+    return artifacts, packages
+
+
 def _git_sha(project_root: Path) -> str | None:
     try:
         completed = subprocess.run(
@@ -262,6 +325,8 @@ def publish_quarterly_release(
         }
         for relative, source in validated["entrypoints"]
     ]
+    related_artifacts, related_packages = _related_package_artifacts(dataset_path)
+    source_artifacts.extend(related_artifacts)
     fingerprint_input = [
         {key: artifact[key] for key in ("path", "size", "sha256")}
         for artifact in source_artifacts
@@ -307,6 +372,7 @@ def publish_quarterly_release(
             source_manifest = validated["manifest"]
             release_manifest = {
                 "schema_version": RELEASE_SCHEMA_VERSION,
+                "bundle_contract_version": BUNDLE_CONTRACT_VERSION,
                 "dataset_key": DATASET_KEY,
                 "source_dataset_id": source_manifest["id"],
                 "release_id": release_id,
@@ -328,6 +394,7 @@ def publish_quarterly_release(
                     else validated["dataset_dir"].parents[1]
                 ),
                 "artifacts": copied,
+                "related_packages": related_packages,
             }
             _write_json(staged_release / "release.json", release_manifest)
             (root / "releases").mkdir(exist_ok=True)

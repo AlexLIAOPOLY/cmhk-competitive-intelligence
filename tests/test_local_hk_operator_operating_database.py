@@ -55,6 +55,12 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(quality["full_audit"]["gaps_without_reason"], [])
         self.assertEqual(quality["full_audit"]["gaps_without_review_sources"], [])
         self.assertEqual(quality["full_audit"]["values_without_sources"], [])
+        self.assertEqual(quality["global_web_search"]["status"], "pending")
+        self.assertGreater(quality["global_web_search"]["pending_gap_rows"], 0)
+        self.assertEqual(
+            manifest["quality"]["pending_web_search_rows"],
+            quality["global_web_search"]["pending_gap_rows"],
+        )
 
     def test_known_official_values_and_period_ends(self) -> None:
         self.assertEqual(self.row("hkt", 2025, "5g_customers")["official_value"], "2.096")
@@ -63,6 +69,10 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(self.row("smartone", 2022, "mobile_postpaid_exit_arpu")["period_end"], "2022-06-30")
         self.assertEqual(self.row("hkbn", 2025, "consumer_broadband_customers")["official_value"], "0.907")
         self.assertEqual(self.row("hkbn", 2025, "consumer_broadband_customers")["period_end"], "2025-08-31")
+        self.assertEqual(self.row("hkbn", 2016, "consumer_broadband_customers")["official_value"], "0.857")
+        self.assertEqual(self.row("hkbn", 2018, "homes_passed_or_connected")["official_value"], "2.297")
+        self.assertEqual(self.row("hkbn", 2019, "residential_arpu")["official_value"], "185")
+        self.assertEqual(self.row("hkbn", 2023, "consumer_broadband_customers")["official_value"], "0.92")
         self.assertEqual(self.row("icable", 2022, "pay_tv_customers")["official_value"], "0.662")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["official_value"], "50")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["comparator"], ">=")
@@ -96,8 +106,39 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
                 self.assertEqual(row["audit_outcome"], "source_gap_confirmed", row)
                 self.assertTrue(row["gap_reason_code"], row)
                 self.assertTrue(row["gap_reason"], row)
+                self.assertTrue(row["gap_search_scope"], row)
+                self.assertIn(
+                    row["global_availability_status"],
+                    {
+                        "broader_web_search_not_yet_proven",
+                        "related_scope_value_found_not_directly_comparable",
+                    },
+                    row,
+                )
                 self.assertGreater(int(row["reviewed_source_count"]), 0, row)
                 self.assertTrue(row["reviewed_source_urls"], row)
+
+    def test_every_operator_row_distinguishes_value_from_web_search_status(self) -> None:
+        manifest = json.loads((DATASET / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(self.rows), manifest["row_count"])
+        self.assertGreaterEqual(len(self.rows), 1434)
+        for row in self.rows:
+            if row["official_value"]:
+                self.assertEqual(row["global_availability_status"], "value_verified", row)
+                self.assertEqual(row["gap_search_scope"], "not_applicable_value_verified", row)
+                self.assertTrue(row["verification_sources"], row)
+            else:
+                self.assertEqual(row["audit_outcome"], "source_gap_confirmed", row)
+                self.assertTrue(row["gap_reason"], row)
+                self.assertTrue(row["gap_search_scope"], row)
+                self.assertIn(
+                    row["global_availability_status"],
+                    {
+                        "broader_web_search_not_yet_proven",
+                        "related_scope_value_found_not_directly_comparable",
+                    },
+                    row,
+                )
 
     def test_scope_breaks_are_machine_readable(self) -> None:
         conflicts = json.loads((DATASET / "conflicts_and_scope_breaks.json").read_text(encoding="utf-8"))["items"]

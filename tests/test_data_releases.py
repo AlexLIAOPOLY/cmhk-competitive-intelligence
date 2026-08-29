@@ -63,6 +63,31 @@ class DataReleaseTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        related = dataset.parent / "local_hk_operator_operating_metrics_2016_2025"
+        related.mkdir()
+        related_entrypoints = [
+            "annual_metrics.csv",
+            "quality_audit.json",
+            "full_metric_audit_2016_2025.csv",
+            "full_metric_audit_2016_2025.json",
+        ]
+        for name in related_entrypoints:
+            (related / name).write_text("{}\n" if name.endswith(".json") else "value\n", encoding="utf-8")
+        (related / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "id": "local_hk_operator_operating_metrics_2016_2025",
+                    "row_count": 4,
+                    "entrypoints": related_entrypoints,
+                    "quality": {
+                        "status": "pass",
+                        "available_value_rows": 2,
+                        "source_count": 3,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
         return dataset
 
     def test_publish_is_content_addressed_idempotent_and_keeps_old_release(self) -> None:
@@ -169,6 +194,28 @@ class DataReleaseTests(unittest.TestCase):
         pointer = events[-1][3]
         self.assertEqual(pointer["release_id"], result["release_id"])
         self.assertEqual(len(pointer["release_manifest_sha256"]), 64)
+
+    def test_publish_bundles_governed_local_hk_operating_package(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            result = publish_quarterly_release(
+                self._dataset(root), root / "releases-output", project_root=root
+            )
+
+            release = json.loads(
+                (Path(result["release_dir"]) / "release.json").read_text()
+            )
+
+        self.assertEqual(release["bundle_contract_version"], 2)
+        self.assertEqual(
+            [item["id"] for item in release["related_packages"]],
+            ["local_hk_operator_operating_metrics_2016_2025"],
+        )
+        paths = {item["path"] for item in release["artifacts"]}
+        self.assertIn(
+            "related_packages/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
+            paths,
+        )
 
     def test_publish_task_is_independent_and_links_parent_by_release_log(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

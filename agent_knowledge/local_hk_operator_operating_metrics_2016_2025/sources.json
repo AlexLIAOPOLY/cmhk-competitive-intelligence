@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T16:40:00+08:00",
+  "generated_at": "2026-08-29T15:45:02+08:00",
   "sources": [
     {
       "source_id": "hkt_ar_2016",
@@ -60,7 +60,7 @@
       "operator_id": "hkt",
       "year": 2017,
       "label": "HKT 2017 Annual Report",
-      "url": "https://www.hkt.com/api-service/assets/2018-hkt-annual-re_e.pdf",
+      "url": "https://www.hkt.com/api-service/assets/e01-%20Annual%20Report.pdf",
       "source_type": "official_annual_report",
       "publisher": "HKT Trust and HKT Limited"
     },
@@ -731,12 +731,93 @@
       "publisher": "SmarTone Telecommunications Holdings Limited"
     },
     {
+      "source_id": "hkbn_ar_2016",
+      "operator_id": "hkbn",
+      "year": 2016,
+      "label": "HKBN FY2016 official annual report/results",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport2016_HKEX.pdf",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2017",
+      "operator_id": "hkbn",
+      "year": 2017,
+      "label": "HKBN FY2017 official annual report/results",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport.pdf",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2018",
+      "operator_id": "hkbn",
+      "year": 2018,
+      "label": "HKBN FY2018 official annual report/results",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_Annual_Report_2018.pdf",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2019",
+      "operator_id": "hkbn",
+      "year": 2019,
+      "label": "HKBN FY2019 official annual report/results",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY19_HKBN_Annual_Results_Presentation.pdf",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2020",
+      "operator_id": "hkbn",
+      "year": 2020,
+      "label": "HKBN FY2020 official annual report/results",
+      "url": "https://www.hkbn.net/new/en/FY20-annual-report-highlights.shtml",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2021",
+      "operator_id": "hkbn",
+      "year": 2021,
+      "label": "HKBN FY2021 official annual report/results",
+      "url": "https://www.hkbn.net/HKBN_AR_2021/",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2022",
+      "operator_id": "hkbn",
+      "year": 2022,
+      "label": "HKBN FY2022 official annual report/results",
+      "url": "https://www.hkbn.net/HKBN_AR_2022/",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2023",
+      "operator_id": "hkbn",
+      "year": 2023,
+      "label": "HKBN FY2023 official annual report/results",
+      "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20231102_FY23_AnnualResults",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
       "source_id": "hkbn_ar_2024",
       "operator_id": "hkbn",
       "year": 2024,
-      "label": "HKBN FY2025 Annual Report and FY2024 comparative",
+      "label": "HKBN FY2024 official annual report/results",
       "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
-      "source_type": "official_annual_report",
+      "source_type": "official_annual_report_or_results",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "hkbn_ar_2025",
+      "operator_id": "hkbn",
+      "year": 2025,
+      "label": "HKBN FY2025 official annual report/results",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+      "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
     {
@@ -746,15 +827,6 @@
       "label": "HKBN FY2025 Annual Results Presentation and FY2024 comparative",
       "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY25_HKBN_Annual_Results_Announcement_Presentation_en.pdf",
       "source_type": "official_results_presentation",
-      "publisher": "HKBN Ltd."
-    },
-    {
-      "source_id": "hkbn_ar_2025",
-      "operator_id": "hkbn",
-      "year": 2025,
-      "label": "HKBN FY2025 Annual Report and FY2024 comparative",
-      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
-      "source_type": "official_annual_report",
       "publisher": "HKBN Ltd."
     },
     {

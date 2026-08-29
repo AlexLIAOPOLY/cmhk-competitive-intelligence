@@ -103,3 +103,5 @@
 | SmarTone | 5G家庭寬頻EBITDA增長 (`5g_home_broadband_ebitda_growth`) | 2 | 8 |
 
 缺口不是空行：每一行都包含 `gap_reason_code`、`gap_reason`、`reviewed_source_ids` 与 `reviewed_source_urls`。
+
+`source_gap_confirmed` 只表示已列出的发行人官方材料没有同口径数值，不等于已证明全网不存在；`global_availability_status` 单独记录更广检索是否完成。相关但不同口径的公开值会保存在 `related_public_*` 字段，绝不冒充目标指标。
