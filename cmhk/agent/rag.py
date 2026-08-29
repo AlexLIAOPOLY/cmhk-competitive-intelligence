@@ -1009,6 +1009,7 @@ def _local_hk_operator_exact_metric_chunks(
     if any(token in lowered for token in ["q1", "q2", "q3", "q4", "h1", "h2", "季度", "半年度"]):
         return []
     subject_aliases = {
+        "cmhk": ["cmhk", "中國移動香港", "中国移动香港", "中移動香港", "中移动香港"],
         "hkt": ["hkt", "香港電訊", "csl", "1o1o"],
         "three_hk": ["3hk", "3 hong kong", "和記電訊香港", "和記電訊", "香港三"],
         "smartone": ["smartone", "數碼通", "数码通"],
