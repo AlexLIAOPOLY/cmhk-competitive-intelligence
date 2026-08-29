@@ -731,6 +731,132 @@
       "publisher": "SmarTone Telecommunications Holdings Limited"
     },
     {
+      "source_id": "smartone_interim_presentation_2025",
+      "operator_id": "smartone",
+      "year": 2025,
+      "label": "SmarTone FY2025 Interim Results Presentation",
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_interim_present.pdf",
+      "source_type": "official_interim_results_presentation",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "smartone_mtr_coverage_2021",
+      "operator_id": "smartone",
+      "year": 2021,
+      "label": "SmarTone official company profile - full 5G coverage at 97 MTR stations from 27 June 2021",
+      "url": "https://www.smartoneholdings.com/jsp/site/about_us/english/index.jsp",
+      "source_type": "official_company_profile",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_5g_coverage_2020",
+      "operator_id": "three_hk",
+      "year": 2020,
+      "label": "3HK official release - 99% 5G coverage",
+      "url": "https://www.hthkh.com/en/ir/press.php?prid=%2Fpress%2Fp201014",
+      "source_type": "official_press_release",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "three_hk_5g_coverage_2022",
+      "operator_id": "three_hk",
+      "year": 2022,
+      "label": "3HK official release - 99% 5G coverage confirmed in 2022",
+      "url": "https://www.hthkh.com/en/ir/press.php?prid=%2Fpress%2Fp220630",
+      "source_type": "official_press_release",
+      "publisher": "Hutchison Telecommunications Hong Kong Holdings Limited"
+    },
+    {
+      "source_id": "smartone_5g_launch_2020",
+      "operator_id": "smartone",
+      "year": 2020,
+      "label": "Mobile World Live report of SmarTone CTO launch statement - 70% population coverage",
+      "url": "https://www.mobileworldlive.com/asia-pacific/smartone-launches-5g-with-70-population-coverage/",
+      "source_type": "industry_news_direct_company_statement",
+      "publisher": "Mobile World Live"
+    },
+    {
+      "source_id": "smartone_5g_mtr_2022",
+      "operator_id": "smartone",
+      "year": 2022,
+      "label": "SmarTone official 5G page - full coverage at 98 MTR stations",
+      "url": "https://5g.smartone.com/en/5G/",
+      "source_type": "official_product_network_page",
+      "publisher": "SmarTone Telecommunications Holdings Limited"
+    },
+    {
+      "source_id": "pccw_now_tv_2016",
+      "operator_id": "hkt",
+      "year": 2016,
+      "label": "PCCW 2016 Annual Report - Now TV installed base",
+      "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0214/ltn20170214300.pdf",
+      "source_type": "official_parent_annual_report",
+      "publisher": "PCCW Limited"
+    },
+    {
+      "source_id": "pccw_now_tv_2017",
+      "operator_id": "hkt",
+      "year": 2017,
+      "label": "PCCW 2017 Annual Results - Now TV installed base",
+      "url": "https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0207/LTN20180207557.pdf",
+      "source_type": "official_parent_results_announcement",
+      "publisher": "PCCW Limited"
+    },
+    {
+      "source_id": "pccw_now_tv_2019",
+      "operator_id": "hkt",
+      "year": 2019,
+      "label": "PCCW 2019 Annual Report - Now TV 2018 and 2019 installed bases",
+      "url": "https://www.pccw.com/staticfiles/PCCWCorpsite/About%20PCCW/Investor%20Relations/documents-on-display/008-e-pccw-2019-annual-report.pdf",
+      "source_type": "official_parent_annual_report",
+      "publisher": "PCCW Limited"
+    },
+    {
+      "source_id": "cmhk_customer_milestone_2021",
+      "operator_id": "cmhk",
+      "year": 2021,
+      "label": "CMHK press release distributed by PR Newswire - customer base exceeded five million",
+      "url": "https://www.prnasia.com/story/323800-1.shtml",
+      "source_type": "company_press_release_distribution",
+      "publisher": "China Mobile Hong Kong Company Limited"
+    },
+    {
+      "source_id": "cmhk_5g_customer_milestone_2021",
+      "operator_id": "cmhk",
+      "year": 2021,
+      "label": "CMHK press release distributed by PR Newswire - 5G customers exceeded one million",
+      "url": "https://www.prnasia.com/story/338861-1.shtml",
+      "source_type": "company_press_release_distribution",
+      "publisher": "China Mobile Hong Kong Company Limited"
+    },
+    {
+      "source_id": "cmhk_5g_customer_milestone_2022",
+      "operator_id": "cmhk",
+      "year": 2022,
+      "label": "CMHK management statement - 5G users exceeded two million in September 2022",
+      "url": "https://hk.on.cc/hk/bkn/cnt/news/20230323/bkn-20230323090026470-0323_00822_001.html",
+      "source_type": "public_report_direct_company_statement",
+      "publisher": "on.cc"
+    },
+    {
+      "source_id": "cmhk_5g_launch_2020",
+      "operator_id": "cmhk",
+      "year": 2020,
+      "label": "China Daily report of CMHK commercial 5G launch population coverage",
+      "url": "https://www.chinadailyhk.com/hk/article/126287",
+      "source_type": "public_report_direct_company_statement",
+      "publisher": "China Daily Hong Kong"
+    },
+    {
+      "source_id": "cmhk_5g_base_stations_2020",
+      "operator_id": "cmhk",
+      "year": 2020,
+      "label": "CGTN report of CMHK commercial 5G launch base-station count",
+      "url": "https://news.cgtn.com/news/2020-04-02/China-Mobile-launches-5G-commercial-service-in-Hong-Kong-PmistIqGKA/index.html",
+      "source_type": "public_report_direct_company_statement",
+      "publisher": "CGTN"
+    },
+    {
       "source_id": "hkbn_ar_2016",
       "operator_id": "hkbn",
       "year": 2016,
@@ -873,6 +999,51 @@
       "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
       "source_type": "official_annual_report_page",
       "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2016",
+      "operator_id": "icable",
+      "year": 2016,
+      "label": "i-CABLE 2016 Annual Report",
+      "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2017/0322/LTN20170322225.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2017",
+      "operator_id": "icable",
+      "year": 2017,
+      "label": "i-CABLE 2017 Annual Report",
+      "url": "https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0419/LTN201804191333.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_results_2018",
+      "operator_id": "icable",
+      "year": 2018,
+      "label": "i-CABLE 2018 Final Results",
+      "url": "https://www.hkexnews.hk/listedco/listconews/SEHK/2019/0329/LTN20190329689.pdf",
+      "source_type": "official_results_announcement",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "icable_ar_2020",
+      "operator_id": "icable",
+      "year": 2020,
+      "label": "i-CABLE 2020 Annual Report with 2019 comparatives",
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/0330/2021033003416.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "hgc_results_2024",
+      "operator_id": "hgc",
+      "year": 2024,
+      "label": "HGC 2024 business results press release",
+      "url": "https://www.hgc.com.hk/press-releases/hgc-continues-to-deepen-telecommunications-infrastructure-enhancing-ai-powered-ict-services",
+      "source_type": "official_press_release",
+      "publisher": "HGC Global Communications Limited"
     },
     {
       "source_id": "hgc_2016_group_ar",

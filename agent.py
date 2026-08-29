@@ -971,8 +971,20 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
                     f"status={row.get('verification_status') or row.get('audit_outcome') or 'source_gap_confirmed'}"
                     f"|reason_code={row.get('gap_reason_code') or 'not_numerically_disclosed'}"
                     f"|reason={row.get('gap_reason') or '官方材料未数值披露'}"
+                    f"|global_availability_status={row.get('global_availability_status') or 'broader_web_search_not_yet_proven'}"
                     f"|reviewed={row.get('reviewed_source_count') or len(row_urls)}"
                 )
+            related_value = str(row.get("related_public_value") or "").strip()
+            related_fields = []
+            if related_value:
+                related_fields = [
+                    f"global_availability_status={row.get('global_availability_status') or ''}",
+                    f"related_public_metric={row.get('related_public_metric') or ''}",
+                    f"related_public_value={related_value}",
+                    f"related_public_unit={row.get('related_public_unit') or ''}",
+                    f"related_public_comparator={row.get('related_public_comparator') or '='}",
+                    f"related_public_note={row.get('related_public_note') or ''}",
+                ]
             row_lines.append(
                 "|".join(
                     [
@@ -984,6 +996,7 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
                         f"official_value={value_field}",
                         f"comparator={comparator or '='}",
                         audit_field,
+                        *related_fields,
                         f"source_refs={','.join(source_refs) or '-'}",
                     ]
                 )
@@ -993,6 +1006,8 @@ def _search_local_reports_only(query: str, max_results: int = 12) -> str:
             f"[来源 1: {source} · 精确年度全表]\n"
             f"香港本地运营商精确年度指标全表；row_count={len(row_lines)}。"
             "以下ROW不得删行；有值逐年列出，未披露逐年说明reason并引用source_refs；"
+            "若ROW含related_public_*，必须另列这个不同口径旁证及比较符，并明确它不等同目标指标；"
+            "targeted_public_web_search_completed_no_direct_value表示定向公开网检索未找到同期间同口径直接值，不能写成全网不存在；"
             "未披露不得当作0或推测。"
         )
         meta_link = {"label": source, "url": source_ref} if source_ref else None

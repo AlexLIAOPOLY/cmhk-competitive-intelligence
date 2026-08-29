@@ -57,6 +57,11 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(quality["full_audit"]["values_without_sources"], [])
         self.assertEqual(quality["global_web_search"]["status"], "pending")
         self.assertGreater(quality["global_web_search"]["pending_gap_rows"], 0)
+        self.assertEqual(quality["full_audit"]["broader_web_search_not_yet_proven"], 0)
+        self.assertGreater(
+            quality["full_audit"]["targeted_public_web_search_completed_no_direct_value"],
+            0,
+        )
         self.assertEqual(
             manifest["quality"]["pending_web_search_rows"],
             quality["global_web_search"]["pending_gap_rows"],
@@ -71,9 +76,16 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(self.row("hkbn", 2025, "consumer_broadband_customers")["period_end"], "2025-08-31")
         self.assertEqual(self.row("hkbn", 2016, "consumer_broadband_customers")["official_value"], "0.857")
         self.assertEqual(self.row("hkbn", 2018, "homes_passed_or_connected")["official_value"], "2.297")
+        self.assertEqual(self.row("hkbn", 2022, "homes_passed_or_connected")["official_value"], "2.513")
+        self.assertEqual(self.row("hkbn", 2022, "commercial_buildings_covered")["official_value"], "8006")
         self.assertEqual(self.row("hkbn", 2019, "residential_arpu")["official_value"], "185")
         self.assertEqual(self.row("hkbn", 2023, "consumer_broadband_customers")["official_value"], "0.92")
         self.assertEqual(self.row("icable", 2022, "pay_tv_customers")["official_value"], "0.662")
+        self.assertEqual(self.row("icable", 2016, "pay_tv_customers")["official_value"], "0.909")
+        self.assertEqual(self.row("icable", 2018, "consumer_broadband_customers")["official_value"], "0.155")
+        self.assertEqual(self.row("icable", 2020, "telephony_customers")["official_value"], "0.076")
+        self.assertEqual(self.row("hgc", 2024, "total_customers")["official_value"], "1.0")
+        self.assertEqual(self.row("hgc", 2024, "total_customers")["comparator"], ">")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["official_value"], "50")
         self.assertEqual(self.row("three_hk", 2022, "5g_base_station_expansion")["comparator"], ">=")
         self.assertEqual(self.row("hkt", 2021, "consumer_broadband_customers")["official_value"], "1.461")
@@ -110,8 +122,10 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
                 self.assertIn(
                     row["global_availability_status"],
                     {
-                        "broader_web_search_not_yet_proven",
+                        "targeted_public_web_search_completed_no_direct_value",
                         "related_scope_value_found_not_directly_comparable",
+                        "not_applicable_business_scope",
+                        "not_applicable_precommercial",
                     },
                     row,
                 )
@@ -135,7 +149,10 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
                     row["global_availability_status"],
                     {
                         "broader_web_search_not_yet_proven",
+                        "targeted_public_web_search_completed_no_direct_value",
                         "related_scope_value_found_not_directly_comparable",
+                        "not_applicable_business_scope",
+                        "not_applicable_precommercial",
                     },
                     row,
                 )
@@ -196,6 +213,26 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=1.289 million_customers", postpaid_text)
         self.assertNotIn("未披露（source_gap_confirmed）", postpaid_text)
 
+        site_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "HKT 2016至2017年移动基站总数及相关站点数是多少？",
+            dataset_ids={DATASET_ID},
+        )
+        site_text = "\n".join(chunk["text"] for chunk in site_chunks)
+        self.assertEqual(len(site_chunks), 2)
+        self.assertIn("related_public_metric=mobile_network_sites", site_text)
+        self.assertIn("related_public_value=3000", site_text)
+        self.assertIn("related_public_comparator=>", site_text)
+        self.assertIn("不等同目標指標", site_text)
+
+        keyed_site_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
+            "香港本地运营商2016–2025库：HKT FY2016 和 FY2017 的 total_base_stations 与 related_public_value",
+            dataset_ids={DATASET_ID},
+        )
+        self.assertEqual(
+            [chunk["exact_metric_row"]["period"] for chunk in keyed_site_chunks],
+            ["FY2016", "FY2017"],
+        )
+
         gap_chunks = rag_llm._local_hk_operator_exact_metric_chunks(
             "HGC 2025年ARPU是多少？",
             dataset_ids={DATASET_ID},
@@ -241,6 +278,21 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("metric_key=residential_arph", texts)
         self.assertIn("official_value=217 HKD_per_household_month", texts)
 
+    def test_public_web_backfills_and_related_scope_evidence_are_retained(self) -> None:
+        self.assertEqual(self.row("three_hk", 2020, "5g_population_coverage")["official_value"], "99")
+        three_sites = self.row("three_hk", 2021, "5g_base_stations")
+        self.assertEqual(three_sites["official_value"], "1300")
+        self.assertEqual(three_sites["comparator"], ">")
+        self.assertEqual(self.row("smartone", 2020, "5g_population_coverage")["official_value"], "70")
+        self.assertEqual(self.row("smartone", 2021, "mtr_stations_5g_enhanced")["official_value"], "97")
+        self.assertEqual(self.row("smartone", 2022, "mtr_stations_5g_enhanced")["official_value"], "98")
+        smartone_2025 = self.row("smartone", 2025, "total_customers")
+        self.assertEqual(smartone_2025["related_public_value"], "2.873")
+        self.assertIn("31 December 2024", smartone_2025["related_public_note"])
+        hkt_2019_tv = self.row("hkt", 2019, "pay_tv_customers")
+        self.assertEqual(hkt_2019_tv["related_public_value"], "1.361")
+        self.assertIn("PCCW", hkt_2019_tv["related_public_note"])
+
     def test_agent_preserves_original_exact_metric_when_tool_query_drifts(self) -> None:
         dataset_token = agent.SELECTED_DATASET_IDS.set({DATASET_ID})
         request_token = agent.CURRENT_USER_REQUEST.set(
@@ -272,9 +324,27 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("operator=HKT", result)
         self.assertIn("operator=SmarTone", result)
         self.assertIn("reason=", result)
+        self.assertIn("global_availability_status=targeted_public_web_search_completed_no_direct_value", result)
         self.assertIn("OFFICIAL_SOURCE|", result)
         self.assertIn('"retained_chunks": 30', result)
         self.assertIn('"skipped_chunks": 0', result)
+
+    def test_agent_exact_table_preserves_related_public_evidence(self) -> None:
+        dataset_token = agent.SELECTED_DATASET_IDS.set({DATASET_ID})
+        request_token = agent.CURRENT_USER_REQUEST.set(
+            "HKT FY2016 和 FY2017 的 total_base_stations，以及 related_public_value 和 related_public_metric"
+        )
+        try:
+            result = agent._search_local_reports_only("HKT FY2016 FY2017 total_base_stations", 4)
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+            agent.SELECTED_DATASET_IDS.reset(dataset_token)
+        self.assertIn("row_count=2", result)
+        self.assertEqual(result.count("\nROW|"), 2)
+        self.assertIn("related_public_metric=mobile_network_sites", result)
+        self.assertIn("related_public_value=3000", result)
+        self.assertIn("related_public_comparator=>", result)
+        self.assertIn("不等同目标指标", result)
 
 
 if __name__ == "__main__":

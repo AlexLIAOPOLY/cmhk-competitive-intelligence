@@ -4585,12 +4585,36 @@ def _merge_international_candidate(stage: Path, target: Path) -> dict[str, Any]:
     _write_rows_csv(stage / "quarterly_metrics.csv", merged_rows)
     manifest_path = stage / "manifest.json"
     manifest = _read_json(manifest_path, {}) or {}
+    current_manifest = _read_json(target / "manifest.json", {}) or {}
+    candidate_entrypoints = [str(item) for item in manifest.get("entrypoints") or []]
+    retained_entrypoints: list[str] = []
+    for raw_item in current_manifest.get("entrypoints") or []:
+        relative = Path(str(raw_item))
+        if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+            continue
+        source = target / relative
+        if not source.is_file() or source.is_symlink():
+            continue
+        retained_entrypoints.append(relative.as_posix())
+        destination = stage / relative
+        if not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+    manifest["entrypoints"] = list(
+        dict.fromkeys([*candidate_entrypoints, *retained_entrypoints])
+    )
     manifest["row_count"] = len(merged_rows)
     if isinstance(manifest.get("quality"), dict):
+        current_quality = current_manifest.get("quality") or {}
+        if isinstance(current_quality, dict):
+            for key, value in current_quality.items():
+                manifest["quality"].setdefault(key, value)
         manifest["quality"]["row_count"] = len(merged_rows)
-        manifest["quality"].setdefault("notes", []).append(
+        notes = manifest["quality"].setdefault("notes", [])
+        notes.append(
             "自动刷新采用保守合并：保留既有已核验行，只新增构建器发现的新键或升级更高验证等级的行。"
         )
+        manifest["quality"]["notes"] = list(dict.fromkeys(map(str, notes)))
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     return candidate["merge"]
 

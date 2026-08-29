@@ -3,8 +3,8 @@
 - 指标：31项
 - 理论审计格：930
 - 实际审计格：930
-- 有官方依据数值：253
-- 确认缺口：677（每格均保留理由及已复核官方来源）
+- 有官方依据数值：259
+- 确认缺口：671（每格均保留理由及已复核官方来源）
 
 | 运营商 | 指标 | 有值年度 | 缺口年度 |
 |---|---|---:|---:|
@@ -57,11 +57,11 @@
 | 3HK | 移動後付月流失率 (`mobile_postpaid_churn`) | 10 | 0 |
 | 3HK | 收費電視客戶 (`pay_tv_customers`) | 0 | 10 |
 | 3HK | 固網電話客戶 (`telephony_customers`) | 0 | 10 |
-| 3HK | 5G人口覆蓋率 (`5g_population_coverage`) | 2 | 8 |
+| 3HK | 5G人口覆蓋率 (`5g_population_coverage`) | 4 | 6 |
 | 3HK | 月戶均移動數據流量DOU (`mobile_data_dou`) | 0 | 10 |
 | 3HK | 年度移動數據流量 (`annual_mobile_data_traffic`) | 0 | 10 |
 | 3HK | 移動基站總數 (`total_base_stations`) | 0 | 10 |
-| 3HK | 5G基站數 (`5g_base_stations`) | 0 | 10 |
+| 3HK | 5G基站數 (`5g_base_stations`) | 1 | 9 |
 | 3HK | 5G基站擴展幅度 (`5g_base_station_expansion`) | 2 | 8 |
 | 3HK | 免費電視人口/家庭覆蓋率 (`free_tv_population_coverage`) | 0 | 10 |
 | 3HK | 5G增強地鐵站 (`mtr_stations_5g_enhanced`) | 1 | 9 |
@@ -88,14 +88,14 @@
 | SmarTone | 移動後付月流失率 (`mobile_postpaid_churn`) | 7 | 3 |
 | SmarTone | 收費電視客戶 (`pay_tv_customers`) | 0 | 10 |
 | SmarTone | 固網電話客戶 (`telephony_customers`) | 0 | 10 |
-| SmarTone | 5G人口覆蓋率 (`5g_population_coverage`) | 1 | 9 |
+| SmarTone | 5G人口覆蓋率 (`5g_population_coverage`) | 2 | 8 |
 | SmarTone | 月戶均移動數據流量DOU (`mobile_data_dou`) | 0 | 10 |
 | SmarTone | 年度移動數據流量 (`annual_mobile_data_traffic`) | 0 | 10 |
 | SmarTone | 移動基站總數 (`total_base_stations`) | 0 | 10 |
 | SmarTone | 5G基站數 (`5g_base_stations`) | 0 | 10 |
 | SmarTone | 5G基站擴展幅度 (`5g_base_station_expansion`) | 0 | 10 |
 | SmarTone | 免費電視人口/家庭覆蓋率 (`free_tv_population_coverage`) | 0 | 10 |
-| SmarTone | 5G增強地鐵站 (`mtr_stations_5g_enhanced`) | 0 | 10 |
+| SmarTone | 5G增強地鐵站 (`mtr_stations_5g_enhanced`) | 2 | 8 |
 | SmarTone | 住宅2Gbps以上客戶 (`residential_2gbps_plus_customers`) | 0 | 10 |
 | SmarTone | 企業2Gbps以上客戶 (`enterprise_2gbps_plus_customers`) | 0 | 10 |
 | SmarTone | 企業核心業務月流失率 (`enterprise_core_churn`) | 0 | 10 |
@@ -104,4 +104,4 @@
 
 缺口不是空行：每一行都包含 `gap_reason_code`、`gap_reason`、`reviewed_source_ids` 与 `reviewed_source_urls`。
 
-`source_gap_confirmed` 只表示已列出的发行人官方材料没有同口径数值，不等于已证明全网不存在；`global_availability_status` 单独记录更广检索是否完成。相关但不同口径的公开值会保存在 `related_public_*` 字段，绝不冒充目标指标。
+`source_gap_confirmed` 只表示已列出的发行人官方材料没有同口径数值；三家目标运营商剩余缺口已完成定向公开网检索，并标为 `targeted_public_web_search_completed_no_direct_value`，但这仍不等于已证明整个互联网不存在。相关但不同口径的公开值会保存在 `related_public_*` 字段，绝不冒充目标指标。

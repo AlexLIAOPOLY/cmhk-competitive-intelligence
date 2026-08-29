@@ -4063,6 +4063,8 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
         self.assertIn('focus?.id !== "financials"', public_app)
         self.assertNotIn("重要财务指标", public_page)
         self.assertIn("function localizedMetricParts", app)
+        self.assertIn("const wanValue = numeric * 100;", app)
+        self.assertNotIn("const wanValue = numeric * 10;", app)
         self.assertIn("function localizeChineseMagnitudeText", app)
         self.assertNotIn('class="intelligence-financial-more"', app)
         self.assertNotIn('class="intelligence-financial-table"', app)

@@ -1060,7 +1060,11 @@ def _local_hk_operator_exact_metric_chunks(
         "5g_home_broadband_revenue_growth": ["5g家庭寬頻收入", "5g家庭宽频收入", "5g home broadband revenue"],
         "5g_home_broadband_ebitda_growth": ["5g家庭寬頻ebitda", "5g家庭宽频ebitda", "5g home broadband ebitda"],
     }
-    matched_metrics = {key for key, aliases in metric_aliases.items() if any(alias in lowered for alias in aliases)}
+    matched_metrics = {
+        key
+        for key, aliases in metric_aliases.items()
+        if key in lowered or any(alias in lowered for alias in aliases)
+    }
     if "5g_penetration" in matched_metrics:
         matched_metrics.discard("5g_customers")
     if "mobile_postpaid_exit_arpu" in matched_metrics or "mobile_postpaid_net_arpu" in matched_metrics:
@@ -1069,13 +1073,21 @@ def _local_hk_operator_exact_metric_chunks(
         matched_metrics.discard("mobile_postpaid_arpu")
     if "5g_home_broadband_ebitda_growth" in matched_metrics:
         matched_metrics.discard("5g_home_broadband_revenue_growth")
-    years = {int(value) for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)}
-    for start, end in re.findall(
-        r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-—–])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
-        normalized,
-    ):
-        lower, upper = sorted((int(start), int(end)))
-        years.update(range(lower, upper + 1))
+    explicit_fiscal_years = {
+        int(value)
+        for value in re.findall(r"\bFY\s*(20(?:1[6-9]|2[0-5]))\b", normalized, re.IGNORECASE)
+    }
+    years = explicit_fiscal_years or {
+        int(value)
+        for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)
+    }
+    if not explicit_fiscal_years:
+        for start, end in re.findall(
+            r"(?<!\d)(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-—–])\s*(20(?:1[6-9]|2[0-5]))(?!\d)",
+            normalized,
+        ):
+            lower, upper = sorted((int(start), int(end)))
+            years.update(range(lower, upper + 1))
     if not matched_subjects or not matched_metrics:
         return []
 
@@ -1125,8 +1137,16 @@ def _local_hk_operator_exact_metric_chunks(
             f"primary_source_url={row.get('primary_source_url')}; "
             f"audit_outcome={row.get('audit_outcome')}; gap_reason_code={row.get('gap_reason_code')}; "
             f"gap_reason={gap_reason}; reviewed_source_count={row.get('reviewed_source_count')}; "
-            f"reviewed_source_urls={reviewed_source_urls}; quality_note={row.get('quality_note')}."
-            "如果狀態為source_gap_confirmed，必須回答未披露並說明gap_reason與已復核官方來源，不能當作0或推測。"
+            f"reviewed_source_urls={reviewed_source_urls}; gap_search_scope={row.get('gap_search_scope')}; "
+            f"global_availability_status={row.get('global_availability_status')}; "
+            f"related_public_metric={row.get('related_public_metric')}; "
+            f"related_public_value={row.get('related_public_value')}; "
+            f"related_public_unit={row.get('related_public_unit')}; "
+            f"related_public_comparator={row.get('related_public_comparator')}; "
+            f"related_public_note={row.get('related_public_note')}; quality_note={row.get('quality_note')}."
+            "如果狀態為source_gap_confirmed，必須回答目標指標未披露並說明gap_reason與已復核官方來源，不能當作0或推測；"
+            "若global_availability_status為targeted_public_web_search_completed_no_direct_value，只能說定向公開網檢索未找到同期間同口徑直接值，不能斷言全網不存在；"
+            "但若related_public_value有值，必須另外列出這個不同口徑旁證及comparator，並明確說它不等同目標指標。"
         )
         chunks.append({
             "source": source,
@@ -1146,6 +1166,13 @@ def _local_hk_operator_exact_metric_chunks(
                 "audit_outcome": row.get("audit_outcome"),
                 "gap_reason_code": row.get("gap_reason_code"),
                 "gap_reason": gap_reason,
+                "gap_search_scope": row.get("gap_search_scope"),
+                "global_availability_status": row.get("global_availability_status"),
+                "related_public_metric": row.get("related_public_metric"),
+                "related_public_value": row.get("related_public_value"),
+                "related_public_unit": row.get("related_public_unit"),
+                "related_public_comparator": row.get("related_public_comparator"),
+                "related_public_note": row.get("related_public_note"),
                 "reviewed_source_count": row.get("reviewed_source_count"),
                 "reviewed_source_urls": [str(url) for url in parsed_reviewed_source_urls if str(url).strip()],
                 "primary_source_url": row.get("primary_source_url"),
