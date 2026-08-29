@@ -24,16 +24,33 @@ from typing import Any, Callable
 DATASET_KEY = "quarterly_competitor_metrics"
 POINTER_SCHEMA_VERSION = "1.0"
 RELEASE_SCHEMA_VERSION = "1.0"
-BUNDLE_CONTRACT_VERSION = 2
-RELATED_PACKAGE_IDS = ("local_hk_operator_operating_metrics_2016_2025",)
-RELATED_PACKAGE_REQUIRED_ENTRYPOINTS = frozenset(
-    {
-        "annual_metrics.csv",
-        "quality_audit.json",
-        "full_metric_audit_2016_2025.csv",
-        "full_metric_audit_2016_2025.json",
-    }
-)
+BUNDLE_CONTRACT_VERSION = 3
+RELATED_PACKAGE_SPECS = {
+    "local_hk_operator_operating_metrics_2016_2025": {
+        "required_entrypoints": frozenset(
+            {
+                "annual_metrics.csv",
+                "quality_audit.json",
+                "full_metric_audit_2016_2025.csv",
+                "full_metric_audit_2016_2025.json",
+            }
+        ),
+        "row_file": "annual_metrics.csv",
+        "quality_statuses": frozenset({"pass"}),
+    },
+    "competitor_product_tariffs": {
+        "required_entrypoints": frozenset(
+            {
+                "product_tariffs_agent_context.md",
+                "product_tariffs_formal_agent_records.csv",
+                "product_tariffs_source_gaps_agent_records.csv",
+                "product_tariffs_followup_agent_records.csv",
+            }
+        ),
+        "row_file": "product_tariffs_formal_agent_records.csv",
+        "quality_statuses": frozenset({"virtual_combined_entry"}),
+    },
+}
 NATURAL_KEY_FIELDS = ("subject", "period", "grain", "metric_key")
 REQUIRED_COLUMNS = frozenset(
     {
@@ -219,7 +236,7 @@ def _related_package_artifacts(dataset_dir: Path) -> tuple[list[dict[str, Any]],
 
     artifacts: list[dict[str, Any]] = []
     packages: list[dict[str, Any]] = []
-    for package_id in RELATED_PACKAGE_IDS:
+    for package_id, spec in RELATED_PACKAGE_SPECS.items():
         package_dir = dataset_dir.parent / package_id
         manifest_path = package_dir / "manifest.json"
         if not manifest_path.is_file():
@@ -228,18 +245,33 @@ def _related_package_artifacts(dataset_dir: Path) -> tuple[list[dict[str, Any]],
         if not isinstance(manifest, dict) or manifest.get("id") != package_id:
             raise RuntimeError(f"related package manifest identity mismatch: {package_id}")
         quality = manifest.get("quality") or {}
-        if not isinstance(quality, dict) or quality.get("status") != "pass":
+        if (
+            not isinstance(quality, dict)
+            or quality.get("status") not in spec["quality_statuses"]
+        ):
             raise RuntimeError(f"related package did not pass quality audit: {package_id}")
         raw_entrypoints = manifest.get("entrypoints")
         if not isinstance(raw_entrypoints, list) or not raw_entrypoints:
             raise RuntimeError(f"related package has no entrypoints: {package_id}")
-        entrypoints = list(dict.fromkeys(["manifest.json", *map(str, raw_entrypoints)]))
-        missing = sorted(RELATED_PACKAGE_REQUIRED_ENTRYPOINTS - set(entrypoints))
+        declared_entrypoints = list(dict.fromkeys(map(str, raw_entrypoints)))
+        missing = sorted(spec["required_entrypoints"] - set(declared_entrypoints))
         if missing:
             raise RuntimeError(
                 f"related package is missing required entrypoints ({package_id}): "
                 + ", ".join(missing)
             )
+        # Some virtual manifests also link sibling datasets using paths rooted
+        # at agent_knowledge/.  A release package only owns files physically
+        # below its own directory, so copy its declared local entrypoints and
+        # fail closed on the required subset above.
+        entrypoints = [
+            "manifest.json",
+            *[
+                item
+                for item in declared_entrypoints
+                if len(Path(item).parts) == 1
+            ],
+        ]
         prefix = Path("related_packages") / package_id
         package_paths: list[str] = []
         for raw_path in entrypoints:
@@ -254,11 +286,14 @@ def _related_package_artifacts(dataset_dir: Path) -> tuple[list[dict[str, Any]],
                 }
             )
             package_paths.append(release_path)
+        row_file = package_dir / str(spec["row_file"])
+        with row_file.open("r", encoding="utf-8-sig", newline="") as handle:
+            row_count = sum(1 for _ in csv.DictReader(handle))
         packages.append(
             {
                 "id": package_id,
                 "release_path": prefix.as_posix(),
-                "row_count": manifest.get("row_count"),
+                "row_count": row_count,
                 "available_value_rows": quality.get("available_value_rows"),
                 "source_count": quality.get("source_count"),
                 "artifacts": package_paths,

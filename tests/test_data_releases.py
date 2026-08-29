@@ -88,6 +88,34 @@ class DataReleaseTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        tariffs = dataset.parent / "competitor_product_tariffs"
+        tariffs.mkdir()
+        tariff_entrypoints = [
+            "product_tariffs_agent_context.md",
+            "product_tariffs_formal_agent_records.csv",
+            "product_tariffs_source_gaps_agent_records.csv",
+            "product_tariffs_followup_agent_records.csv",
+        ]
+        for name in tariff_entrypoints:
+            content = (
+                "record_class,月费_HKD\nformal_product_tariff,98\n"
+                if name.endswith("formal_agent_records.csv")
+                else "value\n"
+            )
+            (tariffs / name).write_text(content, encoding="utf-8")
+        (tariffs / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "id": "competitor_product_tariffs",
+                    "entrypoints": [
+                        *tariff_entrypoints,
+                        "agent_knowledge/hkt_product_tariffs/summary.md",
+                    ],
+                    "quality": {"status": "virtual_combined_entry"},
+                }
+            ),
+            encoding="utf-8",
+        )
         return dataset
 
     def test_publish_is_content_addressed_idempotent_and_keeps_old_release(self) -> None:
@@ -206,14 +234,21 @@ class DataReleaseTests(unittest.TestCase):
                 (Path(result["release_dir"]) / "release.json").read_text()
             )
 
-        self.assertEqual(release["bundle_contract_version"], 2)
+        self.assertEqual(release["bundle_contract_version"], 3)
         self.assertEqual(
             [item["id"] for item in release["related_packages"]],
-            ["local_hk_operator_operating_metrics_2016_2025"],
+            [
+                "local_hk_operator_operating_metrics_2016_2025",
+                "competitor_product_tariffs",
+            ],
         )
         paths = {item["path"] for item in release["artifacts"]}
         self.assertIn(
             "related_packages/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
+            paths,
+        )
+        self.assertIn(
+            "related_packages/competitor_product_tariffs/product_tariffs_formal_agent_records.csv",
             paths,
         )
 
