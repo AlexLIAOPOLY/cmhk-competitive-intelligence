@@ -14479,11 +14479,11 @@
   "refresh": {
     "ok": false,
     "status": "completed_with_fallback",
-    "started_at_hkt": "2026-08-30T04:28:55+08:00",
+    "started_at_hkt": "2026-08-30T04:40:08+08:00",
     "agent_run_id": "scheduled_20260830_030011_012027",
     "dry_run": false,
     "task_run_id": "20260830_042855_439139",
-    "attempt": 1,
+    "attempt": 2,
     "domains": {
       "local": {
         "ok": true,
@@ -14504,20 +14504,20 @@
           "retrieved": 140,
           "failed": 0,
           "content_changed": 1,
-          "first_observation": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "agent_fact_update": {
           "facts": 8,
-          "changed": true,
-          "published": true
+          "changed": false,
+          "published": false
         },
-        "database_changed": true
+        "database_changed": false
       },
       "international": {
         "ok": true,
-        "changed": true,
-        "promoted": true,
+        "changed": false,
+        "promoted": false,
         "validation": {
           "rows": 3051,
           "path": "",
@@ -14535,7 +14535,7 @@
         },
         "release": {
           "ok": true,
-          "created": true,
+          "created": false,
           "release_root": "",
           "release_dir": "",
           "current_pointer": "",
@@ -14548,24 +14548,24 @@
           "data_as_of": "2026-06-30",
           "row_count": 3051,
           "content_sha256": "7ecbf0af8d75a9e89738a3447087b9379ace1823720a909dd6d2f6998affe7e9",
-          "task_id": "crawl:20260830_042926_395236",
-          "task_run_id": "20260830_042926_395236"
+          "task_id": "crawl:20260830_044034_742993",
+          "task_run_id": "20260830_044034_742993"
         },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-jn6eofjt/dataset\nRows: 2841\n",
+        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-_bpfopso/dataset\nRows: 2841\n",
         "source_crawl": {
           "official_urls": 99,
           "retrieved": 52,
           "failed": 47,
           "content_changed": 0,
-          "first_observation": 3,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "agent_fact_update": {
           "facts": 8,
-          "changed": true,
-          "published": true
+          "changed": false,
+          "published": false
         },
-        "database_changed": true
+        "database_changed": false
       },
       "cloud": {
         "ok": true,
@@ -14573,26 +14573,26 @@
         "promoted": false,
         "validation": {
           "rows": 430,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-zwa3vxy7/dataset/cloud_vendor_metrics_2023_2025.json",
+          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-a84y_su9/dataset/cloud_vendor_metrics_2023_2025.json",
           "latest_period": "2025",
           "quality": "passed",
           "verified_rows": 171
         },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-zwa3vxy7/dataset\nRows: 430\n",
+        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-a84y_su9/dataset\nRows: 430\n",
         "source_crawl": {
           "official_urls": 135,
-          "retrieved": 72,
-          "failed": 63,
-          "content_changed": 4,
-          "first_observation": 2,
+          "retrieved": 61,
+          "failed": 74,
+          "content_changed": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "agent_fact_update": {
           "facts": 6,
-          "changed": true,
-          "published": true
+          "changed": false,
+          "published": false
         },
-        "database_changed": true
+        "database_changed": false
       },
       "macro": {
         "ok": false,
@@ -14615,10 +14615,10 @@
         },
         "source_crawl": {
           "official_urls": 241,
-          "retrieved": 232,
-          "failed": 9,
-          "content_changed": 4,
-          "first_observation": 2,
+          "retrieved": 226,
+          "failed": 15,
+          "content_changed": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "agent_fact_update": {
@@ -25581,7 +25581,7 @@
     },
     "ai_analysis": {
       "ok": true,
-      "changed": true,
+      "changed": false,
       "domain_counts": {
         "local": 8,
         "international": 8,
@@ -25595,14 +25595,14 @@
       "local": {
         "path": "",
         "facts": 8,
-        "changed": true,
-        "published": true
+        "changed": false,
+        "published": false
       },
       "international": {
         "path": "",
         "facts": 8,
-        "changed": true,
-        "published": true
+        "changed": false,
+        "published": false
       },
       "mainland": {
         "path": "",
@@ -25613,8 +25613,8 @@
       "cloud": {
         "path": "",
         "facts": 6,
-        "changed": true,
-        "published": true
+        "changed": false,
+        "published": false
       },
       "macro": {
         "path": "",
@@ -25637,12 +25637,12 @@
       "ok": true,
       "path": "",
       "official_urls": 609,
-      "retrieved": 490,
-      "failed": 119,
+      "retrieved": 474,
+      "failed": 135,
       "postpaid_rows": 140,
       "postpaid_values": 20,
-      "content_changed": 9,
-      "first_observation": 9,
+      "content_changed": 5,
+      "first_observation": 0,
       "fingerprint_baseline_upgraded": 0,
       "domains": {
         "local": {
@@ -25650,7 +25650,7 @@
           "retrieved": 140,
           "failed": 0,
           "content_changed": 1,
-          "first_observation": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "international": {
@@ -25658,23 +25658,23 @@
           "retrieved": 52,
           "failed": 47,
           "content_changed": 0,
-          "first_observation": 3,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "mainland": {
           "official_urls": 241,
-          "retrieved": 232,
-          "failed": 9,
-          "content_changed": 4,
-          "first_observation": 2,
+          "retrieved": 226,
+          "failed": 15,
+          "content_changed": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         },
         "cloud": {
           "official_urls": 135,
-          "retrieved": 72,
-          "failed": 63,
-          "content_changed": 4,
-          "first_observation": 2,
+          "retrieved": 61,
+          "failed": 74,
+          "content_changed": 2,
+          "first_observation": 0,
           "fingerprint_baseline_upgraded": 0
         }
       },
@@ -25688,7 +25688,7 @@
       "domains": 4,
       "focuses_expected": 15,
       "focuses_passed": 15,
-      "reused": false,
+      "reused": true,
       "fallback_used": false,
       "fallback_reason": "",
       "evidence_hash": "b41108f32711a15668dee5acc572d50a7259684347c3da850d66efc41c2bf97f",
@@ -25739,15 +25739,11 @@
     "failed_domains": [
       "macro"
     ],
-    "completed_at_hkt": "2026-08-30T04:39:02+08:00",
-    "duration_ms": 607359,
+    "completed_at_hkt": "2026-08-30T04:43:58+08:00",
+    "duration_ms": 230199,
     "fallback_preserved": true,
     "change_summary": {
-      "database_changed_domains": [
-        "local",
-        "international",
-        "cloud"
-      ],
+      "database_changed_domains": [],
       "source_content_changed_domains": [
         "local",
         "mainland",
@@ -25758,14 +25754,13 @@
     },
     "feishu_detail_log": {
       "ok": true,
-      "written": 660,
-      "skipped": 0,
-      "created": false,
+      "written": 0,
+      "skipped": 660,
       "sheet_title": "四库爬虫明细日志",
-      "sheet_url": "",
       "row_start": 15303,
       "row_end": 15962,
-      "readback_verified": true
+      "readback_verified": true,
+      "readback_reason": "previously_verified_event_ids"
     }
   },
   "ui_contract": {
@@ -25785,7 +25780,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-08-30T04:39:02+08:00"
+    "last_checked_at_hkt": "2026-08-30T04:43:58+08:00"
   },
   "ai": {
     "agent_run_id": "scheduled_20260830_030011_012027",
@@ -26921,7 +26916,7 @@
       "discovery_evidence_repair_count": 3,
       "evidence_hash": "b41108f32711a15668dee5acc572d50a7259684347c3da850d66efc41c2bf97f",
       "insight_format": "strategic_operating_judgement_v9",
-      "reused": false
+      "reused": true
     },
     "evidence_hash": "b41108f32711a15668dee5acc572d50a7259684347c3da850d66efc41c2bf97f",
     "model_analysis_fresh": true,

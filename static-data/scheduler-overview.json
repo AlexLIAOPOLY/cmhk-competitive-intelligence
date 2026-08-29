@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T04:39:57+08:00",
+  "checked_at_hkt": "2026-08-30T04:45:00+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -731,8 +731,8 @@
       "backend_pid": 88806,
       "worker_pid": 88806,
       "phase": "后备重试",
-      "progress_detail": "第 1 次未完成（宏观政策支撑库），60 秒后执行第 2 次。旧数据继续保留。",
-      "heartbeat_at_hkt": "2026-08-30T04:39:08+08:00",
+      "progress_detail": "第 2 次未完成（宏观政策支撑库），300 秒后执行第 3 次。旧数据继续保留。",
+      "heartbeat_at_hkt": "2026-08-30T04:43:58+08:00",
       "started_at_hkt": "2026-08-30T04:28:55+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -740,8 +740,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260830_042855_439139.jsonl"
       },
       "stream_log": {
-        "bytes": 4184,
-        "lines": 18
+        "bytes": 8231,
+        "lines": 35
       },
       "final_audit": {},
       "run_log": {},

@@ -2,6 +2,37 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_044034_742993",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_7ecbf0af8d75a9e89738a344 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_7ecbf0af8d75a9e89738a344 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T04:40:50+08:00",
+      "started_at_hkt": "2026-08-30T04:40:34+08:00",
+      "completed_at_hkt": "2026-08-30T04:40:50+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 15715,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_7ecbf0af8d75a9e89738a344",
+        "content_sha256": "7ecbf0af8d75a9e89738a3447087b9379ace1823720a909dd6d2f6998affe7e9",
+        "release_manifest_sha256": "b95ce751df153143d50c9cce2e202939b8ba4413923357821286dc89753d3e67",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": false,
+        "parent_crawl_run_id": "20260830_042855_439139",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 8474,
+        "feishu_written": 0,
+        "feishu_readback_verified": true
+      }
+    },
+    {
       "crawl_run_id": "20260830_042926_395236",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -39,8 +70,8 @@
       "task_kind": "executive-intelligence-refresh",
       "run_status": "running",
       "phase": "后备重试",
-      "progress_detail": "第 1 次未完成（宏观政策支撑库），60 秒后执行第 2 次。旧数据继续保留。",
-      "heartbeat_at_hkt": "2026-08-30T04:39:08+08:00",
+      "progress_detail": "第 2 次未完成（宏观政策支撑库），300 秒后执行第 3 次。旧数据继续保留。",
+      "heartbeat_at_hkt": "2026-08-30T04:43:58+08:00",
       "started_at_hkt": "2026-08-30T04:28:55+08:00",
       "completed_at_hkt": "",
       "final_audit": {},
@@ -71778,6 +71809,6 @@
       }
     }
   ],
-  "total": 284,
+  "total": 285,
   "truncated": false
 }
