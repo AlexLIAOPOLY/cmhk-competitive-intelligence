@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-29T13:57:21+08:00",
+  "generated_at": "2026-08-29T14:22:31+08:00",
   "items": [
+    {
+      "id": "NEWS-A0D0A8AB00B25F",
+      "title": "SmarTone精选客户5G宽频月费低至117港元",
+      "summary": "SmarTone推出5G宽频优惠，精选客户月费低至117港元。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE4yV2k5b0V4MmJCYWlRT21ZZWcwNEN2YzFoQVBiTjdqSVR4MWNSc3hOYS05RE9WdDFVNzUwZmZ1dWF0d1BWMVZ2NzJYdGEtcExISDN3NlhuejE?oc=5",
+      "published_at": "2026-08-29T12:00:00+08:00"
+    },
     {
       "id": "NEWS-C268C42FD59CC1",
       "title": "丰田、KDDI等加盟高通日本机器人中心，加速实体AI布局",
@@ -57,14 +65,6 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMilAJBVV95cUxPY05uVkNnODFvUGFCd0ZIR0I5VFlwM0dTQ0UzeWhHWFNJeWM4MFgzajl0RWJhQXJaU2E1Y1lodF9yZGEyUkhLR052MkUtZ0pLRTVaLUo3Y0xmZVl1ZzY2dXNlQWhpUlBwU1FFMHFwT0pMcUxYbXc0SU9FVUw1cW1lSXZPeE5haUFESy1lVmhQc3FHeDJxVzN1U2l4X0RZOGVZamJCZ0RFN2YwQkxJSG5EUWRqeDJoLUY4Q3ZaRDlBXzJhbVNYQTlTSjFTNW5wd3VueVRzNk9ScGhObkpVM0VoSV9Yc1E2aWQtVms5Zlg0RDRqSTRicGM0RVBsRjd2U1g4czhYRVRMa0RRck9GNmNMVUZiSUc?oc=5",
       "published_at": "2026-08-28T18:00:00+08:00"
-    },
-    {
-      "id": "NEWS-D3E71FA7078787",
-      "title": "中国移动CMHK推5G两地共享数据月费优惠",
-      "summary": "中国移动CMHK推出5G两地共享数据月费优惠，50GB仅149港元。",
-      "category": "公司动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9fSDVjTzJhaEdLcXkwRUYwamRZOXVPQkFyM2NPb2k4bUdPTUFYWUpKekhtaUVZM1M1TUpFUXhMRlAxRll4bHM4dHdwdkpYVVJ5WV8yM0s1Skc?oc=5",
-      "published_at": "2026-08-28T17:00:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "6f76fbebd91c05db67a82464719cfe558d8d91072c646332e6f0f3c78b73a43c"
+  "site_version": "2548faa56623e03f8c6ff6a7f6d920b895350c03325c17540dd0a7fa59e0ed42"
 }

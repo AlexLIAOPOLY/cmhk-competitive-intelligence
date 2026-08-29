@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-29T13:57:55+08:00",
+  "checked_at_hkt": "2026-08-29T14:23:08+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -686,46 +686,46 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260829_110035_517240",
+      "crawl_run_id": "20260829_140022_576402",
       "trigger": "战略新闻定时爬虫",
-      "scope": "修复验证（2026-08-29@repair-1100）",
+      "scope": "午后扫描（2026-08-29@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 17535,
+      "backend_pid": 30762,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 3 条，AI保留 2 条，历史重复 0 条，新增 2 条。",
-      "heartbeat_at_hkt": "2026-08-29T11:12:17+08:00",
-      "started_at_hkt": "2026-08-29T11:00:35+08:00",
-      "completed_at_hkt": "2026-08-29T11:12:17+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 25 条，AI保留 8 条，历史重复 0 条，新增 8 条。",
+      "heartbeat_at_hkt": "2026-08-29T14:06:48+08:00",
+      "started_at_hkt": "2026-08-29T14:00:22+08:00",
+      "completed_at_hkt": "2026-08-29T14:06:48+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 701902,
+      "duration_ms": 385860,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260829_110035_517240.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260829_140022_576402.jsonl"
       },
       "stream_log": {
-        "bytes": 8809,
-        "lines": 52
+        "bytes": 13582,
+        "lines": 78
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 3 条，AI保留 2 条，历史重复 0 条，新增 2 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 25 条，AI保留 8 条，历史重复 0 条，新增 8 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-08-29@repair-1100",
-        "discovered": 3,
-        "ai_retained": 2,
+        "slot": "2026-08-29@14:00",
+        "discovered": 25,
+        "ai_retained": 8,
         "history_duplicates": 0,
-        "new_count": 2,
+        "new_count": 8,
         "readback_verified": true,
-        "notification_status": "queued_while_paused",
-        "message_id": "",
+        "notification_status": "sent",
+        "message_id": "om_x100b661321bebca0b4a81791674429d",
         "selection_agent_status": "completed",
-        "selection_agent_changed": 4
+        "selection_agent_changed": 16
       }
     },
     "four_database_refresh": {

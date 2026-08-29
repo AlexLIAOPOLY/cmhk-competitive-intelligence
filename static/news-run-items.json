@@ -1,4 +1,102 @@
 {
+  "20260829_140022_576402": [
+    {
+      "newsId": "NEWS-A0D0A8AB00B25F",
+      "title": "SmarTone精选客户5G宽频月费低至117港元",
+      "summary": "SmarTone推出5G宽频优惠，精选客户月费低至117港元。",
+      "category": "竞对动态",
+      "region": "香港本地",
+      "source": "Techritual",
+      "publishedAt": "2026-08-29T12:00:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE4yV2k5b0V4MmJCYWlRT21ZZWcwNEN2YzFoQVBiTjdqSVR4MWNSc3hOYS05RE9WdDFVNzUwZmZ1dWF0d1BWMVZ2NzJYdGEtcExISDN3NlhuejE?oc=5",
+      "inclusionReason": "SmarTone推出5G宽频优惠，月费低至117港元，属竞对产品资费动作，可用于对标定价。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-44F7853E2974B0",
+      "title": "B4travel Plus三网络日本13日30GB 5G无限上网卡售328港元",
+      "summary": "B4travel Plus推出日本13日30GB 5G无限上网卡，售价328港元。",
+      "category": "市场/产品类",
+      "region": "香港本地",
+      "source": "Techritual",
+      "publishedAt": "2026-08-29T12:00:26+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1LdE5ORzRDdXNaZDNqdGpDS1VlSGRpQVNaRF9GOHg5YWxrRC0zMjd5MlNkVk92bDRmeTNEcEhEbnN4QTM5UHUwdloyN0Y3amdLNWpfX294NDE?oc=5",
+      "inclusionReason": "B4travel Plus推出日本13日30GB 5G无限上网卡，售价328港元，属漫游上网产品定价信息，可观察本地漫游市场需求。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-A77949C0E38239",
+      "title": "Energy Transfer斥资59亿美元扩建天然气基建 剑指数据中心与发电需求",
+      "summary": "Energy Transfer宣布斥资59亿美元扩建天然气基础设施，以应对数据中心和发电需求增长。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "行銷人",
+      "publishedAt": "2026-08-29T13:29:57+08:00",
+      "url": "https://news.google.com/rss/articles/CBMi-wJBVV95cUxNeHFkakJ0b1JXSjRKdnBVamMxdXRhcThsOHNDelVQT2RXNWw5SVNTdmwzNzdmOEdoZlNmcG5VeFJDc1NZTXlpcThVT09tb1p2aHhnNVpIOEVOSzNGdWZuamRtQlRsT2RsQUhVTTVDUk9IdU1pZjFjcFFVNDA0VnBaTDNsY004aG5HOTBsOHpWbHUzazNkZ1pNUHFVY21qck53cXNqVUlOUGxQV3p0OGFQa2RGdmtTcnhaa2l6X1pKTzNLZVRtX2ZwZHdHOVZwcTZuTjBiTjBkTFhMTlFMQVpJSjQxLVhqSm5GamcyTE9ZaTRTRnllenNWWXFjYU1jVGUtN0JzU3BTeDdvQ1FSMXJjbjhXVGxtZTJaSnJEN2tDTDJXa3JGc0VtUmFrMDU3ZVJMNXFuRndVZTAzeDMzQ18yU2dKaDN3aThkTGFzUndCMzJyWThUM0ViandmanlIQkZIVC0zUVdHNXp5SjQ0SDdpdkxhNnhMT1N3c2Jr?oc=5",
+      "inclusionReason": "数据中心与发电需求推动59亿美元天然气基建扩建，反映数据中心能耗和能源供应成本变化。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-BEB6ED64FE7F2E",
+      "title": "印度政府放宽5G基站辐射限值以扩大覆盖",
+      "summary": "印度修订电磁场限值规则，将5G基站允许功率密度上限提高一倍，以扩大覆盖范围。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "Business Standard",
+      "publishedAt": "2026-08-29T06:50:00+08:00",
+      "url": "https://www.business-standard.com/industry/news/govt-relaxes-radiation-limits-for-5g-towers-to-boost-coverage-report-126082900257_1.html",
+      "inclusionReason": "放宽5G基站辐射限值可降低部署门槛、扩大覆盖，影响运营商网络投资与部署。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-924351D3738257",
+      "title": "Meta承诺与菲律宾政府共享社媒数据协助调查威胁",
+      "summary": "Meta承诺向菲律宾政府移除有害人工智能内容并共享社交媒体数据，协助调查威胁。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "Inquirer.net on MSN",
+      "publishedAt": "2026-08-29T06:45:00+08:00",
+      "url": "https://www.msn.com/en-ph/news/other/meta-sharing-socmed-data-to-help-ph-probe-threats/ar-AA2b8kcg",
+      "inclusionReason": "Meta与菲律宾政府就移除有害AI内容及共享数据达成合作，涉及AI内容安全与合规。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-0A97FD79D09F46",
+      "title": "Redmi Note 17系列香港发布：首载10000mAh大电量，售价1799港元起",
+      "summary": "Redmi Note 17系列在香港发布，首次搭载10000mAh大电量电池，起售价1799港元。",
+      "category": "市场/产品类",
+      "region": "香港本地",
+      "source": "Now 新聞",
+      "publishedAt": "2026-08-29T11:32:58+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5vMVhBb1lVQ24xejVuVUNfNkdESTFoTS1nYktwVS14UXVMdEhsaDFUZ3FCelFLeTloUV9IbzZHSVpRUUlYTHJBb1daZXd1Z19udXkxQk0ydWhMT3NjMzQxaFNydVZWVUFG?oc=5",
+      "inclusionReason": "香港市场新手机发布，具体规格与定价，影响本地设备需求与5G终端生态。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-836DDCE0F1D68A",
+      "title": "中国电信保障西藏吉隆应急通信并免费提供天通卫星通信",
+      "summary": "中国电信卫星公司24小时驻站调度卫星资源，为西藏吉隆救灾提供稳定卫星通信保障。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "快科技",
+      "publishedAt": "2026-08-29T07:00:00+08:00",
+      "url": "https://news.mydrivers.com/1/1147/1147251.htm",
+      "inclusionReason": "中国电信作为被监测竞对，在西藏吉隆应急通信中调度卫星资源并提供天通卫星通信，属竞对网络与运营动作。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-F24FF19B772294",
+      "title": "美国多家工会支持数据中心建设 称可创造大量就业",
+      "summary": "美国多家工会表态支持数据中心建设，称相关项目可创造大量就业机会。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "大纪元",
+      "publishedAt": "2026-08-29T07:23:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBSaEdXd2JkbnV5UGxmQzF6MEhyX3doOFhXVnFka1BlVTRMNURCOXBseFltQ0dISlJhcnFUTldBTmxlUkwxdkVZVHlzWjJ2THYwUUFYWEdhQ1pHS3ZPV3J6ejVCNXJxd9IBZkFVX3lxTFBSaEdXd2JkbnV5UGxmQzF6MEhyX3doOFhXVnFka1BlVTRMNURCOXBseFltQ0dISlJhcnFUTldBTmxlUkwxdkVZVHlzWjJ2THYwUUFYWEdhQ1pHS3ZPV3J6ejVCNXJxdw?oc=5",
+      "inclusionReason": "数据中心建设获工会支持，反映数据中心基础设施需求与就业带动，可影响算力与网络基础设施投资。",
+      "businessImpact": "网络与运营"
+    }
+  ],
   "20260829_073044_424790": [
     {
       "newsId": "NEWS-333A07C2F9C07E",
