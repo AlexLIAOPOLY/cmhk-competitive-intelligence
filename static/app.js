@@ -7954,7 +7954,7 @@ document.addEventListener("keydown", (event) => {
       const countMatch = normalizedUnit.match(/^(?:百万|百萬)(户|戶|连接|連接|订阅|訂閱)?$/);
       if (countMatch) {
         const suffix = ({ "戶": "户", "連接": "连接", "訂閱": "订阅" })[countMatch[1]] || countMatch[1] || "";
-        const wanValue = numeric * 10;
+        const wanValue = numeric * 100;
         if (Math.abs(wanValue) >= 10000) {
           scaled = wanValue / 10000;
           displayUnit = `亿${suffix}`;
