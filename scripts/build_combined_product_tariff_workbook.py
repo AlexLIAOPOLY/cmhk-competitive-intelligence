@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -21,6 +22,7 @@ AGENT_FORMAL_CSV = OUTPUT.parent / "product_tariffs_formal_agent_records.csv"
 AGENT_GAPS_CSV = OUTPUT.parent / "product_tariffs_source_gaps_agent_records.csv"
 AGENT_FOLLOWUP_CSV = OUTPUT.parent / "product_tariffs_followup_agent_records.csv"
 AGENT_CONTEXT_MD = OUTPUT.parent / "product_tariffs_agent_context.md"
+MANIFEST = OUTPUT.parent / "manifest.json"
 
 PLAN_FIELDS = [
     "数据子库", "时间类型", "期间", "期间月份", "抓取/生效时间", "品牌", "产品类别", "网络代际", "客户分段", "产品系列", "套餐名称",
@@ -178,6 +180,52 @@ def write_csv(path: Path, fields: list[str], rows: list[dict[str, str]]) -> None
         writer.writerows(rows)
 
 
+def refresh_manifest(followups: list[dict[str, str]], built_at: str) -> None:
+    if not MANIFEST.exists():
+        return
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    hkt_manifest = json.loads((HKT / "manifest.json").read_text(encoding="utf-8"))
+    other_manifest = json.loads((OTHERS / "manifest.json").read_text(encoding="utf-8"))
+    gap_types = Counter(row.get("gap_type", "") for row in read_csv(OTHERS / "source_gaps.csv"))
+    statuses = Counter(row.get("recheck_status", "") for row in followups)
+    followup_quality = {
+        "rechecked": sum(1 for row in followups if row.get("queue_type") == "verification_backlog"),
+        "duplicate_queue_rows_removed": other_manifest.get("verification_followup", {}).get("duplicate_queue_rows_removed", 0),
+        "near_match_not_equivalent": statuses["near_match_not_equivalent"],
+        "no_equivalent_second_source_found": statuses["no_equivalent_second_source_found"],
+        "confirmed_source_gaps": sum(1 for row in followups if row.get("queue_type") == "confirmed_source_gap"),
+    }
+    other_quality = {
+        "status": "official_public_product_pages_and_public_archives_verified_with_source_gaps",
+        "source_count": len(json.loads((OTHERS / "source_snapshots.json").read_text(encoding="utf-8"))),
+        "current_count": other_manifest["current_count"],
+        "historical_count": other_manifest["historical_count"],
+        "source_gap_count": other_manifest["source_gap_count"],
+        "unresolved_source_gap_count": other_manifest["unresolved_source_gap_count"],
+        "verification_backlog_count": other_manifest["verification_backlog_count"],
+        "source_gap_by_type": dict(sorted(gap_types.items())),
+        "multi_verified_count": other_manifest["row_count"],
+        "single_source_needs_review": 0,
+        "official_price_conflict_needs_review": 0,
+        "verification_followup": followup_quality,
+        "captured_at_hkt": other_manifest["updated_at"],
+        "archive_year_mismatch_count": 0,
+        "notes": [
+            "正式 current/historical 表只保留多来源或多快照验证记录；source_gap_count 为全部待处理证据清单，须分别查看 unresolved_source_gap_count（真实来源/解析缺口）与 verification_backlog_count（单源候选待补第二来源）。",
+            f"已复核 {followup_quality['rechecked']} 条唯一单源候选，去除 {followup_quality['duplicate_queue_rows_removed']} 条重复候选；重复证据不计作独立来源。",
+        ],
+    }
+    manifest["updated_at"] = built_at
+    manifest["built_at"] = built_at
+    manifest["version"] = built_at
+    manifest["updated_at_hkt"] = built_at
+    manifest["quality"]["hkt_product_tariffs"] = hkt_manifest["quality"]
+    manifest["quality"]["hk_competitor_product_tariffs"] = other_quality
+    manifest["subdatasets"]["hkt_product_tariffs"]["quality"] = hkt_manifest["quality"]
+    manifest["subdatasets"]["hk_competitor_product_tariffs"]["quality"] = other_quality
+    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def build() -> dict[str, int | str]:
     plans = [*hkt_plan_rows(), *other_plan_rows()]
     gaps = gap_rows()
@@ -222,10 +270,11 @@ def build() -> dict[str, int | str]:
         ) + "\n",
         encoding="utf-8",
     )
+    now = datetime.now(timezone(timedelta(hours=8))).isoformat(timespec="seconds")
+    refresh_manifest(followups, now)
     wb = Workbook()
     wb.remove(wb.active)
     summary = wb.create_sheet("说明与统计")
-    now = datetime.now(timezone(timedelta(hours=8))).isoformat(timespec="seconds")
     summary_rows = [
         ("工作簿名称", "香港竞对产品资费完整人读版"),
         ("生成时间（HKT）", now),

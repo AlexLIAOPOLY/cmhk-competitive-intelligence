@@ -59,6 +59,37 @@ def source_summary(row: dict[str, str]) -> str:
     return f"{row.get('source_id', '')} ({row.get('period_label', '')})"
 
 
+def dedupe_candidates(rows: list[dict[str, str]]) -> tuple[list[dict[str, str]], int]:
+    """Collapse the same parsed candidate while preserving source order.
+
+    Source-gap evidence can repeat one plan with a different excerpt.  Those
+    excerpts are useful upstream, but they must not inflate the follow-up queue
+    or make a row look independently corroborated.
+    """
+    unique: list[dict[str, str]] = []
+    seen: set[tuple[str, ...]] = set()
+    key_fields = (
+        "period_label",
+        "brand",
+        "product_category",
+        "candidate_plan",
+        "monthly_fee_hkd",
+        "broadband_speed_mbps",
+        "contract_months",
+        "gap_type",
+        "source_id",
+        "source_url",
+        "archive_url",
+    )
+    for row in rows:
+        key = tuple(row.get(field, "").strip() for field in key_fields)
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+    return unique, len(rows) - len(unique)
+
+
 def autosize(ws) -> None:
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = ws.dimensions
@@ -76,10 +107,11 @@ def generate_followup_audit(dataset: Path = DATASET) -> dict[str, int | str]:
     backlog = [row for row in gaps if row.get("gap_type") == "single_source_unverified_plan_row"]
     other_gaps = [row for row in gaps if row.get("gap_type") != "single_source_unverified_plan_row"]
 
-    candidates = []
+    parsed_candidates = []
     for row in backlog:
         name, fee, speed, contract = parse_candidate(row)
-        candidates.append({**row, "candidate_plan": name, "monthly_fee_hkd": fee, "broadband_speed_mbps": speed, "contract_months": contract})
+        parsed_candidates.append({**row, "candidate_plan": name, "monthly_fee_hkd": fee, "broadband_speed_mbps": speed, "contract_months": contract})
+    candidates, duplicate_queue_rows_removed = dedupe_candidates(parsed_candidates)
 
     audit_rows: list[dict[str, str]] = []
     for row in candidates:
@@ -161,7 +193,8 @@ def generate_followup_audit(dataset: Path = DATASET) -> dict[str, int | str]:
         "",
         "## 结论",
         "",
-        f"- 单源待核验：{len(backlog)} 条。均已保留为非正式记录，不纳入正式资费表。",
+        f"- 单源待核验：{len(candidates)} 条。均已保留为非正式记录，不纳入正式资费表。",
+        f"- 去除重复待核验候选：{duplicate_queue_rows_removed} 条。重复证据不会被计作独立来源。",
         f"- 相近来源但不等价：{counts['near_match_not_equivalent']} 条。",
         f"- 未找到等价第二来源：{counts['no_equivalent_second_source_found']} 条。",
         f"- 已确认来源/解析缺口：{len(other_gaps)} 条，均保留为不可估算的 source-gap。",
@@ -172,7 +205,7 @@ def generate_followup_audit(dataset: Path = DATASET) -> dict[str, int | str]:
 
     workbook = Workbook()
     workbook.remove(workbook.active)
-    for title, selected in [("单源复核结论", [row for row in audit_rows if row["queue_type"] == "verification_backlog"]), ("确认来源缺口", [row for row in audit_rows if row["queue_type"] == "confirmed_source_gap"]), ("汇总", [{"项目": "单源待核验", "数量": len(backlog)}, {"项目": "已确认来源/解析缺口", "数量": len(other_gaps)}])]:
+    for title, selected in [("单源复核结论", [row for row in audit_rows if row["queue_type"] == "verification_backlog"]), ("确认来源缺口", [row for row in audit_rows if row["queue_type"] == "confirmed_source_gap"]), ("汇总", [{"项目": "单源待核验", "数量": len(candidates)}, {"项目": "去除重复待核验候选", "数量": duplicate_queue_rows_removed}, {"项目": "已确认来源/解析缺口", "数量": len(other_gaps)}])]:
         ws = workbook.create_sheet(title)
         fields = list(selected[0]) if selected else ["说明"]
         ws.append(fields)
@@ -180,13 +213,20 @@ def generate_followup_audit(dataset: Path = DATASET) -> dict[str, int | str]:
             ws.append([row.get(field, "") for field in fields])
         autosize(ws)
     workbook.save(out_xlsx)
-    return {
-        "verification_backlog_rechecked": len(backlog),
+    result = {
+        "verification_backlog_rechecked": len(candidates),
+        "duplicate_queue_rows_removed": duplicate_queue_rows_removed,
         "confirmed_source_gaps": len(other_gaps),
         "near_match_not_equivalent": counts["near_match_not_equivalent"],
         "no_equivalent_second_source_found": counts["no_equivalent_second_source_found"],
         "out": str(out_csv),
     }
+    manifest_path = dataset / "manifest.json"
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["verification_followup"] = result
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return result
 
 
 def main() -> None:
