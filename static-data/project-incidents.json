@@ -19,9 +19,9 @@
         "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
         "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
       ],
-      "occurred_at_hkt": "2026-08-30T02:00:03+08:00",
+      "occurred_at_hkt": "2026-08-30T03:03:39+08:00",
       "started_at_hkt": "2026-08-30T01:46:01+08:00",
-      "heartbeat_at_hkt": "2026-08-30T02:00:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T03:03:39+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3414,6 +3414,54 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-29 03:08:52",
+      "started_at_hkt": "2026-08-30T03:02:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T03:02:33+08:00",
+      "completed_at_hkt": "2026-08-30T03:03:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "c6bec1187bb29a1178a15f85",
+      "task_id": "incident:c6bec1187bb29a1178a15f85",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主爬虫存在失败或未通过质量门禁的数据",
+      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
+      "suggestions": [
+        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
+        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
+      ],
+      "occurred_at_hkt": "2026-08-29 03:08:52",
+      "started_at_hkt": "2026-08-30T03:03:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T03:04:39+08:00",
+      "completed_at_hkt": "2026-08-30T03:05:09+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "6952f0245d1763d06956834c",
+      "task_id": "incident:6952f0245d1763d06956834c",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -3426,8 +3474,8 @@
         "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
-      "started_at_hkt": "2026-08-30T03:02:03+08:00",
-      "heartbeat_at_hkt": "2026-08-30T03:02:33+08:00",
+      "started_at_hkt": "2026-08-30T03:05:09+08:00",
+      "heartbeat_at_hkt": "2026-08-30T03:07:09+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11998,54 +12046,6 @@
       "started_at_hkt": "2026-08-26T21:56:10+08:00",
       "heartbeat_at_hkt": "2026-08-26T21:56:10+08:00",
       "completed_at_hkt": "2026-08-26T21:56:40+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "59426fa972b0f84ee38a964a",
-      "task_id": "incident:59426fa972b0f84ee38a964a",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-26T21:23:06+08:00",
-      "started_at_hkt": "2026-08-26T21:23:06+08:00",
-      "heartbeat_at_hkt": "2026-08-26T21:23:06+08:00",
-      "completed_at_hkt": "2026-08-26T21:23:36+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "7ab9848b3f2e972481a8145c",
-      "task_id": "incident:7ab9848b3f2e972481a8145c",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-26T20:50:09+08:00",
-      "started_at_hkt": "2026-08-26T20:50:09+08:00",
-      "heartbeat_at_hkt": "2026-08-26T20:50:09+08:00",
-      "completed_at_hkt": "2026-08-26T20:50:40+08:00",
       "handled_at_hkt": ""
     }
   ],
