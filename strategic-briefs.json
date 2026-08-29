@@ -1,70 +1,70 @@
 {
   "ok": true,
-  "generated_at": "2026-08-29T07:20:32+08:00",
+  "generated_at": "2026-08-29T09:43:33+08:00",
   "items": [
     {
-      "id": "NEWS-2BB4C619AAE3EA",
-      "title": "金管局：57家企业参与GenAI测试反诈骗等应用",
-      "summary": "金管局表示57家企业参与生成式AI测试，应用于反诈骗等场景，并继续「AI对抗AI」策略。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE91ZEdQdVo2NkNWbTNGMVhMT2w3OFFtV2x0cGhTNnJPNHV2NXk2bnowUGctWXhyNVRKbFBDYUhPQXBaMzZfckpNX0E3LUdTWG1uc2lxVVNoZ0t4LVNNSGMxYmZrTWMyc3d5Nm83R1YxaWdPdVNa?oc=5",
-      "published_at": "2026-08-28T04:24:28+08:00"
-    },
-    {
-      "id": "NEWS-B5B8FA8A4D7007",
-      "title": "HKT.AI化身家居与伴学智囊",
-      "summary": "HKT.AI化身家居与伴学智囊 信报网站",
+      "id": "NEWS-C268C42FD59CC1",
+      "title": "丰田、KDDI等加盟高通日本机器人中心，加速实体AI布局",
+      "summary": "丰田、KDDI等日本产学巨头加盟高通在日本设立的Qualcomm Japan Robotics Center，共同推进实体AI与机器人技术发展。",
       "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPbHNEU0FwZUZjYmoxTDltaVpqLWZPa3hXR3F6SnhiaXluVVRsWXFzTFctbzBEbGh5YUlUYktDNE9tdHg3SnktX3luN1p1RmZ2SXUtcG1KemNFMjd0Y1FhYU5yM0RkV01kcllQYWVfcnYwS2N3QTVKRW91VHZ0WTJweFVXdGFhS2xaWWg3d2p3Q1hfQmdqeVMyOS1raG1rSmhHMXR0SzdXVzhuekg0ckY0b1c4ZkJ4WklQeC02LVhfUDVBOFRpMXM2dllqOFluTEloSWpYRHBITQ?oc=5",
-      "published_at": "2026-08-28T02:29:23+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNSFFUN2pkNXRiMmJldjVUY1NvcVRzSXJoSjRPLUlRZElfc183UnFWbFcySkhKbzdSRUY0UHJhRWlPYjF3Z0JMOXMtXzdKTGh1UkFLU0NjODB5QzFlNkc0ZVZ3SXpGWDF2NWFwUjRpWVZFeG85VHJpWWNrUWpsczVOb19MaG1qa2wyYkNUenZ3?oc=5",
+      "published_at": "2026-08-29T00:00:38+08:00"
     },
     {
-      "id": "NEWS-88159DDFE485E1",
-      "title": "《业绩》有线宽频(01097.HK)中期亏损扩至2.77亿元",
-      "summary": "有线宽频(01097.HK)公布6月止六个月中期业绩，收入2.44亿元，按年下降11.9%。亏损由上年同期2.17亿元，扩至2.77亿元，每股亏损3.9仙。不派息。",
+      "id": "NEWS-C9B9EB65F881BC",
+      "title": "CSL Mobile独家联乘顶尖网络商推全方位漫游服务",
+      "summary": "CSL Mobile宣布独家联乘顶尖网络商，提供全方位漫游服务并自动升级至「黄金漫游」。",
       "category": "竞对动态",
-      "source_url": "https://hk.finance.yahoo.com/news/%E6%A5%AD%E7%B8%BE-%E6%9C%89%E7%B7%9A%E5%AF%AC%E9%A0%BB-01097-hk-%E4%B8%AD%E6%9C%9F%E8%99%A7%E6%90%8D%E6%93%B4%E8%87%B32-180433876.html",
-      "published_at": "2026-08-27T19:04:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9GeTNORVA4RUVMSjJvOFQ0OC1SbVVEVE1MNzRDcktWbXEtV3RQa01oc0V0c3llbldOQkVFQ0U4NlZMdDhYUm9LRm5yeGd1dEJESDRSUFpXQVh1djE0OHFkcnByNTd0OHpBRmxkUTJtUXpDS3M?oc=5",
+      "published_at": "2026-08-29T00:00:00+08:00"
     },
     {
-      "id": "NEWS-A3338874AE8B6A",
-      "title": "香港电讯参与GenA.I.沙盒 开发AI代理身份验证方案",
-      "summary": "香港电讯参与监管机构的生成式人工智能沙盒，开发AI代理身份验证方案。",
+      "id": "NEWS-EA8E0AC55D3802",
+      "title": "网上行推出全港首个符合F5G-A标准的宽频网络",
+      "summary": "网上行宣布其宽频网络成为全港首个符合F5G-A标准，主打智慧家居应用。",
       "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi2gJBVV95cUxORExhQXk5alQydnBxdlpwTGZKS3lxSDBTQ2dLaTlYOTZjanpuQnZVX0ZmcnNqS3dmUHBjY1YtT2gzTDdPTmlrQVBkQ0ljZ3M5c0dkUGc0XzRmWGxTZWVlUEpITnFjTUx2UEJ3SUpmSXZGdU00WWYtd183VjNVUV9oQmc4d1B5OGg3Vy14WFctdUFOSURoa2RYd3NNaWFzQ3FZZ3h4Y2x6cVRpYVE5RTgwcE1NdXVISFY1VFBOcTEzTElrLWZNMjF5eUtVSUN1bmExSjdyN2YySVJmZWJGMU1qTmdCczk4bHRFNXQ5VUdFUHdFaWpDTU51cWE3MkFGU0t5YkNMejZGaV8yOEotWmlfNng0WU9xUm1MYVZoSG9lQkcwQXBpMVFQZW9yREIxRnQ0SVdNQ1BSLXFZak5HeUctYnI5S1pxV2VzVlc4SmN0UzViRlpDQmdDS2tR?oc=5",
-      "published_at": "2026-08-27T17:40:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5IaFVxMXNSSG1DMGhmbndUdnhnb1JGYlNWR1l3YXh3QjA1RjFvS3hLaEJEWXQ4MGFBU0k4RTRSYjloUVFTajE3dUY5ZTduZ0dPTDZKb3NJdDF4UTNhWFY1UFZWQlg2aVNBenZveVR5Z1NiX3c?oc=5",
+      "published_at": "2026-08-29T00:00:00+08:00"
     },
     {
-      "id": "NEWS-DFAD0C28810EAB",
-      "title": "数字办宣布1823年内推出四项AI提升项目",
-      "summary": "数字政策办公室宣布1823将于今年内推出来电语音达、电邮撷取易、投诉分流快及诉求一览通四项AI项目，并就「AI+」政务转型提供支援。",
+      "id": "NEWS-EF3CDA447E77D4",
+      "title": "工业总会向特首提交逾300项政策建议",
+      "summary": "香港工业总会在《施政报告》发表前向行政长官提交逾300项建议，涵盖北部都会区发展、人工智能应用、拓展新兴市场及支援中小企等五大范畴。",
       "category": "政策监管",
-      "source_url": "https://www.wenweipo.com/a/202608/27/AP6a8fd2e6e4b0c1e500266f28.html",
-      "published_at": "2026-08-27T15:02:00+08:00"
+      "source_url": "https://metrohk.com.hk/%E6%B8%AF%E8%81%9E/%E5%B7%A5%E6%A5%AD%E7%B8%BD%E6%9C%83%E5%90%91%E7%89%B9%E9%A6%96%E6%8F%90%E4%BA%A4%E9%80%BE300%E9%A0%85%E6%94%BF%E7%AD%96%E5%BB%BA%E8%AD%B0-09afc0",
+      "published_at": "2026-08-28T20:05:00+08:00"
     },
     {
-      "id": "NEWS-39FE461DAD2975",
-      "title": "香港宽频遭南向资金减持500股",
-      "summary": "8月27日南向资金减持香港宽频500股，近5个交易日中有4天遭减持，累计净减持15.45万股。",
-      "category": "竞对动态",
-      "source_url": "https://www.sohu.com/a/1068580337_122123195",
-      "published_at": "2026-08-27T14:52:00+08:00"
+      "id": "NEWS-EFE609A2A39D46",
+      "title": "5G服务计划月费98港元享30GB本地数据",
+      "summary": "推出5G服务计划优惠，月费98港元享30GB本地数据及3GB两地数据。",
+      "category": "市场/产品类",
+      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBLRl9qeTVzVVJTOGlUR0paQUpDcklXb1dzSFczbjgxcTN3OHlDcG9QNkxhV2hTYUswNTZlMy1fVGRFVjJ2SFEySkllRlJfN0dCd1FJdW9vbHg?oc=5",
+      "published_at": "2026-08-28T20:00:00+08:00"
     },
     {
-      "id": "NEWS-A003A46A754250",
-      "title": "第一期GenA.I.沙盒++共有30家金融机构和27家技术合作伙伴参与",
-      "summary": "金管局、证监会、保监局及积金局联同数码港今日(8月27日)公布第一期生成式人工智能（GenA.I.)沙盒++参与者名单。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://hk.finance.yahoo.com/news/%E7%AC%AC-%E6%9C%9Fgena-%E6%B2%99%E7%9B%92-%E5%85%B1%E6%9C%8930%E5%AE%B6%E9%87%91%E8%9E%8D%E6%A9%9F%E6%A7%8B%E5%92%8C27%E5%AE%B6%E6%8A%80%E8%A1%93%E5%90%88%E4%BD%9C%E5%A4%A5%E4%BC%B4%E5%8F%83%E8%88%87-092006818.html",
-      "published_at": "2026-08-27T10:20:00+08:00"
-    },
-    {
-      "id": "NEWS-D14FBE54A841DF",
-      "title": "澳门「三五」规划公布 李家超宣布香港首个五年规划将于9月公布",
-      "summary": "澳门第三个五年规划正式公布，引起香港关注；李家超宣布将于9月16日公布香港首个五年规划及2026年施政报告。",
+      "id": "NEWS-333A07C2F9C07E",
+      "title": "香港网约车牌照历经11年终合法化并接受申请",
+      "summary": "香港网约车牌照历经11年拉锯终合法化，即日起接受申请。",
       "category": "政策监管",
-      "source_url": "https://www.dotdotnews.com/a/202608/26/AP6a8ed60de4b04b6c5d37e3e0.html",
-      "published_at": "2026-08-26T21:03:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE13c1o1X21Ja1VUTGpaNy1TbkppU0Q1bm1DMnA3YnpTVmkwazV2aVg0d296cXN5TWcwemtYY2RtNnlpMHVneEpNUVJJYkVBNWFwWVhOeVZyUUVwWm1JY19mY1oxdlg1Zw?oc=5",
+      "published_at": "2026-08-28T18:51:00+08:00"
+    },
+    {
+      "id": "NEWS-2401FD8D0A9295",
+      "title": "HKT以Agentic AI革新客户服务体验",
+      "summary": "香港电讯采用Agentic AI技术，从被动回应转向主动决策，革新客户服务体验。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMilAJBVV95cUxPY05uVkNnODFvUGFCd0ZIR0I5VFlwM0dTQ0UzeWhHWFNJeWM4MFgzajl0RWJhQXJaU2E1Y1lodF9yZGEyUkhLR052MkUtZ0pLRTVaLUo3Y0xmZVl1ZzY2dXNlQWhpUlBwU1FFMHFwT0pMcUxYbXc0SU9FVUw1cW1lSXZPeE5haUFESy1lVmhQc3FHeDJxVzN1U2l4X0RZOGVZamJCZ0RFN2YwQkxJSG5EUWRqeDJoLUY4Q3ZaRDlBXzJhbVNYQTlTSjFTNW5wd3VueVRzNk9ScGhObkpVM0VoSV9Yc1E2aWQtVms5Zlg0RDRqSTRicGM0RVBsRjd2U1g4czhYRVRMa0RRck9GNmNMVUZiSUc?oc=5",
+      "published_at": "2026-08-28T18:00:00+08:00"
+    },
+    {
+      "id": "NEWS-D3E71FA7078787",
+      "title": "中国移动CMHK推5G两地共享数据月费优惠",
+      "summary": "中国移动CMHK推出5G两地共享数据月费优惠，50GB仅149港元。",
+      "category": "公司动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9fSDVjTzJhaEdLcXkwRUYwamRZOXVPQkFyM2NPb2k4bUdPTUFYWUpKekhtaUVZM1M1TUpFUXhMRlAxRll4bHM4dHdwdkpYVVJ5WV8yM0s1Skc?oc=5",
+      "published_at": "2026-08-28T17:00:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "70274f9974c59a28130b76904b48b0e86a06f6123552888415ab20f084b7329d"
+  "site_version": "c0f33d31b74836eef06a68093fd2bc7e0bc5344f14af0a461338670f92d3d38d"
 }
