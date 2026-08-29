@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "b4f03c697046229fa7e36b89",
+      "task_id": "incident:b4f03c697046229fa7e36b89",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-29T12:40:05+08:00",
+      "started_at_hkt": "2026-08-29T12:40:05+08:00",
+      "heartbeat_at_hkt": "2026-08-29T12:40:05+08:00",
+      "completed_at_hkt": "2026-08-29T12:41:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f0cb1a0d36a38a5265ab2819",
       "task_id": "incident:f0cb1a0d36a38a5265ab2819",
       "title": "飞书频率调度周期",
@@ -1947,7 +1971,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-29T09:53:53+08:00",
-      "heartbeat_at_hkt": "2026-08-29T12:39:35+08:00",
+      "heartbeat_at_hkt": "2026-08-29T12:41:03+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12017,32 +12041,6 @@
       "started_at_hkt": "2026-08-26T09:44:36+08:00",
       "heartbeat_at_hkt": "2026-08-26T09:45:11+08:00",
       "completed_at_hkt": "2026-08-26T09:45:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "7dd3a3b98f96eb9e9ee28d2a",
-      "task_id": "incident:7dd3a3b98f96eb9e9ee28d2a",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认：本批4条数据AI批量编辑失败，进入紧凑补审流程，处理时效和自动化程度降低。推断：若补审队列积压或后续批次同样失败，可能影响整体任务完成时间和数据质量。",
-      "suggestions": [
-        "检查AI服务端日志和监控，确认该时间段是否存在超时、资源瓶颈或异常重启，定位JSON截断根因。",
-        "验证本批4条数据在紧凑补审队列中的状态，确认是否已成功入队并保留原有处理结果。",
-        "若AI服务存在稳定性问题，考虑增加重试机制或调整超时阈值，并对截断响应进行容错处理。",
-        "修复后选取同类任务进行小批量验证，确保AI返回JSON完整且后续流程正常。"
-      ],
-      "occurred_at_hkt": "2026-08-26T09:42:06+08:00",
-      "started_at_hkt": "2026-08-26T09:42:06+08:00",
-      "heartbeat_at_hkt": "2026-08-26T09:42:06+08:00",
-      "completed_at_hkt": "2026-08-26T09:42:36+08:00",
       "handled_at_hkt": ""
     }
   ],
