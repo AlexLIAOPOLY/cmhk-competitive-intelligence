@@ -24,8 +24,26 @@ from typing import Any, Callable
 DATASET_KEY = "quarterly_competitor_metrics"
 POINTER_SCHEMA_VERSION = "1.0"
 RELEASE_SCHEMA_VERSION = "1.0"
-BUNDLE_CONTRACT_VERSION = 3
+BUNDLE_CONTRACT_VERSION = 4
 RELATED_PACKAGE_SPECS = {
+    "global_top5_operators_2016_2025": {
+        "required_entrypoints": frozenset(
+            {
+                "annual_metrics.csv",
+                "annual_metrics.json",
+                "sources.json",
+                "quality_audit.json",
+                "conflicts_and_scope_breaks.csv",
+                "conflicts_and_scope_breaks.json",
+            }
+        ),
+        "row_file": "annual_metrics.csv",
+        # A sub-three-source row is a labelled evidence limitation, not a
+        # publication veto.  The package keeps those rows and its 232 explicit
+        # gaps visible so downstream applications can answer "not disclosed"
+        # instead of silently dropping an operator or metric.
+        "quality_statuses": frozenset({"pass", "backlog_open"}),
+    },
     "local_hk_operator_operating_metrics_2016_2025": {
         "required_entrypoints": frozenset(
             {
@@ -294,6 +312,7 @@ def _related_package_artifacts(dataset_dir: Path) -> tuple[list[dict[str, Any]],
                 "id": package_id,
                 "release_path": prefix.as_posix(),
                 "row_count": row_count,
+                "quality_status": quality.get("status"),
                 "available_value_rows": quality.get("available_value_rows"),
                 "source_count": quality.get("source_count"),
                 "artifacts": package_paths,

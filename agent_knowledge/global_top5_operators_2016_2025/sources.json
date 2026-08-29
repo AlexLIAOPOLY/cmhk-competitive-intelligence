@@ -1158,7 +1158,7 @@
       "operator_id": "reliance_jio",
       "year": 2017,
       "label": "Jio Platforms Limited / Reliance Jio Infocomm Limited 2017 annual report",
-      "url": "https://www.ril.com/ar2016-17/digital-services.html",
+      "url": "https://www.ril.com/sites/default/files/2022-12/RIL-Integrated-AR-2016-17HRF.pdf",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
       "source_document_id": "reliance_jio_ar_2017",
@@ -1175,7 +1175,7 @@
       "operator_id": "reliance_jio",
       "year": 2018,
       "label": "Jio Platforms Limited / Reliance Jio Infocomm Limited 2018 annual report",
-      "url": "https://www.ril.com/ar2017-18/digital-services.html",
+      "url": "https://www.ril.com/ar2017-18/mda.html",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
       "source_document_id": "reliance_jio_ar_2018",
@@ -1212,7 +1212,7 @@
       "operator_id": "reliance_jio",
       "year": 2020,
       "label": "Jio Platforms Limited / Reliance Jio Infocomm Limited 2020 annual report",
-      "url": "https://www.ril.com/ar2019-20/digital-services.html",
+      "url": "https://www.ril.com/ar2019-20/mda.html",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
       "source_document_id": "reliance_jio_ar_2020"
@@ -1280,7 +1280,7 @@
       "operator_id": "reliance_jio",
       "year": 2023,
       "label": "Jio Platforms Limited / Reliance Jio Infocomm Limited 2023 annual report",
-      "url": "https://www.ril.com/ar2022-23/digital-services.html",
+      "url": "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf",
       "source_type": "official_annual_report",
       "publisher": "Jio Platforms Limited / Reliance Jio Infocomm Limited",
       "source_document_id": "reliance_jio_ar_2023",
@@ -8609,6 +8609,24 @@
         }
       },
       "source_document_id": "jio_2025_factsheet"
+    },
+    {
+      "source_id": "jio_2026_factsheet_corrob",
+      "operator_id": "reliance_jio",
+      "year": 2025,
+      "label": "Jio Platforms factsheet 2026 corroborating the FY2025 5G-cell lower bound",
+      "url": "https://www.ril.com/sites/default/files/2026-05/Jio-Factsheet-2026.pdf",
+      "source_type": "official_investor_factsheet",
+      "publisher": "Reliance Industries Limited",
+      "evidence": {
+        "5g_base_stations": {
+          "value": 1,
+          "unit": "million_base_stations",
+          "comparator": ">",
+          "locator": "Leading 5G adoption; repeats deployed 1 million+ 5G cells"
+        }
+      },
+      "source_document_id": "jio_2026_factsheet_corrob"
     },
     {
       "source_id": "jio_q2_2026_integrated_filing",

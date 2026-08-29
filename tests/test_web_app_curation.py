@@ -2134,8 +2134,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         )
         self.assertIn("coverage=Q1 2016 至 Q1 2026", revenue["text"])
         self.assertIn("points=41", revenue["text"])
+        self.assertIn("grain=quarter", revenue["text"])
         self.assertIn("Q1 2016=177504", revenue["text"])
         self.assertIn("Q1 2026=266478", revenue["text"])
+        self.assertNotIn("H1 2026=", revenue["text"])
+        self.assertGreater(len(revenue["links"]), 1)
+        self.assertTrue(all(link["url"].startswith(("http://", "https://", "/")) for link in revenue["links"]))
 
     def test_chinese_rag_tokens_match_meaningful_substrings(self) -> None:
         self.assertIn("套餐", rag_llm._tokens("套餐名称"))

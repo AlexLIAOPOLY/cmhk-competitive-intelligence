@@ -385,6 +385,13 @@
       .map((company) => company.id));
   }
 
+  function competitorSourceLinks(values, label, declaredCount = 0) {
+    const urls = [...new Set((values || []).map((value) => String(value || "").trim()).filter(Boolean))];
+    if (!urls.length) return "";
+    const total = Math.max(Number(declaredCount || 0), urls.length);
+    return `<span class="competitor-source-links">${urls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">${esc(label)} ${index + 1}/${total}</a>`).join(" · ")}</span>`;
+  }
+
   function renderCompetitor({ revealedCompanies = [] } = {}) {
     const panel = document.querySelector('[data-workspace-panel="competitor"]');
     const data = state.competitorData || { companies: [], metrics: [], cells: [], gaps: [] };
@@ -499,7 +506,22 @@
       const cell = lookup.get(`${company}|${year}`);
       const gap = gapLookup.get(`${company}|${year}`);
       const gapTitle = gap ? [gap.reason, `${gap.reviewedSourceCount || gap.reviewedSources?.length || 0} 份官方材料已复核`].filter(Boolean).join(" · ") : "暂无审计记录";
-      const reviewedLink = gap?.reviewedSources?.[0];
+      const disclosedSources = cell ? [...new Set([...(cell.sources || []), cell.source].filter(Boolean))] : [];
+      const sourceAuthorityLabel = ["public_reported_company_statement", "distributed_company_press_release"].includes(cell?.sourceAuthority)
+        ? "公共来源转述"
+        : cell?.sourceAuthority === "derived_verified_timeline"
+          ? "核验时间线"
+          : "官方来源";
+      const disclosedSourceLinks = competitorSourceLinks(
+        disclosedSources,
+        sourceAuthorityLabel,
+        cell?.distinctSourceDocumentCount || cell?.verificationCount || disclosedSources.length,
+      );
+      const reviewedSourceLinks = competitorSourceLinks(
+        gap?.reviewedSources || [],
+        "已复核来源",
+        gap?.reviewedSourceCount || gap?.reviewedSources?.length || 0,
+      );
       const relatedValue = gap?.relatedPublicValue;
       const relatedEvidence = relatedValue
         ? `<strong class="competitor-related-value">相关口径：${esc(`${competitorComparator(gap.relatedPublicComparator)}${relatedValue} ${gap.relatedPublicUnit || ""}`.trim())}</strong><small>${esc(gap.relatedPublicNote || gap.relatedPublicMetric || "非目标年度同口径值")}</small>`
@@ -511,7 +533,7 @@
           : gap
             ? "— 已检索未见直接披露"
             : "— 尚无审计记录";
-      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd].filter(Boolean).join(" · "))}</small>${cell.source ? `<a href="${esc(safeUrl(cell.source))}" target="_blank" rel="noreferrer">官方来源</a>` : ""}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedLink ? `<a href="${esc(safeUrl(reviewedLink))}" target="_blank" rel="noreferrer">已复核 ${esc(gap.reviewedSourceCount || gap.reviewedSources.length)} 份官方材料</a>` : ""}`}</td>`;
+      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.usagePolicy, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd, sourceAuthorityLabel].filter(Boolean).join(" · "))}</small>${disclosedSourceLinks}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedSourceLinks}`}</td>`;
     }).join("")}</tr>`).join("");
     host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
       <div class="competitor-core-summary is-loading" role="status" aria-live="polite" aria-busy="true" data-competitor-core-summary-shell data-fallback="${esc(coreSummary)}"><strong data-competitor-core-summary><i aria-hidden="true"><u></u><u></u><u></u></i></strong></div>

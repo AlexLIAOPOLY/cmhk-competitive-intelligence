@@ -3636,6 +3636,48 @@ def _verification_sources_for_record(verification: dict[str, Any]) -> list[dict[
         return explicit_sources
     return _merge_source_lists(explicit_sources, defaults)
 
+
+NON_ISSUER_PRIMARY_HOSTS = (
+    "businesswire.com",
+    "money.finance.sina.com.cn",
+    "vip.stock.finance.sina.com.cn",
+)
+
+
+def _preferred_primary_evidence(
+    verification: dict[str, Any], sources: list[dict[str, str]]
+) -> dict[str, str]:
+    """Prefer issuer, exchange or regulator evidence over a mirror URL.
+
+    Mirrors remain in ``verification_sources`` for readback, but the field
+    named ``official_source_url`` must not point at a media or market portal
+    when an official document is already attached to the same row.
+    """
+
+    fallback = {
+        "label": str(verification.get("source_label") or ""),
+        "url": str(verification.get("source_url") or ""),
+        "evidence": str(verification.get("evidence") or ""),
+    }
+    if not any(host in fallback["url"].lower() for host in NON_ISSUER_PRIMARY_HOSTS):
+        return fallback
+    return next(
+        (
+            {
+                "label": str(source.get("label") or fallback["label"]),
+                "url": str(source.get("url") or ""),
+                "evidence": str(source.get("evidence") or fallback["evidence"]),
+            }
+            for source in sources
+            if source.get("url")
+            and not any(
+                host in str(source.get("url") or "").lower()
+                for host in NON_ISSUER_PRIMARY_HOSTS
+            )
+        ),
+        fallback,
+    )
+
 HKT_2025_ANNUAL_RESULTS_URL = "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
 HKT_2025_ANNUAL_RESULTS_HKEX_URL = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0209/2026020900404.pdf"
 HKT_2025_ANNUAL_REPORT_URL = "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
@@ -12856,6 +12898,9 @@ def apply_official_verifications(rows: list[dict[str, Any]], records: list[dict[
     official_rows: list[dict[str, Any]] = []
     for verification in OFFICIAL_VERIFICATIONS:
         verification_sources = _verification_sources_for_record(verification)
+        primary_evidence = _preferred_primary_evidence(
+            verification, verification_sources
+        )
         verification_sources_json = json.dumps(verification_sources, ensure_ascii=False)
         key = (verification["subject"], verification["period"], verification["metric_key"])
         row = index.get(key)
@@ -12867,9 +12912,9 @@ def apply_official_verifications(rows: list[dict[str, Any]], records: list[dict[
                     "verification_status": status,
                     "official_value": verification["official_value"],
                     "official_unit": verification["unit"],
-                    "official_source_label": verification["source_label"],
-                    "official_source_url": verification["source_url"],
-                    "official_evidence": verification["evidence"],
+                    "official_source_label": primary_evidence["label"],
+                    "official_source_url": primary_evidence["url"],
+                    "official_evidence": primary_evidence["evidence"],
                     "verification_count": len(verification_sources),
                     "verification_method": verification.get("verification_method") or "official_source_row_check",
                     "verification_sources": verification_sources_json,
@@ -12899,9 +12944,9 @@ def apply_official_verifications(rows: list[dict[str, Any]], records: list[dict[
             "verification_status": "official_only",
             "official_value": verification["official_value"],
             "official_unit": verification["unit"],
-            "official_source_label": verification["source_label"],
-            "official_source_url": verification["source_url"],
-            "official_evidence": verification["evidence"],
+            "official_source_label": primary_evidence["label"],
+            "official_source_url": primary_evidence["url"],
+            "official_evidence": primary_evidence["evidence"],
             "verification_count": len(verification_sources),
             "verification_method": verification.get("verification_method") or "official_source_row_check",
             "verification_sources": verification_sources_json,

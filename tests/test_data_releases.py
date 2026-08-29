@@ -63,6 +63,41 @@ class DataReleaseTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        global_operators = dataset.parent / "global_top5_operators_2016_2025"
+        global_operators.mkdir()
+        global_entrypoints = [
+            "annual_metrics.csv",
+            "annual_metrics.json",
+            "sources.json",
+            "quality_audit.json",
+            "conflicts_and_scope_breaks.csv",
+            "conflicts_and_scope_breaks.json",
+        ]
+        for name in global_entrypoints:
+            content = (
+                "operator_id,period,grain,metric_key,official_value,unit,verification_status\n"
+                "reliance_jio,FY2018,annual,mobile_arpu,137,INR_per_user_month,official_single_source\n"
+                if name == "annual_metrics.csv"
+                else "{}\n"
+                if name.endswith(".json")
+                else "value\n"
+            )
+            (global_operators / name).write_text(content, encoding="utf-8")
+        (global_operators / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "id": "global_top5_operators_2016_2025",
+                    "row_count": 1,
+                    "entrypoints": global_entrypoints,
+                    "quality": {
+                        "status": "backlog_open",
+                        "available_value_rows": 1,
+                        "source_count": 1,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
         related = dataset.parent / "local_hk_operator_operating_metrics_2016_2025"
         related.mkdir()
         related_entrypoints = [
@@ -234,15 +269,20 @@ class DataReleaseTests(unittest.TestCase):
                 (Path(result["release_dir"]) / "release.json").read_text()
             )
 
-        self.assertEqual(release["bundle_contract_version"], 3)
+        self.assertEqual(release["bundle_contract_version"], 4)
         self.assertEqual(
             [item["id"] for item in release["related_packages"]],
             [
+                "global_top5_operators_2016_2025",
                 "local_hk_operator_operating_metrics_2016_2025",
                 "competitor_product_tariffs",
             ],
         )
         paths = {item["path"] for item in release["artifacts"]}
+        self.assertIn(
+            "related_packages/global_top5_operators_2016_2025/annual_metrics.csv",
+            paths,
+        )
         self.assertIn(
             "related_packages/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
             paths,

@@ -3,7 +3,7 @@
 - 结论：`backlog_open`
 - 明细行：843
 - 有值行：611
-- 来源条目：369
+- 来源条目：370
 - 重复键：0
 - 无效来源引用：0
 
@@ -12,9 +12,10 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_single_source`: 76
-- `official_three_distinct_sources_verified`: 498
-- `official_two_distinct_sources`: 21
+- `official_multi_source_verified`: 37
+- `official_single_source`: 39
+- `official_three_distinct_sources_verified`: 494
+- `official_two_distinct_sources`: 25
 - `source_gap_confirmed`: 205
 
 ## 三来源认证行（按运营商）
@@ -25,7 +26,7 @@
 - NTT Group: 37
 - Reliance Jio: 27
 - Verizon: 39
-- 中国广电: 6
+- 中国广电: 2
 - 中国电信: 64
 - 中国移动: 80
 - 中国联通: 65

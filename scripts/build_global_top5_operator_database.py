@@ -128,6 +128,15 @@ def annual_url(operator_id: str, year: int) -> str:
         if year == 2025:
             return "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf"
         return "https://www.airtel.in/about-bharti/equity/results/annual-results"
+    if operator_id == "reliance_jio":
+        official_replacements = {
+            2017: "https://www.ril.com/sites/default/files/2022-12/RIL-Integrated-AR-2016-17HRF.pdf",
+            2018: "https://www.ril.com/ar2017-18/mda.html",
+            2020: "https://www.ril.com/ar2019-20/mda.html",
+            2023: "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf",
+        }
+        if year in official_replacements:
+            return official_replacements[year]
     return f"https://www.ril.com/ar{year-1}-{str(year)[-2:]}/digital-services.html"
 
 
@@ -1036,6 +1045,15 @@ SOURCES.update({
             "5g_network_subscribers": {"value": 191, "unit": "million_subscribers", "comparator": ">=", "locator": "Leading 5G adoption"},
             "connected_homes": {"value": 18, "unit": "million_premises", "locator": "Increasing connectivity"},
             "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "Leading 5G adoption; disclosed as 5G cells"},
+        },
+    },
+    "jio_2026_factsheet_corrob": {
+        "source_id": "jio_2026_factsheet_corrob", "operator_id": "reliance_jio", "year": 2025,
+        "label": "Jio Platforms factsheet 2026 corroborating the FY2025 5G-cell lower bound",
+        "url": "https://www.ril.com/sites/default/files/2026-05/Jio-Factsheet-2026.pdf",
+        "source_type": "official_investor_factsheet", "publisher": "Reliance Industries Limited",
+        "evidence": {
+            "5g_base_stations": {"value": 1, "unit": "million_base_stations", "comparator": ">", "locator": "Leading 5G adoption; repeats deployed 1 million+ 5G cells"},
         },
     },
     "jio_q2_2026_integrated_filing": {
@@ -2694,14 +2712,22 @@ def add_series(
             for sid in valid_ids
         }) if value is not None else []
         distinct_source_document_count = len(source_document_ids)
+        official_source_document_ids = sorted({
+            str(SOURCES[sid].get("source_document_id") or SOURCES[sid]["url"])
+            for sid in valid_ids
+            if str(SOURCES[sid].get("source_type") or "").startswith("official_")
+        }) if value is not None else []
+        distinct_official_source_document_count = len(official_source_document_ids)
         row_status = status
         if value is None:
             row_status = "source_gap_confirmed"
-        elif distinct_source_document_count >= 3:
+        elif "derived" in status:
+            row_status = status
+        elif distinct_official_source_document_count >= 3:
             row_status = "official_three_distinct_sources_verified"
-        elif distinct_source_document_count == 2:
+        elif distinct_official_source_document_count == 2:
             row_status = "official_two_distinct_sources"
-        elif status == "official_multi_source_verified":
+        elif distinct_official_source_document_count == 1:
             row_status = "official_single_source"
         ROWS.append({
             "operator_id": operator_id,
@@ -2723,11 +2749,13 @@ def add_series(
             "verification_count": len(valid_ids),
             "distinct_source_document_count": distinct_source_document_count,
             "distinct_source_document_ids": source_document_ids,
+            "distinct_official_source_document_count": distinct_official_source_document_count,
+            "distinct_official_source_document_ids": official_source_document_ids,
             "triple_source_status": (
                 "not_applicable_missing_value"
                 if value is None
                 else "three_distinct_sources_verified"
-                if distinct_source_document_count >= 3 and "derived" not in row_status
+                if distinct_official_source_document_count >= 3 and "derived" not in row_status
                 else "derived_not_directly_disclosed"
                 if "derived" in row_status
                 else "below_three_source_threshold"
@@ -3076,7 +3104,7 @@ add_series("reliance_jio", "mobile_dou", {2016:None,2017:10,2018:9.7,2019:10.9,2
 add_series("reliance_jio", "total_data_traffic", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:62.5,2022:91.4,2023:113.3,2024:148.5,2025:184.5}, scope="annual Jio network data traffic", source_ids=override_sources(override_sources(override_sources(override_sources(override_sources({y:jio_sources.get(y,[f"reliance_jio_ar_{y}"]) for y in YEARS}, 2021, jio_2021_traffic_three), 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_2023_media_release"]), 2023, jio_2023_operating_three), 2024, jio_2024_operating_sources), 2025, ["jio_2025_media_release", "jio_q1_2026_media_release", "jio_q2_2026_media_release", "jio_q3_2026_media_release"]), note="FY2025 stores the exact 184.5 billion GB value repeated in the FY2025 annual-results operating table and the Q1-Q3 FY2026 results releases' FY2025 comparative columns. Rounded 185-exabyte disclosures and the later 185.5-bn factsheet value are different precision/date bases and are not counted as exact corroboration.")
 add_series("reliance_jio", "5g_network_subscribers", {2023:None,2024:108,2025:191}, scope="5G users on Jio True5G network", source_ids=override_sources(override_sources(jio_sources, 2024, ["reliance_jio_ar_2024", "jio_2024_q4", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_media_release", "jio_2025_factsheet"]), note="Targeted review of the FY2023 and FY2024 official annual-report pages found FY2023 rollout coverage and site counts but no FY2023 5G subscriber total. The first comparable year-end subscriber disclosure is over 108 million in FY2024.")
 add_series("reliance_jio", "connected_homes", {2021:None,2022:5,2023:9,2024:12,2025:18}, scope="JioFiber/JioAirFiber connected premises; lower-bound wording in several annual reports", comparator=">=", source_ids=override_sources(override_sources(override_sources(override_sources(jio_sources, 2022, ["reliance_jio_ar_2022", "jio_2022_q4", "jio_rjil_ar_2022"]), 2023, ["reliance_jio_ar_2023"]), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet"]), 2025, ["reliance_jio_ar_2025", "jio_2025_q4", "jio_2025_factsheet"]), note="FY2024 is aligned to the annual report and factsheet (~12 million); the earlier 11 million Q4 presentation figure is not counted because it reflects a different cut-off/rounding basis.")
-add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains only the factsheet because the annual report and Q4 presentation do not repeat the exact cell count.")
+add_series("reliance_jio", "5g_base_stations", {2023:0.060,2024:1.0,2025:1.0}, scope="5G sites/cells; FY2023 is sites, FY2024-25 are cells and therefore not a continuous comparable series", comparator=">=", source_ids=override_sources(override_sources(override_sources(jio_sources, 2023, jio_2023_operating_three), 2024, ["reliance_jio_ar_2024", "jio_2024_factsheet", "jio_q2_2024_media_release"]), 2025, ["jio_2025_factsheet", "jio_2026_factsheet_corrob"]), note="Metric kept for evidence discovery but scope_break=true in quality audit; FY2023 is a directly corroborated ~60,000-site value, FY2024 is a directly corroborated lower bound of over one million cells, and FY2025 retains the original official factsheet disclosure plus the live 2026 official factsheet that repeats the same lower bound.")
 add_series("reliance_jio", "spectrum_holdings", {2016:None,2017:None,2018:None,2019:None,2020:None,2021:None,2022:None,2023:None,2024:None,2025:26801}, unit="MHz_uplink_plus_downlink", scope="total Jio spectrum footprint across bands, uplink plus downlink", source_ids=override_sources({y:[f"reliance_jio_ar_{y}"] for y in YEARS}, 2025, ["reliance_jio_ar_2025", "jio_q1_2025_analyst_presentation", "jio_2024_spectrum_acquisition_release", "jio_q1_2025_media_release"]), note="FY2025 is the exact post-June-2024-auction spectrum footprint. Four independent official RIL/Jio documents disclose the same 26,801 MHz uplink-plus-downlink value; earlier years remain unfilled rather than backcast from the current footprint.")
 
 # China Broadnet: nationwide mobile service started in 2022.  It is not a
@@ -3136,7 +3164,8 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "operator_id", "operator", "legal_name", "year", "period", "period_end", "grain",
         "metric_key", "metric_zh", "value", "official_value", "unit", "comparator", "scope",
         "basis", "verification_status", "verification_count", "distinct_source_document_count",
-        "distinct_source_document_ids",
+        "distinct_source_document_ids", "distinct_official_source_document_count",
+        "distinct_official_source_document_ids",
         "triple_source_status", "primary_source_id",
         "primary_source_url", "verification_sources", "candidate_sources", "quality_note",
     ]
@@ -3148,6 +3177,9 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
             item["verification_sources"] = json.dumps(item["verification_sources"], ensure_ascii=False)
             item["candidate_sources"] = json.dumps(item["candidate_sources"], ensure_ascii=False)
             item["distinct_source_document_ids"] = json.dumps(item["distinct_source_document_ids"], ensure_ascii=False)
+            item["distinct_official_source_document_ids"] = json.dumps(
+                item["distinct_official_source_document_ids"], ensure_ascii=False
+            )
             writer.writerow(item)
 
 
@@ -3212,7 +3244,8 @@ def main() -> None:
     available = [r for r in rows if r["value"] is not None]
     triple_source_rows = [
         r for r in available
-        if r["distinct_source_document_count"] >= 3 and "derived" not in r["verification_status"]
+        if r["distinct_official_source_document_count"] >= 3
+        and "derived" not in r["verification_status"]
     ]
     status_counts = Counter(r["verification_status"] for r in rows)
     operator_counts = Counter(r["operator"] for r in available)

@@ -3,6 +3,10 @@ import json
 import unittest
 from collections import defaultdict
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest import mock
+
+from scripts import build_competitor_workbench_data as builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +49,53 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         )
         self.assertFalse([item for item in cells if item["comparator"] not in {"=", ">", ">=", "<", "<=", "~", "approx", "≈"}])
         self.assertFalse([item for item in cells if not item["period"] or not item["periodEnd"]])
+
+    def test_builder_exports_all_strict_and_reviewed_sources(self):
+        with TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "competitor-workbench-data.json"
+            with mock.patch.object(builder, "OUTPUT", output):
+                builder.main()
+            payload = json.loads(output.read_text(encoding="utf-8"))
+
+        annual_cells = [
+            cell for cell in payload["cells"]
+            if cell["dataset"] in {
+                "global_top5_operators_2016_2025",
+                "local_hk_operator_operating_metrics_2016_2025",
+            }
+        ]
+        self.assertTrue(annual_cells)
+        self.assertFalse([
+            cell for cell in annual_cells
+            if not isinstance(cell.get("sources"), list)
+            or not isinstance(cell.get("verificationSources"), list)
+            or not isinstance(cell.get("reviewedSources"), list)
+            or not isinstance(cell.get("verificationCount"), int)
+            or not isinstance(cell.get("distinctSourceDocumentCount"), int)
+            or not isinstance(cell.get("reviewedSourceCount"), int)
+        ])
+        self.assertFalse([
+            cell for cell in annual_cells
+            if cell.get("source") and cell["source"] not in cell["sources"]
+        ])
+        airtel = next(
+            cell for cell in annual_cells
+            if cell["company"] == "Bharti Airtel"
+            and cell["metric"] == "mobile_broadband_base_stations"
+            and cell["year"] == 2017
+        )
+        self.assertEqual(airtel["verificationCount"], 5)
+        self.assertEqual(airtel["distinctSourceDocumentCount"], 5)
+        self.assertEqual(len(airtel["sources"]), 5)
+        hkt = next(
+            cell for cell in annual_cells
+            if cell["company"] == "HKT"
+            and cell["metric"] == "5g_customers"
+            and cell["year"] == 2016
+        )
+        self.assertEqual(hkt["reviewedSourceCount"], 3)
+        self.assertEqual(len(hkt["reviewedSources"]), 3)
+        self.assertTrue(all(url in hkt["sources"] for url in hkt["reviewedSources"]))
 
     def test_evidence_version_is_content_hash(self):
         self.assertRegex(self.payload["evidenceVersion"], r"^[0-9a-f]{64}$")
@@ -228,4 +279,3 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

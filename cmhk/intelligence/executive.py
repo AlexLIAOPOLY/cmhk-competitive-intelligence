@@ -39,6 +39,7 @@ SAFE_VERIFICATION_STATUSES = {
     "official_only",
     "official_single_source",
     "official_single_source_user_accepted_display",
+    "official_multi_source_verified",
     "official_two_distinct_sources_verified",
     "official_source_count_below_three_displayed",
     "official_derived_from_reported_quarters",

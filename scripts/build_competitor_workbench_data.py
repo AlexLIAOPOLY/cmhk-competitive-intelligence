@@ -7,6 +7,7 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,6 +130,44 @@ SIMPLIFIED_TITLE_REPLACEMENTS = (
 
 def text(row: dict, key: str) -> str:
     return str(row.get(key) or row.get("\ufeff" + key) or "").strip()
+
+
+def json_list(value: str) -> list:
+    try:
+        parsed = json.loads(value or "[]")
+    except (TypeError, json.JSONDecodeError):
+        return []
+    return parsed if isinstance(parsed, list) else []
+
+
+def source_urls(items: list, registry: dict[str, str] | None = None) -> list[str]:
+    registry = registry or {}
+    urls: list[str] = []
+    for item in items:
+        if isinstance(item, dict):
+            candidate = str(item.get("url") or "").strip()
+        else:
+            key = str(item or "").strip()
+            candidate = registry.get(key, key if key.startswith(("https://", "http://")) else "")
+        if candidate.startswith(("https://", "http://")) and candidate not in urls:
+            urls.append(candidate)
+    return urls
+
+
+def source_count(value: str, fallback: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def local_issuer_or_exchange_source(url: str) -> bool:
+    host = (urlparse(url).hostname or "").lower()
+    suffixes = (
+        "hkt.com", "hthkh.com", "smartone.com", "smartoneholdings.com",
+        "hkbn.net", "hgc.com.hk", "i-cablecomm.com", "hkexnews.hk", "irasia.com",
+    )
+    return any(host == suffix or host.endswith(f".{suffix}") for suffix in suffixes)
 
 
 def simplified_title(value: str) -> str:
@@ -260,17 +299,8 @@ def main() -> None:
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 if not raw:
                     if source == GLOBAL_OPERATOR_SOURCE:
-                        try:
-                            source_ids = json.loads(text(row, "candidate_sources") or "[]")
-                        except json.JSONDecodeError:
-                            source_ids = []
-                        reviewed_sources = list(
-                            dict.fromkeys(
-                                global_source_urls.get(str(source_id), "")
-                                for source_id in source_ids
-                                if global_source_urls.get(str(source_id), "")
-                            )
-                        )
+                        source_ids = json_list(text(row, "candidate_sources"))
+                        reviewed_sources = source_urls(source_ids, global_source_urls)
                         precommercial = status == "not_applicable_precommercial"
                         gaps.append({
                             "dataset": source.parent.name,
@@ -296,10 +326,7 @@ def main() -> None:
                             "reviewedSourceCount": len(reviewed_sources),
                         })
                     if source == LOCAL_HK_SOURCE and text(row, "operator_id") in FULL_AUDIT_OPERATOR_IDS and text(row, "audit_outcome") == "source_gap_confirmed":
-                        try:
-                            reviewed_sources = json.loads(text(row, "reviewed_source_urls") or "[]")
-                        except json.JSONDecodeError:
-                            reviewed_sources = []
+                        reviewed_sources = source_urls(json_list(text(row, "reviewed_source_urls")))
                         gaps.append({
                             "dataset": source.parent.name,
                             "company": company,
@@ -312,8 +339,8 @@ def main() -> None:
                             "searchStatus": "targeted_public_search_no_direct_value",
                             "reasonCode": text(row, "gap_reason_code"),
                             "reason": text(row, "gap_reason") or text(row, "quality_note"),
-                            "reviewedSources": list(dict.fromkeys(str(url) for url in reviewed_sources if url)),
-                            "reviewedSourceCount": int(text(row, "reviewed_source_count") or 0),
+                            "reviewedSources": reviewed_sources,
+                            "reviewedSourceCount": source_count(text(row, "reviewed_source_count"), len(reviewed_sources)),
                             "relatedPublicMetric": text(row, "related_public_metric"),
                             "relatedPublicValue": text(row, "related_public_value"),
                             "relatedPublicUnit": text(row, "related_public_unit"),
@@ -328,6 +355,38 @@ def main() -> None:
                 if status in BLOCKED_STATUSES:
                     continue
                 availability[(company, metric)].add(year)
+                verification_sources = json_list(text(row, "verification_sources"))
+                reviewed_sources = source_urls(json_list(text(row, "reviewed_source_urls")))
+                strict_source_urls = source_urls(
+                    verification_sources,
+                    global_source_urls if source == GLOBAL_OPERATOR_SOURCE else None,
+                )
+                primary_source = text(row, "primary_source_url")
+                all_source_urls = list(dict.fromkeys(
+                    url for url in [primary_source, *strict_source_urls, *reviewed_sources] if url
+                ))
+                verification_count = source_count(text(row, "verification_count"), len(verification_sources))
+                distinct_source_count = source_count(
+                    text(row, "distinct_source_document_count"),
+                    len(all_source_urls),
+                )
+                reviewed_source_count = source_count(
+                    text(row, "reviewed_source_count"),
+                    len(reviewed_sources),
+                )
+                if source == LOCAL_HK_SOURCE and not local_issuer_or_exchange_source(primary_source):
+                    source_authority = (
+                        "distributed_company_press_release"
+                        if status == "official_single_source"
+                        else "public_reported_company_statement"
+                    )
+                    usage_policy = "可显示和比较，但须标注为新闻稿分发、媒体或公共机构转述，不得写成发行人官网披露。"
+                elif status == "operational_zero_from_precommercial_timeline":
+                    source_authority = "derived_verified_timeline"
+                    usage_policy = "仅表示经核验的商用前状态，不是发行人发布的KPI。"
+                else:
+                    source_authority = "issuer_or_exchange_official"
+                    usage_policy = "可按原始披露期间与口径用于正式比较。"
                 cell = {
                     "dataset": source.parent.name,
                     "company": company,
@@ -341,7 +400,15 @@ def main() -> None:
                     "scope": text(row, "scope"),
                     "basis": text(row, "basis"),
                     "status": status,
-                    "source": text(row, "primary_source_url"),
+                    "source": primary_source,
+                    "sources": all_source_urls,
+                    "verificationSources": verification_sources,
+                    "verificationCount": verification_count,
+                    "distinctSourceDocumentCount": distinct_source_count,
+                    "reviewedSources": reviewed_sources,
+                    "reviewedSourceCount": reviewed_source_count,
+                    "sourceAuthority": source_authority,
+                    "usagePolicy": usage_policy,
                     "note": text(row, "quality_note"),
                 }
                 if unit != native_unit:
@@ -365,7 +432,15 @@ def main() -> None:
                         "scope": f"{alias['scopePrefix']}{text(row, 'scope')}",
                         "basis": text(row, "basis"),
                         "status": status,
-                        "source": text(row, "primary_source_url"),
+                        "source": primary_source,
+                        "sources": all_source_urls,
+                        "verificationSources": verification_sources,
+                        "verificationCount": verification_count,
+                        "distinctSourceDocumentCount": distinct_source_count,
+                        "reviewedSources": reviewed_sources,
+                        "reviewedSourceCount": reviewed_source_count,
+                        "sourceAuthority": source_authority,
+                        "usagePolicy": usage_policy,
                         "note": f"{alias['notePrefix']}{text(row, 'quality_note')}",
                         "derivedFromMetric": metric,
                     })

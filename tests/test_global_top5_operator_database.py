@@ -42,7 +42,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "NTT Group": 37,
                 "Reliance Jio": 27,
                 "Verizon": 39,
-                "中国广电": 6,
+                "中国广电": 2,
                 "中国电信": 64,
                 "中国移动": 80,
                 "中国联通": 65,
@@ -91,7 +91,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertGreaterEqual(len(row["candidate_sources"]), 3)
         self.assertEqual(len(row["verification_sources"]), 4)
         self.assertEqual(row["distinct_source_document_count"], 4)
-        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(row["verification_status"], "official_two_distinct_sources")
+        self.assertEqual(row["triple_source_status"], "below_three_source_threshold")
 
     def test_china_telecom_historical_subscriber_series_use_three_exact_documents(self):
         for year in range(2016, 2025):
@@ -756,18 +757,24 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertTrue(all(len(row["candidate_sources"]) >= len(row["verification_sources"]) for row in available))
         users_2024 = self.index[("china_broadnet", 2024, "5g_network_subscribers")]
         self.assertEqual(users_2024["value"], 32.7546)
-        self.assertEqual(users_2024["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(users_2024["verification_status"], "official_two_distinct_sources")
+        self.assertEqual(users_2024["triple_source_status"], "below_three_source_threshold")
         self.assertEqual(users_2024["distinct_source_document_count"], 4)
         users_2023 = self.index[("china_broadnet", 2023, "5g_network_subscribers")]
         self.assertEqual(users_2023["comparator"], ">")
         self.assertEqual(users_2023["distinct_source_document_count"], 3)
-        self.assertEqual(users_2023["triple_source_status"], "three_distinct_sources_verified")
+        self.assertEqual(users_2023["verification_status"], "official_two_distinct_sources")
+        self.assertEqual(users_2023["triple_source_status"], "below_three_source_threshold")
         users_2022 = self.index[("china_broadnet", 2022, "5g_network_subscribers")]
         self.assertEqual(users_2022["comparator"], ">")
         self.assertEqual(users_2022["distinct_source_document_count"], 3)
+        self.assertEqual(users_2022["verification_status"], "official_two_distinct_sources")
+        self.assertEqual(users_2022["triple_source_status"], "below_three_source_threshold")
         users_2025 = self.index[("china_broadnet", 2025, "5g_network_subscribers")]
         self.assertEqual(users_2025["comparator"], "≈")
         self.assertEqual(users_2025["distinct_source_document_count"], 3)
+        self.assertEqual(users_2025["verification_status"], "official_single_source")
+        self.assertEqual(users_2025["triple_source_status"], "below_three_source_threshold")
         base_2023 = self.index[("china_broadnet", 2023, "5g_base_stations")]
         self.assertEqual(base_2023["value"], 0.62)
         self.assertIn("co-built and shared", base_2023["scope"])
@@ -1126,7 +1133,11 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(traffic["triple_source_status"], "three_distinct_sources_verified")
 
         cells = self.index[("reliance_jio", 2025, "5g_base_stations")]
-        self.assertEqual(cells["verification_sources"], ["jio_2025_factsheet"])
+        self.assertEqual(
+            cells["verification_sources"],
+            ["jio_2025_factsheet", "jio_2026_factsheet_corrob"],
+        )
+        self.assertEqual(cells["verification_status"], "official_two_distinct_sources")
         self.assertEqual(cells["triple_source_status"], "below_three_source_threshold")
 
         spectrum = self.index[("reliance_jio", 2025, "spectrum_holdings")]
@@ -2099,7 +2110,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("period=FY2023", combined)
         self.assertIn("official_value=已定向检索未见直接披露（source_gap_confirmed）", combined)
         self.assertNotIn("not_applicable_precommercial", combined)
-        self.assertIn("ar2022-23", combined)
+        self.assertIn("RIL-Integrated-Annual-Report-2022-23.pdf", combined)
         self.assertIn("ar2023-24", combined)
         self.assertEqual(len(chunks), 4)
         self.assertNotIn("period=FY2019", combined)
@@ -2108,9 +2119,15 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             for chunk in chunks
             for link in (chunk.get("links") or [])
         }
-        self.assertIn("https://www.ril.com/ar2016-17/digital-services.html", all_links)
-        self.assertIn("https://www.ril.com/ar2017-18/digital-services.html", all_links)
-        self.assertIn("https://www.ril.com/ar2022-23/digital-services.html", all_links)
+        self.assertIn(
+            "https://www.ril.com/sites/default/files/2022-12/RIL-Integrated-AR-2016-17HRF.pdf",
+            all_links,
+        )
+        self.assertIn("https://www.ril.com/ar2017-18/mda.html", all_links)
+        self.assertIn(
+            "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf",
+            all_links,
+        )
         self.assertIn("https://www.ril.com/ar2023-24/digital-services.html", all_links)
         self.assertNotIn("https://www.ril.com/ar2015-16/digital-services.html", all_links)
         self.assertNotIn("https://www.ril.com/ar2024-25/digital-services.html", all_links)

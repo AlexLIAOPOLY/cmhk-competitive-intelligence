@@ -17,6 +17,14 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+try:
+    import certifi
+except ImportError:  # pragma: no cover - system Python may already have a CA bundle
+    certifi = None
+
+from audit_competitor_numeric_integrity import DATASETS as COMPETITOR_DATASETS
+from audit_competitor_numeric_integrity import audit_dataset
+
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT_DATE = date.today().isoformat()
@@ -24,20 +32,11 @@ OUT_ROOT = ROOT / "agent_knowledge" / "source_url_reachability_audits"
 TIMEOUT_SECONDS = 8
 MAX_WORKERS = 24
 
-DATASETS = [
-    {
-        "id": "cmhk_macro_policy_2026-06-19",
-        "csv": ROOT / "agent_knowledge" / "cmhk_macro_policy_2026-06-19" / "macro_policy_metrics.csv",
-    },
-    {
-        "id": "quarterly_competitor_metrics_2026-06-18",
-        "csv": ROOT / "agent_knowledge" / "quarterly_competitor_metrics_2026-06-18" / "quarterly_metrics.csv",
-    },
-    {
-        "id": "cloud_vendor_metrics_2026-06-17",
-        "csv": ROOT / "agent_knowledge" / "cloud_vendor_metrics_2026-06-17" / "cloud_vendor_metrics_2023_2025.csv",
-    },
-]
+DATASETS = COMPETITOR_DATASETS
+
+SSL_CONTEXT = ssl.create_default_context(
+    cafile=certifi.where() if certifi is not None else None
+)
 
 REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 CMHK-source-audit/1.0",
@@ -56,22 +55,9 @@ def collect_urls() -> dict[str, dict[str, Any]]:
     urls: dict[str, dict[str, Any]] = {}
     for dataset in DATASETS:
         dataset_id = dataset["id"]
-        for row in read_rows(dataset["csv"]):
-            row_urls: list[tuple[str, str]] = []
-            for field in ("official_source_url", "primary_source_url"):
-                url = str(row.get(field) or "").strip()
-                if url.startswith(("http://", "https://")):
-                    row_urls.append((field, url))
-            try:
-                sources = json.loads(row.get("verification_sources") or "[]")
-            except Exception:
-                sources = []
-            for item in sources:
-                if isinstance(item, dict):
-                    url = str(item.get("url") or "").strip()
-                    if url.startswith(("http://", "https://")):
-                        row_urls.append(("verification_sources", url))
-            for field, url in row_urls:
+        audited_rows, _summary = audit_dataset(dataset)
+        for row in audited_rows:
+            for url in json.loads(row["resolved_source_urls"]):
                 item = urls.setdefault(
                     url,
                     {
@@ -83,7 +69,7 @@ def collect_urls() -> dict[str, dict[str, Any]]:
                     },
                 )
                 item["datasets"].add(dataset_id)
-                item["field_types"].add(field)
+                item["field_types"].add("resolved_row_evidence")
                 item["row_ref_count"] += 1
     return urls
 
@@ -93,7 +79,9 @@ def request_once(url: str, method: str) -> tuple[int | None, str, int]:
     if method == "GET":
         headers["Range"] = "bytes=0-1023"
     request = urllib.request.Request(url, headers=headers, method=method)
-    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+    with urllib.request.urlopen(
+        request, timeout=TIMEOUT_SECONDS, context=SSL_CONTEXT
+    ) as response:
         length = 0
         if method == "GET":
             length = len(response.read(1024))
@@ -219,7 +207,7 @@ def write_markdown(rows: list[dict[str, Any]], path: Path) -> None:
             "",
             "## Scope",
             "",
-            "- Checks each unique URL referenced by official_source_url, primary_source_url, and verification_sources across the three main packages.",
+            "- Checks every unique resolved evidence URL across the five competitor packages, including registry and candidate-source references.",
             "- `ok` means HTTP 2xx/3xx was returned by HEAD or small-range GET.",
             "- `reachable_restricted` means the host responded with an access-control status such as 401/403/405/429; these require browser/manual review when adding or refreshing data, but still indicate the URL host is live.",
             "- This audit does not re-validate every numeric value; it verifies that preserved source links remain machine-checkable or explicitly flagged.",
@@ -235,7 +223,7 @@ def write_manifest(rows: list[dict[str, Any]], path: Path, csv_path: Path, md_pa
     manifest = {
         "id": "source_url_reachability_audits",
         "title": "小竞AI来源URL可达性审计",
-        "summary": "去重检查三类主数据包中 official_source_url、primary_source_url 和 verification_sources 的唯一 URL 当前是否可访问或返回受限状态。",
+        "summary": "逐行解析五类竞对数据包的所有直接、登记及候选证据 URL，去重后检查当前是否可访问或返回受限状态。",
         "source_type": "live_url_audit",
         "scope": "official/public source URL reachability for preserved evidence links.",
         "updated_at": AUDIT_DATE,

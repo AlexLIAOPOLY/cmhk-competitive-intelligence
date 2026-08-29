@@ -4094,14 +4094,14 @@
       "period": "FY2022",
       "value": 3.227,
       "unit": "亿户",
-      "verification_status": "official_single_source",
-      "source_count": 0,
+      "verification_status": "official_multi_source_verified",
+      "source_count": 3,
       "source_urls": [
         "https://www.chinaunicom.com.hk/en/ir/reports/ar2022.pdf",
         "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2022",
         "https://www.chinaunicom.com.hk/en/ir/presentations/pre230308.pdf"
       ],
-      "scope_note": "FY2022歷史點；official_single_source；來源數只作質量標註，不作展示門檻。"
+      "scope_note": "FY2022歷史點；official_multi_source_verified；來源數只作質量標註，不作展示門檻。"
     },
     {
       "domain": "03",
@@ -4113,7 +4113,7 @@
       "value": 3.333,
       "unit": "亿户",
       "verification_status": "official_derived_from_verified_rows",
-      "source_count": 0,
+      "source_count": 3,
       "source_urls": [
         "https://www.chinaunicom.com.hk/en/ir/reports/ar2023.pdf",
         "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2023",
@@ -4131,7 +4131,7 @@
       "value": 3.4398,
       "unit": "亿户",
       "verification_status": "official_derived_from_verified_rows",
-      "source_count": 0,
+      "source_count": 3,
       "source_urls": [
         "https://www.chinaunicom.com.hk/en/ir/reports/ar2024.pdf",
         "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2024",

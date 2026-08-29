@@ -30,9 +30,9 @@
   "row_count": 843,
   "quality": {
     "status": "backlog_open",
-    "source_count": 369,
+    "source_count": 370,
     "available_value_rows": 611,
-    "three_distinct_source_certified_rows": 498,
+    "three_distinct_source_certified_rows": 494,
     "three_source_certified_rows_by_operator": {
       "AT&T": 42,
       "Bharti Airtel": 98,
@@ -40,12 +40,12 @@
       "NTT Group": 37,
       "Reliance Jio": 27,
       "Verizon": 39,
-      "中国广电": 6,
+      "中国广电": 2,
       "中国电信": 64,
       "中国移动": 80,
       "中国联通": 65
     },
-    "below_three_source_rows": 113
+    "below_three_source_rows": 117
   },
   "linked_existing_datasets": [
     "quarterly_competitor_metrics_2026-06-18"

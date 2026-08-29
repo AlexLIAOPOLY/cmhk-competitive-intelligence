@@ -77,6 +77,36 @@ def _strict_source_document_count(
     return len(documents)
 
 
+def _strict_source_links(row: dict[str, Any]) -> list[dict[str, str]]:
+    candidates: list[tuple[str, str]] = []
+    primary_label = str(row.get("official_source_label") or row.get("来源标题") or "官方主来源").strip()
+    for field in ["official_source_url", "primary_source_url", "来源URL"]:
+        if url := _normalized_source_url(row.get(field)):
+            candidates.append((primary_label, url))
+    try:
+        sources = json.loads(str(row.get("verification_sources") or "[]"))
+    except Exception:
+        sources = []
+    if isinstance(sources, list):
+        for index, source in enumerate(sources, start=1):
+            if isinstance(source, dict):
+                url = _normalized_source_url(source.get("url"))
+                label = str(source.get("label") or f"严格核验来源 {index}").strip()
+            else:
+                url = _normalized_source_url(source)
+                label = f"严格核验来源 {index}"
+            if url:
+                candidates.append((label, url))
+    links: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for label, url in candidates:
+        if url in seen:
+            continue
+        seen.add(url)
+        links.append({"label": label, "url": url})
+    return links
+
+
 def _strict_three_source_text(count: int) -> str:
     status = "three_distinct_sources_verified" if count >= 3 else "below_three_source_threshold"
     return f"distinct_source_document_count={count}; triple_source_status={status}"
@@ -1312,7 +1342,8 @@ def _product_tariff_exact_chunks(
             rows = [
                 row
                 for row in csv.DictReader(handle)
-                if (row.get("record_class") or "").strip() == "formal_product_tariff"
+                if (row.get("record_class") or "").strip()
+                in {"formal_product_tariff", "market_reference_tariff"}
             ]
     except Exception:
         return []
@@ -1475,9 +1506,18 @@ def _product_tariff_exact_chunks(
             if monthly_values
             else "无统一月费"
         )
+        official_rows = sum(
+            (row.get("source_authority") or "").startswith("issuer_or_regulator")
+            for row in brand_rows
+        )
+        market_rows = sum(
+            (row.get("source_authority") or "") == "public_market_reference"
+            for row in brand_rows
+        )
         summary = (
             f"品牌汇总：brand={brand}; matched_records={len(brand_rows)}; "
             f"kinds={','.join(categories)}; period_coverage={coverage}; monthly_fee_range={price_range}."
+            f" issuer_or_regulator_rows={official_rows}; market_reference_rows={market_rows}."
         )
         if history_intent and matched_brands:
             annual_values: dict[str, list[float]] = {}
@@ -1514,7 +1554,8 @@ def _product_tariff_exact_chunks(
             f"broadband_speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
             f"contract_months={compact_value(row, '合约月数')}; "
             f"verification={compact_value(row, '核验状态')}; {_strict_three_source_row_text(row, strict_sources)}; "
-            f"source_id={compact_value(row, '来源ID')}."
+            f"source_authority={compact_value(row, 'source_authority')}; "
+            f"usage_policy={compact_value(row, 'usage_policy')}; source_id={compact_value(row, '来源ID')}."
         )
 
     chunks: list[dict[str, Any]] = []
@@ -1527,6 +1568,13 @@ def _product_tariff_exact_chunks(
             def score(row: dict[str, str]) -> tuple[int, tuple[str, str, str]]:
                 name = f"{row.get('产品类别') or ''} {row.get('套餐名称') or ''}".lower()
                 value = 0
+                authority = row.get("source_authority") or ""
+                if authority == "issuer_or_regulator_official":
+                    value += 20
+                elif authority == "public_official_or_association":
+                    value += 10
+                elif authority == "public_market_reference":
+                    value -= 10
                 if compact_value(row, "月费_HKD", "平均月费_HKD") != "-":
                     value += 4
                 if compact_value(row, "合约月数") != "-":
@@ -1567,6 +1615,7 @@ def _product_tariff_exact_chunks(
                     f"data_GB={compact_value(row, '本地数据_GB')}; "
                     f"speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
                     f"contract_months={compact_value(row, '合约月数')}; "
+                    f"source_authority={compact_value(row, 'source_authority')}; "
                     f"source_id={compact_value(row, '来源ID')}]"
                 )
             overview_lines.append(
@@ -1609,10 +1658,11 @@ def _product_tariff_exact_chunks(
                 "判断数据库整体覆盖只能使用本行的全局覆盖锚点。"
             ),
             (
-                "产品资费结构化检索结果：仅使用 record_class=formal_product_tariff；"
+                "产品资费结构化检索结果：使用正式套餐与明确标注的市场参考套餐；"
                 f"matched_records={len(rows)}; matched_brands={len(by_brand)}; "
                 f"scope={'历史/指定年份' if history_intent else '当前'}。"
-                "以下汇总由全部命中记录计算，明细为跨品牌紧凑代表行，不含 source_gap 或待复核候选。"
+                "以下汇总由全部命中记录计算；issuer_or_regulator_official可支持正式当前结论，"
+                "public_market_reference只可作市场参考，不能写成运营商官方当前资费。"
             )
         ]
         for brand in group:
@@ -1968,18 +2018,30 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
 
     source = csv_path.relative_to(ROOT).as_posix()
     if series_intent:
-        grouped: dict[tuple[str, str, str], list[dict[str, str]]] = {}
+        grouped: dict[tuple[str, str, str, str], list[dict[str, str]]] = {}
         for row in filtered:
             unit = (row.get("official_unit") or row.get("unit") or "").strip()
             key = (
                 (row.get("subject") or "").strip(),
                 (row.get("metric_key") or "").strip(),
                 unit,
+                (row.get("grain") or "unknown").strip().lower(),
             )
             grouped.setdefault(key, []).append(row)
 
         series_chunks: list[dict[str, Any]] = []
-        for (subject, metric_key, unit), group_rows in grouped.items():
+        grain_priority = {"quarter": 0, "quarterly": 0, "annual": 1, "year": 1, "half_year": 2, "half-year": 2}
+        ordered_groups = sorted(
+            grouped.items(),
+            key=lambda item: (
+                grain_priority.get(item[0][3], 9),
+                item[0][0],
+                item[0][1],
+                item[0][2],
+                item[0][3],
+            ),
+        )
+        for (subject, metric_key, unit, grain), group_rows in ordered_groups:
             ordered = sorted(
                 group_rows,
                 key=lambda row: _latest_period_score(
@@ -1998,8 +2060,9 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             if not points:
                 continue
             metric_zh = (ordered[0].get("metric_zh") or metric_key).strip()
+            grain_label = "季度" if grain in {"quarter", "quarterly"} else "半年" if grain in {"half_year", "half-year"} else "年度" if grain in {"annual", "year"} else grain
             text = (
-                f"完整季度时间序列：subject={subject}; metric_key={metric_key}; metric_zh={metric_zh}; "
+                f"完整{grain_label}时间序列：subject={subject}; metric_key={metric_key}; metric_zh={metric_zh}; grain={grain}; "
                 f"coverage={ordered[0].get('period')} 至 {ordered[-1].get('period')}; "
                 f"points={len(points)}; unit={unit}; period_values={'; '.join(points)}. "
                 "各期优先使用 official_value，缺失时使用 standardized_value。"
@@ -2008,11 +2071,19 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             )
             if conflicts:
                 text += f" official_conflict_periods={', '.join(conflicts)}，这些期间应说明口径冲突。"
+            strict_links: list[dict[str, str]] = []
+            seen_links = set()
+            for row in ordered:
+                for link in _strict_source_links(row):
+                    if link["url"] in seen_links:
+                        continue
+                    seen_links.add(link["url"])
+                    strict_links.append(link)
             series_chunks.append(
                 {
                     "source": source,
                     "text": text,
-                    "links": [{"label": source, "url": _local_ref(source)}],
+                    "links": [{"label": source, "url": _local_ref(source)}, *strict_links],
                 }
             )
         if series_chunks:
@@ -2040,7 +2111,11 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             "verification_count 只是旧证据条数，同一文档多个章节不能重复计源；"
             "若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。"
         )
-        chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
+        chunks.append({
+            "source": source,
+            "text": text,
+            "links": [{"label": source, "url": _local_ref(source)}, *_strict_source_links(row)],
+        })
     return chunks
 
 

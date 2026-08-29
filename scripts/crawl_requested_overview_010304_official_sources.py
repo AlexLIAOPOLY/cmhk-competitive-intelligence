@@ -36,6 +36,7 @@ SAFE = {
     "official_match",
     "official_only",
     "official_derived_from_verified_rows",
+    "official_multi_source_verified",
     "multi_source_or_multi_snapshot_verified",
     "official_three_distinct_sources_verified",
 }
@@ -248,10 +249,9 @@ def write_integrated_dataset(generated_at: str) -> dict[str, int]:
                         or "official_source_count_below_three_displayed"
                     )
                     raw_source_count = point.get("verification_count")
-                    source_count = (
-                        int(raw_source_count)
-                        if raw_source_count is not None
-                        else len(source_urls)
+                    source_count = max(
+                        int(raw_source_count or 0),
+                        len(source_urls),
                     )
                     facts.append({
                         "domain": domain_indexes[domain_id],

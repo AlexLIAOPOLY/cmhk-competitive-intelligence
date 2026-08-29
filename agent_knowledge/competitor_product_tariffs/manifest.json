@@ -69,7 +69,7 @@
     "agent_knowledge/hk_competitor_product_tariffs/hk_competitor_product_tariffs_followup_audit.xlsx",
     "agent_knowledge/hk_competitor_product_tariffs/quality_audit.md"
   ],
-  "updated_at": "2026-07-10T13:43:54+08:00",
+  "updated_at": "2026-08-29T18:40:19+08:00",
   "quality": {
     "status": "virtual_combined_entry",
     "notes": [
@@ -167,8 +167,8 @@
     ],
     "hkt_product_tariffs": {
       "status": "official_public_product_pages_parsed",
-      "row_count": 97,
-      "parsed_count": 93,
+      "row_count": 94,
+      "parsed_count": 90,
       "historical_row_count": 1229,
       "historical_parsed_count": 1228,
       "historical_snapshot_count": 169,
@@ -213,23 +213,31 @@
       "verification_backlog_count": 29,
       "source_gap_by_type": {
         "archive_fetched_no_plan_rows": 32,
-        "source_fetched_no_plan_rows": 9,
-        "single_source_unverified_plan_row": 29
+        "single_source_unverified_plan_row": 29,
+        "source_fetched_no_plan_rows": 9
       },
       "multi_verified_count": 684,
       "single_source_needs_review": 0,
       "official_price_conflict_needs_review": 0,
-      "captured_at_hkt": "2026-07-10T13:43:54+08:00",
+      "verification_followup": {
+        "rechecked": 28,
+        "duplicate_queue_rows_removed": 1,
+        "near_match_not_equivalent": 14,
+        "no_equivalent_second_source_found": 14,
+        "confirmed_source_gaps": 41
+      },
+      "captured_at_hkt": "2026-08-25T18:56:05+08:00",
       "archive_year_mismatch_count": 0,
       "notes": [
-        "正式 current/historical 表只保留多来源或多快照验证记录；source_gap_count 为全部待处理证据清单，须分别查看 unresolved_source_gap_count（真实来源/解析缺口）与 verification_backlog_count（单源候选待补第二来源）。"
+        "正式 current/historical 表只保留多来源或多快照验证记录；source_gap_count 为全部待处理证据清单，须分别查看 unresolved_source_gap_count（真实来源/解析缺口）与 verification_backlog_count（单源候选待补第二来源）。",
+        "已复核 28 条唯一单源候选，去除 1 条重复候选；重复证据不计作独立来源。"
       ]
     }
   },
-  "built_at": "2026-07-10T13:43:54+08:00",
-  "version": "2026-07-10T13:43:54+08:00",
+  "built_at": "2026-08-29T18:40:19+08:00",
+  "version": "2026-08-29T18:40:19+08:00",
   "dataset_id": "competitor_product_tariffs",
-  "updated_at_hkt": "2026-07-10T13:41:31+08:00",
+  "updated_at_hkt": "2026-08-29T18:40:19+08:00",
   "description": "汇总 HKT/csl/1O1O 与香港主要竞对公开产品/套餐资费，包含当前套餐、历史快照、人读版和 source-gap 审计。",
   "subdatasets": {
     "hkt_product_tariffs": {
@@ -237,8 +245,8 @@
       "manifest": "agent_knowledge/hkt_product_tariffs/manifest.json",
       "quality": {
         "status": "official_public_product_pages_parsed",
-        "row_count": 97,
-        "parsed_count": 93,
+        "row_count": 94,
+        "parsed_count": 90,
         "historical_row_count": 1229,
         "historical_parsed_count": 1228,
         "historical_snapshot_count": 169,
@@ -287,23 +295,24 @@
         "verification_backlog_count": 29,
         "source_gap_by_type": {
           "archive_fetched_no_plan_rows": 32,
-          "source_fetched_no_plan_rows": 9,
-          "single_source_unverified_plan_row": 29
+          "single_source_unverified_plan_row": 29,
+          "source_fetched_no_plan_rows": 9
         },
         "multi_verified_count": 684,
         "single_source_needs_review": 0,
         "official_price_conflict_needs_review": 0,
         "verification_followup": {
-          "rechecked": 29,
-          "near_match_not_equivalent": 16,
-          "no_equivalent_second_source_found": 13,
+          "rechecked": 28,
+          "duplicate_queue_rows_removed": 1,
+          "near_match_not_equivalent": 14,
+          "no_equivalent_second_source_found": 14,
           "confirmed_source_gaps": 41
         },
-        "captured_at_hkt": "2026-07-10T13:43:54+08:00",
+        "captured_at_hkt": "2026-08-25T18:56:05+08:00",
         "archive_year_mismatch_count": 0,
         "notes": [
           "正式 current/historical 表只保留多来源或多快照验证记录；source_gap_count 为全部待处理证据清单，须分别查看 unresolved_source_gap_count（真实来源/解析缺口）与 verification_backlog_count（单源候选待补第二来源）。",
-          "2026-07-10 已复核 29 条单源候选：16 条发现近似报价但年份、合约期、住房/客户类别或附加条件不等价，13 条未找到等价第二来源；均不升级为正式数据。41 条真实来源/解析缺口已在 verification_followup_audit 中明确标记为不可估算。"
+          "已复核 28 条唯一单源候选，去除 1 条重复候选；重复证据不计作独立来源。"
         ]
       }
     }
