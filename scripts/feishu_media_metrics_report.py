@@ -14,7 +14,6 @@ import sys
 import time
 import urllib.error
 import urllib.request
-import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -103,6 +102,19 @@ def _is_rate_limit_error(payload: dict[str, Any] | None, text: str) -> bool:
     return code == 429 or subtype == "rate_limit" or "http 429" in message
 
 
+def _is_transient_network_error(payload: dict[str, Any] | None, text: str) -> bool:
+    error = payload.get("error") if isinstance(payload, dict) else None
+    error = error if isinstance(error, dict) else {}
+    error_type = str(error.get("type") or "").lower()
+    subtype = str(error.get("subtype") or "").lower()
+    message = f"{error.get('message') or ''} {text}".lower()
+    markers = ("timed out", "timeout", "tls handshake", "connection reset", "temporary failure")
+    return (
+        error_type == "network"
+        and (subtype in {"timeout", "temporary", "connection_reset"} or any(item in message for item in markers))
+    )
+
+
 def _rate_limit_backoff(attempt: int) -> float:
     base = min(
         LARK_RATE_LIMIT_BACKOFF_CAP_SECONDS,
@@ -117,21 +129,30 @@ def run_lark(args: list[str], *, profile: str | None = None, timeout: int = 180)
     if profile:
         command.extend(["--profile", profile])
     for attempt in range(LARK_RATE_LIMIT_MAX_ATTEMPTS):
-        completed = subprocess.run(
-            command,
-            cwd=ROOT,
-            env=env,
-            text=True,
-            capture_output=True,
-            timeout=timeout,
-            check=False,
-        )
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+                timeout=timeout,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            if attempt + 1 < LARK_RATE_LIMIT_MAX_ATTEMPTS:
+                time.sleep(_rate_limit_backoff(attempt))
+                continue
+            raise ReportError(f"飞书命令超时：{_safe_error(exc)}") from exc
         raw_error = completed.stderr or completed.stdout
         payload = _cli_payload(completed.stdout) or _cli_payload(completed.stderr)
-        rate_limited = (
+        retryable = (
             completed.returncode != 0 or (isinstance(payload, dict) and payload.get("ok") is False)
-        ) and _is_rate_limit_error(payload, raw_error)
-        if rate_limited and attempt + 1 < LARK_RATE_LIMIT_MAX_ATTEMPTS:
+        ) and (
+            _is_rate_limit_error(payload, raw_error)
+            or _is_transient_network_error(payload, raw_error)
+        )
+        if retryable and attempt + 1 < LARK_RATE_LIMIT_MAX_ATTEMPTS:
             time.sleep(_rate_limit_backoff(attempt))
             continue
         if completed.returncode != 0:
@@ -429,19 +450,27 @@ def pct(numerator: int, denominator: int, digits: int) -> str:
     return f"{numerator / denominator * 100:.{digits}f}%"
 
 
-def collect(config: dict[str, Any], state: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
+def collect(config: dict[str, Any], state: dict[str, Any], *, progress: Any = None) -> tuple[list[dict[str, Any]], int]:
+    def report(detail: str) -> None:
+        if callable(progress):
+            progress(detail)
+
     sender = config["sender"]
     profile = str(sender["profile"])
     source = config["source_chat"]
+    report("source_chat")
     source_chat = get_chat(str(source["chat_id"]), profile)
     group_count = require_group(source_chat, str(source["name"]), tenant_only=True)
     cached = state.setdefault("metrics", {})
+    report("discovery")
     publications = discover_publications(config, state)
     first_message_ids = [str(item["messages"][0]["message_id"]) for item in publications]
+    report("metadata")
     metadata = get_message_metadata(first_message_ids, profile)
     rows: list[dict[str, Any]] = []
-    for publication in publications:
+    for publication_index, publication in enumerate(publications, start=1):
         title = str(publication["title"])
+        report(f"publication_{publication_index}_of_{len(publications)}")
         first_message_id = str(publication["messages"][0]["message_id"])
         message_meta = metadata.get(first_message_id) or {}
         sender_meta = message_meta.get("sender") or {}
@@ -453,7 +482,8 @@ def collect(config: dict[str, Any], state: dict[str, Any]) -> tuple[list[dict[st
         if not published_at:
             raise ReportError(f"无法读取发布时间：{title}")
         message_results: list[dict[str, Any]] = []
-        for message in publication.get("messages") or []:
+        for message_index, message in enumerate(publication.get("messages") or [], start=1):
+            report(f"publication_{publication_index}_message_{message_index}")
             message_id = str(message["message_id"])
             prior = ((cached.get(title) or {}).get("messages") or {}).get(message_id)
             try:
@@ -468,6 +498,7 @@ def collect(config: dict[str, Any], state: dict[str, Any]) -> tuple[list[dict[st
         drive_stats = None
         token = str(publication.get("drive_file_token") or "")
         if token:
+            report(f"publication_{publication_index}_drive")
             try:
                 drive_stats = get_file_statistics(
                     token,
@@ -762,7 +793,7 @@ def send_report(chat_id: str, image_path: Path, config: dict[str, Any], slot: st
             "--content",
             json.dumps(post, ensure_ascii=False),
             "--idempotency-key",
-            f"cmhk-media-metrics-{slot}-{uuid.uuid4().hex[:10]}",
+            f"cmhk-media-metrics-{slot}",
         ],
         profile=str(sender["profile"]),
     )
@@ -795,19 +826,38 @@ def readback(message_id: str, expected_chat_id: str, config: dict[str, Any], bri
         raise ReportError("发送回读缺少横版表格图片")
 
 
-def execute(config_path: Path, state_path: Path, mode: str, *, slot: str | None = None) -> dict[str, Any]:
+def execute(
+    config_path: Path,
+    state_path: Path,
+    mode: str,
+    *,
+    slot: str | None = None,
+    progress: Any = None,
+) -> dict[str, Any]:
+    def report_phase(phase: str) -> None:
+        if callable(progress):
+            progress(phase)
+
+    report_phase("collecting")
     config = load_json(config_path)
     if not isinstance(config, dict):
         raise ReportError(f"配置文件不存在或无效：{config_path}")
     state = load_json(state_path, {}) or {}
-    rows, group_count = collect(config, state)
+    rows, group_count = collect(
+        config,
+        state,
+        progress=lambda detail: report_phase(f"collecting:{detail}"),
+    )
     markdown = render_markdown(rows, group_count)
+    report_phase("model_validation")
     validate_with_model(markdown, rows, group_count, str(config.get("model") or "DeepSeek-V4-Pro"))
+    report_phase("rendering")
     image_path = render_image(rows, group_count, DEFAULT_IMAGE)
     save_json(state_path, state)
     if mode == "dry-run":
         return {"ok": True, "mode": mode, "markdown": markdown, "image": str(image_path), "group_count": group_count}
     sender = config["sender"]
+    report_phase("target_validation")
     if mode == "preview":
         target = config["preview_chat"]
         require_preview_chat(get_chat(str(target["chat_id"]), str(sender["profile"])))
@@ -822,7 +872,9 @@ def execute(config_path: Path, state_path: Path, mode: str, *, slot: str | None 
         return {"ok": True, "mode": mode, "skipped": True, "message_id": sent_slots[actual_slot]}
     as_of = datetime.now(HKT)
     brief = f"截至 {as_of.year}年{as_of.month}月{as_of.day}日 {as_of:%H:%M}（香港时间）"
+    report_phase("sending")
     message_id, image_key = send_report(str(target["chat_id"]), image_path, config, actual_slot, as_of)
+    report_phase("readback")
     readback(message_id, str(target["chat_id"]), config, brief, image_key)
     if mode == "group":
         verified_at = datetime.now(HKT).isoformat(timespec="seconds")
@@ -834,6 +886,7 @@ def execute(config_path: Path, state_path: Path, mode: str, *, slot: str | None 
             "readback_verified": True,
         }
         save_json(state_path, state)
+    report_phase("completed")
     return {"ok": True, "mode": mode, "message_id": message_id, "markdown": markdown}
 
 
@@ -849,13 +902,40 @@ def due_slots(now: datetime, state: dict[str, Any]) -> list[tuple[str, datetime]
 
 
 def daemon(config_path: Path, state_path: Path) -> None:
+    def update_status(phase: str, *, slot: str = "", error: str = "") -> None:
+        state = load_json(state_path, {}) or {}
+        state["daemon_status"] = {
+            "phase": phase,
+            "slot": slot,
+            "updated_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"),
+            "error": _safe_error(error),
+        }
+        save_json(state_path, state)
+
     while True:
         now = datetime.now(HKT)
         state = load_json(state_path, {}) or {}
-        for slot, scheduled in due_slots(now, state):
-            if now - scheduled <= timedelta(hours=12):
-                execute(config_path, state_path, "group", slot=slot)
+        pending = due_slots(now, state)
+        if not pending:
+            update_status("idle")
+        for slot, scheduled in pending:
+            if now - scheduled > timedelta(hours=12):
+                continue
+            try:
+                execute(
+                    config_path,
+                    state_path,
+                    "group",
+                    slot=slot,
+                    progress=lambda phase, current_slot=slot: update_status(phase, slot=current_slot),
+                )
                 state = load_json(state_path, {}) or {}
+                if slot not in (state.get("sent_slots") or {}):
+                    raise ReportError(f"时段 {slot} 执行返回但未写入发送回读账本")
+                update_status("idle")
+            except Exception as exc:
+                update_status("failed", slot=slot, error=str(exc))
+                raise
         time.sleep(30)
 
 

@@ -99,6 +99,37 @@ class FeishuMediaMetricsReportTests(unittest.TestCase):
         runner.assert_called_once()
         sleeper.assert_not_called()
 
+    def test_run_lark_retries_transient_network_timeout(self):
+        timed_out = subprocess.CompletedProcess(
+            ["lark-cli"],
+            1,
+            "",
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": {
+                        "type": "network",
+                        "subtype": "timeout",
+                        "message": "API call timed out",
+                    },
+                }
+            ),
+        )
+        succeeded = subprocess.CompletedProcess(
+            ["lark-cli"],
+            0,
+            json.dumps({"ok": True, "data": {"items": []}}),
+            "",
+        )
+        with patch.object(MODULE.subprocess, "run", side_effect=[timed_out, succeeded]) as runner, patch.object(
+            MODULE.random, "uniform", return_value=0.0
+        ), patch.object(MODULE.time, "sleep") as sleeper:
+            result = MODULE.run_lark(["im", "+chat-messages-list", "--chat-id", "oc_test"])
+
+        self.assertTrue(result.payload["ok"])
+        self.assertEqual(runner.call_count, 2)
+        sleeper.assert_called_once_with(1.0)
+
     def test_render_exact_table(self):
         rows = [
             {
@@ -131,6 +162,26 @@ class FeishuMediaMetricsReportTests(unittest.TestCase):
         state = {"sent_slots": {"20260811-1000": "om_old"}}
         due = MODULE.due_slots(now, state)
         self.assertEqual([slot for slot, _ in due], ["20260811-1700"])
+
+    def test_group_send_uses_stable_slot_idempotency_key(self):
+        config = {"sender": {"profile": "fixed"}}
+        response = MODULE.CommandResult(
+            payload={"ok": True, "data": {"message_id": "om_report"}},
+            stderr="",
+        )
+        with patch.object(MODULE, "upload_image", return_value="img_report"), patch.object(
+            MODULE, "run_lark", return_value=response
+        ) as run:
+            message_id, image_key = MODULE.send_report(
+                "oc_target",
+                Path("var/feishu_media_metrics/latest_report.png"),
+                config,
+                "20260829-1700",
+                MODULE.datetime(2026, 8, 29, 17, 0, tzinfo=MODULE.HKT),
+            )
+        argv = run.call_args.args[0]
+        self.assertEqual(argv[argv.index("--idempotency-key") + 1], "cmhk-media-metrics-20260829-1700")
+        self.assertEqual((message_id, image_key), ("om_report", "img_report"))
 
     def test_preview_rejects_group(self):
         with self.assertRaises(MODULE.ReportError):

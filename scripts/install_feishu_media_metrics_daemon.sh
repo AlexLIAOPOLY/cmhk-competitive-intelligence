@@ -71,7 +71,6 @@ payload = {
         "LARK_CLI_NO_PROXY": "1",
         "LARKSUITE_CLI_NO_UPDATE_NOTIFIER": "1",
         "LARKSUITE_CLI_NO_SKILLS_NOTIFIER": "1",
-        "CMHK_FEISHU_MEDIA_METRICS_STATE_MIRROR": str(root / "var" / "feishu_media_metrics" / "state.json"),
     },
     "StandardOutPath": str(logs / "daemon.stdout.log"),
     "StandardErrorPath": str(logs / "daemon.stderr.log"),
