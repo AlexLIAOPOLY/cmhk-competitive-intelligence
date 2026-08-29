@@ -1,21 +1,21 @@
 {
   "ok": true,
   "data": {
-    "generatedAt": "2026-08-25 19:10:20",
+    "generatedAt": "2026-08-29 10:59:13",
     "summary": {
-      "companies": 25,
-      "metrics": 57,
+      "companies": 26,
+      "metrics": 63,
       "records": 222,
       "verifiedRecords": 67,
       "crawlRecords": 125,
-      "acceptedAiFacts": 140,
+      "acceptedAiFacts": 141,
       "publishableAiFacts": 125,
       "publishedAiFacts": 125,
       "aiCleanedRecords": 125,
       "qualityPassedRecords": 222,
       "suppressedRecords": 0,
       "excludedOutOfScopeFacts": 0,
-      "excludedNonFacts": 6,
+      "excludedNonFacts": 7,
       "deduplicatedAiFacts": 9
     },
     "companies": [
@@ -33,7 +33,7 @@
       "KDDI",
       "Microsoft Azure",
       "NTT",
-      "SK Telecom",
+      "Orange",
       "SmarTone",
       "T-Mobile US",
       "Telefonica",
@@ -43,7 +43,8 @@
       "中国电信",
       "中国移动",
       "中国联通",
-      "中国铁塔"
+      "中国铁塔",
+      "宏观经济"
     ],
     "metrics": [
       "5G-A",
@@ -54,6 +55,7 @@
       "AI网络",
       "ARPU",
       "Azure及其他云服务增速",
+      "CPI",
       "Capex方向",
       "DICT",
       "EBITDA",
@@ -61,15 +63,19 @@
       "EBITDA或经营利润",
       "FWA",
       "Intelligent Cloud收入",
+      "Intelligent Cloud经营利润",
       "Open RAN",
       "云",
       "云/安全",
       "云网产品",
       "云计算收入",
       "产品规格",
+      "企业方案",
       "促销折扣",
       "净利润",
       "券商观点",
+      "区域布局",
+      "商誉",
       "增值服务",
       "客户数/用户数",
       "家宽套餐",
@@ -98,6 +104,7 @@
       "股票代码",
       "自由现金流",
       "董事会",
+      "融资成本",
       "资产负债率",
       "资本开支",
       "运营收入/总收益",
@@ -119,6 +126,7 @@
       "mainland",
       "中国移动、中国电信、中国联通",
       "亚太运营商",
+      "宏观经济/人口/消费",
       "香港本地竞对财报"
     ],
     "metricCategories": [
@@ -127,6 +135,7 @@
       "客户经营",
       "技术战略",
       "披露信息",
+      "政策宏观",
       "财务业绩"
     ],
     "sourceTypes": [
@@ -143,20 +152,20 @@
       },
       {
         "company": "3HK / Hutchison",
-        "metricCount": 12,
-        "recordCount": 15,
+        "metricCount": 11,
+        "recordCount": 13,
         "sourceCount": 4
       },
       {
         "company": "AT&T",
-        "metricCount": 4,
-        "recordCount": 4,
+        "metricCount": 3,
+        "recordCount": 3,
         "sourceCount": 9
       },
       {
         "company": "Deutsche Telekom",
-        "metricCount": 3,
-        "recordCount": 3,
+        "metricCount": 4,
+        "recordCount": 4,
         "sourceCount": 5
       },
       {
@@ -167,14 +176,14 @@
       },
       {
         "company": "HKBN",
-        "metricCount": 22,
-        "recordCount": 24,
+        "metricCount": 23,
+        "recordCount": 25,
         "sourceCount": 10
       },
       {
         "company": "HKT",
         "metricCount": 16,
-        "recordCount": 22,
+        "recordCount": 21,
         "sourceCount": 9
       },
       {
@@ -191,8 +200,8 @@
       },
       {
         "company": "Hutchison",
-        "metricCount": 14,
-        "recordCount": 14,
+        "metricCount": 13,
+        "recordCount": 13,
         "sourceCount": 14
       },
       {
@@ -209,8 +218,8 @@
       },
       {
         "company": "Microsoft Azure",
-        "metricCount": 2,
-        "recordCount": 2,
+        "metricCount": 3,
+        "recordCount": 3,
         "sourceCount": 4
       },
       {
@@ -220,15 +229,15 @@
         "sourceCount": 3
       },
       {
-        "company": "SK Telecom",
+        "company": "Orange",
         "metricCount": 1,
         "recordCount": 1,
         "sourceCount": 2
       },
       {
         "company": "SmarTone",
-        "metricCount": 16,
-        "recordCount": 20,
+        "metricCount": 17,
+        "recordCount": 21,
         "sourceCount": 11
       },
       {
@@ -245,8 +254,8 @@
       },
       {
         "company": "Verizon",
-        "metricCount": 5,
-        "recordCount": 5,
+        "metricCount": 6,
+        "recordCount": 6,
         "sourceCount": 4
       },
       {
@@ -269,8 +278,8 @@
       },
       {
         "company": "中国移动",
-        "metricCount": 20,
-        "recordCount": 21,
+        "metricCount": 19,
+        "recordCount": 20,
         "sourceCount": 10
       },
       {
@@ -284,6 +293,12 @@
         "metricCount": 9,
         "recordCount": 9,
         "sourceCount": 4
+      },
+      {
+        "company": "宏观经济",
+        "metricCount": 1,
+        "recordCount": 1,
+        "sourceCount": 7
       }
     ],
     "rows": [
@@ -6073,8 +6088,8 @@
         "id": "cee60e2aa37b3626",
         "company": "HKT",
         "metric": "服务收入",
-        "value": "TSS revenue grew 3% to 129.13亿港元; total revenue excluding Mobile product sales rose 3% to 168.31亿港元",
-        "detail": "片段中明确提到 'total TSS revenue expanded by 3% to 129.13亿港元' 以及 'total revenue excluding Mobile product sales rose by 3% to 168.31亿港元'，直接对应服务收入增长。",
+        "value": "TSS服务收入同比增长3%至90.14亿港元；国际电信服务收入同比增长2%至38.99亿港元",
+        "detail": "片段中明确提到“ervices grew by 3% to 90.14亿港元”和“revenue from International Telecommunications Services increased by 2% to 38.99亿港元”，均属于服务收入范畴。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6106,16 +6121,16 @@
             "url": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6127,8 +6142,8 @@
         "id": "a1a3e9d6d91f4feb",
         "company": "HKT",
         "metric": "EBITDA",
-        "value": "Total EBITDA 65.86亿港元, up 3%",
-        "detail": "片段中明确列出 'Total EBITDA1 6,586 3%'，对应2026年上半年数据。",
+        "value": "65.86亿港元（同比增长3%）",
+        "detail": "片段中明确列出“Total EBITDA 6,586”百万港元，即65.86亿港元，并注明同比增长3%。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6160,66 +6175,16 @@
             "url": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "5523a3f74a1e2ca6",
-        "company": "HKT",
-        "metric": "净利润",
-        "value": "Profit attributable to holders of Share Stapled Units 21.53亿港元, up 4%",
-        "detail": "片段中明确提到 'Profit attributable to holders of Share Stapled Units/shares of the Company for the six months ended 30 June 2026 increased by 4% to 21.53亿港元'。",
-        "group": "HKT / csl / 1O1O",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "hkt.com",
-            "url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf"
-          },
-          {
-            "label": "stockanalysis.com",
-            "url": "https://stockanalysis.com/quote/hkg/6823/financials/"
-          },
-          {
-            "label": "stockanalysis.com",
-            "url": "https://stockanalysis.com/quote/hkg/6823/revenue/"
-          },
-          {
-            "label": "hkt.com",
-            "url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf"
-          },
-          {
-            "label": "hkt.com",
-            "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
-          }
-        ],
-        "confidence": 0.95,
-        "rowRef": "row_2",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6231,8 +6196,8 @@
         "id": "3f73a324b93e97c3",
         "company": "HKT",
         "metric": "客户数/用户数",
-        "value": "Post-paid customer base 3.522 million; FTTH connections 1.101 million; consumer broadband base 1.497 million",
-        "detail": "片段中明确提到 'post-paid customer base, reaching 3.522 million'、'FTTH connections reached 1.101 million' 以及 'consumer broadband base of 1.497 million'。",
+        "value": "后付费用户总数352.2万（同比净增4.4万）；核心1O1O和csl用户同比增长2%",
+        "detail": "片段中明确提到“post-paid customer base, reaching 3.522 million”和“net gain of 44,000 year-on-year”，以及“core 1O1O and csl segment further expanded by 2%”。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6264,16 +6229,16 @@
             "url": "https://stockanalysis.com/quote/hkg/6823/financials/"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6285,8 +6250,8 @@
         "id": "fd36afc85660a551",
         "company": "HKT",
         "metric": "5G用户数",
-        "value": "2.2 million users as at end of June 2026, up 16% year-on-year",
-        "detail": "片段中明确提到 '5G mobile customer base also continued to expand, increasing by 16% year-on-year to 2.2 million users as at the end of June 2026'。",
+        "value": "220万（同比增长16%）",
+        "detail": "片段中明确提到“5G mobile customer base also continued to expand, increasing by 16% year-on-year to 2.2 million users”。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6318,16 +6283,16 @@
             "url": "https://stockanalysis.com/quote/hkg/6823/financials/"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6380,16 +6345,16 @@
             "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6442,16 +6407,16 @@
             "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6463,8 +6428,8 @@
         "id": "f0432bd552ec9f17",
         "company": "HKT",
         "metric": "宽频线数/家宽用户数",
-        "value": "FTTH connections 1.101 million; consumer broadband base 1.497 million",
-        "detail": "片段中明确提到 'FTTH connections reached 1.101 million' 以及 'consumer broadband base of 1.497 million'。",
+        "value": "FTTH连接数110.1万（同比增长4%）；消费宽频用户总数149.7万",
+        "detail": "片段中明确提到“FTTH connections reached 1.101 million”和“consumer broadband base of 1.497 million”。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6496,16 +6461,16 @@
             "url": "https://stockanalysis.com/quote/hkg/6823/financials/"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_2",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6517,8 +6482,8 @@
         "id": "af974079b9dbb255",
         "company": "HKT",
         "metric": "战略合作",
-        "value": "HKT Enterprise Solutions参与GSMA Open Gateway、Linux基金会CAMARA Project及Bridge Alliance API Exchange等国际Open API合作框架。",
-        "detail": "片段中明确提到HKT Enterprise Solutions积极参与GSMA Open Gateway计划、Linux基金会主导的CARAMA Project以及跨国联盟Bridge Alliance API Exchange等国际性合作框架。",
+        "value": "参与GSMA Open Gateway、Linux Foundation CARAMA Project及Bridge Alliance API Exchange等国际合作框架",
+        "detail": "片段明确提到HKT Enterprise Solutions积极参与上述国际性合作框架。",
         "group": "HKT / csl / 1O1O",
         "disclosure": "",
         "disclosureDate": "",
@@ -6538,7 +6503,7 @@
         "rowRef": "row_4",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
+        "aiNote": "非量化指标，有具体合作对象和行动。",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -6552,87 +6517,11 @@
         "hasSources": true
       },
       {
-        "id": "a0e917001a2b8c36",
-        "company": "3HK / Hutchison",
-        "metric": "服务收入",
-        "value": "Operating service revenue $2,846 million",
-        "detail": "片段中明确列出 'Operating service revenue $2,846 million'。",
-        "group": "3HK / Hutchison",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
-          },
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
-          }
-        ],
-        "confidence": 0.9,
-        "rowRef": "row_5",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.9,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.962,
-        "sourceTier": "public",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
         "id": "e63f645032808b57",
         "company": "3HK / Hutchison",
         "metric": "EBITDA",
-        "value": "EBITDA 763 million (1H 2026)",
-        "detail": "片段中明确列出 'EBITDA (2) $763 million'，且上下文指向香港业务中期业绩。",
-        "group": "3HK / Hutchison",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
-          },
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
-          }
-        ],
-        "confidence": 0.95,
-        "rowRef": "row_5",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.967,
-        "sourceTier": "public",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "d4a34e0de0f76397",
-        "company": "3HK / Hutchison",
-        "metric": "净利润",
-        "value": "profit attributable to shareholders $2m (from Macau operations)",
-        "detail": "片段提到 'Together with the profit from Macau operations of $2m, the Group’s profit attributable to shareholders'。",
+        "value": "763百万港元（2026年上半年，同比稳定）",
+        "detail": "片段中“EBITDA (2) ... Stable $763”对应2026年上半年EBITDA为763百万港元。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -6652,7 +6541,7 @@
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "该利润仅来自澳门业务，并非集团整体净利润。",
+        "aiNote": "1H2026 EBITDA数据",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -6686,16 +6575,16 @@
             "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiNote": "资本开支数据；从已核验公开字段恢复",
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6724,16 +6613,16 @@
             "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiNote": "派息数据；从已核验公开字段恢复",
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6762,16 +6651,16 @@
             "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiNote": "战略升级事实；从已核验公开字段恢复",
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6783,8 +6672,8 @@
         "id": "2a35c40bece5f01f",
         "company": "Hutchison",
         "metric": "运营收入/总收益",
-        "value": "Total revenue 5,448 million港元 (2025年)",
-        "detail": "片段中多处出现 'Revenue $5,448m' 或 'Total revenue 5,448'，并注明同比增长17%。",
+        "value": "2025年香港业务总收益54.48亿港元（同比增长17%）",
+        "detail": "片段中“Total revenue 5,448 4,643 +17%”及“Revenue 5,448 4,643 +17%”直接支持。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -6812,16 +6701,16 @@
             "url": "https://www.hthkh.com/en/ir/fin_results.php"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiNote": "总收益数据",
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6833,8 +6722,8 @@
         "id": "b69c9d61128ec313",
         "company": "Hutchison",
         "metric": "服务收入",
-        "value": "Net customer service revenue 3,619 million港元 (2025年)",
-        "detail": "片段中 'Service Revenue $3,619m' 和 'Net customer service revenue 3,619' 明确指出了服务收入金额。",
+        "value": "2025年净客户服务收入36.19亿港元（同比增长6%）",
+        "detail": "片段中“Service Revenue $3,619m”及“Net customer service revenue 3,619 3,425 +6%”直接支持。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -6862,16 +6751,16 @@
             "url": "https://www.hthkh.com/en/ir/fin_results.php"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiNote": "服务收入数据",
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -6883,66 +6772,8 @@
         "id": "49319f9a05e34929",
         "company": "Hutchison",
         "metric": "EBITDA",
-        "value": "EBITDA 1,508 million港元 (2025年)",
-        "detail": "片段中多处出现 'EBITDA (2) 1,508' 或 'EBITDA from Hong Kong operations remained stable at 15.08亿港元'。",
-        "group": "3HK / Hutchison",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "www1.hkexnews.hk",
-            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
-          },
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
-          },
-          {
-            "label": "doc.irasia.com",
-            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/reports.php"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/fin_results.php"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/ir/reports.php?report=ir2026"
-          },
-          {
-            "label": "m.hthkh.com",
-            "url": "https://m.hthkh.com/en/ir/presentations.php"
-          }
-        ],
-        "confidence": 0.95,
-        "rowRef": "row_5",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.995,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
-        "id": "1a68225d857290c0",
-        "company": "Hutchison",
-        "metric": "净利润",
-        "value": "Profit attributable to shareholders 18 million港元 (2025年，仅香港业务)",
-        "detail": "片段中 'Profit attributable to shareholders 18 31 –42%' 表格显示2025年股东应占溢利为18（百万港元），但该数字仅包含香港业务。",
+        "value": "2025年香港业务EBITDA 15.08亿港元（同比稳定）",
+        "detail": "片段中“EBITDA (2) 1,508 1,511 –”及“EBITDA from Hong Kong operations remained stable at 15.08亿港元”直接支持。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -6982,7 +6813,65 @@
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "集团整体股东应占亏损为2500万港元，此处提取的是香港业务利润。",
+        "aiNote": "EBITDA数据",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "1a68225d857290c0",
+        "company": "Hutchison",
+        "metric": "净利润",
+        "value": "2025年股东应占亏损2500万港元（2024年盈利600万港元）",
+        "detail": "片段中“(Loss)/profit attributable to shareholders (25) 6 –517%”及“The Group’s loss attributable to shareholders and loss per share in 2025 were 0.25亿港元 and 0.0052港元/股 respectively”直接支持。",
+        "group": "3HK / Hutchison",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "www1.hkexnews.hk",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf"
+          },
+          {
+            "label": "doc.irasia.com",
+            "url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/reports.php"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/fin_results.php"
+          },
+          {
+            "label": "hthkh.com",
+            "url": "https://www.hthkh.com/en/ir/reports.php?report=ir2026"
+          },
+          {
+            "label": "m.hthkh.com",
+            "url": "https://m.hthkh.com/en/ir/presentations.php"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_5",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "净利润数据",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -7040,16 +6929,16 @@
             "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiNote": "current_value中的'4.92%；4.30%'为存款利率，'37.47亿港元'为现金余额，均非资本开支数据，已忽略。；从已核验公开字段恢复",
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7102,16 +6991,16 @@
             "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7156,16 +7045,16 @@
             "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.92,
         "rowRef": "row_5",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.92,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.992,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7177,50 +7066,8 @@
         "id": "df0a6d336bb89316",
         "company": "Hutchison",
         "metric": "5G套餐",
-        "value": "推出5G五周年限时优惠，现有4.5G客户续约指定计划可享首12个月免费升级5G，其后每月加收8港元；新客户或续约客户网上办理指定计划可获额外5,000 MoneyBack积分。",
-        "detail": "片段中详细描述了5G周年庆的限时优惠活动内容。",
-        "group": "3HK / Hutchison",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp250529"
-          },
-          {
-            "label": "m.hthkh.com",
-            "url": "https://m.hthkh.com/en/media/press.php"
-          },
-          {
-            "label": "hthkh.com",
-            "url": "https://www.hthkh.com/en/media/press_3hk.php"
-          }
-        ],
-        "confidence": 0.95,
-        "rowRef": "row_6",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 0.95,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.995,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "产品资费",
-        "hasSources": true
-      },
-      {
-        "id": "a84954f72b5e804e",
-        "company": "Hutchison",
-        "metric": "漫游",
-        "value": "推出World Plan，数据可在香港及全球220多个目的地使用；推出Ai Travel SIM。",
-        "detail": "片段中新闻标题和列表显示 'One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launch World Plan' 和 'Ai Travel SIM'。",
+        "value": "推出5G升级限时优惠，现有4.5G客户续约可享首12个月免费升级，之后12个月每月加收8港元；新客户或续约客户在线办理指定计划可获额外5,000 MoneyBack积分。",
+        "detail": "片段中明确提到'Existing 4.5G customers subscribing to the \"Upgraded 5G Network Plan\" upon renewal can enjoy a free upgrade for the first 12 months, with an additional monthly fee of $8 for the following 12 months'以及'New customers subscribing to specified plans online or existing customers renewing contracts online with specific plans will each receive an extra 5,000 MoneyBack Points'。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -7261,8 +7108,8 @@
         "id": "30c5ed27ba69837c",
         "company": "Hutchison",
         "metric": "战略合作",
-        "value": "在3Business Empower Partnership Summit 2025上与微软等多家战略伙伴签署谅解备忘录，合作范围涵盖AI、5G、ESG、云计算、低空经济、智慧建筑和机器人等领域。",
-        "detail": "片段中详细描述了峰会及与微软等伙伴签署谅解备忘录的具体合作内容。",
+        "value": "HTHK在3Business Empower Partnership Summit 2025上与微软等多家战略伙伴签署MoU，涵盖AI、5G、ESG、云计算、低空经济、智慧建筑和机器人等领域。",
+        "detail": "片段明确提到HTHK在峰会上与多家战略伙伴签署谅解备忘录，合作范围涵盖AI、5G、ESG、云计算、低空经济、智慧建筑和机器人。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -7290,16 +7137,16 @@
             "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp250529"
           }
         ],
-        "confidence": 0.95,
+        "confidence": 0.9,
         "rowRef": "row_7",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.95,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.995,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7311,8 +7158,8 @@
         "id": "2726c115c6438193",
         "company": "Hutchison",
         "metric": "5G-A",
-        "value": "HTHK已启动5.5G网络增强工程，在启德体育园、香港会议展览中心、西九龙文化区部署5.5G热点，并与华为签署云部署战略谅解备忘录。",
-        "detail": "片段明确提到HTHK在启德体育园启动5.5G网络增强工程，并在香港会议展览中心和西九龙文化区部署5.5G，同时current_value提及与华为签署云部署战略谅解备忘录。",
+        "value": "HTHK在启德体育园、香港会议展览中心和西九龙文化区率先推出5.5G网络热点，并部署Agentic AI系统优化网络体验，下载速度达3,083 Mbps。",
+        "detail": "片段提到HTHK在三大活动场馆率先提供5.5G网络热点，并部署Agentic AI系统，测试下载速度达3,083 Mbps。",
         "group": "3HK / Hutchison",
         "disclosure": "",
         "disclosureDate": "",
@@ -7358,11 +7205,61 @@
         "hasSources": true
       },
       {
+        "id": "bd0b9c8ab138487c",
+        "company": "SmarTone",
+        "metric": "企业方案",
+        "value": "SmarTone推出全新Home 5G Broadband x Wi-Fi 7方案，配备SmarTone CPE 6 5G Wi-Fi 7路由器，提升私人宽带体验。",
+        "detail": "片段提到SmarTone推出新Home 5G Broadband x Wi-Fi 7 Solution，并介绍SmarTone CPE 6 5G Wi-Fi 7路由器。",
+        "group": "SmarTone",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "5g.smartone.com",
+            "url": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2025/01/2025_01_15_514.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2025/04/2025_04_02_515.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2022/12/2022_12_19_480.pdf"
+          },
+          {
+            "label": "smartoneholdings.com",
+            "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/01/2026_01_06_525.pdf"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_9",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "其他",
+        "hasSources": true
+      },
+      {
         "id": "0d1ccf4990a888d3",
         "company": "SmarTone",
         "metric": "漫游",
-        "value": "SmarTone提供国际漫游服务，包括多日漫游数据包，并设有漫游学院。",
-        "detail": "片段中多次出现'International Roaming'、'Roaming Data'、'Multi-Day Roaming Data Pack'及'Roaming Academy'等具体服务内容。",
+        "value": "SmarTone提供亚太及全球漫游数据包，10GB全速漫游数据，亚太区平均低于$3/日，全球平均低于$6/日，有效期90天，支持机上漫游。",
+        "detail": "片段详细描述了SmarTone的APAC/Worldwide Roaming Data Pack产品，包括10GB数据、价格、有效期和机上漫游支持。",
         "group": "SmarTone",
         "disclosure": "",
         "disclosureDate": "",
@@ -7412,7 +7309,7 @@
         "company": "HKBN",
         "metric": "总收入",
         "value": "截至2026年2月28日止六个月，总收入为60.292亿港元（2025年同期：57.343亿港元）。",
-        "detail": "片段中明确列出'Revenue from contracts with customers within the scope of HKFRS 15'为6,029,202千港元（2026年）和5,734,269千港元（2025年）。",
+        "detail": "片段中明确列出Revenue from contracts with customers within the scope of HKFRS 15为6,029,202千港元（2026年）和5,734,269千港元（2025年）。",
         "group": "HKBN",
         "disclosure": "",
         "disclosureDate": "",
@@ -7457,8 +7354,8 @@
         "id": "66a26cf66980a45f",
         "company": "HKBN",
         "metric": "板块收入分拆",
-        "value": "住宅解决方案收入11.582亿港元，企业解决方案收入28.076亿港元，企业解决方案相关产品收入10.122亿港元，手机及其他产品收入10.512亿港元（截至2026年2月28日止六个月）。",
-        "detail": "片段中明确按'Residential Solutions revenue'、'Enterprise Solutions revenue'、'Enterprise Solutions related products revenue'和'Handsets and other products revenue'列出了具体金额。",
+        "value": "按主要类别分拆：住宅方案收入11.582亿港元，企业方案收入28.076亿港元，企业方案相关产品收入10.122亿港元，手机及其他产品收入10.512亿港元。",
+        "detail": "片段中按主要类别分拆了收入，包括Residential Solutions revenue、Enterprise Solutions revenue等具体数字。",
         "group": "HKBN",
         "disclosure": "",
         "disclosureDate": "",
@@ -7500,11 +7397,111 @@
         "hasSources": true
       },
       {
+        "id": "41701e4084253bb7",
+        "company": "HKBN",
+        "metric": "融资成本",
+        "value": "截至2026年2月28日止六个月，融资成本为3.788亿港元（2025年同期：3.660亿港元）。",
+        "detail": "片段中明确列出Finance costs为378,831千港元（2026年）和366,024千港元（2025年）。",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/financial-results"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_11",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "86c4bdfa36208042",
+        "company": "HKBN",
+        "metric": "商誉",
+        "value": "截至2026年2月28日，商誉为78.165亿港元（2025年8月31日：78.165亿港元）。",
+        "detail": "片段中明确列出Goodwill为7,816,507千港元（2026年2月28日）和7,816,507千港元（2025年8月31日）。",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/investor-engagement/financial-results"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_11",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
         "id": "b7f0185eb66746ff",
         "company": "HKBN",
         "metric": "云/安全",
-        "value": "HKBN与TP-Link合作推出升级版'Priority Plus'一站式家庭Wi-Fi解决方案，利用TP-Link的Aginet云管理平台。",
-        "detail": "片段明确提到'In partnership with TP Link, we're thrilled to launch an upgraded version of our \"Priority Plus\" one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet'。",
+        "value": "与TP-Link合作推出基于Aginet云管理平台的Wi-Fi 7家庭网络方案；与HIKMICRO达成独家分销合作，提供热成像安防及智能管理解决方案。",
+        "detail": "片段明确提及HKBN与TP-Link合作推出Wi-Fi 7方案，以及与HIKMICRO的独家分销合作，均涉及云/安全相关产品。",
         "group": "HKBN",
         "disclosure": "",
         "disclosureDate": "",
@@ -7524,16 +7521,16 @@
             "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html"
           }
         ],
-        "confidence": 0.9,
+        "confidence": 0.95,
         "rowRef": "row_14",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.9,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.99,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7545,8 +7542,8 @@
         "id": "b4d72044893d4a4c",
         "company": "HKBN",
         "metric": "重大合作",
-        "value": "HKBN企业方案与HIKMICRO签署独家分销合作协议，HIKMICRO加入HKBN InnoTech生态系统联盟(iTEA)。",
-        "detail": "片段明确提到'HKBN Enterprise Solutions today announced an exclusive distribution partnership with HIKMICRO'和'HIKMICRO has officially joined the HKBN InnoTech Ecosystem Alliance (iTEA)'。",
+        "value": "与TP-Link合作推出Wi-Fi 7家庭网络方案；与HIKMICRO达成独家分销合作，提供热成像安防及智能管理解决方案。",
+        "detail": "片段明确提及HKBN与TP-Link合作推出Wi-Fi 7方案，以及与HIKMICRO的独家分销合作。",
         "group": "HKBN",
         "disclosure": "",
         "disclosureDate": "",
@@ -7566,21 +7563,63 @@
             "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
           }
         ],
-        "confidence": 0.9,
+        "confidence": 0.95,
         "rowRef": "row_14",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.9,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.99,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
         "valueType": "text",
         "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
+        "id": "f1b64fc9047387e4",
+        "company": "HKBN",
+        "metric": "区域布局",
+        "value": "住宅宽带网络覆盖扩大2%至265万户家庭。",
+        "detail": "片段提及'network coverage expanded by 2% to 2.65 million households across Hong Kong'，属于区域布局相关描述。",
+        "group": "HKBN",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html"
+          },
+          {
+            "label": "hkbn.net",
+            "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
+          },
+          {
+            "label": "reg.hkbn.net",
+            "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html"
+          }
+        ],
+        "confidence": 0.95,
+        "rowRef": "row_14",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.95,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.995,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "客户经营",
         "hasSources": true
       },
       {
@@ -7620,16 +7659,16 @@
             "url": "https://www.ctfme.com/en/annual-interim-reports"
           }
         ],
-        "confidence": 0.92,
+        "confidence": 0.95,
         "rowRef": "row_17",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.92,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.992,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7666,16 +7705,16 @@
             "url": "https://www.aastocks.com/en/stocks/news/aafn/result-announcement"
           }
         ],
-        "confidence": 0.92,
+        "confidence": 0.95,
         "rowRef": "row_17",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "从已核验公开字段恢复",
-        "aiConfidence": 0.92,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.992,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7710,10 +7749,6 @@
           {
             "label": "aastocks.com",
             "url": "https://www.aastocks.com/en/stocks/news/aafn/result-announcement"
-          },
-          {
-            "label": "aastocks.com",
-            "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/01097/0/hk-stock-news/1"
           }
         ],
         "confidence": 0.92,
@@ -7734,49 +7769,11 @@
         "hasSources": true
       },
       {
-        "id": "cf1b582ec0402849",
-        "company": "SK Telecom",
-        "metric": "Capex方向",
-        "value": "SK Telecom CEO在MWC26宣布'AI Native'战略，包括AI基础设施重组和大规模投资计划。",
-        "detail": "片段中明确提到“SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26... includes a reorganization of AI infrastructure and large-scale investment plans”。",
-        "group": "亚太运营商",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "news.sktelecom.com",
-            "url": "https://news.sktelecom.com/en/category/press-center/press-release"
-          },
-          {
-            "label": "news.sktelecom.com",
-            "url": "https://news.sktelecom.com/en/2787"
-          }
-        ],
-        "confidence": 0.9,
-        "rowRef": "row_19",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "资本开支方向有明确战略描述。",
-        "aiConfidence": 0.9,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 0.962,
-        "sourceTier": "public",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "text",
-        "metricCategory": "财务业绩",
-        "hasSources": true
-      },
-      {
         "id": "31e2ceb91ecb92a8",
         "company": "Jio",
         "metric": "AI",
-        "value": "Jio Platforms is the world's largest data company with 191mn 5G users; ~85% share in 5G-based FWA services; ARPU at Rs 206.2 up 13.5%.",
-        "detail": "片段来自RIL FY25分析师演示文稿，明确提及Jio Platforms的5G用户数、FWA份额和ARPU，属于Jio的AI相关业务表现。",
+        "value": "JioCloud提供AI/ML服务，JioAttendance为AI无接触考勤，并与Google Gemini合作",
+        "detail": "raw_text中Jio业务页面列出AI+Machine Learning、JioAttendance AI考勤，以及Google Gemini from Jio合作。",
         "group": "亚太运营商",
         "disclosure": "",
         "disclosureDate": "",
@@ -7796,16 +7793,16 @@
             "url": "https://www.jio.com/"
           }
         ],
-        "confidence": 0.8,
+        "confidence": 0.9,
         "rowRef": "row_19",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "片段未直接提及AI产品或项目，但展示了Jio在5G和数据领域的领导地位，可视为AI基础设施的支撑。",
-        "aiConfidence": 0.8,
+        "aiNote": "",
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.952,
+        "qualityScore": 0.962,
         "sourceTier": "public",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -7817,8 +7814,8 @@
         "id": "9ed3d0b42f577b45",
         "company": "Jio",
         "metric": "云",
-        "value": "Digital revenue shows strong growth on the back of cloud services, IoT, content bundling and more.",
-        "detail": "片段来自RIL FY25分析师演示文稿，明确提到'Digital revenue shows strong growth on the back of cloud services, IoT, content bundling and...'。",
+        "value": "JioCloud提供云基础设施、数据 center transformation及Microsoft Azure through JioCloud",
+        "detail": "raw_text中Jio业务页面列出JioCloud Services、Cloud Server in a Box、Hybrid+multicloud及Microsoft Azure Through JioCloud。",
         "group": "亚太运营商",
         "disclosure": "",
         "disclosureDate": "",
@@ -7842,7 +7839,7 @@
         "rowRef": "row_19",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "云指标对应云服务，片段直接提及Jio的云服务推动数字收入增长。",
+        "aiNote": "",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -7859,8 +7856,8 @@
         "id": "336afbd1f33dfbca",
         "company": "Deutsche Telekom",
         "metric": "AI网络",
-        "value": "T-Mobile and Deutsche Telekom launch joint 6G Innovation Hub to advance AI-native networks, focusing on Physical AI, sensing and intelligent compute.",
-        "detail": "片段明确提到'T-Mobile and Deutsche Telekom Launch Joint 6G Innovation Hub to Advance AI-Native Networks'，并描述了AI-native网络的设计目标。",
+        "value": "与T-Mobile联合启动6G创新中心，推进AI原生网络；展示Magenta AI Call Assistant等",
+        "detail": "raw_text明确提到T-Mobile and Deutsche Telekom Launch Joint 6G Innovation Hub to Advance AI-Native Networks，并提及AI-native and Autonomous Networks、Magenta AI Call Assistant。",
         "group": "亚太运营商",
         "disclosure": "",
         "disclosureDate": "",
@@ -7884,7 +7881,7 @@
         "rowRef": "row_20",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "AI网络指标对应AI-native网络，片段直接提及Deutsche Telekom的相关举措。",
+        "aiNote": "",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -7898,11 +7895,49 @@
         "hasSources": true
       },
       {
+        "id": "b2056ce3161178a2",
+        "company": "Orange",
+        "metric": "AI网络",
+        "value": "Orange 在 MWC 2026 展示与 Shabodi 合作的 Network-Augmented Facilities 平台，并推动 agentic AI 与网络 API 结合。",
+        "detail": "片段提到 Network-Augmented Facilities demo 由 Orange 与 Shabodi 合作开发，并称 agentic AI workflows becoming a near-term reality。",
+        "group": "亚太运营商",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "developer.orange.com",
+            "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/"
+          },
+          {
+            "label": "developer.orange.com",
+            "url": "https://developer.orange.com/events/mwc-2026/"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_20",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "AI 网络相关定性披露",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.962,
+        "sourceTier": "public",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "text",
+        "metricCategory": "技术战略",
+        "hasSources": true
+      },
+      {
         "id": "5602395e68fa19c2",
         "company": "Telefonica",
         "metric": "网络API",
-        "value": "Telefónica Open Gateway exposes telco capabilities through global, standardized APIs under CAMARA framework, available on AWS, Google Cloud, Microsoft Azure and Vonage.",
-        "detail": "片段明确提到'These capabilities are exposed through global, standardized APIs under the framework of CAMARA'和'available through the most common marketplaces for them: AWS, Google Cloud, Microsoft Azure and Vonage'。",
+        "value": "Telefónica Open Gateway 通过 CAMARA 标准 API 开放网络能力，并推出 Developer Hub 和 Partner Program。",
+        "detail": "片段提到 Telefónica Open Gateway 已推出 Partner Program，并称能力通过 CAMARA 框架下的全球标准化 API 暴露。",
         "group": "亚太运营商",
         "disclosure": "",
         "disclosureDate": "",
@@ -7938,7 +7973,7 @@
         "rowRef": "row_20",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "网络API指标对应网络API开放，片段直接描述了Telefónica的Open Gateway API计划。",
+        "aiNote": "网络 API 定性披露",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -7955,8 +7990,8 @@
         "id": "b38143f3d1e463c8",
         "company": "Telefonica",
         "metric": "Open RAN",
-        "value": "Telefónica believes mobile networks are evolving towards a virtualized model, known as open RAN, and plans to deploy open RAN pilots in Brazil, Germany, Spain and the UK, with ambition to reach up to 50% of 4G and 5G RAN",
-        "detail": "片段明确提到'Telefónica believes that mobile networks are evolving towards a “virtualized” model, known as open RAN'和'we will deploy open RAN pilots in our core markets of Brazil, Germany, Spain and the UK'以及'The ambition is for open RAN to reach up to 50% of the 4G and 5G RAN growth between 2022 and 2025'。",
+        "value": "Telefónica 计划在巴西、德国、西班牙和英国部署 Open RAN 试点，目标 2022-2025 年 Open RAN 占 4G/5G RAN 增长的 50%。",
+        "detail": "片段提到将在巴西、德国、西班牙和英国部署 open RAN pilots，并称目标为 open RAN 达到 4G 和 5G RAN 增长的 50%。",
         "group": "亚太运营商",
         "disclosure": "",
         "disclosureDate": "",
@@ -7992,7 +8027,7 @@
         "rowRef": "row_20",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "Open RAN指标对应开放无线接入网，片段直接描述了Telefónica的Open RAN战略和部署计划。",
+        "aiNote": "Open RAN 部署计划",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -8006,11 +8041,69 @@
         "hasSources": true
       },
       {
+        "id": "7f10a763fac5251f",
+        "company": "宏观经济",
+        "metric": "CPI",
+        "value": "2025年12月消费物价指数发布",
+        "detail": "raw_text 明确提到“Consumer Price Indices for December 2025”及“The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025”。",
+        "group": "宏观经济/人口/消费",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "censtatd.gov.hk",
+            "url": "https://www.censtatd.gov.hk/en/scode200.html"
+          },
+          {
+            "label": "api.worldbank.org",
+            "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5"
+          },
+          {
+            "label": "censtatd.gov.hk",
+            "url": "https://www.censtatd.gov.hk/en/scode530.html"
+          },
+          {
+            "label": "apidocs.hkma.gov.hk",
+            "url": "https://apidocs.hkma.gov.hk/abouthkmasapi/"
+          },
+          {
+            "label": "censtatd.gov.hk",
+            "url": "https://www.censtatd.gov.hk/en/page_213.html"
+          },
+          {
+            "label": "info.gov.hk",
+            "url": "https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm"
+          },
+          {
+            "label": "hkma.gov.hk",
+            "url": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_30",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "片段确认了CPI数据的发布，但未给出具体数值。",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "政策宏观",
+        "hasSources": true
+      },
+      {
         "id": "e596285026b3a527",
         "company": "HKT",
         "metric": "收入",
         "value": "2026年上半年总收入186.85亿港元，同比增长8%",
-        "detail": "片段中明确提到'Total revenue increased by 8% to 186.85亿港元'，并附有分部收入明细。",
+        "detail": "raw_text 中明确列出 'Total revenue increased by 8% to 186.85亿港元'。",
         "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
         "disclosure": "",
         "disclosureDate": "",
@@ -8052,7 +8145,7 @@
         "company": "HKT",
         "metric": "EBITDA",
         "value": "2026年上半年总EBITDA为65.86亿港元，同比增长3%",
-        "detail": "片段中明确提到'Total EBITDA grew by 3% to 65.86亿港元'，并附有分部EBITDA明细。",
+        "detail": "raw_text 中明确列出 'Total EBITDA also increased by 3% year-on-year to 65.86亿港元'。",
         "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
         "disclosure": "",
         "disclosureDate": "",
@@ -8094,7 +8187,7 @@
         "company": "HKT",
         "metric": "净利润",
         "value": "2026年上半年本公司股份合订单位持有人应占溢利21.53亿港元，同比增长4%",
-        "detail": "片段中明确提到'Profit attributable to holders of Share Stapled Units/shares of the Company for the six months ended 30 June 2026 increased by 4% to 21.53亿港元'。",
+        "detail": "raw_text 中明确列出 'Profit attributable to holders of Share Stapled Units/shares of the Company for the six months ended 30 June 2026 increased by 4% to 21.53亿港元'。",
         "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
         "disclosure": "",
         "disclosureDate": "",
@@ -8132,95 +8225,11 @@
         "hasSources": true
       },
       {
-        "id": "8a1c4aa27689adec",
-        "company": "HKBN",
-        "metric": "用户数",
-        "value": "住宅用户宽带覆盖266万户，同比增长2%",
-        "detail": "片段中明确提到'Covering 2.66 million residential households'和'YoY +2%'。",
-        "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "reg.hkbn.net",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
-          },
-          {
-            "label": "reg.hkbn.net",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/investor-engagement/financial-results"
-          }
-        ],
-        "confidence": 1.0,
-        "rowRef": "row_47",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 1.0,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 1.0,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "客户经营",
-        "hasSources": true
-      },
-      {
-        "id": "96685950c4a48038",
-        "company": "HKBN",
-        "metric": "ARPU",
-        "value": "移动ARPU新用户同比增长7%",
-        "detail": "片段中明确提到'ARPU New Subscriptions YoY +7%'。",
-        "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "reg.hkbn.net",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY26_HKBN_Interim_Results_Announcement_Presentation_en.pdf"
-          },
-          {
-            "label": "reg.hkbn.net",
-            "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf"
-          },
-          {
-            "label": "hkbn.net",
-            "url": "https://www.hkbn.net/group/en/investor-engagement/financial-results"
-          }
-        ],
-        "confidence": 1.0,
-        "rowRef": "row_47",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 1.0,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 1.0,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "客户经营",
-        "hasSources": true
-      },
-      {
         "id": "ec98d3972bdacc4b",
         "company": "i-CABLE",
         "metric": "收入",
-        "value": "2025年总收入约5.39亿港元，同比下降8%",
-        "detail": "片段中明确提到'revenues of the Group decreasing by approximately 0.45亿港元 or 8% to approximately 5.39亿港元'。",
+        "value": "2025年度收入约5.39亿港元，同比减少约8%（2024年约5.84亿港元）",
+        "detail": "管理层讨论与分析披露收入减少约4500万港元或8%至约5.39亿港元",
         "group": "HKT、3HK、SmarTone、HKBN、i-CABLE",
         "disclosure": "",
         "disclosureDate": "",
@@ -8236,16 +8245,16 @@
             "url": "https://www.ctfme.com/en/annual-interim-reports"
           }
         ],
-        "confidence": 1.0,
+        "confidence": 0.9,
         "rowRef": "row_47",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 1.0,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.972,
+        "qualityScore": 0.962,
         "sourceTier": "public",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8254,11 +8263,11 @@
         "hasSources": true
       },
       {
-        "id": "b8ec2a58af3ef206",
-        "company": "AT&T",
-        "metric": "收入",
-        "value": "316亿美元（2026年第二季度）",
-        "detail": "片段中'Latest Quarterly Results 2Q 2026'部分显示'$ 31.6 B Revenues'。",
+        "id": "e0ac4b50bebc7be2",
+        "company": "Verizon",
+        "metric": "自由现金流",
+        "value": "2Q 2026自由现金流64亿美元，同比增长24.4%",
+        "detail": "新闻稿披露Free cash flow was $6.4 billion, up 24.4 percent year-over-year",
         "group": "Verizon、AT&T、Deutsche Telekom、NTT",
         "disclosure": "",
         "disclosureDate": "",
@@ -8266,41 +8275,45 @@
         "sourceType": "public-crawl",
         "sources": [
           {
-            "label": "investors.att.com",
-            "url": "https://investors.att.com/"
+            "label": "verizon.com",
+            "url": "https://www.verizon.com/about/news/verizon-delivers-record-2q26-results"
           },
           {
-            "label": "investors.att.com",
-            "url": "https://investors.att.com/financial-reports/quarterly-earnings/2026"
+            "label": "verizon.com",
+            "url": "https://www.verizon.com/about/investors/annual-report"
           },
           {
-            "label": "investors.att.com",
-            "url": "https://investors.att.com/financial-reports/annual-reports/2025"
+            "label": "verizon.com",
+            "url": "https://www.verizon.com/about/investors/financial-reporting"
+          },
+          {
+            "label": "verizon.com",
+            "url": "https://www.verizon.com/about/investors/quarterly-earnings"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.9,
         "rowRef": "row_48",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
         "valueType": "numeric",
-        "metricCategory": "财务业绩",
+        "metricCategory": "其他",
         "hasSources": true
       },
       {
         "id": "5de2315efc8a1cbe",
         "company": "AT&T",
         "metric": "EBITDA或经营利润",
-        "value": "调整后EBITDA 123亿美元（2026年第二季度）",
-        "detail": "片段中'Latest Quarterly Results 2Q 2026'部分显示'$ 12.3 B Adjusted EBITDA*'。",
+        "value": "2Q 2026调整后EBITDA 123亿美元",
+        "detail": "投资者关系页面Latest Quarterly Results显示$12.3B Adjusted EBITDA",
         "group": "Verizon、AT&T、Deutsche Telekom、NTT",
         "disclosure": "",
         "disclosureDate": "",
@@ -8320,16 +8333,16 @@
             "url": "https://investors.att.com/financial-reports/annual-reports/2025"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.9,
         "rowRef": "row_48",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8341,8 +8354,8 @@
         "id": "994b81bafd4b1587",
         "company": "AT&T",
         "metric": "自由现金流",
-        "value": "47亿美元（2026年第二季度）",
-        "detail": "片段中'Latest Quarterly Results 2Q 2026'部分显示'$ 4.7 B Free Cash Flow*'。",
+        "value": "2Q 2026自由现金流47亿美元",
+        "detail": "投资者关系页面Latest Quarterly Results显示$4.7B Free Cash Flow",
         "group": "Verizon、AT&T、Deutsche Telekom、NTT",
         "disclosure": "",
         "disclosureDate": "",
@@ -8362,16 +8375,16 @@
             "url": "https://investors.att.com/financial-reports/annual-reports/2025"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.9,
         "rowRef": "row_48",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.99,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8380,11 +8393,49 @@
         "hasSources": true
       },
       {
+        "id": "8519b0eaf9fcf5c6",
+        "company": "Deutsche Telekom",
+        "metric": "用户数",
+        "value": "德国FTTH客户超过200万",
+        "detail": "年度报告亮点显示Germany: more than 2 million FTTH customers",
+        "group": "Verizon、AT&T、Deutsche Telekom、NTT",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "report.telekom.com",
+            "url": "https://report.telekom.com/annual-report-2025/"
+          },
+          {
+            "label": "telekom.com",
+            "url": "https://www.telekom.com/en/investor-relations/publications/financial-results"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_48",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "客户经营",
+        "hasSources": true
+      },
+      {
         "id": "d4cdfdd13a3f57c2",
         "company": "NTT",
         "metric": "收入",
-        "value": "14,409,121百万日元（2025财年）",
-        "detail": "片段中'Consolidated Financial Results for the Year Ended March 31, 2026'部分显示'Operating Revenues... Year Ended March 31, 2026 14,409,121'。",
+        "value": "14,409,121百万日元（2026财年），同比+5.1%",
+        "detail": "片段中合并经营业绩表显示Operating Revenues Year Ended March 31, 2026为14,409,121百万日元，同比5.1%。",
         "group": "Verizon、AT&T、Deutsche Telekom、NTT",
         "disclosure": "",
         "disclosureDate": "",
@@ -8404,16 +8455,16 @@
             "url": "https://group.ntt/en/ir/library/results/"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.95,
         "rowRef": "row_48",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8425,8 +8476,8 @@
         "id": "4747430daba512a3",
         "company": "中国移动",
         "metric": "收入",
-        "value": "538,035百万元人民币（2026年上半年）",
-        "detail": "片段中'主要会计数据'表格显示'营业收入 2026年上半年 538,035'，以及'合并利润表'显示'一、营业收入... 538,035'。",
+        "value": "5,380亿元（2026上半年），同比-1.1%",
+        "detail": "片段中主要会计数据显示营业收入538,035百万元，同比下降1.1%，并表述为5,380亿元。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8446,16 +8497,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8467,8 +8518,8 @@
         "id": "851ef4052e28e874",
         "company": "中国移动",
         "metric": "通信服务收入",
-        "value": "452,663百万元人民币（2026年上半年）",
-        "detail": "片段中'主要会计数据'表格显示'主营业务收入 2026年上半年 452,663'。",
+        "value": "3,504亿元（2026上半年），同比-5.7%",
+        "detail": "片段中经营发展部分明确提到通信服务收入人民币3,504亿元，同比下降5.7%。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8488,16 +8539,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8509,8 +8560,8 @@
         "id": "48e0246bb7ea5045",
         "company": "中国移动",
         "metric": "EBITDA",
-        "value": "173,626百万元人民币（2026年上半年）",
-        "detail": "片段中'主要财务指标'表格显示'EBITDA 2026年上半年 173,626'。",
+        "value": "1,736亿元（2026上半年），同比-6.6%",
+        "detail": "片段中主要财务指标显示EBITDA为173,626百万元，同比下降6.6%，并表述为1,736亿元。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8530,16 +8581,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 0.98,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 0.98,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 0.998,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8551,8 +8602,8 @@
         "id": "018d549b72d539ba",
         "company": "中国移动",
         "metric": "净利润",
-        "value": "2026年上半年净利润790.10亿元，其中归母净利润789.34亿元",
-        "detail": "合并利润表显示截至2026年6月30日止六个月期间净利润为79,010百万元人民币，归属于母公司股东的净利润为78,934百万元人民币。",
+        "value": "归母净利润789亿元（2026上半年），同比-6.3%",
+        "detail": "片段中合并利润表显示归属于母公司股东的净利润78,934百万元，同比下降6.3%，并表述为789亿元。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8572,16 +8623,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 1.0,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 1.0,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 1.0,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8593,8 +8644,8 @@
         "id": "f5d1fa364216f97f",
         "company": "中国移动",
         "metric": "移动及5G用户",
-        "value": "手机上网客户达到8.95亿户，净增1,145万户",
-        "detail": "片段中明确提到“手机上网客户达到8.95亿户，净增1,145万户”。",
+        "value": "移动客户10.11亿户，5G网络客户6.87亿户（2026上半年）",
+        "detail": "片段中经营发展部分提到移动客户达到10.11亿户，5G网络客户达到6.87亿户。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8614,16 +8665,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 1.0,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 1.0,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 1.0,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8635,8 +8686,8 @@
         "id": "cead4fb504ec0bae",
         "company": "中国移动",
         "metric": "有线宽带用户",
-        "value": "千兆宽带客户达到1.17亿户，净增841万户",
-        "detail": "片段中明确提到“千兆宽带客户达到1.17亿户，净增841万户”。",
+        "value": "宽带联网客户3.37亿户（2026上半年），净增770万户",
+        "detail": "片段中经营发展部分提到宽带联网客户达到3.37亿户，净增770万户。",
         "group": "中国移动、中国电信、中国联通",
         "disclosure": "",
         "disclosureDate": "",
@@ -8656,58 +8707,16 @@
             "url": "https://www.chinamobileltd.com/en/ir/reports.php"
           }
         ],
-        "confidence": 1.0,
+        "confidence": 0.95,
         "rowRef": "row_49",
         "aiCleaned": true,
         "aiStatus": "ok",
         "aiNote": "",
-        "aiConfidence": 1.0,
+        "aiConfidence": 0.95,
         "entitySupported": true,
         "metricSupported": true,
         "valueSupported": true,
-        "qualityScore": 1.0,
-        "sourceTier": "official",
-        "qualityIssues": [],
-        "qualityStatus": "ai-verified",
-        "valueType": "numeric",
-        "metricCategory": "客户经营",
-        "hasSources": true
-      },
-      {
-        "id": "dd50d26faff83236",
-        "company": "中国移动",
-        "metric": "ARPU",
-        "value": "移动ARPU为人民币45.1元",
-        "detail": "片段中明确提到“移动ARPU为人民币45.1元”。",
-        "group": "中国移动、中国电信、中国联通",
-        "disclosure": "",
-        "disclosureDate": "",
-        "stockCode": "",
-        "sourceType": "public-crawl",
-        "sources": [
-          {
-            "label": "chinamobileltd.com",
-            "url": "https://www.chinamobileltd.com/en/ir/reports/ir2026.pdf"
-          },
-          {
-            "label": "chinamobileltd.com",
-            "url": "https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf"
-          },
-          {
-            "label": "chinamobileltd.com",
-            "url": "https://www.chinamobileltd.com/en/ir/reports.php"
-          }
-        ],
-        "confidence": 1.0,
-        "rowRef": "row_49",
-        "aiCleaned": true,
-        "aiStatus": "ok",
-        "aiNote": "",
-        "aiConfidence": 1.0,
-        "entitySupported": true,
-        "metricSupported": true,
-        "valueSupported": true,
-        "qualityScore": 1.0,
+        "qualityScore": 0.995,
         "sourceTier": "official",
         "qualityIssues": [],
         "qualityStatus": "ai-verified",
@@ -8719,8 +8728,8 @@
         "id": "bce333fa1c44674a",
         "company": "Microsoft Azure",
         "metric": "Intelligent Cloud收入",
-        "value": "2025财年Intelligent Cloud收入106,265百万美元，同比增长21%",
-        "detail": "片段中SEGMENT RESULTS显示Intelligent Cloud Revenue 2025年为106,265百万美元，2024年为87,464百万美元，同比增长21%。",
+        "value": "Intelligent Cloud revenue $106,265 million, up 21% YoY",
+        "detail": "片段中SEGMENT RESULTS OF OPERATIONS表显示Intelligent Cloud Revenue 2025年为$106,265百万，2024年为$87,464百万，增长21%。",
         "group": "Microsoft Azure",
         "disclosure": "",
         "disclosureDate": "",
@@ -8748,7 +8757,53 @@
         "rowRef": "row_53",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
+        "aiNote": "片段为微软2025财年年报，Intelligent Cloud为微软部门，包含Azure。",
+        "aiConfidence": 0.9,
+        "entitySupported": true,
+        "metricSupported": true,
+        "valueSupported": true,
+        "qualityScore": 0.99,
+        "sourceTier": "official",
+        "qualityIssues": [],
+        "qualityStatus": "ai-verified",
+        "valueType": "numeric",
+        "metricCategory": "财务业绩",
+        "hasSources": true
+      },
+      {
+        "id": "7c5358259bf68de8",
+        "company": "Microsoft Azure",
+        "metric": "Intelligent Cloud经营利润",
+        "value": "Intelligent Cloud operating income $44,589 million, up 18% YoY",
+        "detail": "片段中SEGMENT RESULTS OF OPERATIONS表显示Intelligent Cloud Operating Income 2025年为$44,589百万，2024年为$37,813百万，增长18%。",
+        "group": "Microsoft Azure",
+        "disclosure": "",
+        "disclosureDate": "",
+        "stockCode": "",
+        "sourceType": "public-crawl",
+        "sources": [
+          {
+            "label": "microsoft.com",
+            "url": "https://www.microsoft.com/investor/reports/ar25/index.html"
+          },
+          {
+            "label": "microsoft.com",
+            "url": "https://www.microsoft.com/en-us/Investor/earnings/default"
+          },
+          {
+            "label": "microsoft.com",
+            "url": "https://www.microsoft.com/en-us/investor/annual-reports"
+          },
+          {
+            "label": "microsoft.com",
+            "url": "https://www.microsoft.com/en-us/Investor/annual-reports"
+          }
+        ],
+        "confidence": 0.9,
+        "rowRef": "row_53",
+        "aiCleaned": true,
+        "aiStatus": "ok",
+        "aiNote": "片段为微软2025财年年报，Intelligent Cloud为微软部门，包含Azure。",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -8765,8 +8820,8 @@
         "id": "0b55baf5c55bdbc6",
         "company": "Microsoft Azure",
         "metric": "Azure及其他云服务增速",
-        "value": "34%",
-        "detail": "片段Highlights中明确提到Azure and other cloud services revenue growth of 34%。",
+        "value": "Azure and other cloud services revenue growth 34%",
+        "detail": "片段中明确提到“Server products and cloud services revenue increased 23% driven by Azure and other cloud services revenue growth of 34%.”",
         "group": "Microsoft Azure",
         "disclosure": "",
         "disclosureDate": "",
@@ -8794,7 +8849,7 @@
         "rowRef": "row_53",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
+        "aiNote": "片段为微软2025财年年报，直接给出Azure及其他云服务增速。",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -8811,8 +8866,8 @@
         "id": "1290bdcde33e6b7f",
         "company": "Huawei Cloud",
         "metric": "云计算收入",
-        "value": "2023年云计算收入55,287百万元人民币，同比增长21.9%",
-        "detail": "片段中分部收入表显示Cloud Computing 2023年55,287百万元，2022年45,342百万元，同比增长21.9%。",
+        "value": "2024年云计算收入为CNY38,523 million，2023年为CNY35,514 million",
+        "detail": "依据片段中2024年报分部收入表：Cloud Computing 2024年38,523，2023年35,514（单位：CNY million）。",
         "group": "Huawei Cloud",
         "disclosure": "",
         "disclosureDate": "",
@@ -8836,7 +8891,7 @@
         "rowRef": "row_57",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "",
+        "aiNote": "数据来自Huawei 2024 Annual Report。",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -8853,8 +8908,8 @@
         "id": "2c1409b31781fa9a",
         "company": "Huawei Cloud",
         "metric": "AI基础设施投入",
-        "value": "Huawei Cloud launched CloudMatrix, an AI-native cloud infrastructure.",
-        "detail": "依据片段中“Huawei Cloud launched CloudMatrix, an AI-native cloud infrastructure based on an architecture featuring system-level innovation”的表述。",
+        "value": "华为云发布AI原生云基础设施CloudMatrix，提供稳定可靠的AI算力",
+        "detail": "依据片段中“Huawei Cloud launched CloudMatrix, an AI-native cloud infrastructure based on an architecture featuring system-level innovation, to provide customers with stable and reliable AI computing power”。",
         "group": "Huawei Cloud",
         "disclosure": "",
         "disclosureDate": "",
@@ -8878,7 +8933,7 @@
         "rowRef": "row_57",
         "aiCleaned": true,
         "aiStatus": "ok",
-        "aiNote": "current_value为拼接文本，未直接采用；片段未提供具体投入金额，按定性指标处理。",
+        "aiNote": "片段明确提及华为云在AI基础设施方面的具体产品发布。",
         "aiConfidence": 0.9,
         "entitySupported": true,
         "metricSupported": true,
@@ -8894,63 +8949,47 @@
     ]
   },
   "curation": {
-    "run_id": "repair_validation_20260829_0954",
-    "started_at": "2026-08-29T09:53:52+08:00",
-    "completed_at": "2026-08-29T10:34:07+08:00",
+    "run_id": "repair_final_20260829_1036",
+    "started_at": "2026-08-29T10:35:47+08:00",
+    "completed_at": "2026-08-29T10:59:13+08:00",
     "tasks": 271,
-    "accepted": 140,
-    "rejected": 115,
-    "review": 17,
-    "gaps": 127,
-    "recrawl_rows": [
-      2,
-      4,
-      5,
-      17,
-      19
-    ],
-    "recrawl_performed": true,
+    "accepted": 141,
+    "rejected": 112,
+    "review": 18,
+    "gaps": 125,
+    "recrawl_rows": [],
+    "recrawl_performed": false,
     "online_ai": true,
     "node_events": [
-      "[数据整理][证据接收] 读取 272 条原始指标证据，复用 43 条缓存判断。",
-      "[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 183、public 81。",
-      "[数据整理][事实抽取] 形成 272 条候选事实；待抽取 201 条，缓存复用 31 条。",
-      "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 90 条。",
-      "[数据整理][质量审计] 发布 140 条、证据缺口 127 条、质量拒绝 5 条、待复核 0 条。",
-      "[数据整理][冲突仲裁] 检查 137 组事实，发现 1 组冲突。",
-      "[数据整理][搜索验证] 并行核验 265 条事实，修正 2 条，转人工复核 15 条，发现冲突 60 条。",
-      "[数据整理][缺口规划] 识别 127 个事实缺口，安排 5 个定向补爬行。",
-      "[数据整理][编排决策] Supervisor 决定补爬 17, 5, 2, 4, 19；模型未形成有效工具决策，采用规则引擎优先级。",
-      "[数据整理][定向补爬] 完成行 2, 4, 5, 17, 19 的补爬，重新进入整理流程。",
       "[数据整理][证据接收] 读取 271 条原始指标证据，复用 43 条缓存判断。",
       "[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 183、public 80。",
       "[数据整理][事实抽取] 形成 271 条候选事实；待抽取 200 条，缓存复用 31 条。",
-      "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 96 条。",
-      "[数据整理][质量审计] 发布 134 条、证据缺口 104 条、质量拒绝 33 条、待复核 0 条。",
-      "[数据整理][冲突仲裁] 检查 131 组事实，发现 1 组冲突。",
-      "[数据整理][搜索验证] 并行核验 236 条事实，修正 3 条，转人工复核 15 条，发现冲突 59 条。",
-      "[数据整理][缺口规划] 识别 127 个事实缺口，安排 0 个定向补爬行。",
+      "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 100 条。",
+      "[数据整理][质量审计] 发布 143 条、证据缺口 125 条、质量拒绝 3 条、待复核 0 条。",
+      "[数据整理][冲突仲裁] 检查 140 组事实，发现 1 组冲突。",
+      "[数据整理][搜索验证] 并行核验 266 条事实，修正 3 条，转人工复核 16 条，发现冲突 65 条。",
+      "[数据整理][缺口规划] 识别 125 个事实缺口，安排 0 个定向补爬行。",
       "[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。",
-      "[数据整理][发布] 发布层写入 140 条，拒绝 115 条，待人工复核 17 条。"
+      "[数据整理][发布] 发布层写入 141 条，拒绝 112 条，待人工复核 18 条。"
     ],
     "extra": {
-      "evidence_gaps": 110,
-      "quality_rejected": 5,
+      "evidence_gaps": 109,
+      "quality_rejected": 3,
       "supervisor_decision": "publish",
       "supervisor_reason": "没有满足补爬条件的候选行，进入发布。",
-      "online_batches": 6,
-      "fallback_batches": 2,
+      "online_batches": 17,
+      "fallback_batches": 0,
       "search_verification": {
-        "checked": 236,
+        "checked": 266,
         "corrected": 3,
-        "review": 15,
-        "conflicts": 59,
+        "review": 16,
+        "conflicts": 65,
         "workers": 4,
         "online_search": true,
         "online_checked": 80,
-        "online_votes": 47
+        "online_votes": 52
       },
-      "cache_backup": "curation_data/cache_backups/repair_validation_20260829_0954_before_publish.json"
+      "cache_backup": "curation_data/cache_backups/repair_final_20260829_1036_before_publish.json"
     }
   }
 }
