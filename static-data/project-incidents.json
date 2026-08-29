@@ -74,6 +74,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "a0a6253b45f8d8d37566f318",
+      "task_id": "incident:a0a6253b45f8d8d37566f318",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-08-29T09:30:46+08:00",
+      "started_at_hkt": "2026-08-29T09:45:05+08:00",
+      "heartbeat_at_hkt": "2026-08-29T09:48:41+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "b6aea5be5d467a04a910471d",
       "task_id": "incident:b6aea5be5d467a04a910471d",
       "title": "主项目后台任务",
@@ -1079,7 +1103,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-29T03:16:44+08:00",
-      "heartbeat_at_hkt": "2026-08-29T09:43:35+08:00",
+      "heartbeat_at_hkt": "2026-08-29T09:48:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12061,32 +12085,6 @@
       "started_at_hkt": "2026-08-25T14:50:50+08:00",
       "heartbeat_at_hkt": "2026-08-25T14:50:50+08:00",
       "completed_at_hkt": "2026-08-25T14:51:20+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "9733a65ca7a8ed46685c9f1f",
-      "task_id": "incident:9733a65ca7a8ed46685c9f1f",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认：至少一个后台处理步骤失败、回退或延期，影响任务执行连续性。推断：若未及时恢复，可能导致任务归档延迟或数据不完整。",
-      "suggestions": [
-        "检查错误发生时间附近的任务归档和候选ID，确认受影响步骤的最终状态（回退成功或最终失败）。",
-        "若步骤进入待恢复队列，保留已有结果，仅重试失败的竞争指标AI洞察步骤，并监控响应完整性。",
-        "验证AI服务端日志，确认响应生成是否正常，必要时联系AI服务团队排查模型输出问题。",
-        "修复后，重新执行受影响任务并验证任务归档状态，确保业务处理完成。"
-      ],
-      "occurred_at_hkt": "2026-08-25T14:48:50+08:00",
-      "started_at_hkt": "2026-08-25T14:48:50+08:00",
-      "heartbeat_at_hkt": "2026-08-25T14:48:50+08:00",
-      "completed_at_hkt": "2026-08-25T14:49:20+08:00",
       "handled_at_hkt": ""
     }
   ],
