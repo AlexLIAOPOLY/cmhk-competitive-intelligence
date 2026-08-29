@@ -151,6 +151,40 @@ class DataReleaseTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        cloud = dataset.parent / "cloud_vendor_metrics_2026-06-17"
+        cloud.mkdir()
+        cloud_entrypoints = [
+            "cloud_vendor_metrics_2016_2025.csv",
+            "cloud_vendor_metrics_2016_2025.json",
+            "cloud_vendor_metrics_summary.md",
+            "sources.json",
+            "online_verification_2026-06-17.csv",
+            "online_verification_2026-06-17.md",
+        ]
+        for name in cloud_entrypoints:
+            content = (
+                "vendor,fiscal_year,metric_key,official_value,verification_status\n"
+                "AWS,2025,cloud_revenue,128725,official_match\n"
+                if name == "cloud_vendor_metrics_2016_2025.csv"
+                else "{}\n"
+                if name.endswith(".json")
+                else "value\n"
+            )
+            (cloud / name).write_text(content, encoding="utf-8")
+        (cloud / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "id": "cloud_vendor_metrics_2026-06-17",
+                    "entrypoints": cloud_entrypoints,
+                    "quality": {
+                        "status": "verified_against_official_public_sources",
+                        "available_value_rows": 1,
+                        "source_count": 1,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
         return dataset
 
     def test_publish_is_content_addressed_idempotent_and_keeps_old_release(self) -> None:
@@ -269,13 +303,14 @@ class DataReleaseTests(unittest.TestCase):
                 (Path(result["release_dir"]) / "release.json").read_text()
             )
 
-        self.assertEqual(release["bundle_contract_version"], 4)
+        self.assertEqual(release["bundle_contract_version"], 5)
         self.assertEqual(
             [item["id"] for item in release["related_packages"]],
             [
                 "global_top5_operators_2016_2025",
                 "local_hk_operator_operating_metrics_2016_2025",
                 "competitor_product_tariffs",
+                "cloud_vendor_metrics_2026-06-17",
             ],
         )
         paths = {item["path"] for item in release["artifacts"]}
@@ -289,6 +324,10 @@ class DataReleaseTests(unittest.TestCase):
         )
         self.assertIn(
             "related_packages/competitor_product_tariffs/product_tariffs_formal_agent_records.csv",
+            paths,
+        )
+        self.assertIn(
+            "related_packages/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.csv",
             paths,
         )
 

@@ -4,6 +4,7 @@ import json
 import unittest
 
 from scripts import build_cloud_vendor_metrics_knowledge as builder
+from cmhk.agent import rag as rag_llm
 
 
 class CloudVendorMetricsBuilderTests(unittest.TestCase):
@@ -25,14 +26,24 @@ class CloudVendorMetricsBuilderTests(unittest.TestCase):
         ]
         self.assertEqual(len(aws_revenue), 10)
 
-    def test_every_admitted_value_has_three_distinct_sources(self):
+    def test_every_admitted_value_has_official_sources_and_an_evidence_grade(self):
         for row in self.rows:
             if row["official_value"] == "":
                 continue
             sources = json.loads(row["verification_sources"])
-            self.assertGreaterEqual(row["verification_count"], 3)
-            self.assertGreaterEqual(len({source["url"] for source in sources}), 3)
-            self.assertNotEqual(row["verification_status"], "needs_third_source")
+            self.assertGreaterEqual(row["verification_count"], 1)
+            self.assertEqual(row["verification_count"], len({source["url"] for source in sources}))
+            self.assertNotEqual(row["verification_status"], "needs_official_row_crosscheck")
+            self.assertTrue(all(source["type"].startswith("official_") for source in sources))
+
+    def test_missing_cells_are_explicit_and_never_numeric_zero(self):
+        for row in self.rows:
+            if row["official_value"] != "":
+                continue
+            self.assertIn(row["verification_status"], {"source_gap_confirmed", "scope_not_comparable"})
+            self.assertTrue(row["gap_reason_code"])
+            self.assertTrue(row["gap_reason"])
+            self.assertNotEqual(row["value"], 0)
 
     def test_china_mobile_cloud_uses_disclosed_values_and_preserves_2025_gap(self):
         rows = {
@@ -104,6 +115,38 @@ class CloudVendorMetricsBuilderTests(unittest.TestCase):
             "Oracle Cloud",
         }:
             self.assertEqual(rows[(vendor, "2025")]["verification_status"], "source_gap_confirmed")
+
+    def test_xiaojing_ai_retrieves_exact_alibaba_legacy_rows(self):
+        chunks = rag_llm._cloud_vendor_exact_metric_chunks(
+            "Alibaba Cloud FY2018云计算分部收入和调整后EBITA是多少？",
+            dataset_ids={"cloud_vendor_metrics_2026-06-17"},
+        )
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("vendor=Alibaba Cloud; period=FY2018", combined)
+        self.assertIn("metric_key=legacy_cloud_segment_revenue_then_reported", combined)
+        self.assertIn("official_value=13390 RMB millions", combined)
+        self.assertIn("metric_key=legacy_cloud_adjusted_ebita_then_reported", combined)
+        self.assertIn("official_value=-799 RMB millions", combined)
+
+    def test_xiaojing_ai_returns_governed_cloud_gap_not_adjacent_vendor(self):
+        chunks = rag_llm.retrieve_context(
+            "Huawei Cloud FY2020云收入是否披露？",
+            limit=3,
+            dataset_ids={"cloud_vendor_metrics_2026-06-17"},
+        )
+        self.assertTrue(chunks)
+        self.assertIn("vendor=Huawei Cloud / Cloud Computing; period=FY2020", chunks[0]["text"])
+        self.assertIn("未披露（source_gap_confirmed）", chunks[0]["text"])
+        self.assertIn("不得当作0", chunks[0]["text"])
+
+    def test_cloud_exact_retrieval_respects_selected_database(self):
+        self.assertEqual(
+            rag_llm._cloud_vendor_exact_metric_chunks(
+                "AWS FY2025云收入",
+                dataset_ids={"global_top5_operators_2016_2025"},
+            ),
+            [],
+        )
 
 
 if __name__ == "__main__":

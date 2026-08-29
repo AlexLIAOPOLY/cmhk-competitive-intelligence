@@ -124,7 +124,7 @@
 | 118 | Microsoft Azure / Intelligent Cloud | 2023 | 集团资本开支 | 28107 | official_match | microsoft_2023_10k;microsoft_2024_10k;microsoft_2025_10k | official_proxy_segment |
 | 119 | Microsoft Azure / Intelligent Cloud | 2024 | 集团资本开支 | 44477 | official_match | microsoft_2024_10k;microsoft_2025_10k;microsoft_fy2024_results | official_proxy_segment |
 | 120 | Microsoft Azure / Intelligent Cloud | 2025 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | microsoft_2025_10k;microsoft_ir_annual_reports | official_proxy_segment |
-| 121 | Microsoft Azure / Intelligent Cloud | 2016 | Intelligent Cloud收入（旧分部口径） | 未披露/不适用 | source_gap_confirmed | microsoft_2025_10k;microsoft_ir_annual_reports | official_proxy_segment |
+| 121 | Microsoft Azure / Intelligent Cloud | 2016 | Intelligent Cloud收入（旧分部口径） | 未披露/不适用 | scope_not_comparable | microsoft_2025_10k;microsoft_ir_annual_reports | official_proxy_segment |
 | 122 | Microsoft Azure / Intelligent Cloud | 2017 | Intelligent Cloud收入（旧分部口径） | 27440.0 | official_match | history_edbe1719f56c80;history_b1f4dec6e4bd93;history_4e9ec32ec72d02;history_51c536c55d311c;history_f39e7c20e6f4d0;history_eb989ced4c6327;history_f873b8d5db2b34;history_087b9b1b01622a;history_895c920fd56d8b | official_proxy_segment |
 | 123 | Microsoft Azure / Intelligent Cloud | 2018 | Intelligent Cloud收入（旧分部口径） | 32219.0 | official_match | history_edbe1719f56c80;history_50ccc7fbef5311;history_e5c42122f3cb77;history_42377d431bcc6e;history_b4c120d6008c42;history_238e35023fd706;history_449b23aaadd990;history_813fa71e2f1852;history_7ff9b485afb672 | official_proxy_segment |
 | 124 | Microsoft Azure / Intelligent Cloud | 2019 | Intelligent Cloud收入（旧分部口径） | 38985.0 | official_match | history_edbe1719f56c80;history_db3ed0e9da6097;history_124ba946e2be40;history_167c864e9bf75c;history_e691de6a8b79a0;history_cf02cd1cc39503;history_0a4447233045d6;history_becfe1ad9ffd53;history_de4396d0e0235b | official_proxy_segment |
@@ -134,7 +134,7 @@
 | 128 | Microsoft Azure / Intelligent Cloud | 2023 | Intelligent Cloud收入（旧分部口径） | 87907.0 | official_match | history_edbe1719f56c80;history_81ed8cc4f57254;history_482b698511801f;history_005545e9d8c3e0;history_aa53ac3ccc2dd7;history_06669badf53621;history_3e1b5720cb2f99;history_e40b111e50a7b5;history_0e419ee2fee1ba | official_proxy_segment |
 | 129 | Microsoft Azure / Intelligent Cloud | 2024 | Intelligent Cloud收入（旧分部口径） | 105362.0 | official_match | history_edbe1719f56c80;history_39acb2d644aadd;history_604864c5fe4652;history_864d97bd2b88ac;history_bb92ae58be1b7a;history_50c3ca9c89e37a;history_47aca8df625fbd;history_de0edfe8b482be;history_257970d01a6d77 | official_proxy_segment |
 | 130 | Microsoft Azure / Intelligent Cloud | 2025 | Intelligent Cloud收入（旧分部口径） | 106265.0 | official_match | history_edbe1719f56c80;history_1a9dd5bb3411a2;history_7a23c46e35a8cd;history_edc8ba021c4acb;history_3de6002e382696;history_3f1effa9b2138b;history_0b24850ed82cf1;history_79be6f0c439add;history_dd62a048aad3d7 | official_proxy_segment |
-| 131 | Microsoft Azure / Intelligent Cloud | 2016 | Intelligent Cloud经营利润（旧分部口径） | 未披露/不适用 | source_gap_confirmed | microsoft_2025_10k;microsoft_ir_annual_reports | official_proxy_segment |
+| 131 | Microsoft Azure / Intelligent Cloud | 2016 | Intelligent Cloud经营利润（旧分部口径） | 未披露/不适用 | scope_not_comparable | microsoft_2025_10k;microsoft_ir_annual_reports | official_proxy_segment |
 | 132 | Microsoft Azure / Intelligent Cloud | 2017 | Intelligent Cloud经营利润（旧分部口径） | 9138.0 | official_match | history_edbe1719f56c80;history_b1f4dec6e4bd93;history_4e9ec32ec72d02;history_51c536c55d311c;history_f39e7c20e6f4d0;history_eb989ced4c6327;history_f873b8d5db2b34;history_087b9b1b01622a;history_895c920fd56d8b | official_proxy_segment |
 | 133 | Microsoft Azure / Intelligent Cloud | 2018 | Intelligent Cloud经营利润（旧分部口径） | 11524.0 | official_match | history_edbe1719f56c80;history_50ccc7fbef5311;history_e5c42122f3cb77;history_42377d431bcc6e;history_b4c120d6008c42;history_238e35023fd706;history_449b23aaadd990;history_813fa71e2f1852;history_7ff9b485afb672 | official_proxy_segment |
 | 134 | Microsoft Azure / Intelligent Cloud | 2019 | Intelligent Cloud经营利润（旧分部口径） | 13920.0 | official_match | history_edbe1719f56c80;history_db3ed0e9da6097;history_124ba946e2be40;history_167c864e9bf75c;history_e691de6a8b79a0;history_cf02cd1cc39503;history_0a4447233045d6;history_becfe1ad9ffd53;history_de4396d0e0235b | official_proxy_segment |
@@ -220,7 +220,7 @@
 | 214 | Alibaba Cloud | 2019 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
 | 215 | Alibaba Cloud | 2020 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
 | 216 | Alibaba Cloud | 2021 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 217 | Alibaba Cloud | 2022 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 217 | Alibaba Cloud | 2022 | 云收入/云相关分部收入 | 102016 | official_match | alibaba_fy2024_annual;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
 | 218 | Alibaba Cloud | 2023 | 云收入/云相关分部收入 | 103497 | official_match | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
 | 219 | Alibaba Cloud | 2024 | 云收入/云相关分部收入 | 106374 | official_match | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
 | 220 | Alibaba Cloud | 2025 | 云收入/云相关分部收入 | 118028 | official_match | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
@@ -234,166 +234,206 @@
 | 228 | Alibaba Cloud | 2023 | 调整后 EBITA | 4101 | official_match | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
 | 229 | Alibaba Cloud | 2024 | 调整后 EBITA | 6121 | official_match | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
 | 230 | Alibaba Cloud | 2025 | 调整后 EBITA | 10556 | official_match | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
-| 231 | Alibaba Cloud | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 232 | Alibaba Cloud | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 233 | Alibaba Cloud | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 234 | Alibaba Cloud | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 235 | Alibaba Cloud | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 236 | Alibaba Cloud | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 237 | Alibaba Cloud | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 238 | Alibaba Cloud | 2023 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
-| 239 | Alibaba Cloud | 2024 | 收入同比增长 | 2.8 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
-| 240 | Alibaba Cloud | 2025 | 收入同比增长 | 11.0 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
-| 241 | Alibaba Cloud | 2016 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 242 | Alibaba Cloud | 2017 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 243 | Alibaba Cloud | 2018 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 244 | Alibaba Cloud | 2019 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 245 | Alibaba Cloud | 2020 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 246 | Alibaba Cloud | 2021 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 247 | Alibaba Cloud | 2022 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
-| 248 | Alibaba Cloud | 2023 | 调整后 EBITA 率 | 4.0 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
-| 249 | Alibaba Cloud | 2024 | 调整后 EBITA 率 | 5.8 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
-| 250 | Alibaba Cloud | 2025 | 调整后 EBITA 率 | 8.9 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
-| 251 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部收入 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 252 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部收入 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 253 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部收入 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 254 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部收入 | 101355.0 | official_match | history_c2075c1c7abfcd;history_86efbdf9f2447e;history_14e176a1277898;history_d571f48acad6de;history_614088929682a4 | proxy_segment |
-| 255 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部收入 | 128086.0 | official_match | history_c2075c1c7abfcd;history_1d6bea0244e28d;history_b3d2b7a477d388;history_32501ce2b9a925;history_3376b436f35760 | proxy_segment |
-| 256 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部收入 | 172195.0 | official_match | history_c2075c1c7abfcd;history_624f470cba3c98;history_fbcf84c7e6ec27;history_1bbe2c890b98f0;history_a4005f91ac2dce | proxy_segment |
-| 257 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部收入 | 177064.0 | official_match | history_c2075c1c7abfcd;history_e9f723ec68079e;history_76ecb799d5d99c;history_b4b12e1409f305;history_3924038d575d5f | proxy_segment |
-| 258 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部收入 | 203763 | official_match | history_c2075c1c7abfcd;history_51a49299120818;history_8bf9d0759ceed1;history_de3cd7830b2aac;history_1214b7c401b992 | proxy_segment |
-| 259 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部收入 | 211956 | official_match | history_c2075c1c7abfcd;history_330d7a99974660;history_56098f20e90eb4;history_5f82333ccea989;history_9421a16fd1efb5 | proxy_segment |
-| 260 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部收入 | 229435 | official_match | history_c2075c1c7abfcd;history_dc12015ae00c7c;history_9e43f1488639df;history_2231bd2d635097;history_266a915b42808d | proxy_segment |
-| 261 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 262 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 263 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 264 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 265 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 266 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 267 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部毛利 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 268 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部毛利 | 80636 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 269 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部毛利 | 99701 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 270 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部毛利 | 116616 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 271 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 272 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 273 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 274 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 275 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 276 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 277 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部毛利率 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 278 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部毛利率 | 40.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 279 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部毛利率 | 47.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 280 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部毛利率 | 51.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 281 | Tencent Cloud / Tencent FBS proxy | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 282 | Tencent Cloud / Tencent FBS proxy | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 283 | Tencent Cloud / Tencent FBS proxy | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
-| 284 | Tencent Cloud / Tencent FBS proxy | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | history_c2075c1c7abfcd;history_86efbdf9f2447e;history_14e176a1277898;history_d571f48acad6de;history_614088929682a4 | proxy_segment |
-| 285 | Tencent Cloud / Tencent FBS proxy | 2020 | 收入同比增长 | 26.4 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_1d6bea0244e28d;history_b3d2b7a477d388;history_32501ce2b9a925;history_3376b436f35760 | proxy_segment |
-| 286 | Tencent Cloud / Tencent FBS proxy | 2021 | 收入同比增长 | 34.4 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_624f470cba3c98;history_fbcf84c7e6ec27;history_1bbe2c890b98f0;history_a4005f91ac2dce | proxy_segment |
-| 287 | Tencent Cloud / Tencent FBS proxy | 2022 | 收入同比增长 | 2.8 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_e9f723ec68079e;history_76ecb799d5d99c;history_b4b12e1409f305;history_3924038d575d5f | proxy_segment |
-| 288 | Tencent Cloud / Tencent FBS proxy | 2023 | 收入同比增长 | 15.1 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_51a49299120818;history_8bf9d0759ceed1;history_de3cd7830b2aac;history_1214b7c401b992 | proxy_segment |
-| 289 | Tencent Cloud / Tencent FBS proxy | 2024 | 收入同比增长 | 4.0 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_330d7a99974660;history_56098f20e90eb4;history_5f82333ccea989;history_9421a16fd1efb5 | proxy_segment |
-| 290 | Tencent Cloud / Tencent FBS proxy | 2025 | 收入同比增长 | 8.2 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_dc12015ae00c7c;history_9e43f1488639df;history_2231bd2d635097;history_266a915b42808d | proxy_segment |
-| 291 | Huawei Cloud / Cloud Computing | 2016 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 292 | Huawei Cloud / Cloud Computing | 2017 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 293 | Huawei Cloud / Cloud Computing | 2018 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 294 | Huawei Cloud / Cloud Computing | 2019 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 295 | Huawei Cloud / Cloud Computing | 2020 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 296 | Huawei Cloud / Cloud Computing | 2021 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 297 | Huawei Cloud / Cloud Computing | 2022 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 298 | Huawei Cloud / Cloud Computing | 2023 | 云收入/云相关分部收入 | 35514 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 299 | Huawei Cloud / Cloud Computing | 2024 | 云收入/云相关分部收入 | 33325 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 300 | Huawei Cloud / Cloud Computing | 2025 | 云收入/云相关分部收入 | 32161 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 301 | Huawei Cloud / Cloud Computing | 2016 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 302 | Huawei Cloud / Cloud Computing | 2017 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 303 | Huawei Cloud / Cloud Computing | 2018 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 304 | Huawei Cloud / Cloud Computing | 2019 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 305 | Huawei Cloud / Cloud Computing | 2020 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 306 | Huawei Cloud / Cloud Computing | 2021 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 307 | Huawei Cloud / Cloud Computing | 2022 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 308 | Huawei Cloud / Cloud Computing | 2023 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 309 | Huawei Cloud / Cloud Computing | 2024 | 含其他分部的云计算业务收入 | 68801 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 310 | Huawei Cloud / Cloud Computing | 2025 | 含其他分部的云计算业务收入 | 72075 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 311 | Huawei Cloud / Cloud Computing | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 312 | Huawei Cloud / Cloud Computing | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 313 | Huawei Cloud / Cloud Computing | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 314 | Huawei Cloud / Cloud Computing | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 315 | Huawei Cloud / Cloud Computing | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 316 | Huawei Cloud / Cloud Computing | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 317 | Huawei Cloud / Cloud Computing | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 318 | Huawei Cloud / Cloud Computing | 2023 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 319 | Huawei Cloud / Cloud Computing | 2024 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 320 | Huawei Cloud / Cloud Computing | 2025 | 收入同比增长 | -3.5 | official_derived_from_verified_rows | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
-| 321 | Oracle Cloud | 2016 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 322 | Oracle Cloud | 2017 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 323 | Oracle Cloud | 2018 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 324 | Oracle Cloud | 2019 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 325 | Oracle Cloud | 2020 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 326 | Oracle Cloud | 2021 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 327 | Oracle Cloud | 2022 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 328 | Oracle Cloud | 2023 | 云收入/云相关分部收入 | 15881 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 329 | Oracle Cloud | 2024 | 云收入/云相关分部收入 | 19774 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 330 | Oracle Cloud | 2025 | 云收入/云相关分部收入 | 24506 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 331 | Oracle Cloud | 2016 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 332 | Oracle Cloud | 2017 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 333 | Oracle Cloud | 2018 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 334 | Oracle Cloud | 2019 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 335 | Oracle Cloud | 2020 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 336 | Oracle Cloud | 2021 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 337 | Oracle Cloud | 2022 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 338 | Oracle Cloud | 2023 | 云服务与许可证支持收入 | 35307 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 339 | Oracle Cloud | 2024 | 云服务与许可证支持收入 | 39383 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 340 | Oracle Cloud | 2025 | 云服务与许可证支持收入 | 44029 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 341 | Oracle Cloud | 2016 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 342 | Oracle Cloud | 2017 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 343 | Oracle Cloud | 2018 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 344 | Oracle Cloud | 2019 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 345 | Oracle Cloud | 2020 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 346 | Oracle Cloud | 2021 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 347 | Oracle Cloud | 2022 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 348 | Oracle Cloud | 2023 | 云与许可证收入 | 41086 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 349 | Oracle Cloud | 2024 | 云与许可证收入 | 44464 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 350 | Oracle Cloud | 2025 | 云与许可证收入 | 49230 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 351 | Oracle Cloud | 2016 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 352 | Oracle Cloud | 2017 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 353 | Oracle Cloud | 2018 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 354 | Oracle Cloud | 2019 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 355 | Oracle Cloud | 2020 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 356 | Oracle Cloud | 2021 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 357 | Oracle Cloud | 2022 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 358 | Oracle Cloud | 2023 | 云与许可证分部利润 | 26126 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 359 | Oracle Cloud | 2024 | 云与许可证分部利润 | 28514 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 360 | Oracle Cloud | 2025 | 云与许可证分部利润 | 30930 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 361 | Oracle Cloud | 2016 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 362 | Oracle Cloud | 2017 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 363 | Oracle Cloud | 2018 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 364 | Oracle Cloud | 2019 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 365 | Oracle Cloud | 2020 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 366 | Oracle Cloud | 2021 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 367 | Oracle Cloud | 2022 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 368 | Oracle Cloud | 2023 | 集团资本开支 | 8695 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 369 | Oracle Cloud | 2024 | 集团资本开支 | 6866 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 370 | Oracle Cloud | 2025 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 371 | Oracle Cloud | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 372 | Oracle Cloud | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 373 | Oracle Cloud | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 374 | Oracle Cloud | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 375 | Oracle Cloud | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 376 | Oracle Cloud | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 377 | Oracle Cloud | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 378 | Oracle Cloud | 2023 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 379 | Oracle Cloud | 2024 | 收入同比增长 | 24.5 | official_derived_from_verified_rows | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 380 | Oracle Cloud | 2025 | 收入同比增长 | 23.9 | official_derived_from_verified_rows | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 381 | Oracle Cloud | 2016 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 382 | Oracle Cloud | 2017 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 383 | Oracle Cloud | 2018 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 384 | Oracle Cloud | 2019 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 385 | Oracle Cloud | 2020 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 386 | Oracle Cloud | 2021 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 387 | Oracle Cloud | 2022 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
-| 388 | Oracle Cloud | 2023 | 经营利润率/分部利润率 | 63.6 | official_derived_from_verified_rows | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
-| 389 | Oracle Cloud | 2024 | 经营利润率/分部利润率 | 64.1 | official_derived_from_verified_rows | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
-| 390 | Oracle Cloud | 2025 | 经营利润率/分部利润率 | 62.8 | official_derived_from_verified_rows | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 231 | Alibaba Cloud | 2016 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 232 | Alibaba Cloud | 2017 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 233 | Alibaba Cloud | 2018 | 云计算分部收入（当年原披露口径） | 13390 | official_match | alibaba_fy2018_results;alibaba_fy2020_20f;alibaba_fy2021_20f | direct_segment_non_gaap_profit |
+| 234 | Alibaba Cloud | 2019 | 云计算分部收入（当年原披露口径） | 24702 | official_match | alibaba_fy2020_20f;alibaba_fy2021_20f;alibaba_fy2021_financial_statements | direct_segment_non_gaap_profit |
+| 235 | Alibaba Cloud | 2020 | 云计算分部收入（当年原披露口径） | 40016 | official_match | alibaba_fy2020_20f;alibaba_fy2021_20f;alibaba_fy2021_financial_statements | direct_segment_non_gaap_profit |
+| 236 | Alibaba Cloud | 2021 | 云计算分部收入（当年原披露口径） | 60120 | official_match | alibaba_fy2021_20f;alibaba_fy2021_financial_statements;alibaba_fy2022_20f | direct_segment_non_gaap_profit |
+| 237 | Alibaba Cloud | 2022 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 238 | Alibaba Cloud | 2023 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 239 | Alibaba Cloud | 2024 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 240 | Alibaba Cloud | 2025 | 云计算分部收入（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 241 | Alibaba Cloud | 2016 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 242 | Alibaba Cloud | 2017 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 243 | Alibaba Cloud | 2018 | 云计算分部调整后EBITA（当年原披露口径） | -799 | official_two_distinct_sources | alibaba_fy2018_results;alibaba_fy2020_20f | direct_segment_non_gaap_profit |
+| 244 | Alibaba Cloud | 2019 | 云计算分部调整后EBITA（当年原披露口径） | -1158 | official_two_distinct_sources | alibaba_fy2020_20f;alibaba_fy2021_20f | direct_segment_non_gaap_profit |
+| 245 | Alibaba Cloud | 2020 | 云计算分部调整后EBITA（当年原披露口径） | -1414 | official_two_distinct_sources | alibaba_fy2020_20f;alibaba_fy2021_20f | direct_segment_non_gaap_profit |
+| 246 | Alibaba Cloud | 2021 | 云计算分部调整后EBITA（当年原披露口径） | -166 | official_single_source | alibaba_fy2021_20f | direct_segment_non_gaap_profit |
+| 247 | Alibaba Cloud | 2022 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 248 | Alibaba Cloud | 2023 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 249 | Alibaba Cloud | 2024 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 250 | Alibaba Cloud | 2025 | 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 251 | Alibaba Cloud | 2016 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 252 | Alibaba Cloud | 2017 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 253 | Alibaba Cloud | 2018 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 254 | Alibaba Cloud | 2019 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 255 | Alibaba Cloud | 2020 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 256 | Alibaba Cloud | 2021 | 云业务收入（抵销跨分部交易后重列口径） | 60558 | official_two_distinct_sources | alibaba_fy2022_results;alibaba_fy2022_20f | direct_segment_non_gaap_profit |
+| 257 | Alibaba Cloud | 2022 | 云业务收入（抵销跨分部交易后重列口径） | 74568 | official_match | alibaba_fy2022_results;alibaba_fy2022_20f;alibaba_fy2024_annual | direct_segment_non_gaap_profit |
+| 258 | Alibaba Cloud | 2023 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 259 | Alibaba Cloud | 2024 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 260 | Alibaba Cloud | 2025 | 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 261 | Alibaba Cloud | 2016 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 262 | Alibaba Cloud | 2017 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 263 | Alibaba Cloud | 2018 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 264 | Alibaba Cloud | 2019 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 265 | Alibaba Cloud | 2020 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 266 | Alibaba Cloud | 2021 | 云业务调整后EBITA（重列口径） | -2251 | official_two_distinct_sources | alibaba_fy2022_results;alibaba_fy2022_20f | direct_segment_non_gaap_profit |
+| 267 | Alibaba Cloud | 2022 | 云业务调整后EBITA（重列口径） | 1146 | official_two_distinct_sources | alibaba_fy2022_results;alibaba_fy2022_20f | direct_segment_non_gaap_profit |
+| 268 | Alibaba Cloud | 2023 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 269 | Alibaba Cloud | 2024 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 270 | Alibaba Cloud | 2025 | 云业务调整后EBITA（重列口径） | 未披露/不适用 | scope_not_comparable | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 271 | Alibaba Cloud | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 272 | Alibaba Cloud | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 273 | Alibaba Cloud | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 274 | Alibaba Cloud | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 275 | Alibaba Cloud | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 276 | Alibaba Cloud | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 277 | Alibaba Cloud | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2024_annual;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 278 | Alibaba Cloud | 2023 | 收入同比增长 | 1.5 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
+| 279 | Alibaba Cloud | 2024 | 收入同比增长 | 2.8 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
+| 280 | Alibaba Cloud | 2025 | 收入同比增长 | 11.0 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
+| 281 | Alibaba Cloud | 2016 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 282 | Alibaba Cloud | 2017 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 283 | Alibaba Cloud | 2018 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 284 | Alibaba Cloud | 2019 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 285 | Alibaba Cloud | 2020 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 286 | Alibaba Cloud | 2021 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2025_pdf;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 287 | Alibaba Cloud | 2022 | 调整后 EBITA 率 | 未披露/不适用 | source_gap_confirmed | alibaba_fy2024_annual;alibaba_fy2024_businesswire;alibaba_ir_financial_results | direct_segment_non_gaap_profit |
+| 288 | Alibaba Cloud | 2023 | 调整后 EBITA 率 | 4.0 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
+| 289 | Alibaba Cloud | 2024 | 调整后 EBITA 率 | 5.8 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_76c0a1c3331b71;history_ba968cacba0845;history_8d5b726b2b699d;history_8632b46ad561b5 | direct_segment_non_gaap_profit |
+| 290 | Alibaba Cloud | 2025 | 调整后 EBITA 率 | 8.9 | official_derived_from_verified_rows | history_91efa98b3c3fd1;history_0c38dcce14bd2c;history_aabf897b82f8b9;history_f60eec20c578f7;history_a066e39842a937;history_f9bcc2696de9fa;history_ac13b7d64632f7 | direct_segment_non_gaap_profit |
+| 291 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部收入 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 292 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部收入 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 293 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部收入 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 294 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部收入 | 101355.0 | official_match | history_c2075c1c7abfcd;history_86efbdf9f2447e;history_14e176a1277898;history_d571f48acad6de;history_614088929682a4 | proxy_segment |
+| 295 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部收入 | 128086.0 | official_match | history_c2075c1c7abfcd;history_1d6bea0244e28d;history_b3d2b7a477d388;history_32501ce2b9a925;history_3376b436f35760 | proxy_segment |
+| 296 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部收入 | 172195.0 | official_match | history_c2075c1c7abfcd;history_624f470cba3c98;history_fbcf84c7e6ec27;history_1bbe2c890b98f0;history_a4005f91ac2dce | proxy_segment |
+| 297 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部收入 | 177064.0 | official_match | history_c2075c1c7abfcd;history_e9f723ec68079e;history_76ecb799d5d99c;history_b4b12e1409f305;history_3924038d575d5f | proxy_segment |
+| 298 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部收入 | 203763 | official_match | history_c2075c1c7abfcd;history_51a49299120818;history_8bf9d0759ceed1;history_de3cd7830b2aac;history_1214b7c401b992 | proxy_segment |
+| 299 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部收入 | 211956 | official_match | history_c2075c1c7abfcd;history_330d7a99974660;history_56098f20e90eb4;history_5f82333ccea989;history_9421a16fd1efb5 | proxy_segment |
+| 300 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部收入 | 229435 | official_match | history_c2075c1c7abfcd;history_dc12015ae00c7c;history_9e43f1488639df;history_2231bd2d635097;history_266a915b42808d | proxy_segment |
+| 301 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 302 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 303 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 304 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 305 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 306 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 307 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部毛利 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 308 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部毛利 | 80636 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 309 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部毛利 | 99701 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 310 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部毛利 | 116616 | official_match | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 311 | Tencent Cloud / Tencent FBS proxy | 2016 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 312 | Tencent Cloud / Tencent FBS proxy | 2017 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 313 | Tencent Cloud / Tencent FBS proxy | 2018 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 314 | Tencent Cloud / Tencent FBS proxy | 2019 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 315 | Tencent Cloud / Tencent FBS proxy | 2020 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 316 | Tencent Cloud / Tencent FBS proxy | 2021 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 317 | Tencent Cloud / Tencent FBS proxy | 2022 | 代理分部毛利率 | 未披露/不适用 | scope_not_comparable | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 318 | Tencent Cloud / Tencent FBS proxy | 2023 | 代理分部毛利率 | 40.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 319 | Tencent Cloud / Tencent FBS proxy | 2024 | 代理分部毛利率 | 47.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 320 | Tencent Cloud / Tencent FBS proxy | 2025 | 代理分部毛利率 | 51.0 | official_derived_from_verified_rows | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 321 | Tencent Cloud / Tencent FBS proxy | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 322 | Tencent Cloud / Tencent FBS proxy | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 323 | Tencent Cloud / Tencent FBS proxy | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | tencent_2025_annual_pdf;tencent_2024_annual_pdf;tencent_ir_financial_reports | proxy_segment |
+| 324 | Tencent Cloud / Tencent FBS proxy | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | history_c2075c1c7abfcd;history_86efbdf9f2447e;history_14e176a1277898;history_d571f48acad6de;history_614088929682a4 | proxy_segment |
+| 325 | Tencent Cloud / Tencent FBS proxy | 2020 | 收入同比增长 | 26.4 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_1d6bea0244e28d;history_b3d2b7a477d388;history_32501ce2b9a925;history_3376b436f35760 | proxy_segment |
+| 326 | Tencent Cloud / Tencent FBS proxy | 2021 | 收入同比增长 | 34.4 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_624f470cba3c98;history_fbcf84c7e6ec27;history_1bbe2c890b98f0;history_a4005f91ac2dce | proxy_segment |
+| 327 | Tencent Cloud / Tencent FBS proxy | 2022 | 收入同比增长 | 2.8 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_e9f723ec68079e;history_76ecb799d5d99c;history_b4b12e1409f305;history_3924038d575d5f | proxy_segment |
+| 328 | Tencent Cloud / Tencent FBS proxy | 2023 | 收入同比增长 | 15.1 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_51a49299120818;history_8bf9d0759ceed1;history_de3cd7830b2aac;history_1214b7c401b992 | proxy_segment |
+| 329 | Tencent Cloud / Tencent FBS proxy | 2024 | 收入同比增长 | 4.0 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_330d7a99974660;history_56098f20e90eb4;history_5f82333ccea989;history_9421a16fd1efb5 | proxy_segment |
+| 330 | Tencent Cloud / Tencent FBS proxy | 2025 | 收入同比增长 | 8.2 | official_derived_from_verified_rows | history_c2075c1c7abfcd;history_dc12015ae00c7c;history_9e43f1488639df;history_2231bd2d635097;history_266a915b42808d | proxy_segment |
+| 331 | Huawei Cloud / Cloud Computing | 2016 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 332 | Huawei Cloud / Cloud Computing | 2017 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 333 | Huawei Cloud / Cloud Computing | 2018 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 334 | Huawei Cloud / Cloud Computing | 2019 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 335 | Huawei Cloud / Cloud Computing | 2020 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 336 | Huawei Cloud / Cloud Computing | 2021 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 337 | Huawei Cloud / Cloud Computing | 2022 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 338 | Huawei Cloud / Cloud Computing | 2023 | 云收入/云相关分部收入 | 35514 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 339 | Huawei Cloud / Cloud Computing | 2024 | 云收入/云相关分部收入 | 33325 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 340 | Huawei Cloud / Cloud Computing | 2025 | 云收入/云相关分部收入 | 32161 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 341 | Huawei Cloud / Cloud Computing | 2016 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 342 | Huawei Cloud / Cloud Computing | 2017 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 343 | Huawei Cloud / Cloud Computing | 2018 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 344 | Huawei Cloud / Cloud Computing | 2019 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 345 | Huawei Cloud / Cloud Computing | 2020 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 346 | Huawei Cloud / Cloud Computing | 2021 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 347 | Huawei Cloud / Cloud Computing | 2022 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 348 | Huawei Cloud / Cloud Computing | 2023 | 含其他分部的云计算业务收入 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 349 | Huawei Cloud / Cloud Computing | 2024 | 含其他分部的云计算业务收入 | 68801 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 350 | Huawei Cloud / Cloud Computing | 2025 | 含其他分部的云计算业务收入 | 72075 | official_match | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 351 | Huawei Cloud / Cloud Computing | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 352 | Huawei Cloud / Cloud Computing | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 353 | Huawei Cloud / Cloud Computing | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 354 | Huawei Cloud / Cloud Computing | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 355 | Huawei Cloud / Cloud Computing | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 356 | Huawei Cloud / Cloud Computing | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 357 | Huawei Cloud / Cloud Computing | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 358 | Huawei Cloud / Cloud Computing | 2023 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 359 | Huawei Cloud / Cloud Computing | 2024 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 360 | Huawei Cloud / Cloud Computing | 2025 | 收入同比增长 | -3.5 | official_derived_from_verified_rows | huawei_2025_annual;huawei_2024_annual;huawei_annual_report_index | segment_with_reclassification |
+| 361 | Oracle Cloud | 2016 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 362 | Oracle Cloud | 2017 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 363 | Oracle Cloud | 2018 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 364 | Oracle Cloud | 2019 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 365 | Oracle Cloud | 2020 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 366 | Oracle Cloud | 2021 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 367 | Oracle Cloud | 2022 | 云收入/云相关分部收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 368 | Oracle Cloud | 2023 | 云收入/云相关分部收入 | 15881 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 369 | Oracle Cloud | 2024 | 云收入/云相关分部收入 | 19774 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 370 | Oracle Cloud | 2025 | 云收入/云相关分部收入 | 24506 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 371 | Oracle Cloud | 2016 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 372 | Oracle Cloud | 2017 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 373 | Oracle Cloud | 2018 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 374 | Oracle Cloud | 2019 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 375 | Oracle Cloud | 2020 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 376 | Oracle Cloud | 2021 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 377 | Oracle Cloud | 2022 | 云服务与许可证支持收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 378 | Oracle Cloud | 2023 | 云服务与许可证支持收入 | 35307 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 379 | Oracle Cloud | 2024 | 云服务与许可证支持收入 | 39383 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 380 | Oracle Cloud | 2025 | 云服务与许可证支持收入 | 44029 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 381 | Oracle Cloud | 2016 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 382 | Oracle Cloud | 2017 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 383 | Oracle Cloud | 2018 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 384 | Oracle Cloud | 2019 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 385 | Oracle Cloud | 2020 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 386 | Oracle Cloud | 2021 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 387 | Oracle Cloud | 2022 | 云与许可证收入 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 388 | Oracle Cloud | 2023 | 云与许可证收入 | 41086 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 389 | Oracle Cloud | 2024 | 云与许可证收入 | 44464 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 390 | Oracle Cloud | 2025 | 云与许可证收入 | 49230 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 391 | Oracle Cloud | 2016 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 392 | Oracle Cloud | 2017 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 393 | Oracle Cloud | 2018 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 394 | Oracle Cloud | 2019 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 395 | Oracle Cloud | 2020 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 396 | Oracle Cloud | 2021 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 397 | Oracle Cloud | 2022 | 云与许可证分部利润 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 398 | Oracle Cloud | 2023 | 云与许可证分部利润 | 26126 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 399 | Oracle Cloud | 2024 | 云与许可证分部利润 | 28514 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 400 | Oracle Cloud | 2025 | 云与许可证分部利润 | 30930 | official_match | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 401 | Oracle Cloud | 2016 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 402 | Oracle Cloud | 2017 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 403 | Oracle Cloud | 2018 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 404 | Oracle Cloud | 2019 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 405 | Oracle Cloud | 2020 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 406 | Oracle Cloud | 2021 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 407 | Oracle Cloud | 2022 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 408 | Oracle Cloud | 2023 | 集团资本开支 | 8695 | official_match | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 409 | Oracle Cloud | 2024 | 集团资本开支 | 6866 | official_match | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 410 | Oracle Cloud | 2025 | 集团资本开支 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 411 | Oracle Cloud | 2016 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 412 | Oracle Cloud | 2017 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 413 | Oracle Cloud | 2018 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 414 | Oracle Cloud | 2019 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 415 | Oracle Cloud | 2020 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 416 | Oracle Cloud | 2021 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 417 | Oracle Cloud | 2022 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 418 | Oracle Cloud | 2023 | 收入同比增长 | 未披露/不适用 | source_gap_confirmed | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 419 | Oracle Cloud | 2024 | 收入同比增长 | 24.5 | official_derived_from_verified_rows | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 420 | Oracle Cloud | 2025 | 收入同比增长 | 23.9 | official_derived_from_verified_rows | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 421 | Oracle Cloud | 2016 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 422 | Oracle Cloud | 2017 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 423 | Oracle Cloud | 2018 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 424 | Oracle Cloud | 2019 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 425 | Oracle Cloud | 2020 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 426 | Oracle Cloud | 2021 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 427 | Oracle Cloud | 2022 | 经营利润率/分部利润率 | 未披露/不适用 | source_gap_confirmed | oracle_2025_10k;oracle_ir_sec_filings | direct_product_line_and_segment |
+| 428 | Oracle Cloud | 2023 | 经营利润率/分部利润率 | 63.6 | official_derived_from_verified_rows | oracle_2023_10k;oracle_2024_10k;oracle_2025_10k | direct_product_line_and_segment |
+| 429 | Oracle Cloud | 2024 | 经营利润率/分部利润率 | 64.1 | official_derived_from_verified_rows | oracle_2024_10k;oracle_2025_10k;oracle_fy2024_results | direct_product_line_and_segment |
+| 430 | Oracle Cloud | 2025 | 经营利润率/分部利润率 | 62.8 | official_derived_from_verified_rows | oracle_2025_10k;oracle_fy2025_results;oracle_ir_sec_filings | direct_product_line_and_segment |
 
 ## 口径冲突和限制
 

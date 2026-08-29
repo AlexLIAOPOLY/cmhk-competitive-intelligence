@@ -295,7 +295,7 @@ china_broadnet,中国广电,2022,broadband_arpu,source_gap_confirmed
 china_broadnet,中国广电,2022,mobile_dou,source_gap_confirmed
 china_broadnet,中国广电,2022,total_data_traffic,source_gap_confirmed
 china_broadnet,中国广电,2022,5g_base_stations,available
-china_broadnet,中国广电,2022,cable_tv_actual_users,available
+china_broadnet,中国广电,2022,cable_tv_actual_users,scope_not_comparable
 china_broadnet,中国广电,2022,revenue,source_gap_confirmed
 china_broadnet,中国广电,2022,ebitda,source_gap_confirmed
 china_broadnet,中国广电,2022,net_profit,source_gap_confirmed
@@ -308,7 +308,7 @@ china_broadnet,中国广电,2023,broadband_arpu,source_gap_confirmed
 china_broadnet,中国广电,2023,mobile_dou,source_gap_confirmed
 china_broadnet,中国广电,2023,total_data_traffic,source_gap_confirmed
 china_broadnet,中国广电,2023,5g_base_stations,available
-china_broadnet,中国广电,2023,cable_tv_actual_users,available
+china_broadnet,中国广电,2023,cable_tv_actual_users,scope_not_comparable
 china_broadnet,中国广电,2023,revenue,source_gap_confirmed
 china_broadnet,中国广电,2023,ebitda,source_gap_confirmed
 china_broadnet,中国广电,2023,net_profit,source_gap_confirmed
@@ -321,7 +321,7 @@ china_broadnet,中国广电,2024,broadband_arpu,source_gap_confirmed
 china_broadnet,中国广电,2024,mobile_dou,source_gap_confirmed
 china_broadnet,中国广电,2024,total_data_traffic,source_gap_confirmed
 china_broadnet,中国广电,2024,5g_base_stations,source_gap_confirmed
-china_broadnet,中国广电,2024,cable_tv_actual_users,available
+china_broadnet,中国广电,2024,cable_tv_actual_users,scope_not_comparable
 china_broadnet,中国广电,2024,revenue,source_gap_confirmed
 china_broadnet,中国广电,2024,ebitda,source_gap_confirmed
 china_broadnet,中国广电,2024,net_profit,source_gap_confirmed
@@ -334,7 +334,7 @@ china_broadnet,中国广电,2025,broadband_arpu,source_gap_confirmed
 china_broadnet,中国广电,2025,mobile_dou,source_gap_confirmed
 china_broadnet,中国广电,2025,total_data_traffic,source_gap_confirmed
 china_broadnet,中国广电,2025,5g_base_stations,source_gap_confirmed
-china_broadnet,中国广电,2025,cable_tv_actual_users,available
+china_broadnet,中国广电,2025,cable_tv_actual_users,scope_not_comparable
 china_broadnet,中国广电,2025,revenue,source_gap_confirmed
 china_broadnet,中国广电,2025,ebitda,source_gap_confirmed
 china_broadnet,中国广电,2025,net_profit,source_gap_confirmed

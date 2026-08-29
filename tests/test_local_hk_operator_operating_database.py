@@ -118,7 +118,7 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
     def test_unfilled_gaps_remain_missing_and_normalized_disclosures_are_labelled(self) -> None:
         hgc = self.row("hgc", 2025, "mobile_postpaid_arpu")
         self.assertEqual(hgc["official_value"], "")
-        self.assertEqual(hgc["verification_status"], "source_gap_confirmed")
+        self.assertEqual(hgc["verification_status"], "not_applicable_business_scope")
         self.assertTrue(hgc["gap_reason"])
         smartone = self.row("smartone", 2025, "5g_penetration")
         self.assertEqual(smartone["official_value"], "39")
@@ -233,7 +233,9 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertIn("operator=3HK", text)
         self.assertIn("operator=HKT", text)
         self.assertIn("operator=SmarTone", text)
-        self.assertIn("verification_status=operational_zero_from_precommercial_timeline", text)
+        self.assertIn("verification_status=not_applicable_precommercial", text)
+        self.assertIn("商用前不适用", text)
+        self.assertNotIn("operational_zero_from_precommercial_timeline", text)
         self.assertIn("verification_status=official_derived_from_disclosed_growth_bridge", text)
         self.assertIn("verification_status=official_range_normalized", text)
         self.assertIn("verification_status=official_qualitative_continuity_normalized", text)
@@ -287,8 +289,8 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
             dataset_ids={DATASET_ID},
         )
         self.assertEqual(len(gap_chunks), 1)
-        self.assertIn("未披露（source_gap_confirmed）", gap_chunks[0]["text"])
-        self.assertIn("不能當作0或推測", gap_chunks[0]["text"])
+        self.assertIn("业务不适用（not_applicable_business_scope）", gap_chunks[0]["text"])
+        self.assertIn("不能当作0或推测", gap_chunks[0]["text"])
 
         isolated = rag_llm._local_hk_operator_exact_metric_chunks(
             "HKT 2025年5G客戶數是多少？",

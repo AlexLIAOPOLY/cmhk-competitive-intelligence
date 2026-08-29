@@ -629,6 +629,112 @@ def _selected_quarterly_metrics_csv(dataset_ids: set[str] | None = None) -> Path
     return max(candidates, key=lambda item: (item[0], item[1]))[2]
 
 
+def _governed_gap_value_text(status: str) -> str:
+    return {
+        "not_applicable_business_scope": "业务不适用（not_applicable_business_scope）",
+        "not_applicable_precommercial": "商用前不适用（not_applicable_precommercial）",
+        "scope_not_comparable": "口径不可比（scope_not_comparable）",
+    }.get(status, "未披露（source_gap_confirmed）")
+
+
+def _cloud_vendor_exact_metric_chunks(
+    question: str,
+    dataset_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Return exact governed cloud-vendor rows instead of adjacent CSV chunks."""
+    dataset_id = "cloud_vendor_metrics_2026-06-17"
+    if dataset_ids is not None and dataset_id not in dataset_ids:
+        return []
+    csv_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "cloud_vendor_metrics_2016_2025.csv"
+    if not csv_path.exists():
+        return []
+
+    lowered = re.sub(r"\s+", " ", question or "").strip().lower()
+    vendor_aliases = {
+        "AWS": ("aws", "amazon web services", "亚马逊云", "亞馬遜雲"),
+        "Microsoft Azure / Intelligent Cloud": ("microsoft azure", "azure", "intelligent cloud", "微软云", "微軟雲"),
+        "Google Cloud": ("google cloud", "谷歌云", "谷歌雲"),
+        "Alibaba Cloud": ("alibaba cloud", "阿里云", "阿里雲"),
+        "Tencent Cloud / Tencent FBS proxy": ("tencent cloud", "tencent fbs", "腾讯云", "騰訊雲"),
+        "Huawei Cloud / Cloud Computing": ("huawei cloud", "华为云", "華為雲"),
+        "Oracle Cloud": ("oracle cloud", "甲骨文云", "甲骨文雲"),
+        "China Mobile Cloud": ("china mobile cloud", "移动云", "移動雲"),
+    }
+    matched_vendors = {
+        vendor for vendor, aliases in vendor_aliases.items() if any(alias in lowered for alias in aliases)
+    }
+    metric_aliases = {
+        "legacy_cloud_segment_revenue_then_reported": ("当年原披露云计算分部收入", "云计算分部收入", "legacy cloud segment revenue"),
+        "legacy_cloud_adjusted_ebita_then_reported": ("当年原披露调整后ebita", "云计算分部调整后ebita", "legacy cloud adjusted ebita"),
+        "restated_external_cloud_revenue": ("抵销后重列云收入", "重列云收入", "restated external cloud revenue"),
+        "restated_cloud_adjusted_ebita": ("重列调整后ebita", "restated cloud adjusted ebita"),
+        "cloud_revenue": ("云收入", "雲收入", "cloud revenue"),
+        "cloud_operating_profit": ("云业务经营利润", "云经营利润", "cloud operating profit"),
+        "adjusted_ebita": ("调整后ebita", "adjusted ebita"),
+        "operating_income": ("经营利润", "operating income", "operating profit"),
+        "operating_margin": ("经营利润率", "operating margin"),
+        "group_capex": ("集团资本开支", "资本开支", "group capex", "capex"),
+        "revenue_yoy": ("收入同比", "收入增速", "revenue yoy", "revenue growth"),
+        "proxy_segment_revenue": ("代理分部收入", "代理口径收入", "proxy segment revenue"),
+        "proxy_segment_gross_profit": ("代理分部毛利", "proxy segment gross profit"),
+    }
+    matched_metrics = {
+        metric for metric, aliases in metric_aliases.items() if any(alias in lowered for alias in aliases)
+    }
+    if "legacy_cloud_segment_revenue_then_reported" in matched_metrics:
+        matched_metrics.discard("cloud_revenue")
+        if "adjusted_ebita" in matched_metrics:
+            matched_metrics.discard("adjusted_ebita")
+            matched_metrics.add("legacy_cloud_adjusted_ebita_then_reported")
+    if "legacy_cloud_adjusted_ebita_then_reported" in matched_metrics:
+        matched_metrics.discard("adjusted_ebita")
+    if "restated_external_cloud_revenue" in matched_metrics:
+        matched_metrics.discard("cloud_revenue")
+    if "restated_cloud_adjusted_ebita" in matched_metrics:
+        matched_metrics.discard("adjusted_ebita")
+    if "operating_margin" in matched_metrics:
+        matched_metrics.discard("operating_income")
+    if not matched_vendors or not matched_metrics:
+        return []
+
+    years = {int(year) for year in re.findall(r"(?:fy\s*)?(20(?:1[6-9]|2[0-5]))", lowered)}
+    if not years and any(token in lowered for token in ("最新", "latest", "current")):
+        years = {2025}
+    source = f"agent_knowledge/{dataset_id}/cloud_vendor_metrics_2016_2025.csv"
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    selected = [
+        row for row in rows
+        if row.get("vendor") in matched_vendors
+        and row.get("metric_key") in matched_metrics
+        and (not years or int(row.get("fiscal_year") or 0) in years)
+    ]
+    chunks: list[dict[str, Any]] = []
+    for row in selected:
+        status = str(row.get("verification_status") or "source_gap_confirmed")
+        official_value = str(row.get("official_value") or row.get("value") or "").strip()
+        if official_value:
+            value_text = f"{official_value} {row.get('currency')} {row.get('official_unit') or row.get('unit')}".strip()
+        else:
+            value_text = _governed_gap_value_text(status)
+        strict_count = _strict_source_document_count(row)
+        text = (
+            f"精确云厂商年度指标行：vendor={row.get('vendor')}; period=FY{row.get('fiscal_year')}; "
+            f"metric_key={row.get('metric_key')}; metric_zh={row.get('metric_zh')}; "
+            f"official_value={value_text}; verification_status={status}; "
+            f"{_strict_three_source_row_text(row, strict_count)}; disclosure_quality={row.get('disclosure_quality')}; "
+            f"gap_reason_code={row.get('gap_reason_code')}; gap_reason={row.get('gap_reason')}; "
+            f"quality_note={row.get('quality_note')}. "
+            "回答时必须保留指标口径；空值只能表述为未披露/业务不适用/商用前不适用/口径不可比，不得当作0。"
+        )
+        chunks.append({
+            "source": source,
+            "text": text,
+            "links": [{"label": source, "url": _local_ref(source)}, *_strict_source_links(row)],
+        })
+    return chunks
+
+
 def _global_operator_exact_metric_chunks(
     question: str,
     dataset_ids: set[str] | None = None,
@@ -931,8 +1037,14 @@ def _global_operator_exact_metric_chunks(
             points = []
             for row in pair_rows:
                 strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
+                row_value = str(row.get("official_value") or "").strip()
+                point_value = (
+                    f"{row_value} {row.get('unit')}"
+                    if row_value
+                    else _governed_gap_value_text(str(row.get("verification_status") or ""))
+                )
                 points.append(
-                    f"{row.get('period')}={row.get('official_value')} {row.get('unit')}"
+                    f"{row.get('period')}={point_value}"
                     f"[status={row.get('verification_status')},verification_count={row.get('verification_count')},"
                     f"distinct_sources={strict_sources}]"
                 )
@@ -966,8 +1078,11 @@ def _global_operator_exact_metric_chunks(
             value_text = f"{official_value} {row.get('unit')}"
             missing_value_instruction = ""
         elif verification_status == "not_applicable_precommercial":
-            value_text = "不适用（not_applicable_precommercial / 尚未商用）"
-            missing_value_instruction = "该行只能回答尚未商用不适用，不能写成未检索或0。"
+            value_text = _governed_gap_value_text(verification_status)
+            missing_value_instruction = "该行只能回答商用前不适用，不能写成未检索或0。"
+        elif verification_status == "scope_not_comparable":
+            value_text = _governed_gap_value_text(verification_status)
+            missing_value_instruction = "该行只能回答口径不可比，不能把行业、联邦体系或其他分部数值当成公司值。"
         else:
             value_text = "已定向检索未见直接披露（source_gap_confirmed）"
             missing_value_instruction = (
@@ -1214,7 +1329,11 @@ def _local_hk_operator_exact_metric_chunks(
     # performs the final size-aware selection.
     for row in filtered[:300]:
         strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
-        value_text = f"{row.get('official_value')} {row.get('unit')}" if row.get("official_value") else "未披露（source_gap_confirmed）"
+        value_text = (
+            f"{row.get('official_value')} {row.get('unit')}"
+            if row.get("official_value")
+            else _governed_gap_value_text(str(row.get("verification_status") or ""))
+        )
         gap_reason = (row.get("gap_reason") or row.get("quality_note") or "").strip()
         reviewed_source_urls = (row.get("reviewed_source_urls") or "[]").strip()
         try:
@@ -1239,7 +1358,7 @@ def _local_hk_operator_exact_metric_chunks(
             f"related_public_unit={row.get('related_public_unit')}; "
             f"related_public_comparator={row.get('related_public_comparator')}; "
             f"related_public_note={row.get('related_public_note')}; quality_note={row.get('quality_note')}."
-            "如果狀態為source_gap_confirmed，必須回答目標指標未披露並說明gap_reason與已復核官方來源，不能當作0或推測；"
+            "必须按verification_status回答未披露、业务不适用、商用前不适用或口径不可比，并说明gap_reason与已复核官方来源，不能当作0或推测；"
             "若global_availability_status為targeted_public_web_search_completed_no_direct_value，只能說定向公開網檢索未找到同期間同口徑直接值，不能斷言全網不存在；"
             "但若related_public_value有值，必須另外列出這個不同口徑旁證及comparator，並明確說它不等同目標指標。"
         )
@@ -2185,6 +2304,7 @@ def retrieve_context(question: str, limit: int = 8, dataset_ids: set[str] | None
     )
     exact_chunks = _product_tariff_exact_chunks(question, dataset_ids=dataset_ids)
     exact_chunks.extend(_requested_overview_exact_metric_chunks(question, dataset_ids=dataset_ids))
+    exact_chunks.extend(_cloud_vendor_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_global_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_local_hk_operator_exact_metric_chunks(question, dataset_ids=dataset_ids))
     exact_chunks.extend(_quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids))

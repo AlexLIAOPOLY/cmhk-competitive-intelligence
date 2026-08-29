@@ -1,8 +1,8 @@
 # 全球重点十家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：843
-- 有值行：611
+- 明细行：844
+- 有值行：594
 - 来源条目：370
 - 重复键：0
 - 无效来源引用：0
@@ -12,11 +12,12 @@
 - `not_applicable_precommercial`: 27
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
-- `official_multi_source_verified`: 37
+- `official_multi_source_verified`: 20
 - `official_single_source`: 39
 - `official_three_distinct_sources_verified`: 494
 - `official_two_distinct_sources`: 25
-- `source_gap_confirmed`: 205
+- `scope_not_comparable`: 20
+- `source_gap_confirmed`: 203
 
 ## 三来源认证行（按运营商）
 
@@ -39,7 +40,7 @@
 - NTT Group: 7
 - Reliance Jio: 40
 - Verizon: 7
-- 中国广电: 120
+- 中国广电: 124
 - 中国电信: 14
 - 中国移动: 9
 - 中国联通: 31

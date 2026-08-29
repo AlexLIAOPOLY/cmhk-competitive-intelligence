@@ -25,9 +25,16 @@ GLOBAL_OPERATOR_SOURCES = (
 LOCAL_HK_SOURCE = (
     ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv"
 )
+CLOUD_VENDOR_SOURCE = (
+    ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.csv"
+)
+CLOUD_VENDOR_SOURCES = (
+    ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/sources.json"
+)
 SOURCES = (
     GLOBAL_OPERATOR_SOURCE,
     LOCAL_HK_SOURCE,
+    CLOUD_VENDOR_SOURCE,
 )
 REQUESTED_OVERVIEW_SOURCES = (
     ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
@@ -47,9 +54,20 @@ KNOWLEDGE_BASE_META = {
         "type": "客户 + 网络 + 运营指标",
         "scope": "香港本地运营商 · 2016–2025",
     },
+    CLOUD_VENDOR_SOURCE: {
+        "label": "全球云厂商十年经营知识库",
+        "type": "云收入 + 利润 + 资本开支 + 披露缺口",
+        "scope": "八家重点云厂商 · FY2016–FY2025 · 原生财政年度",
+    },
 }
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
-BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
+BLOCKED_STATUSES = {
+    "source_gap_confirmed",
+    "needs_official_row_crosscheck",
+    "not_applicable_business_scope",
+    "not_applicable_precommercial",
+    "scope_not_comparable",
+}
 FULL_AUDIT_OPERATOR_IDS = {
     "cmhk",
     "hkt",
@@ -91,6 +109,9 @@ UNIT_LABELS = {
     "JPY_billion": "十亿日元",
     "HKD_million": "百万港元",
     "CNY_100million": "亿元",
+    "RMB_millions": "百万人民币",
+    "CNY_millions": "百万人民币",
+    "USD_millions": "百万美元",
     "hundred_million_subscribers": "亿户",
 }
 COMPARISON_ALIASES = {
@@ -266,25 +287,38 @@ def main() -> None:
         for item in (global_source_payload.get("sources") or [])
         if isinstance(item, dict)
     }
+    cloud_source_payload = json.loads(CLOUD_VENDOR_SOURCES.read_text(encoding="utf-8"))
+    cloud_source_urls = {
+        str(source_id): str(item.get("url") or "")
+        for source_id, item in cloud_source_payload.items()
+        if isinstance(item, dict)
+    }
     for source in SOURCES:
         with source.open(encoding="utf-8-sig", newline="") as handle:
             for row in csv.DictReader(handle):
+                is_cloud = source == CLOUD_VENDOR_SOURCE
                 status = text(row, "verification_status")
                 raw = text(row, "official_value")
-                company = text(row, "operator")
+                company = text(row, "vendor") if is_cloud else text(row, "operator")
                 metric = text(row, "metric_key")
                 try:
-                    year = int(text(row, "year"))
+                    year = int(text(row, "fiscal_year") if is_cloud else text(row, "year"))
                 except (TypeError, ValueError):
                     continue
                 if not company or not metric:
                     continue
                 native_unit = text(row, "unit")
+                if is_cloud and native_unit == "millions":
+                    native_unit = f"{text(row, 'currency')}_millions"
                 unit = "million_subscribers" if metric == "postpaid_connections" else native_unit
                 company_meta.setdefault(company, {
                     "id": company,
                     "label": company,
-                    "group": "香港运营商" if source == LOCAL_HK_SOURCE else COMPANY_GROUPS.get(company, "国际运营商"),
+                    "group": (
+                        "全球云厂商"
+                        if is_cloud
+                        else ("香港运营商" if source == LOCAL_HK_SOURCE else COMPANY_GROUPS.get(company, "国际运营商"))
+                    ),
                 })
                 meta = metric_meta.setdefault(metric, {
                     "key": metric,
@@ -298,10 +332,36 @@ def main() -> None:
                     meta["units"].append(unit)
                 meta["unitLabels"][unit] = UNIT_LABELS.get(unit, unit)
                 if not raw:
+                    if source == CLOUD_VENDOR_SOURCE:
+                        reviewed_sources = source_urls(
+                            json_list(text(row, "verification_sources")), cloud_source_urls
+                        )
+                        gaps.append({
+                            "dataset": source.parent.name,
+                            "company": company,
+                            "metric": metric,
+                            "year": year,
+                            "unit": unit,
+                            "period": f"FY{year}",
+                            "periodEnd": f"{year}-12-31",
+                            "status": status,
+                            "searchStatus": (
+                                "scope_not_comparable"
+                                if status == "scope_not_comparable"
+                                else "targeted_public_search_no_direct_value"
+                            ),
+                            "reasonCode": text(row, "gap_reason_code") or "official_public_material_no_direct_value",
+                            "reason": text(row, "gap_reason") or text(row, "quality_note") or text(row, "verification_note"),
+                            "reviewedSources": reviewed_sources,
+                            "reviewedSourceCount": source_count(
+                                text(row, "verification_count"), len(reviewed_sources)
+                            ),
+                        })
                     if source == GLOBAL_OPERATOR_SOURCE:
                         source_ids = json_list(text(row, "candidate_sources"))
                         reviewed_sources = source_urls(source_ids, global_source_urls)
                         precommercial = status == "not_applicable_precommercial"
+                        scope_not_comparable = status == "scope_not_comparable"
                         gaps.append({
                             "dataset": source.parent.name,
                             "company": company,
@@ -314,11 +374,15 @@ def main() -> None:
                             "searchStatus": (
                                 "not_applicable_precommercial"
                                 if precommercial
+                                else "scope_not_comparable"
+                                if scope_not_comparable
                                 else "targeted_public_search_no_direct_value"
                             ),
                             "reasonCode": (
                                 "not_applicable_precommercial"
                                 if precommercial
+                                else "scope_not_comparable"
+                                if scope_not_comparable
                                 else "official_public_material_no_direct_value"
                             ),
                             "reason": text(row, "quality_note"),
@@ -327,6 +391,16 @@ def main() -> None:
                         })
                     if source == LOCAL_HK_SOURCE and text(row, "operator_id") in FULL_AUDIT_OPERATOR_IDS and text(row, "audit_outcome") == "source_gap_confirmed":
                         reviewed_sources = source_urls(json_list(text(row, "reviewed_source_urls")))
+                        reason_code = text(row, "gap_reason_code")
+                        search_status = (
+                            "not_applicable_business_scope"
+                            if reason_code == "not_applicable_business_scope"
+                            else "not_applicable_precommercial"
+                            if reason_code == "precommercial_kpi_not_defined"
+                            else "scope_not_comparable"
+                            if reason_code == "metric_definition_not_comparable"
+                            else "targeted_public_search_no_direct_value"
+                        )
                         gaps.append({
                             "dataset": source.parent.name,
                             "company": company,
@@ -336,8 +410,8 @@ def main() -> None:
                             "period": text(row, "period"),
                             "periodEnd": text(row, "period_end"),
                             "status": status,
-                            "searchStatus": "targeted_public_search_no_direct_value",
-                            "reasonCode": text(row, "gap_reason_code"),
+                            "searchStatus": search_status,
+                            "reasonCode": reason_code,
                             "reason": text(row, "gap_reason") or text(row, "quality_note"),
                             "reviewedSources": reviewed_sources,
                             "reviewedSourceCount": source_count(text(row, "reviewed_source_count"), len(reviewed_sources)),
@@ -359,7 +433,11 @@ def main() -> None:
                 reviewed_sources = source_urls(json_list(text(row, "reviewed_source_urls")))
                 strict_source_urls = source_urls(
                     verification_sources,
-                    global_source_urls if source == GLOBAL_OPERATOR_SOURCE else None,
+                    (
+                        cloud_source_urls
+                        if source == CLOUD_VENDOR_SOURCE
+                        else (global_source_urls if source == GLOBAL_OPERATOR_SOURCE else None)
+                    ),
                 )
                 primary_source = text(row, "primary_source_url")
                 all_source_urls = list(dict.fromkeys(
@@ -395,9 +473,9 @@ def main() -> None:
                     "value": value,
                     "unit": unit,
                     "comparator": text(row, "comparator") or "=",
-                    "period": text(row, "period"),
-                    "periodEnd": text(row, "period_end"),
-                    "scope": text(row, "scope"),
+                    "period": f"FY{year}" if is_cloud else text(row, "period"),
+                    "periodEnd": f"{year}-12-31" if is_cloud else text(row, "period_end"),
+                    "scope": text(row, "scope") or text(row, "quality_note"),
                     "basis": text(row, "basis"),
                     "status": status,
                     "source": primary_source,

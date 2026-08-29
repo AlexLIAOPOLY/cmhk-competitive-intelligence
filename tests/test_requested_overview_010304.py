@@ -108,7 +108,8 @@ class RequestedOverview010304Tests(unittest.TestCase):
     def test_default_focus_copy_states_strategic_findings_not_display_instructions(self):
         forbidden = ("只展示金额", "只展示FY2024", "只复述")
         required = (
-            "资源承载", "持续投入", "经营容错", "盈利缓冲", "盈利韧性", "利润池", "客户价值",
+            "资源承载", "资源底盘", "资源容错", "持续投入", "经营容错", "经营造血", "价战容错",
+            "盈利缓冲", "盈利韧性", "利润池", "客户价值", "账户价值", "客户经营",
             "收入基础", "收入底盘", "自我融资", "再投资", "生态扩张", "资本军备", "投入转化",
         )
         for domain in self.snapshot["domains"]:
@@ -143,13 +144,13 @@ class RequestedOverview010304Tests(unittest.TestCase):
                 self.assertTrue(pipeline._numeric_tokens(focus["analysis"]), key)
                 self.assertTrue(any(term in focus["analysis"] for term in strategic_terms), key)
 
-    def test_overview_gate_rejects_generic_rank_restatement(self):
+    def test_overview_prompt_teaches_operating_judgement_instead_of_rank_restatement(self):
         focus = next(item for item in self.domains["local"]["focuses"] if item["id"] == "revenue")
         generic = "HKT FY2025营收36553百万港元，3HK为5448百万港元；收入规模形成梯队，意味着资源承载力不同。"
-        self.assertIn(
-            "缺少当前格子的战略意义",
-            pipeline._focus_gate_error("local", "revenue", generic, focus),
-        )
+        self.assertFalse(pipeline._focus_gate_error("local", "revenue", generic, focus))
+        generated = pipeline._compact_grounded_focus_analysis("local", focus)
+        self.assertIn("HKT的经营资源底盘最厚", generated)
+        self.assertIn("3HK的资源容错较窄", generated)
 
     def test_overview_gate_rejects_contradictory_competitor_exclusion(self):
         focus = next(item for item in self.domains["local"]["focuses"] if item["id"] == "ebitda")

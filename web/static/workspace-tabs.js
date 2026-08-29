@@ -527,11 +527,15 @@
         ? `<strong class="competitor-related-value">相关口径：${esc(`${competitorComparator(gap.relatedPublicComparator)}${relatedValue} ${gap.relatedPublicUnit || ""}`.trim())}</strong><small>${esc(gap.relatedPublicNote || gap.relatedPublicMetric || "非目标年度同口径值")}</small>`
         : "";
       const gapLabel = gap?.searchStatus === "not_applicable_precommercial"
-        ? "— 不适用（尚未商用）"
+        ? "— 商用前不适用"
+        : gap?.searchStatus === "not_applicable_business_scope"
+          ? "— 业务不适用"
+          : gap?.searchStatus === "scope_not_comparable"
+            ? "— 口径不可比"
         : gap?.searchStatus === "targeted_public_search_not_recorded"
           ? "— 尚未记录定向检索"
           : gap
-            ? "— 已检索未见直接披露"
+            ? "— 未披露"
             : "— 尚无审计记录";
       return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.usagePolicy, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd, sourceAuthorityLabel].filter(Boolean).join(" · "))}</small>${disclosedSourceLinks}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedSourceLinks}`}</td>`;
     }).join("")}</tr>`).join("");

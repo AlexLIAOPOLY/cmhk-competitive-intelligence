@@ -130,6 +130,41 @@ SOURCES: dict[str, dict[str, str]] = {
         "url": "https://www.alibabagroup.com/ir-financial-reports-quarterly-results",
         "type": "official_ir_results_index",
     },
+    "alibaba_fy2024_annual": {
+        "label": "Alibaba Group FY2024 Annual Report, current Cloud Intelligence Group comparative table",
+        "url": "https://static.alibabagroup.com/reports/fy2024/ar/ebook/EN/88/index.html",
+        "type": "official_annual_report",
+    },
+    "alibaba_fy2022_results": {
+        "label": "Alibaba Group FY2022 full-year results, legacy Cloud segment revenue and adjusted EBITA",
+        "url": "https://www.alibabagroup.com/zh-HK/document-1489047618746056704",
+        "type": "official_results_release",
+    },
+    "alibaba_fy2022_20f": {
+        "label": "Alibaba Group FY2022 Form 20-F, legacy Cloud segment comparative tables",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465922082622/baba-20220331x20f.htm",
+        "type": "official_20f",
+    },
+    "alibaba_fy2021_20f": {
+        "label": "Alibaba Group FY2021 Form 20-F, Cloud computing segment comparative tables",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465921096092/baba-20210331x20f.htm",
+        "type": "official_20f",
+    },
+    "alibaba_fy2021_financial_statements": {
+        "label": "Alibaba Group FY2021 official financial statements, cloud computing services revenue table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465921096324/a21-17183_36k.pdf",
+        "type": "official_financial_statements",
+    },
+    "alibaba_fy2020_20f": {
+        "label": "Alibaba Group FY2020 Form 20-F, FY2019-FY2020 Cloud computing segment tables",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465920082409/baba-20200331x20f.htm",
+        "type": "official_20f",
+    },
+    "alibaba_fy2018_results": {
+        "label": "Alibaba Group FY2018 full-year results, Cloud computing revenue and adjusted EBITA",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465918030651/a18-12785_1ex99d1.htm",
+        "type": "official_results_release",
+    },
     "tencent_2025_annual_pdf": {
         "label": "Tencent Holdings 2025 Annual Report, FinTech and Business Services tables",
         "url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
@@ -229,6 +264,10 @@ METRICS_ZH = {
     "cloud_operating_profit": "云业务经营利润",
     "legacy_intelligent_cloud_revenue": "Intelligent Cloud收入（旧分部口径）",
     "legacy_intelligent_cloud_operating_income": "Intelligent Cloud经营利润（旧分部口径）",
+    "legacy_cloud_segment_revenue_then_reported": "云计算分部收入（当年原披露口径）",
+    "legacy_cloud_adjusted_ebita_then_reported": "云计算分部调整后EBITA（当年原披露口径）",
+    "restated_external_cloud_revenue": "云业务收入（抵销跨分部交易后重列口径）",
+    "restated_cloud_adjusted_ebita": "云业务调整后EBITA（重列口径）",
 }
 
 PERCENT_METRICS = {
@@ -237,6 +276,18 @@ PERCENT_METRICS = {
     "segment_gross_margin",
     "adjusted_ebita_margin",
     "proxy_segment_gross_margin",
+}
+
+SCOPE_BOUND_METRICS = {
+    "legacy_intelligent_cloud_operating_income",
+    "legacy_intelligent_cloud_revenue",
+    "legacy_cloud_segment_revenue_then_reported",
+    "legacy_cloud_adjusted_ebita_then_reported",
+    "restated_external_cloud_revenue",
+    "restated_cloud_adjusted_ebita",
+    "proxy_segment_gross_margin",
+    "proxy_segment_gross_profit",
+    "proxy_segment_revenue",
 }
 
 
@@ -367,11 +418,50 @@ VENDORS: list[dict[str, Any]] = [
         "fiscal_year_end": "March 31",
         "cmhk_relevance": "中国和亚洲云/AI 基础设施核心对标对象，尤其适合观察 AI 云需求和公共云产品结构。",
         "disclosure_quality": "direct_segment_non_gaap_profit",
-        "quality_note": "收入为 Cloud Intelligence Group 分部收入；利润口径为非 GAAP 调整后 EBITA，不等同 IFRS/GAAP 经营利润。",
+        "quality_note": "FY2022-FY2025 cloud_revenue 为重组后的 Cloud Intelligence Group 分部收入（分部间抵销前）；FY2018-FY2021 当年原披露云计算分部、FY2021-FY2022 抵销后重列口径分别保留为独立指标，禁止跨口径直连。利润口径为非 GAAP 调整后 EBITA。",
         "sources": ["alibaba_fy2025_pdf", "alibaba_fy2024_businesswire", "alibaba_ir_financial_results"],
         "metrics": {
-            "cloud_revenue": {"2023": 103497, "2024": 106374, "2025": 118028},
+            "cloud_revenue": {"2022": 102016, "2023": 103497, "2024": 106374, "2025": 118028},
             "adjusted_ebita": {"2023": 4101, "2024": 6121, "2025": 10556},
+            "legacy_cloud_segment_revenue_then_reported": {
+                "2018": 13390,
+                "2019": 24702,
+                "2020": 40016,
+                "2021": 60120,
+            },
+            "legacy_cloud_adjusted_ebita_then_reported": {
+                "2018": -799,
+                "2019": -1158,
+                "2020": -1414,
+                "2021": -166,
+            },
+            "restated_external_cloud_revenue": {"2021": 60558, "2022": 74568},
+            "restated_cloud_adjusted_ebita": {"2021": -2251, "2022": 1146},
+        },
+        "sources_by_metric_year": {
+            "cloud_revenue": {
+                "2022": ["alibaba_fy2024_annual", "alibaba_fy2024_businesswire", "alibaba_ir_financial_results"],
+            },
+            "legacy_cloud_segment_revenue_then_reported": {
+                "2018": ["alibaba_fy2018_results", "alibaba_fy2020_20f", "alibaba_fy2021_20f"],
+                "2019": ["alibaba_fy2020_20f", "alibaba_fy2021_20f", "alibaba_fy2021_financial_statements"],
+                "2020": ["alibaba_fy2020_20f", "alibaba_fy2021_20f", "alibaba_fy2021_financial_statements"],
+                "2021": ["alibaba_fy2021_20f", "alibaba_fy2021_financial_statements", "alibaba_fy2022_20f"],
+            },
+            "legacy_cloud_adjusted_ebita_then_reported": {
+                "2018": ["alibaba_fy2018_results", "alibaba_fy2020_20f"],
+                "2019": ["alibaba_fy2020_20f", "alibaba_fy2021_20f"],
+                "2020": ["alibaba_fy2020_20f", "alibaba_fy2021_20f"],
+                "2021": ["alibaba_fy2021_20f"],
+            },
+            "restated_external_cloud_revenue": {
+                "2021": ["alibaba_fy2022_results", "alibaba_fy2022_20f"],
+                "2022": ["alibaba_fy2022_results", "alibaba_fy2022_20f", "alibaba_fy2024_annual"],
+            },
+            "restated_cloud_adjusted_ebita": {
+                "2021": ["alibaba_fy2022_results", "alibaba_fy2022_20f"],
+                "2022": ["alibaba_fy2022_results", "alibaba_fy2022_20f"],
+            },
         },
     },
     {
@@ -696,8 +786,30 @@ def flatten_rows(vendors: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     for source_id in source_ids
                     if source_id in SOURCES
                 ]
-                admitted = value is None or len(source_entries) >= 3
-                status = verification_status(metric_key, value) if admitted else "needs_third_source"
+                admitted = value is None or len(source_entries) >= 1
+                status = verification_status(metric_key, value) if admitted else "needs_official_row_crosscheck"
+                gap_reason_code = ""
+                gap_reason = ""
+                if value is None:
+                    if metric_key in SCOPE_BOUND_METRICS:
+                        status = "scope_not_comparable"
+                        gap_reason_code = "scope_not_comparable"
+                        gap_reason = (
+                            f"FY{year} 没有可与该历史/代理分部口径直接连接的公司数值；"
+                            "保留为口径不可比，不用其他分部、集团或行业数据补齐。"
+                        )
+                    else:
+                        status = "source_gap_confirmed"
+                        gap_reason_code = "not_numerically_disclosed"
+                        gap_reason = (
+                            f"已复核{vendor['vendor']} FY{year}所列官方年报、业绩或监管文件；"
+                            f"未见{METRICS_ZH.get(metric_key, metric_key)}的可复用数值，不估算、不写0。"
+                        )
+                if value is not None and metric_key not in PERCENT_METRICS:
+                    if len(source_entries) == 1:
+                        status = "official_single_source"
+                    elif len(source_entries) == 2:
+                        status = "official_two_distinct_sources"
                 rows.append(
                     {
                         "vendor": vendor["vendor"],
@@ -717,10 +829,12 @@ def flatten_rows(vendors: list[dict[str, Any]]) -> list[dict[str, Any]]:
                         "verification_method": (
                             "three_distinct_official_documents"
                             if len(source_entries) >= 3
-                            else "candidate_value_pending_third_source"
+                            else "official_value_retained_with_evidence_limit"
                         ),
                         "verification_sources": json.dumps(source_entries, ensure_ascii=False),
                         "verification_note": "Direct official figure or derived metric from official rows; missing disclosures are retained as source gaps and are not estimated.",
+                        "gap_reason_code": gap_reason_code,
+                        "gap_reason": gap_reason,
                         "source_ids": ";".join(source_ids),
                         "primary_source_url": SOURCES[primary_source]["url"] if primary_source in SOURCES else "",
                         "disclosure_quality": vendor["disclosure_quality"],
@@ -749,6 +863,8 @@ def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
         "verification_method",
         "verification_sources",
         "verification_note",
+        "gap_reason_code",
+        "gap_reason",
         "source_ids",
         "primary_source_url",
         "disclosure_quality",
@@ -821,7 +937,7 @@ def build_summary(vendors: list[dict[str, Any]], rows: list[dict[str, Any]]) -> 
             "",
             f"- CSV 明细共 {len(rows)} 行，每行包含 `official_value`、`verification_status`、`verification_count`、`verification_sources`、`source_ids`、`primary_source_url`、`disclosure_quality` 和 `quality_note`。",
             "- 已按官方 10-K、官方年报 PDF/网页、官方业绩公告和官方 IR/报告索引逐项核对；代理口径和重述口径均在 `quality_note` 中标注。",
-            "- `source_gap_confirmed` 行保留披露边界，不估算；`official_derived_from_verified_rows` 行由已核验官方值计算。",
+            "- `source_gap_confirmed` 行保留未披露边界，`scope_not_comparable` 保留口径断点，两者都不写0或估算值；`official_derived_from_verified_rows` 行由已核验官方值计算。",
             "",
         ]
     )
@@ -836,7 +952,7 @@ def build_readme() -> str:
 ## 数据内容
 
 - 覆盖中国移动云、AWS、Microsoft Azure / Intelligent Cloud、Google Cloud、Alibaba Cloud、Tencent Cloud 代理口径、Huawei Cloud / Cloud Computing、Oracle Cloud。
-- 统一使用 FY2016-FY2025 十年窗口；仅在官方披露且逐值至少三份不同文件可追溯时入值，未披露年份保留缺口。
+- 统一使用 FY2016-FY2025 十年窗口；官方已披露值入库并按一份、两份或三份不同官方文件分级，未披露或口径不可比年份保留显式缺口。
 - 数据来源为官方 10-K、官方年报、官方业绩 PDF/公告。
 
 ## 文件

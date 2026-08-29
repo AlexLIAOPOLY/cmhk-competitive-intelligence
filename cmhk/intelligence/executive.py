@@ -1332,7 +1332,11 @@ def _requested_hong_kong_domain(
         if len(comparable) >= 2:
             prefix = f"{comparison_lead['name']}为{comparison_lead['value']}{comparison_lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": f"这表明{comparison_lead['name']}的经营资源底盘最厚，更能承担网络与获客投入，{low['name']}的资源容错较窄；规模不等同效率。",
+                "revenue": (
+                    f"这表明{comparison_lead['name']}的经营资源底盘最厚、资源承载力更强，"
+                    f"更能承担网络与获客投入；{low['name']}的资源容错较窄、经营容错更低，"
+                    "但规模不等同效率。"
+                ),
                 "ebitda": f"这表明{comparison_lead['name']}的经营造血代理最强，持续投入与价格竞争缓冲更厚，{low['name']}的防守容错更窄。",
                 "net_profit": f"这表明{comparison_lead['name']}盈利状态最稳、自我融资与再投资空间最厚，{low['name']}的盈利防线明显承压。",
                 "postpaid": f"这表明{comparison_lead['name']}的客户经营底盘更厚，{low['name']}的续约与交叉销售基础较窄；未结合ARPU不判断客户价值。",
@@ -1444,7 +1448,11 @@ def _requested_mainland_domain(
         if len(available) >= 2:
             prefix = f"{lead['name']}为{lead['value']}{lead.get('unit') or ''}，{low['name']}为{low['value']}{low.get('unit') or ''}；"
             implication = {
-                "revenue": f"这表明{lead['name']}的经营资源底盘最厚，更能承担网络与获客投入，{low['name']}的资源容错较窄；规模不等同效率。",
+                "revenue": (
+                    f"这表明{lead['name']}的经营资源底盘最厚、资源承载力更强，"
+                    f"更能承担网络与获客投入；{low['name']}的资源容错较窄、经营容错更低，"
+                    "但规模不等同效率。"
+                ),
                 "ebitda": f"这表明{lead['name']}的经营造血代理最强，持续投入与价格竞争缓冲更厚，{low['name']}的防守容错更窄。",
                 "net_profit": f"这表明{lead['name']}盈利状态最稳、自我融资与再投资空间最厚，{low['name']}的盈利防线明显承压。",
                 "postpaid": f"这表明{lead['name']}的客户经营底盘更厚，交叉销售与网络规模摊薄基础更广，{low['name']}的底盘较窄；未结合ARPU不判断客户价值。",

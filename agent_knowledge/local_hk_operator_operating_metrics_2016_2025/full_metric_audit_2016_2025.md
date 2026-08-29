@@ -3,16 +3,16 @@
 - 指标：31项
 - 理论审计格：930
 - 实际审计格：930
-- 有官方依据数值：259
-- 确认缺口：671（每格均保留理由及已复核官方来源）
+- 有官方依据数值：235
+- 确认缺口：695（每格均保留理由及已复核官方来源）
 
 | 运营商 | 指标 | 有值年度 | 缺口年度 |
 |---|---|---:|---:|
 | HKT | 總客戶數 (`total_customers`) | 10 | 0 |
 | HKT | 移動後付客戶 (`mobile_postpaid_customers`) | 10 | 0 |
 | HKT | 移動預付客戶 (`mobile_prepaid_customers`) | 10 | 0 |
-| HKT | 5G客戶 (`5g_customers`) | 10 | 0 |
-| HKT | 5G滲透率 (`5g_penetration`) | 10 | 0 |
+| HKT | 5G客戶 (`5g_customers`) | 6 | 4 |
+| HKT | 5G滲透率 (`5g_penetration`) | 6 | 4 |
 | HKT | 住宅寬頻客戶 (`consumer_broadband_customers`) | 10 | 0 |
 | HKT | FTTH連接 (`ftth_connections`) | 10 | 0 |
 | HKT | 寬頻網絡覆蓋/接入家庭 (`homes_passed_or_connected`) | 2 | 8 |
@@ -42,8 +42,8 @@
 | 3HK | 總客戶數 (`total_customers`) | 10 | 0 |
 | 3HK | 移動後付客戶 (`mobile_postpaid_customers`) | 10 | 0 |
 | 3HK | 移動預付客戶 (`mobile_prepaid_customers`) | 10 | 0 |
-| 3HK | 5G客戶 (`5g_customers`) | 10 | 0 |
-| 3HK | 5G滲透率 (`5g_penetration`) | 10 | 0 |
+| 3HK | 5G客戶 (`5g_customers`) | 6 | 4 |
+| 3HK | 5G滲透率 (`5g_penetration`) | 6 | 4 |
 | 3HK | 住宅寬頻客戶 (`consumer_broadband_customers`) | 0 | 10 |
 | 3HK | FTTH連接 (`ftth_connections`) | 0 | 10 |
 | 3HK | 寬頻網絡覆蓋/接入家庭 (`homes_passed_or_connected`) | 0 | 10 |
@@ -73,8 +73,8 @@
 | SmarTone | 總客戶數 (`total_customers`) | 9 | 1 |
 | SmarTone | 移動後付客戶 (`mobile_postpaid_customers`) | 0 | 10 |
 | SmarTone | 移動預付客戶 (`mobile_prepaid_customers`) | 0 | 10 |
-| SmarTone | 5G客戶 (`5g_customers`) | 4 | 6 |
-| SmarTone | 5G滲透率 (`5g_penetration`) | 9 | 1 |
+| SmarTone | 5G客戶 (`5g_customers`) | 0 | 10 |
+| SmarTone | 5G滲透率 (`5g_penetration`) | 5 | 5 |
 | SmarTone | 住宅寬頻客戶 (`consumer_broadband_customers`) | 0 | 10 |
 | SmarTone | FTTH連接 (`ftth_connections`) | 0 | 10 |
 | SmarTone | 寬頻網絡覆蓋/接入家庭 (`homes_passed_or_connected`) | 0 | 10 |

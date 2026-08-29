@@ -24,7 +24,7 @@ from typing import Any, Callable
 DATASET_KEY = "quarterly_competitor_metrics"
 POINTER_SCHEMA_VERSION = "1.0"
 RELEASE_SCHEMA_VERSION = "1.0"
-BUNDLE_CONTRACT_VERSION = 4
+BUNDLE_CONTRACT_VERSION = 5
 RELATED_PACKAGE_SPECS = {
     "global_top5_operators_2016_2025": {
         "required_entrypoints": frozenset(
@@ -67,6 +67,20 @@ RELATED_PACKAGE_SPECS = {
         ),
         "row_file": "product_tariffs_formal_agent_records.csv",
         "quality_statuses": frozenset({"virtual_combined_entry"}),
+    },
+    "cloud_vendor_metrics_2026-06-17": {
+        "required_entrypoints": frozenset(
+            {
+                "cloud_vendor_metrics_2016_2025.csv",
+                "cloud_vendor_metrics_2016_2025.json",
+                "cloud_vendor_metrics_summary.md",
+                "sources.json",
+                "online_verification_2026-06-17.csv",
+                "online_verification_2026-06-17.md",
+            }
+        ),
+        "row_file": "cloud_vendor_metrics_2016_2025.csv",
+        "quality_statuses": frozenset({"verified_against_official_public_sources"}),
     },
 }
 NATURAL_KEY_FIELDS = ("subject", "period", "grain", "metric_key")

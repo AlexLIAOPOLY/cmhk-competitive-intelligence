@@ -5,7 +5,7 @@
 ## 数据内容
 
 - 覆盖中国移动云、AWS、Microsoft Azure / Intelligent Cloud、Google Cloud、Alibaba Cloud、Tencent Cloud 代理口径、Huawei Cloud / Cloud Computing、Oracle Cloud。
-- 统一使用 FY2016-FY2025 十年窗口；仅在官方披露且逐值至少三份不同文件可追溯时入值，未披露年份保留缺口。
+- 统一使用 FY2016-FY2025 十年窗口；官方已披露值入库并按一份、两份或三份不同官方文件分级，未披露或口径不可比年份保留显式缺口。
 - 数据来源为官方 10-K、官方年报、官方业绩 PDF/公告。
 
 ## 文件

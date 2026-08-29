@@ -3111,8 +3111,8 @@ add_series("reliance_jio", "spectrum_holdings", {2016:None,2017:None,2018:None,2
 # listed company and does not publish a comparable consolidated annual-report
 # series.  Mobile, broadband, ARPU, traffic and financial gaps are therefore
 # explicit rather than filled from MIIT industry totals or provincial network
-# companies.  Nationwide cable-TV rows are retained as a separate federated /
-# industry scope and must never be treated as China Broadnet-owned customers.
+# companies.  Nationwide cable-TV industry figures remain only as reviewed
+# evidence; their company cells are blank and explicitly scope-incomparable.
 CBN_2022_STATS = ["china_broadnet_nrta_2022", "china_broadnet_jiacreat_filing_2022", "china_broadnet_lianhe_rating_2022"]
 CBN_2022_REVENUE = ["china_broadnet_nrta_2022", "china_broadnet_lianhe_rating_2022", "china_broadnet_lianhe_rating_revenue_2022"]
 CBN_2023_STATS = ["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_guangxi_ar_2023"]
@@ -3145,11 +3145,11 @@ add_series("china_broadnet", "5g_base_stations", {2023:0.62}, scope="700MHz 5G b
 add_series("china_broadnet", "5g_base_stations", {2024:None, 2025:None}, scope="700MHz 5G base stations co-built and shared with China Mobile", source_ids={2024:[], 2025:[]}, note="Only interim or differently scoped shared-network totals were found; no year-end value is substituted.")
 add_series("china_broadnet", "shared_4g_5g_base_stations", {2023:4.0}, scope="China Mobile 4G/5G base stations available to China Broadnet through network sharing", comparator=">", source_ids={2023:CBN_2023_SHARED_NETWORK}, note="Network-access evidence appears in three distinct public documents, but downstream reports share the China Broadnet chairman statement lineage; these are available shared stations, not owned assets.")
 
-add_series("china_broadnet", "cable_tv_actual_users", {2022:200, 2023:202, 2024:208, 2025:207}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_CABLE}, note="Industry/federated scope only; provincial legal entities were not fully consolidated into a single comparable corporate customer base. Corroborating documents can share the same regulator-statistic lineage.")
-add_series("china_broadnet", "two_way_digital_cable_tv_users", {2022:98.2, 2023:100, 2024:None, 2025:105}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:[], 2025:CBN_2025_TWO_WAY}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
-add_series("china_broadnet", "hd_uhd_cable_tv_users", {2022:110, 2023:109, 2024:110, 2025:111}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
-add_series("china_broadnet", "uhd_cable_tv_users", {2023:42, 2024:45, 2025:56}, scope=CBN_CABLE_SCOPE, source_ids={2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Industry/federated scope; corroborating documents can share the same regulator-statistic lineage.")
-add_series("china_broadnet", "cable_network_industry_revenue", {2022:71955, 2023:None, 2024:73937, 2025:72158}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_REVENUE}, note="Stored only as industry context. Never answer this as China Broadnet corporate revenue; corroborating documents can share the same regulator-statistic lineage.")
+add_series("china_broadnet", "cable_tv_actual_users", {year:None for year in range(2022, 2026)}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_CABLE}, note="Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values.")
+add_series("china_broadnet", "two_way_digital_cable_tv_users", {year:None for year in range(2022, 2026)}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:["china_broadnet_nrta_2023", "china_broadnet_crta_2023", "china_broadnet_shaanxi_ar_2023"], 2024:[], 2025:CBN_2025_TWO_WAY}, note="Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence.")
+add_series("china_broadnet", "hd_uhd_cable_tv_users", {year:None for year in range(2022, 2026)}, scope=CBN_CABLE_SCOPE, source_ids={2022:CBN_2022_STATS, 2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence.")
+add_series("china_broadnet", "uhd_cable_tv_users", {year:None for year in range(2022, 2026)}, scope=CBN_CABLE_SCOPE, source_ids={2022:[], 2023:CBN_2023_HD, 2024:CBN_2024_STATS, 2025:CBN_2025_HD}, note="Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence.")
+add_series("china_broadnet", "cable_network_industry_revenue", {year:None for year in range(2022, 2026)}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_REVENUE}, note="Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence.")
 for metric_key in ["revenue", "ebitda", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"]:
     add_series("china_broadnet", metric_key, {y:None for y in YEARS}, unit="RMB_million", scope=f"China Broadnet consolidated {METRICS[metric_key][0]}", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
 
@@ -3205,7 +3205,7 @@ def build_coverage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 if not row:
                     status = "not_collected"
                 elif row["value"] is None:
-                    status = "not_applicable_precommercial" if (
+                    status = "scope_not_comparable" if row["verification_status"] == "scope_not_comparable" else "not_applicable_precommercial" if (
                         (operator_id == "reliance_jio" and year <= 2016)
                         or (operator_id == "china_broadnet" and year <= 2021 and metric in {"mobile_subscribers", "5g_network_subscribers", "5g_base_stations"})
                     ) else "source_gap_confirmed"
@@ -3226,6 +3226,15 @@ def main() -> None:
         if row["operator_id"] == "china_broadnet" and row["year"] <= 2021 and row["metric_key"] in {"mobile_subscribers", "5g_network_subscribers", "5g_base_stations"}:
             row["verification_status"] = "not_applicable_precommercial"
             row["basis"] = "precommercial_not_applicable"
+        if row["operator_id"] == "china_broadnet" and row["metric_key"] in {
+            "cable_tv_actual_users",
+            "two_way_digital_cable_tv_users",
+            "hd_uhd_cable_tv_users",
+            "uhd_cable_tv_users",
+            "cable_network_industry_revenue",
+        }:
+            row["verification_status"] = "scope_not_comparable"
+            row["basis"] = "industry_or_federated_scope_not_company_value"
         if row["operator_id"] == "china_unicom" and row["metric_key"] in {"mobile_subscribers", "fixed_broadband_subscribers"} and row["year"] >= 2023:
             row["verification_status"] = "official_derived_from_verified_rows"
             row["triple_source_status"] = "derived_not_directly_disclosed"

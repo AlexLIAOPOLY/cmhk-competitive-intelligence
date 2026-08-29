@@ -82,13 +82,17 @@
 - 口径：direct_segment_non_gaap_profit
 - 单位：RMB millions
 - CMHK 相关性：中国和亚洲云/AI 基础设施核心对标对象，尤其适合观察 AI 云需求和公共云产品结构。
-- 质量说明：收入为 Cloud Intelligence Group 分部收入；利润口径为非 GAAP 调整后 EBITA，不等同 IFRS/GAAP 经营利润。
+- 质量说明：FY2022-FY2025 cloud_revenue 为重组后的 Cloud Intelligence Group 分部收入（分部间抵销前）；FY2018-FY2021 当年原披露云计算分部、FY2021-FY2022 抵销后重列口径分别保留为独立指标，禁止跨口径直连。利润口径为非 GAAP 调整后 EBITA。
 
 | 指标 | FY2016 | FY2017 | FY2018 | FY2019 | FY2020 | FY2021 | FY2022 | FY2023 | FY2024 | FY2025 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 云收入/云相关分部收入 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 103,497 RMB million | 106,374 RMB million | 118,028 RMB million |
+| 云收入/云相关分部收入 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 102,016 RMB million | 103,497 RMB million | 106,374 RMB million | 118,028 RMB million |
 | 调整后 EBITA | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 4,101 RMB million | 6,121 RMB million | 10,556 RMB million |
-| 收入同比增长 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 2.8% | 11% |
+| 云计算分部收入（当年原披露口径） | 未披露/不适用 | 未披露/不适用 | 13,390 RMB million | 24,702 RMB million | 40,016 RMB million | 60,120 RMB million | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 |
+| 云计算分部调整后EBITA（当年原披露口径） | 未披露/不适用 | 未披露/不适用 | -799 RMB million | -1,158 RMB million | -1,414 RMB million | -166 RMB million | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 |
+| 云业务收入（抵销跨分部交易后重列口径） | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 60,558 RMB million | 74,568 RMB million | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 |
+| 云业务调整后EBITA（重列口径） | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | -2,251 RMB million | 1,146 RMB million | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 |
+| 收入同比增长 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 1.5% | 2.8% | 11% |
 | 调整后 EBITA 率 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 未披露/不适用 | 4% | 5.8% | 8.9% |
 
 ### Tencent Cloud / Tencent FBS proxy
@@ -142,6 +146,6 @@
 
 ## 逐行核验摘要
 
-- CSV 明细共 390 行，每行包含 `official_value`、`verification_status`、`verification_count`、`verification_sources`、`source_ids`、`primary_source_url`、`disclosure_quality` 和 `quality_note`。
+- CSV 明细共 430 行，每行包含 `official_value`、`verification_status`、`verification_count`、`verification_sources`、`source_ids`、`primary_source_url`、`disclosure_quality` 和 `quality_note`。
 - 已按官方 10-K、官方年报 PDF/网页、官方业绩公告和官方 IR/报告索引逐项核对；代理口径和重述口径均在 `quality_note` 中标注。
-- `source_gap_confirmed` 行保留披露边界，不估算；`official_derived_from_verified_rows` 行由已核验官方值计算。
+- `source_gap_confirmed` 行保留未披露边界，`scope_not_comparable` 保留口径断点，两者都不写0或估算值；`official_derived_from_verified_rows` 行由已核验官方值计算。

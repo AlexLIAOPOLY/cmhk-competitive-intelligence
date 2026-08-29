@@ -741,7 +741,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             row for row in self.rows
             if row["operator_id"] == "china_broadnet" and row["value"] is not None
         ]
-        self.assertEqual(len(available), 24)
+        self.assertEqual(len(available), 7)
         certified = [row for row in available if row["distinct_source_document_count"] >= 3]
         self.assertEqual(
             [(row["year"], row["metric_key"]) for row in certified],
@@ -783,8 +783,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertEqual(base_2022["distinct_source_document_count"], 3)
         self.assertIn("co-built and shared", base_2022["scope"])
         cable = self.index[("china_broadnet", 2024, "cable_tv_actual_users")]
-        self.assertEqual(cable["value"], 208)
+        self.assertIsNone(cable["value"])
+        self.assertEqual(cable["verification_status"], "scope_not_comparable")
         self.assertIn("not China Broadnet consolidated", cable["scope"])
+        self.assertTrue(cable["candidate_sources"])
         mobile_arpu = self.index[("china_broadnet", 2025, "mobile_arpu")]
         self.assertIsNone(mobile_arpu["value"])
         self.assertEqual(mobile_arpu["verification_status"], "source_gap_confirmed")
@@ -809,7 +811,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         value_text = "\n".join(chunk["text"] for chunk in value_chunks)
         self.assertIn("operator=中国广电", value_text)
         self.assertIn("official_value=32.7546 million_subscribers", value_text)
-        self.assertIn("official_value=208 million_users", value_text)
+        self.assertIn("口径不可比（scope_not_comparable）", value_text)
         self.assertIn("distinct_source_document_count=4", value_text)
         self.assertIn("triple_source_status=three_distinct_sources_verified", value_text)
         gap_chunks = rag_llm._global_operator_exact_metric_chunks(

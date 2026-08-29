@@ -35,13 +35,13 @@
   "quality": {
     "status": "pass",
     "verification_scope": "official_public_values_with_documented_source_gaps_and_search_boundaries",
-    "verified_count": 360,
-    "gap_count": 1089,
+    "verified_count": 335,
+    "gap_count": 1114,
     "global_web_search_status": "complete",
     "pending_web_search_rows": 0,
     "targeted_search_no_direct_value_rows": 590,
     "source_count": 123,
-    "available_value_rows": 360,
+    "available_value_rows": 335,
     "full_audit_rows": 930,
     "full_audit_expected_rows": 930
   },

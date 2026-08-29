@@ -109,6 +109,41 @@
     "url": "https://www.alibabagroup.com/ir-financial-reports-quarterly-results",
     "type": "official_ir_results_index"
   },
+  "alibaba_fy2024_annual": {
+    "label": "Alibaba Group FY2024 Annual Report, current Cloud Intelligence Group comparative table",
+    "url": "https://static.alibabagroup.com/reports/fy2024/ar/ebook/EN/88/index.html",
+    "type": "official_annual_report"
+  },
+  "alibaba_fy2022_results": {
+    "label": "Alibaba Group FY2022 full-year results, legacy Cloud segment revenue and adjusted EBITA",
+    "url": "https://www.alibabagroup.com/zh-HK/document-1489047618746056704",
+    "type": "official_results_release"
+  },
+  "alibaba_fy2022_20f": {
+    "label": "Alibaba Group FY2022 Form 20-F, legacy Cloud segment comparative tables",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465922082622/baba-20220331x20f.htm",
+    "type": "official_20f"
+  },
+  "alibaba_fy2021_20f": {
+    "label": "Alibaba Group FY2021 Form 20-F, Cloud computing segment comparative tables",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465921096092/baba-20210331x20f.htm",
+    "type": "official_20f"
+  },
+  "alibaba_fy2021_financial_statements": {
+    "label": "Alibaba Group FY2021 official financial statements, cloud computing services revenue table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465921096324/a21-17183_36k.pdf",
+    "type": "official_financial_statements"
+  },
+  "alibaba_fy2020_20f": {
+    "label": "Alibaba Group FY2020 Form 20-F, FY2019-FY2020 Cloud computing segment tables",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465920082409/baba-20200331x20f.htm",
+    "type": "official_20f"
+  },
+  "alibaba_fy2018_results": {
+    "label": "Alibaba Group FY2018 full-year results, Cloud computing revenue and adjusted EBITA",
+    "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465918030651/a18-12785_1ex99d1.htm",
+    "type": "official_results_release"
+  },
   "tencent_2025_annual_pdf": {
     "label": "Tencent Holdings 2025 Annual Report, FinTech and Business Services tables",
     "url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",

@@ -62,7 +62,8 @@ FOCUS_RELATION_FEW_SHOTS = (
     "反例：AWS云利润39834百万美元，Google为6112百万美元，利润定义见明细。"
     "问题：只复述金额和定义。\n"
     "正例：AWS的云业务自我造血能力更强：同属经营利润的AWS为39834百万美元、Google为6112百万美元；"
-    "AWS可用更厚的盈利缓冲支撑再投资与价格竞争，其他厂商的毛利或调整后EBITA不混入比较。\n"
+    "AWS可用更厚的盈利缓冲支撑再投资与价格竞争，利润池向头部集中；"
+    "其他厂商的毛利或调整后EBITA不混入比较。\n"
     "反例：中国移动营收10501.87亿元、中国联通3922.23亿元，规模优势固化资源壁垒。"
     "问题：仍然只在命名数据差距，没有回答哪家的经营状态更强、哪家更承压。\n"
     "正例：中国移动的收入底盘最强，中国联通的资源容错相对最窄：两者营收分别为10501.87亿元和3922.23亿元；"
@@ -1887,7 +1888,8 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             if focus_id == "revenue":
                 return (
                     f"{high_name} FY2025营收{high_value}{unit}，{low_name}{low_value}{unit}；"
-                    f"这表明{high_name}的经营资源底盘最厚，更能承担网络与获客投入，{low_name}的资源容错较窄；规模不等同效率。"
+                    f"这表明{high_name}的经营资源底盘最厚、资源承载力更强，"
+                    f"更能承担网络与获客投入；{low_name}的资源容错较窄、经营容错更低，但规模不等同效率。"
                 )
             if focus_id == "ebitda":
                 return (
@@ -1917,7 +1919,8 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
         if focus_id == "revenue":
             return (
                 f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
-                f"表明{high_name}的经营资源底盘更厚，更能承担跨国网络、渠道与获客投入；{low_name}资源容错较窄，但营收不等同盈利能力。"
+                f"表明{high_name}的经营资源底盘更厚、资源承载力更强，"
+                f"更能承担跨国网络、渠道与获客投入；{low_name}资源容错较窄，但营收不等同盈利能力。"
             )
         if focus_id == "ebitda":
             return (

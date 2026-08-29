@@ -14,8 +14,15 @@ DATA_PATH = ROOT / "web/static/competitor-workbench-data.json"
 SOURCES = (
     ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.csv",
     ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv",
+    ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.csv",
 )
-BLOCKED = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
+BLOCKED = {
+    "source_gap_confirmed",
+    "needs_official_row_crosscheck",
+    "not_applicable_business_scope",
+    "not_applicable_precommercial",
+    "scope_not_comparable",
+}
 
 
 class CompetitorWorkbenchDataTests(unittest.TestCase):
@@ -88,14 +95,14 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         self.assertEqual(airtel["distinctSourceDocumentCount"], 5)
         self.assertEqual(len(airtel["sources"]), 5)
         hkt = next(
-            cell for cell in annual_cells
-            if cell["company"] == "HKT"
-            and cell["metric"] == "5g_customers"
-            and cell["year"] == 2016
+            gap for gap in payload["gaps"]
+            if gap["company"] == "HKT"
+            and gap["metric"] == "5g_customers"
+            and gap["year"] == 2016
         )
         self.assertEqual(hkt["reviewedSourceCount"], 3)
         self.assertEqual(len(hkt["reviewedSources"]), 3)
-        self.assertTrue(all(url in hkt["sources"] for url in hkt["reviewedSources"]))
+        self.assertEqual(hkt["searchStatus"], "not_applicable_precommercial")
 
     def test_evidence_version_is_content_hash(self):
         self.assertRegex(self.payload["evidenceVersion"], r"^[0-9a-f]{64}$")
@@ -108,9 +115,12 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
                 for row in csv.DictReader(handle):
                     if row.get("verification_status") in BLOCKED or not (row.get("official_value") or "").strip():
                         continue
-                    key = (row["operator"], row["metric_key"])
-                    availability[key].add(int(row["year"]))
-                    source_rows.append((row["operator"], row["metric_key"], int(row["year"])))
+                    is_cloud = "vendor" in row
+                    company = row["vendor"] if is_cloud else row["operator"]
+                    year = int(row["fiscal_year"] if is_cloud else row["year"])
+                    key = (company, row["metric_key"])
+                    availability[key].add(year)
+                    source_rows.append((company, row["metric_key"], year))
         expected = set(source_rows)
         actual = {
             (row["company"], row["metric"], row["year"])
@@ -124,6 +134,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             [
                 "global_top5_operators_2016_2025",
                 "local_hk_operator_operating_metrics_2016_2025",
+                "cloud_vendor_metrics_2026-06-17",
                 "requested_overview_010304_2016_2025",
             ],
         )
@@ -274,7 +285,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             for item in self.payload["knowledgeBases"]
             if item["id"] == "global_top5_operators_2016_2025"
         )
-        self.assertEqual(global_meta["gapCount"], 232)
+        self.assertEqual(global_meta["gapCount"], 250)
 
 
 if __name__ == "__main__":
