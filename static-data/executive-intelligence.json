@@ -9391,7 +9391,7 @@
                   "value": 3.227,
                   "unit": "亿户",
                   "verification_count": 0,
-                  "verification_status": "official_single_source",
+                  "verification_status": "official_multi_source_verified",
                   "source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ar2022.pdf",
                     "https://www.chinaunicom.com.hk/en/ir/operating.php?year=2022",
