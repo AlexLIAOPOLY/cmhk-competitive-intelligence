@@ -3,8 +3,8 @@ services:
     name: cmhk-competitive-intelligence
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python web_app.py
+    buildCommand: pip install -r requirements.txt && npm install --global @larksuite/cli@1.0.92
+    startCommand: ./scripts/bootstrap_feishu_server.sh && python web_app.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.8
@@ -26,6 +26,20 @@ services:
         value: deepseek-v4
       - key: CMHK_INTERNAL_AI_API_KEY
         sync: false
+      - key: CMHK_FEISHU_APP_ID
+        sync: false
+      - key: CMHK_FEISHU_APP_SECRET
+        sync: false
+      - key: CMHK_FEISHU_PROFILE
+        value: cmhk-server
+      - key: CMHK_DATABASE_SHEET_SYNC_ENABLED
+        value: "1"
+      - key: CMHK_DATABASE_SHEET_IDENTITY
+        value: bot
+      - key: CMHK_DATABASE_SHEET_PROFILE
+        value: cmhk-server
+      - key: CMHK_DATABASE_SHEET_SPREADSHEET_TOKEN
+        value: ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA
       - key: CMHK_REQUIRE_ROBOTS
         value: "1"
       - key: CMHK_SAVE_RAW_BODY

@@ -351,6 +351,17 @@ class DataReleaseTests(unittest.TestCase):
                 mock.patch(
                     "cmhk.crawl.run_registry.finalize_operational_crawl_run"
                 ) as finalize,
+                mock.patch(
+                    "cmhk.integrations.database_sheet_sync.sync_producer_database_sheet",
+                    return_value={
+                        "ok": True,
+                        "status": "synced",
+                        "sheet_title": "競對資料庫",
+                        "row_count": 5,
+                        "written": 2,
+                        "readback_verified": True,
+                    },
+                ),
             ):
                 result = publish_quarterly_release_task(
                     self._dataset(root),
@@ -366,8 +377,10 @@ class DataReleaseTests(unittest.TestCase):
             start.call_args.kwargs["parent_crawl_run_id"], "refresh-parent-1"
         )
         self.assertEqual(events[0]["phase"], "任务启动")
-        self.assertEqual(events[-1]["phase"], "任务完成")
+        self.assertEqual(events[-1]["phase"], "飞书同步")
+        self.assertEqual(events[-1]["message"], "已经同步到飞书")
         self.assertEqual(events[-1]["data"]["release_id"], result["release_id"])
+        self.assertTrue(events[-1]["data"]["feishu_readback_verified"])
         self.assertTrue(finalize.call_args.kwargs["ok"])
 
 

@@ -61,10 +61,18 @@ CMHK_FEISHU_DRIVE_IDENTITY=bot
 CMHK_FEISHU_DRIVE_PROFILE=cmhk-innovation-digital
 CMHK_FEISHU_DRIVE_PROBE_TOKEN=<an existing app-accessible file token>
 CMHK_FEISHU_DRIVE_PROBE_TYPE=file
+CMHK_DATABASE_SHEET_SYNC_ENABLED=1
+CMHK_DATABASE_SHEET_IDENTITY=bot
+CMHK_DATABASE_SHEET_PROFILE=cli_xxx
+CMHK_DATABASE_SHEET_SPREADSHEET_TOKEN=ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA
 LARK_CLI_PATH=/usr/local/bin/lark-cli
 ```
 
 `CMHK_AUTH_TRUST_PROXY_HEADERS=1` 只能用在可信反向代理已清理用户伪造 `X-Forwarded-*` 头的场景。Secret 必须由 systemd `EnvironmentFile`、Docker/Kubernetes Secret 或企业密钥管理器注入，不得写入 Git、镜像、日志或启动参数。
+
+镜像及 `render.yaml` 会固定安装官方 `@larksuite/cli@1.0.92`；其他 Linux 部署需预先提供 Node.js 16 或以上并执行 `npm install --global @larksuite/cli@1.0.92`。启动命令先运行 bootstrap：它用 stdin 初始化 bot profile，并读取主工作簿确认应用已获协作者权限；任何一项失败都会阻止旧式“服务已起但数据未能同步”的半成功部署。
+
+数据库同步属于既有数据库发布任务的一部分。`競對資料庫` 仅暴露可读字段及黄色的 `人工修訂值`、`人工備註`；用户可插入额外列、移动核心列、插入无同步键的说明行，任务会按列名及隐藏同步键配对并保留额外内容。十五个核心列不可删除或改成重名，否则任务会明确失败，避免错写。
 
 ## 初始化与只读验收
 
@@ -76,10 +84,11 @@ python3 scripts/prewarm_feishu_directory.py \
 python3 scripts/check_feishu_server_readiness.py \
   --server-url https://cmhk-intelligence.internal \
   --live \
-  --require-drive
+  --require-drive \
+  --require-database-sheet
 ```
 
-Bootstrap 脚本从标准输入传递 Secret，建立命名 profile，不会把 Secret 放进程参数。通讯录预热使用应用身份全量拉取一次授权范围，并在切流前生成本地快取，避免第一次页面搜索等待逐部门分页。Readiness 脚本只读，不发消息、不改表。服务器上必须设置 `CMHK_FEISHU_DRIVE_PROBE_TOKEN` 和可选的 `CMHK_FEISHU_DRIVE_PROBE_TYPE`，并使用 `--require-drive`；缺少探针或权限时验收会直接失败，不再跳过云盘链路。
+Bootstrap 脚本从标准输入传递 Secret，建立命名 profile，不会把 Secret 放进程参数。通讯录预热使用应用身份全量拉取一次授权范围，并在切流前生成本地快取，避免第一次页面搜索等待逐部门分页。Readiness 脚本只读，不发消息、不改表。服务器上必须设置 `CMHK_FEISHU_DRIVE_PROBE_TOKEN` 和可选的 `CMHK_FEISHU_DRIVE_PROBE_TYPE`，并同时使用 `--require-drive`、`--require-database-sheet`；缺少探针、应用协作者权限或 scope 时验收会直接失败，不再跳过相关链路。
 
 ## IP 白名单
 

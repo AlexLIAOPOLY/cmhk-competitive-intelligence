@@ -557,6 +557,10 @@ def publish_quarterly_release_task(
         heartbeat_crawl_run,
         start_crawl_run,
     )
+    from cmhk.integrations.database_sheet_sync import (
+        SUCCESS_MESSAGE as FEISHU_SYNC_SUCCESS_MESSAGE,
+        sync_producer_database_sheet,
+    )
 
     started = time.monotonic()
     task = start_crawl_run(
@@ -597,7 +601,21 @@ def publish_quarterly_release_task(
             "trigger_kind": trigger_kind,
         },
     )
+    failure_stage = "季度数据发布"
     try:
+        failure_stage = "飞书数据库同步"
+        event_sink(
+            "飞书同步",
+            "正在读取飞书人工修订，并增量同步竞对生产源库。",
+            "info",
+            {"sheet_role": "竞对生产源库", "direction": "bidirectional"},
+        )
+        feishu_sync = sync_producer_database_sheet(dataset_dir)
+        if feishu_sync.get("status") != "synced" or not feishu_sync.get(
+            "readback_verified"
+        ):
+            raise RuntimeError(f"飞书数据库同步未完成：{feishu_sync}")
+        failure_stage = "季度数据发布"
         result = publish_quarterly_release(
             dataset_dir,
             release_root,
@@ -613,15 +631,20 @@ def publish_quarterly_release_task(
             "data_as_of": result.get("data_as_of"),
             "created": result["created"],
             "parent_crawl_run_id": parent_crawl_run_id,
+            "feishu_sheet_title": feishu_sync.get("sheet_title"),
+            "feishu_row_count": feishu_sync.get("row_count"),
+            "feishu_written": feishu_sync.get("written"),
+            "feishu_readback_verified": feishu_sync.get("readback_verified"),
         }
-        event_sink("任务完成", "季度竞对数据版本发布完成。", "success", summary)
+        event_sink("飞书同步", FEISHU_SYNC_SUCCESS_MESSAGE, "success", summary)
         finalize_operational_crawl_run(
             task_run_id,
             ok=True,
             duration_ms=duration_ms,
             progress_detail=(
                 f"发布 {result['release_id']} 完成，共 {result['row_count']} 行；"
-                f"数据截至 {result.get('data_as_of') or '未标注'}。"
+                f"数据截至 {result.get('data_as_of') or '未标注'}；"
+                f"{FEISHU_SYNC_SUCCESS_MESSAGE}。"
             ),
             summary=summary,
         )
@@ -639,7 +662,7 @@ def publish_quarterly_release_task(
             ok=False,
             duration_ms=duration_ms,
             progress_detail=f"季度竞对数据发布失败：{exc}",
-            failure_stage="季度数据发布",
+            failure_stage=failure_stage,
             summary={"error": str(exc), "parent_crawl_run_id": parent_crawl_run_id},
         )
         raise

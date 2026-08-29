@@ -60,6 +60,28 @@ class FeishuServerReadinessTests(unittest.TestCase):
         self.assertIn("drive_probe_configured", names)
         self.assertIn("drive_statistics_read", names)
 
+    def test_require_database_sheet_executes_bot_workbook_probe(self):
+        result, payload = self._run(
+            [
+                "check_feishu_server_readiness.py",
+                "--require-database-sheet",
+                "--env-file",
+                "",
+            ],
+            {
+                "CMHK_FEISHU_APP_ID": "cli_test",
+                "CMHK_FEISHU_APP_SECRET": "secret",
+                "CMHK_FEISHU_PROFILE": "server-bot",
+                "CMHK_DATABASE_SHEET_PROFILE": "server-bot",
+                "CMHK_DATABASE_SHEET_SPREADSHEET_TOKEN": "sheet_test",
+            },
+        )
+
+        names = {item["name"] for item in payload["checks"]}
+        self.assertEqual(result, 0)
+        self.assertIn("database_sheet_probe_configured", names)
+        self.assertIn("database_sheet_read", names)
+
 
 if __name__ == "__main__":
     unittest.main()

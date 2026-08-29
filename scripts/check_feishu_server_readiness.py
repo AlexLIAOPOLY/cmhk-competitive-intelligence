@@ -63,10 +63,15 @@ def main() -> int:
         action="store_true",
         help="require and execute a read-only Drive statistics probe (implies --live)",
     )
+    parser.add_argument(
+        "--require-database-sheet",
+        action="store_true",
+        help="require and execute the production database-workbook read probe (implies --live)",
+    )
     parser.add_argument("--server-url", default="", help="expected external service URL")
     parser.add_argument("--env-file", default=os.environ.get("CMHK_AUTH_ENV_FILE", ""))
     args = parser.parse_args()
-    if args.require_drive:
+    if args.require_drive or args.require_database_sheet:
         args.live = True
     _load_env_file(args.env_file)
 
@@ -90,11 +95,29 @@ def main() -> int:
     ).strip()
     checks: list[dict[str, object]] = []
     drive_probe_token = os.environ.get("CMHK_FEISHU_DRIVE_PROBE_TOKEN", "").strip()
+    database_sheet_token = os.environ.get(
+        "CMHK_DATABASE_SHEET_SPREADSHEET_TOKEN", "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
+    ).strip()
+    database_sheet_profile = (
+        os.environ.get("CMHK_DATABASE_SHEET_PROFILE")
+        or os.environ.get("CMHK_FEISHU_PROFILE")
+        or ""
+    ).strip()
     if args.require_drive:
         checks.append({
             "name": "drive_probe_configured",
             "ok": bool(drive_probe_token),
             "error": "set CMHK_FEISHU_DRIVE_PROBE_TOKEN" if not drive_probe_token else "",
+        })
+    if args.require_database_sheet:
+        checks.append({
+            "name": "database_sheet_probe_configured",
+            "ok": bool(database_sheet_token and database_sheet_profile),
+            "error": (
+                "set CMHK_DATABASE_SHEET_SPREADSHEET_TOKEN and CMHK_DATABASE_SHEET_PROFILE"
+                if not (database_sheet_token and database_sheet_profile)
+                else ""
+            ),
         })
 
     checks.append({"name": "app_credentials", "ok": bool(app_id and app_secret)})
@@ -155,6 +178,12 @@ def main() -> int:
                 "sheet_read",
                 [cli, "sheets", "+workbook-info", "--spreadsheet-token", spreadsheet_token,
                  "--as", "bot", "--profile", primary_profile, "--format", "json"],
+            ))
+        if database_sheet_token and database_sheet_profile:
+            live_commands.append((
+                "database_sheet_read",
+                [cli, "sheets", "+workbook-info", "--spreadsheet-token", database_sheet_token,
+                 "--as", "bot", "--profile", database_sheet_profile, "--format", "json"],
             ))
         if drive_probe_token:
             drive_probe_type = os.environ.get("CMHK_FEISHU_DRIVE_PROBE_TYPE", "file").strip()
