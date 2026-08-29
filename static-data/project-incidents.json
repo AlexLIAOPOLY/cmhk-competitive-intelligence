@@ -2,6 +2,31 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "690739ae0d282a9d35057585",
+      "task_id": "incident:690739ae0d282a9d35057585",
+      "title": "Feishu媒体指标定时汇总",
+      "kind": "feishu-media-metrics",
+      "kind_label": "Feishu媒体指标定时汇总",
+      "scope": "feishu-media-metrics",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目常驻服务未运行",
+      "impact": "对应的爬虫、定时任务或Web能力可能停止，后续计划任务可能漏跑。",
+      "suggestions": [
+        "先读取 launchctl print gui/501/com.liaowang.cmhk-feishu-media-metrics 与对应 stderr 日志。",
+        "确认没有同类任务正在执行后，再按既有 LaunchAgent 流程恢复服务。",
+        "恢复后交叉检查任务归档、/api/status 与 /api/task-runs，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-29T17:15:35+08:00",
+      "started_at_hkt": "2026-08-29T17:15:35+08:00",
+      "heartbeat_at_hkt": "2026-08-29T17:15:35+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "a36b5be0d5d52f52eb774ee7",
       "task_id": "incident:a36b5be0d5d52f52eb774ee7",
       "title": "主项目Web后台",
@@ -2095,7 +2120,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-29T09:53:53+08:00",
-      "heartbeat_at_hkt": "2026-08-29T17:10:35+08:00",
+      "heartbeat_at_hkt": "2026-08-29T17:15:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12017,30 +12042,6 @@
       "started_at_hkt": "2026-08-26T10:23:03+08:00",
       "heartbeat_at_hkt": "2026-08-26T10:24:01+08:00",
       "completed_at_hkt": "2026-08-26T10:24:31+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "5aef1609e3eeb9ed01875901",
-      "task_id": "incident:5aef1609e3eeb9ed01875901",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-26T10:14:01+08:00",
-      "started_at_hkt": "2026-08-26T10:14:01+08:00",
-      "heartbeat_at_hkt": "2026-08-26T10:14:01+08:00",
-      "completed_at_hkt": "2026-08-26T10:14:31+08:00",
       "handled_at_hkt": ""
     }
   ],
