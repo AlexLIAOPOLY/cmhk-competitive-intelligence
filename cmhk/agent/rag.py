@@ -613,6 +613,12 @@ def _global_operator_exact_metric_chunks(
 
     normalized = re.sub(r"\s+", " ", question or "").strip()
     lowered = normalized.lower()
+    period_query_text = re.sub(
+        r"(?:fy\s*)?20(?:1[6-9]|2[0-5])\s*(?:至|到|[-–—])\s*"
+        r"(?:fy\s*)?20(?:1[6-9]|2[0-5])(?=[^。！？\n]{0,24}数据库)",
+        "",
+        lowered,
+    )
     if any(token in lowered for token in ["q1", "q2", "q3", "q4", "h1", "h2", "季度", "半年度"]):
         return []
 
@@ -732,7 +738,7 @@ def _global_operator_exact_metric_chunks(
     # returning every metric for every named operator.
     requested_pairs: set[tuple[str, str]] = set()
     requested_years_by_pair: dict[tuple[str, str], set[int]] = {}
-    for sentence in re.split(r"[。！？\n]", lowered):
+    for sentence in re.split(r"[。！？\n]", period_query_text):
         carried_subjects: set[str] = set()
         carried_years: set[int] = set()
         for clause in re.split(r"[,，、;；]", sentence):
@@ -774,9 +780,12 @@ def _global_operator_exact_metric_chunks(
                 start_year, end_year = int(start_text), int(end_text)
                 if start_year <= end_year:
                     clause_years.update(range(start_year, end_year + 1))
-            if clause_years:
+            # A leading dataset title such as "2016–2025数据库" describes
+            # coverage, not the requested period.  Carry years only after an
+            # operator has been bound in the same or an earlier clause.
+            if clause_years and clause_subjects:
                 carried_years = set(clause_years)
-            elif carried_years:
+            elif clause_subjects and carried_years:
                 clause_years = set(carried_years)
             for subject in clause_subjects:
                 for metric in clause_metrics:
@@ -793,11 +802,11 @@ def _global_operator_exact_metric_chunks(
 
     years = {
         int(value)
-        for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", normalized)
+        for value in re.findall(r"(?<!\d)(20(?:1[6-9]|2[0-5]))(?!\d)", period_query_text)
     }
     for start_text, end_text in re.findall(
         r"(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))\s*(?:至|到|[-–—])\s*(?:[Ff][Yy]\s*)?(20(?:1[6-9]|2[0-5]))(?!\d)",
-        normalized,
+        period_query_text,
     ):
         start_year, end_year = int(start_text), int(end_text)
         if start_year <= end_year:
@@ -875,7 +884,10 @@ def _global_operator_exact_metric_chunks(
         ]
 
     chunks: list[dict[str, Any]] = []
-    if len(years) >= 5 or postpaid_series_mode:
+    long_series_requested = any(
+        len(pair_years) >= 5 for pair_years in requested_years_by_pair.values()
+    ) or (not requested_years_by_pair and len(years) >= 5)
+    if long_series_requested or postpaid_series_mode:
         grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for row in filtered:
             pair = (

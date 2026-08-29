@@ -2089,6 +2089,7 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
 
     def test_jio_exact_gap_retrieval_does_not_mix_unrelated_dataset_citations(self):
         question = (
+            "仅使用全球重点十家运营商2016–2025数据库回答："
             "Jio FY2017 DOU、FY2018 ARPU和DOU、FY2023 5G用户数分别是多少？"
         )
         chunks = rag_llm._global_operator_exact_metric_chunks(
@@ -2099,6 +2100,8 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertIn("official_value=未披露", combined)
         self.assertIn("ar2022-23", combined)
         self.assertIn("ar2023-24", combined)
+        self.assertEqual(len(chunks), 4)
+        self.assertNotIn("period=FY2019", combined)
         all_links = {
             str(link.get("url") or "")
             for chunk in chunks
