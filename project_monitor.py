@@ -3884,7 +3884,7 @@ class ProjectMonitor:
                 )
             )
 
-    def _sync_error_ledger(self) -> None:
+    def _sync_error_ledger(self, *, deadline_monotonic: float | None = None) -> None:
         ledger_state = self.state.setdefault("error_ledger", {})
         if not isinstance(ledger_state.get("rows"), dict):
             ledger_state["rows"] = {}
@@ -3895,9 +3895,10 @@ class ProjectMonitor:
         if retry_after and self.now() < retry_after:
             return
         try:
-            deadline_monotonic = (
-                time.monotonic() + ERROR_LEDGER_SYNC_BUDGET_SECONDS
-            )
+            if deadline_monotonic is None:
+                deadline_monotonic = (
+                    time.monotonic() + ERROR_LEDGER_SYNC_BUDGET_SECONDS
+                )
             config = self._error_ledger_config()
             ledger_state.update(
                 {
@@ -4185,10 +4186,13 @@ class ProjectMonitor:
         self.state["cycle_phase"] = "external_sync"
         self.state["last_issue_count"] = len(active)
         _atomic_json(self.state_path, self.state)
+        ledger_deadline_monotonic = (
+            time.monotonic() + ERROR_LEDGER_SYNC_BUDGET_SECONDS
+        )
         # A card must never be delivered before its incident row exists. The
         # callback can be clicked immediately, so syncing after delivery leaves
         # a race where the click cannot resolve the incident ID.
-        self._sync_error_ledger()
+        self._sync_error_ledger(deadline_monotonic=ledger_deadline_monotonic)
         # The user explicitly requires errors only and AI-before-send. Healthy
         # cycles never send messages; resolved incidents only edit a previously
         # verified shared card in place.
@@ -4207,7 +4211,7 @@ class ProjectMonitor:
         ) + updated
         # Sync again so notification status is reflected after successful sends.
         # M/N (处理人员/处理状态) are never touched by this path after append.
-        self._sync_error_ledger()
+        self._sync_error_ledger(deadline_monotonic=ledger_deadline_monotonic)
         self.state["last_cycle_at_hkt"] = _iso(self.now())
         self.state["cycle_phase"] = "idle"
         self.state["cycles"] = int(self.state.get("cycles") or 0) + 1
