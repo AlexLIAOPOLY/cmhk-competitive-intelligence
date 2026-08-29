@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260829_161725_288926": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260829_161725_288926",
+        "task_run_id": "20260829_161725_288926",
+        "title": "季度竞对数据发布",
+        "kind": "quarterly-data-release",
+        "kind_label": "季度数据发布",
+        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
+        "status_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
+        "started_at_hkt": "2026-08-29T16:17:25+08:00",
+        "heartbeat_at_hkt": "2026-08-29T16:17:26+08:00",
+        "completed_at_hkt": "2026-08-29T16:17:26+08:00",
+        "duration_ms": 1386,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260829_161704_775570": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260829_161704_775570",
+        "task_run_id": "20260829_161704_775570",
+        "title": "季度竞对数据发布",
+        "kind": "quarterly-data-release",
+        "kind_label": "季度数据发布",
+        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
+        "status_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
+        "started_at_hkt": "2026-08-29T16:17:04+08:00",
+        "heartbeat_at_hkt": "2026-08-29T16:17:06+08:00",
+        "completed_at_hkt": "2026-08-29T16:17:06+08:00",
+        "duration_ms": 1459,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260829_155301_065177": {
       "ok": true,
       "run": {
@@ -1005,48 +1047,6 @@
         "heartbeat_at_hkt": "2026-08-24T14:04:59+08:00",
         "completed_at_hkt": "2026-08-24T14:04:59+08:00",
         "duration_ms": 251818,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260824_090045_886079": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260824_090045_886079",
-        "task_run_id": "20260824_090045_886079",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "晨间扫描（2026-08-24@09:00）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 537 条，AI保留 159 条，历史重复 37 条，新增 122 条。",
-        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 537 条，AI保留 159 条，历史重复 37 条，新增 122 条。",
-        "started_at_hkt": "2026-08-24T09:00:45+08:00",
-        "heartbeat_at_hkt": "2026-08-24T09:58:36+08:00",
-        "completed_at_hkt": "2026-08-24T09:58:36+08:00",
-        "duration_ms": 3470391,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260824_033758_713655": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260824_033758_713655",
-        "task_run_id": "20260824_033758_713655",
-        "title": "四库与观察结论自动更新",
-        "kind": "executive-intelligence-refresh",
-        "kind_label": "四库刷新",
-        "scope": "Agent审核 20260824_030847_6b00f4d8 · 父任务 20260824_030105_614859",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "四库、17个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 2 次。",
-        "status_detail": "四库、17个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 2 次。",
-        "started_at_hkt": "2026-08-24T03:37:58+08:00",
-        "heartbeat_at_hkt": "2026-08-24T03:44:41+08:00",
-        "completed_at_hkt": "2026-08-24T03:44:41+08:00",
-        "duration_ms": 402927,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
