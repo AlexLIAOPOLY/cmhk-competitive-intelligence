@@ -857,6 +857,42 @@
       "publisher": "CGTN"
     },
     {
+      "source_id": "cmhk_investhk_profile_2024",
+      "operator_id": "cmhk",
+      "year": 2024,
+      "label": "Invest Hong Kong profile quoting CMHK customer and 5G subscriber milestones",
+      "url": "https://www.investhk.gov.hk/media/ginf5rc0/202403-print_investhk_cloud-dc_en.pdf",
+      "source_type": "government_agency_company_profile",
+      "publisher": "Invest Hong Kong"
+    },
+    {
+      "source_id": "hkbn_mobile_mvno_launch_2016",
+      "operator_id": "hkbn",
+      "year": 2016,
+      "label": "HKBN official release - mobile services launched in September 2016",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/20160913_MVNO_press_release_E_Final.pdf",
+      "source_type": "official_press_release",
+      "publisher": "HKBN Ltd."
+    },
+    {
+      "source_id": "icable_mobile_launch_2020",
+      "operator_id": "icable",
+      "year": 2020,
+      "label": "i-CABLE official milestone - iMobile brand debuted in December 2020",
+      "url": "https://www.i-cablecomm.com/en/milestones",
+      "source_type": "official_company_milestone",
+      "publisher": "i-CABLE Communications Limited"
+    },
+    {
+      "source_id": "hgc_mobile_launch_2026",
+      "operator_id": "hgc",
+      "year": 2026,
+      "label": "HGC official release - HGC Mobile launched after the audit period",
+      "url": "https://www.hgc.com.hk/press-releases/hgc-announces-the-launch-of-hgc-mobile-expanding-mobile-connectivity-footprint-with-enhanced-network-on-the-go-experience",
+      "source_type": "official_press_release",
+      "publisher": "HGC Global Communications Limited"
+    },
+    {
       "source_id": "hkbn_interim_presentation_2024",
       "operator_id": "hkbn",
       "year": 2023,
@@ -897,7 +933,7 @@
       "operator_id": "hkbn",
       "year": 2019,
       "label": "HKBN FY2019 official annual report/results",
-      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/FY19_HKBN_Annual_Results_Presentation.pdf",
+      "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2019/1111/2019111100307.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
@@ -906,7 +942,7 @@
       "operator_id": "hkbn",
       "year": 2020,
       "label": "HKBN FY2020 official annual report/results",
-      "url": "https://www.hkbn.net/new/en/FY20-annual-report-highlights.shtml",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/20201112_AnnualReport2020_Eng.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
@@ -915,7 +951,7 @@
       "operator_id": "hkbn",
       "year": 2021,
       "label": "HKBN FY2021 official annual report/results",
-      "url": "https://www.hkbn.net/HKBN_AR_2021/",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY21_AnnualResultsAnnouncement.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
@@ -924,7 +960,7 @@
       "operator_id": "hkbn",
       "year": 2022,
       "label": "HKBN FY2022 official annual report/results",
-      "url": "https://www.hkbn.net/HKBN_AR_2022/",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY22_AnnualResultsAnnouncement.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
@@ -933,7 +969,7 @@
       "operator_id": "hkbn",
       "year": 2023,
       "label": "HKBN FY2023 official annual report/results",
-      "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20231102_FY23_AnnualResults",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY23_AnnualResultsAnnouncement.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },
@@ -942,7 +978,7 @@
       "operator_id": "hkbn",
       "year": 2024,
       "label": "HKBN FY2024 official annual report/results",
-      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+      "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2024.pdf",
       "source_type": "official_annual_report_or_results",
       "publisher": "HKBN Ltd."
     },

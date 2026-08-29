@@ -427,6 +427,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("span.is-coincident em", STYLE)
         self.assertNotIn("多年趋势对比", SCRIPT)
         self.assertIn("查看数据明细、缺口理由与官方来源", SCRIPT)
+        self.assertIn("相关口径：", SCRIPT)
+        self.assertIn("relatedPublicValue", SCRIPT)
         self.assertIn("AI 竞争洞察", SCRIPT)
         self.assertIn("buildCompetitorFallbackInsight", SCRIPT)
         self.assertIn('card.classList.remove("is-loading", "is-streaming")', SCRIPT)

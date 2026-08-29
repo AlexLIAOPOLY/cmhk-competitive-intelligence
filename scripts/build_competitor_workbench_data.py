@@ -46,7 +46,15 @@ KNOWLEDGE_BASE_META = {
 }
 OUTPUT = ROOT / "web/static/competitor-workbench-data.json"
 BLOCKED_STATUSES = {"source_gap_confirmed", "needs_official_row_crosscheck", "not_applicable_precommercial"}
-FULL_AUDIT_OPERATOR_IDS = {"hkt", "three_hk", "smartone"}
+FULL_AUDIT_OPERATOR_IDS = {
+    "cmhk",
+    "hkt",
+    "three_hk",
+    "smartone",
+    "hkbn",
+    "hgc",
+    "icable",
+}
 COMPANY_GROUPS = {
     "中国移动": "内地运营商",
     "中国电信": "内地运营商",
@@ -91,6 +99,8 @@ COMPARISON_ALIASES = {
 }
 SIMPLIFIED_TITLE_REPLACEMENTS = (
     ("寬頻", "宽带"),
+    ("戶", "户"),
+    ("數據", "数据"),
     ("客戶", "客户"),
     ("業務", "业务"),
     ("網絡", "网络"),
@@ -258,6 +268,11 @@ def main() -> None:
                             "reason": text(row, "gap_reason") or text(row, "quality_note"),
                             "reviewedSources": list(dict.fromkeys(str(url) for url in reviewed_sources if url)),
                             "reviewedSourceCount": int(text(row, "reviewed_source_count") or 0),
+                            "relatedPublicMetric": text(row, "related_public_metric"),
+                            "relatedPublicValue": text(row, "related_public_value"),
+                            "relatedPublicUnit": text(row, "related_public_unit"),
+                            "relatedPublicComparator": text(row, "related_public_comparator"),
+                            "relatedPublicNote": text(row, "related_public_note"),
                         })
                     continue
                 try:

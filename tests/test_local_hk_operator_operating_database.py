@@ -64,8 +64,10 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(quality["full_audit"]["gaps_without_reason"], [])
         self.assertEqual(quality["full_audit"]["gaps_without_review_sources"], [])
         self.assertEqual(quality["full_audit"]["values_without_sources"], [])
-        self.assertEqual(quality["global_web_search"]["status"], "pending")
-        self.assertGreater(quality["global_web_search"]["pending_gap_rows"], 0)
+        self.assertEqual(quality["global_web_search"]["status"], "complete")
+        self.assertEqual(quality["global_web_search"]["pending_gap_rows"], 0)
+        self.assertEqual(quality["global_web_search"]["issuer_material_review_not_started_rows"], 0)
+        self.assertGreater(quality["global_web_search"]["targeted_search_no_direct_value_rows"], 0)
         self.assertEqual(quality["full_audit"]["broader_web_search_not_yet_proven"], 0)
         self.assertGreater(
             quality["full_audit"]["targeted_public_web_search_completed_no_direct_value"],
@@ -89,6 +91,16 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
         self.assertEqual(self.row("hkbn", 2022, "commercial_buildings_covered")["official_value"], "8006")
         self.assertEqual(self.row("hkbn", 2019, "residential_arpu")["official_value"], "185")
         self.assertEqual(self.row("hkbn", 2023, "consumer_broadband_customers")["official_value"], "0.92")
+        self.assertEqual(self.row("hkbn", 2019, "mobile_postpaid_customers")["official_value"], "0.277")
+        self.assertEqual(self.row("hkbn", 2025, "mobile_postpaid_customers")["official_value"], "0.181")
+        self.assertEqual(self.row("hkbn", 2021, "mobile_postpaid_arpu")["official_value"], "111")
+        self.assertEqual(self.row("hkbn", 2016, "total_customers")["official_value"], "0.898")
+        self.assertEqual(self.row("hkbn", 2024, "total_customers")["official_value"], "0.932")
+        self.assertEqual(self.row("hkbn", 2016, "homes_passed_or_connected")["official_value"], "2.202")
+        self.assertEqual(self.row("hkbn", 2020, "homes_passed_or_connected")["official_value"], "2.415")
+        self.assertEqual(self.row("cmhk", 2024, "total_customers")["official_value"], "5.0")
+        self.assertEqual(self.row("cmhk", 2024, "total_customers")["comparator"], ">")
+        self.assertEqual(self.row("cmhk", 2024, "5g_customers")["official_value"], "2.0")
         self.assertEqual(self.row("icable", 2022, "pay_tv_customers")["official_value"], "0.662")
         self.assertEqual(self.row("icable", 2016, "pay_tv_customers")["official_value"], "0.909")
         self.assertEqual(self.row("icable", 2018, "consumer_broadband_customers")["official_value"], "0.155")
@@ -157,7 +169,6 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
                 self.assertIn(
                     row["global_availability_status"],
                     {
-                        "broader_web_search_not_yet_proven",
                         "targeted_public_web_search_completed_no_direct_value",
                         "related_scope_value_found_not_directly_comparable",
                         "not_applicable_business_scope",
@@ -165,6 +176,27 @@ class LocalHKOperatorOperatingDatabaseTest(unittest.TestCase):
                     },
                     row,
                 )
+
+    def test_fixed_and_mvno_network_metrics_are_not_mislabelled_as_missing(self) -> None:
+        self.assertEqual(
+            self.row("hgc", 2025, "mobile_postpaid_customers")["global_availability_status"],
+            "not_applicable_business_scope",
+        )
+        self.assertIn("2026", self.row("hgc", 2025, "mobile_postpaid_customers")["gap_reason"])
+        self.assertEqual(
+            self.row("hkbn", 2025, "5g_base_stations")["global_availability_status"],
+            "not_applicable_business_scope",
+        )
+        self.assertEqual(
+            self.row("icable", 2024, "total_base_stations")["global_availability_status"],
+            "not_applicable_business_scope",
+        )
+        hgc_homes = self.row("hgc", 2024, "homes_passed_or_connected")
+        self.assertEqual(
+            hgc_homes["global_availability_status"],
+            "related_scope_value_found_not_directly_comparable",
+        )
+        self.assertEqual(hgc_homes["related_public_value"], "41000")
 
     def test_scope_breaks_are_machine_readable(self) -> None:
         conflicts = json.loads((DATASET / "conflicts_and_scope_breaks.json").read_text(encoding="utf-8"))["items"]

@@ -1,7 +1,7 @@
 {
   "id": "local_hk_operator_operating_metrics_2016_2025",
   "title": "香港本地運營商2016–2025非財務經營指標庫",
-  "summary": "HKT、3HK、SmarTone、HKBN、HGC、i-CABLE客戶、5G、寬頻、網絡、ARPU、流失率及其他官方KPI。",
+  "summary": "CMHK、HKT、3HK、SmarTone、HKBN、HGC、i-CABLE客戶、5G、寬頻、網絡、ARPU、流失率及其他公開KPI。",
   "source_type": "official_public_multi_source",
   "updated_at": "2026-08-29T15:45:02+08:00",
   "tags": [
@@ -35,13 +35,13 @@
   "quality": {
     "status": "pass",
     "verification_scope": "official_public_values_with_documented_source_gaps_and_search_boundaries",
-    "verified_count": 333,
-    "gap_count": 1116,
-    "global_web_search_status": "pending",
-    "pending_web_search_rows": 396,
-    "targeted_search_no_direct_value_rows": 352,
-    "source_count": 119,
-    "available_value_rows": 333,
+    "verified_count": 360,
+    "gap_count": 1089,
+    "global_web_search_status": "complete",
+    "pending_web_search_rows": 0,
+    "targeted_search_no_direct_value_rows": 590,
+    "source_count": 123,
+    "available_value_rows": 360,
     "full_audit_rows": 930,
     "full_audit_expected_rows": 930
   },

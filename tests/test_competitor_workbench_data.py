@@ -169,6 +169,33 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         self.assertNotIn(("SmarTone", 2025), cells)
         self.assertTrue(cells[("HKT", 2025)]["source"].startswith("https://"))
 
+    def test_every_local_operator_gap_and_related_value_reaches_the_workbench(self):
+        rows = [*self.payload["cells"], *self.payload["gaps"]]
+        local_companies = {"CMHK", "HKT", "3HK", "SmarTone", "HKBN", "HGC", "i-CABLE"}
+        for company in local_companies:
+            company_rows = [
+                row
+                for row in rows
+                if row["company"] == company
+                and row["dataset"] == "local_hk_operator_operating_metrics_2016_2025"
+            ]
+            self.assertTrue(company_rows, company)
+        hkbn_homes = {
+            row["year"]
+            for row in self.payload["cells"]
+            if row["company"] == "HKBN" and row["metric"] == "homes_passed_or_connected"
+        }
+        self.assertEqual(hkbn_homes, set(range(2016, 2026)))
+        hkbn_arpu = next(
+            row
+            for row in self.payload["gaps"]
+            if row["company"] == "HKBN"
+            and row["metric"] == "residential_arpu"
+            and row["year"] == 2023
+        )
+        self.assertEqual(hkbn_arpu["relatedPublicValue"], "177")
+        self.assertEqual(hkbn_arpu["relatedPublicMetric"], "2H2023_residential_arpu")
+
 
 if __name__ == "__main__":
     unittest.main()
