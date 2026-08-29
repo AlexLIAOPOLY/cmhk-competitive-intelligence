@@ -19,10 +19,58 @@
         "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
         "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
       ],
-      "occurred_at_hkt": "2026-08-30T01:10:04+08:00",
+      "occurred_at_hkt": "2026-08-30T01:15:40+08:00",
       "started_at_hkt": "2026-08-30T00:19:40+08:00",
-      "heartbeat_at_hkt": "2026-08-30T01:10:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T01:15:40+08:00",
       "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "deca04acc8b67b29b0ba3595",
+      "task_id": "incident:deca04acc8b67b29b0ba3595",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-30T01:15:40+08:00",
+      "started_at_hkt": "2026-08-30T01:15:40+08:00",
+      "heartbeat_at_hkt": "2026-08-30T01:15:40+08:00",
+      "completed_at_hkt": "2026-08-30T01:16:10+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "1394f31c734fbce73661bde1",
+      "task_id": "incident:1394f31c734fbce73661bde1",
+      "title": "飞书频率调度周期",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度周期",
+      "scope": "frequency-scheduler",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "调度器日志出现未处理异常",
+      "impact": "本轮或后续到期任务可能没有被正常检查或启动。",
+      "suggestions": [
+        "读取异常前后的完整 scheduler stderr 与任务状态。",
+        "先确认本轮是否已经启动/完成，再修复异常，避免重复触发。"
+      ],
+      "occurred_at_hkt": "2026-08-30T01:14:09+08:00",
+      "started_at_hkt": "2026-08-30T01:14:09+08:00",
+      "heartbeat_at_hkt": "2026-08-30T01:14:09+08:00",
+      "completed_at_hkt": "2026-08-30T01:14:35+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -3067,7 +3115,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-30T00:13:02+08:00",
-      "heartbeat_at_hkt": "2026-08-30T01:11:34+08:00",
+      "heartbeat_at_hkt": "2026-08-30T01:16:40+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -11998,54 +12046,6 @@
       "started_at_hkt": "2026-08-26T14:54:37+08:00",
       "heartbeat_at_hkt": "2026-08-26T14:54:37+08:00",
       "completed_at_hkt": "2026-08-26T14:55:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "9e2d638ae843be90ce6ac002",
-      "task_id": "incident:9e2d638ae843be90ce6ac002",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-26T14:24:04+08:00",
-      "started_at_hkt": "2026-08-26T14:24:04+08:00",
-      "heartbeat_at_hkt": "2026-08-26T14:24:04+08:00",
-      "completed_at_hkt": "2026-08-26T14:24:34+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "a4c9c422ef9460cc94c6c230",
-      "task_id": "incident:a4c9c422ef9460cc94c6c230",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-26T14:05:04+08:00",
-      "started_at_hkt": "2026-08-26T14:07:33+08:00",
-      "heartbeat_at_hkt": "2026-08-26T14:08:33+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:03+08:00",
       "handled_at_hkt": ""
     }
   ],
