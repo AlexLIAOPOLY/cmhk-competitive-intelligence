@@ -704,10 +704,11 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         ],
         "temperature": 0.1,
         # The current internal V4 gateway may still emit hidden reasoning even
-        # when both supported non-thinking switches are present.  Keep enough
-        # headroom for the required final four lines instead of ending after
-        # reasoning-only tokens; the final-output gate below remains strict.
-        "max_tokens": 1800,
+        # when both supported non-thinking switches are present.  Production
+        # readback showed that 1,800 tokens could still end after reasoning
+        # only, so reserve enough headroom for the required final four lines;
+        # the final-output gate below remains strict.
+        "max_tokens": 4096,
         "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
@@ -717,7 +718,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     # Per-feature completion headroom is a correctness gate.  A smaller global
     # extra_parameters.max_tokens previously overrode this value and let hidden
     # reasoning consume the whole budget, leaving no user-visible final answer.
-    body["max_tokens"] = 1800
+    body["max_tokens"] = 4096
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),

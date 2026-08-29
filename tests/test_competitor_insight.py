@@ -101,7 +101,7 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertIn("两侧加【】", captured["body"]["messages"][0]["content"])
         self.assertIn("句末不要句号", captured["body"]["messages"][0]["content"])
         self.assertIn("竞争格局｜", captured["body"]["messages"][0]["content"])
-        self.assertEqual(captured["body"]["max_tokens"], 1800)
+        self.assertEqual(captured["body"]["max_tokens"], 4096)
         self.assertEqual(captured["body"]["temperature"], 0.1)
         self.assertEqual(captured["body"]["chat_template_kwargs"], {"enable_thinking": False})
 
