@@ -51,6 +51,8 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn("visibleCompetitorIds(data, selection.companies, selection.years, selection.metric)", SCRIPT)
         self.assertIn("data.metrics.filter((metric) => competitorHasCompleteMetric", SCRIPT)
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
+        self.assertIn("if (companyIds.length === 1)", SCRIPT)
+        self.assertIn("const audited = new Set(metricRows.map", SCRIPT)
 
     def test_all_gap_metric_from_reported_screenshot_is_filtered_out(self):
         companies = ["3HK", "HKT", "SmarTone"]
@@ -72,6 +74,17 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 5))
         self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 10))
         self.assertFalse(complete_metric(["SmarTone"], "mobile_postpaid_churn", 99))
+
+    def test_single_company_audited_gap_metric_remains_available(self):
+        rows = [
+            row
+            for row in ROWS
+            if row["company"] == "HKBN" and row["metric"] == "residential_arpu"
+        ]
+        self.assertEqual({row["year"] for row in rows}, set(range(2016, 2026)))
+        self.assertFalse(complete_metric(["HKBN"], "residential_arpu", 10))
+        gap = next(row for row in DATA["gaps"] if row in rows and row["year"] == 2023)
+        self.assertEqual(gap["relatedPublicValue"], "177")
 
     def test_three_local_competitors_have_all_metric_year_audit_rows(self):
         rows = [*DATA["cells"], *DATA["gaps"]]
