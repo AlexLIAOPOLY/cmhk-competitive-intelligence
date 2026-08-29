@@ -383,7 +383,9 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
             True,
         )
 
-        self.assertEqual(start_at, datetime(2026, 7, 26, 8, 0, tzinfo=HKT))
+        # The production morning slot moved from 09:00 to 07:30.  The admission
+        # backstop begins one hour before that slot on the previous day.
+        self.assertEqual(start_at, datetime(2026, 7, 26, 6, 30, tzinfo=HKT))
         self.assertEqual(end_at, datetime(2026, 7, 27, 9, 16, tzinfo=HKT))
 
 

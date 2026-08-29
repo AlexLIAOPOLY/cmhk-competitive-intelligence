@@ -38,6 +38,8 @@ PUBLIC_STATIC_FILES = (
     "confirm-dialog.js",
     "custom-select.css",
     "custom-select.js",
+    "intelligence-map.css",
+    "intelligence-map.js",
     "leadership-board.css",
     "news-review-sheet.css",
     "news-review-sheet.js",
@@ -55,6 +57,7 @@ PUBLIC_VENDOR_FILES = (
     "chartjs-plugin-datalabels-2.2.0-LICENSE.md",
     "marked-15.0.12.umd.js",
     "marked-15.0.12-LICENSE.md",
+    "cytoscape-3.34.0.min.js",
 )
 
 PUBLIC_EARLY_SHELL = r'''<script data-public-early-shell>

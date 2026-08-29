@@ -122,7 +122,7 @@ def _record_verified_operation_footprints(
     service = AuthService(OPERATION_AUDIT_ROOT)
     existing_keys = {
         str(details.get("automation_event_key") or "")
-        for event in service.operation_audit(limit=1000)
+        for event in service.operation_audit(limit=None)
         if isinstance(event, dict)
         and event.get("action") == "news_review.update"
         and isinstance((details := event.get("details")), dict)

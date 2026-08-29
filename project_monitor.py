@@ -84,6 +84,9 @@ STATEFUL_CONDITION_PREFIXES = (
     "crawl-task-failed:",
     "general-task-failed:",
     "strategic-slot-",
+    "strategic-monitor-heartbeat-stale",
+    "strategic-deferred-backlog:",
+    "launchd:",
     "ui-runtime:",
 )
 DEFAULT_CONFIG_PATH = ROOT / "config" / "project_monitor.json"
@@ -519,6 +522,8 @@ class ProjectMonitor:
                             "started_at_hkt": _iso(started or self.now()),
                             "observed_at_hkt": _iso(self.now()),
                         }
+                    else:
+                        previous["observed_at_hkt"] = _iso(self.now())
                 continue
             exit_match = re.search(r"(?m)^\s*last exit code\s*=\s*([^\n]+)", output)
             last_exit = exit_match.group(1).strip() if exit_match else "未读取"
@@ -1626,6 +1631,119 @@ class ProjectMonitor:
             ]
         return []
 
+    def _recover_historical_pending_incidents(self, active_keys: set[str]) -> None:
+        """Close legacy pending records only when a current positive signal proves recovery.
+
+        Older monitor versions removed a cleared condition from ``conditions`` but left the
+        incident in ``recovery_pending``.  If the same condition returned, every polling
+        cycle could therefore create another incident.  Restrict this migration to sources
+        whose current files provide explicit recovery evidence; unrelated pending records
+        remain untouched.
+        """
+        strategic_state_path = self.runtime_root / "strategy_briefing" / "state.json"
+        strategic_state = _read_json(strategic_state_path, {})
+        strategic_heartbeat = _parse_datetime(
+            strategic_state.get("last_cycle_at") if isinstance(strategic_state, dict) else None
+        )
+        strategic_fresh = bool(
+            strategic_heartbeat
+            and (self.now() - strategic_heartbeat).total_seconds() <= 300
+        )
+
+        deferred_path = (
+            self.runtime_root
+            / "strategy_briefing"
+            / "candidate_ai_editor_deferred.json"
+        )
+        deferred = _read_json(deferred_path, {})
+        deferred_items = deferred.get("items") if isinstance(deferred, dict) else []
+        deferred_count = len(deferred_items) if isinstance(deferred_items, list) else 0
+        deferred_threshold = max(
+            1, int(self.config.get("strategic_deferred_queue_limit") or 40)
+        )
+        deferred_healthy = deferred_path.is_file() and deferred_count < deferred_threshold
+
+        scheduler_path = (
+            self.runtime_root / "var" / "frequency_scheduler" / "heartbeat.json"
+        )
+        scheduler = _read_json(scheduler_path, {})
+        scheduler_heartbeat = _parse_datetime(
+            scheduler.get("updated_at_hkt") if isinstance(scheduler, dict) else None
+        )
+        scheduler_fresh = bool(
+            scheduler_heartbeat
+            and (self.now() - scheduler_heartbeat).total_seconds() <= 120
+        )
+        service_instances = self.state.get("service_instances") or {}
+        service_instances = service_instances if isinstance(service_instances, dict) else {}
+
+        now_text = _iso(self.now())
+        incidents = self.state.get("incidents") or {}
+        if not isinstance(incidents, dict):
+            return
+        for record in incidents.values():
+            if not isinstance(record, dict) or record.get("status") != "recovery_pending":
+                continue
+            key = str(record.get("condition_key") or "")
+            if not key or key in active_keys:
+                continue
+            reason = ""
+            evidence: list[str] = []
+            if key == "strategic-monitor-heartbeat-stale" and strategic_fresh:
+                reason = "strategic_monitor_heartbeat_verified"
+                evidence = [
+                    f"战略新闻监视器心跳于 {_iso(strategic_heartbeat)} 更新。",
+                    f"回读状态文件：{strategic_state_path}。",
+                ]
+            elif key.startswith("strategic-deferred-backlog:") and deferred_healthy:
+                reason = "strategic_deferred_queue_below_threshold"
+                evidence = [
+                    f"AI 补审队列当前 {deferred_count} 条，低于告警阈值 {deferred_threshold} 条。",
+                    f"回读队列文件：{deferred_path}。",
+                ]
+            elif key == "frequency-scheduler-heartbeat-stale" and scheduler_fresh:
+                reason = "scheduler_heartbeat_verified"
+                evidence = [
+                    f"独立调度器心跳于 {_iso(scheduler_heartbeat)} 更新。",
+                    f"回读状态文件：{scheduler_path}。",
+                ]
+            elif key.startswith("launchd:"):
+                label = key.removeprefix("launchd:")
+                instance = service_instances.get(label)
+                observed_at = _parse_datetime(
+                    instance.get("observed_at_hkt") if isinstance(instance, dict) else None
+                )
+                if (
+                    isinstance(instance, dict)
+                    and int(instance.get("pid") or 0) > 0
+                    and observed_at
+                    and (self.now() - observed_at).total_seconds() <= 120
+                ):
+                    reason = "launchd_running_verified"
+                    evidence = [
+                        f"launchd 服务 {label} 于 {_iso(observed_at)} 回读为 running。",
+                        f"PID={int(instance.get('pid') or 0)}。",
+                    ]
+            if not reason:
+                continue
+            self._mark_resolved(
+                record,
+                resolution_type="normal_task_progress",
+                reason=reason,
+                evidence=evidence,
+            )
+            _append_jsonl(
+                self.events_path,
+                {
+                    "type": "incident_resolved_local_only",
+                    "at_hkt": now_text,
+                    "incident_id": record.get("incident_id"),
+                    "condition_key": key,
+                    "reason": reason,
+                    "historical_pending_reconciliation": True,
+                },
+            )
+
     def _upsert_incidents(self, issues: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         now_text = _iso(self.now())
         incidents = self.state.setdefault("incidents", {})
@@ -1884,6 +2002,7 @@ class ProjectMonitor:
                     "condition_key": key,
                 },
             )
+        self._recover_historical_pending_incidents(active_keys)
         return new_records, active_records
 
     def _extract_json_object(self, text: str) -> dict[str, Any]:

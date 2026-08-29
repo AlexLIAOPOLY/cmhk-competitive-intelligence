@@ -1103,6 +1103,91 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(record["status"], "resolved")
         self.assertEqual(record["resolution_reason"], "condition_no_longer_current")
 
+    def test_historical_strategic_pending_records_close_with_current_positive_evidence(self):
+        monitor = self._monitor(enabled=False)
+        (self.root / "strategy_briefing" / "candidate_ai_editor_deferred.json").write_text(
+            json.dumps({"items": []})
+        )
+        monitor.state["conditions"] = {}
+        monitor.state["incidents"] = {
+            "heartbeat-old": {
+                "incident_id": "heartbeat-old",
+                "condition_key": "strategic-monitor-heartbeat-stale",
+                "status": "recovery_pending",
+            },
+            "queue-old": {
+                "incident_id": "queue-old",
+                "condition_key": "strategic-deferred-backlog:6",
+                "status": "recovery_pending",
+            },
+            "unrelated": {
+                "incident_id": "unrelated",
+                "condition_key": "unknown-condition",
+                "status": "recovery_pending",
+            },
+        }
+
+        monitor._upsert_incidents([])
+
+        self.assertEqual(monitor.state["incidents"]["heartbeat-old"]["status"], "resolved")
+        self.assertEqual(monitor.state["incidents"]["queue-old"]["status"], "resolved")
+        self.assertEqual(monitor.state["incidents"]["unrelated"]["status"], "recovery_pending")
+        self.assertEqual(
+            monitor.state["incidents"]["heartbeat-old"]["resolution_reason"],
+            "strategic_monitor_heartbeat_verified",
+        )
+
+    def test_historical_pending_record_stays_pending_while_condition_is_active(self):
+        monitor = self._monitor(enabled=False)
+        monitor.state["conditions"] = {}
+        monitor.state["incidents"] = {
+            "heartbeat-old": {
+                "incident_id": "heartbeat-old",
+                "condition_key": "strategic-monitor-heartbeat-stale",
+                "status": "recovery_pending",
+            }
+        }
+
+        monitor._upsert_incidents(
+            [
+                monitor._issue(
+                    condition_key="strategic-monitor-heartbeat-stale",
+                    component="strategic-news",
+                    task_name="战略新闻常驻监视器",
+                    severity="P1",
+                    summary="心跳超时",
+                    error="stale",
+                    impact="扫描可能停止",
+                    suggestions=["检查服务"],
+                )
+            ]
+        )
+
+        self.assertEqual(monitor.state["incidents"]["heartbeat-old"]["status"], "recovery_pending")
+
+    def test_historical_launchd_pending_closes_only_after_fresh_running_observation(self):
+        monitor = self._monitor(enabled=False)
+        label = "com.example.worker"
+        monitor.state["service_instances"] = {
+            label: {
+                "pid": 1234,
+                "observed_at_hkt": self.now.isoformat(timespec="seconds"),
+            }
+        }
+        monitor.state["incidents"] = {
+            "launchd-old": {
+                "incident_id": "launchd-old",
+                "condition_key": f"launchd:{label}",
+                "status": "recovery_pending",
+            }
+        }
+
+        monitor._upsert_incidents([])
+
+        record = monitor.state["incidents"]["launchd-old"]
+        self.assertEqual(record["status"], "resolved")
+        self.assertEqual(record["resolution_reason"], "launchd_running_verified")
+
     def test_recovered_scheduler_log_incident_closes_without_service_restart(self):
         monitor = self._monitor(enabled=True)
         incident_id = "scheduler-network-timeout"

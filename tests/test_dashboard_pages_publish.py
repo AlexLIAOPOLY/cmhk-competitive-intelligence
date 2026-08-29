@@ -208,7 +208,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('label: "主营业务收入", value: "3.995", unit: "十亿港元", trend: "同比 +6.1%"', script)
         self.assertIn('label: "净利润", value: "0.507", unit: "十亿港元", trend: "同比 +18.5%"', script)
         self.assertIn('if (fallback.key === "cmhk") return fallback;', script)
-        self.assertIn('periodNote: sectionKey === "finance" && profile.key === "cmhk"', script)
+        self.assertIn('const periodNote = sectionKey === "finance" && metric?.value !== "—"', script)
+        self.assertIn('profile.key === "cmhk" ? "2026首7月"', script)
         self.assertIn('{period|${row.periodNote}}', script)
         self.assertNotIn("cmhkReferenceSnapshot", script)
         self.assertNotIn("cmhk-reference-strip", style)
@@ -870,8 +871,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn('src="./static/vendor/marked-15.0.12.umd.js?v=1"', html)
             self.assertNotIn("cdn.jsdelivr.net", html)
             self.assertLess(
-                html.index('src="./static/workspace-tabs.js?v=public-8"'),
                 html.index('src="./static/vendor/chart-4.4.0.umd.js?v=1"'),
+                html.index('src="./static/workspace-tabs.js?v=public-8"'),
             )
             self.assertLess(
                 html.index('src="./static/workspace-tabs.js?v=public-8"'),

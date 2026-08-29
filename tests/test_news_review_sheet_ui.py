@@ -451,6 +451,47 @@ class NewsReviewActorTests(unittest.TestCase):
             self.assertEqual(by_id[robot["id"]]["actor_id"], "news-auto-screening-bot")
             self.assertTrue(by_id[robot["id"]]["details"]["identity_corrected"])
 
+    def test_verified_historical_agent_write_is_backfilled_once(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            service = AuthService(root)
+            decisions_path = root / "decisions.jsonl"
+            decisions_path.write_text(json.dumps({
+                "event": "decision",
+                "recorded_at": "2026-08-28T12:07:01+08:00",
+                "agent_run_id": "agent-run-history",
+                "row_number": 18,
+                "title": "历史机器人新闻",
+                "automated_fields": ["app", "weekly"],
+                "app_before": "待审核",
+                "app_status": "不接受",
+                "weekly_before": "待审核",
+                "weekly_status": "接受",
+                "write_verified": True,
+                "writer_identity": "bot",
+                "writer_profile": "bot-profile-1",
+            }, ensure_ascii=False) + "\n", encoding="utf-8")
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_SELECTION_DECISIONS_PATH", decisions_path),
+                mock.patch.object(
+                    web_app,
+                    "NEWS_REVIEW_AUDIT_STATE_PATH",
+                    service.state_dir / "news-review-sheet-audit-state.json",
+                ),
+            ):
+                self.assertEqual(web_app.backfill_news_auto_screening_audit(), 2)
+                self.assertEqual(web_app.backfill_news_auto_screening_audit(), 0)
+
+            events = service.operation_audit(limit=None)
+            self.assertEqual(len(events), 2)
+            self.assertTrue(all(item["actor_id"] == "news-auto-screening-bot" for item in events))
+            self.assertTrue(all(item["details"]["historical_backfill"] for item in events))
+            self.assertEqual(
+                {item["details"]["field"] for item in events},
+                {"纳入滚动栏", "纳入周报"},
+            )
+
     def test_new_sheet_rows_establish_a_baseline_without_false_footprints(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             service = AuthService(Path(temp_dir))

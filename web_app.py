@@ -4423,6 +4423,12 @@ def _news_auto_screening_decisions() -> list[dict]:
                 "writer_profile": str(record.get("writer_profile") or ""),
                 "writer_identity": str(record.get("writer_identity") or ""),
                 "remediation": str(record.get("remediation") or ""),
+                "automation_event_key": "|".join((
+                    str(record.get("agent_run_id") or ""),
+                    str(row_number),
+                    field_label,
+                    str(record.get(after_key) or ""),
+                )),
             })
     return decisions
 
@@ -4541,6 +4547,68 @@ def repair_news_auto_screening_audit() -> int:
     return corrected
 
 
+def backfill_news_auto_screening_audit() -> int:
+    """Backfill verified historical robot writes that predate direct audit capture."""
+    decisions = _news_auto_screening_decisions()
+    if not decisions:
+        return 0
+    existing_keys: set[str] = set()
+    for event in AUTH.operation_audit(limit=None):
+        if not isinstance(event, dict) or event.get("action") != "news_review.update":
+            continue
+        details = event.get("details") if isinstance(event.get("details"), dict) else {}
+        explicit_key = str(details.get("automation_event_key") or "")
+        if explicit_key:
+            existing_keys.add(explicit_key)
+        if str(event.get("actor_id") or "") == NEWS_AUTO_SCREENING_ACTOR["id"]:
+            try:
+                row_number = int(details.get("sheet_row") or 0)
+            except (TypeError, ValueError):
+                row_number = 0
+            if details.get("agent_run_id") and row_number >= 2:
+                existing_keys.add("|".join((
+                    str(details.get("agent_run_id") or ""),
+                    str(row_number),
+                    _news_review_field_label(details.get("field")),
+                    str(details.get("after") or ""),
+                )))
+    audit_state = AUTH._read(NEWS_REVIEW_AUDIT_STATE_PATH, {})
+    sheet_id = str(
+        audit_state.get("sheet_id") if isinstance(audit_state, dict) else ""
+    ) or "news-review-sheet"
+    written = 0
+    for decision in decisions:
+        event_key = str(decision.get("automation_event_key") or "")
+        if not event_key or event_key in existing_keys:
+            continue
+        row_number = int(decision.get("row_number") or 0)
+        AUTH.record_operation(
+            actor=NEWS_AUTO_SCREENING_ACTOR,
+            action="news_review.update",
+            target=sheet_id,
+            source="feishu_sheet",
+            details={
+                "source_label": "新闻自动初筛",
+                "target_label": str(decision.get("title") or "")[:500],
+                "sheet_row": row_number,
+                "decision_rows": [row_number],
+                "field": str(decision.get("field") or ""),
+                "before": str(decision.get("before") or ""),
+                "after": str(decision.get("after") or ""),
+                "identity_note": "历史机器人写入已有逐格回读证据；启动时补入统一操作审计",
+                "agent_run_id": str(decision.get("agent_run_id") or ""),
+                "agent_recorded_at": str(decision.get("recorded_at_iso") or ""),
+                "model": str(decision.get("model") or ""),
+                "writer_profile": str(decision.get("writer_profile") or ""),
+                "automation_event_key": event_key,
+                "historical_backfill": True,
+            },
+        )
+        existing_keys.add(event_key)
+        written += 1
+    return written
+
+
 def sync_news_review_sheet_audit(
     snapshot: dict,
     *,
@@ -4617,7 +4685,7 @@ def sync_news_review_sheet_audit(
         agent_decisions = _news_auto_screening_decisions()
         recorded_agent_keys = {
             str(details.get("automation_event_key") or "")
-            for event in AUTH.operation_audit(limit=1000)
+            for event in AUTH.operation_audit(limit=None)
             if isinstance(event, dict)
             and event.get("action") == "news_review.update"
             and isinstance((details := event.get("details")), dict)
@@ -6990,6 +7058,9 @@ def main() -> None:
     corrected_footprints = repair_news_auto_screening_audit()
     if corrected_footprints:
         print(f"已校正 {corrected_footprints} 条新闻自动初筛机器人身份足迹", flush=True)
+    backfilled_footprints = backfill_news_auto_screening_audit()
+    if backfilled_footprints:
+        print(f"已补录 {backfilled_footprints} 条新闻自动初筛操作足迹", flush=True)
     interrupted = reconcile_interrupted_crawl_runs()
     if interrupted:
         print(f"Reconciled {len(interrupted)} interrupted crawl run(s)", flush=True)
