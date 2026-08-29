@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T04:23:20+08:00",
+  "checked_at_hkt": "2026-08-30T04:28:18+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -41,16 +41,15 @@
       "crawl_run_id": "20260830_030011_012027",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "failed",
+      "run_status": "running",
       "backend_pid": 41226,
       "worker_pid": 0,
-      "phase": "失败",
-      "progress_detail": "续跑财报数据库已更新，但前端发布验证失败：{\"status\": \"busy\"}\n。",
-      "failure_stage": "financial_frontend_publish",
-      "heartbeat_at_hkt": "2026-08-30T03:57:59+08:00",
+      "phase": "恢复未完成任务",
+      "progress_detail": "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T04:28:06+08:00",
       "started_at_hkt": "2026-08-30T03:00:11+08:00",
-      "completed_at_hkt": "2026-08-30T03:57:59+08:00",
-      "crawl_return_code": 1,
+      "completed_at_hkt": "",
       "duration_ms": 3468955,
       "feishu": {
         "main_sheet_id": "9c638d",
@@ -646,9 +645,12 @@
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 107917,
-        "lines": 754
-      }
+        "bytes": 108186,
+        "lines": 755
+      },
+      "status_detail": "",
+      "interrupted": false,
+      "resumed_at_hkt": "2026-08-30T04:28:06+08:00"
     },
     "strategic_news": {
       "crawl_run_id": "20260829_140022_576402",
