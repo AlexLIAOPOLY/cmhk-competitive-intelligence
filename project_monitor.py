@@ -17,11 +17,13 @@ the recovery; no additional recovery message is sent.
 from __future__ import annotations
 
 import argparse
+import faulthandler
 import fcntl
 import hashlib
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -4246,6 +4248,8 @@ class ProjectMonitor:
 
 
 def main() -> None:
+    if hasattr(signal, "SIGUSR1"):
+        faulthandler.register(signal.SIGUSR1, all_threads=True)
     parser = argparse.ArgumentParser(description="CMHK主项目错误实时监控（默认禁止群发送）")
     parser.add_argument("--once", action="store_true", help="只执行一次只读检测")
     parser.add_argument("--daemon", action="store_true", help="持续轮询")
