@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T04:49:42+08:00",
+  "checked_at_hkt": "2026-08-30T04:52:55+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -730,9 +730,9 @@
       "run_status": "running",
       "backend_pid": 88806,
       "worker_pid": 88806,
-      "phase": "国际运营商",
-      "progress_detail": "正在重建国际运营商数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
-      "heartbeat_at_hkt": "2026-08-30T04:48:58+08:00",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-08-30T04:52:43+08:00",
       "started_at_hkt": "2026-08-30T04:28:55+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -740,8 +740,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260830_042855_439139.jsonl"
       },
       "stream_log": {
-        "bytes": 8891,
-        "lines": 39
+        "bytes": 10956,
+        "lines": 51
       },
       "final_audit": {},
       "run_log": {},
