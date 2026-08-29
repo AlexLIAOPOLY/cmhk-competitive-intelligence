@@ -2,6 +2,31 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "487bfcf3aff5c85c8eb56521",
+      "task_id": "incident:487bfcf3aff5c85c8eb56521",
+      "title": "Feishu媒体指标定时汇总",
+      "kind": "feishu-media-metrics",
+      "kind_label": "Feishu媒体指标定时汇总",
+      "scope": "feishu-media-metrics",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目常驻服务未运行",
+      "impact": "对应的爬虫、定时任务或Web能力可能停止，后续计划任务可能漏跑。",
+      "suggestions": [
+        "先读取 launchctl print gui/501/com.liaowang.cmhk-feishu-media-metrics 与对应 stderr 日志。",
+        "确认没有同类任务正在执行后，再按既有 LaunchAgent 流程恢复服务。",
+        "恢复后交叉检查任务归档、/api/status 与 /api/task-runs，禁止盲目补跑。"
+      ],
+      "occurred_at_hkt": "2026-08-29T17:25:33+08:00",
+      "started_at_hkt": "2026-08-29T17:25:33+08:00",
+      "heartbeat_at_hkt": "2026-08-29T17:25:33+08:00",
+      "completed_at_hkt": "2026-08-29T17:26:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "c9a05d777f12f594824d9b27",
       "task_id": "incident:c9a05d777f12f594824d9b27",
       "title": "Feishu媒体指标定时汇总 17:00",
@@ -14,14 +39,16 @@
       "severity": "P2",
       "severity_label": "高",
       "summary": "Feishu媒体指标定时汇总超过宽限期仍未完成",
-      "impact": "该时段媒体发布阅读与互动指标没有按计划汇总，项目数据本身和主爬虫仍可继续运行。",
+      "impact": "已确认：2026-08-29T17:00时段的媒体发布阅读与互动指标未按计划汇总，报告缺失。推断：可能影响该时段数据分析和决策，但项目整体数据采集不受影响。",
       "suggestions": [
-        "检查媒体指标 daemon 的 launchd 状态、stderr、飞书读取和消息回读错误。",
-        "先核对目标群是否已经收到该时段报告；确认未发送后再做有界恢复，避免重复消息。"
+        "检查媒体指标daemon的launchd状态和stderr日志，确认进程是否正常运行，并排查飞书读取和消息回读错误。",
+        "核对目标飞书群是否已收到20260829-1700时段报告；若未收到，手动触发该时段汇总任务（需确保不重复发送消息）。",
+        "检查上游调度系统，确认20260829-1700槽位是否已生成；若未生成，手动创建槽位并重试任务。",
+        "修复后验证：监控下一个计划时段（如18:00）的汇总任务是否正常执行，并确认报告成功发送至目标群。"
       ],
       "occurred_at_hkt": "2026-08-29T17:20:00+08:00",
       "started_at_hkt": "2026-08-29T17:20:08+08:00",
-      "heartbeat_at_hkt": "2026-08-29T17:20:08+08:00",
+      "heartbeat_at_hkt": "2026-08-29T17:26:33+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2144,7 +2171,7 @@
       ],
       "occurred_at_hkt": "2026-08-29 03:08:52",
       "started_at_hkt": "2026-08-29T09:53:53+08:00",
-      "heartbeat_at_hkt": "2026-08-29T17:20:08+08:00",
+      "heartbeat_at_hkt": "2026-08-29T17:26:33+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12016,32 +12043,6 @@
       "started_at_hkt": "2026-08-26T12:01:34+08:00",
       "heartbeat_at_hkt": "2026-08-26T12:04:05+08:00",
       "completed_at_hkt": "2026-08-29T16:42:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "89f39d02ab91212b024f4e3a",
-      "task_id": "incident:89f39d02ab91212b024f4e3a",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "已确认：本轮定时爬虫任务未完全成功，i-CABLE来源的财报数据未能更新，但旧数据被保留，其他成功阶段不受影响。推断：若持续失败，可能导致i-CABLE相关财报数据过时，影响下游分析或报表的时效性。",
-      "suggestions": [
-        "检查i-CABLE目标网站的当前可访问性，包括网络连通性、DNS解析和页面响应状态。",
-        "对比历史成功抓取时的页面结构，确认i-CABLE官方财报页面是否发生变更，并调整解析逻辑。",
-        "查看本轮完整流日志，确认第17行之前的处理状态和其他来源的成功情况，以排除级联故障。",
-        "若确认为临时性访问问题，等待系统自动重试；若为结构性变更，更新爬虫配置后，仅针对i-CABLE来源进行增量重跑，并验证数据完整性。"
-      ],
-      "occurred_at_hkt": "2026-08-26T10:32:30+08:00",
-      "started_at_hkt": "2026-08-26T03:31:41+08:00",
-      "heartbeat_at_hkt": "2026-08-26T11:00:41+08:00",
-      "completed_at_hkt": "2026-08-26T11:01:11+08:00",
       "handled_at_hkt": ""
     }
   ],
