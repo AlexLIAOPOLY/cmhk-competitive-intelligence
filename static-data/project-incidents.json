@@ -2,6 +2,58 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "2915c9ff1f7b313718a44097",
+      "task_id": "incident:2915c9ff1f7b313718a44097",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "已确认：至少一个请求、后台线程或战略监视周期可能中断。推断：若异常持续，可能导致服务降级、任务失败或数据不一致。",
+      "suggestions": [
+        "",
+        "关联 /api/task-runs 接口日志，确认该时间点是否有任务执行失败或状态异常。",
+        "根据堆栈信息修复根因（如代码缺陷或依赖问题），并在测试环境验证修复后，再部署到生产环境。",
+        "修复后监控 web_app.stderr.log 和任务运行状态，确保无新异常出现。"
+      ],
+      "occurred_at_hkt": "2026-08-31T07:16:35+08:00",
+      "started_at_hkt": "2026-08-31T03:35:31+08:00",
+      "heartbeat_at_hkt": "2026-08-31T07:16:35+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "0f0552cf4e708c47edfa0928",
+      "task_id": "incident:0f0552cf4e708c47edfa0928",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认事实：输入影响描述为至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。推断：可能影响主项目后台任务的部分处理结果，但未证实影响范围扩大或数据丢失。",
+      "suggestions": [
+        "检查：按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "检查：查看日志中2条错误的完整上下文和堆栈，确认失败步骤和影响条目。",
+        "修复：若条目进入待恢复队列，保留已有结果并只恢复失败步骤，不重跑已完成的外部写入。",
+        "验证：恢复后核对任务归档状态，确认候选、去重、AI审核或后台处理步骤完成且无新增错误。"
+      ],
+      "occurred_at_hkt": "2026-08-31T07:16:35+08:00",
+      "started_at_hkt": "2026-08-31T07:16:35+08:00",
+      "heartbeat_at_hkt": "2026-08-31T07:16:35+08:00",
+      "completed_at_hkt": "2026-08-31T07:17:11+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "7dd54e13f5af7d02e965e941",
       "task_id": "incident:7dd54e13f5af7d02e965e941",
       "title": "主项目后台任务",
@@ -179,32 +231,6 @@
       "started_at_hkt": "2026-08-31T05:34:04+08:00",
       "heartbeat_at_hkt": "2026-08-31T05:35:38+08:00",
       "completed_at_hkt": "2026-08-31T05:36:09+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "2915c9ff1f7b313718a44097",
-      "task_id": "incident:2915c9ff1f7b313718a44097",
-      "title": "主项目Web后台",
-      "kind": "web-app",
-      "kind_label": "主项目Web后台",
-      "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "Web后台日志出现未处理异常",
-      "impact": "已确认：至少一个请求、后台线程或战略监视周期可能中断。推断：若异常持续，可能导致服务降级、任务失败或数据不一致。",
-      "suggestions": [
-        "",
-        "关联 /api/task-runs 接口日志，确认该时间点是否有任务执行失败或状态异常。",
-        "根据堆栈信息修复根因（如代码缺陷或依赖问题），并在测试环境验证修复后，再部署到生产环境。",
-        "修复后监控 web_app.stderr.log 和任务运行状态，确保无新异常出现。"
-      ],
-      "occurred_at_hkt": "2026-08-31T05:34:04+08:00",
-      "started_at_hkt": "2026-08-31T03:35:31+08:00",
-      "heartbeat_at_hkt": "2026-08-31T05:34:04+08:00",
-      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -761,7 +787,7 @@
       ],
       "occurred_at_hkt": "2026-08-31 03:09:47",
       "started_at_hkt": "2026-08-31T03:10:04+08:00",
-      "heartbeat_at_hkt": "2026-08-31T07:15:35+08:00",
+      "heartbeat_at_hkt": "2026-08-31T07:20:41+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12155,30 +12181,6 @@
       "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
       "started_at_hkt": "2026-08-27T10:06:36+08:00",
       "heartbeat_at_hkt": "2026-08-27T10:06:36+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "ec3b763ff0113d4556365b1c",
-      "task_id": "incident:ec3b763ff0113d4556365b1c",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
-      "started_at_hkt": "2026-08-27T10:11:37+08:00",
-      "heartbeat_at_hkt": "2026-08-27T10:12:37+08:00",
       "completed_at_hkt": "2026-08-29T16:42:04+08:00",
       "handled_at_hkt": ""
     }
