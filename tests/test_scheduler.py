@@ -38,6 +38,49 @@ def _save_registry_record_in_process(
 
 
 class FeishuCliEnvironmentTests(unittest.TestCase):
+    def test_live_schedule_uses_recent_verified_cache_after_transient_failures(self) -> None:
+        failed = subprocess.CompletedProcess(
+            ["lark-cli"],
+            1,
+            stdout="",
+            stderr=json.dumps({
+                "ok": False,
+                "error": {"type": "network", "subtype": "timeout", "message": "dial tcp: i/o timeout"},
+            }),
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "live_schedule_cache.json"
+            cache_path.write_text(json.dumps({
+                "version": 1,
+                "verified_at_hkt": scheduler.datetime.now(scheduler.HKT).isoformat(timespec="seconds"),
+                "rows": [{"row": 2, "frequency": "每天 03:00"}],
+            }), encoding="utf-8")
+            with (
+                mock.patch.object(scheduler, "LIVE_SCHEDULE_CACHE_PATH", cache_path),
+                mock.patch.object(scheduler, "SCHEDULE_READ_ATTEMPTS", 3),
+                mock.patch.object(scheduler.subprocess, "run", return_value=failed) as run,
+                mock.patch.object(scheduler.time, "sleep"),
+            ):
+                rows = scheduler.read_live_schedule()
+
+        self.assertEqual(rows, [{"row": 2, "frequency": "每天 03:00"}])
+        self.assertEqual(run.call_count, 3)
+
+    def test_live_schedule_does_not_mask_non_transient_permission_error(self) -> None:
+        failed = subprocess.CompletedProcess(
+            ["lark-cli"],
+            1,
+            stdout="",
+            stderr='{"ok":false,"error":{"type":"permission","message":"forbidden"}}',
+        )
+        with (
+            mock.patch.object(scheduler.subprocess, "run", return_value=failed) as run,
+            mock.patch.object(scheduler.time, "sleep"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "forbidden"):
+                scheduler.read_live_schedule()
+        self.assertEqual(run.call_count, 1)
+
     def test_financial_frontend_publish_requires_verified_public_version(self) -> None:
         completed = subprocess.CompletedProcess(
             ["publish"],

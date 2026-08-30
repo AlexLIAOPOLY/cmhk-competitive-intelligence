@@ -23,6 +23,21 @@ class FaultIncidentApiTests(unittest.TestCase):
         warning.assert_called_once()
         exception.assert_not_called()
 
+    def test_handler_reconciliation_wrapped_network_timeout_is_also_deferred(self) -> None:
+        with (
+            mock.patch.object(web_app, "CardActionHandler") as handler,
+            mock.patch.object(web_app.logging, "warning") as warning,
+            mock.patch.object(web_app.logging, "exception") as exception,
+        ):
+            handler.return_value.sync_handlers_from_sheet.side_effect = RuntimeError(
+                "API call failed: dial tcp 198.18.0.52:443: connect: operation timed out"
+            )
+            result = web_app.sync_project_monitor_sheet_handlers(force=True)
+
+        self.assertEqual(result["status"], "deferred")
+        warning.assert_called_once()
+        exception.assert_not_called()
+
     def test_real_incident_ledger_keeps_p1_p2_p3_and_handler(self) -> None:
         state = {
             "incidents": {

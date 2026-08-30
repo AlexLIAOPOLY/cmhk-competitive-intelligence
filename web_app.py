@@ -4518,16 +4518,30 @@ def sync_project_monitor_sheet_handlers(*, force: bool = False) -> dict:
     """Consume direct Feishu ledger edits before serving the alarm screen."""
     try:
         return CardActionHandler(runtime_root=ROOT).sync_handlers_from_sheet(force=force)
-    except (subprocess.TimeoutExpired, TimeoutError) as exc:
+    except Exception as exc:
         # Handler reconciliation is a periodic cache refresh. A slow Feishu
         # read must preserve the last verified mapping and retry later instead
         # of emitting a traceback that the project monitor treats as a new P1.
-        logging.warning(
-            "project monitor sheet handler reconciliation timed out; "
-            "retaining the last verified mapping"
+        detail = str(exc).lower()
+        transient = isinstance(exc, (subprocess.TimeoutExpired, TimeoutError)) or any(
+            marker in detail
+            for marker in (
+                "connect: operation timed out",
+                "connection reset",
+                "dial tcp",
+                "i/o timeout",
+                "rate limit",
+                "temporarily unavailable",
+                "timed out",
+                "timeout",
+            )
         )
-        return {"status": "deferred", "changes": 0, "error": str(exc)[:240]}
-    except Exception as exc:
+        if transient:
+            logging.warning(
+                "project monitor sheet handler reconciliation timed out; "
+                "retaining the last verified mapping"
+            )
+            return {"status": "deferred", "changes": 0, "error": str(exc)[:240]}
         logging.exception("project monitor sheet handler reconciliation failed")
         return {"status": "failed", "changes": 0, "error": str(exc)[:240]}
 

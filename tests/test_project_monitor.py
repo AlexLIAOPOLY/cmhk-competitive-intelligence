@@ -1739,6 +1739,32 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(third["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
         self.assertEqual(len(self.runner.send_calls()), 0)
 
+    def test_ai_diagnosis_retries_are_bounded_and_never_send_without_ai(self):
+        def failing_ai(_incident):
+            self.ai_calls += 1
+            raise RuntimeError("AI unavailable")
+
+        monitor = self._monitor(enabled=True, ai=failing_ai)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        for _ in range(project_monitor.AI_DIAGNOSIS_MAX_ATTEMPTS):
+            monitor.run_cycle()
+            self.now += timedelta(minutes=5, seconds=1)
+
+        exhausted = monitor.run_cycle()
+
+        self.assertEqual(self.ai_calls, project_monitor.AI_DIAGNOSIS_MAX_ATTEMPTS)
+        self.assertEqual(
+            exhausted["active_incidents"][0]["diagnosis_status"],
+            "failed_retry_exhausted",
+        )
+        self.assertEqual(self.runner.send_calls(), [])
+
+    def test_ai_diagnosis_model_candidates_use_governed_fallback_order(self):
+        self.assertEqual(
+            project_monitor._diagnosis_model_candidates("DeepSeek-V4-Pro", {}),
+            ["DeepSeek-V4-Pro", "GLM", "Qwen3-30B-A3B-Instruct-2507"],
+        )
+
     def test_incident_first_seen_while_disabled_is_never_replayed_when_gate_enables(self):
         monitor = self._monitor(enabled=False)
         monitor.collect_issues = lambda: [self._issue(monitor)]

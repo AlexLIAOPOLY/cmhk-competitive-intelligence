@@ -4803,11 +4803,18 @@ def run_cycle(
             }
         )
         _write_json(STATE_PATH, state)
-        dashboard_publish = (
-            _schedule_public_dashboard_publish()
-            if schedule_dashboard_publish
-            else {"status": "deferred_until_periodic_cycle"}
+        dashboard_has_visible_changes = (
+            not source_unchanged
+            or int(sync_result.get("new_count") or 0) > 0
+            or int(review_result.get("changed_rows") or 0) > 0
+            or int(retention_result.get("removedRows") or 0) > 0
         )
+        if not schedule_dashboard_publish:
+            dashboard_publish = {"status": "deferred_until_periodic_cycle"}
+        elif dashboard_has_visible_changes:
+            dashboard_publish = _schedule_public_dashboard_publish()
+        else:
+            dashboard_publish = {"status": "unchanged_no_publish"}
         cycle_result = {
             "status": "ok",
             "source_unchanged": source_unchanged,

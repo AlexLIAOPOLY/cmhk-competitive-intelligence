@@ -297,6 +297,12 @@ ERROR_LEDGER_SYNC_BUDGET_SECONDS = max(
     30,
     int(os.environ.get("CMHK_ERROR_LEDGER_SYNC_BUDGET_SECONDS", "90")),
 )
+AI_DIAGNOSIS_RETRY_POLICY_VERSION = 2
+AI_DIAGNOSIS_MAX_ATTEMPTS = max(
+    3,
+    int(os.environ.get("CMHK_ALERT_AI_MAX_ATTEMPTS", "6")),
+)
+AI_DIAGNOSIS_FALLBACK_MODELS = ("GLM", "Qwen3-30B-A3B-Instruct-2507")
 TERMINAL_STATUSES = {"completed", "failed"}
 SENSITIVE_RE = re.compile(
     r"(?i)(authorization\s*[:=]\s*bearer\s+|api[_-]?key\s*[:=]\s*|app[_-]?secret\s*[:=]\s*)[^\s,;\"']+"
@@ -308,6 +314,20 @@ _T2S_CONVERTER = OpenCC("t2s") if OpenCC is not None else None
 
 def _env_true(value: object) -> bool:
     return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _diagnosis_model_candidates(configured_model: object, environ: dict[str, str]) -> list[str]:
+    configured = str(
+        environ.get("CMHK_ALERT_AI_MODEL")
+        or configured_model
+        or "DeepSeek-V4-Pro"
+    ).strip()
+    rescue = str(environ.get("CMHK_STRATEGY_AI_RESCUE_MODEL") or "").strip()
+    return list(dict.fromkeys(
+        model
+        for model in (configured, rescue, *AI_DIAGNOSIS_FALLBACK_MODELS)
+        if model
+    ))
 
 
 def _iso(now: datetime | None = None) -> str:
@@ -2314,15 +2334,12 @@ class ProjectMonitor:
         config = load_ai_config(include_key=True)
         api_key = str(config.get("api_key") or "").strip()
         base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
-        model = str(
-            self.environ.get("CMHK_ALERT_AI_MODEL")
-            or self.environ.get("CMHK_STRATEGY_AI_RESCUE_MODEL")
-            or config.get("model")
-            or "deepseek-v4"
-        ).strip()
+        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        models = _diagnosis_model_candidates(config.get("model"), self.environ)
+        model = models[min(diagnosis_attempt - 1, len(models) - 1)]
         if not api_key or not base_url or not model:
             raise RuntimeError("内部AI配置不完整")
-        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        incident["diagnosis_last_model"] = model
         prompt_payload = {
             "diagnosis_attempt": diagnosis_attempt,
             "task": incident.get("task_name"),
@@ -2484,15 +2501,12 @@ class ProjectMonitor:
         config = load_ai_config(include_key=True)
         api_key = str(config.get("api_key") or "").strip()
         base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
-        model = str(
-            self.environ.get("CMHK_ALERT_AI_MODEL")
-            or self.environ.get("CMHK_STRATEGY_AI_RESCUE_MODEL")
-            or config.get("model")
-            or "deepseek-v4"
-        ).strip()
+        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        models = _diagnosis_model_candidates(config.get("model"), self.environ)
+        model = models[min(diagnosis_attempt - 1, len(models) - 1)]
         if not api_key or not base_url or not model:
             raise RuntimeError("内部AI配置不完整")
-        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        incident["diagnosis_last_model"] = model
         prompt_payload = {
             "route_assessment_version": LINEAGE_ROUTE_ASSESSMENT_VERSION,
             "diagnosis_attempt": diagnosis_attempt,
@@ -2734,6 +2748,27 @@ class ProjectMonitor:
         if not self.ai_enabled:
             incident["diagnosis_status"] = "disabled"
             return False
+        if int(incident.get("diagnosis_retry_policy_version") or 0) != AI_DIAGNOSIS_RETRY_POLICY_VERSION:
+            # Existing incidents may have retried the old single-model policy
+            # indefinitely. Give the new bounded multi-model policy one fresh
+            # sequence without carrying the legacy attempt counter forward.
+            incident["diagnosis_retry_policy_version"] = AI_DIAGNOSIS_RETRY_POLICY_VERSION
+            incident["diagnosis_attempts"] = 0
+            incident.pop("diagnosis_retry_after_hkt", None)
+            incident.pop("diagnosis_last_model", None)
+        attempts = int(incident.get("diagnosis_attempts") or 0)
+        if attempts >= AI_DIAGNOSIS_MAX_ATTEMPTS:
+            if incident.get("diagnosis_status") != "failed_retry_exhausted":
+                incident["diagnosis_status"] = "failed_retry_exhausted"
+                incident.pop("diagnosis_retry_after_hkt", None)
+                _append_jsonl(self.events_path, {
+                    "type": "ai_diagnosis_retry_exhausted_local_only",
+                    "at_hkt": _iso(self.now()),
+                    "incident_id": incident.get("incident_id"),
+                    "attempts": attempts,
+                    "last_model": incident.get("diagnosis_last_model"),
+                })
+            return False
         retry_after = _parse_datetime(incident.get("diagnosis_retry_after_hkt"))
         if retry_after and self.now() < retry_after:
             return False
@@ -2759,14 +2794,26 @@ class ProjectMonitor:
             })
             return True
         except Exception as exc:
-            incident["diagnosis_status"] = "failed_waiting_retry"
+            exhausted = int(incident.get("diagnosis_attempts") or 0) >= AI_DIAGNOSIS_MAX_ATTEMPTS
+            incident["diagnosis_status"] = (
+                "failed_retry_exhausted" if exhausted else "failed_waiting_retry"
+            )
             incident["diagnosis_error"] = _redact(f"{type(exc).__name__}: {exc}", 700)
-            incident["diagnosis_retry_after_hkt"] = _iso(self.now() + timedelta(minutes=5))
+            if exhausted:
+                incident.pop("diagnosis_retry_after_hkt", None)
+            else:
+                incident["diagnosis_retry_after_hkt"] = _iso(self.now() + timedelta(minutes=5))
             _append_jsonl(self.events_path, {
-                "type": "ai_diagnosis_failed_local_only",
+                "type": (
+                    "ai_diagnosis_retry_exhausted_local_only"
+                    if exhausted
+                    else "ai_diagnosis_failed_local_only"
+                ),
                 "at_hkt": _iso(self.now()),
                 "incident_id": incident.get("incident_id"),
                 "error": incident["diagnosis_error"],
+                "attempts": incident.get("diagnosis_attempts"),
+                "model": incident.get("diagnosis_last_model"),
             })
             return False
 

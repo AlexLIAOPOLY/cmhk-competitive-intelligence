@@ -32,12 +32,18 @@ RESULTS_DIR = ROOT / "results"
 STATE_PATH = ROOT / "scheduler_state.json"
 PENDING_RUN_PATH = ROOT / "scheduler_pending_run.json"
 HEARTBEAT_PATH = ROOT / "var" / "frequency_scheduler" / "heartbeat.json"
+LIVE_SCHEDULE_CACHE_PATH = ROOT / "var" / "frequency_scheduler" / "live_schedule_cache.json"
 RUN_LOG_PATH = ROOT / "run_log.json"
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
 HKT = ZoneInfo("Asia/Hong_Kong")
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_SCHEDULER_POLL_SECONDS", "60")))
 RETRY_SECONDS = max(300, int(os.environ.get("CMHK_SCHEDULER_RETRY_SECONDS", "1800")))
+SCHEDULE_READ_ATTEMPTS = max(1, int(os.environ.get("CMHK_SCHEDULE_READ_ATTEMPTS", "3")))
+SCHEDULE_CACHE_MAX_AGE_SECONDS = max(
+    POLL_SECONDS * 2,
+    int(os.environ.get("CMHK_SCHEDULE_CACHE_MAX_AGE_SECONDS", "900")),
+)
 LARK_CLI = resolve_lark_cli()
 PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
@@ -87,28 +93,37 @@ def cell_text(value: object) -> str:
     return "" if value is None else str(value)
 
 
-def read_live_schedule() -> list[dict[str, object]]:
-    proc = subprocess.run(
-        [
-            LARK_CLI,
-            "sheets",
-            "+read",
-            "--spreadsheet-token",
-            SPREADSHEET_TOKEN,
-            "--range",
-            f"{MAIN_SHEET_ID}!A1:Z200",
-            "--value-render-option",
-            "FormattedValue",
-        ],
-        cwd=ROOT,
-        env=no_proxy_env(),
-        text=True,
-        capture_output=True,
-        timeout=120,
+def _transient_lark_failure(raw: object) -> bool:
+    text = str(raw or "").strip()
+    try:
+        payload = json.loads(text)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        payload = {}
+    error = payload.get("error") if isinstance(payload, dict) else {}
+    error = error if isinstance(error, dict) else {}
+    error_type = str(error.get("type") or "").lower()
+    error_subtype = str(error.get("subtype") or "").lower()
+    message = str(error.get("message") or text).lower()
+    return bool(
+        error_type in {"network", "timeout"}
+        or error_subtype in {"connect", "connection", "dns", "server_error", "timeout", "tls"}
+        or any(
+            marker in message
+            for marker in (
+                "connect: operation timed out",
+                "connection reset",
+                "dial tcp",
+                "i/o timeout",
+                "rate limit",
+                "temporarily unavailable",
+                "timed out",
+                "timeout",
+            )
+        )
     )
-    if proc.returncode:
-        raise RuntimeError(proc.stderr.strip() or proc.stdout.strip())
-    values = json.loads(proc.stdout)["data"]["valueRange"]["values"]
+
+
+def _schedule_rows_from_values(values: list[object]) -> list[dict[str, object]]:
     if not values:
         raise RuntimeError("飞书主表为空")
     headers = [cell_text(value).strip() for value in values[0]]
@@ -132,6 +147,108 @@ def read_live_schedule() -> list[dict[str, object]]:
         if frequency:
             rows.append({"row": row_no, "frequency": frequency})
     return rows
+
+
+def _write_live_schedule_cache(rows: list[dict[str, object]]) -> None:
+    LIVE_SCHEDULE_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = LIVE_SCHEDULE_CACHE_PATH.with_suffix(".tmp")
+    temporary.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "verified_at_hkt": datetime.now(HKT).isoformat(timespec="seconds"),
+                "rows": rows,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    temporary.replace(LIVE_SCHEDULE_CACHE_PATH)
+
+
+def _read_recent_live_schedule_cache() -> list[dict[str, object]]:
+    try:
+        payload = json.loads(LIVE_SCHEDULE_CACHE_PATH.read_text(encoding="utf-8"))
+        verified_at = datetime.fromisoformat(str(payload.get("verified_at_hkt") or ""))
+        if verified_at.tzinfo is None:
+            verified_at = verified_at.replace(tzinfo=HKT)
+        age_seconds = (datetime.now(HKT) - verified_at.astimezone(HKT)).total_seconds()
+        rows = payload.get("rows")
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return []
+    if age_seconds < 0 or age_seconds > SCHEDULE_CACHE_MAX_AGE_SECONDS or not isinstance(rows, list):
+        return []
+    normalized: list[dict[str, object]] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            return []
+        try:
+            row_no = int(item.get("row") or 0)
+        except (TypeError, ValueError):
+            return []
+        frequency = str(item.get("frequency") or "").strip()
+        if row_no < 2 or not frequency:
+            return []
+        normalized.append({"row": row_no, "frequency": frequency})
+    return normalized
+
+
+def read_live_schedule() -> list[dict[str, object]]:
+    last_error = ""
+    for attempt in range(1, SCHEDULE_READ_ATTEMPTS + 1):
+        try:
+            proc = subprocess.run(
+                [
+                    LARK_CLI,
+                    "sheets",
+                    "+read",
+                    "--spreadsheet-token",
+                    SPREADSHEET_TOKEN,
+                    "--range",
+                    f"{MAIN_SHEET_ID}!A1:Z200",
+                    "--value-render-option",
+                    "FormattedValue",
+                ],
+                cwd=ROOT,
+                env=no_proxy_env(),
+                text=True,
+                capture_output=True,
+                timeout=120,
+            )
+        except subprocess.TimeoutExpired as exc:
+            last_error = f"lark-cli schedule read timed out after {exc.timeout}s"
+            transient = True
+        else:
+            raw = proc.stderr.strip() or proc.stdout.strip()
+            if proc.returncode:
+                last_error = raw
+                transient = _transient_lark_failure(raw)
+            else:
+                try:
+                    values = json.loads(proc.stdout)["data"]["valueRange"]["values"]
+                    rows = _schedule_rows_from_values(values)
+                except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                    raise RuntimeError(f"飞书主表返回结构无效：{exc}") from exc
+                _write_live_schedule_cache(rows)
+                return rows
+        if not transient:
+            raise RuntimeError(last_error)
+        if attempt < SCHEDULE_READ_ATTEMPTS:
+            logging.warning(
+                "飞书排期读取瞬时失败，第 %s/%s 次，准备重试",
+                attempt,
+                SCHEDULE_READ_ATTEMPTS,
+            )
+            time.sleep(min(2.0, float(attempt)))
+    cached = _read_recent_live_schedule_cache()
+    if cached:
+        logging.warning(
+            "飞书排期连续读取失败，使用最近 %s 秒内已验证快照；下一轮继续实时回读",
+            SCHEDULE_CACHE_MAX_AGE_SECONDS,
+        )
+        return cached
+    raise RuntimeError(last_error or "飞书排期读取失败且没有可用的已验证快照")
 
 
 def parse_datetime(value: object) -> datetime | None:

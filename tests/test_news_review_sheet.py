@@ -1043,6 +1043,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         }
         load_latest = mock.Mock()
         sync = mock.Mock()
+        dashboard_publish = mock.Mock()
         with (
             mock.patch.object(review_sheet, "_read_json", return_value=state),
             mock.patch.object(review_sheet, "_write_json") as write_json,
@@ -1057,6 +1058,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             ),
             mock.patch.object(review_sheet, "_load_curated_latest", load_latest),
             mock.patch.object(review_sheet, "sync_candidates", sync),
+            mock.patch.object(
+                review_sheet,
+                "_schedule_public_dashboard_publish",
+                dashboard_publish,
+            ),
             mock.patch.object(
                 review_sheet,
                 "apply_reviews",
@@ -1075,9 +1081,56 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         apply_reviews.assert_called_once_with("sheet")
         self.assertTrue(result["source_unchanged"])
         self.assertEqual(result["sheet_candidate_count"], 277)
+        self.assertEqual(
+            result["dashboard_publish"]["status"],
+            "unchanged_no_publish",
+        )
+        dashboard_publish.assert_not_called()
         self.assertFalse(
             write_json.call_args.args[1]["group_notifications_paused"]
         )
+
+    def test_run_cycle_publishes_when_review_state_changed(self):
+        state = {
+            "last_poll_epoch": 0,
+            "last_source_generated_at": "2026-07-27T09:41:27+08:00",
+            "last_source_summary": {
+                "generated_at": "2026-07-27T09:41:27+08:00",
+                "candidate_count": 29,
+            },
+            "sheet_id": "sheet",
+            "sheet_url": "https://example.com/sheet",
+            "last_candidate_count": 277,
+        }
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value=state),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "_current_source_generated_at",
+                return_value="2026-07-27T09:41:27+08:00",
+            ),
+            mock.patch.object(
+                review_sheet,
+                "apply_reviews",
+                return_value={"changed_rows": 1},
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_maintain_review_history_and_retention",
+                return_value={"status": "ok", "removedRows": 0},
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_schedule_public_dashboard_publish",
+                return_value={"status": "started", "pid": 123},
+            ) as dashboard_publish,
+        ):
+            result = review_sheet.run_cycle()
+
+        self.assertTrue(result["source_unchanged"])
+        self.assertEqual(result["dashboard_publish"]["status"], "started")
+        dashboard_publish.assert_called_once_with()
 
     def test_retention_failure_does_not_break_verified_review_sync(self):
         state = {
