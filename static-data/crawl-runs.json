@@ -43,14 +43,150 @@
       "trigger": "四库与观察结论自动更新",
       "scope": "Agent审核 scheduled_20260831_030014_019556 · 父任务 20260831_030014_019556",
       "task_kind": "executive-intelligence-refresh",
-      "run_status": "running",
-      "phase": "更新主页UI",
-      "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-      "heartbeat_at_hkt": "2026-08-31T03:52:01+08:00",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "四库、15个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
+      "status_detail": "四库、15个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 1 次。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-31T03:53:50+08:00",
       "started_at_hkt": "2026-08-31T03:31:13+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-31T03:53:50+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 1356991,
       "final_audit": {},
-      "curation": {}
+      "curation": {},
+      "operational_summary": {
+        "attempts": 1,
+        "agent_run_id": "scheduled_20260831_030014_019556",
+        "failed_domains": [],
+        "status": "completed",
+        "notification_policy": "local_log_only",
+        "model_analysis": {
+          "ok": true,
+          "generated_at_hkt": "2026-08-31T03:51:39+08:00",
+          "model": "DeepSeek-V4-Pro",
+          "domains": 4,
+          "focuses_expected": 15,
+          "focuses_passed": 15,
+          "reused": false,
+          "fallback_used": false,
+          "fallback_reason": "",
+          "evidence_hash": "a36dbb3718fb2190bac55c751984f7964b70d75fee717ed96dc8f315ac0be945",
+          "discovery_model": "DeepSeek-V4-Pro",
+          "discovery_evidence_repair_count": 3,
+          "discovery_fallback_used": false,
+          "discovery_fallback_reason": ""
+        },
+        "pages_publish": {
+          "ok": true,
+          "attempts": 5,
+          "status": "published",
+          "site_version": "66064749b35d6f88ee5c88252a1f67de746ead0b7ac7b3f8da98677cb8ac87aa",
+          "item_count": 8,
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "3b5558862d8468bfa9fe9ffb84c5fb9fc72e1988",
+          "snapshot_source_url": ""
+        },
+        "feishu_detail_log": {
+          "ok": true,
+          "written": 657,
+          "skipped": 0,
+          "created": false,
+          "sheet_title": "四库爬虫明细日志",
+          "sheet_url": "",
+          "row_start": 20482,
+          "row_end": 21138,
+          "readback_verified": true,
+          "readback_reason": "live_full_event_id_readback",
+          "readback_scope": "all_live_event_ids",
+          "live_event_count": 21137,
+          "event_index_sha256": "23d370a61f672628be543ef9f86ae98afe3bd445b3c9fbb1cc09e8f7eb882a00",
+          "write_recovered_by_readback": false
+        },
+        "failure_stage": "",
+        "overview_source_recrawl": {
+          "ok": true,
+          "path": "",
+          "official_urls": 606,
+          "retrieved": 487,
+          "failed": 119,
+          "postpaid_rows": 140,
+          "postpaid_values": 20,
+          "content_changed": 6,
+          "first_observation": 7,
+          "fingerprint_baseline_upgraded": 0,
+          "domains": {
+            "local": {
+              "official_urls": 140,
+              "retrieved": 139,
+              "failed": 1,
+              "content_changed": 1,
+              "first_observation": 0,
+              "fingerprint_baseline_upgraded": 0
+            },
+            "international": {
+              "official_urls": 98,
+              "retrieved": 51,
+              "failed": 47,
+              "content_changed": 0,
+              "first_observation": 1,
+              "fingerprint_baseline_upgraded": 0
+            },
+            "mainland": {
+              "official_urls": 239,
+              "retrieved": 231,
+              "failed": 8,
+              "content_changed": 2,
+              "first_observation": 6,
+              "fingerprint_baseline_upgraded": 0
+            },
+            "cloud": {
+              "official_urls": 135,
+              "retrieved": 72,
+              "failed": 63,
+              "content_changed": 3,
+              "first_observation": 0,
+              "fingerprint_baseline_upgraded": 0
+            }
+          },
+          "annual_facts": 311,
+          "fact_sources": 466
+        },
+        "ui_value_changes": {
+          "baseline_available": true,
+          "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+          "changed": 0,
+          "added": 0,
+          "removed": 0,
+          "domains": {
+            "local": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "international": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "mainland": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "cloud": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            }
+          },
+          "items": []
+        }
+      }
     },
     {
       "crawl_run_id": "20260831_030014_019556",
