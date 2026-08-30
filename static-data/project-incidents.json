@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "4dcdc2ec174ddf4ee111677c",
+      "task_id": "incident:4dcdc2ec174ddf4ee111677c",
+      "title": "飞书频率调度周期",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度周期",
+      "scope": "frequency-scheduler",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "调度器日志出现未处理异常",
+      "impact": "本轮或后续到期任务可能没有被正常检查或启动。",
+      "suggestions": [
+        "读取异常前后的完整 scheduler stderr 与任务状态。",
+        "先确认本轮是否已经启动/完成，再修复异常，避免重复触发。"
+      ],
+      "occurred_at_hkt": "2026-08-30T10:13:10+08:00",
+      "started_at_hkt": "2026-08-30T10:13:10+08:00",
+      "heartbeat_at_hkt": "2026-08-30T10:13:10+08:00",
+      "completed_at_hkt": "2026-08-30T10:13:40+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "58c9901b875bfe0ecf39416d",
       "task_id": "incident:58c9901b875bfe0ecf39416d",
       "title": "战略新闻常驻监视器",
@@ -1501,7 +1525,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T09:59:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T10:12:10+08:00",
+      "heartbeat_at_hkt": "2026-08-30T10:17:11+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12038,30 +12062,6 @@
       "started_at_hkt": "2026-08-27T06:44:07+08:00",
       "heartbeat_at_hkt": "2026-08-27T06:44:07+08:00",
       "completed_at_hkt": "2026-08-27T06:44:38+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "26f8c3bd08d2729d39af5ffc",
-      "task_id": "incident:26f8c3bd08d2729d39af5ffc",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "检查 Agent run_id、节点完整性、超时和待恢复状态。",
-        "保留抓取结果，只恢复审核阶段，不重新触发已完成抓取。"
-      ],
-      "occurred_at_hkt": "2026-08-27T06:39:36+08:00",
-      "started_at_hkt": "2026-08-27T06:39:36+08:00",
-      "heartbeat_at_hkt": "2026-08-27T06:40:07+08:00",
-      "completed_at_hkt": "2026-08-27T06:40:37+08:00",
       "handled_at_hkt": ""
     }
   ],
