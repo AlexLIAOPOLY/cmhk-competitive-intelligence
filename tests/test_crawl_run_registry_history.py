@@ -39,6 +39,53 @@ class CrawlRunHistoryTests(unittest.TestCase):
 
         self.assertEqual([item["crawl_run_id"] for item in history], ["strategic-18", "strategic-17"])
 
+    def test_amend_terminal_run_preserves_original_completion_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runs_dir = root / "runs"
+            runs_dir.mkdir()
+            stream_path = runs_dir / "strategic-1.jsonl"
+            stream_path.write_text("", encoding="utf-8")
+            record = {
+                "crawl_run_id": "strategic-1",
+                "run_status": "completed",
+                "started_at_hkt": "2026-08-30T07:30:00+08:00",
+                "completed_at_hkt": "2026-08-30T09:12:36+08:00",
+                "duration_ms": 6156000,
+                "progress_detail": "主流程完成，选材待恢复",
+                "operational_summary": {"selection_agent_status": "failed"},
+                "local_files": {"stream_log": "runs/strategic-1.jsonl"},
+            }
+            (runs_dir / "strategic-1.json").write_text(
+                json.dumps(record),
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(crawl_run_registry, "ROOT", root),
+                mock.patch.object(crawl_run_registry, "RUNS_DIR", runs_dir),
+                mock.patch.object(
+                    crawl_run_registry,
+                    "_save_run_record",
+                    side_effect=lambda value: value,
+                ),
+            ):
+                amended = crawl_run_registry.amend_operational_crawl_run(
+                    "strategic-1",
+                    progress_detail="后置选材已恢复",
+                    summary_updates={"selection_agent_status": "completed"},
+                    event={"reason": "selection_agent_recovered"},
+                )
+            event = json.loads(stream_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(amended["completed_at_hkt"], record["completed_at_hkt"])
+        self.assertEqual(amended["duration_ms"], record["duration_ms"])
+        self.assertEqual(amended["run_status"], "completed")
+        self.assertEqual(
+            amended["operational_summary"]["selection_agent_status"],
+            "completed",
+        )
+        self.assertEqual(event["type"], "amendment")
+
 
 if __name__ == "__main__":
     unittest.main()

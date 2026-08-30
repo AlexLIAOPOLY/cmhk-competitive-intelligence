@@ -387,6 +387,46 @@ def finalize_operational_crawl_run(
         return _save_run_record(record)
 
 
+def amend_operational_crawl_run(
+    crawl_run_id: str,
+    *,
+    progress_detail: str,
+    summary_updates: dict[str, Any],
+    event: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Amend a terminal task after an independently retried child completes.
+
+    The original start/completion timestamps, duration and terminal status stay
+    immutable. Only the human-readable detail and operational summary receive
+    the later recovery evidence.
+    """
+    with REGISTRY_LOCK:
+        record = _read_json(RUNS_DIR / f"{_safe_id(crawl_run_id)}.json", {})
+        if not isinstance(record, dict) or not record:
+            raise ValueError(f"crawl run not found: {crawl_run_id}")
+        if record.get("run_status") not in {"completed", "failed", "cutoff"}:
+            raise ValueError(f"crawl run is not terminal: {crawl_run_id}")
+        relative = str((record.get("local_files") or {}).get("stream_log") or "")
+        stream_path = ROOT / relative if relative else RUNS_DIR / f"{crawl_run_id}.jsonl"
+        amended_at = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(
+            timespec="seconds"
+        )
+        summary = record.get("operational_summary")
+        summary = dict(summary) if isinstance(summary, dict) else {}
+        summary.update(dict(summary_updates or {}))
+        record["operational_summary"] = summary
+        record["progress_detail"] = str(progress_detail or record.get("progress_detail") or "")
+        record["status_detail"] = record["progress_detail"]
+        record["amended_at_hkt"] = amended_at
+        if event:
+            append_crawl_run_event(
+                stream_path,
+                {"type": "amendment", "timestamp": amended_at, **event},
+            )
+        record["stream_log"] = _stream_log_stats(stream_path)
+        return _save_run_record(record)
+
+
 def append_crawl_run_event(log_path: str | Path, payload: dict[str, Any]) -> None:
     path = Path(log_path)
     path.parent.mkdir(parents=True, exist_ok=True)

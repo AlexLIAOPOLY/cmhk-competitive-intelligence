@@ -27,6 +27,7 @@ from ai_key_rotation import is_key_unavailable_error
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import load_json_response
 from cmhk.crawl.run_registry import (
+    amend_operational_crawl_run,
     append_crawl_run_event,
     finalize_operational_crawl_run,
     heartbeat_crawl_run,
@@ -589,6 +590,18 @@ INTERRUPTED_SCAN_RECOVERY_MINUTES = max(
     SCAN_CATCHUP_MINUTES,
     int(os.environ.get("CMHK_STRATEGY_INTERRUPTED_RECOVERY_MINUTES", "720")),
 )
+SELECTION_RECOVERY_INTERVAL_MINUTES = max(
+    1,
+    int(os.environ.get("CMHK_NEWS_SELECTION_RECOVERY_INTERVAL_MINUTES", "10")),
+)
+SELECTION_RECOVERY_MAX_ATTEMPTS = max(
+    3,
+    int(os.environ.get("CMHK_NEWS_SELECTION_RECOVERY_MAX_ATTEMPTS", "12")),
+)
+SELECTION_RECOVERY_MAX_AGE_HOURS = max(
+    24,
+    int(os.environ.get("CMHK_NEWS_SELECTION_RECOVERY_MAX_AGE_HOURS", "48")),
+)
 MAX_QUERIES_PER_SCAN = max(4, int(os.environ.get("CMHK_STRATEGY_MAX_QUERIES", "24")))
 MAX_CANDIDATES_PER_SCAN = max(3, int(os.environ.get("CMHK_STRATEGY_MAX_CANDIDATES", "12")))
 MAX_SCHEDULED_CRAWL_SIGNALS = max(
@@ -833,11 +846,236 @@ def _recover_completed_scan_slot(
         )
 
 
+def _selection_recovery_parent_run_id(slot_key: str) -> str:
+    scope_suffix = f"（{slot_key}）"
+    for record in load_crawl_run_index():
+        if not isinstance(record, dict):
+            continue
+        if str(record.get("task_kind") or "") != "strategic-news":
+            continue
+        if not str(record.get("scope") or "").endswith(scope_suffix):
+            continue
+        return _clean_text(record.get("crawl_run_id"), 120)
+    return ""
+
+
+def _recover_pending_selection_agents(
+    now: datetime,
+    state: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Retry one failed post-crawl selection task without replaying the crawl/card."""
+    recoveries: list[dict[str, Any]] = []
+    retry_state = state.setdefault("selection_agent_retries", {})
+    if not isinstance(retry_state, dict):
+        retry_state = {}
+        state["selection_agent_retries"] = retry_state
+    cutoff = now - timedelta(hours=SELECTION_RECOVERY_MAX_AGE_HOURS)
+    paths = sorted(RUNS_DIR.glob("*.json"), reverse=True) if RUNS_DIR.exists() else []
+    for path in paths:
+        archive = _read_json(path, {})
+        if not isinstance(archive, dict) or archive.get("status") != "completed":
+            continue
+        slot_key = _clean_text(archive.get("slot"), 120)
+        selection = archive.get("selection_agent")
+        if not slot_key or not isinstance(selection, dict):
+            continue
+        if str(selection.get("status") or "") not in {"failed", "retry_pending"}:
+            continue
+        completed_at = _crawl_record_time(
+            archive,
+            "completed_at",
+            "scanned_at",
+        )
+        if completed_at is not None and completed_at < cutoff:
+            continue
+        review = archive.get("review_sheet")
+        if not isinstance(review, dict) or review.get("readback_verified") is not True:
+            continue
+        new_items = [
+            item
+            for item in (review.get("new_items") or [])
+            if isinstance(item, dict)
+        ]
+        sheet_id = _clean_text(review.get("sheet_id"), 120)
+        if not new_items or not sheet_id:
+            continue
+        entry = retry_state.get(slot_key)
+        entry = dict(entry) if isinstance(entry, dict) else {}
+        attempts = int(entry.get("attempts") or 0)
+        if attempts >= SELECTION_RECOVERY_MAX_ATTEMPTS:
+            entry["status"] = "exhausted"
+            retry_state[slot_key] = entry
+            state["last_selection_agent_error"] = (
+                f"{slot_key} 选材自动续写已达 {attempts} 次上限，需人工检查"
+            )
+            continue
+        last_attempt_at = _crawl_record_time(entry, "last_attempt_at")
+        if (
+            last_attempt_at is not None
+            and now - last_attempt_at
+            < timedelta(minutes=SELECTION_RECOVERY_INTERVAL_MINUTES)
+        ):
+            continue
+        attempts += 1
+        entry.update(
+            {
+                "status": "running",
+                "attempts": attempts,
+                "last_attempt_at": _now_iso(now),
+            }
+        )
+        retry_state[slot_key] = entry
+        state["selection_agent_retries"] = retry_state
+        _save_state(state)
+        try:
+            from cmhk.intelligence.news_selection_agent import (
+                run_news_selection_agent,
+            )
+
+            parent_crawl_run_id = (
+                _clean_text(archive.get("task_run_id"), 120)
+                or _selection_recovery_parent_run_id(slot_key)
+            )
+            prior_error = _clean_text(selection.get("error"), 1000)
+            recover_legacy_partial_write = bool(
+                "/open-apis/sheets/v2/spreadsheets/" in prior_error
+                and "/values" in prior_error
+            )
+            result = run_news_selection_agent(
+                new_items=new_items,
+                sheet_id=sheet_id,
+                parent_crawl_run_id=parent_crawl_run_id,
+                idempotency_key=slot_key,
+                recover_unlogged_applied=recover_legacy_partial_write,
+            )
+            previous = dict(selection)
+            archive["selection_agent"] = result
+            review["selection_agent"] = result
+            archive["review_sheet"] = review
+            archive["selection_agent_recovery"] = {
+                "status": "completed",
+                "attempts": attempts,
+                "completed_at": _now_iso(now),
+                "previous_status": previous.get("status") or "",
+                "previous_error": previous.get("error") or "",
+                "no_crawl_replay": True,
+                "no_notification_replay": True,
+            }
+            _atomic_write_json(path, archive)
+            if parent_crawl_run_id:
+                try:
+                    amend_operational_crawl_run(
+                        parent_crawl_run_id,
+                        progress_detail=(
+                            "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；"
+                            f"后置选材已自动恢复，验证 {int(result.get('verified_field_count') or 0)} 格，"
+                            "未重跑爬虫或重复发送群消息。"
+                        ),
+                        summary_updates={
+                            "selection_agent_status": "completed",
+                            "selection_agent_changed": int(
+                                result.get("changed_count") or 0
+                            ),
+                            "selection_agent_recovered": True,
+                            "selection_agent_recovery_task_run_id": (
+                                result.get("task_run_id") or ""
+                            ),
+                            "selection_agent_recovered_at": _now_iso(now),
+                            "message_ids": list(
+                                archive.get("message_ids")
+                                or ([archive.get("message_id")] if archive.get("message_id") else [])
+                            ),
+                            "notification_destination_count": len(
+                                archive.get("message_ids")
+                                or ([archive.get("message_id")] if archive.get("message_id") else [])
+                            ),
+                        },
+                        event={
+                            "reason": "selection_agent_recovered",
+                            "child_task_run_id": result.get("task_run_id") or "",
+                            "verified_field_count": int(
+                                result.get("verified_field_count") or 0
+                            ),
+                            "no_crawl_replay": True,
+                            "no_notification_replay": True,
+                        },
+                    )
+                except Exception:
+                    logging.exception("主爬虫任务摘要未能追加选材恢复证据")
+            entry.update(
+                {
+                    "status": "completed",
+                    "completed_at": _now_iso(now),
+                    "task_run_id": result.get("task_run_id") or "",
+                    "error": "",
+                }
+            )
+            state["last_selection_agent_error"] = ""
+            recovery = {
+                "slot": slot_key,
+                "status": "completed",
+                "attempt": attempts,
+                "candidate_count": int(result.get("candidate_count") or 0),
+                "verified_field_count": int(
+                    result.get("verified_field_count") or 0
+                ),
+                "task_run_id": result.get("task_run_id") or "",
+                "no_notification_replay": True,
+            }
+            recoveries.append(recovery)
+            _append_event({"type": "selection_agent_recovered", **recovery})
+        except Exception as exc:
+            error = _clean_text(exc, 600)
+            entry.update(
+                {
+                    "status": "retry_pending",
+                    "error": error,
+                    "next_retry_at": _now_iso(
+                        now + timedelta(minutes=SELECTION_RECOVERY_INTERVAL_MINUTES)
+                    ),
+                }
+            )
+            selection["status"] = "retry_pending"
+            selection["error"] = error
+            selection["readback_verified"] = False
+            archive["selection_agent"] = selection
+            review["selection_agent"] = selection
+            archive["review_sheet"] = review
+            archive["selection_agent_recovery"] = {
+                "status": "retry_pending",
+                "attempts": attempts,
+                "last_attempt_at": _now_iso(now),
+                "next_retry_at": entry["next_retry_at"],
+                "error": error,
+                "no_crawl_replay": True,
+                "no_notification_replay": True,
+            }
+            _atomic_write_json(path, archive)
+            state["last_selection_agent_error"] = error
+            recovery = {
+                "slot": slot_key,
+                "status": "retry_pending",
+                "attempt": attempts,
+                "error": error,
+                "no_notification_replay": True,
+            }
+            recoveries.append(recovery)
+            _append_event({"type": "selection_agent_recovery_failed", **recovery})
+            logging.exception("新闻选材自动续写 %s 失败", slot_key)
+        retry_state[slot_key] = entry
+        state["selection_agent_retries"] = retry_state
+        # Limit each monitor cycle to one potentially expensive recovery task.
+        break
+    return recoveries
+
+
 def _mark_scan_archive_notification_sent(
     slot_key: str,
     message_id: str,
     identity: str,
     now: datetime,
+    *,
+    message_ids: list[str] | None = None,
 ) -> None:
     path = _scan_run_path(slot_key)
     archive = _read_json(path, {})
@@ -846,6 +1084,7 @@ def _mark_scan_archive_notification_sent(
     archive["status"] = "completed"
     archive["notification_status"] = "sent"
     archive["message_id"] = message_id
+    archive["message_ids"] = list(dict.fromkeys(message_ids or [message_id]))
     archive["feishu_identity"] = identity
     archive["notified_at"] = _now_iso(now)
     _atomic_write_json(path, archive)
@@ -1721,9 +1960,9 @@ def _send_scan_message(
     spec: dict[str, Any],
     review_result: dict[str, Any] | None = None,
     notification_key: str = "",
-) -> tuple[str, str]:
+) -> tuple[str, str, list[str]]:
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
-        return "", "paused"
+        return "", "paused", []
     review = review_result or {}
     has_new_metrics = "new_count" in review
     category_counts = (
@@ -2083,7 +2322,11 @@ def _send_scan_message(
         identity = str(payload.get("_identity") or "")
         if identity and identity not in identities:
             identities.append(identity)
-    return (message_ids[0] if message_ids else ""), ",".join(identities)
+    return (
+        message_ids[0] if message_ids else "",
+        ",".join(identities),
+        list(dict.fromkeys(message_ids)),
+    )
 
 
 def _pending_notification_payload(
@@ -2127,13 +2370,13 @@ def _pending_notification_payload(
 def _flush_pending_scan_notifications(
     now: datetime,
     state: dict[str, Any],
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
         return []
     pending = state.get("pending_scan_notifications")
     if not isinstance(pending, dict) or not pending:
         return []
-    sent: list[dict[str, str]] = []
+    sent: list[dict[str, Any]] = []
     for slot_key in sorted(list(pending)):
         entry = pending.get(slot_key)
         if not isinstance(entry, dict):
@@ -2143,7 +2386,7 @@ def _flush_pending_scan_notifications(
             scheduled_at = datetime.fromisoformat(str(entry.get("now") or ""))
         except ValueError:
             scheduled_at = now
-        message_id, identity = _send_scan_message(
+        message_id, identity, message_ids = _send_scan_message(
             now=scheduled_at,
             slot_label=_clean_text(entry.get("slot_label"), 80) or "定时扫描",
             candidates=[],
@@ -2162,21 +2405,29 @@ def _flush_pending_scan_notifications(
             message_id,
             identity,
             now,
+            message_ids=message_ids,
         )
         state["outbound_message_ids"] = (
-            list(state.get("outbound_message_ids") or []) + [message_id]
+            list(state.get("outbound_message_ids") or []) + message_ids
         )[-300:]
         slot_state = (state.get("scan_slots") or {}).get(slot_key)
         if isinstance(slot_state, dict):
             slot_state["message_id"] = message_id
             slot_state["notification_replayed_at"] = _now_iso(now)
         pending.pop(slot_key, None)
-        sent.append({"slot": slot_key, "message_id": message_id})
+        sent.append(
+            {
+                "slot": slot_key,
+                "message_id": message_id,
+                "message_ids": message_ids,
+            }
+        )
         _append_event(
             {
                 "type": "scan_notification_replayed",
                 "slot": slot_key,
                 "message_id": message_id,
+                "message_ids": message_ids,
                 "identity": identity,
             }
         )
@@ -2417,6 +2668,10 @@ def _run_scan(
             "readback_verified": review.get("readback_verified") is True,
             "notification_status": result.get("notification_status") or "",
             "message_id": result.get("message_id") or "",
+            "message_ids": list(result.get("message_ids") or []),
+            "notification_destination_count": len(
+                result.get("message_ids") or []
+            ),
             "selection_agent_status": str(
                 (result.get("selection_agent") or {}).get("status") or ""
             ),
@@ -2424,11 +2679,19 @@ def _run_scan(
                 (result.get("selection_agent") or {}).get("changed_count") or 0
             ),
         }
-        detail = (
-            f"扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；"
-            f"发现 {summary['discovered']} 条，AI保留 {summary['ai_retained']} 条，"
-            f"历史重复 {summary['history_duplicates']} 条，新增 {summary['new_count']} 条。"
-        )
+        if summary["selection_agent_status"] == "completed":
+            detail = (
+                "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；"
+                f"发现 {summary['discovered']} 条，AI保留 {summary['ai_retained']} 条，"
+                f"历史重复 {summary['history_duplicates']} 条，新增 {summary['new_count']} 条。"
+            )
+        else:
+            detail = (
+                "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；"
+                f"发现 {summary['discovered']} 条，AI保留 {summary['ai_retained']} 条，"
+                f"历史重复 {summary['history_duplicates']} 条，新增 {summary['new_count']} 条。"
+                "后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。"
+            )
         append_crawl_run_event(
             stream_log_path,
             {"type": "done", "ok": True, "returnCode": 0, "summary": summary},
@@ -2754,6 +3017,7 @@ def _run_scan_impl(
             parent_crawl_run_id=crawl_run_id,
             idempotency_key=slot_key,
         )
+        state["last_selection_agent_error"] = ""
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
@@ -2768,17 +3032,20 @@ def _run_scan_impl(
         )
     except Exception as exc:
         selection_agent_result = {
-            "status": "failed",
+            "status": "retry_pending",
             "error": _clean_text(exc, 600),
             "readback_verified": False,
+            "recovery": "scheduled_without_resending_scan",
         }
+        state["last_selection_agent_error"] = selection_agent_result["error"]
         logging.exception("新闻自动初筛失败，原新闻爬虫结果仍保留")
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
             "选材 Agent 失败",
             (
-                "独立选材任务已在任务日志记为失败；未覆盖既有人工决策。"
+                "独立选材任务已在任务日志记为失败；未覆盖既有人工决策，"
+                "主爬虫和群通知不会重跑，后台将仅续写选材结果。"
                 f"原因：{selection_agent_result['error']}"
             ),
         )
@@ -2906,7 +3173,7 @@ def _run_scan_impl(
     )
     try:
         _enforce_scan_deadline(deadline_monotonic, deadline_at)
-        message_id, identity = _send_scan_message(
+        message_id, identity, message_ids = _send_scan_message(
             now=now,
             slot_label=slot_label,
             candidates=ranked,
@@ -2937,12 +3204,13 @@ def _run_scan_impl(
         notification_status = "sent"
     if message_id:
         state["outbound_message_ids"] = (
-            list(state.get("outbound_message_ids") or []) + [message_id]
+            list(state.get("outbound_message_ids") or []) + message_ids
         )[-300:]
     state["feishu_identity"] = identity
     run_payload["status"] = "completed"
     run_payload["notification_status"] = notification_status
     run_payload["message_id"] = message_id
+    run_payload["message_ids"] = message_ids
     run_payload["feishu_identity"] = identity
     run_payload["notified_at"] = _now_iso()
     _atomic_write_json(_scan_run_path(slot_key), run_payload)
@@ -6953,6 +7221,10 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 )
                 logging.exception("战略快讯 %s 失败", slot_key)
 
+        result["selection_recoveries"] = _recover_pending_selection_agents(
+            now if fixed_now else datetime.now(HKT),
+            state,
+        )
         result["replayed_notifications"] = _flush_pending_scan_notifications(
             now,
             state,
@@ -7132,6 +7404,7 @@ def public_snapshot() -> dict[str, Any]:
     last_error = (
         state.get("last_scan_error")
         or state.get("last_group_error")
+        or state.get("last_selection_agent_error")
         or ""
     )
     return {

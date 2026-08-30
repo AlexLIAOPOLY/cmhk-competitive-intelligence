@@ -87,6 +87,58 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(run.call_count, 2)
         sleep.assert_called_once_with(1)
 
+    def test_lark_write_retries_nested_network_timeout_then_succeeds(self):
+        transient = self._lark_result(
+            {
+                "ok": False,
+                "error": {
+                    "type": "network",
+                    "subtype": "timeout",
+                    "message": "dial tcp 198.18.0.52:443: connect: operation timed out",
+                },
+            },
+            returncode=1,
+        )
+        success = self._lark_result({"ok": True, "data": {}})
+        with (
+            mock.patch.object(
+                review_sheet.subprocess,
+                "run",
+                side_effect=[transient, success],
+            ) as run,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            result = review_sheet._lark(
+                "sheets",
+                "+cells-set",
+                retry_transient=True,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(1)
+
+    def test_write_many_uses_one_current_cells_set_batch(self):
+        with mock.patch.object(review_sheet, "_lark") as lark:
+            review_sheet._write_many(
+                "sheet-1",
+                [
+                    ("A2:B2", [["接受", "不接受"]]),
+                    ("A3:B3", [["不接受", "接受"]]),
+                ],
+                identity="bot",
+                profile="bot-profile",
+            )
+
+        args = lark.call_args.args
+        self.assertEqual(args[:2], ("sheets", "+cells-set"))
+        writes = json.loads(args[args.index("--writes") + 1])
+        self.assertEqual(len(writes), 2)
+        self.assertEqual(writes[0]["sheet_id"], "sheet-1")
+        self.assertEqual(writes[0]["cells"][0][0]["value"], "接受")
+        self.assertTrue(lark.call_args.kwargs["retry_transient"])
+        self.assertEqual(lark.call_args.kwargs["identity_override"], "bot")
+
     def test_lark_read_does_not_retry_permission_error(self):
         forbidden = self._lark_result(
             {"ok": False, "error": {"code": 403, "message": "Forbidden"}},

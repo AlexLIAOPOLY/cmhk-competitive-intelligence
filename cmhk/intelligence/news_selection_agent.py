@@ -48,6 +48,7 @@ SUPPLEMENT_BATCH_SIZE = max(
 WRITE_BATCH_ROWS = max(
     10, min(90, int(os.environ.get("CMHK_NEWS_SELECTION_WRITE_BATCH_ROWS", "80")))
 )
+MAX_PENDING_PLANS = 16
 REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
     5.0,
     min(
@@ -113,6 +114,7 @@ def _record_verified_operation_footprints(
     *,
     sheet_id: str,
     agent_run_id: str,
+    idempotency_key: str,
     model_name: str,
     recorded_at: str,
 ) -> int:
@@ -142,7 +144,15 @@ def _record_verified_operation_footprints(
             if decision.get(f"{field_key}_before") != "待审核":
                 continue
             after = str(decision.get(f"{field_key}_status") or "")
-            event_key = "|".join((agent_run_id, str(decision["row_number"]), field_label, after))
+            stable_run_key = idempotency_key or agent_run_id
+            event_key = "|".join(
+                (
+                    stable_run_key,
+                    _text(decision.get("news_id"), 80),
+                    field_label,
+                    after,
+                )
+            )
             if event_key in existing_keys:
                 continue
             service.record_operation(
@@ -160,14 +170,79 @@ def _record_verified_operation_footprints(
                     "after": after,
                     "identity_note": "机器人写入后已逐格回读，并直接写入统一操作审计",
                     "agent_run_id": agent_run_id,
+                    "selection_idempotency_key": idempotency_key,
                     "agent_recorded_at": recorded_at,
-                    "model": model_name,
+                    "model": _text(decision.get("model"), 120) or model_name,
                     "writer_profile": FEISHU_BOT_PROFILE,
+                    "recovered_from_partial_write": bool(
+                        decision.get("recovered_from_partial_write")
+                    ),
                     "automation_event_key": event_key,
                 },
             )
             existing_keys.add(event_key)
             written += 1
+    return written
+
+
+def _record_verified_decision_audits(
+    decisions: list[dict[str, Any]],
+    *,
+    agent_run_id: str,
+    parent_crawl_run_id: str,
+    idempotency_key: str,
+    model_name: str,
+    recorded_at: str,
+) -> int:
+    existing = {
+        (
+            _text(record.get("idempotency_key"), 120),
+            _text(record.get("news_id"), 80),
+        )
+        for record in _load_audit()
+        if record.get("event") == "decision"
+    }
+    written = 0
+    for decision in decisions:
+        audit_key = (idempotency_key, _text(decision.get("news_id"), 80))
+        if audit_key in existing:
+            continue
+        automated_fields = [
+            field
+            for field in ("app", "weekly")
+            if decision.get(f"{field}_before") == "待审核"
+        ]
+        _append_audit(
+            {
+                "event": "decision",
+                "decision_event_key": "|".join(audit_key),
+                "recorded_at": recorded_at,
+                "agent_run_id": agent_run_id,
+                "parent_crawl_run_id": parent_crawl_run_id,
+                "idempotency_key": idempotency_key,
+                "model": _text(decision.get("model"), 120) or model_name,
+                "news_id": decision["news_id"],
+                "row_number": decision["row_number"],
+                "title": decision["title"],
+                "app_before": decision["app_before"],
+                "weekly_before": decision["weekly_before"],
+                "app_status": decision["app_status"],
+                "weekly_status": decision["weekly_status"],
+                "automated_fields": automated_fields,
+                "app_confidence": decision["app_confidence"],
+                "weekly_confidence": decision["weekly_confidence"],
+                "reason": decision["reason"],
+                "write_verified": True,
+                "writer_identity": "bot",
+                "writer_profile": FEISHU_BOT_PROFILE,
+                "recovered_from_partial_write": bool(
+                    decision.get("recovered_from_partial_write")
+                ),
+                "recovery_note": _text(decision.get("recovery_note"), 500),
+            }
+        )
+        existing.add(audit_key)
+        written += 1
     return written
 
 
@@ -264,10 +339,15 @@ def _snapshot_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 def _human_examples(
     rows: list[dict[str, Any]],
     latest_agent_decisions: dict[str, dict[str, Any]],
+    *,
+    excluded_news_ids: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], int]:
     examples: list[dict[str, Any]] = []
     corrected_count = 0
+    excluded_news_ids = excluded_news_ids or set()
     for row in rows:
+        if _text(row.get("news_id"), 80) in excluded_news_ids:
+            continue
         app_status = _text(row.get("status"), 20)
         weekly_status = _text(row.get("weekly_status"), 20)
         previous = latest_agent_decisions.get(_text(row.get("news_id"), 80))
@@ -311,7 +391,7 @@ def _human_examples(
     return examples[:MAX_HISTORY_EXAMPLES], corrected_count
 
 
-def _target_rows(
+def _candidate_rows(
     rows: list[dict[str, Any]],
     new_items: list[dict[str, Any]],
     *,
@@ -322,15 +402,13 @@ def _target_rows(
         for item in new_items
         if isinstance(item, dict) and _text(item.get("news_id"), 80)
     }
-    targets: list[dict[str, Any]] = []
+    candidates: list[dict[str, Any]] = []
     for row in rows:
         if _text(row.get("search_date"), 20) != selection_date:
             continue
         if _text(row.get("news_id"), 80) not in target_ids:
             continue
-        if row.get("status") != "待审核" and row.get("weekly_status") != "待审核":
-            continue
-        targets.append(
+        candidates.append(
             {
                 "news_id": _text(row.get("news_id"), 80),
                 "row_number": int(row.get("row_number") or 0),
@@ -347,7 +425,75 @@ def _target_rows(
                 "weekly_before": _text(row.get("weekly_status"), 20),
             }
         )
-    return targets
+    return candidates
+
+
+def _target_rows(
+    rows: list[dict[str, Any]],
+    new_items: list[dict[str, Any]],
+    *,
+    selection_date: str,
+) -> list[dict[str, Any]]:
+    return [
+        row
+        for row in _candidate_rows(
+            rows,
+            new_items,
+            selection_date=selection_date,
+        )
+        if row.get("app_before") == "待审核"
+        or row.get("weekly_before") == "待审核"
+    ]
+
+
+def _recoverable_applied_decisions(
+    rows: list[dict[str, Any]],
+    new_items: list[dict[str, Any]],
+    *,
+    selection_date: str,
+    idempotency_key: str,
+    audits: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Rebuild provenance for a legacy partial write whose model plan was lost."""
+    audited_news_ids = {
+        _text(record.get("news_id"), 80)
+        for record in audits
+        if record.get("event") == "decision"
+        and _text(record.get("idempotency_key"), 120) == idempotency_key
+    }
+    recovered: list[dict[str, Any]] = []
+    for row in _candidate_rows(
+        rows,
+        new_items,
+        selection_date=selection_date,
+    ):
+        if row["news_id"] in audited_news_ids:
+            continue
+        if row.get("app_before") not in VALID_STATUSES:
+            continue
+        if row.get("weekly_before") not in VALID_STATUSES:
+            continue
+        recovered.append(
+            {
+                **row,
+                "app_before": "待审核",
+                "weekly_before": "待审核",
+                "app_status": row["app_before"],
+                "weekly_status": row["weekly_before"],
+                "app_confidence": 0.0,
+                "weekly_confidence": 0.0,
+                "reason": (
+                    "网络中断前已写入飞书；本次按连续失败批次的逐格回读恢复归属，"
+                    "原模型逐条理由未持久化，未作补造。"
+                ),
+                "recovered_from_partial_write": True,
+                "model": "recovered-live-sheet-readback",
+                "recovery_note": (
+                    "状态取自飞书实时回读；置信度与原模型逐条理由不可恢复。"
+                ),
+            }
+        )
+    return recovered
 
 
 def _model_routes() -> list[tuple[str, str]]:
@@ -668,9 +814,11 @@ def run_news_selection_agent(
     sheet_id: str,
     parent_crawl_run_id: str,
     idempotency_key: str,
+    recover_unlogged_applied: bool = False,
 ) -> dict[str, Any]:
     """Learn human choices and auto-review only this crawl's pending rows."""
     started = time.monotonic()
+    plan_saved = False
     run = start_crawl_run(
         trigger="新闻自动初筛",
         scope=f"爬虫后选材（{_text(idempotency_key, 120) or '未命名轮次'}）",
@@ -701,14 +849,50 @@ def run_news_selection_agent(
 
         snapshot = news_review_sheet.review_sheet_snapshot(
             sheet_id=sheet_id,
+            identity="bot",
+            profile=FEISHU_BOT_PROFILE,
             lock_timeout_seconds=REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS,
         )
         rows = _snapshot_rows(snapshot)
         audits = _load_audit()
-        examples, corrected_count = _human_examples(rows, _latest_agent_decisions(audits))
         selection_date_match = re.match(r"(\d{4}-\d{2}-\d{2})", idempotency_key or "")
         selection_date = (
             selection_date_match.group(1) if selection_date_match else _now_iso()[:10]
+        )
+        pending_plans = (
+            state.get("pending_plans")
+            if isinstance(state.get("pending_plans"), dict)
+            else {}
+        )
+        pending_plan = (
+            pending_plans.get(idempotency_key)
+            if idempotency_key and isinstance(pending_plans.get(idempotency_key), dict)
+            else {}
+        )
+        resumed_plan = bool(pending_plan)
+        recovered_decisions_for_run = (
+            _recoverable_applied_decisions(
+                rows,
+                new_items,
+                selection_date=selection_date,
+                idempotency_key=idempotency_key,
+                audits=audits,
+            )
+            if recover_unlogged_applied and not resumed_plan
+            else []
+        )
+        excluded_example_ids = {
+            _text(item.get("news_id"), 80)
+            for item in [
+                *(pending_plan.get("decisions") or []),
+                *recovered_decisions_for_run,
+            ]
+            if isinstance(item, dict) and _text(item.get("news_id"), 80)
+        }
+        examples, corrected_count = _human_examples(
+            rows,
+            _latest_agent_decisions(audits),
+            excluded_news_ids=excluded_example_ids,
         )
         targets = _target_rows(
             rows,
@@ -719,9 +903,142 @@ def run_news_selection_agent(
             crawl_run_id,
             stream_log_path,
             "人工样本隔离",
-            f"读取审核表 {len(rows)} 条；学习历史人工样本 {len(examples)} 条，排除既有自动结果，识别人工纠正 {corrected_count} 条；当天且属于本轮的新候选 {len(targets)} 条。",
+            f"读取审核表 {len(rows)} 条；学习历史人工样本 {len(examples)} 条，排除既有自动结果，识别人工纠正 {corrected_count} 条；当天且属于本轮的待审候选 {len(targets)} 条。",
         )
-        if not targets:
+        decisions: list[dict[str, Any]] = []
+        model_name = ""
+        skill_text = ""
+        recovered_decision_count = 0
+        if resumed_plan:
+            if _text(pending_plan.get("sheet_id"), 120) != _text(sheet_id, 120):
+                raise RuntimeError("待恢复选材计划对应的飞书工作表已变化，停止自动续写")
+            decisions = [
+                dict(item)
+                for item in (pending_plan.get("decisions") or [])
+                if isinstance(item, dict)
+            ]
+            if not decisions:
+                raise RuntimeError("待恢复选材计划缺少逐条决策，停止自动续写")
+            new_item_ids = {
+                _text(item.get("news_id"), 80)
+                for item in new_items
+                if isinstance(item, dict)
+            }
+            if any(decision.get("news_id") not in new_item_ids for decision in decisions):
+                raise RuntimeError("待恢复选材计划与本轮候选不一致，停止自动续写")
+            live_rows_by_id = {
+                _text(row.get("news_id"), 80): row
+                for row in _candidate_rows(
+                    rows,
+                    new_items,
+                    selection_date=selection_date,
+                )
+            }
+            for decision in decisions:
+                live_row = live_rows_by_id.get(_text(decision.get("news_id"), 80))
+                if not live_row:
+                    raise RuntimeError(
+                        f"待恢复候选 {_text(decision.get('news_id'), 80)} 已不在飞书表中"
+                    )
+                decision["row_number"] = live_row["row_number"]
+            model_name = _text(pending_plan.get("model"), 200)
+            skill_text = str(pending_plan.get("skill_text") or "")
+            recovered_decision_count = sum(
+                bool(item.get("recovered_from_partial_write"))
+                for item in decisions
+            )
+            _progress(
+                crawl_run_id,
+                stream_log_path,
+                "断点计划恢复",
+                (
+                    f"复用网络中断前已持久化的 {len(decisions)} 条模型决策；"
+                    "不重复调用模型，只回读并续写尚未落格的字段。"
+                ),
+            )
+        else:
+            recovered_decisions = recovered_decisions_for_run
+            recovered_decision_count = len(recovered_decisions)
+            model_payload: dict[str, Any] = {
+                "learned_rules": [],
+                "avoid_patterns": [],
+                "app_preference_summary": "",
+                "weekly_preference_summary": "",
+            }
+            if targets:
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "LangChain 偏好学习",
+                    f"使用 {len(examples)} 条人工样本分析 {len(targets)} 条当天新候选；APP 与双周报分开判断，只输出接受或不接受。",
+                )
+                model_payload, model_name = _invoke_langchain_batches(
+                    examples,
+                    targets,
+                    progress_callback=lambda batch, total, count: _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "LangChain 分批判断",
+                        f"正在处理第 {batch}/{total} 批，本批 {count} 条当天候选。",
+                    ),
+                )
+                if model_payload.get("_format_repaired") is True:
+                    _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "模型格式自动修复",
+                        "模型首次返回的 JSON 格式不完整；已通过 LangChain 仅修复语法并重新校验，业务判断未重写。",
+                    )
+                if int(model_payload.get("_supplemented_count") or 0):
+                    _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "遗漏候选补判",
+                        f"首轮模型结果遗漏候选；已单独补判 {int(model_payload['_supplemented_count'])} 条并通过完整性校验。",
+                    )
+                decisions.extend(_normalized_decisions(model_payload, targets))
+            decisions.extend(recovered_decisions)
+            decisions.sort(key=lambda item: int(item.get("row_number") or 0))
+            if decisions:
+                skill_text = _skill_text(
+                    model_payload,
+                    model_name=model_name or "recovered-live-sheet-readback",
+                    human_example_count=len(examples),
+                    corrected_count=corrected_count,
+                )
+                pending_plan = {
+                    "status": "pending",
+                    "idempotency_key": idempotency_key,
+                    "sheet_id": sheet_id,
+                    "parent_crawl_run_id": parent_crawl_run_id,
+                    "created_at": _now_iso(),
+                    "updated_at": _now_iso(),
+                    "attempt_count": 0,
+                    "model": model_name or "recovered-live-sheet-readback",
+                    "human_example_count": len(examples),
+                    "human_correction_count": corrected_count,
+                    "decisions": decisions,
+                    "verified_news_ids": [],
+                    "skill_text": skill_text,
+                }
+                pending_plans[idempotency_key] = pending_plan
+                state["pending_plans"] = dict(
+                    list(pending_plans.items())[-MAX_PENDING_PLANS:]
+                )
+                state["updated_at"] = _now_iso()
+                _atomic_write_json(STATE_PATH, state)
+                plan_saved = True
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "写前计划持久化",
+                    (
+                        f"已在飞书写入前保存 {len(decisions)} 条逐条决策；"
+                        "后续网络中断可按幂等键直接续写，不会丢失原模型判断。"
+                    ),
+                )
+
+        if not decisions:
             result = {
                 "status": "completed",
                 "candidate_count": 0,
@@ -733,69 +1050,42 @@ def run_news_selection_agent(
             }
             _progress(crawl_run_id, stream_log_path, "无待审候选", result["reason"])
         else:
-            _progress(
-                crawl_run_id,
-                stream_log_path,
-                "LangChain 偏好学习",
-                f"使用 {len(examples)} 条人工样本分析 {len(targets)} 条当天新候选；APP 与双周报分开判断，只输出接受或不接受。",
-            )
-            model_payload, model_name = _invoke_langchain_batches(
-                examples,
-                targets,
-                progress_callback=lambda batch, total, count: _progress(
-                    crawl_run_id,
-                    stream_log_path,
-                    "LangChain 分批判断",
-                    f"正在处理第 {batch}/{total} 批，本批 {count} 条当天候选。",
-                ),
-            )
-            if model_payload.get("_format_repaired") is True:
+            if skill_text:
+                SKILL_PATH.parent.mkdir(parents=True, exist_ok=True)
+                SKILL_PATH.write_text(skill_text, encoding="utf-8")
                 _progress(
                     crawl_run_id,
                     stream_log_path,
-                    "模型格式自动修复",
-                    "模型首次返回的 JSON 格式不完整；已通过 LangChain 仅修复语法并重新校验，业务判断未重写。",
+                    "Skill 更新",
+                    f"已把最新人工偏好摘要写入 {_display_path(SKILL_PATH)}，供下次爬虫继续学习。",
                 )
-            if int(model_payload.get("_supplemented_count") or 0):
-                _progress(
-                    crawl_run_id,
-                    stream_log_path,
-                    "遗漏候选补判",
-                    f"首轮模型结果遗漏候选；已单独补判 {int(model_payload['_supplemented_count'])} 条并通过完整性校验。",
-                )
-            if int(model_payload.get("_fallback_count") or 0):
-                _progress(
-                    crawl_run_id,
-                    stream_log_path,
-                    "保守兜底判断",
-                    f"模型多轮仍遗漏 {int(model_payload['_fallback_count'])} 条；已按信息不足标记为不接受，未放大进入 APP 或双周报的范围。",
-                )
-            decisions = _normalized_decisions(model_payload, targets)
-            SKILL_PATH.parent.mkdir(parents=True, exist_ok=True)
-            SKILL_PATH.write_text(
-                _skill_text(
-                    model_payload,
-                    model_name=model_name,
-                    human_example_count=len(examples),
-                    corrected_count=corrected_count,
-                ),
-                encoding="utf-8",
+            newly_written_count = int(
+                pending_plan.get("newly_written_count") or 0
             )
-            _progress(
-                crawl_run_id,
-                stream_log_path,
-                "Skill 更新",
-                f"已把最新人工偏好摘要写入 {_display_path(SKILL_PATH)}，供下次爬虫继续学习。",
+            verified_field_count = 0
+            operation_audit_count = int(
+                pending_plan.get("operation_audit_count") or 0
             )
-            changed_count = 0
-            operation_audit_count = 0
+            decision_audit_count = int(
+                pending_plan.get("decision_audit_count") or 0
+            )
+            verified_news_ids = {
+                _text(value, 80)
+                for value in (pending_plan.get("verified_news_ids") or [])
+                if _text(value, 80)
+            }
+            pending_decisions = [
+                decision
+                for decision in decisions
+                if decision.get("news_id") not in verified_news_ids
+            ]
             write_batch_total = (
-                len(decisions) + WRITE_BATCH_ROWS - 1
+                len(pending_decisions) + WRITE_BATCH_ROWS - 1
             ) // WRITE_BATCH_ROWS
             for write_batch_index, start in enumerate(
-                range(0, len(decisions), WRITE_BATCH_ROWS), start=1
+                range(0, len(pending_decisions), WRITE_BATCH_ROWS), start=1
             ):
-                decision_batch = decisions[start : start + WRITE_BATCH_ROWS]
+                decision_batch = pending_decisions[start : start + WRITE_BATCH_ROWS]
                 changes: list[dict[str, Any]] = []
                 for decision in decision_batch:
                     if decision["app_before"] == "待审核":
@@ -824,7 +1114,10 @@ def run_news_selection_agent(
                 )
                 if write_result.get("readbackVerified") is not True:
                     raise RuntimeError("自动勾选后未取得逐格回读证据")
-                changed_count += int(write_result.get("changedCount") or 0)
+                if int(write_result.get("verifiedCount") or 0) != len(changes):
+                    raise RuntimeError("自动勾选回读数量与写前计划不一致")
+                newly_written_count += int(write_result.get("changedCount") or 0)
+                verified_field_count += len(changes)
                 app_batch_accept = sum(
                     item["app_before"] == "待审核" and item["app_status"] == "接受"
                     for item in decision_batch
@@ -834,53 +1127,80 @@ def run_news_selection_agent(
                     for item in decision_batch
                 )
                 recorded_at = _now_iso()
-                for decision in decision_batch:
-                    automated_fields = [
-                        field
-                        for field in ("app", "weekly")
-                        if decision[f"{field}_before"] == "待审核"
-                    ]
-                    _append_audit(
-                        {
-                            "event": "decision",
-                            "recorded_at": recorded_at,
-                            "agent_run_id": crawl_run_id,
-                            "parent_crawl_run_id": parent_crawl_run_id,
-                            "idempotency_key": idempotency_key,
-                            "model": model_name,
-                            "news_id": decision["news_id"],
-                            "row_number": decision["row_number"],
-                            "title": decision["title"],
-                            "app_before": decision["app_before"],
-                            "weekly_before": decision["weekly_before"],
-                            "app_status": decision["app_status"],
-                            "weekly_status": decision["weekly_status"],
-                            "automated_fields": automated_fields,
-                            "app_confidence": decision["app_confidence"],
-                            "weekly_confidence": decision["weekly_confidence"],
-                            "reason": decision["reason"],
-                            "write_verified": True,
-                            "writer_identity": "bot",
-                            "writer_profile": FEISHU_BOT_PROFILE,
-                        }
-                    )
+                decision_audit_count += _record_verified_decision_audits(
+                    decision_batch,
+                    agent_run_id=crawl_run_id,
+                    parent_crawl_run_id=parent_crawl_run_id,
+                    idempotency_key=idempotency_key,
+                    model_name=model_name,
+                    recorded_at=recorded_at,
+                )
                 operation_audit_count += _record_verified_operation_footprints(
                     decision_batch,
                     sheet_id=sheet_id,
                     agent_run_id=crawl_run_id,
+                    idempotency_key=idempotency_key,
                     model_name=model_name,
                     recorded_at=recorded_at,
                 )
+                verified_news_ids.update(
+                    _text(item.get("news_id"), 80) for item in decision_batch
+                )
+                state = _load_state()
+                pending_plans = (
+                    state.get("pending_plans")
+                    if isinstance(state.get("pending_plans"), dict)
+                    else {}
+                )
+                live_plan = (
+                    dict(pending_plans.get(idempotency_key) or pending_plan)
+                    if idempotency_key
+                    else dict(pending_plan)
+                )
+                live_plan.update(
+                    {
+                        "status": "writing",
+                        "updated_at": _now_iso(),
+                        "verified_news_ids": sorted(verified_news_ids),
+                        "newly_written_count": newly_written_count,
+                        "operation_audit_count": operation_audit_count,
+                        "decision_audit_count": decision_audit_count,
+                    }
+                )
+                if idempotency_key:
+                    pending_plans[idempotency_key] = live_plan
+                    state["pending_plans"] = dict(
+                        list(pending_plans.items())[-MAX_PENDING_PLANS:]
+                    )
+                    state["updated_at"] = _now_iso()
+                    _atomic_write_json(STATE_PATH, state)
+                    plan_saved = True
+                pending_plan = live_plan
                 _progress(
                     crawl_run_id,
                     stream_log_path,
                     "机器人分批写入与回读",
-                    f"第 {write_batch_index}/{write_batch_total} 批由飞书机器人 {FEISHU_BOT_PROFILE} 写入 {len(changes)} 格；滚动栏接受 {app_batch_accept} 条、滚动栏不接受 {sum(item['app_before'] == '待审核' for item in decision_batch) - app_batch_accept} 条，周报接受 {weekly_batch_accept} 条、周报不接受 {sum(item['weekly_before'] == '待审核' for item in decision_batch) - weekly_batch_accept} 条；逐格回读通过。",
+                    f"第 {write_batch_index}/{write_batch_total} 批由飞书机器人 {FEISHU_BOT_PROFILE} 验证 {len(changes)} 格，本次实际新写 {int(write_result.get('changedCount') or 0)} 格；滚动栏接受 {app_batch_accept} 条、滚动栏不接受 {sum(item['app_before'] == '待审核' for item in decision_batch) - app_batch_accept} 条，周报接受 {weekly_batch_accept} 条、周报不接受 {sum(item['weekly_before'] == '待审核' for item in decision_batch) - weekly_batch_accept} 条；逐格回读通过。",
                 )
+            final_review = news_review_sheet.apply_reviews(
+                sheet_id,
+                identity="bot",
+                profile=FEISHU_BOT_PROFILE,
+            )
+            planned_field_count = sum(
+                decision.get("app_before") == "待审核"
+                for decision in decisions
+            ) + sum(
+                decision.get("weekly_before") == "待审核"
+                for decision in decisions
+            )
             result = {
                 "status": "completed",
                 "candidate_count": len(decisions),
-                "changed_count": changed_count,
+                "changed_count": planned_field_count,
+                "newly_written_count": newly_written_count,
+                "already_applied_count": planned_field_count - newly_written_count,
+                "verified_field_count": planned_field_count,
                 "app_accepted_count": sum(
                     item["app_before"] == "待审核"
                     and item["app_status"] == "接受"
@@ -899,6 +1219,11 @@ def run_news_selection_agent(
                 "audit_path": _display_path(AUDIT_PATH),
                 "readback_verified": True,
                 "operation_audit_count": operation_audit_count,
+                "decision_audit_count": decision_audit_count,
+                "resumed_from_plan": resumed_plan,
+                "recovered_decision_count": recovered_decision_count,
+                "published_count": int(final_review.get("published_count") or 0),
+                "published_provenance_refreshed": True,
                 "writer_identity": "bot",
                 "writer_profile": FEISHU_BOT_PROFILE,
                 "task_run_id": crawl_run_id,
@@ -907,7 +1232,7 @@ def run_news_selection_agent(
                 crawl_run_id,
                 stream_log_path,
                 "自动勾选与回读完成",
-                f"仅处理检索日期为 {selection_date} 的本轮新增新闻 {len(decisions)} 条，由飞书机器人写入 {result['changed_count']} 格；滚动栏接受 {result['app_accepted_count']} 条、不接受 {sum(item['app_before'] == '待审核' for item in decisions) - result['app_accepted_count']} 条，周报接受 {result['weekly_accepted_count']} 条、不接受 {sum(item['weekly_before'] == '待审核' for item in decisions) - result['weekly_accepted_count']} 条；逐格回读全部通过。",
+                f"仅处理检索日期为 {selection_date} 的本轮新增新闻 {len(decisions)} 条，由飞书机器人验证 {result['verified_field_count']} 格，本次新写 {result['newly_written_count']} 格、断点前已写 {result['already_applied_count']} 格；滚动栏接受 {result['app_accepted_count']} 条、不接受 {sum(item['app_before'] == '待审核' for item in decisions) - result['app_accepted_count']} 条，周报接受 {result['weekly_accepted_count']} 条、不接受 {sum(item['weekly_before'] == '待审核' for item in decisions) - result['weekly_accepted_count']} 条；逐格回读全部通过。",
             )
 
         if idempotency_key:
@@ -917,6 +1242,13 @@ def run_news_selection_agent(
                 key: value for key, value in result.items() if key != "task_run_id"
             }
             state["completed_keys"] = dict(list(completed_keys.items())[-64:])
+            pending_plans = (
+                state.get("pending_plans")
+                if isinstance(state.get("pending_plans"), dict)
+                else {}
+            )
+            pending_plans.pop(idempotency_key, None)
+            state["pending_plans"] = pending_plans
             state["last_run"] = result
             state["updated_at"] = _now_iso()
             _atomic_write_json(STATE_PATH, state)
@@ -938,6 +1270,27 @@ def run_news_selection_agent(
     except Exception as exc:
         detail = "新闻自动初筛失败：" + _text(exc, 700)
         try:
+            if plan_saved and idempotency_key:
+                state = _load_state()
+                pending_plans = (
+                    state.get("pending_plans")
+                    if isinstance(state.get("pending_plans"), dict)
+                    else {}
+                )
+                failed_plan = dict(pending_plans.get(idempotency_key) or {})
+                if failed_plan:
+                    failed_plan.update(
+                        {
+                            "status": "retry_pending",
+                            "updated_at": _now_iso(),
+                            "last_error": detail,
+                            "attempt_count": int(failed_plan.get("attempt_count") or 0) + 1,
+                        }
+                    )
+                    pending_plans[idempotency_key] = failed_plan
+                    state["pending_plans"] = pending_plans
+                    state["updated_at"] = _now_iso()
+                    _atomic_write_json(STATE_PATH, state)
             append_crawl_run_event(
                 stream_log_path,
                 {"type": "done", "ok": False, "error": detail},

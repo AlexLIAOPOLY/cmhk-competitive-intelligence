@@ -324,7 +324,11 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 updates.extend(changes)
                 self.assertEqual(writer_identity, "bot")
                 self.assertEqual(writer_profile, "cli_a9575e70ae799cb2")
-                return {"changedCount": len(changes), "readbackVerified": True}
+                return {
+                    "changedCount": len(changes),
+                    "verifiedCount": len(changes),
+                    "readbackVerified": True,
+                }
 
             with (
                 mock.patch.object(agent, "AGENT_DIR", root),
@@ -350,6 +354,11 @@ class NewsSelectionAgentTests(unittest.TestCase):
                     return_value=snapshot,
                 ) as review_snapshot,
                 mock.patch.object(news_review_sheet, "update_review_sheet_cells", side_effect=update),
+                mock.patch.object(
+                    news_review_sheet,
+                    "apply_reviews",
+                    return_value={"published_count": 1},
+                ),
             ):
                 result = agent.run_news_selection_agent(
                     new_items=[{"news_id": target_id}],
@@ -362,6 +371,8 @@ class NewsSelectionAgentTests(unittest.TestCase):
             self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "parent-run")
             review_snapshot.assert_called_once_with(
                 sheet_id="sheet-1",
+                identity="bot",
+                profile="cli_a9575e70ae799cb2",
                 lock_timeout_seconds=agent.REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS,
             )
             self.assertEqual(result["candidate_count"], 1)
@@ -392,6 +403,222 @@ class NewsSelectionAgentTests(unittest.TestCase):
             )
             self.assertEqual(result["operation_audit_count"], 2)
             self.assertTrue(finalize.call_args.kwargs["ok"])
+
+    def test_failed_write_persists_plan_and_retry_reuses_model_decisions(self):
+        target_values = _row(
+            title="断点续写候选",
+            url="https://example.com/resume",
+        )
+        target_id = news_review_sheet._row_dict(target_values, 2)["news_id"]
+        snapshot = {"rows": [{"rowNumber": 2, "values": target_values}]}
+        model_payload = {
+            "learned_rules": ["香港本地优先"],
+            "avoid_patterns": [],
+            "decisions": [
+                {
+                    "news_id": target_id,
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "测试断点续写",
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            successful_write = {
+                "changedCount": 2,
+                "verifiedCount": 2,
+                "readbackVerified": True,
+            }
+            with (
+                mock.patch.object(agent, "AGENT_DIR", root),
+                mock.patch.object(agent, "AUDIT_PATH", root / "decisions.jsonl"),
+                mock.patch.object(agent, "STATE_PATH", root / "state.json"),
+                mock.patch.object(agent, "SKILL_PATH", root / "SKILL.md"),
+                mock.patch.object(agent, "OPERATION_AUDIT_ROOT", root),
+                mock.patch.object(
+                    agent,
+                    "start_crawl_run",
+                    side_effect=[
+                        {
+                            "crawl_run_id": "selection-run-1",
+                            "stream_log_path": str(root / "selection-run-1.jsonl"),
+                        },
+                        {
+                            "crawl_run_id": "selection-run-2",
+                            "stream_log_path": str(root / "selection-run-2.jsonl"),
+                        },
+                    ],
+                ),
+                mock.patch.object(agent, "heartbeat_crawl_run"),
+                mock.patch.object(agent, "append_crawl_run_event"),
+                mock.patch.object(agent, "finalize_operational_crawl_run"),
+                mock.patch.object(
+                    agent,
+                    "_invoke_langchain_batches",
+                    return_value=(model_payload, "DeepSeek-V4-Pro"),
+                ) as invoke,
+                mock.patch.object(
+                    news_review_sheet,
+                    "review_sheet_snapshot",
+                    return_value=snapshot,
+                ),
+                mock.patch.object(
+                    news_review_sheet,
+                    "update_review_sheet_cells",
+                    side_effect=[RuntimeError("connect timeout"), successful_write],
+                ),
+                mock.patch.object(
+                    news_review_sheet,
+                    "apply_reviews",
+                    return_value={"published_count": 1},
+                ),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "connect timeout"):
+                    agent.run_news_selection_agent(
+                        new_items=[{"news_id": target_id}],
+                        sheet_id="sheet-1",
+                        parent_crawl_run_id="parent-run",
+                        idempotency_key="2026-08-28@07:30-resume",
+                    )
+                pending_state = json.loads(
+                    (root / "state.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(
+                    pending_state["pending_plans"]["2026-08-28@07:30-resume"]["status"],
+                    "retry_pending",
+                )
+
+                result = agent.run_news_selection_agent(
+                    new_items=[{"news_id": target_id}],
+                    sheet_id="sheet-1",
+                    parent_crawl_run_id="parent-run",
+                    idempotency_key="2026-08-28@07:30-resume",
+                )
+
+            self.assertEqual(invoke.call_count, 1)
+            self.assertTrue(result["resumed_from_plan"])
+            completed_state = json.loads(
+                (root / "state.json").read_text(encoding="utf-8")
+            )
+            self.assertNotIn(
+                "2026-08-28@07:30-resume",
+                completed_state["pending_plans"],
+            )
+            self.assertIn(
+                "2026-08-28@07:30-resume",
+                completed_state["completed_keys"],
+            )
+
+    def test_legacy_partial_write_is_recovered_without_inventing_model_reason(self):
+        applied_values = _row(
+            title="网络中断前已写",
+            url="https://example.com/applied",
+            app="接受",
+            weekly="不接受",
+        )
+        pending_values = _row(
+            title="网络中断后待续",
+            url="https://example.com/pending",
+        )
+        applied_id = news_review_sheet._row_dict(applied_values, 2)["news_id"]
+        pending_id = news_review_sheet._row_dict(pending_values, 3)["news_id"]
+        snapshot = {
+            "rows": [
+                {"rowNumber": 2, "values": applied_values},
+                {"rowNumber": 3, "values": pending_values},
+            ]
+        }
+        model_payload = {
+            "learned_rules": [],
+            "avoid_patterns": [],
+            "decisions": [
+                {
+                    "news_id": pending_id,
+                    "app_status": "不接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.9,
+                    "reason": "续写候选补判",
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            captured_changes = []
+
+            def update(changes, **_kwargs):
+                captured_changes.extend(changes)
+                return {
+                    "changedCount": 2,
+                    "verifiedCount": len(changes),
+                    "readbackVerified": True,
+                }
+
+            with (
+                mock.patch.object(agent, "AGENT_DIR", root),
+                mock.patch.object(agent, "AUDIT_PATH", root / "decisions.jsonl"),
+                mock.patch.object(agent, "STATE_PATH", root / "state.json"),
+                mock.patch.object(agent, "SKILL_PATH", root / "SKILL.md"),
+                mock.patch.object(agent, "OPERATION_AUDIT_ROOT", root),
+                mock.patch.object(
+                    agent,
+                    "start_crawl_run",
+                    return_value={
+                        "crawl_run_id": "selection-recovery",
+                        "stream_log_path": str(root / "selection-recovery.jsonl"),
+                    },
+                ),
+                mock.patch.object(agent, "heartbeat_crawl_run"),
+                mock.patch.object(agent, "append_crawl_run_event"),
+                mock.patch.object(agent, "finalize_operational_crawl_run"),
+                mock.patch.object(
+                    agent,
+                    "_invoke_langchain_batches",
+                    return_value=(model_payload, "DeepSeek-V4-Pro"),
+                ) as invoke,
+                mock.patch.object(
+                    news_review_sheet,
+                    "review_sheet_snapshot",
+                    return_value=snapshot,
+                ),
+                mock.patch.object(
+                    news_review_sheet,
+                    "update_review_sheet_cells",
+                    side_effect=update,
+                ),
+                mock.patch.object(
+                    news_review_sheet,
+                    "apply_reviews",
+                    return_value={"published_count": 1},
+                ),
+            ):
+                result = agent.run_news_selection_agent(
+                    new_items=[{"news_id": applied_id}, {"news_id": pending_id}],
+                    sheet_id="sheet-1",
+                    parent_crawl_run_id="parent-run",
+                    idempotency_key="2026-08-28@07:30-legacy",
+                    recover_unlogged_applied=True,
+                )
+
+            self.assertEqual(result["candidate_count"], 2)
+            self.assertEqual(result["recovered_decision_count"], 1)
+            self.assertEqual(result["verified_field_count"], 4)
+            self.assertEqual(result["newly_written_count"], 2)
+            self.assertEqual(invoke.call_args.args[0], [])
+            audit = [
+                json.loads(line)
+                for line in (root / "decisions.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            ]
+            recovered = next(item for item in audit if item["news_id"] == applied_id)
+            self.assertTrue(recovered["recovered_from_partial_write"])
+            self.assertEqual(recovered["model"], "recovered-live-sheet-readback")
+            self.assertIn("未持久化", recovered["reason"])
+            self.assertEqual(len(captured_changes), 4)
 
 
 if __name__ == "__main__":

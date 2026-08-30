@@ -62,8 +62,12 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         with (
             mock.patch.object(news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"),
             mock.patch.object(news_review_sheet, "_review_process_lock", return_value=nullcontext(True)),
-            mock.patch.object(news_review_sheet, "_read_rows", side_effect=[[before], [after]]),
-            mock.patch.object(news_review_sheet, "_write") as write,
+            mock.patch.object(
+                news_review_sheet,
+                "_read_rows",
+                side_effect=[[before], [after], [after]],
+            ),
+            mock.patch.object(news_review_sheet, "_write_many") as write_many,
             mock.patch.object(news_review_sheet, "apply_reviews", return_value={"accepted_count": 1}),
         ):
             payload = news_review_sheet.update_review_sheet_cells(
@@ -73,10 +77,9 @@ class NewsReviewSheetModelTests(unittest.TestCase):
                 ]
             )
 
-            write.assert_called_once_with(
+            write_many.assert_called_once_with(
                 "sheet-1",
-                "A2:B2",
-                [["接受", "接受"]],
+                [("A2:B2", [["接受", "接受"]])],
                 identity="",
                 profile="",
             )
@@ -97,6 +100,64 @@ class NewsReviewSheetModelTests(unittest.TestCase):
                     [{"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "不接受"}]
                 )
         write.assert_not_called()
+
+    def test_update_reconciles_timeout_when_batch_already_reached_feishu(self) -> None:
+        before = sheet_row("待审核", "待审核", "未同步")
+        after = sheet_row("接受", "不接受", "已纳入")
+        with (
+            mock.patch.object(news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"),
+            mock.patch.object(news_review_sheet, "_review_process_lock", return_value=nullcontext(True)),
+            mock.patch.object(
+                news_review_sheet,
+                "_read_rows",
+                side_effect=[[before], [after], [after]],
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_write_many",
+                side_effect=RuntimeError("connect timeout"),
+            ) as write_many,
+            mock.patch.object(
+                news_review_sheet,
+                "apply_reviews",
+                return_value={"accepted_count": 1},
+            ),
+        ):
+            payload = news_review_sheet.update_review_sheet_cells(
+                [
+                    {"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "接受"},
+                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "不接受"},
+                ]
+            )
+
+        write_many.assert_called_once()
+        self.assertTrue(payload["readbackVerified"])
+        self.assertEqual(payload["verifiedCount"], 2)
+
+    def test_update_resume_accepts_cells_already_equal_to_planned_values(self) -> None:
+        after = sheet_row("接受", "不接受", "已纳入")
+        with (
+            mock.patch.object(news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"),
+            mock.patch.object(news_review_sheet, "_review_process_lock", return_value=nullcontext(True)),
+            mock.patch.object(news_review_sheet, "_read_rows", side_effect=[[after], [after]]),
+            mock.patch.object(news_review_sheet, "_write_many") as write_many,
+            mock.patch.object(
+                news_review_sheet,
+                "apply_reviews",
+                return_value={"accepted_count": 1},
+            ),
+        ):
+            payload = news_review_sheet.update_review_sheet_cells(
+                [
+                    {"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "接受"},
+                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "不接受"},
+                ]
+            )
+
+        write_many.assert_not_called()
+        self.assertEqual(payload["changedCount"], 0)
+        self.assertEqual(payload["alreadyAppliedCount"], 2)
+        self.assertEqual(payload["verifiedCount"], 2)
 
     def test_sync_status_column_is_not_user_editable(self) -> None:
         rows = [sheet_row("待审核", "待审核", "未同步")]

@@ -405,7 +405,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 briefing.os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS"),
                 "1",
             )
-            return "om_after_completion", "bot"
+            return "om_after_completion", "bot", ["om_after_completion"]
 
         def record_registry_final(_crawl_run_id, **kwargs):
             order.append("registry_finalized")
@@ -776,6 +776,85 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(state["outbound_message_ids"], ["om_first_success"])
         start_run.assert_not_called()
         run_impl.assert_not_called()
+
+    def test_failed_selection_recovers_without_replaying_crawl_or_notification(self):
+        now = datetime(2026, 8, 30, 9, 30, tzinfo=briefing.HKT)
+        slot_key = "2026-08-30@07:30"
+        archive = {
+            "slot": slot_key,
+            "status": "completed",
+            "completed_at": "2026-08-30T09:12:36+08:00",
+            "notification_status": "sent",
+            "message_id": "om_original",
+            "selection_agent": {
+                "status": "failed",
+                "error": (
+                    "Put https://open.feishu.cn/open-apis/sheets/v2/"
+                    "spreadsheets/token/values: connect timeout"
+                ),
+                "readback_verified": False,
+            },
+            "review_sheet": {
+                "readback_verified": True,
+                "sheet_id": "sheet-1",
+                "new_items": [{"news_id": "NEWS-1"}],
+            },
+        }
+        recovered = {
+            "status": "completed",
+            "task_run_id": "selection-recovery",
+            "candidate_count": 1,
+            "changed_count": 2,
+            "verified_field_count": 2,
+            "readback_verified": True,
+        }
+        state = {}
+        with tempfile.TemporaryDirectory() as temporary:
+            runs_dir = Path(temporary)
+            archive_path = runs_dir / "2026-08-30@07-30.json"
+            archive_path.write_text(
+                json.dumps(archive, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(briefing, "RUNS_DIR", runs_dir),
+                mock.patch.object(briefing, "_save_state"),
+                mock.patch.object(briefing, "_append_event"),
+                mock.patch.object(
+                    briefing,
+                    "_selection_recovery_parent_run_id",
+                    return_value="parent-run",
+                ),
+                mock.patch.object(
+                    briefing,
+                    "amend_operational_crawl_run",
+                ) as amend,
+                mock.patch(
+                    "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+                    return_value=recovered,
+                ) as run_selection,
+                mock.patch.object(briefing, "_run_scan") as run_scan,
+                mock.patch.object(briefing, "_send_scan_message") as send_message,
+            ):
+                result = briefing._recover_pending_selection_agents(now, state)
+
+            run_selection.assert_called_once_with(
+                new_items=[{"news_id": "NEWS-1"}],
+                sheet_id="sheet-1",
+                parent_crawl_run_id="parent-run",
+                idempotency_key=slot_key,
+                recover_unlogged_applied=True,
+            )
+            run_scan.assert_not_called()
+            send_message.assert_not_called()
+            self.assertEqual(result[0]["status"], "completed")
+            self.assertTrue(result[0]["no_notification_replay"])
+            updated = json.loads(archive_path.read_text(encoding="utf-8"))
+            self.assertEqual(updated["selection_agent"]["status"], "completed")
+            self.assertTrue(
+                updated["selection_agent_recovery"]["no_notification_replay"]
+            )
+            amend.assert_called_once()
 
     def test_incomplete_archive_does_not_block_retry(self):
         slot_key = "2026-07-30@07:30"
@@ -1218,7 +1297,11 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_send_scan_message",
-                return_value=("om_replayed_once", "bot"),
+                return_value=(
+                    "om_replayed_once",
+                    "bot",
+                    ["om_replayed_once", "om_replayed_second_group"],
+                ),
             ),
             mock.patch.object(briefing, "_append_event"),
         ):
@@ -1237,10 +1320,23 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(
             sent,
-            [{"slot": slot_key, "message_id": "om_replayed_once"}],
+            [
+                {
+                    "slot": slot_key,
+                    "message_id": "om_replayed_once",
+                    "message_ids": [
+                        "om_replayed_once",
+                        "om_replayed_second_group",
+                    ],
+                }
+            ],
         )
         self.assertEqual(final_archive["notification_status"], "sent")
         self.assertEqual(final_archive["message_id"], "om_replayed_once")
+        self.assertEqual(
+            final_archive["message_ids"],
+            ["om_replayed_once", "om_replayed_second_group"],
+        )
         self.assertEqual(state["pending_scan_notifications"], {})
 
     def test_scan_notification_retries_with_stable_idempotency_key(self):
@@ -1266,7 +1362,7 @@ class StrategicBriefingTests(unittest.TestCase):
             ) as lark_api,
             mock.patch.object(briefing.time, "sleep") as sleep,
         ):
-            message_id, identity = briefing._send_scan_message(
+            message_id, identity, message_ids = briefing._send_scan_message(
                 now=datetime(2026, 7, 28, 9, 0, tzinfo=briefing.HKT),
                 slot_label="晨间扫描",
                 candidates=[],
@@ -1281,7 +1377,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 },
                 notification_key="2026-07-28@09:00",
             )
-            repeated_message_id, _ = briefing._send_scan_message(
+            repeated_message_id, _, repeated_message_ids = briefing._send_scan_message(
                 now=datetime(2026, 7, 28, 9, 0, tzinfo=briefing.HKT),
                 slot_label="晨间扫描",
                 candidates=[],
@@ -1300,6 +1396,8 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(message_id, "om_notification")
         self.assertEqual(repeated_message_id, "om_notification")
         self.assertEqual(identity, "bot")
+        self.assertEqual(message_ids, ["om_notification"])
+        self.assertEqual(repeated_message_ids, ["om_notification"])
         self.assertEqual(lark_api.call_count, 5)
         first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
         second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
@@ -1424,7 +1522,7 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_send_scan_message",
-                return_value=("om_replayed", "bot"),
+                return_value=("om_replayed", "bot", ["om_replayed"]),
             ) as send,
             mock.patch.object(briefing, "_append_event") as append_event,
         ):
@@ -1435,7 +1533,13 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(
             result,
-            [{"slot": slot_key, "message_id": "om_replayed"}],
+            [
+                {
+                    "slot": slot_key,
+                    "message_id": "om_replayed",
+                    "message_ids": ["om_replayed"],
+                }
+            ],
         )
         self.assertEqual(state["pending_scan_notifications"], {})
         self.assertEqual(

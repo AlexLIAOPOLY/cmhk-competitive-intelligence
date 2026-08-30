@@ -63,6 +63,26 @@ SHEET_SOURCE = "feishu_review_sheet"
 FORMAT_VERSION = 9
 LARK_READ_MAX_ATTEMPTS = 3
 LARK_TRANSIENT_ERROR_CODES = {2200}
+LARK_TRANSIENT_ERROR_TYPES = {"network", "timeout"}
+LARK_TRANSIENT_ERROR_SUBTYPES = {
+    "connect",
+    "connection",
+    "dns",
+    "server_error",
+    "timeout",
+    "tls",
+}
+LARK_TRANSIENT_MESSAGE_MARKERS = (
+    "connection reset",
+    "connection refused",
+    "connect: operation timed out",
+    "dial tcp",
+    "i/o timeout",
+    "rate limit",
+    "temporarily unavailable",
+    "timed out",
+    "timeout",
+)
 SUCCESSFUL_CYCLE_RESULTS_STATE_KEY = "successful_cycle_results"
 PENDING_CYCLE_STATE_KEY = "pending_cycle"
 MAX_SUCCESSFUL_CYCLE_RESULTS = 32
@@ -224,12 +244,46 @@ def _lark_error_message(
     stderr: str = "",
     output: str = "",
 ) -> str:
-    return str(
-        payload.get("message")
+    error = payload.get("error")
+    nested_message = (
+        error.get("message")
+        if isinstance(error, dict)
+        else ""
+    )
+    message = str(
+        nested_message
+        or payload.get("message")
         or payload.get("msg")
         or stderr.strip()
         or output
         or "飞书命令执行失败"
+    )
+    error_code = _lark_error_code(payload)
+    return f"{message}（错误码 {error_code}）" if error_code else message
+
+
+def _lark_error_is_transient(
+    payload: dict[str, Any],
+    *,
+    stderr: str = "",
+    output: str = "",
+) -> bool:
+    error = payload.get("error")
+    error = error if isinstance(error, dict) else {}
+    error_code = _lark_error_code(payload)
+    error_type = _text(error.get("type"), 80).lower()
+    error_subtype = _text(error.get("subtype"), 80).lower()
+    message = _lark_error_message(
+        payload,
+        stderr=stderr,
+        output=output,
+    ).lower()
+    return bool(
+        error_code in LARK_TRANSIENT_ERROR_CODES
+        or 429 <= error_code <= 599
+        or error_type in LARK_TRANSIENT_ERROR_TYPES
+        or error_subtype in LARK_TRANSIENT_ERROR_SUBTYPES
+        or any(marker in message for marker in LARK_TRANSIENT_MESSAGE_MARKERS)
     )
 
 
@@ -273,10 +327,10 @@ def _lark(
         except subprocess.TimeoutExpired as exc:
             if attempt >= attempts:
                 raise RuntimeError(
-                    f"飞书只读接口超时，已尝试 {attempt} 次"
+                    f"飞书接口超时，已尝试 {attempt} 次"
                 ) from exc
             logging.warning(
-                "飞书只读接口超时，第 %s/%s 次失败，准备重试",
+                "飞书接口超时，第 %s/%s 次失败，准备重试",
                 attempt,
                 attempts,
             )
@@ -291,17 +345,24 @@ def _lark(
             ) from exc
         if process.returncode == 0 and payload.get("ok") is not False:
             return payload
-        error_code = _lark_error_code(payload)
         if (
             retry_transient
-            and error_code in LARK_TRANSIENT_ERROR_CODES
+            and _lark_error_is_transient(
+                payload,
+                stderr=process.stderr,
+                output=output,
+            )
             and attempt < attempts
         ):
             logging.warning(
-                "飞书只读接口返回瞬时错误 %s，第 %s/%s 次失败，准备重试",
-                error_code,
+                "飞书接口返回瞬时错误，第 %s/%s 次失败，准备重试：%s",
                 attempt,
                 attempts,
+                _lark_error_message(
+                    payload,
+                    stderr=process.stderr,
+                    output=output,
+                ),
             )
             time.sleep(2 ** (attempt - 1))
             continue
@@ -312,7 +373,7 @@ def _lark(
                 output=output,
             )
         )
-    raise RuntimeError("飞书只读接口重试流程异常结束")
+    raise RuntimeError("飞书接口重试流程异常结束")
 
 
 def _walk_for_key(value: Any, key: str) -> Any:
@@ -665,20 +726,61 @@ def _write(
     identity: str = "",
     profile: str = "",
 ) -> None:
+    cells = [
+        [{"value": value} for value in row]
+        for row in values
+    ]
     _lark(
         "sheets",
-        "+write",
+        "+cells-set",
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--sheet-id",
         sheet_id,
         "--range",
         cell_range,
-        "--values",
-        json.dumps(values, ensure_ascii=False),
+        "--cells",
+        json.dumps(cells, ensure_ascii=False),
+        retry_transient=True,
         identity_override=identity,
         profile_override=profile,
     )
+
+
+def _write_many(
+    sheet_id: str,
+    regions: list[tuple[str, list[list[Any]]]],
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> None:
+    """Write up to 100 scattered ranges per request using the current CLI API."""
+    normalized = [
+        {
+            "sheet_id": sheet_id,
+            "range": cell_range,
+            "cells": [
+                [{"value": value} for value in row]
+                for row in values
+            ],
+        }
+        for cell_range, values in regions
+    ]
+    for start in range(0, len(normalized), 100):
+        batch = normalized[start : start + 100]
+        if not batch:
+            continue
+        _lark(
+            "sheets",
+            "+cells-set",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--writes",
+            json.dumps(batch, ensure_ascii=False),
+            retry_transient=True,
+            identity_override=identity,
+            profile_override=profile,
+        )
 
 
 def _insert_rows(
@@ -2169,6 +2271,62 @@ def _column_name(index: int) -> str:
     return chr(ord("A") + index)
 
 
+def _cell_change_regions(
+    changes: list[dict[str, Any]],
+) -> list[tuple[str, list[list[Any]]]]:
+    """Coalesce adjacent same-row cell changes into batched write regions."""
+    by_row: dict[int, list[dict[str, Any]]] = {}
+    for item in changes:
+        by_row.setdefault(int(item["rowNumber"]), []).append(item)
+    regions: list[tuple[str, list[list[Any]]]] = []
+    for row_number, row_changes in sorted(by_row.items()):
+        row_changes.sort(key=lambda item: int(item["columnIndex"]))
+        segment: list[dict[str, Any]] = []
+        segments: list[list[dict[str, Any]]] = []
+        for item in row_changes:
+            if segment and item["columnIndex"] != segment[-1]["columnIndex"] + 1:
+                segments.append(segment)
+                segment = []
+            segment.append(item)
+        if segment:
+            segments.append(segment)
+        for items in segments:
+            start_column = _column_name(int(items[0]["columnIndex"]))
+            end_column = _column_name(int(items[-1]["columnIndex"]))
+            regions.append(
+                (
+                    f"{start_column}{row_number}:{end_column}{row_number}",
+                    [[item["value"] for item in items]],
+                )
+            )
+    return regions
+
+
+def _changed_cell_readback(
+    rows: list[list[Any]],
+    changes: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return still-pending writes and conflicting live edits after readback."""
+    pending: list[dict[str, Any]] = []
+    conflicts: list[dict[str, Any]] = []
+    for item in changes:
+        row_offset = int(item["rowNumber"]) - 2
+        values = (
+            _comparable_sheet_row(rows[row_offset])
+            if 0 <= row_offset < len(rows)
+            else []
+        )
+        column_index = int(item["columnIndex"])
+        actual = values[column_index] if column_index < len(values) else ""
+        if actual == item["value"]:
+            continue
+        if actual == item["before"]:
+            pending.append(item)
+            continue
+        conflicts.append({**item, "actual": actual})
+    return pending, conflicts
+
+
 def update_review_sheet_cells(
     changes: list[dict[str, Any]],
     *,
@@ -2205,11 +2363,6 @@ def update_review_sheet_cells(
             if row_offset >= len(current_rows):
                 raise ValueError(f"第 {row_number} 行不存在，已停止写入")
             current = _comparable_sheet_row(current_rows[row_offset])[column_index]
-            expected = raw_change.get("before")
-            if expected is not None and _text(expected, 5000) != current:
-                raise RuntimeError(
-                    f"第 {row_number} 行“{HEADERS[column_index]}”已被其他用户修改，请刷新后重试"
-                )
             value = _text(raw_change.get("value"), 5000)
             if column_index in {0, 1}:
                 value = _normalized_status(value)
@@ -2217,6 +2370,15 @@ def update_review_sheet_cells(
                     raise ValueError(f"无效审核状态：{value}")
             if column_index == 10 and value and not value.lower().startswith(("http://", "https://")):
                 raise ValueError("原文链接必须以 http:// 或 https:// 开头")
+            expected = raw_change.get("before")
+            if (
+                expected is not None
+                and _text(expected, 5000) != current
+                and value != current
+            ):
+                raise RuntimeError(
+                    f"第 {row_number} 行“{HEADERS[column_index]}”已被其他用户修改，请刷新后重试"
+                )
             normalized[(row_number, column_index)] = {
                 "rowNumber": row_number,
                 "columnIndex": column_index,
@@ -2224,39 +2386,69 @@ def update_review_sheet_cells(
                 "value": value,
             }
 
-        changed = [item for item in normalized.values() if item["value"] != item["before"]]
+        requested = list(normalized.values())
+        changed = [item for item in requested if item["value"] != item["before"]]
         if not changed:
-            snapshot = review_sheet_snapshot(sheet_id=resolved_sheet_id)
-            return {"changedCount": 0, "review": {}, **snapshot}
+            review_result = apply_reviews(
+                resolved_sheet_id,
+                identity=writer_identity,
+                profile=writer_profile,
+            )
+            snapshot = review_sheet_snapshot(
+                sheet_id=resolved_sheet_id,
+                identity=writer_identity,
+                profile=writer_profile,
+            )
+            return {
+                "changedCount": 0,
+                "alreadyAppliedCount": len(requested),
+                "verifiedCount": len(requested),
+                "readbackVerified": True,
+                "review": review_result,
+                **snapshot,
+            }
 
-        # Coalesce adjacent cells on the same row so rectangular Excel pastes do
-        # not produce one network request per cell.
-        by_row: dict[int, list[dict[str, Any]]] = {}
-        for item in changed:
-            by_row.setdefault(item["rowNumber"], []).append(item)
-        for row_number, row_changes in sorted(by_row.items()):
-            row_changes.sort(key=lambda item: item["columnIndex"])
-            segment: list[dict[str, Any]] = []
-            segments: list[list[dict[str, Any]]] = []
-            for item in row_changes:
-                if segment and item["columnIndex"] != segment[-1]["columnIndex"] + 1:
-                    segments.append(segment)
-                    segment = []
-                segment.append(item)
-            if segment:
-                segments.append(segment)
-            for items in segments:
-                start_column = _column_name(items[0]["columnIndex"])
-                end_column = _column_name(items[-1]["columnIndex"])
-                _write(
+        pending = list(changed)
+        last_write_error: Exception | None = None
+        for reconciliation_attempt in range(1, LARK_READ_MAX_ATTEMPTS + 1):
+            try:
+                _write_many(
                     resolved_sheet_id,
-                    f"{start_column}{row_number}:{end_column}{row_number}",
-                    [[item["value"] for item in items]],
+                    _cell_change_regions(pending),
                     identity=writer_identity,
                     profile=writer_profile,
                 )
+                last_write_error = None
+            except Exception as exc:
+                # A timed-out batch may already have reached Feishu. Always
+                # reconcile the live cells before deciding whether to resend.
+                last_write_error = exc
+            live_rows = _read_rows(
+                resolved_sheet_id,
+                identity=writer_identity,
+                profile=writer_profile,
+            )
+            pending, conflicts = _changed_cell_readback(live_rows, pending)
+            if conflicts:
+                first = conflicts[0]
+                raise RuntimeError(
+                    f"第 {first['rowNumber']} 行“{HEADERS[first['columnIndex']]}”"
+                    "在写入重试期间被其他用户修改，已停止续写"
+                )
+            if not pending:
+                break
+            if reconciliation_attempt >= LARK_READ_MAX_ATTEMPTS:
+                detail = f"；最后错误：{last_write_error}" if last_write_error else ""
+                raise RuntimeError(
+                    f"飞书批量写入回读后仍有 {len(pending)} 格未生效{detail}"
+                )
+            time.sleep(2 ** (reconciliation_attempt - 1))
 
-        review_result = apply_reviews(resolved_sheet_id)
+        review_result = apply_reviews(
+            resolved_sheet_id,
+            identity=writer_identity,
+            profile=writer_profile,
+        )
         snapshot = review_sheet_snapshot(
             sheet_id=resolved_sheet_id,
             identity=writer_identity,
@@ -2279,6 +2471,8 @@ def update_review_sheet_cells(
             )
         return {
             "changedCount": len(changed),
+            "alreadyAppliedCount": len(requested) - len(changed),
+            "verifiedCount": len(requested),
             "readbackVerified": True,
             "review": review_result,
             **snapshot,
@@ -2362,7 +2556,12 @@ def load_weekly_report_candidates(
     }
 
 
-def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
+def apply_reviews(
+    sheet_id: str | None = None,
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> dict[str, Any]:
     with _LOCK:
         try:
             from cmhk.intelligence.news_selection_agent import selection_provenance_map
@@ -2381,7 +2580,14 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
         )
         rows = [
             _row_dict(row, index)
-            for index, row in enumerate(_read_rows(sheet_id), start=2)
+            for index, row in enumerate(
+                _read_rows(
+                    sheet_id,
+                    identity=identity,
+                    profile=profile,
+                ),
+                start=2,
+            )
             if row and any(_text(value, 80) for value in row[:2])
         ]
         payload = _read_json(PUBLISHED_PATH, {"items": []})
@@ -2516,6 +2722,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             _write_json(PUBLISHED_PATH, new_payload)
 
         changed_rows = 0
+        sync_writes: list[tuple[str, list[list[Any]]]] = []
         blocked_reviews: list[dict[str, Any]] = []
         for row in rows:
             blocked_reason = blocked_rows.get(row["row_number"])
@@ -2529,10 +2736,11 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     }
                 )
                 if row["sync_status"] != "同步失败":
-                    _write(
-                        sheet_id,
-                        f"C{row['row_number']}:C{row['row_number']}",
-                        [["同步失败"]],
+                    sync_writes.append(
+                        (
+                            f"C{row['row_number']}:C{row['row_number']}",
+                            [["同步失败"]],
+                        )
                     )
                     changed_rows += 1
                 continue
@@ -2544,12 +2752,24 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             elif row["news_id"] in existing_sheet:
                 desired_sync = "已移除"
             if desired_sync != row["sync_status"]:
-                _write(
-                    sheet_id,
-                    f"C{row['row_number']}:C{row['row_number']}",
-                    [[desired_sync]],
+                sync_writes.append(
+                    (
+                        f"C{row['row_number']}:C{row['row_number']}",
+                        [[desired_sync]],
+                    )
                 )
                 changed_rows += 1
+        if sync_writes:
+            if identity or profile:
+                _write_many(
+                    sheet_id,
+                    sync_writes,
+                    identity=identity,
+                    profile=profile,
+                )
+            else:
+                for cell_range, values in sync_writes:
+                    _write(sheet_id, cell_range, values)
         return {
             "accepted_count": len(accepted_items),
             "requested_accept_count": len(accepted_rows),
