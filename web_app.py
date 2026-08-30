@@ -4534,6 +4534,23 @@ def _news_auto_screening_decisions() -> list[dict]:
         ):
             if field_key not in automated_fields:
                 continue
+            idempotency_key = str(record.get("idempotency_key") or "").strip()
+            news_id = str(record.get("news_id") or "").strip()
+            if idempotency_key and news_id:
+                automation_event_key = "|".join((
+                    idempotency_key,
+                    news_id,
+                    field_label,
+                    str(record.get(after_key) or ""),
+                ))
+            else:
+                # Legacy decision records predate the crawl-slot/news-id key.
+                automation_event_key = "|".join((
+                    str(record.get("agent_run_id") or ""),
+                    str(row_number),
+                    field_label,
+                    str(record.get(after_key) or ""),
+                ))
             decisions.append({
                 "row_number": row_number,
                 "title": str(record.get("title") or "").strip(),
@@ -4547,12 +4564,7 @@ def _news_auto_screening_decisions() -> list[dict]:
                 "writer_profile": str(record.get("writer_profile") or ""),
                 "writer_identity": str(record.get("writer_identity") or ""),
                 "remediation": str(record.get("remediation") or ""),
-                "automation_event_key": "|".join((
-                    str(record.get("agent_run_id") or ""),
-                    str(row_number),
-                    field_label,
-                    str(record.get(after_key) or ""),
-                )),
+                "automation_event_key": automation_event_key,
             })
     return decisions
 

@@ -544,6 +544,8 @@ class NewsReviewActorTests(unittest.TestCase):
                 "event": "decision",
                 "recorded_at": datetime.now().astimezone().isoformat(),
                 "agent_run_id": "agent-run-1",
+                "idempotency_key": "2026-08-30@14:00",
+                "news_id": "NEWS-ONE",
                 "row_number": 8,
                 "title": "机器人新闻",
                 "automated_fields": ["app"],
@@ -592,6 +594,8 @@ class NewsReviewActorTests(unittest.TestCase):
                 "event": "decision",
                 "recorded_at": datetime.now().astimezone().isoformat(),
                 "agent_run_id": "agent-run-1",
+                "idempotency_key": "2026-08-30@14:00",
+                "news_id": "NEWS-ONE",
                 "row_number": 8,
                 "title": "机器人新闻",
                 "automated_fields": ["app"],
@@ -600,7 +604,7 @@ class NewsReviewActorTests(unittest.TestCase):
                 "write_verified": True,
                 "writer_identity": "bot",
             }, ensure_ascii=False) + "\n", encoding="utf-8")
-            event_key = "agent-run-1|8|纳入滚动栏|不接受"
+            event_key = "2026-08-30@14:00|NEWS-ONE|纳入滚动栏|不接受"
             service.record_operation(
                 actor={"id": "news-auto-screening-bot", "name": "新闻自动初筛机器人", "role": "SYSTEM"},
                 action="news_review.update",
