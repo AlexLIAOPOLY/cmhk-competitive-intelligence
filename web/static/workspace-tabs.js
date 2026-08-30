@@ -1297,6 +1297,56 @@
     return String(run?.scope || "").match(/父任务\s+([A-Za-z0-9_.-]+)/)?.[1] || "";
   }
 
+  function selectionRunBatchKey(run) {
+    const explicit = String(
+      run?.idempotency_key
+      || run?.operational_summary?.idempotency_key
+      || ""
+    ).trim();
+    if (explicit) return explicit;
+    const scopeKey = String(run?.scope || "")
+      .match(/爬虫后选材[（(]([^）)]+)[）)]/)?.[1];
+    return String(scopeKey || linkedParentRunId(run) || run?.crawl_run_id || "").trim();
+  }
+
+  function selectionRunBusinessDate(run) {
+    return selectionRunBatchKey(run).match(/(\d{4}-\d{2}-\d{2})@/)?.[1]
+      || newsRunDate(run);
+  }
+
+  function verifiedSelectionRun(run) {
+    const status = String(run?.run_status || run?.status || "").toLowerCase();
+    return ["completed", "complete", "success", "succeeded", "done"].includes(status)
+      && run?.operational_summary?.readback_verified === true;
+  }
+
+  function selectionAttemptRunsForDate(date) {
+    return state.crawlRuns.filter((run) => (
+      run.task_kind === "news-selection-agent"
+      && selectionRunBusinessDate(run) === date
+    ));
+  }
+
+  function authoritativeSelectionRunsForDate(date) {
+    const batches = new Map();
+    selectionAttemptRunsForDate(date).forEach((run) => {
+      const batchKey = selectionRunBatchKey(run);
+      const current = batches.get(batchKey);
+      const runVerified = verifiedSelectionRun(run);
+      const currentVerified = verifiedSelectionRun(current);
+      const preferOriginalVerifiedRun = (
+        runVerified
+        && currentVerified
+        && current?.operational_summary?.reused === true
+        && run?.operational_summary?.reused !== true
+      );
+      if (!current || (runVerified && !currentVerified) || preferOriginalVerifiedRun) {
+        batches.set(batchKey, run);
+      }
+    });
+    return [...batches.values()];
+  }
+
   function dailyNewsReviewResults(date) {
     const sheet = state.newsReviewSheet;
     if (!sheet || !Array.isArray(sheet.headers) || !Array.isArray(sheet.rows)) {
@@ -1354,10 +1404,8 @@
       run.task_kind === "four-database-source-discovery"
       && newsRunDate(run) === selectedDate
     )) || {};
-    const selectionRuns = state.crawlRuns.filter((run) => (
-      run.task_kind === "news-selection-agent"
-      && newsRunDate(run) === selectedDate
-    ));
+    const selectionAttemptRuns = selectionAttemptRunsForDate(selectedDate);
+    const selectionRuns = authoritativeSelectionRunsForDate(selectedDate);
     const matchingIntelligenceRuns = state.crawlRuns.filter((run) => (
       run.task_kind === "executive-intelligence-refresh"
       && (
@@ -1499,7 +1547,7 @@
       { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
       { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
-      { key: "news-selection-agent", label: "新闻自动初筛", value: selectionRuns.length ? `纳入周报 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `纳入滚动栏 ${number(selectionSummary.appAccepted)} 条` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`独立任务 ${number(selectionRuns.length)} 次；仅处理检索日期为 ${selectedDate} 的本轮新增新闻`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
+      { key: "news-selection-agent", label: "新闻自动初筛", value: selectionRuns.length ? `纳入周报 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `纳入滚动栏 ${number(selectionSummary.appAccepted)} 条` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`权威批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
       { key: "app-result", label: "纳入滚动栏", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.appMachineRows.length)} 条 · 人工 ${number(reviewResults.appHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条；人工纳入 ${number(reviewResults.appHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.weeklyMachineRows.length)} 条 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日战略新闻", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及指标相关的内容", "新闻摘要只作追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日新闻归档" },
@@ -1647,7 +1695,7 @@
     if (["strategic", "news-search", "news-ai", "news-dedupe", "news-output"].includes(nodeKey)) return selectedNewsRuns();
     if (["app-result", "weekly-result"].includes(nodeKey)) return [];
     if (nodeKey === "news-selection-agent") {
-      return state.crawlRuns.filter((run) => run.task_kind === "news-selection-agent" && newsRunDate(run) === date);
+      return selectionAttemptRunsForDate(date);
     }
     if (nodeKey === "news-db-signal") {
       return state.crawlRuns.filter((run) => run.task_kind === "four-database-source-discovery" && newsRunDate(run) === date);
