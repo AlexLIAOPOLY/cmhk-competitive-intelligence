@@ -513,6 +513,8 @@ class LarkSheetGateway:
                     "temporary failure in name resolution",
                     "no such host",
                     "temporarily unavailable",
+                    "900015205",
+                    "cs recommited",
                 )
             )
             if not (retry_safe and transient and attempt + 1 < attempts):

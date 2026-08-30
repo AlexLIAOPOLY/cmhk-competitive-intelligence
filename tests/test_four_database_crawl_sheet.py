@@ -10,6 +10,23 @@ from cmhk.integrations import four_database_crawl_sheet as sheet
 
 
 class FourDatabaseCrawlSheetTests(unittest.TestCase):
+    def test_write_retries_sheet_revision_conflict(self) -> None:
+        outcomes = [
+            subprocess.CompletedProcess(
+                [],
+                1,
+                stdout="",
+                stderr='{"code":900015205,"message":"cs recommited, rev is 43469"}',
+            ),
+            subprocess.CompletedProcess([], 0, stdout='{"ok":true,"data":{}}', stderr=""),
+        ]
+        with mock.patch.object(sheet.subprocess, "run", side_effect=outcomes) as run, \
+             mock.patch.object(sheet.time, "sleep"):
+            payload = sheet._run(["sheets", "+table-put"], retry_safe=True)
+
+        self.assertTrue(payload["ok"])
+        self.assertEqual(run.call_count, 2)
+
     def test_live_read_retries_timeout_exception(self) -> None:
         outcomes = [
             subprocess.TimeoutExpired(["lark-cli"], 180),

@@ -196,6 +196,7 @@ def _run(
                 '"type": "network"', "timeout", "timed out", "deadline exceeded",
                 "dial tcp", "connection reset", "connection refused", "connection closed",
                 "temporary failure in name resolution", "no such host", "temporarily unavailable",
+                "900015205", "cs recommited",
             )
         )
         if retry_safe and transient and attempt + 1 < attempts:

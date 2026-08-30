@@ -93,6 +93,29 @@ class DatabaseSheetSyncTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(run.call_count, 2)
 
+    def test_retry_safe_gateway_call_recovers_from_sheet_revision_conflict(self) -> None:
+        gateway = object.__new__(LarkSheetGateway)
+        gateway.cli = "lark-cli"
+        gateway.identity = "user"
+        gateway.profile = ""
+        outcomes = [
+            subprocess.CompletedProcess(
+                [],
+                1,
+                stdout="",
+                stderr='{"code":900015205,"message":"cs recommited, rev is 43469"}',
+            ),
+            subprocess.CompletedProcess([], 0, stdout='{"ok":true,"data":{}}', stderr=""),
+        ]
+
+        with patch(
+            "cmhk.integrations.database_sheet_sync.subprocess.run", side_effect=outcomes
+        ) as run, patch("cmhk.integrations.database_sheet_sync.time.sleep"):
+            payload = gateway._run(["sheets", "+cells-set"], retry_safe=True)
+
+        self.assertTrue(payload["ok"])
+        self.assertEqual(run.call_count, 2)
+
     def _dataset(self, root: Path) -> tuple[Path, Path]:
         dataset = root / "agent_knowledge" / "quarterly_competitor_metrics_2026-06-18"
         dataset.mkdir(parents=True)
