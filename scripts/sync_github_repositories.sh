@@ -63,6 +63,15 @@ rsync -a --delete --link-dest="$ROOT" \
   --exclude '/.git/' \
   --exclude '/.venv*/' \
   --exclude '/venv/' \
+  --exclude '/node_modules/' \
+  --exclude '/.pytest_cache/' \
+  --exclude '/.mypy_cache/' \
+  --exclude '/.ruff_cache/' \
+  --exclude '/.coverage' \
+  --exclude '/coverage.xml' \
+  --exclude '/htmlcov/' \
+  --exclude '/junit*.xml' \
+  --exclude '/frontend_test_results.txt' \
   --exclude '/tmp/' \
   --exclude '/archives/' \
   --exclude '/artifacts/generated/' \
