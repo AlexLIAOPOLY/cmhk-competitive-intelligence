@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260830_142500_910444": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260830_142500_910444",
+        "task_run_id": "20260830_142500_910444",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-30@14:00）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "status_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "started_at_hkt": "2026-08-30T14:25:00+08:00",
+        "heartbeat_at_hkt": "2026-08-30T14:27:01+08:00",
+        "completed_at_hkt": "2026-08-30T14:27:01+08:00",
+        "duration_ms": 120817,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260830_142330_602016": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260830_142330_602016",
+        "task_run_id": "20260830_142330_602016",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-30@14:00）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "status_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "started_at_hkt": "2026-08-30T14:23:30+08:00",
+        "heartbeat_at_hkt": "2026-08-30T14:25:00+08:00",
+        "completed_at_hkt": "2026-08-30T14:25:00+08:00",
+        "duration_ms": 90159,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260830_141310_112490": {
       "ok": true,
       "run": {
@@ -984,48 +1026,6 @@
         "heartbeat_at_hkt": "2026-08-28T14:29:39+08:00",
         "completed_at_hkt": "2026-08-28T14:29:39+08:00",
         "duration_ms": 52524,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260828_142550_413049": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260828_142550_413049",
-        "task_run_id": "20260828_142550_413049",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-28@14:00）",
-        "run_status": "failed",
-        "phase": "失败",
-        "progress_detail": "新闻自动初筛失败：模型遗漏候选 NEWS-3000379B053779",
-        "status_detail": "新闻自动初筛失败：模型遗漏候选 NEWS-3000379B053779",
-        "started_at_hkt": "2026-08-28T14:25:50+08:00",
-        "heartbeat_at_hkt": "2026-08-28T14:26:03+08:00",
-        "completed_at_hkt": "2026-08-28T14:26:03+08:00",
-        "duration_ms": 12637,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260828_142353_291845": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260828_142353_291845",
-        "task_run_id": "20260828_142353_291845",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-28@14:00）",
-        "run_status": "failed",
-        "phase": "失败",
-        "progress_detail": "新闻自动初筛失败：LangChain 模型路由全部失败；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；deepseek-v4-free: Expecting ',' delimiter: line 60 column 6 (char 1919)",
-        "status_detail": "新闻自动初筛失败：LangChain 模型路由全部失败；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；deepseek-v4-free: Expecting ',' delimiter: line 60 column 6 (char 1919)",
-        "started_at_hkt": "2026-08-28T14:23:53+08:00",
-        "heartbeat_at_hkt": "2026-08-28T14:24:01+08:00",
-        "completed_at_hkt": "2026-08-28T14:24:01+08:00",
-        "duration_ms": 8477,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
