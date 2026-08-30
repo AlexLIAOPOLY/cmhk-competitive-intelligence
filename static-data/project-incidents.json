@@ -1480,6 +1480,32 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "838004fe4cbe50886e078b05",
+      "task_id": "incident:838004fe4cbe50886e078b05",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "本轮有数据被质量门禁拒绝，未进入数据库",
+      "impact": "已确认：25行数据未进入数据库，未造成数据污染。推断：对应指标可能保留旧值或显示为未披露，对下游分析影响较小。",
+      "suggestions": [
+        "检查质量门禁日志，确认25行数据的具体拒绝原因。",
+        "针对缺失的官方原文或字段，从官方来源补证数据后重新提交。",
+        "验证补证后的数据通过质量门禁并成功入库。",
+        "若无法补证，记录未披露指标并通知下游系统。"
+      ],
+      "occurred_at_hkt": "2026-08-30 03:07:49",
+      "started_at_hkt": "2026-08-30T09:59:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T10:01:09+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "a8273d342dc836b4ef0c6ad5",
       "task_id": "incident:a8273d342dc836b4ef0c6ad5",
       "title": "主项目后台任务",
@@ -12036,30 +12062,6 @@
       "started_at_hkt": "2026-08-27T06:39:36+08:00",
       "heartbeat_at_hkt": "2026-08-27T06:40:07+08:00",
       "completed_at_hkt": "2026-08-27T06:40:37+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "781aa3d674171989a1c472e9",
-      "task_id": "incident:781aa3d674171989a1c472e9",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-27T06:11:10+08:00",
-      "started_at_hkt": "2026-08-27T06:11:10+08:00",
-      "heartbeat_at_hkt": "2026-08-27T06:11:10+08:00",
-      "completed_at_hkt": "2026-08-27T06:11:40+08:00",
       "handled_at_hkt": ""
     }
   ],
