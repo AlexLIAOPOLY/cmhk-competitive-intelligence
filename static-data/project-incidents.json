@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "133468ad691ae31017e45166",
+      "task_id": "incident:133468ad691ae31017e45166",
+      "title": "飞书频率调度周期",
+      "kind": "frequency-scheduler",
+      "kind_label": "飞书频率调度周期",
+      "scope": "frequency-scheduler",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "调度器日志出现未处理异常",
+      "impact": "已确认：调度周期失败。推断：本轮或后续到期任务可能未被正常检查或启动，影响飞书消息的按时发送。",
+      "suggestions": [
+        "",
+        "根据堆栈信息定位异常根因（如代码错误、依赖超时等），修复后重新部署或重启调度器。",
+        "验证本轮调度是否已部分执行，确认是否有任务被遗漏，必要时手动补触发遗漏任务。",
+        "修复后监控下一个调度周期，确保日志无异常且任务正常启动。"
+      ],
+      "occurred_at_hkt": "2026-08-30T21:23:35+08:00",
+      "started_at_hkt": "2026-08-30T21:23:35+08:00",
+      "heartbeat_at_hkt": "2026-08-30T21:23:35+08:00",
+      "completed_at_hkt": "2026-08-30T21:24:22+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "bde5fbb1735fafb07f609012",
       "task_id": "incident:bde5fbb1735fafb07f609012",
       "title": "主项目后台任务",
@@ -2843,7 +2869,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T17:26:33+08:00",
-      "heartbeat_at_hkt": "2026-08-30T21:21:34+08:00",
+      "heartbeat_at_hkt": "2026-08-30T21:26:34+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12084,30 +12110,6 @@
       "started_at_hkt": "2026-08-27T08:29:05+08:00",
       "heartbeat_at_hkt": "2026-08-27T08:29:05+08:00",
       "completed_at_hkt": "2026-08-27T08:29:35+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "09682c9f769c0fb20362122b",
-      "task_id": "incident:09682c9f769c0fb20362122b",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:25:04+08:00",
-      "started_at_hkt": "2026-08-27T08:25:04+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:25:04+08:00",
-      "completed_at_hkt": "2026-08-27T08:25:34+08:00",
       "handled_at_hkt": ""
     }
   ],
