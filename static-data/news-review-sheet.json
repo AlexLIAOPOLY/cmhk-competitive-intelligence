@@ -24,16 +24,16 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-30T15:00:13+08:00",
+  "updatedAt": "2026-08-30T15:07:48+08:00",
   "rows": [
     {
       "rowNumber": 2,
       "originalRowNumber": 2,
       "recordId": "NEWS-1E0FC84F90D5C0",
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "竞对动态",
@@ -51,11 +51,27 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "role": "ADMIN",
-        "reviewedAt": "2026-08-27T08:20:48+00:00"
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T07:07:49+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        }
       }
     },
     {
@@ -63,9 +79,9 @@
       "originalRowNumber": 3,
       "recordId": "NEWS-C1A57E25ED054F",
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -81,16 +97,39 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T07:07:49+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        }
+      }
     },
     {
       "rowNumber": 4,
       "originalRowNumber": 4,
       "recordId": "NEWS-A7514BB409B3BB",
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "竞对动态",
@@ -106,16 +145,39 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T07:07:49+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        }
+      }
     },
     {
       "rowNumber": 5,
       "originalRowNumber": 5,
       "recordId": "NEWS-8C5659BD4C7B31",
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "竞对动态",
@@ -131,16 +193,39 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T07:07:49+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        }
+      }
     },
     {
       "rowNumber": 6,
       "originalRowNumber": 6,
       "recordId": "NEWS-E12878F8AC9FE0",
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "行业动态",
@@ -156,7 +241,30 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T07:07:49+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T07:07:49+00:00"
+        }
+      }
     },
     {
       "rowNumber": 8,

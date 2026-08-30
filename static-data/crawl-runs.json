@@ -2,6 +2,57 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_150517_221049",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-08-30@14:00）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 5 条，验证 10 格，本次新写 10 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 5 条，验证 10 格，本次新写 10 格，已有 0 格；逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T15:07:42+08:00",
+      "started_at_hkt": "2026-08-30T15:05:17+08:00",
+      "completed_at_hkt": "2026-08-30T15:07:42+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 145630,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 5,
+        "changed_count": 10,
+        "newly_written_count": 10,
+        "already_applied_count": 0,
+        "verified_field_count": 10,
+        "app_accepted_count": 2,
+        "weekly_accepted_count": 2,
+        "deferred_field_count": 0,
+        "human_example_count": 160,
+        "human_correction_count": 1,
+        "model": "DeepSeek-V4-Pro",
+        "decision_models": [
+          "DeepSeek-V4-Pro"
+        ],
+        "decision_source_counts": {
+          "DeepSeek-V4-Pro": 5
+        },
+        "mixed_decision_sources": false,
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "operation_audit_count": 10,
+        "decision_audit_count": 5,
+        "resumed_from_plan": false,
+        "recovered_decision_count": 0,
+        "published_count": 81,
+        "published_provenance_refreshed": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "task_run_id": "20260830_150517_221049"
+      }
+    },
+    {
       "crawl_run_id": "20260830_145704_725579",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-08-30@14:00）",
@@ -196,8 +247,8 @@
       "task_kind": "strategic-news",
       "run_status": "completed",
       "phase": "已完成",
-      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 18 条，AI保留 5 条，历史重复 0 条，新增 5 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
-      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 18 条，AI保留 5 条，历史重复 0 条，新增 5 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
+      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
       "failure_stage": "",
       "heartbeat_at_hkt": "2026-08-30T14:13:10+08:00",
       "started_at_hkt": "2026-08-30T14:00:56+08:00",
@@ -220,8 +271,11 @@
           "om_x100b6608d19128a0b1f5642937f1b07"
         ],
         "notification_destination_count": 2,
-        "selection_agent_status": "retry_pending",
-        "selection_agent_changed": 0
+        "selection_agent_status": "completed",
+        "selection_agent_changed": 10,
+        "selection_agent_recovered": true,
+        "selection_agent_recovery_task_run_id": "20260830_150517_221049",
+        "selection_agent_recovered_at": "2026-08-30T15:07:42+08:00"
       }
     },
     {
@@ -72425,6 +72479,6 @@
       }
     }
   ],
-  "total": 303,
+  "total": 304,
   "truncated": false
 }

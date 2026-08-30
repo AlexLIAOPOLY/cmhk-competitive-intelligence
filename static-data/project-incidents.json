@@ -8,9 +8,9 @@
       "kind": "web-app",
       "kind_label": "主项目Web后台",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "Web后台日志出现未处理异常",
@@ -22,7 +22,7 @@
       "occurred_at_hkt": "2026-08-30T14:58:16+08:00",
       "started_at_hkt": "2026-08-30T14:25:05+08:00",
       "heartbeat_at_hkt": "2026-08-30T14:58:16+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-30T15:02:34+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -71,7 +71,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:58:01+08:00",
       "started_at_hkt": "2026-08-30T14:58:16+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -95,7 +95,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:57:04+08:00",
       "started_at_hkt": "2026-08-30T14:57:05+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -145,7 +145,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:48:01+08:00",
       "started_at_hkt": "2026-08-30T14:48:03+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -195,7 +195,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:46:03+08:00",
       "started_at_hkt": "2026-08-30T14:46:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -245,7 +245,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:38:02+08:00",
       "started_at_hkt": "2026-08-30T14:38:32+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -295,7 +295,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:36:00+08:00",
       "started_at_hkt": "2026-08-30T14:36:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -367,7 +367,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:27:01+08:00",
       "started_at_hkt": "2026-08-30T14:27:06+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -417,7 +417,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:25:00+08:00",
       "started_at_hkt": "2026-08-30T14:25:05+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -493,7 +493,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:11+08:00",
       "started_at_hkt": "2026-08-30T14:14:22+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -517,7 +517,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:00+08:00",
       "started_at_hkt": "2026-08-30T14:13:11+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2121,7 +2121,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T09:59:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T15:00:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T15:07:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
