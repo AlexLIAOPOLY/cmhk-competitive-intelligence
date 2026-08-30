@@ -1,6 +1,27 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260831_010008_824724": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260831_010008_824724",
+        "task_run_id": "20260831_010008_824724",
+        "title": "每日01:00四库资料搜索",
+        "kind": "four-database-source-discovery",
+        "kind_label": "01:00四库资料搜索",
+        "scope": "四库更新资料 2026-08-31",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "01:00资料搜索完成：18个查询、68条搜索结果、前一日两次任务参考300条、2条四库线索；已交接03:00官方来源复核。",
+        "status_detail": "01:00资料搜索完成：18个查询、68条搜索结果、前一日两次任务参考300条、2条四库线索；已交接03:00官方来源复核。",
+        "started_at_hkt": "2026-08-31T01:00:08+08:00",
+        "heartbeat_at_hkt": "2026-08-31T01:00:43+08:00",
+        "completed_at_hkt": "2026-08-31T01:00:43+08:00",
+        "duration_ms": 35102,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260830_163850_597761": {
       "ok": true,
       "run": {
@@ -984,27 +1005,6 @@
         "heartbeat_at_hkt": "2026-08-29T04:59:08+08:00",
         "completed_at_hkt": "2026-08-29T04:59:08+08:00",
         "duration_ms": 856,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260829_045326_996446": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260829_045326_996446",
-        "task_run_id": "20260829_045326_996446",
-        "title": "季度竞对数据发布",
-        "kind": "quarterly-data-release",
-        "kind_label": "季度数据发布",
-        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
-        "status_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
-        "started_at_hkt": "2026-08-29T04:53:26+08:00",
-        "heartbeat_at_hkt": "2026-08-29T04:53:27+08:00",
-        "completed_at_hkt": "2026-08-29T04:53:27+08:00",
-        "duration_ms": 835,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
