@@ -54,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=3', INDEX)
         self.assertIn('/static/organization-admin.js?v=32', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=154', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=155', INDEX)
         self.assertIn('/static/app.js?v=313', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -647,9 +647,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.js?v=154', INDEX)
+        self.assertIn('workspace-tabs.js?v=155', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=132', INDEX)
+        self.assertIn('workspace-tabs.css?v=133', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -801,6 +801,27 @@ class WorkspaceTabsTests(unittest.TestCase):
         for health in ("healthy", "running", "warning", "critical", "unknown"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.is-health-{health}", STYLE)
         self.assertNotIn('node.tone', SCRIPT)
+
+    def test_news_lineage_marks_only_evidence_backed_or_gated_llm_route_impacts(self):
+        self.assertIn("function activeLineageRouteAssessments(selectedDate)", SCRIPT)
+        self.assertIn("function newsLineageEdgeStatus(from, to, nodesByKey, selectedDate, routeAssessments)", SCRIPT)
+        self.assertIn('Number(task.route_assessment_version || 0) >= 1', SCRIPT)
+        self.assertIn('impact === "interrupted" && confidence !== "high"', SCRIPT)
+        self.assertIn('selectedDate !== hktCalendarDate()', SCRIPT)
+        self.assertIn('source: "llm-incident"', SCRIPT)
+        self.assertIn('source: "run-evidence"', SCRIPT)
+        self.assertIn('data-line-state="${esc(line?.key || "unknown")}"', SCRIPT)
+        self.assertIn('data-news-lineage-state', SCRIPT)
+        self.assertIn('受影响线路 · LLM 受限复核', SCRIPT)
+        self.assertIn('仅高置信度中断可触发红色断线', SCRIPT)
+        self.assertIn('task.source === "project-monitor"', SCRIPT)
+        self.assertIn("renderNews();", SCRIPT)
+        self.assertIn(".news-lineage-edge.is-line-interrupted > path:first-of-type", STYLE)
+        self.assertIn("stroke-dasharray: 16 11", STYLE)
+        self.assertIn("marker-end: url(#newsLineageArrowRed)", STYLE)
+        self.assertIn(".news-lineage-edge.is-line-degraded", STYLE)
+        self.assertIn(".news-line-health-legend", STYLE)
+        self.assertIn(".fault-route-impact", STYLE)
 
 
 if __name__ == "__main__":

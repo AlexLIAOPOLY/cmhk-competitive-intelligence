@@ -40,7 +40,19 @@ class FaultIncidentApiTests(unittest.TestCase):
                         "ai_status": "completed",
                         "ai_summary": {"recovery_cause": f"{severity} recovery reason"},
                     } if severity != "P1" else {}),
-                    "diagnosis": {"fault_cause": f"{severity} alarm reason"},
+                    "diagnosis": {
+                        "fault_cause": f"{severity} alarm reason",
+                        "route_assessment_version": 1,
+                        "affected_routes": [{
+                            "route_id": "main->agent",
+                            "label": "固定源抓取 → Agent证据审核",
+                            "from": "main",
+                            "to": "agent",
+                            "impact": "interrupted",
+                            "confidence": "high",
+                            "reason": f"{severity} route impact",
+                        }],
+                    },
                 }
                 for index, severity in enumerate(("P1", "P2", "P3"), start=1)
             }
@@ -89,6 +101,9 @@ class FaultIncidentApiTests(unittest.TestCase):
         self.assertEqual(web_record["alarm_reason"], "P2 alarm reason")
         self.assertEqual(web_record["resolution_type_label"], "故障条件消除")
         self.assertEqual(web_record["resolution_reason"], "P2 recovery reason")
+        self.assertEqual(web_record["source"], "project-monitor")
+        self.assertEqual(web_record["route_assessment_version"], 1)
+        self.assertEqual(web_record["affected_routes"][0]["route_id"], "main->agent")
         auto_record = next(record for record in records if record["severity"] == "P3")
         self.assertEqual(auto_record["auto_repaired_at_hkt"], "2026-08-19T09:15:00+08:00")
         self.assertEqual(total, 3)

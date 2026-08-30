@@ -464,11 +464,23 @@ class ProjectMonitorTests(unittest.TestCase):
                 "remaining_risk": "无需补跑；继续观察下一轮心跳。",
                 "needs_followup": False,
             }
+        candidates = project_monitor.lineage_route_candidates(incident)
+        interrupted = next(
+            (item for item in candidates if "interrupted" in item.get("allowed_impacts", [])),
+            None,
+        )
+        selected_route = interrupted or (candidates[0] if candidates else None)
         return {
             "severity": incident["severity"],
             "severity_reason": "定時任務或外部寫入可能漏跑，屬需要即時處理的生產錯誤。",
             "fault_cause": "根據現有錯誤證據，爬蟲進程以非零狀態退出。",
             "fault_impact": "本輪資料未完成更新，下游結果可能繼續使用舊資料。",
+            "affected_routes": ([{
+                "route_id": selected_route["route_id"],
+                "impact": "interrupted" if interrupted else "degraded",
+                "confidence": "high",
+                "reason": "現有任務失敗證據顯示該交接未完成。",
+            }] if selected_route else []),
             "fault_time_hkt": incident["occurred_at_hkt"],
             "recommended_solutions": ["讀取完整任務日誌。", "只恢復未完成階段並驗證結果。"],
             "needs_human": True,
@@ -530,6 +542,167 @@ class ProjectMonitorTests(unittest.TestCase):
             impact="本轮数据未完成更新。",
             suggestions=["检查日志。"],
             terminal=True,
+        )
+
+    def test_lineage_route_candidates_are_scoped_and_cap_non_terminal_quality_alerts(self):
+        quality_issue = {
+            "condition_key": "strategic-agentic-empty:2026-08-16@07-30",
+            "component": "strategic-news",
+            "task_name": "战略新闻Agentic补搜",
+            "summary": "查询有执行但无结果",
+            "error": "agentic_result_count=0",
+        }
+
+        candidates = project_monitor.lineage_route_candidates(quality_issue)
+
+        self.assertEqual([item["route_id"] for item in candidates], ["news-search->news-ai"])
+        self.assertEqual(candidates[0]["allowed_impacts"], ["degraded", "at_risk"])
+        self.assertEqual(project_monitor.lineage_route_candidates({
+            "condition_key": "web-health",
+            "component": "web-app",
+            "task_name": "Web服务",
+        }), [])
+        failed_candidates = project_monitor.lineage_route_candidates({
+            "condition_key": "crawl-task-failed:crawl-20260816",
+            "component": "crawl",
+            "task_name": "定时主爬虫",
+            "summary": "任务失败",
+            "error": "crawl returned 1",
+        })
+        main_to_agent = next(item for item in failed_candidates if item["route_id"] == "main->agent")
+        self.assertIn("interrupted", main_to_agent["allowed_impacts"])
+        publish_candidates = project_monitor.lineage_route_candidates({
+            "condition_key": "crawl-task-failed:intelligence-1",
+            "component": "executive-intelligence-refresh",
+            "task_name": "四库与AI观察结论刷新",
+            "evidence": ["failure_stage=financial_frontend_publish"],
+        })
+        self.assertEqual(
+            {item["route_id"] for item in publish_candidates},
+            {
+                "database-local->insights",
+                "database-international->insights",
+                "database-cloud->insights",
+                "database-mainland->insights",
+            },
+        )
+        self.assertEqual(project_monitor.lineage_route_candidates({
+            "condition_key": "crawl-task-failed:intelligence-log-1",
+            "component": "executive-intelligence-refresh",
+            "task_name": "四库与AI观察结论刷新",
+            "evidence": ["failure_stage=four_database_feishu_log"],
+        }), [])
+
+    def test_ai_route_assessment_rejects_hallucinated_or_policy_exceeding_interruption(self):
+        monitor = self._monitor()
+        incident = self._issue(monitor)
+        valid = self._ai(incident)
+        valid["affected_routes"] = [{
+            "route_id": "invented->route",
+            "impact": "interrupted",
+            "confidence": "high",
+            "reason": "模型自行扩展。",
+        }]
+        with self.assertRaisesRegex(ValueError, "非候选线路"):
+            monitor._validate_diagnosis(valid, model="test", incident=incident)
+
+        quality_incident = monitor._issue(
+            condition_key="strategic-agentic-empty:2026-08-16@07-30",
+            component="strategic-news",
+            task_name="战略新闻Agentic补搜",
+            severity="P2",
+            summary="查询有执行但无结果",
+            error="agentic_result_count=0",
+            impact="补缺覆盖下降。",
+            suggestions=["检查查询。"],
+        )
+        exceeding = self._ai(quality_incident)
+        exceeding["affected_routes"] = [{
+            "route_id": "news-search->news-ai",
+            "impact": "interrupted",
+            "confidence": "high",
+            "reason": "模型声称中断。",
+        }]
+        with self.assertRaisesRegex(ValueError, "超过系统门禁"):
+            monitor._validate_diagnosis(exceeding, model="test", incident=quality_incident)
+
+    def test_existing_llm_diagnosis_reuses_base_and_only_runs_route_assessment(self):
+        monitor = self._monitor()
+        incident = self._issue(monitor)
+        incident["incident_id"] = "existing-diagnosis"
+        incident["diagnosis_attempts"] = 0
+        base_payload = self._ai(incident)
+        incident["diagnosis"] = monitor._validate_diagnosis(
+            base_payload,
+            model="existing-model",
+            incident=incident,
+            require_routes=False,
+        )
+        route_result = {
+            "affected_routes": [],
+            "route_assessment_version": project_monitor.LINEAGE_ROUTE_ASSESSMENT_VERSION,
+            "route_assessment_source": "llm",
+            "route_assessment_model": "route-model",
+        }
+
+        with mock.patch.object(monitor, "_diagnose_with_internal_ai") as full_diagnosis, mock.patch.object(
+            monitor,
+            "_assess_routes_with_internal_ai",
+            return_value=route_result,
+        ) as route_assessment:
+            self.assertTrue(monitor._ensure_ai_diagnosis(incident))
+
+        full_diagnosis.assert_not_called()
+        route_assessment.assert_called_once_with(incident)
+        self.assertEqual(incident["diagnosis"]["model"], "existing-model")
+        self.assertEqual(incident["diagnosis"]["affected_routes"], [])
+        self.assertEqual(incident["diagnosis_status"], "completed")
+
+    def test_exact_recurring_fault_reuses_prior_base_and_still_assesses_routes(self):
+        monitor = self._monitor()
+        prior = self._issue(monitor)
+        prior["incident_id"] = "prior-exact-fault"
+        prior["diagnosis"] = monitor._validate_diagnosis(
+            self._ai(prior),
+            model="existing-model",
+            incident=prior,
+            require_routes=False,
+        )
+        monitor.state["incidents"] = {prior["incident_id"]: prior}
+        current = dict(self._issue(monitor))
+        current.update({"incident_id": "current-exact-fault", "diagnosis": {}, "diagnosis_attempts": 0})
+        route_result = {
+            "affected_routes": [],
+            "route_assessment_version": project_monitor.LINEAGE_ROUTE_ASSESSMENT_VERSION,
+            "route_assessment_source": "llm",
+            "route_assessment_model": "route-model",
+        }
+
+        with mock.patch.object(monitor, "_diagnose_with_internal_ai") as full_diagnosis, mock.patch.object(
+            monitor,
+            "_assess_routes_with_internal_ai",
+            return_value=route_result,
+        ) as route_assessment:
+            self.assertTrue(monitor._ensure_ai_diagnosis(current))
+
+        full_diagnosis.assert_not_called()
+        route_assessment.assert_called_once_with(current)
+        self.assertTrue(current["diagnosis"]["reused_for_exact_incident"])
+        self.assertEqual(current["diagnosis"]["route_assessment_model"], "route-model")
+
+    def test_route_assessment_skips_llm_when_incident_has_no_graph_candidates(self):
+        monitor = self._monitor()
+        result = monitor._assess_routes_with_internal_ai({
+            "condition_key": "web-health",
+            "component": "web-app",
+            "task_name": "Web服务",
+        })
+
+        self.assertEqual(result["affected_routes"], [])
+        self.assertEqual(result["route_assessment_source"], "not_applicable")
+        self.assertEqual(
+            result["route_assessment_version"],
+            project_monitor.LINEAGE_ROUTE_ASSESSMENT_VERSION,
         )
 
     def _write_slot_archive(self, slot: str, payload: dict) -> None:
@@ -1459,6 +1632,8 @@ class ProjectMonitorTests(unittest.TestCase):
             self.assertIn("重要等级（LLM 复核）", serialized)
             self.assertIn("故障原因", serialized)
             self.assertIn("故障影响", serialized)
+            self.assertIn("受影响线路（LLM 复核）", serialized)
+            self.assertIn("四库资料补缺 → 固定源抓取", serialized)
             self.assertIn("故障时间", serialized)
             self.assertIn("建议解决方案", serialized)
             self.assertIn("需要人工介入", serialized)
@@ -1600,6 +1775,7 @@ class ProjectMonitorTests(unittest.TestCase):
                 "severity_reason": "該錯誤已令本輪任務失敗，需要處理。",
                 "fault_cause": "根據現有證據，背景任務執行時發生錯誤。",
                 "fault_impact": "本輪產物未完成，但上一版資料仍保留。",
+                "affected_routes": [],
                 "fault_time_hkt": incident["occurred_at_hkt"],
                 "recommended_solutions": ["檢查完整日誌並只恢復失敗步驟。"],
                 "needs_human": True,

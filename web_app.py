@@ -5807,6 +5807,7 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
         if not isinstance(suggestions, list):
             suggestions = [str(suggestions)] if suggestions else []
         evidence = incident.get("evidence") if isinstance(incident.get("evidence"), list) else []
+        affected_routes = diagnosis.get("affected_routes") if isinstance(diagnosis.get("affected_routes"), list) else []
         status = str(incident.get("status") or "open")
         resolution_type = str(resolution.get("type") or "")
         condition_key = str(incident.get("condition_key") or "")
@@ -5867,6 +5868,7 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
         else:
             phase = "历史结案（旧口径）"
         records.append({
+            "source": "project-monitor",
             "task_id": f"incident:{incident_id}",
             "incident_id": incident_id,
             "incident_status": status,
@@ -5893,6 +5895,8 @@ def load_project_incident_index(limit: int = 100) -> list[dict]:
             "severity_reason": str(diagnosis.get("severity_reason") or ""),
             "confirmed_facts": diagnosis.get("confirmed_facts") if isinstance(diagnosis.get("confirmed_facts"), list) else [],
             "inferences": diagnosis.get("inferences") if isinstance(diagnosis.get("inferences"), list) else [],
+            "affected_routes": [dict(item) for item in affected_routes if isinstance(item, dict)],
+            "route_assessment_version": int(diagnosis.get("route_assessment_version") or 0),
             "resolution_status": str(resolution.get("status") or ""),
             "resolution_type": resolution_type,
             "resolution_type_label": resolution_type_labels.get(resolution_type, "历史结案（旧口径）" if status == "resolved" else "尚未结案"),

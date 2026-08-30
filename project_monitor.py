@@ -29,6 +29,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from copy import deepcopy
 from datetime import datetime, time as clock_time, timedelta
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -98,6 +99,169 @@ SEVERITY_LABELS = {
     "P2": "高",
     "P3": "中",
 }
+LINEAGE_ROUTE_ASSESSMENT_VERSION = 1
+LINEAGE_ROUTE_CATALOG: dict[str, dict[str, str]] = {
+    "strategic->news-search": {"label": "战略新闻扫描 → 线索补缺", "from": "strategic", "to": "news-search"},
+    "news-search->news-ai": {"label": "线索补缺 → AI审核", "from": "news-search", "to": "news-ai"},
+    "news-ai->news-dedupe": {"label": "AI审核 → 历史去重", "from": "news-ai", "to": "news-dedupe"},
+    "news-dedupe->news-output": {"label": "历史去重 → 新增新闻", "from": "news-dedupe", "to": "news-output"},
+    "news-output->news-selection-agent": {"label": "新增新闻 → 新闻自动初筛", "from": "news-output", "to": "news-selection-agent"},
+    "news-selection-agent->app-result": {"label": "新闻自动初筛 → 纳入滚动栏", "from": "news-selection-agent", "to": "app-result"},
+    "news-selection-agent->weekly-result": {"label": "新闻自动初筛 → 纳入周报", "from": "news-selection-agent", "to": "weekly-result"},
+    "news-output->strategic": {"label": "新增新闻 → 下一轮历史去重", "from": "news-output", "to": "strategic"},
+    "previous-news->news-db-signal": {"label": "前一日战略新闻 → 四库资料补缺", "from": "previous-news", "to": "news-db-signal"},
+    "news-db-signal->main": {"label": "四库资料补缺 → 固定源抓取", "from": "news-db-signal", "to": "main"},
+    "main->agent": {"label": "固定源抓取 → Agent证据审核", "from": "main", "to": "agent"},
+    "main->news-search": {"label": "固定源页面变化 → 下一轮线索补缺", "from": "main", "to": "news-search"},
+    "agent->database-hub": {"label": "Agent证据审核 → 新增数据入库", "from": "agent", "to": "database-hub"},
+    "database-hub->database-local": {"label": "新增数据入库 → 本地运营商库", "from": "database-hub", "to": "database-local"},
+    "database-hub->database-international": {"label": "新增数据入库 → 国际运营商库", "from": "database-hub", "to": "database-international"},
+    "database-hub->database-cloud": {"label": "新增数据入库 → 全球云厂商库", "from": "database-hub", "to": "database-cloud"},
+    "database-hub->database-mainland": {"label": "新增数据入库 → 内地运营商库", "from": "database-hub", "to": "database-mainland"},
+    "database-local->insights": {"label": "本地运营商库 → AI战略洞察UI", "from": "database-local", "to": "insights"},
+    "database-international->insights": {"label": "国际运营商库 → AI战略洞察UI", "from": "database-international", "to": "insights"},
+    "database-cloud->insights": {"label": "全球云厂商库 → AI战略洞察UI", "from": "database-cloud", "to": "insights"},
+    "database-mainland->insights": {"label": "内地运营商库 → AI战略洞察UI", "from": "database-mainland", "to": "insights"},
+}
+
+
+def lineage_route_candidates(incident: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the only monitoring-map routes an LLM may assess for an incident.
+
+    The catalog gate is deterministic: the model may select a subset and
+    describe its impact, but cannot invent a route or expand the fault into an
+    unrelated part of the production workflow.
+    """
+
+    condition = str(incident.get("condition_key") or "").lower()
+    component = str(incident.get("component") or "").lower()
+    task_name = str(incident.get("task_name") or "").lower()
+    evidence_text = " ".join(
+        str(value or "").lower()
+        for value in (
+            condition,
+            component,
+            task_name,
+            incident.get("summary"),
+            incident.get("error"),
+            incident.get("impact"),
+            incident.get("suggestions"),
+            incident.get("evidence"),
+        )
+    )
+    agent_review_issue = "failure_stage=agent_review" in evidence_text or "agent证据审核" in evidence_text
+    frontend_publish_issue = "financial_frontend_publish" in evidence_text or "页面发布" in evidence_text
+    auxiliary_log_issue = "failure_stage=four_database_feishu_log" in evidence_text
+    news_bridge_issue = "failure_stage=news_bridge" in evidence_text
+    route_ids: list[str] = []
+    route_max_impacts: dict[str, str] = {}
+    hard_failure = condition.startswith((
+        "crawl-task-failed:",
+        "general-task-failed:",
+        "strategic-slot-failed:",
+        "strategic-slot-not-started:",
+        "strategic-slot-incomplete:",
+    ))
+
+    def add(*items: str, max_impact: str = "degraded") -> None:
+        for route_id in items:
+            if route_id in LINEAGE_ROUTE_CATALOG and route_id not in route_ids:
+                route_ids.append(route_id)
+            if route_id in LINEAGE_ROUTE_CATALOG:
+                route_max_impacts[route_id] = max_impact
+
+    if "strategic-agentic-empty" in condition:
+        add("news-search->news-ai", max_impact="degraded")
+    elif "strategic-dirty-copy" in condition:
+        add("news-ai->news-dedupe", max_impact="degraded")
+    elif "strategic-deferred-backlog" in condition:
+        add("news-search->news-ai", "news-ai->news-dedupe", max_impact="degraded")
+    elif condition.startswith("strategic-") or component == "strategic-news" or "战略新闻" in task_name:
+        add(
+            "strategic->news-search",
+            "news-search->news-ai",
+            "news-ai->news-dedupe",
+            "news-dedupe->news-output",
+            "news-output->news-selection-agent",
+            "news-selection-agent->app-result",
+            "news-selection-agent->weekly-result",
+            "news-output->strategic",
+            max_impact="interrupted" if hard_failure else "degraded",
+        )
+
+    if component == "news-selection-agent" or "新闻自动初筛" in evidence_text:
+        add("news-output->news-selection-agent", max_impact="degraded")
+        add(
+            "news-selection-agent->app-result",
+            "news-selection-agent->weekly-result",
+            max_impact="interrupted" if hard_failure else "degraded",
+        )
+
+    if component == "four-database-source-discovery" or "四库资料补缺" in evidence_text:
+        add("previous-news->news-db-signal", "news-db-signal->main", max_impact="degraded")
+
+    if (
+        component in {"crawl", "main-crawl"}
+        or "主爬虫" in evidence_text
+        or "固定源抓取" in evidence_text
+    ) and not auxiliary_log_issue:
+        add("news-db-signal->main", max_impact="degraded")
+        if agent_review_issue:
+            add("main->agent", max_impact="degraded")
+            add("agent->database-hub", max_impact="interrupted" if hard_failure else "degraded")
+        elif news_bridge_issue:
+            add("main->news-search", max_impact="interrupted" if hard_failure else "degraded")
+        else:
+            add(
+                "main->agent",
+                "main->news-search",
+                max_impact="interrupted" if hard_failure else "degraded",
+            )
+
+    if agent_review_issue and component not in {"crawl", "main-crawl"}:
+        add("main->agent", max_impact="degraded")
+        add("agent->database-hub", max_impact="interrupted" if hard_failure else "degraded")
+
+    if (
+        component == "executive-intelligence-refresh"
+        or "四库与ai观察结论刷新" in evidence_text
+    ) and not agent_review_issue and not frontend_publish_issue and not auxiliary_log_issue:
+        add(
+            "agent->database-hub",
+            "database-hub->database-local",
+            "database-hub->database-international",
+            "database-hub->database-cloud",
+            "database-hub->database-mainland",
+            "database-local->insights",
+            "database-international->insights",
+            "database-cloud->insights",
+            "database-mainland->insights",
+            max_impact="interrupted" if hard_failure else "degraded",
+        )
+
+    if frontend_publish_issue:
+        add(
+            "database-local->insights",
+            "database-international->insights",
+            "database-cloud->insights",
+            "database-mainland->insights",
+            max_impact="interrupted" if hard_failure else "degraded",
+        )
+
+    impact_options = {
+        "degraded": ["degraded", "at_risk"],
+        "interrupted": ["interrupted", "degraded", "at_risk"],
+    }
+    return [
+        dict(
+            LINEAGE_ROUTE_CATALOG[route_id],
+            route_id=route_id,
+            allowed_impacts=impact_options[route_max_impacts.get(route_id, "degraded")],
+        )
+        for route_id in route_ids
+    ]
+
+
 ERROR_LEDGER_COLUMNS = (
     "告警ID",
     "故障时间",
@@ -2158,7 +2322,9 @@ class ProjectMonitor:
         ).strip()
         if not api_key or not base_url or not model:
             raise RuntimeError("内部AI配置不完整")
+        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
         prompt_payload = {
+            "diagnosis_attempt": diagnosis_attempt,
             "task": incident.get("task_name"),
             "component": incident.get("component"),
             "severity": incident.get("severity"),
@@ -2166,6 +2332,7 @@ class ProjectMonitor:
             "error": incident.get("error"),
             "impact": incident.get("impact"),
             "deterministic_suggestions": incident.get("suggestions"),
+            "evidence": incident.get("evidence"),
             "occurred_at_hkt": incident.get("occurred_at_hkt"),
         }
         body = prepare_structured_chat_body({
@@ -2178,7 +2345,8 @@ class ProjectMonitor:
                         "你是中国移动香港公司科创及数智化部的生产运维分析员。"
                         "只根据输入错误做一轮分析，不得臆测未提供的内部事实。"
                         "输出单一JSON对象，字段必须是severity、severity_reason、diagnosis_summary、"
-                        "confirmed_facts、inferences、fault_cause、fault_impact、recommended_solutions、needs_human。"
+                        "confirmed_facts、inferences、fault_cause、fault_impact、"
+                        "recommended_solutions、needs_human。"
                         "severity只能是P1、P2或P3，可以提高输入的严重程度，但不得降低；"
                         "confirmed_facts只能写输入中可直接验证的事实；inferences必须明确为推断，可为空数组；"
                         "severity_reason、fault_cause和fault_impact使用简体中文，并区分已确认事实与推断；"
@@ -2193,13 +2361,16 @@ class ProjectMonitor:
                 },
             ],
             "temperature": 0.1,
-            "max_tokens": 720,
+            # This internal V4 route needs both supported non-thinking switches;
+            # otherwise it can return reasoning_content with no final JSON even
+            # when ``thinking.type`` is disabled by the compatibility helper.
+            "chat_template_kwargs": {"enable_thinking": False},
+            "max_tokens": 4096,
         })
-        # Some internal gateways cache by request_id even when the HTTP request
-        # carries no-cache headers.  Give each contract-validation retry its own
-        # deterministic ID so an empty/malformed first response cannot be
-        # replayed forever, while a completed diagnosis is still persisted once.
-        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        # Some internal gateways ignore request headers/query parameters when
+        # caching by request body.  The retry number above makes the prompt
+        # itself unique, so an incomplete first response cannot
+        # be replayed forever while a completed diagnosis is still persisted.
         request_id = (
             "cmhk-alert-"
             + str(incident.get("incident_id") or _fingerprint(prompt_payload))
@@ -2220,7 +2391,7 @@ class ProjectMonitor:
         try:
             with open_llm_request(
                 request,
-                timeout=35,
+                timeout=90,
                 config=config,
                 requested_key=api_key,
                 model=model,
@@ -2237,7 +2408,12 @@ class ProjectMonitor:
                 "AI诊断未返回可解析JSON对象"
                 f"（content_chars={len(content)}）"
             )
-        diagnosis = self._validate_diagnosis(parsed, model=model, incident=incident)
+        diagnosis = self._validate_diagnosis(
+            parsed,
+            model=model,
+            incident=incident,
+            require_routes=False,
+        )
         diagnosis.update({
             "source": "llm",
             "request_id": request_id,
@@ -2245,12 +2421,168 @@ class ProjectMonitor:
         })
         return diagnosis
 
+    def _validate_affected_routes(
+        self,
+        value: object,
+        *,
+        incident: dict[str, Any],
+    ) -> list[dict[str, str]]:
+        if not isinstance(value, list):
+            raise ValueError("AI诊断 affected_routes 必须是JSON数组")
+        route_candidates = {
+            item["route_id"]: item
+            for item in lineage_route_candidates(incident)
+        }
+        affected_routes: list[dict[str, str]] = []
+        seen_route_ids: set[str] = set()
+        impact_values = {"interrupted", "degraded", "at_risk"}
+        confidence_values = {"high", "medium", "low"}
+        for raw_route in value[:12]:
+            if not isinstance(raw_route, dict):
+                raise ValueError("AI诊断 affected_routes 每项必须是JSON对象")
+            route_id = str(raw_route.get("route_id") or "").strip()
+            impact = str(raw_route.get("impact") or "").strip().lower()
+            confidence = str(raw_route.get("confidence") or "").strip().lower()
+            reason = _to_simplified(_redact(raw_route.get("reason"), 500))
+            if route_id not in route_candidates:
+                raise ValueError(f"AI诊断返回了非候选线路：{route_id or '-'}")
+            candidate = route_candidates[route_id]
+            if route_id in seen_route_ids:
+                raise ValueError(f"AI诊断重复返回线路：{route_id}")
+            if impact not in impact_values or confidence not in confidence_values or not reason:
+                raise ValueError("AI诊断线路影响字段无效")
+            if impact not in candidate.get("allowed_impacts", []):
+                raise ValueError(f"AI诊断线路影响超过系统门禁：{route_id}={impact}")
+            if impact == "interrupted" and confidence != "high":
+                raise ValueError("AI诊断只有高置信度线路才可标记为中断")
+            seen_route_ids.add(route_id)
+            affected_routes.append({
+                "route_id": route_id,
+                "label": candidate["label"],
+                "from": candidate["from"],
+                "to": candidate["to"],
+                "impact": impact,
+                "confidence": confidence,
+                "reason": reason,
+            })
+        return affected_routes
+
+    def _assess_routes_with_internal_ai(self, incident: dict[str, Any]) -> dict[str, Any]:
+        route_candidates = lineage_route_candidates(incident)
+        if not route_candidates:
+            return {
+                "affected_routes": [],
+                "route_assessment_version": LINEAGE_ROUTE_ASSESSMENT_VERSION,
+                "route_assessment_source": "not_applicable",
+                "route_assessed_at_hkt": _iso(self.now()),
+            }
+
+        from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+        from ai_rate_limit import wait_for_internal_ai_slot
+        from network_utils import urlopen_with_local_proxy_fallback
+
+        config = load_ai_config(include_key=True)
+        api_key = str(config.get("api_key") or "").strip()
+        base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
+        model = str(
+            self.environ.get("CMHK_ALERT_AI_MODEL")
+            or self.environ.get("CMHK_STRATEGY_AI_RESCUE_MODEL")
+            or config.get("model")
+            or "deepseek-v4"
+        ).strip()
+        if not api_key or not base_url or not model:
+            raise RuntimeError("内部AI配置不完整")
+        diagnosis_attempt = max(1, int(incident.get("diagnosis_attempts") or 1))
+        prompt_payload = {
+            "route_assessment_version": LINEAGE_ROUTE_ASSESSMENT_VERSION,
+            "diagnosis_attempt": diagnosis_attempt,
+            "task": incident.get("task_name"),
+            "component": incident.get("component"),
+            "summary": incident.get("summary"),
+            "error": incident.get("error"),
+            "impact": incident.get("impact"),
+            "evidence": incident.get("evidence"),
+            "route_candidates": route_candidates,
+        }
+        body = prepare_structured_chat_body({
+            **dict(config.get("extra_parameters") or {}),
+            "model": model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "不要展开或输出思考过程。只返回单一JSON对象，字段只有affected_routes。"
+                        "affected_routes必须是数组，只能从输入route_candidates选择；每项必须包含"
+                        "route_id、impact、confidence、reason。impact只能是interrupted、degraded或at_risk，"
+                        "并且必须属于候选的allowed_impacts；confidence只能是high、medium或low。"
+                        "只有证据直接证明线路交接不能完成时才可使用interrupted且confidence必须为high；"
+                        "资料不足、只是质量门禁拒绝或下游仍保留旧值时，不得判中断，应使用at_risk或空数组。"
+                        "不得扩大到相邻线路，不得新增候选外线路。"
+                    ),
+                },
+                {"role": "user", "content": json.dumps(prompt_payload, ensure_ascii=False)},
+            ],
+            "temperature": 0.0,
+            "chat_template_kwargs": {"enable_thinking": False},
+            "max_tokens": 1050,
+        })
+        request_id = (
+            "cmhk-alert-routes-"
+            + str(incident.get("incident_id") or _fingerprint(prompt_payload))
+            + f"-v{LINEAGE_ROUTE_ASSESSMENT_VERSION}-a{diagnosis_attempt}"
+        )
+        request = urllib.request.Request(
+            f"{base_url}/chat/completions?request_id={request_id}",
+            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "Cache-Control": "no-cache, no-store",
+                "X-Request-ID": request_id,
+            },
+            method="POST",
+        )
+        wait_for_internal_ai_slot(
+            "project-monitor-route-assessment",
+            deadline_monotonic=time.monotonic() + 45,
+        )
+        try:
+            with open_llm_request(
+                request,
+                timeout=60,
+                config=config,
+                requested_key=api_key,
+                model=model,
+                open_func=urlopen_with_local_proxy_fallback,
+            ) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")[:500]
+            raise RuntimeError(f"内部AI HTTP {exc.code}: {_redact(detail, 500)}") from exc
+        content = final_chat_message_text(response_payload, operation="运维告警线路复核")
+        parsed = load_json_response(content, operation="运维告警线路复核")
+        if not isinstance(parsed, dict) or "affected_routes" not in parsed:
+            raise ValueError("AI线路复核未返回 affected_routes JSON对象")
+        return {
+            "affected_routes": self._validate_affected_routes(
+                parsed.get("affected_routes"),
+                incident=incident,
+            ),
+            "route_assessment_version": LINEAGE_ROUTE_ASSESSMENT_VERSION,
+            "route_assessment_source": "llm",
+            "route_assessment_model": model,
+            "route_assessment_request_id": request_id,
+            "route_assessment_response_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+            "route_assessed_at_hkt": _iso(self.now()),
+        }
+
     def _validate_diagnosis(
         self,
         payload: object,
         *,
         model: str,
         incident: dict[str, Any],
+        require_routes: bool = True,
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise ValueError("AI诊断未返回JSON对象")
@@ -2262,6 +2594,8 @@ class ProjectMonitor:
             "recommended_solutions",
             "needs_human",
         }
+        if require_routes:
+            required.add("affected_routes")
         missing = sorted(required.difference(payload))
         if missing:
             raise ValueError(f"AI诊断缺少必填字段：{', '.join(missing)}")
@@ -2301,6 +2635,12 @@ class ProjectMonitor:
             if str(item).strip()
         ][:8]
 
+        affected_routes = (
+            self._validate_affected_routes(payload.get("affected_routes"), incident=incident)
+            if require_routes
+            else []
+        )
+
         solutions_raw = payload.get("recommended_solutions")
         solutions = [
             _solution_text(item, 450)
@@ -2311,7 +2651,7 @@ class ProjectMonitor:
             raise ValueError("AI诊断的重要程度、故障原因、故障影响或建议解决方案为空")
         if type(payload.get("needs_human")) is not bool:
             raise ValueError("AI诊断 needs_human 必须是布林值")
-        return {
+        result = {
             "ok": True,
             "model": str(model),
             "source": "llm",
@@ -2332,14 +2672,63 @@ class ProjectMonitor:
             "completed_at_hkt": _iso(self.now()),
             "rounds": 1,
         }
+        if require_routes:
+            result.update({
+                "affected_routes": affected_routes,
+                "route_assessment_version": LINEAGE_ROUTE_ASSESSMENT_VERSION,
+                "route_assessment_source": "llm",
+                "route_assessment_model": str(model),
+                "route_assessed_at_hkt": _iso(self.now()),
+            })
+        return result
+
+    def _matching_prior_llm_diagnosis(self, incident: dict[str, Any]) -> dict[str, Any] | None:
+        """Reuse only an earlier LLM diagnosis for the exact same immutable fault."""
+
+        match_fields = (
+            "condition_key",
+            "component",
+            "task_name",
+            "summary",
+            "error",
+            "impact",
+            "occurred_at_hkt",
+        )
+        matches: list[tuple[str, dict[str, Any]]] = []
+        incidents = self.state.get("incidents")
+        for other in incidents.values() if isinstance(incidents, dict) else []:
+            if not isinstance(other, dict) or other is incident:
+                continue
+            if any(str(other.get(field) or "") != str(incident.get(field) or "") for field in match_fields):
+                continue
+            diagnosis = other.get("diagnosis")
+            if not (
+                isinstance(diagnosis, dict)
+                and diagnosis.get("ok")
+                and diagnosis.get("source") == "llm"
+                and not str(diagnosis.get("model") or "").startswith("deterministic-")
+            ):
+                continue
+            completed_at = str(diagnosis.get("completed_at_hkt") or other.get("first_seen_at_hkt") or "")
+            matches.append((completed_at, diagnosis))
+        if not matches:
+            return None
+        reused = deepcopy(max(matches, key=lambda item: item[0])[1])
+        reused["reused_for_exact_incident"] = True
+        reused["reused_at_hkt"] = _iso(self.now())
+        return reused
 
     def _ensure_ai_diagnosis(self, incident: dict[str, Any]) -> bool:
         diagnosis = incident.get("diagnosis")
-        if (
+        valid_base_diagnosis = bool(
             isinstance(diagnosis, dict)
             and diagnosis.get("ok")
             and diagnosis.get("source") == "llm"
             and not str(diagnosis.get("model") or "").startswith("deterministic-")
+        )
+        if (
+            valid_base_diagnosis
+            and diagnosis.get("route_assessment_version") == LINEAGE_ROUTE_ASSESSMENT_VERSION
         ):
             return True
         if not self.ai_enabled:
@@ -2350,7 +2739,13 @@ class ProjectMonitor:
             return False
         incident["diagnosis_attempts"] = int(incident.get("diagnosis_attempts") or 0) + 1
         try:
-            incident["diagnosis"] = self._diagnose_with_internal_ai(incident)
+            if not valid_base_diagnosis:
+                diagnosis = self._matching_prior_llm_diagnosis(incident)
+                if diagnosis is None:
+                    diagnosis = self._diagnose_with_internal_ai(incident)
+                incident["diagnosis"] = diagnosis
+            if diagnosis.get("route_assessment_version") != LINEAGE_ROUTE_ASSESSMENT_VERSION:
+                diagnosis.update(self._assess_routes_with_internal_ai(incident))
             incident["diagnosis_status"] = "completed"
             incident.pop("diagnosis_error", None)
             incident.pop("diagnosis_retry_after_hkt", None)
@@ -2358,7 +2753,8 @@ class ProjectMonitor:
                 "type": "ai_diagnosis_completed",
                 "at_hkt": _iso(self.now()),
                 "incident_id": incident.get("incident_id"),
-                "model": incident["diagnosis"].get("model"),
+                "model": diagnosis.get("model"),
+                "route_assessment_model": diagnosis.get("route_assessment_model"),
                 "rounds": 1,
             })
             return True
@@ -2521,6 +2917,17 @@ class ProjectMonitor:
         fault_time = self._card_markdown_text(fault_time_plain, 100)
         fault_cause = self._card_markdown_text(diagnosis.get("fault_cause") or "-", 900)
         fault_impact = self._card_markdown_text(diagnosis.get("fault_impact") or "-", 900)
+        affected_routes = diagnosis.get("affected_routes") if isinstance(diagnosis.get("affected_routes"), list) else []
+        impact_labels = {"interrupted": "中断", "degraded": "降级", "at_risk": "有风险"}
+        confidence_labels = {"high": "高置信", "medium": "中置信", "low": "低置信"}
+        route_lines = "\n".join(
+            f"- {self._card_markdown_text(route.get('label') or route.get('route_id') or '-', 180)}："
+            f"{impact_labels.get(str(route.get('impact') or ''), '待核对')}"
+            f"（{confidence_labels.get(str(route.get('confidence') or ''), '置信度未记录')}）— "
+            f"{self._card_markdown_text(route.get('reason') or '-', 500)}"
+            for route in affected_routes
+            if isinstance(route, dict)
+        ) or "未识别到与三线监控图直接相关的受影响线路。"
         severity_reason = self._card_markdown_text(diagnosis.get("severity_reason") or "-", 600)
         error_evidence = self._card_markdown_text(
             incident.get("error") or incident.get("summary") or "-",
@@ -2633,6 +3040,10 @@ class ProjectMonitor:
                                     {
                                         "tag": "markdown",
                                         "content": f"**故障影响**\n{fault_impact}",
+                                    },
+                                    {
+                                        "tag": "markdown",
+                                        "content": f"**受影响线路（LLM 复核）**\n{route_lines}",
                                     },
                                     {
                                         "tag": "markdown",
@@ -3735,6 +4146,16 @@ class ProjectMonitor:
             solutions = solutions if isinstance(solutions, list) else []
             needs_human = "是" if diagnosis.get("needs_human") else "否"
             model = str(diagnosis.get("model") or "")
+            affected_routes = diagnosis.get("affected_routes") if isinstance(diagnosis.get("affected_routes"), list) else []
+            if affected_routes:
+                impact_labels = {"interrupted": "中断", "degraded": "降级", "at_risk": "有风险"}
+                route_summary = "；".join(
+                    f"{route.get('label') or route.get('route_id')}={impact_labels.get(str(route.get('impact') or ''), '待核对')}"
+                    for route in affected_routes
+                    if isinstance(route, dict)
+                )
+                if route_summary:
+                    fault_impact = f"{fault_impact}\n受影响线路（LLM复核）：{route_summary}"
         else:
             shadow = not self.notifications_enabled or not incident.get("detected_with_notifications_enabled")
             suffix = "影子模式不调用 LLM。" if shadow else "等待 LLM 分析。"
@@ -4129,6 +4550,8 @@ class ProjectMonitor:
             "ai_severity": diagnosis.get("severity") if diagnosis.get("ok") else "",
             "ai_fault_cause": diagnosis.get("fault_cause") if diagnosis.get("ok") else "",
             "ai_fault_impact": diagnosis.get("fault_impact") if diagnosis.get("ok") else "",
+            "ai_affected_routes": diagnosis.get("affected_routes") if diagnosis.get("ok") else [],
+            "route_assessment_version": int(diagnosis.get("route_assessment_version") or 0),
             "ai_recommended_solutions": (
                 diagnosis.get("recommended_solutions") if diagnosis.get("ok") else []
             ),

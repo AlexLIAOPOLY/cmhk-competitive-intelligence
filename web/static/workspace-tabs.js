@@ -1394,6 +1394,95 @@
     return Array.isArray(domain.ai_analysis) ? domain.ai_analysis : [];
   }
 
+  function hktCalendarDate() {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Hong_Kong",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${value.year}-${value.month}-${value.day}`;
+  }
+
+  function newsLineageRouteId(from, to) {
+    return `${from}->${to}`;
+  }
+
+  function newsStageHealth(stage, aggregateHealth) {
+    if (!stage) return aggregateHealth || { key: "unknown", label: "无记录" };
+    if (stage.status === "done") return { key: "healthy", label: "正常" };
+    if (stage.status === "pending") return { key: "unknown", label: "无记录" };
+    if (aggregateHealth?.key === "critical") return { key: "critical", label: "异常" };
+    if (aggregateHealth?.key === "warning") return { key: "warning", label: "警告" };
+    if (aggregateHealth?.key === "running") return { key: "running", label: "运行中" };
+    return aggregateHealth || { key: "unknown", label: "无记录" };
+  }
+
+  function activeLineageRouteAssessments(selectedDate) {
+    if (selectedDate !== hktCalendarDate()) return new Map();
+    const priority = { interrupted: 4, degraded: 3, at_risk: 2 };
+    const routes = new Map();
+    (state.tasks || []).filter((task) => (
+      task.source === "project-monitor"
+      && ["open", "recovery_pending"].includes(String(task.incident_status || ""))
+      && Number(task.route_assessment_version || 0) >= 1
+    )).forEach((task) => {
+      (Array.isArray(task.affected_routes) ? task.affected_routes : []).forEach((route) => {
+        const routeId = String(route?.route_id || "");
+        const impact = String(route?.impact || "");
+        const confidence = String(route?.confidence || "");
+        if (!routeId || !priority[impact]) return;
+        if (impact === "interrupted" && confidence !== "high") return;
+        if (impact === "degraded" && !["high", "medium"].includes(confidence)) return;
+        const current = routes.get(routeId);
+        if (current && priority[current.impact] >= priority[impact]) return;
+        routes.set(routeId, {
+          ...route,
+          incidentId: task.incident_id || "",
+          incidentTitle: task.title || task.alarm_type || "项目告警",
+        });
+      });
+    });
+    return routes;
+  }
+
+  function newsLineageEdgeStatus(from, to, nodesByKey, selectedDate, routeAssessments) {
+    const routeId = newsLineageRouteId(from, to);
+    const assessed = routeAssessments.get(routeId);
+    const routeImpact = {
+      interrupted: { key: "interrupted", label: "中断" },
+      degraded: { key: "degraded", label: "降级" },
+      at_risk: { key: "at-risk", label: "有风险" },
+    }[assessed?.impact];
+    if (routeImpact) {
+      return {
+        ...routeImpact,
+        routeId,
+        source: "llm-incident",
+        confidence: assessed.confidence || "",
+        reason: `${assessed.incidentTitle}：${assessed.reason || "LLM判断该线路受影响。"}`,
+        incidentId: assessed.incidentId || "",
+      };
+    }
+
+    const sourceHealth = nodesByKey.get(from)?.health || { key: "unknown", label: "无记录" };
+    const targetHealth = nodesByKey.get(to)?.health || { key: "unknown", label: "无记录" };
+    if (sourceHealth.key === "critical" && !["healthy", "running"].includes(targetHealth.key)) {
+      return { key: "interrupted", label: "中断", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(from)?.label || "上游节点"}有真实异常记录，下游交接未确认完成。` };
+    }
+    if (targetHealth.key === "critical" || targetHealth.key === "warning" || (sourceHealth.key === "warning" && targetHealth.key !== "healthy")) {
+      return { key: "degraded", label: "降级", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(["critical", "warning"].includes(targetHealth.key) ? to : from)?.label || "相邻节点"}处于异常或警告状态；现有证据不足以把该输入线路判为中断。` };
+    }
+    if (targetHealth.key === "running" || sourceHealth.key === "running") {
+      return { key: "running", label: "传输中", routeId, source: "run-evidence", confidence: "high", reason: "相邻节点仍在运行，线路保持活动。" };
+    }
+    if (targetHealth.key === "unknown" || sourceHealth.key === "unknown") {
+      return { key: "unknown", label: "待确认", routeId, source: "run-evidence", confidence: "", reason: "缺少相邻节点的运行记录，不推测线路中断。" };
+    }
+    return { key: "healthy", label: "正常", routeId, source: "run-evidence", confidence: "high", reason: "上下游节点均有正常完成记录。" };
+  }
+
   function globalSchedulerLineageModel(runs, stages) {
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
@@ -1438,6 +1527,10 @@
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const selectionHealth = combinedRunHealth(selectionRuns);
     const intelligenceHealth = runHealth(intelligenceRun);
+    const strategicSearchHealth = newsStageHealth(stages.find((stage) => stage.key === "search"), strategicHealth);
+    const strategicAiHealth = newsStageHealth(stages.find((stage) => stage.key === "ai"), strategicHealth);
+    const strategicDedupeHealth = newsStageHealth(stages.find((stage) => stage.key === "dedupe"), strategicHealth);
+    const strategicOutputHealth = newsStageHealth(stages.find((stage) => stage.key === "push"), strategicHealth);
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
     const expectedInsightCount = Number(
       intelligenceRun.operational_summary?.model_analysis?.focuses_expected
@@ -1543,10 +1636,10 @@
     const sourceDiscoverySummary = sourceDiscoveryRun.operational_summary || intelligenceRun.operational_summary?.news_database_signals || {};
     const nodes = [
       { key: "strategic", label: "07:30 / 14:00 战略新闻扫描", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}次`, note: runs.length ? `最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["搜索引擎、固定来源与03:00页面变化线索共同进入候选池", ...runs.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`)], evidence: runs.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, health: strategicHealth, variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
+      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: `当天 ${runs.length} 次运行合计`, health: strategicSearchHealth, variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
+      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`, health: strategicAiHealth, variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
+      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicDedupeHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
+      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicOutputHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
       { key: "news-selection-agent", label: "新闻自动初筛", value: selectionRuns.length ? `纳入周报 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `纳入滚动栏 ${number(selectionSummary.appAccepted)} 条` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`权威批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
       { key: "app-result", label: "纳入滚动栏", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.appMachineRows.length)} 条 · 人工 ${number(reviewResults.appHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条；人工纳入 ${number(reviewResults.appHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
       { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.weeklyMachineRows.length)} 条 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
@@ -1567,9 +1660,18 @@
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
     ];
+    const nodesByKey = new Map(nodes.map((node) => [node.key, node]));
+    const routeAssessments = activeLineageRouteAssessments(selectedDate);
+    const edgesWithStatus = edges.map(([from, to, label, kind]) => [
+      from,
+      to,
+      label,
+      kind,
+      newsLineageEdgeStatus(from, to, nodesByKey, selectedDate, routeAssessments),
+    ]);
     return {
       nodes,
-      edges,
+      edges: edgesWithStatus,
       canvasSize: [1850, 680],
       feedbackLabel: "历史记录用于下一轮去重",
       laneLabels: [
@@ -1650,6 +1752,13 @@
       const length = path.getTotalLength();
       const point = path.getPointAtLength(path.dataset.kind === "feedback-side" ? length * .1 : length / 2);
       label.style.transform = `translate(${point.x}px,${point.y - 13}px) translate(-50%,-50%)`;
+    });
+    document.querySelectorAll("[data-news-lineage-state]").forEach((label) => {
+      const path = document.querySelector(`#newsLineageEdge${label.dataset.edgeIndex}`);
+      if (!path) return;
+      const length = path.getTotalLength();
+      const point = path.getPointAtLength(path.dataset.kind === "feedback-side" ? length * .1 : length / 2);
+      label.style.transform = `translate(${point.x}px,${point.y + 13}px) translate(-50%,-50%)`;
     });
   }
 
@@ -2191,15 +2300,16 @@
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-health-legend" aria-label="系统健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div>
+        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
             <div class="news-lineage-stage" data-news-lineage-stage style="width:${lineageWidth}px;height:${lineageHeight}px">
             <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:1;width:${lineageWidth}px;height:${lineageHeight}px">
-              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind], index) => `<g class="news-lineage-edge is-${esc(kind)}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
-              <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
+              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
+              <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
+              <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk", "running"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}"><i aria-hidden="true">${line.key === "interrupted" ? "×" : line.key === "degraded" ? "!" : "•"}</i>${esc(line.label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
@@ -2476,7 +2586,8 @@
     const rows = state.tasks.map((task, index) => ({ task, index, status: faultStatus(task) })).filter(({ task, status }) => {
       if (state.faultFilters.status !== "all" && status.key !== state.faultFilters.status) return false;
       if (state.faultFilters.kind !== "all" && task.kind !== state.faultFilters.kind) return false;
-      return !query || [task.title, task.scope, task.phase, task.alarm_type, task.alarm_reason, task.summary, task.error, task.impact, task.resolution_type_label, task.resolution_reason, task.recovery_cause, task.verification_summary, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
+      const routeSearchText = (Array.isArray(task.affected_routes) ? task.affected_routes : []).map((route) => `${route?.label || ""} ${route?.reason || ""}`).join(" ");
+      return !query || [task.title, task.scope, task.phase, task.alarm_type, task.alarm_reason, task.summary, task.error, task.impact, task.resolution_type_label, task.resolution_reason, task.recovery_cause, task.verification_summary, routeSearchText, task.kind].some((value) => String(value || "").toLowerCase().includes(query));
     });
     const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
     const direction = state.faultSort.direction === "asc" ? 1 : -1;
@@ -2511,6 +2622,9 @@
     const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], [task.handler_source === "feishu_robot" ? "机器人处理时间" : "人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
     const confirmedFacts = Array.isArray(task.confirmed_facts) ? task.confirmed_facts.filter(Boolean) : [];
     const inferences = Array.isArray(task.inferences) ? task.inferences.filter(Boolean) : [];
+    const affectedRoutes = Array.isArray(task.affected_routes) ? task.affected_routes.filter((route) => route && typeof route === "object") : [];
+    const routeImpactLabels = { interrupted: "中断", degraded: "降级", at_risk: "有风险" };
+    const routeConfidenceLabels = { high: "高置信", medium: "中置信", low: "低置信" };
     const resolutionEvidence = Array.isArray(task.resolution_evidence) ? task.resolution_evidence.filter(Boolean) : [];
     const resolutionAction = task.resolution_action && typeof task.resolution_action === "object" ? task.resolution_action : {};
     const actionSummary = resolutionAction.performed ? `已执行：${resolutionAction.type || "未命名动作"}` : "未执行自动修复动作";
@@ -2519,6 +2633,7 @@
       ${confirmedFacts.length ? `<section class="fault-detail-section"><h3>已确认事实</h3><ul>${confirmedFacts.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
       ${inferences.length ? `<section class="fault-detail-section is-inference"><h3>分析推断</h3><ul>${inferences.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
       ${task.diagnosis_summary ? `<section class="fault-detail-section"><h3>LLM 告警总结</h3><p>${esc(task.diagnosis_summary)}</p><small>模型：${esc(task.diagnosis_model || "—")} · 来源：${esc(task.diagnosis_source || "未记录")}</small></section>` : ""}
+      <section class="fault-detail-section fault-route-impact"><h3>受影响线路 · LLM 受限复核</h3>${affectedRoutes.length ? `<div>${affectedRoutes.map((route) => `<article class="is-${esc(route.impact || "at_risk")}"><header><strong>${esc(route.label || route.route_id || "未命名线路")}</strong><span>${esc(routeImpactLabels[route.impact] || "待核对")} · ${esc(routeConfidenceLabels[route.confidence] || "置信度未记录")}</span></header><p>${esc(route.reason || "未记录判断依据。")}</p></article>`).join("")}</div>` : `<p>本次告警未识别到与三线监控图直接相关的受影响线路；系统不会把无证据的相邻线路标记为中断。</p>`}<small>模型只能从系统候选线路中选择；仅高置信度中断可触发红色断线。</small></section>
       <section class="fault-detail-section fault-resolution"><h3>解决原因 · ${esc(task.resolution_type_label || "尚未结案")}</h3><p>${esc(faultResolutionReason(task))}</p><small>${esc(actionSummary)}</small></section>
       ${task.resolution_summary ? `<section class="fault-detail-section"><h3>LLM 结案总结</h3><p>${esc(task.resolution_summary)}</p><p><strong>验证结论：</strong>${esc(task.verification_summary || "—")}</p><p><strong>剩余风险：</strong>${esc(task.remaining_risk || "—")}</p><small>模型：${esc(task.resolution_model || "—")}</small></section>` : ""}
       ${resolutionEvidence.length ? `<section class="fault-detail-section"><h3>结案验证证据</h3><ul>${resolutionEvidence.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
@@ -2554,6 +2669,7 @@
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
+      if (document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");
