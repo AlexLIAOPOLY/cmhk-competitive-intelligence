@@ -62,7 +62,7 @@ delete_release_dir() {
   find "$candidate" -depth -delete
 }
 
-running_strategic_tasks() {
+running_protected_tasks() {
   local payload
   if [[ "${CMHK_RELOAD_FORCE_INDEX_FALLBACK:-0}" != "1" ]] \
     && payload="$(/usr/bin/curl -fsS --max-time 3 "$TASKS_URL" 2>/dev/null)"; then
@@ -72,10 +72,11 @@ import sys
 
 payload = json.load(sys.stdin)
 tasks = payload.get("tasks") or []
+protected_kinds = {"strategic-news", "news-selection-agent"}
 print(sum(
     1
     for task in tasks
-    if task.get("kind") == "strategic-news"
+    if (task.get("task_kind") or task.get("kind")) in protected_kinds
     and task.get("run_status") == "running"
 ))
 '
@@ -98,10 +99,11 @@ elif isinstance(payload, list):
     tasks = payload
 else:
     raise TypeError("crawl-run registry must be a list or object")
+protected_kinds = {"strategic-news", "news-selection-agent"}
 print(sum(
     1
     for task in tasks
-    if (task.get("task_kind") or task.get("kind")) == "strategic-news"
+    if (task.get("task_kind") or task.get("kind")) in protected_kinds
     and task.get("run_status") == "running"
 ))
 PY
@@ -116,8 +118,9 @@ running_frequency_pipeline_tasks() {
   fi
 }
 
-if [[ "${1:-}" == "--count-running-strategic" ]]; then
-  running_strategic_tasks
+if [[ "${1:-}" == "--count-running-strategic" ]] \
+  || [[ "${1:-}" == "--count-running-protected" ]]; then
+  running_protected_tasks
   exit
 fi
 
@@ -150,7 +153,7 @@ wait_until_idle_or_midnight() {
       log "Daily midnight cutoff reached; queued release may interrupt the remaining strategic task."
       return 0
     fi
-    if ! first_count="$(running_strategic_tasks)"; then
+    if ! first_count="$(running_protected_tasks)"; then
       log "Task API unavailable; preserving the current Web process."
       sleep "$CHECK_INTERVAL_SECONDS"
       continue
@@ -165,7 +168,7 @@ wait_until_idle_or_midnight() {
       continue
     fi
     sleep "$CHECK_INTERVAL_SECONDS"
-    if ! second_count="$(running_strategic_tasks)"; then
+    if ! second_count="$(running_protected_tasks)"; then
       continue
     fi
     if (( second_count == 0 )); then

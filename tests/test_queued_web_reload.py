@@ -49,6 +49,8 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn('bootstrap "$DOMAIN" "$WEB_PLIST"', worker)
         self.assertIn('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"', worker)
         self.assertIn("running_frequency_pipeline_tasks", worker)
+        self.assertIn("running_protected_tasks", worker)
+        self.assertIn('"news-selection-agent"', worker)
         self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
         self.assertIn("web-reload-queue.lock", queue)
@@ -70,7 +72,7 @@ class QueuedWebReloadTests(unittest.TestCase):
             worker.index('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"'),
         )
 
-    def test_worker_fallback_counts_running_strategic_crawl(self):
+    def test_worker_fallback_counts_running_protected_tasks(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             runtime = Path(temporary_directory)
             registry = runtime / "agent_knowledge" / "crawl_run_logs" / "index.json"
@@ -78,6 +80,7 @@ class QueuedWebReloadTests(unittest.TestCase):
             registry.write_text(
                 '['
                 '{"task_kind": "strategic-news", "run_status": "running"},'
+                '{"task_kind": "news-selection-agent", "run_status": "running"},'
                 '{"task_kind": "strategic-news", "run_status": "completed"},'
                 '{"task_kind": "main-crawl", "run_status": "running"}'
                 ']',
@@ -100,7 +103,7 @@ class QueuedWebReloadTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             )
-            self.assertEqual(result.stdout.strip(), "1")
+            self.assertEqual(result.stdout.strip(), "2")
 
     def test_worker_fallback_fails_closed_for_missing_registry(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

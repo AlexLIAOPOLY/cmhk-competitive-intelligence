@@ -1123,6 +1123,24 @@ def _recover_pending_review_selection_batches(
         return []
     batch: dict[str, Any] | None = None
     for candidate in batches:
+        candidate_key = _clean_text(candidate.get("idempotency_key"), 120)
+        archive = _read_json(_scan_run_path(candidate_key), {}) if candidate_key else {}
+        archive_selection = (
+            archive.get("selection_agent") if isinstance(archive, dict) else None
+        )
+        if (
+            isinstance(archive, dict)
+            and archive.get("status") == "completed"
+            and archive.get("slot") == candidate_key
+            and isinstance(archive_selection, dict)
+            and str(archive_selection.get("status") or "")
+            in {"failed", "retry_pending"}
+        ):
+            # Scan-owned batches are retried by _recover_pending_selection_agents,
+            # which also amends the parent archive and task. Letting this generic
+            # queue retry the same key creates a second model run and incident in
+            # the same monitor cycle.
+            continue
         last_attempt_at = _crawl_record_time(
             candidate,
             "last_attempt_at",

@@ -951,6 +951,42 @@ class StrategicBriefingTests(unittest.TestCase):
         acknowledge.assert_not_called()
         fail.assert_not_called()
 
+    def test_scan_owned_selection_batch_is_not_retried_by_generic_queue(self):
+        now = datetime(2026, 8, 30, 14, 30, tzinfo=briefing.HKT)
+        slot_key = "2026-08-30@14:00"
+        batch = {
+            "status": "retry_pending",
+            "idempotency_key": slot_key,
+            "sheet_id": "sheet-1",
+            "new_items": [{"news_id": "NEWS-1"}],
+            "attempt_count": 1,
+            "last_attempt_at": "2026-08-30T14:00:00+08:00",
+        }
+        archive = {
+            "slot": slot_key,
+            "status": "completed",
+            "selection_agent": {"status": "retry_pending"},
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            with (
+                mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+                mock.patch(
+                    "cmhk.intelligence.news_review_sheet.pending_selection_batches",
+                    return_value=[batch],
+                ),
+                mock.patch(
+                    "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+                ) as run_selection,
+            ):
+                briefing._atomic_write_json(briefing._scan_run_path(slot_key), archive)
+                result = briefing._recover_pending_review_selection_batches(
+                    {},
+                    now=now,
+                )
+
+        self.assertEqual(result, [])
+        run_selection.assert_not_called()
+
     def test_cooling_retry_does_not_block_a_fresh_background_batch(self):
         now = datetime(2026, 8, 30, 10, 5, tzinfo=briefing.HKT)
         cooling = {

@@ -616,6 +616,16 @@ def _invoke_langchain(
     targets: list[dict[str, Any]],
 ) -> tuple[dict[str, Any], str]:
     config = load_ai_config(include_key=True)
+    required_candidate_ids = [
+        _text(item.get("news_id"), 80)
+        for item in targets
+        if _text(item.get("news_id"), 80)
+    ]
+    # Put the changing, authoritative candidates before the much larger shared
+    # history prefix. Some compatible gateways reuse long prompt prefixes; a
+    # per-call token at the front also prevents a stale completion for another
+    # candidate from being replayed during singleton supplementation.
+    request_id = f"news-selection-{uuid.uuid4().hex}"
     system_prompt = (
         "你是 CMHK 每日新闻选材偏好学习 Agent。你只从已提供的历史人工决策中归纳习惯，"
         "并对本轮候选分别判断 APP 滚动新闻与双周报。两个字段互相独立。"
@@ -626,12 +636,19 @@ def _invoke_langchain(
         "weekly_preference_summary、decisions。decisions 每项必须有 news_id、"
         "app_status、weekly_status、app_confidence、weekly_confidence、reason。"
         "状态只能是接受或不接受，confidence 为 0 至 1。"
+        "decisions 必须与 required_candidate_ids 一一对应，并逐字复制 news_id；"
+        "不得返回清单以外或上一次请求的候选。"
     )
     user_prompt = json.dumps(
         {
-            "human_examples": examples,
+            "request_id": request_id,
+            "required_candidate_ids": required_candidate_ids,
             "current_candidates": targets,
-            "instruction": "归纳可复用偏好并逐条判断；不可遗漏任何 current_candidates。",
+            "instruction": (
+                "先逐字核对 required_candidate_ids，再归纳可复用偏好并逐条判断；"
+                "不可遗漏、替换或复用其他轮次的候选。"
+            ),
+            "human_examples": examples,
         },
         ensure_ascii=False,
     )
@@ -779,6 +796,7 @@ def _invoke_langchain_batches(
             if isinstance(item, dict)
         }
         supplemented_count = 0
+        stale_supplement_count = 0
         # Retry valid-but-incomplete JSON in small groups, then one candidate at
         # a time. Persistent omissions must fail the run, not be rewritten into
         # negative editorial decisions.
@@ -799,7 +817,21 @@ def _invoke_langchain_batches(
                     supplement_start : supplement_start + supplement_size
                 ]
                 supplement, supplement_model = _invoke_langchain(examples, supplement_targets)
-                payload.setdefault("decisions", []).extend(supplement.get("decisions") or [])
+                supplement_ids = {item["news_id"] for item in supplement_targets}
+                supplement_decisions = [
+                    item
+                    for item in (supplement.get("decisions") or [])
+                    if isinstance(item, dict)
+                ]
+                matching_decisions = [
+                    item
+                    for item in supplement_decisions
+                    if _text(item.get("news_id"), 80) in supplement_ids
+                ]
+                stale_supplement_count += len(supplement_decisions) - len(
+                    matching_decisions
+                )
+                payload.setdefault("decisions", []).extend(matching_decisions)
                 payload["_format_repaired"] = bool(
                     payload.get("_format_repaired") or supplement.get("_format_repaired")
                 )
@@ -817,6 +849,7 @@ def _invoke_langchain_batches(
                 f"LangChain 多轮补判后仍遗漏 {len(missing_targets)} 条候选：{missing_ids}"
             )
         payload["_supplemented_count"] = supplemented_count
+        payload["_stale_supplement_count"] = stale_supplement_count
         payload["_fallback_count"] = 0
         payloads.append(payload)
         model_names.append(model_name)
@@ -827,6 +860,10 @@ def _invoke_langchain_batches(
         ),
         "_supplemented_count": sum(
             int(payload.get("_supplemented_count") or 0) for payload in payloads
+        ),
+        "_stale_supplement_count": sum(
+            int(payload.get("_stale_supplement_count") or 0)
+            for payload in payloads
         ),
         "_fallback_count": sum(
             int(payload.get("_fallback_count") or 0) for payload in payloads
@@ -1148,6 +1185,17 @@ def _run_news_selection_agent_locked(
                         stream_log_path,
                         "遗漏候选补判",
                         f"首轮模型结果遗漏候选；已单独补判 {int(model_payload['_supplemented_count'])} 条并通过完整性校验。",
+                    )
+                if int(model_payload.get("_stale_supplement_count") or 0):
+                    _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "模型候选错配隔离",
+                        (
+                            "补判返回了其他轮次或其他候选的结果；已丢弃 "
+                            f"{int(model_payload['_stale_supplement_count'])} 条错配结果，"
+                            "并使用候选优先的新请求重新补判。"
+                        ),
                     )
                 model_decisions = _normalized_decisions(model_payload, targets)
                 for decision in model_decisions:

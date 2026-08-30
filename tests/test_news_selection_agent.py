@@ -264,6 +264,44 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(payload["decisions"], repaired_payload["decisions"])
         self.assertEqual(fake_model.invoke.call_count, 2)
 
+    def test_langchain_places_unique_candidate_manifest_before_history(self):
+        payload = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-TARGET",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "测试",
+                }
+            ]
+        }
+        fake_model = mock.Mock()
+        fake_model.invoke.return_value = SimpleNamespace(
+            content=json.dumps(payload, ensure_ascii=False)
+        )
+        examples = [{"news_id": "NEWS-HISTORY", "summary": "历史" * 500}]
+
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
+        ):
+            agent._invoke_langchain(examples, [{"news_id": "NEWS-TARGET"}])
+            first_prompt = fake_model.invoke.call_args.args[0][1].content
+            agent._invoke_langchain(examples, [{"news_id": "NEWS-TARGET"}])
+            second_prompt = fake_model.invoke.call_args.args[0][1].content
+
+        first_payload = json.loads(first_prompt)
+        second_payload = json.loads(second_prompt)
+        self.assertEqual(first_payload["required_candidate_ids"], ["NEWS-TARGET"])
+        self.assertLess(
+            first_prompt.index('"current_candidates"'),
+            first_prompt.index('"human_examples"'),
+        )
+        self.assertNotEqual(first_payload["request_id"], second_payload["request_id"])
+
     def test_batches_supplement_model_omissions(self):
         targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
         first = {
@@ -306,6 +344,53 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(
             {item["news_id"] for item in payload["decisions"]},
             {"NEWS-1", "NEWS-2"},
+        )
+
+    def test_batches_discard_stale_supplement_before_singleton_retry(self):
+        targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
+        first = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.9,
+                    "reason": "首轮",
+                }
+            ]
+        }
+        stale = {"decisions": [dict(first["decisions"][0])]}
+        corrected = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-2",
+                    "app_status": "不接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.8,
+                    "weekly_confidence": 0.8,
+                    "reason": "候选优先重试",
+                }
+            ]
+        }
+
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[
+                (first, "model"),
+                (stale, "model"),
+                (corrected, "model"),
+            ],
+        ) as invoke:
+            payload, _model = agent._invoke_langchain_batches([], targets)
+
+        self.assertEqual(invoke.call_count, 3)
+        self.assertEqual(payload["_supplemented_count"], 1)
+        self.assertEqual(payload["_stale_supplement_count"], 1)
+        self.assertEqual(
+            [item["news_id"] for item in payload["decisions"]],
+            ["NEWS-1", "NEWS-2"],
         )
 
     def test_persistent_model_omission_fails_instead_of_auto_rejecting(self):
