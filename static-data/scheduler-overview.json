@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-31T03:36:26+08:00",
+  "checked_at_hkt": "2026-08-31T03:41:32+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -741,9 +741,9 @@
       "run_status": "running",
       "backend_pid": 10985,
       "worker_pid": 10985,
-      "phase": "战略总览来源复查",
-      "progress_detail": "正在逐一复查当前战略总览四域所引用的官方文件，结果只写审计旁路，不覆盖已核验数值。",
-      "heartbeat_at_hkt": "2026-08-31T03:35:05+08:00",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点逐一执行深层解释、简洁度与事实门禁。",
+      "heartbeat_at_hkt": "2026-08-31T03:36:42+08:00",
       "started_at_hkt": "2026-08-31T03:31:13+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -751,8 +751,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260831_033113_729673.jsonl"
       },
       "stream_log": {
-        "bytes": 1907,
-        "lines": 12
+        "bytes": 2341,
+        "lines": 14
       },
       "final_audit": {},
       "run_log": {},
