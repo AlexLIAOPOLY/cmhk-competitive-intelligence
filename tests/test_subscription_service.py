@@ -8,6 +8,8 @@ from contextlib import closing
 from pathlib import Path
 from unittest import mock
 
+from docx import Document
+
 from cmhk.services.subscriptions import (
     SubscriptionService,
     encode_strategic_news_digest,
@@ -135,6 +137,19 @@ class SubscriptionServiceTests(unittest.TestCase):
         sidecar_path = Path(str(report_path) + ".quality.json")
         sidecar_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
         return sidecar_path
+
+    def _write_weekly_report(self, report_path: Path, *, detail: str = "") -> Path:
+        document = Document()
+        document.add_paragraph("战略双周报")
+        document.add_paragraph(
+            detail
+            or (
+                "测试主体公布经审核的业务进展，披露具体参与范围、执行时间和当前状态。"
+                "第二句继续说明可核验的关键数字、后续安排及业务影响，确保正文不是标题重复或网页导航。"
+            )
+        )
+        document.save(report_path)
+        return report_path
 
     def test_card_is_card_2_form_with_three_services(self):
         card = subscription_entry_card(
@@ -581,7 +596,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "测试周报.docx"
-        report.write_bytes(b"docx placeholder")
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
         pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
         pdf.parent.mkdir(parents=True)
         pdf.write_bytes(b"%PDF-1.7\n")
@@ -602,7 +618,8 @@ class SubscriptionServiceTests(unittest.TestCase):
 
     def test_reports_reject_non_pdf_delivery_modes(self):
         report = self.root / "测试周报.docx"
-        report.write_bytes(b"docx placeholder")
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
         with self.assertRaisesRegex(ValueError, "只支持 PDF"):
             self.service.push(service="weekly", mode="text", path=report.name, test_open_id="ou_test123")
 
@@ -610,7 +627,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "语音周报.docx"
-        report.write_bytes(b"docx placeholder")
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
         pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
         pdf.parent.mkdir(parents=True)
         pdf.write_bytes(b"%PDF-1.7\n")
@@ -636,11 +654,61 @@ class SubscriptionServiceTests(unittest.TestCase):
             "var/subscriptions/outbound/CMHK_战略双周报_语音周报_音频.opus",
         )
 
+    def test_report_audio_accepts_tts_safe_name_for_numbered_report(self):
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+
+        report = self.root / "语音周报 (3).docx"
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
+        pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+        pdf.parent.mkdir(parents=True)
+        pdf.write_bytes(b"%PDF-1.7\n")
+        audio = self.root / "audio" / "语音周报 3.opus"
+        audio.parent.mkdir()
+        audio.write_bytes(b"OggS-safe-name")
+
+        result = self.service.push(
+            service="weekly",
+            mode="pdf_audio",
+            path=report.name,
+            test_open_id="ou_test123",
+        )
+
+        self.assertEqual(len(result["results"][0]["message_ids"]), 2)
+        audio_send = next(
+            call for call in self.lark.calls
+            if "+messages-send" in call and "--audio" in call
+        )
+        sent_audio = self.root / audio_send[audio_send.index("--audio") + 1]
+        self.assertEqual(sent_audio.read_bytes(), b"OggS-safe-name")
+
+    def test_missing_audio_fails_before_sending_pdf(self):
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+
+        report = self.root / "缺语音周报.docx"
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
+        pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+        pdf.parent.mkdir(parents=True)
+        pdf.write_bytes(b"%PDF-1.7\n")
+
+        result = self.service.push(
+            service="weekly",
+            mode="pdf_audio",
+            path=report.name,
+            test_open_id="ou_test123",
+        )
+
+        self.assertEqual(result["results"][0]["status"], "failed")
+        self.assertIn("尚无可推送语音", result["results"][0]["error"])
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+
     def test_bulk_report_audio_respects_each_subscriber_preference(self):
         from cmhk.reporting.pdf_preview import pdf_preview_path
 
         report = self.root / "偏好周报.docx"
-        report.write_bytes(b"docx placeholder")
+        self._write_weekly_report(report)
+        self._write_weekly_quality_sidecar(report)
         pdf = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
         pdf.parent.mkdir(parents=True)
         pdf.write_bytes(b"%PDF-1.7\n")
@@ -914,7 +982,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         def run_with_generated_report(argv, timeout=45):
             if any("generate_weekly_report.py" in item for item in argv):
                 report_path = self.root / "8月30日周报.docx"
-                report_path.write_bytes(b"generated")
+                self._write_weekly_report(report_path)
                 self._write_weekly_quality_sidecar(report_path)
                 return subprocess.CompletedProcess(argv, 0, "generated", "")
             return self.lark(argv, timeout=timeout)
@@ -942,8 +1010,14 @@ class SubscriptionServiceTests(unittest.TestCase):
             if any("generate_weekly_report.py" in item for item in argv):
                 first = self.root / "8月30日周报.docx"
                 latest = self.root / "8月30日周报 (1).docx"
-                first.write_bytes(b"first")
-                latest.write_bytes(b"latest")
+                self._write_weekly_report(first)
+                self._write_weekly_report(
+                    latest,
+                    detail=(
+                        "最新报告披露经审核的业务进展，并列明参与范围、执行时点与当前状态。"
+                        "后续说明补充可核验数字、具体安排和业务影响，供正式订阅者阅读。"
+                    ),
+                )
                 self._write_weekly_quality_sidecar(first)
                 self._write_weekly_quality_sidecar(latest, detail_chars=110)
                 first_mtime = first.stat().st_mtime_ns
@@ -1030,6 +1104,26 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("哈希与待推送 Word 不一致", result["error"])
         deliver.assert_not_called()
+
+    def test_weekly_push_rejects_navigation_noise_even_with_passed_sidecar(self):
+        report = self.root / "含网页导航噪声周报.docx"
+        self._write_weekly_report(
+            report,
+            detail=(
+                "发掘 SmarTone 精选服务计划，5G计划任你拣，总有一个适合你。"
+                "数据用量 - 高至低。数据用量 - 低至高。价格 - 高至低。价格 - 低至高。"
+            ),
+        )
+        self._write_weekly_quality_sidecar(report)
+
+        with self.assertRaisesRegex(RuntimeError, "排序、导航或营销按钮噪声"):
+            self.service.push(
+                service="weekly",
+                mode="pdf",
+                path=report.name,
+                test_open_id="ou_test123",
+            )
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
 
     def test_due_report_does_not_generate_without_an_active_weekly_subscriber(self):
         from datetime import datetime

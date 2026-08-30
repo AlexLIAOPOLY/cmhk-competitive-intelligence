@@ -821,6 +821,13 @@ class BiweeklyDocxDirectoryTests(unittest.TestCase):
             rendered.save(output_path)
             reopened = Document(output_path)
 
+        department_line = next(
+            paragraph for paragraph in reopened.paragraphs
+            if paragraph.text.startswith("中国移动香港公司战略部")
+        )
+        self.assertEqual(department_line.text, "中国移动香港公司战略部\t2026年7月15日")
+        self.assertIsNotNone(department_line._p.pPr.tabs)
+
         texts = [paragraph.text.strip() for paragraph in reopened.paragraphs]
         toc_title_index = texts.index("目 录")
         body_start = texts.index("政治资讯", toc_title_index + 1)
@@ -836,6 +843,15 @@ class BiweeklyDocxDirectoryTests(unittest.TestCase):
         self.assertEqual(toc_entries, expected_entries)
         self.assertTrue(all("【测试标签】" not in entry for entry in toc_entries))
         self.assertTrue(all(not re.match(r"^\d+[.、]", entry) for entry in toc_entries))
+        detail_paragraphs = [
+            paragraph
+            for paragraph in reopened.paragraphs
+            if paragraph.text.startswith("据测试来源于2026年7月15日发布的信息")
+        ]
+        self.assertEqual(len(detail_paragraphs), len(expected_entries))
+        self.assertTrue(
+            all(paragraph.paragraph_format.keep_together is True for paragraph in detail_paragraphs)
+        )
 
 
 if __name__ == "__main__":

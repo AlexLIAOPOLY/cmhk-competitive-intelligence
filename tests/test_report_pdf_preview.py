@@ -1,9 +1,14 @@
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview, pdf_preview_path
+from cmhk.reporting.pdf_preview import (
+    _convert_with_microsoft_word,
+    convert_docx_to_pdf_preview,
+    pdf_preview_path,
+)
 
 
 class ReportPdfPreviewTests(unittest.TestCase):
@@ -32,6 +37,27 @@ class ReportPdfPreviewTests(unittest.TestCase):
 
             self.assertEqual(result.read_bytes(), b"%PDF-test")
             self.assertFalse(result.with_suffix(".pdf.tmp").exists())
+
+    def test_word_close_timeout_does_not_discard_exported_pdf(self):
+        with tempfile.TemporaryDirectory() as temp_name:
+            root = Path(temp_name)
+            source = root / "sample.docx"
+            target = root / "previews" / "sample.pdf"
+            source.write_bytes(b"word")
+
+            def fake_run(command, **_kwargs):
+                if command[:2] == ["osascript", "-"]:
+                    Path(command[-1]).write_bytes(b"%PDF-word")
+                    return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+                if command[:2] == ["osascript", "-e"]:
+                    raise subprocess.TimeoutExpired(command, 10)
+                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+
+            with patch("cmhk.reporting.pdf_preview.subprocess.run", side_effect=fake_run):
+                _convert_with_microsoft_word(source, target, timeout=120)
+
+            self.assertEqual(target.read_bytes(), b"%PDF-word")
+            self.assertFalse(target.with_suffix(".pdf.tmp").exists())
 
 
 if __name__ == "__main__":

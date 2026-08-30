@@ -19,12 +19,13 @@ from zoneinfo import ZoneInfo
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph
 from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
+from cmhk.reporting.weekly_quality import weekly_text_has_navigation_noise
 from bs4 import BeautifulSoup
 import httpx
 from opencc import OpenCC
@@ -149,11 +150,16 @@ def weekly_supplemental_evidence() -> dict[str, dict]:
         payload = json.loads(WEEKLY_SUPPLEMENTAL_EVIDENCE.read_text(encoding="utf-8"))
     except Exception:
         return {}
-    return {
-        _canonical_summary_text(item.get("title")): item
-        for item in payload.get("items") or []
-        if clean_text(item.get("title")) and clean_text(item.get("detail"))
-    }
+    evidence_by_title: dict[str, dict] = {}
+    for item in payload.get("items") or []:
+        if not isinstance(item, dict) or not clean_text(item.get("detail")):
+            continue
+        titles = [item.get("title"), *(item.get("aliases") or [])]
+        for title in titles:
+            key = _canonical_summary_text(title)
+            if key:
+                evidence_by_title[key] = item
+    return evidence_by_title
 
 
 def dated_weekly_docx_path(
@@ -765,7 +771,9 @@ def summary_has_search_noise(value: object) -> bool:
         r"(?:Konfiden|Конфиденциальность|просмотров|Условия)",
         r"(?:www\.|https?://|\.com\b|\.cn\b|\.fr\b)",
     )
-    return any(re.search(pattern, text, flags=re.I) for pattern in noise_patterns)
+    return weekly_text_has_navigation_noise(text) or any(
+        re.search(pattern, text, flags=re.I) for pattern in noise_patterns
+    )
 
 
 def _headline_evidence_overlap(headline: object, candidate_title: object) -> float:
@@ -5898,11 +5906,23 @@ def render_into_source_template(model: dict) -> Document:
             clear_paragraph(paragraph)
 
     set_template_paragraph(doc.paragraphs[company_idx], model["company"], snapshots["company"])
+    department_line = doc.paragraphs[dept_idx]
+    issue_suffix = (
+        "　" + clean_text(model.get("issueLabel"))
+        if clean_text(model.get("issueLabel"))
+        else ""
+    )
     set_template_paragraph(
-        doc.paragraphs[dept_idx],
-        f"{model['department']}                                                    "
-        f"{model['generatedDate']}{('　' + clean_text(model.get('issueLabel'))) if clean_text(model.get('issueLabel')) else ''}",
+        department_line,
+        f"{model['department']}\t{model['generatedDate']}{issue_suffix}",
         snapshots["dept"],
+    )
+    department_line.paragraph_format.tab_stops.clear_all()
+    cover_section = doc.sections[0]
+    usable_width = cover_section.page_width - cover_section.left_margin - cover_section.right_margin
+    department_line.paragraph_format.tab_stops.add_tab_stop(
+        usable_width,
+        WD_TAB_ALIGNMENT.RIGHT,
     )
     toc_paragraph = doc.paragraphs[toc_idx]
     set_template_paragraph(toc_paragraph, "目 录", snapshots["toc_title"])
@@ -5970,7 +5990,11 @@ def render_into_source_template(model: dict) -> Document:
             tag_paragraph.paragraph_format.keep_with_next = True
             title_paragraph = add_or_reuse(body_slots, doc, item["title"], snapshots["body_title"])
             title_paragraph.paragraph_format.keep_with_next = True
-            add_or_reuse(body_slots, doc, item["detail"], snapshots["body_text"])
+            detail_paragraph = add_or_reuse(body_slots, doc, item["detail"], snapshots["body_text"])
+            # A single weekly item is short enough to fit on one page. Keeping
+            # its detail paragraph together prevents Word's PDF exporter from
+            # splitting a Chinese phrase across the footer/header boundary.
+            detail_paragraph.paragraph_format.keep_together = True
             add_or_reuse(body_slots, doc, "", snapshots["body_text"])
 
     # Removing text is not enough here: unused template paragraphs retain

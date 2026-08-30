@@ -18,6 +18,7 @@ from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
 from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
+from cmhk.reporting.weekly_quality import weekly_text_has_navigation_noise
 
 
 HKT_OFFSET = "+08:00"
@@ -1528,6 +1529,14 @@ class SubscriptionService:
                 f"{examples}{suffix} 未达到每篇至少 {WEEKLY_DELIVERY_MIN_DETAIL_CHARS} 字且 "
                 f"{WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES} 句完整事实的正式版标准"
             )
+        try:
+            report_text = self._report_text(report_path)
+        except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as exc:
+            raise RuntimeError("周报发布质量门禁失败：待推送 Word 正文无法解析") from exc
+        if weekly_text_has_navigation_noise(report_text):
+            raise RuntimeError(
+                "周报发布质量门禁失败：正文含网页排序、导航或营销按钮噪声"
+            )
         return {
             "report_sha256": report_sha256,
             "quality_sidecar": sidecar_path.name,
@@ -2393,11 +2402,23 @@ class SubscriptionService:
         return chunks
 
     def _find_audio(self, report_path: Path) -> Path:
+        from tts_service import safe_audio_stem
+
         audio_dir = self.runtime_root / "audio"
-        candidates = [audio_dir / f"{report_path.stem}{suffix}" for suffix in (".opus", ".ogg", ".mp3", ".wav")]
-        source = next((item for item in candidates if item.exists()), None)
-        if source is None:
+        # TTS removes punctuation such as the parentheses in Word's numbered
+        # filenames (for example ``周报 (3).docx`` -> ``周报 3.mp3``). Accept
+        # both the literal report stem and the TTS-safe stem, and use the most
+        # recently generated file when both forms exist.
+        stems = tuple(dict.fromkeys((report_path.stem, safe_audio_stem(report_path))))
+        candidates = [
+            audio_dir / f"{stem}{suffix}"
+            for stem in stems
+            for suffix in (".opus", ".ogg", ".mp3", ".wav")
+        ]
+        existing = [item for item in candidates if item.exists()]
+        if not existing:
             raise ValueError("该报告尚无可推送语音，请先在报告库生成音频")
+        source = max(existing, key=lambda item: item.stat().st_mtime_ns)
         if source.suffix.lower() in {".opus", ".ogg"}:
             return source
         target_dir = self.runtime_root / "var" / "subscriptions" / "media"
@@ -2468,6 +2489,22 @@ class SubscriptionService:
         report_path: Path | None = None
         if service in {"weekly", "performance"}:
             report_path, _ = self._resolve_report(content_ref)
+        text_chunks: list[str] = []
+        pdf: Path | None = None
+        audio: Path | None = None
+        # Resolve and prepare every requested artifact before sending the first
+        # message. A missing audio file must not leave an untracked PDF in the
+        # recipient's chat and then queue the whole PDF+audio pair for retry.
+        if mode in {"text", "both"} and service != "news":
+            text = self._report_text(report_path)  # type: ignore[arg-type]
+            text_chunks = self._text_chunks(title, text)
+        if mode in {"pdf", "pdf_audio"}:
+            pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
+            pdf = self._named_delivery_copy(pdf, report_path, service, "pdf")  # type: ignore[arg-type]
+        if mode in {"audio", "both", "pdf_audio"}:
+            audio = self._find_audio(report_path)  # type: ignore[arg-type]
+            audio = self._named_delivery_copy(audio, report_path, service, "audio")  # type: ignore[arg-type]
+
         message_ids: list[str] = []
         if mode in {"text", "both"}:
             if service == "news":
@@ -2482,8 +2519,7 @@ class SubscriptionService:
                     profile=profile,
                 ))
             else:
-                text = self._report_text(report_path)  # type: ignore[arg-type]
-                for index, chunk in enumerate(self._text_chunks(title, text), start=1):
+                for index, chunk in enumerate(text_chunks, start=1):
                     message_ids.append(self._send_markdown(
                         open_id,
                         chunk,
@@ -2491,20 +2527,16 @@ class SubscriptionService:
                         profile=profile,
                     ))
         if mode in {"pdf", "pdf_audio"}:
-            pdf = self._report_pdf(report_path)  # type: ignore[arg-type]
-            pdf = self._named_delivery_copy(pdf, report_path, service, "pdf")  # type: ignore[arg-type]
             message_ids.append(self._send_file(
                 open_id,
-                pdf,
+                pdf,  # type: ignore[arg-type]
                 idempotency_key=f"{batch_id}-p-{open_id[-6:]}",
                 profile=profile,
             ))
         if mode in {"audio", "both", "pdf_audio"}:
-            audio = self._find_audio(report_path)  # type: ignore[arg-type]
-            audio = self._named_delivery_copy(audio, report_path, service, "audio")  # type: ignore[arg-type]
             message_ids.append(self._send_audio(
                 open_id,
-                audio,
+                audio,  # type: ignore[arg-type]
                 idempotency_key=f"{batch_id}-a-{open_id[-6:]}",
                 profile=profile,
             ))
@@ -2863,6 +2895,8 @@ class SubscriptionService:
         content_ref = ""
         if service in {"weekly", "performance"}:
             report_path, content_ref = self._resolve_report(path)
+            if service == "weekly":
+                self._validate_weekly_delivery_artifact(report_path)
             title = title.strip() or report_path.stem
         else:
             title = title.strip() or "战略新闻"

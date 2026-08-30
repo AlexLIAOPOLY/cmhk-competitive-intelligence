@@ -132,25 +132,28 @@ end run
         if completed.returncode != 0 or not converted.exists():
             detail = (completed.stderr or completed.stdout or "Word 未产出 PDF").strip()
             raise RuntimeError(f"Microsoft Word PDF 转换失败：{detail}")
+        pending = target.with_suffix(".pdf.tmp")
+        shutil.copy2(converted, pending)
+        pending.replace(target)
         # Word's current AppleScript dictionary exports reliably but does not
         # expose a working document close command. Close only the just-active
         # report window through the standard macOS shortcut; failure here is
         # non-fatal because the PDF has already been written.
-        subprocess.run(
-            [
-                "osascript",
-                "-e",
-                'tell application "Microsoft Word" to activate',
-                "-e",
-                'tell application "System Events" to keystroke "w" using command down',
-            ],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        pending = target.with_suffix(".pdf.tmp")
-        shutil.copy2(converted, pending)
-        pending.replace(target)
+        try:
+            subprocess.run(
+                [
+                    "osascript",
+                    "-e",
+                    'tell application "Microsoft Word" to activate',
+                    "-e",
+                    'tell application "System Events" to keystroke "w" using command down',
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (subprocess.SubprocessError, OSError):
+            pass
     finally:
         converted.unlink(missing_ok=True)

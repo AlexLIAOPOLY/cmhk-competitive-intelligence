@@ -195,6 +195,42 @@ class PublicationLabelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "网页搜索结果噪声"):
             report.validate_human_template_content(make_model(item))
 
+    def test_plan_sort_controls_and_marketing_navigation_are_rejected(self) -> None:
+        item = make_item(
+            "W001",
+            1,
+            title="SmarTone精选客户5G宽频月费低至117港元",
+        )
+        item["detail"] = (
+            "发掘 SmarTone 精选服务计划。精选服务计划。"
+            "5G计划任你拣，总有一个适合你。"
+            "数据用量 - 高至低。数据用量 - 低至高。"
+            "价格 - 高至低。价格 - 低至高。"
+        )
+
+        self.assertTrue(report.summary_has_search_noise(item["detail"]))
+        self.assertIn("正文含网页搜索结果噪声或无关片段", report.deterministic_evidence_repair_errors(item))
+        with self.assertRaisesRegex(ValueError, "网页搜索结果噪声"):
+            report.validate_human_template_content(make_model(item))
+
+    def test_verified_smartone_offer_evidence_is_publishable(self) -> None:
+        item = make_item(
+            "W001",
+            1,
+            title="SmarTone精选客户5G宽频月费低至117港元",
+        )
+        item["originalTitle"] = item["title"]
+        item["rawDetail"] = item["title"]
+        item["detail"] = item["title"]
+        item["webResearch"] = {"results": []}
+
+        repaired = report.deterministic_limited_weekly_detail(item)
+
+        self.assertIn("七天试用", repaired)
+        self.assertIn("2026年12月31日", repaired)
+        self.assertFalse(report.summary_has_search_noise(repaired))
+        self.assertEqual(report.deterministic_evidence_repair_errors({**item, "detail": repaired}), [])
+
     def test_fallback_selects_only_concise_snippet_from_matching_web_evidence(self) -> None:
         item = make_item(
             "W001",
@@ -273,6 +309,13 @@ class PublicationLabelTests(unittest.TestCase):
 
     def test_latest_report_short_items_recover_from_verified_supplemental_evidence(self) -> None:
         titles = [
+            "香港网约车服务牌照将择优而取 不设发牌上限",
+            "香港网约车牌照开放申请，平台、车辆及司机均须领牌",
+            "香港网约车平台牌照开放申请，陈美宝预计首批年底前出牌",
+            "多家网约车平台对香港牌照表达兴趣",
+            "广州南沙新增一项通行粤港澳的职业资质",
+            "港怡伙数码通在元朗首设遥距医健站",
+            "澳门五年规划拟降低博彩业增加值比重 加强与香港合作",
             "香港外贸连涨29个月超预期",
             "网上行推出全港首个符合F5G-A标准的宽频网络",
             "HKT.AI化身家居与伴学智囊",
