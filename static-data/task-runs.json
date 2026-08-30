@@ -2,6 +2,23 @@
   "ok": true,
   "tasks": [
     {
+      "task_id": "crawl:20260830_163850_597761",
+      "task_run_id": "20260830_163850_597761",
+      "title": "新闻自动初筛",
+      "kind": "news-selection-agent",
+      "kind_label": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-08-30@human-only-training-migration-v2）",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 0 条，验证 0 格，本次新写 0 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 0 条，验证 0 格，本次新写 0 格，已有 0 格；逐格回读通过。",
+      "started_at_hkt": "2026-08-30T16:38:50+08:00",
+      "heartbeat_at_hkt": "2026-08-30T16:39:22+08:00",
+      "completed_at_hkt": "2026-08-30T16:39:22+08:00",
+      "duration_ms": 32306,
+      "retry_index": 0
+    },
+    {
       "task_id": "crawl:20260830_150517_221049",
       "task_run_id": "20260830_150517_221049",
       "title": "新闻自动初筛",
@@ -815,23 +832,6 @@
       "heartbeat_at_hkt": "2026-08-29T05:10:21+08:00",
       "completed_at_hkt": "2026-08-29T05:10:21+08:00",
       "duration_ms": 1042391,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260829_032232_884664",
-      "task_run_id": "20260829_032232_884664",
-      "title": "四库与观察结论自动更新",
-      "kind": "executive-intelligence-refresh",
-      "kind_label": "四库刷新",
-      "scope": "Agent审核 scheduled_20260829_030001_119063 · 父任务 20260829_030001_119063",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "在线AI连续 3 次未通过后，已使用通过全部证据门禁的确定性回退；15个洞察及公开页面回读完整。",
-      "status_detail": "在线AI连续 3 次未通过后，已使用通过全部证据门禁的确定性回退；15个洞察及公开页面回读完整。",
-      "started_at_hkt": "2026-08-29T03:22:32+08:00",
-      "heartbeat_at_hkt": "2026-08-29T03:40:21+08:00",
-      "completed_at_hkt": "2026-08-29T03:40:21+08:00",
-      "duration_ms": 1067960,
       "retry_index": 0
     },
     {
