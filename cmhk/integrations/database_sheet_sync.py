@@ -467,19 +467,35 @@ class LarkSheetGateway:
         command = [self.cli, *args, "--as", self.identity]
         if self.profile:
             command.extend(["--profile", self.profile])
-        attempts = 3 if retry_safe else 1
+        attempts = max(
+            1,
+            int(os.environ.get("CMHK_LARK_CLI_READ_ATTEMPTS", "5")),
+        ) if retry_safe else 1
         completed: subprocess.CompletedProcess[str] | None = None
         for attempt in range(attempts):
-            completed = subprocess.run(
-                command,
-                cwd=ROOT,
-                env=lark_cli_env(),
-                input=input_text,
-                text=True,
-                capture_output=True,
-                timeout=timeout,
-                check=False,
-            )
+            try:
+                completed = subprocess.run(
+                    command,
+                    cwd=ROOT,
+                    env=lark_cli_env(),
+                    input=input_text,
+                    text=True,
+                    capture_output=True,
+                    timeout=timeout,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired as exc:
+                if retry_safe and attempt + 1 < attempts:
+                    time.sleep(min(8.0, 1.0 * (2**attempt)))
+                    continue
+                raise RuntimeError(
+                    f"lark-cli 在 {exc.timeout} 秒内未返回；已尝试 {attempt + 1} 次"
+                ) from exc
+            except OSError as exc:
+                if retry_safe and attempt + 1 < attempts:
+                    time.sleep(min(8.0, 1.0 * (2**attempt)))
+                    continue
+                raise RuntimeError(f"lark-cli 启动失败：{type(exc).__name__}") from exc
             if not completed.returncode:
                 break
             detail = (completed.stderr or completed.stdout).strip()
@@ -492,12 +508,16 @@ class LarkSheetGateway:
                     "deadline exceeded",
                     "dial tcp",
                     "connection reset",
+                    "connection refused",
+                    "connection closed",
+                    "temporary failure in name resolution",
+                    "no such host",
                     "temporarily unavailable",
                 )
             )
             if not (retry_safe and transient and attempt + 1 < attempts):
                 raise RuntimeError(detail[-1600:])
-            time.sleep(0.75 * (attempt + 1))
+            time.sleep(min(8.0, 1.0 * (2**attempt)))
         assert completed is not None
         try:
             payload = json.loads(completed.stdout)
@@ -612,6 +632,11 @@ class LarkSheetGateway:
             mapped[key] = row
         self.ignored_manual_rows = manual_rows
         self.ignored_duplicate_rows = duplicate_rows
+        if duplicate_rows:
+            raise RuntimeError(
+                f"飛書子表 {self.title} 有 {duplicate_rows} 個重複同步鍵；"
+                "為避免覆蓋錯行，本輪已停止。"
+            )
         return True, mapped, final_row
 
     def _table_put(self, rows: list[dict[str, str]], *, start_row: int, header: bool) -> None:
@@ -813,15 +838,48 @@ class LarkSheetGateway:
             if new_rows:
                 self._styles(rows, last_row)
         _, readback, readback_last = self.read_rows()
-        missing = [row["同步鍵"] for row in rows if row["同步鍵"] not in readback]
+        expected = {row["同步鍵"]: row for row in rows}
+        missing = sorted(set(expected) - set(readback))
         if missing:
             raise RuntimeError(f"飛書回讀缺少 {len(missing)} 個同步鍵；首個：{missing[0]}")
-        samples = [rows[0], rows[len(rows) // 2], rows[-1]] if rows else []
-        for row in samples:
-            actual = readback[row["同步鍵"]]
-            for header in ("資料集", "本地值", "人工修訂值", "人工備註", "版本／快照"):
+        unexpected = sorted(set(readback) - set(expected))
+        if unexpected:
+            raise RuntimeError(
+                f"飛書回讀多出 {len(unexpected)} 個帶同步鍵資料列；首個：{unexpected[0]}"
+            )
+        mismatches: list[tuple[str, str]] = []
+        for key, row in expected.items():
+            actual = readback[key]
+            for header in HEADERS:
                 if _text(actual.get(header), 800) != _text(row.get(header), 800):
-                    raise RuntimeError(f"飛書回讀不一致：{row['同步鍵']} / {header}")
+                    mismatches.append((key, header))
+                    if len(mismatches) >= 20:
+                        break
+            if len(mismatches) >= 20:
+                break
+        if mismatches:
+            first_key, first_header = mismatches[0]
+            raise RuntimeError(
+                f"飛書完整回讀有 {len(mismatches)} 個欄位不一致；"
+                f"首個：{first_key} / {first_header}"
+            )
+
+        def digest(values: dict[str, dict[str, str]]) -> str:
+            payload = [
+                [key, *[_text(values[key].get(header), 800) for header in HEADERS]]
+                for key in sorted(values)
+            ]
+            return hashlib.sha256(
+                json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+            ).hexdigest()
+
+        expected_sha256 = digest(expected)
+        readback_sha256 = digest(readback)
+        if expected_sha256 != readback_sha256:
+            raise RuntimeError("飛書完整回讀摘要不一致。")
+        tombstone_count = sum(
+            _text(row.get("資料狀態"), 120) == "本地已下線" for row in rows
+        )
         return {
             "ok": True,
             "created": created,
@@ -831,6 +889,15 @@ class LarkSheetGateway:
             "sheet_url": f"https://cmhk-try.feishu.cn/sheets/{self.token}",
             "last_row": readback_last,
             "readback_verified": True,
+            "readback_scope": "all_rows_all_core_fields",
+            "readback_expected_sha256": expected_sha256,
+            "readback_sha256": readback_sha256,
+            "coverage_ratio": 1.0,
+            "coverage_missing_keys": 0,
+            "coverage_unexpected_keys": 0,
+            "coverage_mismatch_cells": 0,
+            "active_row_count": len(rows) - tombstone_count,
+            "tombstone_row_count": tombstone_count,
             "extra_column_count": max(0, len(self.sheet_headers) - len(HEADERS)),
             "ignored_manual_rows": self.ignored_manual_rows,
             "ignored_duplicate_rows": self.ignored_duplicate_rows,
@@ -857,6 +924,7 @@ def sync_producer_database_sheet(
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
         existed, remote_rows, last_row = sheet.read_rows()
         state = _read_state(state_path)
+        effective_release_id = _text(release_id or state.get("release_id"), 180)
         records, files = _read_sources(dataset_path)
         if not records:
             raise RuntimeError("沒有可同步的競對資料列。")
@@ -873,6 +941,15 @@ def sync_producer_database_sheet(
                 row_state = state["rows"].get(record["同步鍵"], {})
                 record["人工修訂值"] = _text(row_state.get("override_value"), 160)
                 record["人工備註"] = _text(row_state.get("note"), 800)
+        if effective_release_id:
+            for record in records:
+                version = _text(record.get("版本／快照"), 180)
+                bundle_marker = f"bundle:{effective_release_id}"
+                if bundle_marker not in version:
+                    record["版本／快照"] = _text(
+                        f"{bundle_marker} · {version}" if version else bundle_marker,
+                        180,
+                    )
         _stamp_records(records, state)
         local_keys = {row["同步鍵"] for row in records}
         for key, remote in remote_rows.items():
@@ -886,7 +963,8 @@ def sync_producer_database_sheet(
         records.sort(key=lambda row: (row["資料狀態"] == "本地已下線", row["資料集"], row["主體"], row["期間"], row["指標"], row["同步鍵"]))
         state["audit"] = (state.get("audit") or [])[-999:] + audit
         state["last_pull_at"] = _now()
-        state["release_id"] = release_id
+        if release_id:
+            state["release_id"] = release_id
         _atomic_json(state_path, state)
         result = sheet.upsert_rows(
             records,
@@ -903,7 +981,7 @@ def sync_producer_database_sheet(
             "status": "synced",
             "changed_source_files": changed_files,
             "edit_audit_count": len(audit),
-            "release_id": release_id,
+            "release_id": effective_release_id,
             "message": SUCCESS_MESSAGE,
         }
 

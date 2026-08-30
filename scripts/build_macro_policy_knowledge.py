@@ -3,14 +3,16 @@
 
 from __future__ import annotations
 
-import csv
 import calendar
+import csv
 import json
 import os
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -263,9 +265,25 @@ CSD_POPULATION_METRICS: dict[str, tuple[str, str, str]] = {
 }
 
 
+def _urlopen_with_retry(request: Request, *, timeout: int):
+    attempts = max(1, int(os.environ.get("CMHK_OFFICIAL_SOURCE_READ_ATTEMPTS", "3")))
+    for attempt in range(attempts):
+        try:
+            return urlopen(request, timeout=timeout)
+        except HTTPError as exc:
+            retryable = exc.code == 429 or 500 <= exc.code < 600
+            if not (retryable and attempt + 1 < attempts):
+                raise
+        except (TimeoutError, URLError, OSError):
+            if attempt + 1 >= attempts:
+                raise
+        time.sleep(min(8.0, 1.0 * (2**attempt)))
+    raise RuntimeError("official source request exhausted retries")
+
+
 def fetch_html(url: str) -> str:
     req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urlopen(req, timeout=30) as resp:
+    with _urlopen_with_retry(req, timeout=30) as resp:
         return resp.read().decode("utf-8", "ignore")
 
 
@@ -279,7 +297,7 @@ def fetch_json(url: str, referer: str) -> dict[str, Any]:
             "Referer": referer,
         },
     )
-    with urlopen(req, timeout=45) as resp:
+    with _urlopen_with_retry(req, timeout=45) as resp:
         return json.loads(resp.read().decode("utf-8", "ignore"))
 
 
@@ -293,7 +311,7 @@ def fetch_csv_rows(url: str, referer: str = "") -> list[dict[str, str]]:
             **({"Referer": referer} if referer else {}),
         },
     )
-    with urlopen(req, timeout=45) as resp:
+    with _urlopen_with_retry(req, timeout=45) as resp:
         csv_text = resp.read().decode("utf-8-sig", "ignore")
     return list(csv.DictReader(csv_text.splitlines()))
 
@@ -313,7 +331,7 @@ def fetch_csd_post(table_id: str, query: dict[str, Any], referer: str) -> dict[s
             "Referer": referer,
         },
     )
-    with urlopen(req, timeout=45) as resp:
+    with _urlopen_with_retry(req, timeout=45) as resp:
         return json.loads(resp.read().decode("utf-8", "ignore"))
 
 
@@ -551,7 +569,7 @@ def parse_ofca_telecom_indicators() -> list[dict[str, Any]]:
 
 def parse_ofca_key_communications_statistics() -> list[dict[str, Any]]:
     req = Request(OFCA_KEY_STATS_CSV_URL, headers={"User-Agent": "Mozilla/5.0"})
-    with urlopen(req, timeout=45) as resp:
+    with _urlopen_with_retry(req, timeout=45) as resp:
         csv_text = resp.read().decode("utf-8-sig", "ignore")
     source_rows = list(csv.DictReader(csv_text.splitlines()))
     if not source_rows:
@@ -649,7 +667,11 @@ def parse_pdf_cell_lines(raw: str | None) -> list[str]:
 
 
 def parse_ofca_wireless_services() -> list[dict[str, Any]]:
-    pdf_bytes = urlopen(Request(OFCA_WIRELESS_SERVICES_PDF_URL, headers={"User-Agent": "Mozilla/5.0"}), timeout=45).read()
+    with _urlopen_with_retry(
+        Request(OFCA_WIRELESS_SERVICES_PDF_URL, headers={"User-Agent": "Mozilla/5.0"}),
+        timeout=45,
+    ) as response:
+        pdf_bytes = response.read()
     tmp_pdf = ROOT / "tmp" / "ofca_wireless_en.pdf"
     tmp_pdf.parent.mkdir(parents=True, exist_ok=True)
     tmp_pdf.write_bytes(pdf_bytes)
@@ -811,7 +833,11 @@ def append_ofca_internet_rows(
 
 
 def parse_ofca_internet_subscriptions() -> list[dict[str, Any]]:
-    pdf_bytes = urlopen(Request(OFCA_INTERNET_SUBSCRIPTIONS_PDF_URL, headers={"User-Agent": "Mozilla/5.0"}), timeout=45).read()
+    with _urlopen_with_retry(
+        Request(OFCA_INTERNET_SUBSCRIPTIONS_PDF_URL, headers={"User-Agent": "Mozilla/5.0"}),
+        timeout=45,
+    ) as response:
+        pdf_bytes = response.read()
     tmp_pdf = ROOT / "tmp" / "ofca_cus_isp_en.pdf"
     tmp_pdf.parent.mkdir(parents=True, exist_ok=True)
     tmp_pdf.write_bytes(pdf_bytes)

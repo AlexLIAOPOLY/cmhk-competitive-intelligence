@@ -29,7 +29,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import date, datetime, time as clock_time, timedelta
+from datetime import datetime, time as clock_time, timedelta
 from pathlib import Path
 from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
@@ -127,7 +127,7 @@ ERROR_LEDGER_OPERATIONAL_MAX_ROWS = max(
 )
 ERROR_LEDGER_READ_CHUNK_ROWS = max(
     10,
-    int(os.environ.get("CMHK_ERROR_LEDGER_READ_CHUNK_ROWS", "50")),
+    int(os.environ.get("CMHK_ERROR_LEDGER_READ_CHUNK_ROWS", "500")),
 )
 ERROR_LEDGER_SYNC_BUDGET_SECONDS = max(
     30,
@@ -2474,7 +2474,6 @@ class ProjectMonitor:
         task_name_plain = _to_simplified(
             _alert_plain(incident.get("task_name") or "-", 100)
         ).replace("\n", " ")
-        task_name = self._card_markdown_text(task_name_plain, 100)
         fault_time_plain = _alert_plain(diagnosis.get("fault_time_hkt") or "-", 100)
         fault_time = self._card_markdown_text(fault_time_plain, 100)
         fault_cause = self._card_markdown_text(diagnosis.get("fault_cause") or "-", 900)
@@ -4245,7 +4244,12 @@ class ProjectMonitor:
         ) + updated
         # Sync again so notification status is reflected after successful sends.
         # M/N (处理人员/处理状态) are never touched by this path after append.
-        self._sync_error_ledger(deadline_monotonic=ledger_deadline_monotonic)
+        # This is an independent Feishu round trip and therefore receives its
+        # own budget; sharing the first deadline made a successful first read
+        # consume nearly all time available to the second readback.
+        self._sync_error_ledger(
+            deadline_monotonic=time.monotonic() + ERROR_LEDGER_SYNC_BUDGET_SECONDS
+        )
         self.state["last_cycle_at_hkt"] = _iso(self.now())
         self.state["cycle_phase"] = "idle"
         self.state["cycles"] = int(self.state.get("cycles") or 0) + 1

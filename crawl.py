@@ -6,7 +6,6 @@ import json
 import os
 import re
 import fcntl
-import shutil
 import socket
 import subprocess
 import tempfile
@@ -485,14 +484,7 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.censtatd.gov.hk/en/scode200.html",
         "https://www.pmi.spglobal.com/Public/Home/PressRelease/a8f02e53a64c42c7bed05c6df7b1a487",
     ],
-    24: ["https://www.policyaddress.gov.hk/2025/en/index.html", "https://www.digitalpolicy.gov.hk/en/"],
     26: ["https://www.ofca.gov.hk/en/home/index.html", "https://www.pcpd.org.hk/english/artificial_intelligence/index.html"],
-    27: [
-        "https://digital-strategy.ec.europa.eu/en/policies/data-act",
-        "https://digital-strategy.ec.europa.eu/en/policies/data-act-explained",
-        "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
-    ],
-    28: ["https://www.ofca.gov.hk/en/home/index.html", "https://www.enisa.europa.eu/news", "https://www.imda.gov.sg/regulations-and-licensing-listing"],
     29: [
         "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
         "https://www.itu.int/",
@@ -558,6 +550,7 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
     ],
     15: ["https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"],
     24: [
+        "https://www.policyaddress.gov.hk/2025/en/index.html",
         "https://www.policyaddress.gov.hk/2025/en/highlight.html",
         "https://www.investhk.gov.hk/en/news/",
         "https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm",
@@ -578,6 +571,9 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.imda.gov.sg/-/media/imda/files/news-and-events/media-room/media-releases/2025/06/02/model-ai-governance-framework-for-generative-ai.pdf",
     ],
     28: [
+        "https://www.ofca.gov.hk/en/home/index.html",
+        "https://www.enisa.europa.eu/news",
+        "https://www.imda.gov.sg/regulations-and-licensing-listing",
         "https://www.ofca.gov.hk/en/site_map/index.html",
         "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
         "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
@@ -593,7 +589,6 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
         "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
     ],
-    31: ["https://www.mobileworldlive.com/", "https://www.totaltele.com/"],
     31: [
         "https://www.gsma.com/newsroom/press-releases/",
         "https://www.gsma.com/solutions-and-impact/technologies/networks/",
@@ -601,7 +596,6 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.mobileworldlive.com/",
         "https://www.totaltele.com/",
     ],
-    34: ["https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5"],
     34: [
         "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
         "https://www.censtatd.gov.hk/en/scode200.html",
@@ -2556,6 +2550,21 @@ def compact_f_cell(row_result: Dict[str, Any]) -> str:
     return "\n".join(f"{url}（{source_title_for_url(url, row_result)}）" for url in urls)
 
 
+def row_outcome_counts(row_results: List[Dict[str, Any]]) -> Dict[str, int]:
+    return {
+        "ok": sum(1 for row in row_results if row.get("status") == "ok"),
+        "partial": sum(1 for row in row_results if row.get("status") == "partial"),
+        "quality_rejected": sum(
+            1 for row in row_results if row.get("status") == "quality_rejected"
+        ),
+        "operational_failed": sum(
+            1
+            for row in row_results
+            if row.get("status") not in {"ok", "partial", "quality_rejected"}
+        ),
+    }
+
+
 def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     f_values = []
     ij_values = []
@@ -2683,9 +2692,11 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         writer.writerows(log_rows)
     (ROOT / "run_log.json").write_text(json.dumps(log_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    ok = sum(1 for r in row_results if r["status"] == "ok")
-    partial = sum(1 for r in row_results if r["status"] == "partial")
-    failed = sum(1 for r in row_results if r["status"] not in {"ok", "partial"})
+    outcome_counts = row_outcome_counts(row_results)
+    ok = outcome_counts["ok"]
+    partial = outcome_counts["partial"]
+    quality_rejected = outcome_counts["quality_rejected"]
+    failed = outcome_counts["operational_failed"]
     skipped = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") == "skipped")
     crawled = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") != "skipped")
     cache_hits = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("cache_hit"))
@@ -2723,7 +2734,8 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         f"- Rows crawled: {len(row_results)}",
         f"- OK rows: {ok}",
         f"- Partial rows: {partial}",
-        f"- Failed/no extraction rows: {failed}",
+        f"- Quality-gated/no database promotion rows: {quality_rejected}",
+        f"- Operational failed/no extraction rows: {failed}",
         f"- Information requirements fulfilled: {fulfilled}/{len(row_results)} ({coverage_rate:.1f}%)",
         f"- Rows fulfilled by verified fallback: {fallback_rows}",
         f"- URLs fetched after compliance checks: {crawled}",

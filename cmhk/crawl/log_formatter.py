@@ -226,6 +226,8 @@ def _status_label(value: str) -> str:
         return "成功"
     if status in {"partial", "warning", "部分成功"}:
         return "部分成功"
+    if status in {"quality_rejected", "质量门禁拒绝", "质量门禁拒绝（未入库）"}:
+        return "质量门禁拒绝（未入库）"
     if status in {"failed", "failure", "error", "失败"}:
         return "失败"
     return value or "待检查"

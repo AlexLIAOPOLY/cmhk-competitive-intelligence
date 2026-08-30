@@ -75,6 +75,24 @@ class DatabaseSheetSyncTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(run.call_count, 2)
 
+    def test_retry_safe_gateway_call_recovers_from_timeout_exception(self) -> None:
+        gateway = object.__new__(LarkSheetGateway)
+        gateway.cli = "lark-cli"
+        gateway.identity = "bot"
+        gateway.profile = "server-bot"
+        outcomes = [
+            subprocess.TimeoutExpired(["lark-cli"], 240),
+            subprocess.CompletedProcess([], 0, stdout='{"ok":true,"data":{}}', stderr=""),
+        ]
+
+        with patch(
+            "cmhk.integrations.database_sheet_sync.subprocess.run", side_effect=outcomes
+        ) as run, patch("cmhk.integrations.database_sheet_sync.time.sleep"):
+            payload = gateway._run(["sheets", "+workbook-info"], retry_safe=True)
+
+        self.assertTrue(payload["ok"])
+        self.assertEqual(run.call_count, 2)
+
     def _dataset(self, root: Path) -> tuple[Path, Path]:
         dataset = root / "agent_knowledge" / "quarterly_competitor_metrics_2026-06-18"
         dataset.mkdir(parents=True)
@@ -191,7 +209,7 @@ class DatabaseSheetSyncTests(unittest.TestCase):
 
             self.assertEqual(gateway.last_rows[0]["人工備註"], "本地維護備註")
 
-    def test_sheet_reader_tolerates_extra_reordered_columns_manual_and_duplicate_rows(
+    def test_sheet_reader_tolerates_extra_reordered_columns_and_manual_rows(
         self,
     ) -> None:
         layout = (HEADERS[0], "使用者新增欄", *HEADERS[1:])
@@ -204,9 +222,6 @@ class DatabaseSheetSyncTests(unittest.TestCase):
             [f"[row=2] {values[layout[0]]}", "保留內容", *[values[item] for item in layout[2:]]]
         )
         writer.writerow(["[row=3] 手動列", "使用者內容", *([""] * (len(layout) - 2))])
-        writer.writerow(
-            [f"[row=4] {values[layout[0]]}", "重複列", *[values[item] for item in layout[2:]]]
-        )
 
         gateway = object.__new__(LarkSheetGateway)
         gateway.token = "token"
@@ -220,23 +235,78 @@ class DatabaseSheetSyncTests(unittest.TestCase):
             "ok": True,
             "data": {
                 "annotated_csv": buffer.getvalue(),
-                "current_region": "A1:P4",
+                "current_region": "A1:P3",
             },
         }
 
         existed, rows, last_row = gateway.read_rows()
 
         self.assertTrue(existed)
-        self.assertEqual(last_row, 4)
+        self.assertEqual(last_row, 3)
         self.assertEqual(rows["stable-key-1"]["使用者新增欄"], "保留內容")
         self.assertEqual(gateway.ignored_manual_rows, 1)
-        self.assertEqual(gateway.ignored_duplicate_rows, 1)
         writes = gateway._row_writes(
             {header: values[header] for header in HEADERS},
             row_number=5,
             remote=None,
         )
         self.assertEqual([item["range"] for item in writes], ["A5:A5", "C5:P5"])
+
+    def test_sheet_reader_fails_closed_on_duplicate_sync_keys(self) -> None:
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow([f"[row=1] {HEADERS[0]}", *HEADERS[1:]])
+        values = {header: f"v:{header}" for header in HEADERS}
+        values["同步鍵"] = "duplicate-key"
+        writer.writerow([f"[row=2] {values[HEADERS[0]]}", *[values[item] for item in HEADERS[1:]]])
+        writer.writerow([f"[row=3] {values[HEADERS[0]]}", *[values[item] for item in HEADERS[1:]]])
+        gateway = object.__new__(LarkSheetGateway)
+        gateway.token = "token"
+        gateway.title = "競對資料庫"
+        gateway.sheet_headers = HEADERS
+        gateway.sheet_col_count = len(HEADERS)
+        gateway.ignored_manual_rows = 0
+        gateway.ignored_duplicate_rows = 0
+        gateway._sheet = lambda: {"column_count": len(HEADERS)}  # type: ignore[method-assign]
+        gateway._run = lambda *_args, **_kwargs: {  # type: ignore[method-assign]
+            "ok": True,
+            "data": {"annotated_csv": buffer.getvalue(), "current_region": "A1:O3"},
+        }
+
+        with self.assertRaisesRegex(RuntimeError, "重複同步鍵"):
+            gateway.read_rows()
+
+    def test_full_readback_catches_non_sample_field_mismatch(self) -> None:
+        rows = [
+            {header: f"{header}-{index}" for header in HEADERS}
+            for index in range(5)
+        ]
+        for index, row in enumerate(rows):
+            row["同步鍵"] = f"key-{index}"
+        readback = {
+            row["同步鍵"]: {**row, "__row_number": str(index + 2)}
+            for index, row in enumerate(rows)
+        }
+        readback["key-1"]["來源"] = "漏寫的非抽樣欄位"
+        gateway = object.__new__(LarkSheetGateway)
+        gateway.title = "競對資料庫"
+        gateway.token = "token"
+        gateway.identity = "bot"
+        gateway.sheet_headers = HEADERS
+        gateway.sheet_col_count = len(HEADERS)
+        gateway.ignored_manual_rows = 0
+        gateway.ignored_duplicate_rows = 0
+        gateway._write_batches = lambda _writes: None  # type: ignore[method-assign]
+        gateway._styles = lambda _rows, _last: None  # type: ignore[method-assign]
+        gateway.read_rows = lambda: (True, readback, 6)  # type: ignore[method-assign]
+
+        with self.assertRaisesRegex(RuntimeError, "完整回讀"):
+            gateway.upsert_rows(
+                rows,
+                existed=True,
+                remote_rows=readback,
+                last_row=6,
+            )
 
 
 if __name__ == "__main__":

@@ -610,11 +610,11 @@ def publish_quarterly_release_task(
             "info",
             {"sheet_role": "竞对生产源库", "direction": "bidirectional"},
         )
-        feishu_sync = sync_producer_database_sheet(dataset_dir)
-        if feishu_sync.get("status") != "synced" or not feishu_sync.get(
+        feishu_pre_publish = sync_producer_database_sheet(dataset_dir)
+        if feishu_pre_publish.get("status") != "synced" or not feishu_pre_publish.get(
             "readback_verified"
         ):
-            raise RuntimeError(f"飞书数据库同步未完成：{feishu_sync}")
+            raise RuntimeError(f"飞书数据库同步未完成：{feishu_pre_publish}")
         failure_stage = "季度数据发布"
         result = publish_quarterly_release(
             dataset_dir,
@@ -622,6 +622,20 @@ def publish_quarterly_release_task(
             project_root=project_root,
             event_sink=event_sink,
         )
+        failure_stage = "飞书发布版本回读"
+        event_sink(
+            "飞书同步",
+            "不可变版本已生成，正在把 release ID 写入竞对资料库并执行全量回读。",
+            "info",
+            {"release_id": result["release_id"], "direction": "publish_and_readback"},
+        )
+        feishu_sync = sync_producer_database_sheet(
+            dataset_dir, release_id=str(result["release_id"])
+        )
+        if feishu_sync.get("status") != "synced" or not feishu_sync.get(
+            "readback_verified"
+        ):
+            raise RuntimeError(f"飞书发布版本回读未完成：{feishu_sync}")
         duration_ms = int((time.monotonic() - started) * 1000)
         summary = {
             "release_id": result["release_id"],
@@ -635,6 +649,12 @@ def publish_quarterly_release_task(
             "feishu_row_count": feishu_sync.get("row_count"),
             "feishu_written": feishu_sync.get("written"),
             "feishu_readback_verified": feishu_sync.get("readback_verified"),
+            "feishu_readback_scope": feishu_sync.get("readback_scope"),
+            "feishu_readback_sha256": feishu_sync.get("readback_sha256"),
+            "feishu_coverage_ratio": feishu_sync.get("coverage_ratio"),
+            "feishu_active_row_count": feishu_sync.get("active_row_count"),
+            "feishu_tombstone_row_count": feishu_sync.get("tombstone_row_count"),
+            "feishu_pre_publish_written": feishu_pre_publish.get("written"),
         }
         event_sink("飞书同步", FEISHU_SYNC_SUCCESS_MESSAGE, "success", summary)
         finalize_operational_crawl_run(

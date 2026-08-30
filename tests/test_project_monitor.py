@@ -33,6 +33,7 @@ class FakeCommandRunner:
         self.fail_ledger = False
         self.fail_ledger_styles = False
         self.ledger_append_row_shift = 0
+        self.ledger_sheet_row_count = 200
         self.bot_app_id = "cli_a9575e70ae799cb2"
         self.ledger_rows: list[list[str]] = []
         self.chat_names = {
@@ -132,7 +133,7 @@ class FakeCommandRunner:
                                 {
                                     "sheet_id": "j1AY6G",
                                     "sheet_name": "项目错误告警",
-                                    "row_count": 200,
+                                    "row_count": self.ledger_sheet_row_count,
                                 },
                             ],
                         },
@@ -1839,7 +1840,7 @@ class ProjectMonitorTests(unittest.TestCase):
         self.runner.fail_ledger_styles = True
         monitor = self._monitor(enabled=True, enable_ledger=True)
         monitor.collect_issues = lambda: [self._issue(monitor)]
-        result = monitor.run_cycle()
+        monitor.run_cycle()
         self.assertEqual(len(self.runner.ledger_rows), 1)
         self.assertEqual(len(self.runner.send_calls()), 1)
         events = self.state_dir.joinpath("events.jsonl").read_text()
@@ -1860,12 +1861,13 @@ class ProjectMonitorTests(unittest.TestCase):
 
     def test_error_ledger_is_read_in_bounded_chunks_without_losing_rows(self):
         ledger_rows = []
-        for index in range(project_monitor.ERROR_LEDGER_READ_CHUNK_ROWS + 5):
+        for index in range(project_monitor.ERROR_LEDGER_READ_CHUNK_ROWS * 2 + 5):
             row = [""] * 17
             row[0] = f"incident-{index:03d}"
             row[13] = "待处理"
             ledger_rows.append(row)
         self.runner.ledger_rows = ledger_rows
+        self.runner.ledger_sheet_row_count = len(ledger_rows) + 1
         monitor = self._monitor(enabled=True, enable_ledger=True)
 
         rows, mapping = monitor._read_error_ledger()
@@ -1880,6 +1882,20 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(len(mapping), len(ledger_rows))
         self.assertEqual(rows[0][0], "incident-000")
         self.assertEqual(rows[-1][0], ledger_rows[-1][0])
+
+    def test_second_error_ledger_sync_receives_a_fresh_time_budget(self):
+        monitor = self._monitor(enabled=False, enable_ledger=True)
+        monitor.collect_issues = lambda: []
+        deadlines = []
+        monitor._sync_error_ledger = lambda *, deadline_monotonic=None: deadlines.append(
+            deadline_monotonic
+        )
+
+        monitor.run_cycle()
+
+        self.assertEqual(len(deadlines), 2)
+        self.assertIsNotNone(deadlines[0])
+        self.assertGreater(deadlines[1], deadlines[0])
 
     def test_sensitive_values_are_redacted_before_incident_storage(self):
         monitor = self._monitor()

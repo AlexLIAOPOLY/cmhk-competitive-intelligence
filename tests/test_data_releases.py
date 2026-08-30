@@ -361,7 +361,7 @@ class DataReleaseTests(unittest.TestCase):
                         "written": 2,
                         "readback_verified": True,
                     },
-                ),
+                ) as sync_sheet,
             ):
                 result = publish_quarterly_release_task(
                     self._dataset(root),
@@ -381,6 +381,11 @@ class DataReleaseTests(unittest.TestCase):
         self.assertEqual(events[-1]["message"], "已经同步到飞书")
         self.assertEqual(events[-1]["data"]["release_id"], result["release_id"])
         self.assertTrue(events[-1]["data"]["feishu_readback_verified"])
+        self.assertEqual(sync_sheet.call_count, 2)
+        self.assertNotIn("release_id", sync_sheet.call_args_list[0].kwargs)
+        self.assertEqual(
+            sync_sheet.call_args_list[1].kwargs["release_id"], result["release_id"]
+        )
         self.assertTrue(finalize.call_args.kwargs["ok"])
 
 

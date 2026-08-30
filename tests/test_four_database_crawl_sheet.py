@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import mock
@@ -9,6 +10,18 @@ from cmhk.integrations import four_database_crawl_sheet as sheet
 
 
 class FourDatabaseCrawlSheetTests(unittest.TestCase):
+    def test_live_read_retries_timeout_exception(self) -> None:
+        outcomes = [
+            subprocess.TimeoutExpired(["lark-cli"], 180),
+            subprocess.CompletedProcess([], 0, stdout='{"ok":true,"data":{}}', stderr=""),
+        ]
+        with mock.patch.object(sheet.subprocess, "run", side_effect=outcomes) as run, \
+             mock.patch.object(sheet.time, "sleep"):
+            payload = sheet._run(["sheets", "+workbook-info"], retry_safe=True)
+
+        self.assertTrue(payload["ok"])
+        self.assertEqual(run.call_count, 2)
+
     def test_discovery_rows_keep_queries_results_and_handoff(self) -> None:
         rows = sheet.discovery_rows(
             {
@@ -38,15 +51,23 @@ class FourDatabaseCrawlSheetTests(unittest.TestCase):
     def test_append_uses_next_real_data_row_not_physical_sheet_size(self) -> None:
         calls = []
         row = sheet._row(run_id="r1", stage="测试", action="真实事件", discriminator="1")
+        written = False
 
-        def fake_run(args, *, input_text=""):
+        def fake_run(args, *, input_text="", retry_safe=False):
+            nonlocal written
             calls.append((args, input_text))
             if "+workbook-info" in args:
                 return {"ok": True, "data": {"sheets": [{"sheet_name": sheet.SHEET_TITLE, "sheet_id": "s1"}]}}
+            if "+table-put" in args:
+                written = True
+                return {"ok": True, "data": {}}
             if "+csv-get" in args:
-                if "--range" in args:
-                    return {"ok": True, "data": {"annotated_csv": f"[row=672] {row['事件ID']}"}}
-                return {"ok": True, "data": {"current_region": "A1:Q671"}}
+                requested_range = args[args.index("--range") + 1]
+                current_region = "A1:Q672" if written else "A1:Q671"
+                annotated = ""
+                if written and requested_range in {"B672:B672", "B2:B672"}:
+                    annotated = f"[row=672] {row['事件ID']}"
+                return {"ok": True, "data": {"annotated_csv": annotated, "current_region": current_region}}
             return {"ok": True, "data": {}}
 
         with TemporaryDirectory() as temp_dir, \
@@ -63,8 +84,20 @@ class FourDatabaseCrawlSheetTests(unittest.TestCase):
         self.assertEqual(payload["sheets"][0]["mode"], "overwrite")
         self.assertFalse(payload["sheets"][0]["header"])
 
-    def test_duplicate_events_reuse_prior_positive_readback(self) -> None:
+    def test_duplicate_events_require_current_live_readback(self) -> None:
         row = sheet._row(run_id="r2", stage="测试", action="重复保护", discriminator="1")
+        calls = []
+
+        def fake_run(args, *, input_text="", retry_safe=False):
+            calls.append(args)
+            if "+workbook-info" in args:
+                return {"ok": True, "data": {"sheets": [{"sheet_name": sheet.SHEET_TITLE}]}}
+            if "+csv-get" in args:
+                requested_range = args[args.index("--range") + 1]
+                annotated = f"[row=20] {row['事件ID']}" if requested_range == "B2:B20" else ""
+                return {"ok": True, "data": {"annotated_csv": annotated, "current_region": "A1:Q20"}}
+            raise AssertionError(f"unexpected write call: {args}")
+
         with TemporaryDirectory() as temp_dir:
             state_path = Path(temp_dir) / "state.json"
             state_path.write_text(__import__("json").dumps({
@@ -73,12 +106,33 @@ class FourDatabaseCrawlSheetTests(unittest.TestCase):
             }))
             with mock.patch.object(sheet, "STATE_PATH", state_path), \
                  mock.patch.object(sheet, "LOCK_PATH", Path(temp_dir) / "write.lock"), \
-                 mock.patch.object(sheet, "_run") as run:
+                 mock.patch.object(sheet, "_run", side_effect=fake_run):
                 result = sheet.append_rows([row])
-        run.assert_not_called()
+        self.assertTrue(any("+csv-get" in call for call in calls))
+        self.assertFalse(any("+table-put" in call for call in calls))
         self.assertEqual(result["skipped"], 1)
         self.assertTrue(result["readback_verified"])
-        self.assertEqual(result["readback_reason"], "previously_verified_event_ids")
+        self.assertEqual(result["readback_reason"], "live_full_event_id_readback")
+
+    def test_event_id_changes_with_result_content_but_not_timestamp(self) -> None:
+        first = sheet._row(
+            run_id="r3", stage="03:00四库更新", action="运行汇总",
+            result="completed_with_fallback", value="成功490；失败119",
+            timestamp="2026-08-30T04:28:55+08:00",
+        )
+        corrected = sheet._row(
+            run_id="r3", stage="03:00四库更新", action="运行汇总",
+            result="成功", value="成功484；失败125",
+            timestamp="2026-08-30T04:53:34+08:00",
+        )
+        same_content_later = sheet._row(
+            run_id="r3", stage="03:00四库更新", action="运行汇总",
+            result="成功", value="成功484；失败125",
+            timestamp="2026-08-30T05:00:00+08:00",
+        )
+
+        self.assertNotEqual(first["事件ID"], corrected["事件ID"])
+        self.assertEqual(corrected["事件ID"], same_content_later["事件ID"])
 
 
 if __name__ == "__main__":

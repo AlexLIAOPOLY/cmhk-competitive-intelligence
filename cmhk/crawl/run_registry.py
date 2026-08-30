@@ -89,7 +89,11 @@ def load_final_audit_summary() -> dict[str, Any]:
         "rows_crawled": _line_value(text, "Rows crawled"),
         "ok_rows": _line_value(text, "OK rows"),
         "partial_rows": _line_value(text, "Partial rows"),
-        "failed_rows": _line_value(text, "Failed/no extraction rows"),
+        "quality_gated_rows": _line_value(
+            text, "Quality-gated/no database promotion rows"
+        ),
+        "failed_rows": _line_value(text, "Operational failed/no extraction rows")
+        or _line_value(text, "Failed/no extraction rows"),
         "fulfilled": _line_value(text, "Information requirements fulfilled"),
         "live_url_success": _line_value(text, "Live URL success"),
         "live_url_failures": _line_value(text, "Live URL failures"),
@@ -758,6 +762,7 @@ def latest_crawl_run_summary(limit: int = 5) -> str:
                     f"- 运行ID：{item.get('crawl_run_id')}",
                     f"  时间：{item.get('completed_at_hkt')}",
                     f"  覆盖率：{audit.get('fulfilled') or '未记录'}",
+                    f"  质量门禁拒绝（未入库）：{audit.get('quality_gated_rows') or 0} 行；运行失败：{audit.get('failed_rows') or 0} 行",
                     f"  URL：成功 {run_log.get('success_urls', 0)}，失败/兜底 {run_log.get('failed_urls', 0)}",
                     f"  飞书日志：{feishu.get('log_sheet_title') or feishu.get('log_sheet_id') or '未写入'} {feishu.get('url') or ''}",
                     f"  Agent运行：{curation.get('agent_run_id') or '未记录'}，发布 {curation.get('accepted', 0)}，缺口 {curation.get('gaps', 0)}",
