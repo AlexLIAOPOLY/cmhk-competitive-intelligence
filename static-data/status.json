@@ -277,6 +277,12 @@
       ],
       "outputs": [
         {
+          "name": "8月30日周报 (1).docx",
+          "mtime": 1788056869.8963583,
+          "mtimeText": "2026-08-30 10:27:49",
+          "audio": false
+        },
+        {
           "name": "8月30日周报.docx",
           "mtime": 1788052258.0020952,
           "mtimeText": "2026-08-30 09:10:58",
@@ -317,12 +323,6 @@
           "mtime": 1786611613.8852298,
           "mtimeText": "2026-08-13 17:00:13",
           "audio": true
-        },
-        {
-          "name": "8月13日运营商业绩摘要.docx",
-          "mtime": 1786610091.2196035,
-          "mtimeText": "2026-08-13 16:34:51",
-          "audio": true
         }
       ]
     },
@@ -338,6 +338,17 @@
     },
     "latestOutputText": "2026-08-30 03:06:11",
     "outputs": [
+      {
+        "name": "8月30日周报 (1).docx",
+        "path_str": "8月30日周报 (1).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1649785,
+        "mtime": 1788056869.8963583,
+        "mtimeText": "2026-08-30 10:27:49",
+        "url": "",
+        "audio": null
+      },
       {
         "name": "8月30日周报.docx",
         "path_str": "8月30日周报.docx",
