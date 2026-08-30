@@ -19,9 +19,59 @@
         "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
         "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
       ],
-      "occurred_at_hkt": "2026-08-30T14:36:04+08:00",
+      "occurred_at_hkt": "2026-08-30T14:38:32+08:00",
       "started_at_hkt": "2026-08-30T14:25:05+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:36:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:38:32+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "1ff37631b4a81a0df28ddf77",
+      "task_id": "incident:1ff37631b4a81a0df28ddf77",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认事实：至少一个候选的处理流程（如去重、AI审核）可能回退、延期或失败。推断：整体任务是否完成需检查任务归档，当前影响范围限于该候选及相关步骤。",
+      "suggestions": [
+        "根据错误时间2026-08-30T11:58:35+08:00，关联对应任务归档和候选ID，确认该候选的最终完成状态。",
+        "检查初筛失败的具体原因，查看相关日志或依赖服务状态，定位是逻辑错误、数据问题还是外部依赖异常。",
+        "若条目已进入待恢复队列，保留已有处理结果，仅恢复失败的初筛步骤，并监控恢复过程。",
+        "恢复完成后，验证任务归档状态，确保该候选后续步骤（如去重、AI审核）正常完成。"
+      ],
+      "occurred_at_hkt": "2026-08-30T14:38:32+08:00",
+      "started_at_hkt": "2026-08-30T14:38:32+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:38:32+08:00",
+      "completed_at_hkt": "2026-08-30T14:39:12+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "6d6d120f442e1bf599dd3e9d",
+      "task_id": "incident:6d6d120f442e1bf599dd3e9d",
+      "title": "新闻自动初筛",
+      "kind": "news-selection-agent",
+      "kind_label": "新闻自动初筛",
+      "scope": "news-selection-agent",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "任务失败：新闻自动初筛",
+      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
+      "suggestions": [
+        "读取该任务完整日志和最后心跳，确认实际失败阶段。",
+        "修复后只恢复未完成阶段，避免重复执行已经成功的外部写入。"
+      ],
+      "occurred_at_hkt": "2026-08-30T14:38:02+08:00",
+      "started_at_hkt": "2026-08-30T14:38:32+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -71,7 +121,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:36:00+08:00",
       "started_at_hkt": "2026-08-30T14:36:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -143,7 +193,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:27:01+08:00",
       "started_at_hkt": "2026-08-30T14:27:06+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -193,7 +243,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:25:00+08:00",
       "started_at_hkt": "2026-08-30T14:25:05+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -269,7 +319,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:11+08:00",
       "started_at_hkt": "2026-08-30T14:14:22+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -293,7 +343,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:00+08:00",
       "started_at_hkt": "2026-08-30T14:13:11+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1897,7 +1947,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T09:59:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:38:02+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12025,54 +12075,6 @@
       "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
       "started_at_hkt": "2026-08-27T08:19:33+08:00",
       "heartbeat_at_hkt": "2026-08-27T08:19:33+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "6c7c28151867e20cc11d8b7e",
-      "task_id": "incident:6c7c28151867e20cc11d8b7e",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
-      "started_at_hkt": "2026-08-27T08:20:33+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:20:33+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "400712e5b851e9f14ddc45c8",
-      "task_id": "incident:400712e5b851e9f14ddc45c8",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
-      "started_at_hkt": "2026-08-27T08:21:33+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:23:34+08:00",
       "completed_at_hkt": "2026-08-29T16:42:04+08:00",
       "handled_at_hkt": ""
     }
