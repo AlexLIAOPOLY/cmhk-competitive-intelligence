@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "f88a2a421f1beab75bb5d768",
+      "task_id": "incident:f88a2a421f1beab75bb5d768",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "服务重启后恢复",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个后台处理步骤出现错误。推断：可能导致相关任务回退、延期或失败，需结合任务归档确认最终影响。",
+      "suggestions": [
+        "检查Lark服务的可达性和响应时间，确认网络连接和服务状态。",
+        "根据日志时间关联对应任务归档和候选ID，确认受影响的任务和步骤。",
+        "若任务进入待恢复队列，保留已有结果并仅重试失败步骤。",
+        "重试完成后验证任务归档状态，确保业务处理完成。"
+      ],
+      "occurred_at_hkt": "2026-08-30T16:47:04+08:00",
+      "started_at_hkt": "2026-08-30T16:47:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T16:47:04+08:00",
+      "completed_at_hkt": "2026-08-30T16:49:37+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "4b7a6b51b405b9a2f09a1a71",
       "task_id": "incident:4b7a6b51b405b9a2f09a1a71",
       "title": "飞书频率调度周期",
@@ -2130,6 +2156,32 @@
       "kind": "crawl",
       "kind_label": "主爬虫数据质量门禁",
       "scope": "crawl",
+      "incident_status": "recovery_pending",
+      "run_status": "completed",
+      "phase": "恢复待验证",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "本轮有数据被质量门禁拒绝，未进入数据库",
+      "impact": "已确认：25行数据未进入数据库，未造成数据污染。推断：对应指标可能保留旧值或显示为未披露，对下游分析影响较小。",
+      "suggestions": [
+        "检查质量门禁日志，确认25行数据的具体拒绝原因。",
+        "针对缺失的官方原文或字段，从官方来源补证数据后重新提交。",
+        "验证补证后的数据通过质量门禁并成功入库。",
+        "若无法补证，记录未披露指标并通知下游系统。"
+      ],
+      "occurred_at_hkt": "2026-08-30 03:07:49",
+      "started_at_hkt": "2026-08-30T09:59:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T16:46:04+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "cee96ebe1f46033ac49556ba",
+      "task_id": "incident:cee96ebe1f46033ac49556ba",
+      "title": "主爬虫数据质量门禁",
+      "kind": "crawl",
+      "kind_label": "主爬虫数据质量门禁",
+      "scope": "crawl",
       "incident_status": "open",
       "run_status": "failed",
       "phase": "待处理",
@@ -2144,8 +2196,8 @@
         "若无法补证，记录未披露指标并通知下游系统。"
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
-      "started_at_hkt": "2026-08-30T09:59:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T16:38:34+08:00",
+      "started_at_hkt": "2026-08-30T16:47:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T16:56:28+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12033,54 +12085,6 @@
       "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
       "started_at_hkt": "2026-08-27T08:01:06+08:00",
       "heartbeat_at_hkt": "2026-08-27T08:01:06+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "346394c26c0f4468090a7a54",
-      "task_id": "incident:346394c26c0f4468090a7a54",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
-      "started_at_hkt": "2026-08-27T08:03:06+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:03:06+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "64ba4088f71c38dd589204fa",
-      "task_id": "incident:64ba4088f71c38dd589204fa",
-      "title": "战略新闻常驻监视器",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻常驻监视器",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
-      "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
-      ],
-      "occurred_at_hkt": "2026-08-27T07:34:03+08:00",
-      "started_at_hkt": "2026-08-27T08:04:06+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:06:37+08:00",
       "completed_at_hkt": "2026-08-29T16:42:03+08:00",
       "handled_at_hkt": ""
     }

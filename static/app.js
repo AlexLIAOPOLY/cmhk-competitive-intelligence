@@ -1035,7 +1035,9 @@ function toolNarrationText(toolName) {
 function fileDescription(file) {
   const defaultDescription = file.reportType === "carrier-performance" ? "运营商业绩对标摘要" : "正式 Word 周报";
   let desc = file.note ? escapeHtml(file.note) : defaultDescription;
-  
+  if (file.isEdited) {
+    desc = `<i class="report-edited-badge">编辑稿${file.editRevision ? ` r${Number(file.editRevision)}` : ""}</i>${desc}`;
+  }
   if (file.is_archive) {
     desc = `<span class="archive-label">历史归档 ${file.archive_batch}</span> ` + desc;
   }
@@ -1837,6 +1839,7 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
+          <button type="button" class="row-icon-button edit-report-button" data-path="${safePath}" title="全屏编辑 Word 内容" aria-label="全屏编辑 ${escapeHtml(file.name)}">${iconSvg("edit")}</button>
           ${audioAction}
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
           <a href="${file.url}" download class="row-icon-button download-icon-button" data-path="${safePath}" title="下载" aria-label="下载">${iconSvg("download")}</a>
@@ -1849,6 +1852,9 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
 
 function bindOutputTableEvents(target) {
   if (!target) return;
+  target.querySelectorAll(".edit-report-button").forEach((button) => {
+    button.addEventListener("click", () => window.CMHKReportEditor?.open(button.dataset.path));
+  });
   target.querySelectorAll(".file-name-editable").forEach((cell) => {
     cell.addEventListener("click", () => openFileEditor(cell.dataset.path));
   });
@@ -2116,6 +2122,10 @@ window.addEventListener("workspace-tab-change", (event) => {
     markReportCategoryViewed(reportType);
   }
   if (reportType === "weekly") refreshWeeklyGenerationPreview();
+});
+
+window.addEventListener("cmhk-report-saved", (event) => {
+  if (event.detail?.status) renderStatus(event.detail.status);
 });
 
 function markReportConsumed(pathStr) {
