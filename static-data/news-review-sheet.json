@@ -25,7 +25,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-30T17:29:15+08:00",
+  "updatedAt": "2026-08-30T17:35:01+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -14600,17 +14600,17 @@
       "reviewer": {
         "id": "fs-76b4f5e7ee939e57",
         "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=240x240&cut_type=&quality=&format=png&sticker_format=.webp",
         "role": "EXTERNAL",
-        "reviewedAt": "2026-08-28T07:43:55+00:00"
+        "reviewedAt": "2026-08-30T09:32:21+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
           "id": "fs-76b4f5e7ee939e57",
           "name": "廖望 Alex LIAO Wang",
-          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=240x240&cut_type=&quality=&format=png&sticker_format=.webp",
           "role": "EXTERNAL",
-          "reviewedAt": "2026-08-28T07:43:55+00:00"
+          "reviewedAt": "2026-08-30T09:32:21+00:00"
         },
         "纳入周报": {
           "id": "fs-76b4f5e7ee939e57",
