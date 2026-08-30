@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-30T11:54:19+08:00",
+  "generated_at": "2026-08-30T12:00:13+08:00",
   "items": [
     {
       "id": "NEWS-F613BB2ED73CBC",
@@ -11,12 +11,28 @@
       "published_at": "2026-08-30T04:50:11+08:00"
     },
     {
+      "id": "NEWS-E95639FE910741",
+      "title": "香港网约车服务牌照将择优而取 不设发牌上限",
+      "summary": "香港政府就网约车服务牌照制度表态，将择优发牌且不设发牌上限，影响本地出行市场准入规则。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBHekJoU2YtV2hzendfcHpEMDJFcGpwYk5jV2xxdUVFY01FcGRVTlRiWFNFTFF6VDNSa0tNcGxBY3p6OTAwOGNZczc4Mk9EWXlwdkZnTUl2RmtMX2puTXBVU0gwUHE0VTVKRFRlUEYzcEY?oc=5",
+      "published_at": "2026-08-29T21:32:00+08:00"
+    },
+    {
       "id": "NEWS-A4DAA3DA0AB2D4",
       "title": "新皇岗口岸无香港电话讯号 政府免费Wi-Fi网速缓慢",
       "summary": "新皇岗口岸由内地运营商提供流动通讯服务，大楼内无香港电话讯号；数字政策办公室提供免费Wi-Fi但网速缓慢，仍有改进空间。",
       "category": "基础设施/网络/技术类",
       "source_url": "https://www.kinliu.hk/news/%E7%86%B1%E9%BB%9E/%E6%96%B0%E7%9A%87%E5%B4%97%E5%8F%A3%E5%B2%B8%E7%84%A1%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A9%B1%E8%A8%8A%E8%99%9F-%E8%A8%AD%E6%9C%89%E6%94%BF%E5%BA%9C%E5%85%8D%E8%B2%BBWi-Fi%E4%BD%86%E6%9C%89%E6%94%B9%E9%80%B2%E7%A9%BA%E9%96%93/272235.html?id=51&from=home&bc1=%E9%A6%96%E9%A0%81&bc1to=%2F",
       "published_at": "2026-08-29T20:47:00+08:00"
+    },
+    {
+      "id": "NEWS-6A34944C537918",
+      "title": "多家网约车平台对香港牌照表达兴趣",
+      "summary": "香港运输署署长表示，在政府公布网约车监管框架后一天内，已有至少两至三家平台运营商表示有意申请牌照。",
+      "category": "政策监管",
+      "source_url": "https://www.scmp.com/news/hong-kong/transport/article/3365691/several-ride-hailing-firms-express-interest-hong-kong-licences-minister",
+      "published_at": "2026-08-29T19:50:00+08:00"
     },
     {
       "id": "NEWS-E863449203275F",
@@ -35,36 +51,20 @@
       "published_at": "2026-08-29T17:56:55+08:00"
     },
     {
+      "id": "NEWS-0BFAA29657A630",
+      "title": "香港网约车平台牌照开放申请，陈美宝预计首批年底前出牌",
+      "summary": "香港运输署开放网约车平台牌照申请且不设上限，运输及物流局局长陈美宝预计首批牌照最快年底前发出。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi9ANBVV95cUxNclZZX1d2cFJqM05vU3RzVmpmMGp4dkpLQjhjZFMxODg5UXFmczFXSGJhT1I5SFQ3cnhURlhyUlo0cENiTWhURnd3TlhUdkoyWFN4MElXcThEYnBicXFqdWVkX3JMRG16UzJRR2pQWEtTVGgwRWRmVkk1bHhyQUZJUndNNzFGbTFyUFE1OGZ1NUQxdDAxbkxGN0xBZjlXc0ZzVzBCeVoyaHJlZXZCZmxobHRmNmc1bGxvZEFBQ0tHNThWSExVY1Vlb3JSNDZ0MHVta0dlRS1QR1FPNmdYcWlvSWNIZjJqX3oxMk1xLXd0c0I0bDlaaGtjTmVBTzBXTFJGSHlJX2g0YjZPblZjWGRkRUpUNTF0TEkwWkZyNTUtYk1TN1Y1ZGhuVjdpSE1FQ2hFVkppbWFNOGdxQ1JkY1pBUkVxdmQ0UnFYaU9UQmdYZFpNOVRUVlZ4eF9Td0ItekUyd2NwY01LTGNIRmlWaEpKbXlCVmd2TjRRMkU3NmpfSC1jWFZadFFneEVrOEtqdjNBSnY0emxXNVpsYlRrNjF1VUJVdWdzdnl0VlFuakozQkFTc0cwZWpGeXdPWjFPYlpuRDlVRVhLNXV0cTlkeWlGNHlvb0ozcTFfc1l6R243SXV6LUhPdlRac1U1ZDVHbGtmRUUtMdIBjAFBVV95cUxNNHE4QUZSTGpGc2RkYVVtXzFwWFdST21LNnR0SnBlSURDd2hVRVNPemtPd0xaLS1aV3k4dzRyaklxd2dqMmZEenI4WHZZQzI1RGZtdEc0REJuVnNtejJvQ2MwY1BtUGNpdFZFS0ZHZXZWcHJ1QVZfbzNyYmtVVGU2blVTX1k4NS1aWkZVbw?oc=5",
+      "published_at": "2026-08-29T16:54:45+08:00"
+    },
+    {
       "id": "NEWS-A0D0A8AB00B25F",
       "title": "SmarTone精选客户5G宽频月费低至117港元",
       "summary": "SmarTone推出5G宽频优惠，精选客户月费低至117港元。",
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE4yV2k5b0V4MmJCYWlRT21ZZWcwNEN2YzFoQVBiTjdqSVR4MWNSc3hOYS05RE9WdDFVNzUwZmZ1dWF0d1BWMVZ2NzJYdGEtcExISDN3NlhuejE?oc=5",
       "published_at": "2026-08-29T12:00:00+08:00"
-    },
-    {
-      "id": "NEWS-C268C42FD59CC1",
-      "title": "丰田、KDDI等加盟高通日本机器人中心，加速实体AI布局",
-      "summary": "丰田、KDDI等日本产学巨头加盟高通在日本设立的Qualcomm Japan Robotics Center，共同推进实体AI与机器人技术发展。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNSFFUN2pkNXRiMmJldjVUY1NvcVRzSXJoSjRPLUlRZElfc183UnFWbFcySkhKbzdSRUY0UHJhRWlPYjF3Z0JMOXMtXzdKTGh1UkFLU0NjODB5QzFlNkc0ZVZ3SXpGWDF2NWFwUjRpWVZFeG85VHJpWWNrUWpsczVOb19MaG1qa2wyYkNUenZ3?oc=5",
-      "published_at": "2026-08-29T00:00:38+08:00"
-    },
-    {
-      "id": "NEWS-C9B9EB65F881BC",
-      "title": "CSL Mobile独家联乘顶尖网络商推全方位漫游服务",
-      "summary": "CSL Mobile宣布独家联乘顶尖网络商，提供全方位漫游服务并自动升级至「黄金漫游」。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9GeTNORVA4RUVMSjJvOFQ0OC1SbVVEVE1MNzRDcktWbXEtV3RQa01oc0V0c3llbldOQkVFQ0U4NlZMdDhYUm9LRm5yeGd1dEJESDRSUFpXQVh1djE0OHFkcnByNTd0OHpBRmxkUTJtUXpDS3M?oc=5",
-      "published_at": "2026-08-29T00:00:00+08:00"
-    },
-    {
-      "id": "NEWS-EA8E0AC55D3802",
-      "title": "网上行推出全港首个符合F5G-A标准的宽频网络",
-      "summary": "网上行宣布其宽频网络成为全港首个符合F5G-A标准，主打智慧家居应用。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5IaFVxMXNSSG1DMGhmbndUdnhnb1JGYlNWR1l3YXh3QjA1RjFvS3hLaEJEWXQ4MGFBU0k4RTRSYjloUVFTajE3dUY5ZTduZ0dPTDZKb3NJdDF4UTNhWFY1UFZWQlg2aVNBenZveVR5Z1NiX3c?oc=5",
-      "published_at": "2026-08-29T00:00:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "3d1cb54ceac6574748b767531e2e5b446f14ce9f4029d48657125335ebb645c8"
+  "site_version": "21bd0653f0bfaa3445b44bbe7d22f41bd6184720b1600cff8f2a9488b16f0624"
 }

@@ -2,6 +2,57 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_115734_943432",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-08-30@review-repair-2f544c2015052543）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 21 条，验证 42 格，本次新写 42 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 21 条，验证 42 格，本次新写 42 格，已有 0 格；逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T11:59:51+08:00",
+      "started_at_hkt": "2026-08-30T11:57:34+08:00",
+      "completed_at_hkt": "2026-08-30T11:59:51+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 136795,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 21,
+        "changed_count": 42,
+        "newly_written_count": 42,
+        "already_applied_count": 0,
+        "verified_field_count": 42,
+        "app_accepted_count": 4,
+        "weekly_accepted_count": 4,
+        "deferred_field_count": 0,
+        "human_example_count": 60,
+        "human_correction_count": 1,
+        "model": "DeepSeek-V4-Pro",
+        "decision_models": [
+          "DeepSeek-V4-Pro"
+        ],
+        "decision_source_counts": {
+          "DeepSeek-V4-Pro": 21
+        },
+        "mixed_decision_sources": false,
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "operation_audit_count": 42,
+        "decision_audit_count": 21,
+        "resumed_from_plan": false,
+        "recovered_decision_count": 0,
+        "published_count": 79,
+        "published_provenance_refreshed": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "task_run_id": "20260830_115734_943432"
+      }
+    },
+    {
       "crawl_run_id": "20260830_095628_598960",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-08-28@14:00）",
@@ -72151,6 +72202,6 @@
       }
     }
   ],
-  "total": 291,
+  "total": 292,
   "truncated": false
 }

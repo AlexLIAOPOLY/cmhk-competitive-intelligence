@@ -24,14 +24,14 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-30T11:54:23+08:00",
+  "updatedAt": "2026-08-30T12:00:16+08:00",
   "rows": [
     {
       "rowNumber": 2,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -45,19 +45,35 @@
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
       ],
       "reviewer": {
-        "id": "fs-76b4f5e7ee939e57",
-        "name": "廖望 Alex LIAO Wang",
-        "avatarUrl": "https://s1-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
-        "role": "ADMIN",
-        "reviewedAt": "2026-08-27T08:20:48+00:00"
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
       }
     },
     {
       "rowNumber": 3,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -69,14 +85,37 @@
         "",
         "香港网约车监管新框架吸引多家平台申请牌照，反映本地出行市场需求变化，可能影响电信运营商的移动数据、车联网及企业客户服务机会。",
         "后台固定战略词库（模块：宏观经济） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 4,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -88,14 +127,37 @@
         "口岸",
         "新皇岗口岸逾千架次私家车首试五合一通道并模拟电动车起火施救，属跨境基础设施具体测试进展。",
         "飞书监测表关键词（模块：香港本地新闻；命中：口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 5,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -107,14 +169,37 @@
         "口岸",
         "介绍新皇岗口岸联合一站式车道过关流程，属跨境基础设施新安排。",
         "飞书监测表关键词（模块：香港本地新闻；命中：口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 6,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -126,14 +211,37 @@
         "",
         "新田科技城拟吸引晶片、无人机及新能源汽车等高新科技企业落户并降低工业地价，可能带动本地企业客户需求与网络基础设施投资。",
         "后台固定竞对词库（HKT） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 7,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -145,14 +253,37 @@
         "香港、無人駕駛",
         "无人驾驶eVTOL在香港试飞成功，属智慧交通与低空经济具体进展，可影响本地出行需求与基础设施部署。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、無人駕駛） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 8,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -164,14 +295,37 @@
         "皇崗口岸",
         "皇岗口岸进行大规模承载力演练，涉及跨境基础设施运营准备，可能影响深港通关客流、物流及沿线网络需求。",
         "后台固定战略词库（模块：香港本地新闻；命中：皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 9,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -183,14 +337,37 @@
         "",
         "皇岗口岸跨境压力测试与合作查验模式有具体新事实，影响跨境客流与物流需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 10,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -202,14 +379,37 @@
         "",
         "皇岗口岸跨境通关模式测试有具体新事实，影响跨境客流与通关效率。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 11,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -221,14 +421,37 @@
         "香港、皇崗口岸",
         "皇岗口岸首次测试车辆通关联合一站式车道，有具体新事实，影响跨境物流与通关效率。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 12,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -240,14 +463,37 @@
         "",
         "皇岗口岸演练规模提升至2万人次并计划设短途巴士分流旅客，有具体新事实，影响跨境客流与交通需求。",
         "飞书监测表关键词（模块：政策/法规类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 13,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -259,14 +505,37 @@
         "皇崗口岸",
         "皇岗口岸跨境压力测试是具体基础设施事件，涉及客流物流与通关网络部署准备，影响本地企业需求与运营。",
         "后台固定战略词库（模块：香港本地新闻；命中：皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 14,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -278,14 +547,37 @@
         "香港、皇崗口岸",
         "联合一站式车道信息采集一体机属跨境基础设施技术部署，可提升通关效率并影响口岸运营。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 15,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -297,14 +589,37 @@
         "算力",
         "算力需求带动电子行业利润高增长，反映算力相关市场需求扩张。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 16,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -316,14 +631,37 @@
         "牌照",
         "香港网约车平台牌照制度正式落地，涉及新的交通服务监管框架和牌照发放，可能影响本地出行市场需求和电信运营商的车联网、移动数据等业务场景。",
         "飞书监测表关键词（模块：政策/法规类；命中：牌照） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 17,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -335,14 +673,37 @@
         "",
         "香港网约车规管制度具体细节公布，涉及牌照准入条件，可能影响本地出行生态及电信运营商相关业务场景。",
         "后台固定竞对词库（HKT） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 18,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -354,14 +715,37 @@
         "牌照",
         "香港网约车牌照制度的新政策方向涉及发牌规则与市场准入，可能影响本地电信运营商在车联网、出行平台合作及数据服务方面的业务机会与合规要求。",
         "飞书监测表关键词（模块：政策/法规类；命中：牌照） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 19,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -373,14 +757,37 @@
         "口岸",
         "新皇岗口岸通关演练涉及深港跨境基础设施运作，测试高峰人流与公共交通安排，影响跨境客流、物流及口岸网络部署需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 20,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -392,14 +799,37 @@
         "香港、皇崗口岸",
         "皇岗口岸五合一车道跨境实测，提升通关效率，影响跨境客流与物流。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 21,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -411,14 +841,37 @@
         "",
         "新皇岗口岸演练显示通关效率提升，影响跨境客流、物流与企业需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 22,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -430,7 +883,30 @@
         "AI",
         "韩国政府推出全民免费AI服务，反映国家层面AI基础设施部署和公共服务模式创新，可作为电信运营商AI服务策略的国际对标参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T04:00:17+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T04:00:17+00:00"
+        }
+      }
     },
     {
       "rowNumber": 24,
