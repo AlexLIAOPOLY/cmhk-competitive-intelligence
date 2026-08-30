@@ -277,6 +277,12 @@
       ],
       "outputs": [
         {
+          "name": "8月30日周报 (3).docx",
+          "mtime": 1788069164.9559095,
+          "mtimeText": "2026-08-30 13:52:44",
+          "audio": false
+        },
+        {
           "name": "8月30日周报 (2).docx",
           "mtime": 1788067971.7578273,
           "mtimeText": "2026-08-30 13:32:51",
@@ -317,12 +323,6 @@
           "mtime": 1786615664.0,
           "mtimeText": "2026-08-13 18:07:44",
           "audio": false
-        },
-        {
-          "name": "8月13日周报 (3).docx",
-          "mtime": 1786612928.2043362,
-          "mtimeText": "2026-08-13 17:22:08",
-          "audio": true
         }
       ]
     },
@@ -338,6 +338,17 @@
     },
     "latestOutputText": "2026-08-30 03:06:11",
     "outputs": [
+      {
+        "name": "8月30日周报 (3).docx",
+        "path_str": "8月30日周报 (3).docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652495,
+        "mtime": 1788069164.9559095,
+        "mtimeText": "2026-08-30 13:52:44",
+        "url": "",
+        "audio": null
+      },
       {
         "name": "8月30日周报 (2).docx",
         "path_str": "8月30日周报 (2).docx",
