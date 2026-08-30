@@ -3,28 +3,28 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 7,
+      "ok": 5,
       "partial": 1
     },
     "visuals": {
       "crawl": {
-        "success": 198,
+        "success": 200,
         "failed": 7,
         "fallback": 0,
-        "total": 205,
+        "total": 207,
         "successRate": 97,
-        "completedAt": "2026-08-30 03:07:49"
+        "completedAt": "2026-08-31 03:09:47"
       },
       "quality": {
-        "ok": 7,
+        "ok": 5,
         "partial": 1,
         "failed": 0,
         "operationalFailed": 0,
-        "qualityRejected": 25,
-        "nonPromoted": 25,
+        "qualityRejected": 27,
+        "nonPromoted": 27,
         "fieldTotal": 205,
         "missingFields": 2,
-        "rawSources": 205
+        "rawSources": 207
       },
       "blocks": [
         {
@@ -47,7 +47,7 @@
         },
         {
           "label": "government_public_info",
-          "value": 26
+          "value": 27
         },
         {
           "label": "commercial_data",
@@ -59,7 +59,7 @@
         },
         {
           "label": "regulator_public_info",
-          "value": 7
+          "value": 8
         },
         {
           "label": "exchange_public_disclosure",
@@ -69,7 +69,7 @@
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 104
+          "value": 105
         },
         {
           "label": "US",
@@ -95,11 +95,11 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 146
+          "value": 145
         },
         {
           "label": "cache:httpx",
-          "value": 33
+          "value": 34
         },
         {
           "label": "curl_chrome_ua",
@@ -107,7 +107,7 @@
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 7
+          "value": 9
         },
         {
           "label": "cache:curl_direct_chrome_ua",
@@ -320,7 +320,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-31 03:03:12",
+    "latestOutputText": "2026-08-31 03:08:16",
     "outputs": [
       {
         "name": "8月30日周报 (3).docx",
