@@ -172,6 +172,33 @@ body.news-review-open {
   white-space: nowrap;
 }
 
+.news-review-pagination {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  color: #607783;
+  white-space: nowrap;
+}
+
+.news-review-pagination button {
+  min-height: 26px;
+  padding: 0 8px;
+  color: #176f9f;
+  background: #f4f9fc;
+  border: 1px solid #c5dce8;
+  border-radius: 4px;
+  font: 600 11px/1 inherit;
+  cursor: pointer;
+}
+
+.news-review-pagination button:disabled {
+  color: #9aabb3;
+  background: #f3f5f6;
+  border-color: #dce3e7;
+  cursor: default;
+}
+
 .news-review-selection-text {
   margin-left: auto;
 }

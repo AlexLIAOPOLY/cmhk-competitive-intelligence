@@ -10,6 +10,9 @@
     feishu: document.getElementById("newsReviewFeishuLink"),
     search: document.getElementById("newsReviewSearchInput"),
     count: document.getElementById("newsReviewCountText"),
+    previousPage: document.getElementById("newsReviewPreviousPage"),
+    nextPage: document.getElementById("newsReviewNextPage"),
+    pageText: document.getElementById("newsReviewPageText"),
     selection: document.getElementById("newsReviewSelectionText"),
     clearFilters: document.getElementById("newsReviewClearFilters"),
     cellName: document.getElementById("newsReviewCellName"),
@@ -29,6 +32,7 @@
   const model = {
     headers: [],
     rows: [],
+    matchedRows: [],
     visibleRows: [],
     editableColumns: new Set(),
     statusOptions: ["待审核", "接受", "不接受", "暂缓"],
@@ -44,6 +48,8 @@
     feishuCurrentCount: 0,
     localHistoryCount: 0,
     totalHistoryCount: 0,
+    page: 0,
+    pageSize: 200,
   };
   const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v2";
   const SHEET_READ_TIMEOUT_MS = 30000;
@@ -78,7 +84,7 @@
 
   function updateVisibleRows() {
     const query = nodes.search.value.trim().toLocaleLowerCase("zh-Hans");
-    model.visibleRows = model.rows.filter((row) => {
+    const matchedRows = model.rows.filter((row) => {
       if (query && !row.values.some((value) => String(value).toLocaleLowerCase("zh-Hans").includes(query))) {
         return false;
       }
@@ -89,12 +95,17 @@
     });
     if (model.sort) {
       const { columnIndex, direction } = model.sort;
-      model.visibleRows.sort((left, right) => String(left.values[columnIndex] || "").localeCompare(
+      matchedRows.sort((left, right) => String(left.values[columnIndex] || "").localeCompare(
         String(right.values[columnIndex] || ""),
         "zh-Hans",
         { numeric: true, sensitivity: "base" },
       ) * direction);
     }
+    model.matchedRows = matchedRows;
+    const pageCount = Math.max(1, Math.ceil(matchedRows.length / model.pageSize));
+    model.page = Math.max(0, Math.min(model.page, pageCount - 1));
+    const pageStart = model.page * model.pageSize;
+    model.visibleRows = matchedRows.slice(pageStart, pageStart + model.pageSize);
   }
 
   function selectionBounds() {
@@ -263,6 +274,7 @@
         model.sort = model.sort?.columnIndex === columnIndex
           ? { columnIndex, direction: model.sort.direction * -1 }
           : { columnIndex, direction: 1 };
+        model.page = 0;
         render();
       });
       const filter = document.createElement("button");
@@ -305,10 +317,14 @@
     updateVisibleRows();
     renderHead();
     renderBody();
-    const scope = model.visibleRows.length === model.rows.length
+    const scope = model.matchedRows.length === model.rows.length
       ? `${model.totalHistoryCount} 条完整记录`
-      : `${model.visibleRows.length} / ${model.totalHistoryCount} 条完整记录`;
+      : `${model.matchedRows.length} / ${model.totalHistoryCount} 条完整记录`;
     nodes.count.textContent = `${scope} · 飞书当前 ${model.feishuCurrentCount} · 本地历史 ${model.localHistoryCount}`;
+    const pageCount = Math.max(1, Math.ceil(model.matchedRows.length / model.pageSize));
+    nodes.pageText.textContent = `第 ${model.page + 1} / ${pageCount} 页`;
+    nodes.previousPage.disabled = model.page <= 0;
+    nodes.nextPage.disabled = model.page >= pageCount - 1;
     nodes.clearFilters.hidden = model.filters.size === 0 && !nodes.search.value;
     nodes.grid.hidden = false;
     nodes.loading.hidden = true;
@@ -459,6 +475,7 @@
       button.addEventListener("click", () => {
         if (value === null) model.filters.delete(columnIndex);
         else model.filters.set(columnIndex, value);
+        model.page = 0;
         nodes.filterMenu.hidden = true;
         model.selectionAnchor = null;
         model.selectionFocus = null;
@@ -626,6 +643,7 @@
   openButton.addEventListener("click", openWorkspace);
   nodes.close.addEventListener("click", closeWorkspace);
   nodes.search.addEventListener("input", () => {
+    model.page = 0;
     model.selectionAnchor = null;
     model.selectionFocus = null;
     render();
@@ -633,7 +651,25 @@
   nodes.clearFilters.addEventListener("click", () => {
     model.filters.clear();
     nodes.search.value = "";
+    model.page = 0;
     render();
+  });
+  nodes.previousPage.addEventListener("click", () => {
+    if (model.page <= 0) return;
+    model.page -= 1;
+    model.selectionAnchor = null;
+    model.selectionFocus = null;
+    render();
+    nodes.shell.scrollTop = 0;
+  });
+  nodes.nextPage.addEventListener("click", () => {
+    const pageCount = Math.max(1, Math.ceil(model.matchedRows.length / model.pageSize));
+    if (model.page >= pageCount - 1) return;
+    model.page += 1;
+    model.selectionAnchor = null;
+    model.selectionFocus = null;
+    render();
+    nodes.shell.scrollTop = 0;
   });
 
   nodes.body.addEventListener("pointerdown", (event) => {
