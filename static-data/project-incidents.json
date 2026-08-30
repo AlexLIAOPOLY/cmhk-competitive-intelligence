@@ -2,6 +2,58 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "3ad35f8d052f3fe1fc1b4874",
+      "task_id": "incident:3ad35f8d052f3fe1fc1b4874",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败状态。推断整体任务可能未完全完成，部分结果可能丢失或需恢复，但最终影响需结合任务归档判断。",
+      "suggestions": [
+        "",
+        "关联任务归档与候选ID：根据日志时间戳查询对应任务归档记录和候选ID，确认哪些步骤失败、是否已回退成功或进入待恢复队列。",
+        "恢复失败步骤：若条目进入待恢复队列，保留已有处理结果，仅重新执行失败步骤，并监控执行过程确保无新错误。",
+        "验证任务完成状态：在恢复或修复后，检查任务归档的最终状态，确认所有步骤成功完成且无数据丢失。"
+      ],
+      "occurred_at_hkt": "2026-08-30T22:05:04+08:00",
+      "started_at_hkt": "2026-08-30T22:05:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T22:05:04+08:00",
+      "completed_at_hkt": "2026-08-30T22:06:14+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "dd3be3253508f0dacc912bd4",
+      "task_id": "incident:dd3be3253508f0dacc912bd4",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败状态。推断整体任务可能未完全完成，部分结果可能丢失或需恢复，但最终影响需结合任务归档判断。",
+      "suggestions": [
+        "",
+        "关联任务归档与候选ID：根据日志时间戳查询对应任务归档记录和候选ID，确认哪些步骤失败、是否已回退成功或进入待恢复队列。",
+        "恢复失败步骤：若条目进入待恢复队列，保留已有处理结果，仅重新执行失败步骤，并监控执行过程确保无新错误。",
+        "验证任务完成状态：在恢复或修复后，检查任务归档的最终状态，确认所有步骤成功完成且无数据丢失。"
+      ],
+      "occurred_at_hkt": "2026-08-30T22:03:36+08:00",
+      "started_at_hkt": "2026-08-30T22:03:36+08:00",
+      "heartbeat_at_hkt": "2026-08-30T22:03:36+08:00",
+      "completed_at_hkt": "2026-08-30T22:04:15+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "81068d27be7b58af2b2882c7",
       "task_id": "incident:81068d27be7b58af2b2882c7",
       "title": "主项目后台任务",
@@ -2895,7 +2947,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T17:26:33+08:00",
-      "heartbeat_at_hkt": "2026-08-30T21:57:36+08:00",
+      "heartbeat_at_hkt": "2026-08-30T22:08:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12064,54 +12116,6 @@
       "started_at_hkt": "2026-08-27T08:42:07+08:00",
       "heartbeat_at_hkt": "2026-08-27T08:42:37+08:00",
       "completed_at_hkt": "2026-08-27T08:43:07+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b09960d768906461efcf2df5",
-      "task_id": "incident:b09960d768906461efcf2df5",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:34:06+08:00",
-      "started_at_hkt": "2026-08-27T08:34:06+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:34:06+08:00",
-      "completed_at_hkt": "2026-08-27T08:34:36+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "436235f7008236e582742645",
-      "task_id": "incident:436235f7008236e582742645",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:32:05+08:00",
-      "started_at_hkt": "2026-08-27T08:32:05+08:00",
-      "heartbeat_at_hkt": "2026-08-27T08:32:05+08:00",
-      "completed_at_hkt": "2026-08-27T08:32:35+08:00",
       "handled_at_hkt": ""
     }
   ],
